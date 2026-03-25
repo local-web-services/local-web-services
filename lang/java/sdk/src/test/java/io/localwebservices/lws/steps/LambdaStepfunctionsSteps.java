@@ -23,7 +23,8 @@ import software.amazon.awssdk.services.sfn.model.StateMachineType;
  * <p>Covers: create_state_machine, delete_state_machine, deploy_function, execution_completes,
  * invocation_fails_state_machine_deleted, invoke_function, start_execution_task.
  *
- * <p>Safety invariants: InvocationRequiresActiveFunction, RunningExecutionReferencesExistingStateMachine
+ * <p>Safety invariants: InvocationRequiresActiveFunction,
+ * RunningExecutionReferencesExistingStateMachine
  *
  * <p>Steps already registered in CrossServiceSteps ("the system is initialized", "the operation is
  * rejected") are NOT re-registered here.
@@ -224,8 +225,7 @@ public class LambdaStepfunctionsSteps {
     try (SfnClient client = world.session.sfnClient()) {
       // Act
       StartExecutionResponse result =
-          client.startExecution(
-              r -> r.stateMachineArn(smArn()).input("{\"key\":\"value\"}"));
+          client.startExecution(r -> r.stateMachineArn(smArn()).input("{\"key\":\"value\"}"));
       world.lastExecutionArn = result.executionArn();
       // Assert: execution started (no error thrown)
     }
@@ -355,7 +355,8 @@ public class LambdaStepfunctionsSteps {
     // Assert: captured in world
   }
 
-  @When("the Lambda function fails to start an execution because the state machine has been deleted")
+  @When(
+      "the Lambda function fails to start an execution because the state machine has been deleted")
   public void theLambdaFunctionFailsToStartAnExecution() {
     // @internal: Cannot trigger Lambda invocation failure via public API in lws.
     // This scenario is tagged @internal and excluded by the tag filter.

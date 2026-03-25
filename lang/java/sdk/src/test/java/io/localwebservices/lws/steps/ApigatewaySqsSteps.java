@@ -28,8 +28,7 @@ import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
 /**
  * Step definitions for the apigateway_sqs cross-service informal specification feature files.
  *
- * <p>Covers: create_rest_api, create_queue, configure_integration, handle_request,
- * consume_message.
+ * <p>Covers: create_rest_api, create_queue, configure_integration, handle_request, consume_message.
  *
  * <p>Steps already registered in CrossServiceSteps (the system is initialized, the operation is
  * rejected, the queue does not already exist, the queue already exists, the queue exists, the queue
@@ -151,10 +150,7 @@ public class ApigatewaySqsSteps {
     String capturedDeploymentId = deploymentId;
     try (ApiGatewayClient client = world.session.apiGatewayClient()) {
       client.createStage(
-          r ->
-              r.restApiId(capturedApiId)
-                  .stageName(TEST_STAGE)
-                  .deploymentId(capturedDeploymentId));
+          r -> r.restApiId(capturedApiId).stageName(TEST_STAGE).deploymentId(capturedDeploymentId));
     }
   }
 
@@ -347,8 +343,7 @@ public class ApigatewaySqsSteps {
       String qUrl = world.session.queueUrl(TEST_QUEUE);
       // Act: receive
       ReceiveMessageResponse recvResult =
-          client.receiveMessage(
-              r -> r.queueUrl(qUrl).maxNumberOfMessages(1).waitTimeSeconds(0));
+          client.receiveMessage(r -> r.queueUrl(qUrl).maxNumberOfMessages(1).waitTimeSeconds(0));
       List<Message> messages = recvResult.messages();
       if (messages.isEmpty()) {
         throw new IllegalStateException(
@@ -392,8 +387,7 @@ public class ApigatewaySqsSteps {
     if (apiId == null) {
       apiId = apigwSqsGetApiId();
     }
-    assertNotNull(
-        apiId, "Expected REST API \"" + TEST_API_NAME + "\" to exist but not found");
+    assertNotNull(apiId, "Expected REST API \"" + TEST_API_NAME + "\" to exist but not found");
     // Act: POST a test request
     String jsonBody = "{\"event\":\"check\",\"orderId\":\"check-1\"}";
     int actualStatus = apigwSqsInvokeApi(apiId, jsonBody);
@@ -432,8 +426,7 @@ public class ApigatewaySqsSteps {
     try (SqsClient client = world.session.sqsClient()) {
       String qUrl = world.session.queueUrl(TEST_QUEUE);
       ReceiveMessageResponse recvResult =
-          client.receiveMessage(
-              r -> r.queueUrl(qUrl).maxNumberOfMessages(1).waitTimeSeconds(0));
+          client.receiveMessage(r -> r.queueUrl(qUrl).maxNumberOfMessages(1).waitTimeSeconds(0));
       List<Message> messages = recvResult.messages();
       // Assert
       int expectedCount = 1;

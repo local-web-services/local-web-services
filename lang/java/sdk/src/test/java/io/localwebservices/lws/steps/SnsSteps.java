@@ -22,10 +22,10 @@ import software.amazon.awssdk.services.sqs.SqsClient;
  *
  * <p>Steps already registered in CrossServiceSteps (the topic does not already exist, the topic
  * already exists, the topic exists, the topic is not {string}, the topic does not exist, the topic
- * is {string}, the system is initialized, the operation is rejected, every .* catch-all,
- * the subscription slot is available, the subscription slot is not available,
- * a confirmed subscription exists for the topic, no confirmed subscription exists for the topic,
- * an "SNS" topic is created) are NOT re-registered here.
+ * is {string}, the system is initialized, the operation is rejected, every .* catch-all, the
+ * subscription slot is available, the subscription slot is not available, a confirmed subscription
+ * exists for the topic, no confirmed subscription exists for the topic, an "SNS" topic is created)
+ * are NOT re-registered here.
  */
 public class SnsSteps {
 
@@ -98,10 +98,7 @@ public class SnsSteps {
       // Act
       SubscribeResponse response =
           client.subscribe(
-              r ->
-                  r.topicArn(world.lastTopicArn)
-                      .protocol("email")
-                      .endpoint(TEST_EMAIL_ENDPOINT));
+              r -> r.topicArn(world.lastTopicArn).protocol("email").endpoint(TEST_EMAIL_ENDPOINT));
       // Assert: subscription ARN is set
       String subArn = response.subscriptionArn();
       world.lastTopicArn = world.lastTopicArn;
@@ -299,8 +296,7 @@ public class SnsSteps {
     try (SnsClient client = world.session.snsClient()) {
       // Act
       SubscribeResponse response =
-          client.subscribe(
-              r -> r.topicArn(arn).protocol("email").endpoint(TEST_EMAIL_ENDPOINT));
+          client.subscribe(r -> r.topicArn(arn).protocol("email").endpoint(TEST_EMAIL_ENDPOINT));
       // Assert: store result
       world.setSuccess(response);
       world.lastOutput = response.subscriptionArn();
@@ -403,8 +399,7 @@ public class SnsSteps {
       String expectedTopic = TEST_TOPIC;
       boolean actualFound =
           result.topics().stream()
-              .anyMatch(
-                  t -> t.topicArn() != null && t.topicArn().endsWith(":" + expectedTopic));
+              .anyMatch(t -> t.topicArn() != null && t.topicArn().endsWith(":" + expectedTopic));
       assertFalse(
           actualFound,
           "Expected topic \""
@@ -426,8 +421,7 @@ public class SnsSteps {
       String expectedTopic = TEST_TOPIC;
       boolean actualFound =
           result.topics().stream()
-              .anyMatch(
-                  t -> t.topicArn() != null && t.topicArn().endsWith(":" + expectedTopic));
+              .anyMatch(t -> t.topicArn() != null && t.topicArn().endsWith(":" + expectedTopic));
       assertFalse(
           actualFound,
           "Expected topic \""

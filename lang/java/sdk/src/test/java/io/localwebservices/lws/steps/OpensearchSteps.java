@@ -7,10 +7,10 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import software.amazon.awssdk.services.opensearch.OpenSearchClient;
-import software.amazon.awssdk.services.opensearch.model.DescribeDomainResponse;
-import software.amazon.awssdk.services.opensearch.model.DomainInformationContainer;
 import software.amazon.awssdk.services.opensearch.model.AWSDomainInformation;
 import software.amazon.awssdk.services.opensearch.model.CreateOutboundConnectionResponse;
+import software.amazon.awssdk.services.opensearch.model.DescribeDomainResponse;
+import software.amazon.awssdk.services.opensearch.model.DomainInformationContainer;
 
 /**
  * Step definitions for the OpenSearch informal specification feature files.
@@ -118,7 +118,8 @@ public class OpensearchSteps {
 
   @Given("the connection slot is not available")
   public void theConnectionSlotIsNotAvailable() {
-    // @internal: capacity exhaustion requires internal state manipulation — not reachable via public API.
+    // @internal: capacity exhaustion requires internal state manipulation — not reachable via
+    // public API.
   }
 
   // ── Given: outbound connection state ──────────────────────────────────────────
@@ -174,7 +175,8 @@ public class OpensearchSteps {
 
   @Given("the associated inbound connection exists")
   public void theAssociatedInboundConnectionExists() {
-    // Arrange / Act / Assert — no-op: inbound connection is created automatically with outbound connection.
+    // Arrange / Act / Assert — no-op: inbound connection is created automatically with outbound
+    // connection.
   }
 
   @Given("the associated inbound connection does not exist")
@@ -207,7 +209,8 @@ public class OpensearchSteps {
 
   @Given("the inbound connection is \"PENDING_ACCEPTANCE\"")
   public void theInboundConnectionIsPendingAcceptance() {
-    // Arrange / Act / Assert — no-op: freshly created inbound connections are in PENDING_ACCEPTANCE state.
+    // Arrange / Act / Assert — no-op: freshly created inbound connections are in PENDING_ACCEPTANCE
+    // state.
   }
 
   @Given("the inbound connection is not \"PENDING_ACCEPTANCE\"")
@@ -452,7 +455,8 @@ public class OpensearchSteps {
             + world.lastError
             + "; expected_success="
             + expectedSuccess);
-    assertNotNull(outboundConnectionId, "expected outbound connection ID to be set but it was null");
+    assertNotNull(
+        outboundConnectionId, "expected outbound connection ID to be set but it was null");
   }
 
   @Then("the outbound connection is in \"DELETING\" state")
@@ -595,8 +599,7 @@ public class OpensearchSteps {
 
   private boolean osDomainExists(String domainName) {
     try (OpenSearchClient client = world.session.openSearchClient()) {
-      DescribeDomainResponse result =
-          client.describeDomain(r -> r.domainName(domainName));
+      DescribeDomainResponse result = client.describeDomain(r -> r.domainName(domainName));
       if (result.domainStatus() == null) {
         return false;
       }

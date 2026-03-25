@@ -21,8 +21,8 @@ import software.amazon.awssdk.services.ssm.model.ParameterType;
  * invocation_fails_parameter_not_found, invocation_succeeds.
  *
  * <p>Steps already registered in {@link LambdaSteps} (function existence, function lifecycle
- * states) and {@link SsmSteps} (basic parameter existence) and {@link CrossServiceSteps}
- * ("the system is initialized", "the operation is rejected") and {@link StepfunctionsSsmSteps}
+ * states) and {@link SsmSteps} (basic parameter existence) and {@link CrossServiceSteps} ("the
+ * system is initialized", "the operation is rejected") and {@link StepfunctionsSsmSteps}
  * (parameterised parameter state steps) are intentionally absent here or registered as exact-string
  * overrides to avoid DuplicateStepDefinitionException.
  */

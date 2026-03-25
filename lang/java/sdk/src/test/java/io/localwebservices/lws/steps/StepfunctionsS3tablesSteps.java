@@ -18,8 +18,8 @@ import software.amazon.awssdk.services.sfn.model.StateMachineType;
  * s3_tables_task_succeeds, s3_tables_task_fails.
  *
  * <p>Steps already registered in {@link StepfunctionsSteps} (state machine Given/When/Then) and
- * {@link CrossServiceSteps} (the system is initialized, the operation is rejected, every .* catch-alls)
- * are NOT re-registered here.
+ * {@link CrossServiceSteps} (the system is initialized, the operation is rejected, every .*
+ * catch-alls) are NOT re-registered here.
  */
 public class StepfunctionsS3tablesSteps {
 

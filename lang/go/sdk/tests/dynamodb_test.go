@@ -1062,4 +1062,3 @@ func registerDynamoDBSteps(sc *godog.ScenarioContext, world *World) {
 		return nil
 	})
 }
-

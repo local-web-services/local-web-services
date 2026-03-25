@@ -40,8 +40,8 @@ import software.amazon.awssdk.services.sns.model.CreateTopicResponse;
  *       {string}, the topic does not exist or is not {string}, the target topic is {string}, the
  *       target topic is not {string}, an "SNS" topic is created, the {string} topic is deleted
  *   <li>ApigatewaySteps: the {string} does not already exist, the {string} already exists, the
- *       {string} does not exist, the {string} exists, the {string} is {string}, the {string} is
- *       not {string}
+ *       {string} does not exist, the {string} exists, the {string} is {string}, the {string} is not
+ *       {string}
  * </ul>
  */
 public class ApigatewaySnsSteps {
@@ -127,8 +127,7 @@ public class ApigatewaySnsSteps {
 
   private void apigwSnsConfigureIntegration(String apiId) throws Exception {
     String rootId = apigwSnsGetRootResourceId(apiId);
-    String integrationUri =
-        "arn:aws:apigateway:" + TEST_REGION + ":sns:action/Publish";
+    String integrationUri = "arn:aws:apigateway:" + TEST_REGION + ":sns:action/Publish";
     String capturedApiId = apiId;
     String capturedRootId = rootId;
     String capturedUri = integrationUri;
@@ -159,10 +158,7 @@ public class ApigatewaySnsSteps {
 
       // Act: create stage
       client.createStage(
-          r ->
-              r.restApiId(capturedApiId)
-                  .stageName(TEST_STAGE)
-                  .deploymentId(capturedDeploymentId));
+          r -> r.restApiId(capturedApiId).stageName(TEST_STAGE).deploymentId(capturedDeploymentId));
     }
     // Assert: integration configured
   }
@@ -170,15 +166,12 @@ public class ApigatewaySnsSteps {
   private int apigwSnsInvokeApi(String apiId, String topicArnValue, String message)
       throws Exception {
     int port = world.session.portFor("apigateway");
-    String url =
-        "http://127.0.0.1:" + port + "/" + apiId + "/" + TEST_STAGE + "/";
-    String body =
-        "{\"TopicArn\":\"" + topicArnValue + "\",\"Message\":\"" + message + "\"}";
+    String url = "http://127.0.0.1:" + port + "/" + apiId + "/" + TEST_STAGE + "/";
+    String body = "{\"TopicArn\":\"" + topicArnValue + "\",\"Message\":\"" + message + "\"}";
     byte[] bodyBytes = body.getBytes(StandardCharsets.UTF_8);
 
     // Arrange
-    HttpURLConnection conn =
-        (HttpURLConnection) URI.create(url).toURL().openConnection();
+    HttpURLConnection conn = (HttpURLConnection) URI.create(url).toURL().openConnection();
     conn.setRequestMethod("POST");
     conn.setDoOutput(true);
     conn.setRequestProperty("Content-Type", "application/json");
@@ -322,8 +315,7 @@ public class ApigatewaySnsSteps {
     // Assert: captured in world
   }
 
-  @When(
-      "a request is received, the \"API\" publishes to the \"SNS\" topic, and returns 200")
+  @When("a request is received, the \"API\" publishes to the \"SNS\" topic, and returns 200")
   public void aRequestIsReceivedAndApiPublishesToSnsTopic() {
     // Arrange
     if (!world.lastSuccess && world.lastError != null) {
@@ -340,8 +332,7 @@ public class ApigatewaySnsSteps {
     }
     // Act: invoke the API
     try {
-      int statusCode =
-          apigwSnsInvokeApi(apiId, topicArn(TEST_TOPIC_NAME), "e2e-test-message");
+      int statusCode = apigwSnsInvokeApi(apiId, topicArn(TEST_TOPIC_NAME), "e2e-test-message");
       invokeStatusCode = statusCode;
       if (statusCode != 200) {
         world.setFailure(new RuntimeException("API request returned status " + statusCode));
@@ -354,8 +345,7 @@ public class ApigatewaySnsSteps {
     // Assert: captured in world
   }
 
-  @When(
-      "a request is received but the \"SNS\" publish fails because the topic has been deleted")
+  @When("a request is received but the \"SNS\" publish fails because the topic has been deleted")
   public void aRequestIsReceivedButSnsPublishFails() {
     // Arrange
     if (!world.lastSuccess && world.lastError != null) {
@@ -385,8 +375,7 @@ public class ApigatewaySnsSteps {
       apiId = apigwSnsGetApiId();
     }
     assertNotNull(
-        apiId,
-        "Expected REST API \"" + TEST_API_NAME + "\" to exist but it was not found");
+        apiId, "Expected REST API \"" + TEST_API_NAME + "\" to exist but it was not found");
     String capturedApiId = apiId;
     try (ApiGatewayClient client = world.session.apiGatewayClient()) {
       // Act
@@ -434,8 +423,7 @@ public class ApigatewaySnsSteps {
   }
 
   @Then("the message is {string} and the request is {string}")
-  public void theMessageIsPublishedAndRequestIsSuccess(
-      String messageState, String requestState) {
+  public void theMessageIsPublishedAndRequestIsSuccess(String messageState, String requestState) {
     // Arrange
     // Act: (action performed in When step)
     // Assert

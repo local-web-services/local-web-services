@@ -268,10 +268,10 @@ func registerS3TablesSteps(sc *godog.ScenarioContext, world *World) {
 			return err
 		}
 		_, err = world.S3TablesClient().PutTablePolicy(context.Background(), &s3tables.PutTablePolicyInput{
-			TableBucketARN:  aws.String(arn),
-			Namespace:       aws.String(s3tablesNamespaceName),
-			Name:            aws.String(s3tablesTableName),
-			ResourcePolicy:  aws.String(s3tablesTestPolicy),
+			TableBucketARN: aws.String(arn),
+			Namespace:      aws.String(s3tablesNamespaceName),
+			Name:           aws.String(s3tablesTableName),
+			ResourcePolicy: aws.String(s3tablesTestPolicy),
 		})
 		return err
 	})
@@ -560,10 +560,10 @@ func registerS3TablesSteps(sc *godog.ScenarioContext, world *World) {
 		}
 		// Act
 		resp, err := world.S3TablesClient().PutTablePolicy(context.Background(), &s3tables.PutTablePolicyInput{
-			TableBucketARN:  aws.String(arn),
-			Namespace:       aws.String(s3tablesNamespaceName),
-			Name:            aws.String(s3tablesTableName),
-			ResourcePolicy:  aws.String(s3tablesTestPolicy),
+			TableBucketARN: aws.String(arn),
+			Namespace:      aws.String(s3tablesNamespaceName),
+			Name:           aws.String(s3tablesTableName),
+			ResourcePolicy: aws.String(s3tablesTestPolicy),
 		})
 		// Assert: captured in world
 		setResult(world, resp, err)

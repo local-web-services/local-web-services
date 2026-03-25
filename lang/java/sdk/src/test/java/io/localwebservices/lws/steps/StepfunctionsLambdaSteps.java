@@ -15,13 +15,13 @@ import software.amazon.awssdk.services.sfn.model.StateMachineType;
 /**
  * Step definitions for the stepfunctions_lambda cross-service feature files.
  *
- * <p>Covers: create_state_machine, deploy_function, configure_task, start_execution,
- * invoke_task, task_succeeds, task_fails.
+ * <p>Covers: create_state_machine, deploy_function, configure_task, start_execution, invoke_task,
+ * task_succeeds, task_fails.
  *
- * <p>Steps already registered in {@link StepfunctionsSteps} (state machine Given/When/Then),
- * {@link LambdaSteps} (function Given/When/Then), and {@link CrossServiceSteps} ("the system is
- * initialized", "the operation is rejected", invariant catch-alls) are NOT re-registered here.
- * Only steps unique to the cross-service scenarios appear below.
+ * <p>Steps already registered in {@link StepfunctionsSteps} (state machine Given/When/Then), {@link
+ * LambdaSteps} (function Given/When/Then), and {@link CrossServiceSteps} ("the system is
+ * initialized", "the operation is rejected", invariant catch-alls) are NOT re-registered here. Only
+ * steps unique to the cross-service scenarios appear below.
  */
 public class StepfunctionsLambdaSteps {
 
@@ -59,7 +59,11 @@ public class StepfunctionsLambdaSteps {
       // Act
       var result =
           client.createStateMachine(
-              r -> r.name(name).definition(definition).roleArn(TEST_ROLE_ARN).type(StateMachineType.STANDARD));
+              r ->
+                  r.name(name)
+                      .definition(definition)
+                      .roleArn(TEST_ROLE_ARN)
+                      .type(StateMachineType.STANDARD));
       world.lastStateMachineArn = result.stateMachineArn();
       // Assert: creation succeeded (no exception thrown)
     }
@@ -89,7 +93,8 @@ public class StepfunctionsLambdaSteps {
 
   @Given("the state machine has no Lambda task configured")
   public void theStateMachineHasNoLambdaTaskConfigured() {
-    // Arrange / Act / Assert — no-op: state machine is created with a Pass definition (no Lambda task).
+    // Arrange / Act / Assert — no-op: state machine is created with a Pass definition (no Lambda
+    // task).
   }
 
   @Given("the state machine already has a Lambda task configured")
@@ -214,12 +219,14 @@ public class StepfunctionsLambdaSteps {
 
   @Given("the execution's state machine has a configured Lambda task")
   public void theExecutionStateMachineHasAConfiguredLambdaTask() {
-    // Arrange / Act / Assert — no-op: state machine is set up with a Lambda task in the execution setup step.
+    // Arrange / Act / Assert — no-op: state machine is set up with a Lambda task in the execution
+    // setup step.
   }
 
   @Given("the execution's state machine has no Lambda task configured")
   public void theExecutionStateMachineHasNoLambdaTaskConfigured() {
-    // Arrange / Act / Assert — no-op: covered by state machine creation without Lambda task definition.
+    // Arrange / Act / Assert — no-op: covered by state machine creation without Lambda task
+    // definition.
   }
 
   // ── When: cross-service actions ───────────────────────────────────────────────

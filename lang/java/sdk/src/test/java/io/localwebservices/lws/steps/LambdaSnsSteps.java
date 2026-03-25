@@ -10,16 +10,16 @@ import software.amazon.awssdk.services.lambda.model.Runtime;
 /**
  * Step definitions for the lambda_sns cross-service informal specification feature files.
  *
- * <p>Covers: deploy_function, create_topic, invoke_function, invocation_fails,
- * invocation_succeeds, publish_to_topic.
+ * <p>Covers: deploy_function, create_topic, invoke_function, invocation_fails, invocation_succeeds,
+ * publish_to_topic.
  *
- * <p>Steps already registered in {@link CrossServiceSteps} (e.g. "the system is initialized",
- * "the operation is rejected", "the topic does not already exist", "the topic already exists",
- * "the topic exists", "the topic is {string}", "the topic is not {string}", "the topic does not
- * exist", "an {string} topic is created") and in {@link LambdaSteps} (e.g. "the function does not
- * already exist", "the function already exists", "the function exists", "the function does not
- * exist", "the function is {string}", "the function is not {string}") are intentionally absent here
- * to avoid duplicate step definition errors.
+ * <p>Steps already registered in {@link CrossServiceSteps} (e.g. "the system is initialized", "the
+ * operation is rejected", "the topic does not already exist", "the topic already exists", "the
+ * topic exists", "the topic is {string}", "the topic is not {string}", "the topic does not exist",
+ * "an {string} topic is created") and in {@link LambdaSteps} (e.g. "the function does not already
+ * exist", "the function already exists", "the function exists", "the function does not exist", "the
+ * function is {string}", "the function is not {string}") are intentionally absent here to avoid
+ * duplicate step definition errors.
  */
 public class LambdaSnsSteps {
 

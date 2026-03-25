@@ -86,27 +86,27 @@ type World struct {
 	// Cached service clients — reused within a scenario to avoid creating
 	// new http.Transport instances (and thus new ephemeral TCP connections)
 	// for every API call.
-	dynamodbClient              *dynamodb.Client
-	sqsClient                   *sqs.Client
-	s3Client                    *s3.Client
-	snsClient                   *sns.Client
-	eventbridgeClient           *eventbridge.Client
-	sfnClient                   *sfn.Client
-	ssmClient                   *ssm.Client
-	secretsmanagerClient        *secretsmanager.Client
-	cognitoIDPClient            *cognitoidentityprovider.Client
-	apigatewayClient            *apigateway.Client
-	lambdaClient                *lambda.Client
-	organizationsClient         *organizations.Client
-	rdsClient                   *rds.Client
-	docdbClient                 *docdb.Client
-	neptuneClient               *neptune.Client
-	elasticacheClient           *elasticache.Client
-	memorydbClient              *memorydb.Client
-	glacierClient               *glacier.Client
-	elasticsearchserviceClient  *elasticsearchservice.Client
-	opensearchClient            *opensearch.Client
-	s3tablesClient              *s3tables.Client
+	dynamodbClient             *dynamodb.Client
+	sqsClient                  *sqs.Client
+	s3Client                   *s3.Client
+	snsClient                  *sns.Client
+	eventbridgeClient          *eventbridge.Client
+	sfnClient                  *sfn.Client
+	ssmClient                  *ssm.Client
+	secretsmanagerClient       *secretsmanager.Client
+	cognitoIDPClient           *cognitoidentityprovider.Client
+	apigatewayClient           *apigateway.Client
+	lambdaClient               *lambda.Client
+	organizationsClient        *organizations.Client
+	rdsClient                  *rds.Client
+	docdbClient                *docdb.Client
+	neptuneClient              *neptune.Client
+	elasticacheClient          *elasticache.Client
+	memorydbClient             *memorydb.Client
+	glacierClient              *glacier.Client
+	elasticsearchserviceClient *elasticsearchservice.Client
+	opensearchClient           *opensearch.Client
+	s3tablesClient             *s3tables.Client
 }
 
 func newWorld() *World {

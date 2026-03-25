@@ -16,13 +16,13 @@ const apigwTestChildPath = "items"
 
 // apigwState holds mutable state for API Gateway step definitions within one scenario.
 type apigwState struct {
-	restApiID      string
-	rootResourceID string
+	restApiID       string
+	rootResourceID  string
 	childResourceID string
-	httpMethod     string
-	deploymentID   string
-	devStageID     string
-	prodStageID    string
+	httpMethod      string
+	deploymentID    string
+	devStageID      string
+	prodStageID     string
 }
 
 func registerAPIGatewaySteps(sc *godog.ScenarioContext, world *World) {
@@ -97,11 +97,11 @@ func registerAPIGatewaySteps(sc *godog.ScenarioContext, world *World) {
 			return err
 		}
 		_, err := world.APIGatewayClient().PutIntegration(context.Background(), &apigateway.PutIntegrationInput{
-			RestApiId:             aws.String(st.restApiID),
-			ResourceId:            aws.String(st.rootResourceID),
-			HttpMethod:            aws.String(st.httpMethod),
-			Type:                  types.IntegrationTypeMock,
-			RequestTemplates:      map[string]string{"application/json": `{"statusCode": 200}`},
+			RestApiId:        aws.String(st.restApiID),
+			ResourceId:       aws.String(st.rootResourceID),
+			HttpMethod:       aws.String(st.httpMethod),
+			Type:             types.IntegrationTypeMock,
+			RequestTemplates: map[string]string{"application/json": `{"statusCode": 200}`},
 		})
 		return err
 	}

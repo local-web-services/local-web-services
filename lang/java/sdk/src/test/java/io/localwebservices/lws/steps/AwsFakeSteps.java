@@ -11,8 +11,8 @@ import java.util.Map;
 /**
  * Step definitions for the aws_fake informal specification feature files.
  *
- * <p>Covers: create_aws_fake, delete_aws_fake, add_operation, remove_operation,
- * intercept_request, intercept_request_with_header, fallthrough_request, sequences.
+ * <p>Covers: create_aws_fake, delete_aws_fake, add_operation, remove_operation, intercept_request,
+ * intercept_request_with_header, fallthrough_request, sequences.
  */
 public class AwsFakeSteps {
 
@@ -236,7 +236,8 @@ public class AwsFakeSteps {
     // Arrange
     // Act: configure a header-filtered fake operation and record the result
     try {
-      world.session
+      world
+          .session
           .fake(TEST_SERVICE)
           .operation(TEST_OPERATION)
           .withHeader("X-Test-Header", "test-value")

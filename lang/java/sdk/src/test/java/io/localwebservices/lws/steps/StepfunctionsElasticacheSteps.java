@@ -19,8 +19,8 @@ import software.amazon.awssdk.services.sfn.model.StateMachineType;
  * cluster_modification_complete, start_execution, read_cache_task_fails, read_cache_task_succeeds.
  *
  * <p>Steps already registered in {@link StepfunctionsSteps} (state machine Given/When/Then) and
- * {@link CrossServiceSteps} (the system is initialized, the operation is rejected, every .* catch-alls)
- * are NOT re-registered here.
+ * {@link CrossServiceSteps} (the system is initialized, the operation is rejected, every .*
+ * catch-alls) are NOT re-registered here.
  */
 public class StepfunctionsElasticacheSteps {
 
@@ -98,7 +98,8 @@ public class StepfunctionsElasticacheSteps {
 
   @Given("the cluster is \"MODIFYING\"")
   public void theClusterIsModifying() {
-    // Arrange / Act / Assert — no-op: cannot drive a cluster into MODIFYING state via public API in lws.
+    // Arrange / Act / Assert — no-op: cannot drive a cluster into MODIFYING state via public API in
+    // lws.
   }
 
   @Given("the cluster is not \"MODIFYING\"")
@@ -111,7 +112,8 @@ public class StepfunctionsElasticacheSteps {
 
   @Given("the cluster is not \"AVAILABLE\"")
   public void theClusterIsNotAvailable() {
-    // Arrange / Act / Assert — no-op: cannot drive a cluster into a non-AVAILABLE state via public API in lws.
+    // Arrange / Act / Assert — no-op: cannot drive a cluster into a non-AVAILABLE state via public
+    // API in lws.
   }
 
   // ── Given: execution state ────────────────────────────────────────────────────
@@ -206,8 +208,7 @@ public class StepfunctionsElasticacheSteps {
             "cannot trigger internal execution step that fails due to MODIFYING cluster in lws"));
   }
 
-  @When(
-      "a running execution reads from the \"AVAILABLE\" ElastiCache cluster and succeeds")
+  @When("a running execution reads from the \"AVAILABLE\" ElastiCache cluster and succeeds")
   public void aRunningExecutionReadsFromAvailableElastiCacheClusterAndSucceeds() {
     // @internal: Cannot trigger internal execution step that reads from ElastiCache cluster in lws.
     world.setFailure(
@@ -230,8 +231,16 @@ public class StepfunctionsElasticacheSteps {
     try (ElastiCacheClient client = world.session.elastiCacheClient()) {
       var result = client.describeCacheClusters(r -> r.cacheClusterId(expectedClusterID));
       java.util.List<CacheCluster> clusters = result.cacheClusters();
-      assertNotNull(clusters, "Expected cluster list to be non-null; expected_cluster_id=" + expectedClusterID);
-      assertEquals(1, clusters.size(), "Expected exactly one cluster with id \"" + expectedClusterID + "\"; expected_cluster_id=" + expectedClusterID);
+      assertNotNull(
+          clusters,
+          "Expected cluster list to be non-null; expected_cluster_id=" + expectedClusterID);
+      assertEquals(
+          1,
+          clusters.size(),
+          "Expected exactly one cluster with id \""
+              + expectedClusterID
+              + "\"; expected_cluster_id="
+              + expectedClusterID);
       String actualStatus = clusters.get(0).cacheClusterStatus();
       // Assert
       assertEquals(
@@ -256,7 +265,8 @@ public class StepfunctionsElasticacheSteps {
 
   @Then("the cluster is \"AVAILABLE\" again")
   public void theClusterIsAvailableAgain() {
-    // @internal: Cannot observe cluster returning to AVAILABLE after modification via public API in lws.
+    // @internal: Cannot observe cluster returning to AVAILABLE after modification via public API in
+    // lws.
     // No-op: treat as invariant satisfied.
   }
 

@@ -18,20 +18,20 @@ import (
 )
 
 const (
-	glacierTestVaultName   = "test-glacier-vault-1"
-	glacierTestArchiveID   = "test-glacier-archive-1"
-	glacierTestAccountID   = "-"
-	glacierTestPartSize    = "1048576"
-	glacierTestUploadID    = "test-glacier-upload-1"
+	glacierTestVaultName = "test-glacier-vault-1"
+	glacierTestArchiveID = "test-glacier-archive-1"
+	glacierTestAccountID = "-"
+	glacierTestPartSize  = "1048576"
+	glacierTestUploadID  = "test-glacier-upload-1"
 )
 
 // glacierState holds mutable state for Glacier step definitions within one scenario.
 type glacierState struct {
-	vaultExists     bool
-	archiveID       string
-	uploadID        string
-	jobID           string
-	partUploaded    bool
+	vaultExists  bool
+	archiveID    string
+	uploadID     string
+	jobID        string
+	partUploaded bool
 }
 
 // glacierCreateVault is a helper that creates the test Glacier vault.

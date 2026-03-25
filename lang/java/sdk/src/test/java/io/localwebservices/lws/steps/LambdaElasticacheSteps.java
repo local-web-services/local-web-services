@@ -1,6 +1,7 @@
 package io.localwebservices.lws.steps;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -15,9 +16,8 @@ import software.amazon.awssdk.services.lambda.model.Runtime;
  * <p>Covers: create_cluster, deploy_function, invoke_function, cache_write, cache_evict,
  * invocation_fails_cache_miss, invocation_succeeds_cache_hit.
  *
- * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized",
- * "the operation is rejected") are intentionally absent here to avoid duplicate step definition
- * errors.
+ * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized", "the
+ * operation is rejected") are intentionally absent here to avoid duplicate step definition errors.
  */
 public class LambdaElasticacheSteps {
 
@@ -253,8 +253,7 @@ public class LambdaElasticacheSteps {
   public void elastiCacheEvictsACacheEntryDueToMemoryPressureOrTtlExpiry() {
     // @internal: Cannot trigger cache eviction in lws.
     world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger cache eviction: scenario is @internal"));
+        new UnsupportedOperationException("cannot trigger cache eviction: scenario is @internal"));
   }
 
   @When("the Lambda invocation fails because all cache entries have been evicted")

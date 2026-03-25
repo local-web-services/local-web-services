@@ -457,7 +457,7 @@ func registerLambdaSteps(sc *godog.ScenarioContext, world *World) {
 		// Arrange
 		// Act
 		result, err := world.LambdaClient().PutFunctionConcurrency(context.Background(), &lambda.PutFunctionConcurrencyInput{
-			FunctionName:              aws.String(lambdaTestFunctionName),
+			FunctionName:                 aws.String(lambdaTestFunctionName),
 			ReservedConcurrentExecutions: aws.Int32(5),
 		})
 		// Assert: store result

@@ -475,9 +475,7 @@ public class DynamodbSteps {
           client.getItem(
               r ->
                   r.tableName(TEST_TABLE)
-                      .key(
-                          Map.of(
-                              TEST_PK, AttributeValue.builder().s(TEST_ITEM_KEY).build())));
+                      .key(Map.of(TEST_PK, AttributeValue.builder().s(TEST_ITEM_KEY).build())));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -493,8 +491,7 @@ public class DynamodbSteps {
       client.updateItem(
           r ->
               r.tableName(TEST_TABLE)
-                  .key(
-                      Map.of(TEST_PK, AttributeValue.builder().s(TEST_ITEM_KEY).build()))
+                  .key(Map.of(TEST_PK, AttributeValue.builder().s(TEST_ITEM_KEY).build()))
                   .updateExpression("SET #d = :val")
                   .conditionExpression("attribute_exists(#pk)")
                   .expressionAttributeNames(Map.of("#d", "data", "#pk", TEST_PK))
@@ -515,8 +512,7 @@ public class DynamodbSteps {
       client.deleteItem(
           r ->
               r.tableName(TEST_TABLE)
-                  .key(
-                      Map.of(TEST_PK, AttributeValue.builder().s(TEST_ITEM_KEY).build()))
+                  .key(Map.of(TEST_PK, AttributeValue.builder().s(TEST_ITEM_KEY).build()))
                   .conditionExpression("attribute_exists(#pk)")
                   .expressionAttributeNames(Map.of("#pk", TEST_PK)));
       // Assert: store result
@@ -663,16 +659,14 @@ public class DynamodbSteps {
   public void throttlingIsAppliedToReads() {
     // No-op: throttle state set via capacity API in the Given step.
     world.setFailure(
-        new UnsupportedOperationException(
-            "throttle reads is not applicable via public SDK"));
+        new UnsupportedOperationException("throttle reads is not applicable via public SDK"));
   }
 
   @When("throttling is applied to writes")
   public void throttlingIsAppliedToWrites() {
     // No-op: throttle state set via capacity API in the Given step.
     world.setFailure(
-        new UnsupportedOperationException(
-            "throttle writes is not applicable via public SDK"));
+        new UnsupportedOperationException("throttle writes is not applicable via public SDK"));
   }
 
   // ── Then: assertions ──────────────────────────────────────────────────────────
@@ -865,18 +859,24 @@ public class DynamodbSteps {
           client.getItem(
               r ->
                   r.tableName(TEST_TABLE)
-                      .key(
-                          Map.of(
-                              TEST_PK, AttributeValue.builder().s(TEST_ITEM_KEY).build())));
+                      .key(Map.of(TEST_PK, AttributeValue.builder().s(TEST_ITEM_KEY).build())));
       Map<String, AttributeValue> actualItem = result.item();
       // Assert
       String expectedKey = TEST_ITEM_KEY;
       assertNotNull(
           actualItem,
-          "Expected item \"" + expectedKey + "\" to exist in table; expected_key=\"" + expectedKey + "\"");
+          "Expected item \""
+              + expectedKey
+              + "\" to exist in table; expected_key=\""
+              + expectedKey
+              + "\"");
       assertFalse(
           actualItem.isEmpty(),
-          "Expected item \"" + expectedKey + "\" to exist in table; expected_key=\"" + expectedKey + "\"");
+          "Expected item \""
+              + expectedKey
+              + "\" to exist in table; expected_key=\""
+              + expectedKey
+              + "\"");
     }
   }
 
@@ -906,9 +906,7 @@ public class DynamodbSteps {
           client.getItem(
               r ->
                   r.tableName(TEST_TABLE)
-                      .key(
-                          Map.of(
-                              TEST_PK, AttributeValue.builder().s(TEST_ITEM_KEY).build())));
+                      .key(Map.of(TEST_PK, AttributeValue.builder().s(TEST_ITEM_KEY).build())));
       Map<String, AttributeValue> actualItem = result.item();
       // Assert
       String expectedKey = TEST_ITEM_KEY;
@@ -983,7 +981,8 @@ public class DynamodbSteps {
     }
     if (world.lastError != null) {
       String expectedErrorSubstr = "ConditionalCheckFailedException";
-      String actualErrMsg = world.lastError.getMessage() != null ? world.lastError.getMessage() : "";
+      String actualErrMsg =
+          world.lastError.getMessage() != null ? world.lastError.getMessage() : "";
       assertTrue(
           actualErrMsg.contains(expectedErrorSubstr),
           "Expected ConditionalCheckFailedException or success but got: "
@@ -1070,8 +1069,7 @@ public class DynamodbSteps {
       List<String> expectedValidStatuses = List.of("CREATING", "ACTIVE");
       // Assert
       for (String tableName : actualTableNames) {
-        DescribeTableResponse descResult =
-            client.describeTable(r -> r.tableName(tableName));
+        DescribeTableResponse descResult = client.describeTable(r -> r.tableName(tableName));
         String actualStatus = descResult.table().tableStatus().toString();
         assertTrue(
             expectedValidStatuses.contains(actualStatus),

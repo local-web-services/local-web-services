@@ -13,13 +13,13 @@ import io.cucumber.java.en.When;
  *
  * <ul>
  *   <li>"the system is initialized", "the operation is rejected" → {@link CrossServiceSteps}
- *   <li>"the queue does not already exist", "the queue already exists", "the queue exists",
- *       "the queue does not exist", "the queue is not {string}", "a message slot is available",
- *       "no message slot is available", "the message is AVAILABLE in the queue" → {@link
+ *   <li>"the queue does not already exist", "the queue already exists", "the queue exists", "the
+ *       queue does not exist", "the queue is not {string}", "a message slot is available", "no
+ *       message slot is available", "the message is AVAILABLE in the queue" → {@link
  *       CrossServiceSteps}
- *   <li>"the function does not already exist", "the function already exists", "the function exists",
- *       "the function does not exist", "the function is {string}", "the function is not {string}"
- *       → {@link LambdaSteps}
+ *   <li>"the function does not already exist", "the function already exists", "the function
+ *       exists", "the function does not exist", "the function is {string}", "the function is not
+ *       {string}" → {@link LambdaSteps}
  *   <li>"the queue is ACTIVE" (Then) → {@link SqsSteps}
  *   <li>"an invocation is IN_PROGRESS", "no invocation is IN_PROGRESS", "an invocation slot is
  *       available", "no invocation slot is available", "a Lambda function is deployed", "an SQS

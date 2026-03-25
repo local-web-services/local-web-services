@@ -27,9 +27,8 @@ import software.amazon.awssdk.services.apigateway.model.RestApi;
  * delete_resource, put_method_get, put_method_update, delete_method, put_integration,
  * delete_integration, put_method_response, put_integration_response, create_deployment,
  * delete_deployment, create_stage_dev, delete_stage_dev, update_stage_dev,
- * enable_stage_throttling_dev, disable_stage_throttling_dev, create_stage_prod,
- * delete_stage_prod, update_stage_prod, enable_stage_throttling_prod,
- * disable_stage_throttling_prod.
+ * enable_stage_throttling_dev, disable_stage_throttling_dev, create_stage_prod, delete_stage_prod,
+ * update_stage_prod, enable_stage_throttling_prod, disable_stage_throttling_prod.
  *
  * <p>Steps already registered in CrossServiceSteps (the system is initialized, the operation is
  * rejected, every .* catch-all) are NOT re-registered here.
@@ -74,8 +73,7 @@ public class ApigatewaySteps {
     // Arrange
     try (ApiGatewayClient client = world.session.apiGatewayClient()) {
       // Act
-      GetResourcesResponse result =
-          client.getResources(r -> r.restApiId(restApiId));
+      GetResourcesResponse result = client.getResources(r -> r.restApiId(restApiId));
       List<Resource> items = result.items();
       // Assert: find root resource
       for (Resource r : items) {
@@ -114,16 +112,14 @@ public class ApigatewaySteps {
                   .resourceId(rootResourceId)
                   .httpMethod(TEST_HTTP_METHOD)
                   .type(IntegrationType.MOCK)
-                  .requestTemplates(
-                      java.util.Map.of("application/json", "{\"statusCode\": 200}")));
+                  .requestTemplates(java.util.Map.of("application/json", "{\"statusCode\": 200}")));
     }
   }
 
   private void apigwSetupDeployment() throws Exception {
     apigwSetupWithIntegration();
     try (ApiGatewayClient client = world.session.apiGatewayClient()) {
-      CreateDeploymentResponse result =
-          client.createDeployment(r -> r.restApiId(restApiId));
+      CreateDeploymentResponse result = client.createDeployment(r -> r.restApiId(restApiId));
       deploymentId = result.id();
     }
   }
@@ -718,8 +714,7 @@ public class ApigatewaySteps {
     String capturedRestApiId = restApiId;
     try (ApiGatewayClient client = world.session.apiGatewayClient()) {
       // Act — GetResources is the public way to observe the root resource
-      GetResourcesResponse result =
-          client.getResources(r -> r.restApiId(capturedRestApiId));
+      GetResourcesResponse result = client.getResources(r -> r.restApiId(capturedRestApiId));
       // Assert: store result
       world.setSuccess(result);
       for (Resource r : result.items()) {
@@ -763,8 +758,7 @@ public class ApigatewaySteps {
     String targetResourceId = childResourceId != null ? childResourceId : rootResourceId;
     try (ApiGatewayClient client = world.session.apiGatewayClient()) {
       // Act
-      client.deleteResource(
-          r -> r.restApiId(capturedRestApiId).resourceId(targetResourceId));
+      client.deleteResource(r -> r.restApiId(capturedRestApiId).resourceId(targetResourceId));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -1200,10 +1194,8 @@ public class ApigatewaySteps {
               + " REST API but found none; expected_api_state="
               + expectedApiState);
       String actualId = actualApis.get(0).id();
-      GetResourcesResponse resources =
-          client.getResources(r -> r.restApiId(actualId));
-      boolean actualHasRoot =
-          resources.items().stream().anyMatch(r -> "/".equals(r.path()));
+      GetResourcesResponse resources = client.getResources(r -> r.restApiId(actualId));
+      boolean actualHasRoot = resources.items().stream().anyMatch(r -> "/".equals(r.path()));
       assertTrue(
           actualHasRoot,
           "expected root resource to be "
@@ -1213,7 +1205,8 @@ public class ApigatewaySteps {
     }
   }
 
-  @Then("the {string} is {string} along with all its resources, methods, integrations, deployments, and stages")
+  @Then(
+      "the {string} is {string} along with all its resources, methods, integrations, deployments, and stages")
   public void theApiIsDeleted(String resourceType, String state) {
     // Arrange
     String expectedState = state;
@@ -1317,8 +1310,7 @@ public class ApigatewaySteps {
     // Assert
     assertTrue(
         actualSuccess,
-        "expected method configuration to be unchanged but operation failed: "
-            + world.lastError);
+        "expected method configuration to be unchanged but operation failed: " + world.lastError);
   }
 
   @Then("the method is no longer on the resource")
@@ -1418,8 +1410,7 @@ public class ApigatewaySteps {
     boolean actualSuccess = world.lastSuccess;
     // Assert
     assertTrue(
-        actualSuccess,
-        "expected dev stage to be removed but operation failed: " + world.lastError);
+        actualSuccess, "expected dev stage to be removed but operation failed: " + world.lastError);
   }
 
   @Then("the dev stage points to the new deployment")

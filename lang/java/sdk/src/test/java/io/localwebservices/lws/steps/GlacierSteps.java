@@ -93,8 +93,7 @@ public class GlacierSteps {
       UploadArchiveResponse resp =
           client.uploadArchive(
               r -> r.accountId(ACCOUNT_ID).vaultName(TEST_VAULT),
-              RequestBody.fromBytes(
-                  "test-archive-content-1".getBytes(StandardCharsets.UTF_8)));
+              RequestBody.fromBytes("test-archive-content-1".getBytes(StandardCharsets.UTF_8)));
       // Assert: archive uploaded
       archiveId = resp.archiveId();
     }
@@ -136,8 +135,7 @@ public class GlacierSteps {
       UploadArchiveResponse resp =
           client.uploadArchive(
               r -> r.accountId(ACCOUNT_ID).vaultName(TEST_VAULT),
-              RequestBody.fromBytes(
-                  "test-archive-content-1".getBytes(StandardCharsets.UTF_8)));
+              RequestBody.fromBytes("test-archive-content-1".getBytes(StandardCharsets.UTF_8)));
       // Assert: archive uploaded
       archiveId = resp.archiveId();
     }
@@ -151,8 +149,7 @@ public class GlacierSteps {
       UploadArchiveResponse resp =
           client.uploadArchive(
               r -> r.accountId(ACCOUNT_ID).vaultName(TEST_VAULT),
-              RequestBody.fromBytes(
-                  "test-archive-content-1".getBytes(StandardCharsets.UTF_8)));
+              RequestBody.fromBytes("test-archive-content-1".getBytes(StandardCharsets.UTF_8)));
       // Assert: archive uploaded
       archiveId = resp.archiveId();
     }
@@ -254,10 +251,7 @@ public class GlacierSteps {
     try (GlacierClient client = world.session.glacierClient()) {
       InitiateMultipartUploadResponse resp =
           client.initiateMultipartUpload(
-              r ->
-                  r.accountId(ACCOUNT_ID)
-                      .vaultName(TEST_VAULT)
-                      .partSize(TEST_PART_SIZE));
+              r -> r.accountId(ACCOUNT_ID).vaultName(TEST_VAULT).partSize(TEST_PART_SIZE));
       // Assert: upload initiated
       uploadId = resp.uploadId();
     }
@@ -270,10 +264,7 @@ public class GlacierSteps {
     try (GlacierClient client = world.session.glacierClient()) {
       InitiateMultipartUploadResponse resp =
           client.initiateMultipartUpload(
-              r ->
-                  r.accountId(ACCOUNT_ID)
-                      .vaultName(TEST_VAULT)
-                      .partSize(TEST_PART_SIZE));
+              r -> r.accountId(ACCOUNT_ID).vaultName(TEST_VAULT).partSize(TEST_PART_SIZE));
       // Assert: upload initiated
       uploadId = resp.uploadId();
     }
@@ -380,8 +371,7 @@ public class GlacierSteps {
       UploadArchiveResponse resp =
           client.uploadArchive(
               r -> r.accountId(ACCOUNT_ID).vaultName(TEST_VAULT),
-              RequestBody.fromBytes(
-                  "test-archive-content-1".getBytes(StandardCharsets.UTF_8)));
+              RequestBody.fromBytes("test-archive-content-1".getBytes(StandardCharsets.UTF_8)));
       // Assert: store result
       archiveId = resp.archiveId();
       world.setSuccess(resp);
@@ -397,10 +387,7 @@ public class GlacierSteps {
     try (GlacierClient client = world.session.glacierClient()) {
       // Act
       client.deleteArchive(
-          r ->
-              r.accountId(ACCOUNT_ID)
-                  .vaultName(TEST_VAULT)
-                  .archiveId(activeArchiveId));
+          r -> r.accountId(ACCOUNT_ID).vaultName(TEST_VAULT).archiveId(activeArchiveId));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -420,9 +407,7 @@ public class GlacierSteps {
                   r.accountId(ACCOUNT_ID)
                       .vaultName(TEST_VAULT)
                       .jobParameters(
-                          jp ->
-                              jp.type("archive-retrieval")
-                                  .archiveId(activeArchiveId)));
+                          jp -> jp.type("archive-retrieval").archiveId(activeArchiveId)));
       // Assert: store result
       jobId = resp.jobId();
       world.setSuccess(resp);
@@ -456,18 +441,13 @@ public class GlacierSteps {
     // @internal: job_succeeds requires background processing; this step is only
     // reached in @internal scenarios which are excluded from the standard run.
     if (jobId == null) {
-      world.setFailure(
-          new RuntimeException("ResourceNotFoundException: job not found"));
+      world.setFailure(new RuntimeException("ResourceNotFoundException: job not found"));
       return;
     }
     try (GlacierClient client = world.session.glacierClient()) {
       // Act
       var resp =
-          client.getJobOutput(
-              r ->
-                  r.accountId(ACCOUNT_ID)
-                      .vaultName(TEST_VAULT)
-                      .jobId(jobId));
+          client.getJobOutput(r -> r.accountId(ACCOUNT_ID).vaultName(TEST_VAULT).jobId(jobId));
       // Assert: store result
       world.setSuccess(resp);
     } catch (Exception e) {
@@ -482,10 +462,7 @@ public class GlacierSteps {
       // Act
       InitiateMultipartUploadResponse resp =
           client.initiateMultipartUpload(
-              r ->
-                  r.accountId(ACCOUNT_ID)
-                      .vaultName(TEST_VAULT)
-                      .partSize(TEST_PART_SIZE));
+              r -> r.accountId(ACCOUNT_ID).vaultName(TEST_VAULT).partSize(TEST_PART_SIZE));
       // Assert: store result
       uploadId = resp.uploadId();
       world.setSuccess(resp);
@@ -545,10 +522,7 @@ public class GlacierSteps {
     try (GlacierClient client = world.session.glacierClient()) {
       // Act
       client.abortMultipartUpload(
-          r ->
-              r.accountId(ACCOUNT_ID)
-                  .vaultName(TEST_VAULT)
-                  .uploadId(activeUploadId));
+          r -> r.accountId(ACCOUNT_ID).vaultName(TEST_VAULT).uploadId(activeUploadId));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {

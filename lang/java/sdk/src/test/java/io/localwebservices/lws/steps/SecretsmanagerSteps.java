@@ -112,7 +112,9 @@ public class SecretsmanagerSteps {
       if (desc.deletedDate() != null) {
         world.setFailure(
             new IllegalStateException(
-                "InvalidRequestException: Secret " + TEST_SECRET_NAME + " is already scheduled for deletion"));
+                "InvalidRequestException: Secret "
+                    + TEST_SECRET_NAME
+                    + " is already scheduled for deletion"));
         return;
       }
       // Act
@@ -129,8 +131,7 @@ public class SecretsmanagerSteps {
     // Arrange
     try (SecretsManagerClient client = world.session.secretsManagerClient()) {
       // Act
-      GetSecretValueResponse response =
-          client.getSecretValue(r -> r.secretId(TEST_SECRET_NAME));
+      GetSecretValueResponse response = client.getSecretValue(r -> r.secretId(TEST_SECRET_NAME));
       // Assert: store result
       world.setSuccess(response);
     } catch (Exception e) {
@@ -219,13 +220,8 @@ public class SecretsmanagerSteps {
         return;
       }
       // Act
-      Tag tag =
-          Tag.builder()
-              .key(TEST_TAG_KEY)
-              .value(TEST_TAG_VALUE)
-              .build();
-      var response =
-          client.tagResource(r -> r.secretId(TEST_SECRET_NAME).tags(tag));
+      Tag tag = Tag.builder().key(TEST_TAG_KEY).value(TEST_TAG_VALUE).build();
+      var response = client.tagResource(r -> r.secretId(TEST_SECRET_NAME).tags(tag));
       // Assert: store result
       world.setSuccess(response);
     } catch (Exception e) {
@@ -247,8 +243,7 @@ public class SecretsmanagerSteps {
         return;
       }
       // Act
-      var response =
-          client.untagResource(r -> r.secretId(TEST_SECRET_NAME).tagKeys(TEST_TAG_KEY));
+      var response = client.untagResource(r -> r.secretId(TEST_SECRET_NAME).tagKeys(TEST_TAG_KEY));
       // Assert: store result
       world.setSuccess(response);
     } catch (Exception e) {
@@ -342,9 +337,7 @@ public class SecretsmanagerSteps {
             + "; expected_success="
             + expectedSuccess);
     PutSecretValueResponse actualOutput = (PutSecretValueResponse) world.lastOutput;
-    assertNotNull(
-        actualOutput.versionId(),
-        "expected VersionId in response but got null");
+    assertNotNull(actualOutput.versionId(), "expected VersionId in response but got null");
   }
 
   @Then("the list of secrets is returned")
@@ -361,9 +354,7 @@ public class SecretsmanagerSteps {
             + "; expected_success="
             + expectedSuccess);
     ListSecretsResponse actualOutput = (ListSecretsResponse) world.lastOutput;
-    assertNotNull(
-        actualOutput.secretList(),
-        "expected SecretList in response but got null");
+    assertNotNull(actualOutput.secretList(), "expected SecretList in response but got null");
   }
 
   @Then("the secret metadata is returned")
@@ -400,11 +391,7 @@ public class SecretsmanagerSteps {
       assertEquals(
           expectedDescription,
           actualDescription,
-          "expected description '"
-              + expectedDescription
-              + "' but got '"
-              + actualDescription
-              + "'");
+          "expected description '" + expectedDescription + "' but got '" + actualDescription + "'");
     }
   }
 
@@ -467,41 +454,49 @@ public class SecretsmanagerSteps {
 
   @Then("every \"ACTIVE\" secret has a current version assigned")
   public void everyActiveSecretQuotedHasACurrentVersionAssigned() {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated context.
+    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated
+    // context.
   }
 
   @Then("every active secret has a current version assigned")
   public void everyActiveSecretHasACurrentVersionAssigned() {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated context.
+    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated
+    // context.
   }
 
   @Then("every deleted secret with an open recovery window can still be restored or expired")
   public void everyDeletedSecretWithAnOpenRecoveryWindowCanStillBeRestoredOrExpired() {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated context.
+    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated
+    // context.
   }
 
   @Then("at most one current version exists per secret")
   public void atMostOneCurrentVersionExistsPerSecret() {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated context.
+    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated
+    // context.
   }
 
   @Then("at most one previous version exists per secret")
   public void atMostOnePreviousVersionExistsPerSecret() {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated context.
+    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated
+    // context.
   }
 
   @Then("a deleted secret with a closed recovery window cannot be restored")
   public void aDeletedSecretWithAClosedRecoveryWindowCannotBeRestored() {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated context.
+    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated
+    // context.
   }
 
   @Then("all secret names are unique")
   public void allSecretNamesAreUnique() {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated context.
+    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated
+    // context.
   }
 
   @Then("all version identifiers are unique across secrets")
   public void allVersionIdentifiersAreUniqueAcrossSecrets() {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated context.
+    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated
+    // context.
   }
 }

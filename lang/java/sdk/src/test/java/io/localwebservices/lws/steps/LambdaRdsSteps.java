@@ -19,9 +19,8 @@ import software.amazon.awssdk.services.rds.model.DescribeDbInstancesResponse;
  * <p>Covers: create_d_b_instance, deploy_function, invoke_function, d_b_failover_begins,
  * d_b_failover_complete, invocation_fails_d_b_unavailable, invocation_succeeds.
  *
- * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized",
- * "the operation is rejected") are intentionally absent here to avoid duplicate step definition
- * errors.
+ * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized", "the
+ * operation is rejected") are intentionally absent here to avoid duplicate step definition errors.
  */
 public class LambdaRdsSteps {
 
@@ -286,8 +285,7 @@ public class LambdaRdsSteps {
   public void theMultiAzFailoverCompletesAndTheNewPrimaryIsPromoted() {
     // @internal: Failover completion requires internal RDS processing.
     world.setFailure(
-        new UnsupportedOperationException(
-            "d_b_failover_complete: scenario is @internal"));
+        new UnsupportedOperationException("d_b_failover_complete: scenario is @internal"));
   }
 
   @When("the Lambda function fails to connect because the database is failing over")
@@ -303,8 +301,7 @@ public class LambdaRdsSteps {
   public void theLambdaFunctionExecutesASqlQueryAgainstTheAvailableDatabaseAndSucceeds() {
     // @internal: Cannot trigger Lambda SQL query in lws without Docker.
     world.setFailure(
-        new UnsupportedOperationException(
-            "invocation_succeeds: scenario is @internal"));
+        new UnsupportedOperationException("invocation_succeeds: scenario is @internal"));
   }
 
   // ── Then: assertions ───────────────────────────────────────────────────────────

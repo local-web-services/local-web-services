@@ -34,8 +34,8 @@ import software.amazon.awssdk.services.s3.model.PutBucketNotificationConfigurati
  *
  * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized", "the
  * operation is rejected") are NOT re-registered here. Given steps for bucket/function state are
- * re-registered here because this suite uses its own resource-name constants
- * ("e2e-test-bucket-1", "e2e-test-func-1") that differ from the single-service defaults.
+ * re-registered here because this suite uses its own resource-name constants ("e2e-test-bucket-1",
+ * "e2e-test-func-1") that differ from the single-service defaults.
  */
 public class S3apiLambdaSteps {
 
@@ -390,7 +390,8 @@ public class S3apiLambdaSteps {
     }
   }
 
-  @When("an object is put into the bucket and asynchronously invokes the configured Lambda function")
+  @When(
+      "an object is put into the bucket and asynchronously invokes the configured Lambda function")
   public void anObjectIsPutIntoTheBucketAndAsynchronouslyInvokesTheConfiguredLambdaFunction() {
     // Arrange
     byte[] bodyBytes = TEST_BODY.getBytes(StandardCharsets.UTF_8);
@@ -435,8 +436,7 @@ public class S3apiLambdaSteps {
       boolean actualExists =
           resp.buckets().stream().anyMatch(b -> expectedBucketName.equals(b.name()));
       assertTrue(
-          actualExists,
-          "Expected bucket '" + expectedBucketName + "' to be ACTIVE but not found");
+          actualExists, "Expected bucket '" + expectedBucketName + "' to be ACTIVE but not found");
     }
   }
 
@@ -472,11 +472,9 @@ public class S3apiLambdaSteps {
       GetBucketNotificationConfigurationResponse resp =
           client.getBucketNotificationConfiguration(r -> r.bucket(TEST_BUCKET));
       // Assert
-      List<LambdaFunctionConfiguration> actualConfigs =
-          resp.lambdaFunctionConfigurations();
+      List<LambdaFunctionConfiguration> actualConfigs = resp.lambdaFunctionConfigurations();
       boolean actualContains =
-          actualConfigs.stream()
-              .anyMatch(cfg -> expectedFuncArn.equals(cfg.lambdaFunctionArn()));
+          actualConfigs.stream().anyMatch(cfg -> expectedFuncArn.equals(cfg.lambdaFunctionArn()));
       assertTrue(
           actualContains,
           "Expected notification ARN '"

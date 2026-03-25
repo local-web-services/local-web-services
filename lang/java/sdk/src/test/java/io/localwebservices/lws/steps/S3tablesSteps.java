@@ -350,8 +350,7 @@ public class S3tablesSteps {
     // Arrange: (bucket state set up by Given steps)
     try (S3TablesClient client = world.session.s3TablesClient()) {
       // Act
-      CreateTableBucketResponse result =
-          client.createTableBucket(r -> r.name(TEST_BUCKET_NAME));
+      CreateTableBucketResponse result = client.createTableBucket(r -> r.name(TEST_BUCKET_NAME));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -494,10 +493,7 @@ public class S3tablesSteps {
       // Act
       GetTableMaintenanceJobStatusResponse result =
           client.getTableMaintenanceJobStatus(
-              r ->
-                  r.tableBucketARN(arn)
-                      .namespace(TEST_NAMESPACE_NAME)
-                      .name(TEST_TABLE_NAME));
+              r -> r.tableBucketARN(arn).namespace(TEST_NAMESPACE_NAME).name(TEST_TABLE_NAME));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -555,10 +551,7 @@ public class S3tablesSteps {
       // Act
       GetTableResponse result =
           client.getTable(
-              r ->
-                  r.tableBucketARN(arn)
-                      .namespace(TEST_NAMESPACE_NAME)
-                      .name(TEST_TABLE_NAME));
+              r -> r.tableBucketARN(arn).namespace(TEST_NAMESPACE_NAME).name(TEST_TABLE_NAME));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -604,10 +597,7 @@ public class S3tablesSteps {
     try (S3TablesClient client = world.session.s3TablesClient()) {
       // Act
       client.deleteTablePolicy(
-          r ->
-              r.tableBucketARN(arn)
-                  .namespace(TEST_NAMESPACE_NAME)
-                  .name(TEST_TABLE_NAME));
+          r -> r.tableBucketARN(arn).namespace(TEST_NAMESPACE_NAME).name(TEST_TABLE_NAME));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -782,8 +772,7 @@ public class S3tablesSteps {
             + world.lastError
             + "; expected_success="
             + expectedSuccess);
-    assertNotNull(
-        world.lastOutput, "expected GetTableMaintenanceJobStatusResponse but got null");
+    assertNotNull(world.lastOutput, "expected GetTableMaintenanceJobStatusResponse but got null");
   }
 
   @Then("the snapshot is \"ACTIVE\" and the table snapshot count increases")
@@ -910,8 +899,7 @@ public class S3tablesSteps {
   private void createNamespace() {
     String arn = getBucketArn();
     try (S3TablesClient client = world.session.s3TablesClient()) {
-      client.createNamespace(
-          r -> r.tableBucketARN(arn).namespace(List.of(TEST_NAMESPACE_NAME)));
+      client.createNamespace(r -> r.tableBucketARN(arn).namespace(List.of(TEST_NAMESPACE_NAME)));
     } catch (Exception e) {
       String msg = e.getMessage() != null ? e.getMessage() : "";
       if (!msg.contains("already exists") && !msg.contains("ConflictException")) {
@@ -940,15 +928,17 @@ public class S3tablesSteps {
   private String getBucketArn() {
     try (S3TablesClient client = world.session.s3TablesClient()) {
       List<TableBucketSummary> buckets =
-          client.listTableBuckets(software.amazon.awssdk.services.s3tables.model.ListTableBucketsRequest.builder().build()).tableBuckets();
+          client
+              .listTableBuckets(
+                  software.amazon.awssdk.services.s3tables.model.ListTableBucketsRequest.builder()
+                      .build())
+              .tableBuckets();
       return buckets.stream()
           .filter(b -> TEST_BUCKET_NAME.equals(b.name()))
           .map(TableBucketSummary::arn)
           .findFirst()
           .orElseThrow(
-              () ->
-                  new RuntimeException(
-                      "table bucket \"" + TEST_BUCKET_NAME + "\" not found"));
+              () -> new RuntimeException("table bucket \"" + TEST_BUCKET_NAME + "\" not found"));
     }
   }
 }

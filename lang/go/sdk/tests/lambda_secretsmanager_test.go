@@ -89,7 +89,7 @@ func registerLambdaSecretsManagerSteps(sc *godog.ScenarioContext, world *World) 
 		_ = createLambdaSmSecret(world)
 		// Act: delete with a recovery window so it enters PENDING_DELETION state
 		_, err := world.SecretsManagerClient().DeleteSecret(context.Background(), &secretsmanager.DeleteSecretInput{
-			SecretId:              aws.String(lambdaSmTestSecret),
+			SecretId:             aws.String(lambdaSmTestSecret),
 			RecoveryWindowInDays: aws.Int64(7),
 		})
 		// Assert: caller checks error
@@ -137,7 +137,7 @@ func registerLambdaSecretsManagerSteps(sc *godog.ScenarioContext, world *World) 
 		// Arrange
 		// Act
 		result, err := world.SecretsManagerClient().DeleteSecret(context.Background(), &secretsmanager.DeleteSecretInput{
-			SecretId:              aws.String(lambdaSmTestSecret),
+			SecretId:             aws.String(lambdaSmTestSecret),
 			RecoveryWindowInDays: aws.Int64(7),
 		})
 		// Assert: store result

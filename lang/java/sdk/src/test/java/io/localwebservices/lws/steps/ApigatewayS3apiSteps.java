@@ -151,8 +151,7 @@ public class ApigatewayS3apiSteps {
 
     // Act: put AWS S3 PutObject integration
     String integrationUri =
-        String.format(
-            "arn:aws:apigateway:%s:s3:path/%s/%s", TEST_REGION, TEST_BUCKET, TEST_KEY);
+        String.format("arn:aws:apigateway:%s:s3:path/%s/%s", TEST_REGION, TEST_BUCKET, TEST_KEY);
     try (ApiGatewayClient client = world.session.apiGatewayClient()) {
       client.putIntegration(
           r ->
@@ -176,10 +175,7 @@ public class ApigatewayS3apiSteps {
     String capturedDeploymentId = deploymentId;
     try (ApiGatewayClient client = world.session.apiGatewayClient()) {
       client.createStage(
-          r ->
-              r.restApiId(capturedApiId)
-                  .stageName(TEST_STAGE)
-                  .deploymentId(capturedDeploymentId));
+          r -> r.restApiId(capturedApiId).stageName(TEST_STAGE).deploymentId(capturedDeploymentId));
     }
   }
 
@@ -307,8 +303,7 @@ public class ApigatewayS3apiSteps {
       if (statusCode == 200) {
         world.setSuccess(statusCode);
       } else {
-        world.setFailure(
-            new RuntimeException("PUT request failed with status " + statusCode));
+        world.setFailure(new RuntimeException("PUT request failed with status " + statusCode));
       }
     } catch (Exception e) {
       world.setFailure(e);
@@ -316,8 +311,7 @@ public class ApigatewayS3apiSteps {
     // Assert: captured in world result
   }
 
-  @When(
-      "a \"GET\" request is received and the \"API\" retrieves an existing object from S3")
+  @When("a \"GET\" request is received and the \"API\" retrieves an existing object from S3")
   public void aGetRequestIsReceivedAndTheApiRetrievesAnExistingObjectFromS3() {
     // Arrange / Act / Assert — @internal: Cannot simulate GetObject via API Gateway without seed.
     Assumptions.assumeTrue(
@@ -390,8 +384,7 @@ public class ApigatewayS3apiSteps {
             + actualSuccess);
     // Act: verify object exists in bucket
     try (S3Client client = world.session.s3Client()) {
-      HeadObjectResponse headResponse =
-          client.headObject(r -> r.bucket(TEST_BUCKET).key(TEST_KEY));
+      HeadObjectResponse headResponse = client.headObject(r -> r.bucket(TEST_BUCKET).key(TEST_KEY));
       boolean actualObjectFound = headResponse != null;
       boolean expectedObjectFound = true;
       // Assert

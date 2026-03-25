@@ -22,8 +22,8 @@ import software.amazon.awssdk.services.lambda.model.Runtime;
  *
  * <p>Steps already registered in LambdaSteps ("the function does not already exist", "the function
  * already exists", "the function exists", "the function is {string}", etc.) and EventsSteps ("the
- * event bus is \"ACTIVE\"", "the event bus is \"DELETED\"", etc.) are NOT re-registered here.
- * "the operation is rejected" and "the system is initialized" are already registered in
+ * event bus is \"ACTIVE\"", "the event bus is \"DELETED\"", etc.) are NOT re-registered here. "the
+ * operation is rejected" and "the system is initialized" are already registered in
  * CrossServiceSteps.
  */
 public class LambdaEventsSteps {
@@ -259,7 +259,10 @@ public class LambdaEventsSteps {
     String expectedBus = TEST_BUS;
     // Act
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse result = client.listEventBuses(software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder().build());
+      ListEventBusesResponse result =
+          client.listEventBuses(
+              software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder()
+                  .build());
       List<EventBus> buses = result.eventBuses();
       boolean actualFound = buses.stream().anyMatch(b -> expectedBus.equals(b.name()));
       // Assert
@@ -278,7 +281,10 @@ public class LambdaEventsSteps {
     String expectedBus = TEST_BUS;
     // Act
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse result = client.listEventBuses(software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder().build());
+      ListEventBusesResponse result =
+          client.listEventBuses(
+              software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder()
+                  .build());
       List<EventBus> buses = result.eventBuses();
       boolean actualFound = buses.stream().anyMatch(b -> expectedBus.equals(b.name()));
       // Assert

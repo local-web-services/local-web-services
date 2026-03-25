@@ -368,8 +368,7 @@ public class CognitoIdpSteps {
     try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
       // Act
       String expectedSecondPoolName = "e2e-cognito-test-pool-2";
-      var poolResp =
-          client.createUserPool(r -> r.poolName(expectedSecondPoolName));
+      var poolResp = client.createUserPool(r -> r.poolName(expectedSecondPoolName));
       String secondPoolId = poolResp.userPool().id();
       client.createGroup(r -> r.userPoolId(secondPoolId).groupName(TEST_GROUP_NAME));
       // Assert: group name stored, but it belongs to a different pool
@@ -453,12 +452,10 @@ public class CognitoIdpSteps {
   public void aUserIsDeletedByAnAdmin() {
     // Arrange
     String expectedPoolId = world.cognitoPoolId;
-    String expectedUsername =
-        world.cognitoUsername != null ? world.cognitoUsername : TEST_USERNAME;
+    String expectedUsername = world.cognitoUsername != null ? world.cognitoUsername : TEST_USERNAME;
     try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
       // Act
-      client.adminDeleteUser(
-          r -> r.userPoolId(expectedPoolId).username(expectedUsername));
+      client.adminDeleteUser(r -> r.userPoolId(expectedPoolId).username(expectedUsername));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -473,8 +470,7 @@ public class CognitoIdpSteps {
     String expectedUsername = world.cognitoUsername;
     try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
       // Act
-      client.adminDisableUser(
-          r -> r.userPoolId(expectedPoolId).username(expectedUsername));
+      client.adminDisableUser(r -> r.userPoolId(expectedPoolId).username(expectedUsername));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -489,8 +485,7 @@ public class CognitoIdpSteps {
     String expectedUsername = world.cognitoUsername;
     try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
       // Act
-      client.adminEnableUser(
-          r -> r.userPoolId(expectedPoolId).username(expectedUsername));
+      client.adminEnableUser(r -> r.userPoolId(expectedPoolId).username(expectedUsername));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -502,12 +497,10 @@ public class CognitoIdpSteps {
   public void anAdminResetsAUserPassword() {
     // Arrange
     String expectedPoolId = world.cognitoPoolId;
-    String expectedUsername =
-        world.cognitoUsername != null ? world.cognitoUsername : TEST_USERNAME;
+    String expectedUsername = world.cognitoUsername != null ? world.cognitoUsername : TEST_USERNAME;
     try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
       // Act
-      client.adminResetUserPassword(
-          r -> r.userPoolId(expectedPoolId).username(expectedUsername));
+      client.adminResetUserPassword(r -> r.userPoolId(expectedPoolId).username(expectedUsername));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -539,16 +532,14 @@ public class CognitoIdpSteps {
   public void anAdminUpdatesAttributesForAConfirmedUser() {
     // Arrange
     String expectedPoolId = world.cognitoPoolId;
-    String expectedUsername =
-        world.cognitoUsername != null ? world.cognitoUsername : TEST_USERNAME;
+    String expectedUsername = world.cognitoUsername != null ? world.cognitoUsername : TEST_USERNAME;
     try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
       // Act
       client.adminUpdateUserAttributes(
           r ->
               r.userPoolId(expectedPoolId)
                   .username(expectedUsername)
-                  .userAttributes(
-                      a -> a.name(TEST_ATTRIBUTE).value(TEST_ATTRIBUTE_VALUE)));
+                  .userAttributes(a -> a.name(TEST_ATTRIBUTE).value(TEST_ATTRIBUTE_VALUE)));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -560,12 +551,10 @@ public class CognitoIdpSteps {
   public void anAdminConfirmsAUserRegistration() {
     // Arrange
     String expectedPoolId = world.cognitoPoolId;
-    String expectedUsername =
-        world.cognitoUsername != null ? world.cognitoUsername : TEST_USERNAME;
+    String expectedUsername = world.cognitoUsername != null ? world.cognitoUsername : TEST_USERNAME;
     try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
       // Act
-      client.adminConfirmSignUp(
-          r -> r.userPoolId(expectedPoolId).username(expectedUsername));
+      client.adminConfirmSignUp(r -> r.userPoolId(expectedPoolId).username(expectedUsername));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -662,12 +651,10 @@ public class CognitoIdpSteps {
   public void aVerificationCodeDeliveryFailsForAnUnconfirmedUser() {
     // Arrange
     String expectedPoolId = world.cognitoPoolId;
-    String expectedUsername =
-        world.cognitoUsername != null ? world.cognitoUsername : TEST_USERNAME;
+    String expectedUsername = world.cognitoUsername != null ? world.cognitoUsername : TEST_USERNAME;
     try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
       // Act — AdminConfirmSignUp is the closest public API for confirming an unconfirmed user
-      client.adminConfirmSignUp(
-          r -> r.userPoolId(expectedPoolId).username(expectedUsername));
+      client.adminConfirmSignUp(r -> r.userPoolId(expectedPoolId).username(expectedUsername));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -709,16 +696,13 @@ public class CognitoIdpSteps {
   public void anAdminAddsAUserToAGroupInTheSamePool() {
     // Arrange
     String expectedPoolId = world.cognitoPoolId;
-    String expectedUsername =
-        world.cognitoUsername != null ? world.cognitoUsername : TEST_USERNAME;
+    String expectedUsername = world.cognitoUsername != null ? world.cognitoUsername : TEST_USERNAME;
     String expectedGroupName = world.cognitoGroupName;
     try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
       // Act
       client.adminAddUserToGroup(
           r ->
-              r.userPoolId(expectedPoolId)
-                  .username(expectedUsername)
-                  .groupName(expectedGroupName));
+              r.userPoolId(expectedPoolId).username(expectedUsername).groupName(expectedGroupName));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -730,16 +714,13 @@ public class CognitoIdpSteps {
   public void anAdminRemovesAUserFromAGroup() {
     // Arrange
     String expectedPoolId = world.cognitoPoolId;
-    String expectedUsername =
-        world.cognitoUsername != null ? world.cognitoUsername : TEST_USERNAME;
+    String expectedUsername = world.cognitoUsername != null ? world.cognitoUsername : TEST_USERNAME;
     String expectedGroupName = world.cognitoGroupName;
     try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
       // Act
       client.adminRemoveUserFromGroup(
           r ->
-              r.userPoolId(expectedPoolId)
-                  .username(expectedUsername)
-                  .groupName(expectedGroupName));
+              r.userPoolId(expectedPoolId).username(expectedUsername).groupName(expectedGroupName));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -781,8 +762,7 @@ public class CognitoIdpSteps {
     try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
       // Act
       AdminGetUserResponse result =
-          client.adminGetUser(
-              r -> r.userPoolId(expectedPoolId).username(expectedUsername));
+          client.adminGetUser(r -> r.userPoolId(expectedPoolId).username(expectedUsername));
       String actualStatus = result.userStatusAsString();
       boolean actualEnabled = result.enabled();
       // Assert
@@ -969,8 +949,7 @@ public class CognitoIdpSteps {
     try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
       // Act
       ListUsersInGroupResponse result =
-          client.listUsersInGroup(
-              r -> r.userPoolId(expectedPoolId).groupName(expectedGroupName));
+          client.listUsersInGroup(r -> r.userPoolId(expectedPoolId).groupName(expectedGroupName));
       List<UserType> actualUsers = result.users();
       // Assert
       boolean actualFound =
@@ -1013,8 +992,7 @@ public class CognitoIdpSteps {
     try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
       // Act
       AdminGetUserResponse result =
-          client.adminGetUser(
-              r -> r.userPoolId(expectedPoolId).username(expectedUsername));
+          client.adminGetUser(r -> r.userPoolId(expectedPoolId).username(expectedUsername));
       String actualStatus = result.userStatusAsString();
       // Assert
       assertEquals(
@@ -1043,10 +1021,7 @@ public class CognitoIdpSteps {
   private void cognitoCreateUser(String poolId) throws Exception {
     try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
       client.adminCreateUser(
-          r ->
-              r.userPoolId(poolId)
-                  .username(TEST_USERNAME)
-                  .temporaryPassword(TEST_TEMP_PASSWORD));
+          r -> r.userPoolId(poolId).username(TEST_USERNAME).temporaryPassword(TEST_TEMP_PASSWORD));
     }
   }
 

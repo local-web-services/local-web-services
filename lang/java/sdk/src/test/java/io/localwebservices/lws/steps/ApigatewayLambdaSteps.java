@@ -17,12 +17,12 @@ import software.amazon.awssdk.services.apigateway.model.RestApi;
  * <p>Covers: configure_integration, create_rest_api, deploy_function, handle_request,
  * invocation_fails, invocation_succeeds.
  *
- * <p>Steps already registered in {@link ApigatewaySteps} (API existence, lifecycle states),
- * {@link LambdaSteps} (function existence, lifecycle states), {@link LambdaDynamodbSteps}
- * ("an invocation is IN_PROGRESS", "no invocation is IN_PROGRESS", "an invocation slot is
- * available", "no invocation slot is available", "a Lambda function is deployed", "every
- * IN_PROGRESS invocation references an ACTIVE Lambda function"), and {@link CrossServiceSteps}
- * ("the system is initialized", "the operation is rejected") are NOT re-registered here.
+ * <p>Steps already registered in {@link ApigatewaySteps} (API existence, lifecycle states), {@link
+ * LambdaSteps} (function existence, lifecycle states), {@link LambdaDynamodbSteps} ("an invocation
+ * is IN_PROGRESS", "no invocation is IN_PROGRESS", "an invocation slot is available", "no
+ * invocation slot is available", "a Lambda function is deployed", "every IN_PROGRESS invocation
+ * references an ACTIVE Lambda function"), and {@link CrossServiceSteps} ("the system is
+ * initialized", "the operation is rejected") are NOT re-registered here.
  *
  * <p>Only the unique cross-service steps absent from all constituent files are defined here.
  */
@@ -109,8 +109,7 @@ public class ApigatewayLambdaSteps {
             "cannot configure Lambda integration: scenario is @internal"));
   }
 
-  @When(
-      "the \"API\" receives an \"HTTP\" request and synchronously invokes the Lambda function")
+  @When("the \"API\" receives an \"HTTP\" request and synchronously invokes the Lambda function")
   public void theApiReceivesAnHttpRequestAndSynchronouslyInvokesTheLambdaFunction() {
     // @internal: Cannot send requests through API Gateway Lambda integration in lws.
     world.setFailure(
@@ -186,8 +185,7 @@ public class ApigatewayLambdaSteps {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
   }
 
-  @Then(
-      "every \"IN_PROGRESS\" invocation has a corresponding \"IN_PROGRESS\" request")
+  @Then("every \"IN_PROGRESS\" invocation has a corresponding \"IN_PROGRESS\" request")
   public void everyInProgressInvocationHasACorrespondingInProgressRequest() {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
   }

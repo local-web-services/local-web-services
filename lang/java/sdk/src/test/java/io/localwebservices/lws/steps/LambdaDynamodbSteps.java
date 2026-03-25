@@ -16,17 +16,17 @@ import software.amazon.awssdk.services.lambda.model.Runtime;
 /**
  * Step definitions for the lambda_dynamodb cross-service informal specification feature files.
  *
- * <p>Covers: create_table, deploy_function, invocation_fails, invocation_succeeds,
- * invoke_function, put_item.
+ * <p>Covers: create_table, deploy_function, invocation_fails, invocation_succeeds, invoke_function,
+ * put_item.
  *
- * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized",
- * "the operation is rejected", "an item slot is available", "no item slot is available",
- * "a DynamoDB table is created"), {@link LambdaSteps} ("the function does not already exist",
- * "the function already exists", "the function exists", "the function does not exist",
- * "the function is {string}", "the function is not {string}"), and {@link DynamodbSteps}
- * ("the table does not already exist", "the table already exists", "the table exists",
- * "the table does not exist", "the table is {string}", "the table is not {string}") are
- * intentionally absent here to avoid duplicate step definition errors.
+ * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized", "the
+ * operation is rejected", "an item slot is available", "no item slot is available", "a DynamoDB
+ * table is created"), {@link LambdaSteps} ("the function does not already exist", "the function
+ * already exists", "the function exists", "the function does not exist", "the function is
+ * {string}", "the function is not {string}"), and {@link DynamodbSteps} ("the table does not
+ * already exist", "the table already exists", "the table exists", "the table does not exist", "the
+ * table is {string}", "the table is not {string}") are intentionally absent here to avoid duplicate
+ * step definition errors.
  */
 public class LambdaDynamodbSteps {
 

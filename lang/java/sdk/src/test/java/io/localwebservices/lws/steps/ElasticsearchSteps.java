@@ -148,10 +148,7 @@ public class ElasticsearchSteps {
     assertNotNull(arn, "Expected domain ARN to be available");
     // Act: add the test tag to the domain
     try (ElasticsearchClient client = world.session.elasticsearchClient()) {
-      client.addTags(
-          r ->
-              r.arn(arn)
-                  .tagList(Tag.builder().key(TAG_KEY).value(TAG_VALUE).build()));
+      client.addTags(r -> r.arn(arn).tagList(Tag.builder().key(TAG_KEY).value(TAG_VALUE).build()));
     }
     // Assert: tag added (no error thrown)
   }
@@ -201,10 +198,7 @@ public class ElasticsearchSteps {
     }
     try (ElasticsearchClient client = world.session.elasticsearchClient()) {
       // Act
-      client.addTags(
-          r ->
-              r.arn(arn)
-                  .tagList(Tag.builder().key(TAG_KEY).value(TAG_VALUE).build()));
+      client.addTags(r -> r.arn(arn).tagList(Tag.builder().key(TAG_KEY).value(TAG_VALUE).build()));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {

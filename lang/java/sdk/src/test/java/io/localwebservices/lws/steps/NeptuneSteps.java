@@ -13,8 +13,8 @@ import software.amazon.awssdk.services.neptune.NeptuneClient;
 import software.amazon.awssdk.services.neptune.model.DBCluster;
 import software.amazon.awssdk.services.neptune.model.DBClusterSnapshot;
 import software.amazon.awssdk.services.neptune.model.DBInstance;
-import software.amazon.awssdk.services.neptune.model.DescribeDbClustersResponse;
 import software.amazon.awssdk.services.neptune.model.DescribeDbClusterSnapshotsResponse;
+import software.amazon.awssdk.services.neptune.model.DescribeDbClustersResponse;
 import software.amazon.awssdk.services.neptune.model.DescribeDbInstancesResponse;
 
 /**
@@ -42,8 +42,7 @@ public class NeptuneSteps {
 
   private void neptuneCreateCluster() {
     try (NeptuneClient client = world.session.neptuneClient()) {
-      client.createDBCluster(
-          r -> r.dbClusterIdentifier(TEST_CLUSTER_ID).engine(TEST_ENGINE));
+      client.createDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID).engine(TEST_ENGINE));
     } catch (Exception e) {
       String msg = e.getMessage() != null ? e.getMessage() : "";
       if (!msg.contains("already exists") && !msg.contains("AlreadyExists")) {
@@ -72,8 +71,7 @@ public class NeptuneSteps {
     try (NeptuneClient client = world.session.neptuneClient()) {
       client.createDBClusterSnapshot(
           r ->
-              r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID)
-                  .dbClusterIdentifier(TEST_CLUSTER_ID));
+              r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID).dbClusterIdentifier(TEST_CLUSTER_ID));
     } catch (Exception e) {
       String msg = e.getMessage() != null ? e.getMessage() : "";
       if (!msg.contains("already exists") && !msg.contains("AlreadyExists")) {
@@ -112,10 +110,10 @@ public class NeptuneSteps {
 
   @Given("the cluster is not {string}")
   public void theClusterIsNot(String status) {
-    // Arrange / Act / Assert — cannot force a cluster into a non-AVAILABLE state via public API; skip
+    // Arrange / Act / Assert — cannot force a cluster into a non-AVAILABLE state via public API;
+    // skip
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: cannot force cluster into non-AVAILABLE state via public API");
+        false, "lws limitation: cannot force cluster into non-AVAILABLE state via public API");
   }
 
   @Given("the cluster has no non-deleted instances")
@@ -165,10 +163,10 @@ public class NeptuneSteps {
 
   @Given("the instance is not {string}")
   public void theInstanceIsNot(String status) {
-    // Arrange / Act / Assert — cannot force an instance into a non-AVAILABLE state via public API; skip
+    // Arrange / Act / Assert — cannot force an instance into a non-AVAILABLE state via public API;
+    // skip
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: cannot force instance into non-AVAILABLE state via public API");
+        false, "lws limitation: cannot force instance into non-AVAILABLE state via public API");
   }
 
   @Given("the instance does not exist")
@@ -205,10 +203,10 @@ public class NeptuneSteps {
 
   @Given("the snapshot is not {string}")
   public void theSnapshotIsNot(String status) {
-    // Arrange / Act / Assert — cannot force a snapshot into a non-AVAILABLE state via public API; skip
+    // Arrange / Act / Assert — cannot force a snapshot into a non-AVAILABLE state via public API;
+    // skip
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: cannot force snapshot into non-AVAILABLE state via public API");
+        false, "lws limitation: cannot force snapshot into non-AVAILABLE state via public API");
   }
 
   @Given("the snapshot does not exist")
@@ -235,8 +233,7 @@ public class NeptuneSteps {
     try (NeptuneClient client = world.session.neptuneClient()) {
       // Act
       var response =
-          client.createDBCluster(
-              r -> r.dbClusterIdentifier(TEST_CLUSTER_ID).engine(TEST_ENGINE));
+          client.createDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID).engine(TEST_ENGINE));
       // Assert: store result
       world.setSuccess(response);
     } catch (Exception e) {
@@ -249,8 +246,7 @@ public class NeptuneSteps {
     // Arrange: (cluster state set up by Given steps)
     try (NeptuneClient client = world.session.neptuneClient()) {
       // Act
-      var response =
-          client.deleteDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
+      var response = client.deleteDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
       // Assert: store result
       world.setSuccess(response);
     } catch (Exception e) {
@@ -282,8 +278,7 @@ public class NeptuneSteps {
     // Arrange: (instance state set up by Given steps)
     try (NeptuneClient client = world.session.neptuneClient()) {
       // Act
-      var response =
-          client.deleteDBInstance(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
+      var response = client.deleteDBInstance(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
       // Assert: store result
       world.setSuccess(response);
     } catch (Exception e) {
@@ -314,8 +309,7 @@ public class NeptuneSteps {
     try (NeptuneClient client = world.session.neptuneClient()) {
       // Act
       var response =
-          client.deleteDBClusterSnapshot(
-              r -> r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID));
+          client.deleteDBClusterSnapshot(r -> r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID));
       // Assert: store result
       world.setSuccess(response);
     } catch (Exception e) {
@@ -328,8 +322,7 @@ public class NeptuneSteps {
     // Arrange: (cluster state set up by Given steps)
     try (NeptuneClient client = world.session.neptuneClient()) {
       // Act
-      var response =
-          client.startDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
+      var response = client.startDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
       // Assert: store result
       world.setSuccess(response);
     } catch (Exception e) {
@@ -342,8 +335,7 @@ public class NeptuneSteps {
     // Arrange: (cluster state set up by Given steps)
     try (NeptuneClient client = world.session.neptuneClient()) {
       // Act
-      var response =
-          client.stopDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
+      var response = client.stopDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
       // Assert: store result
       world.setSuccess(response);
     } catch (Exception e) {
@@ -356,8 +348,7 @@ public class NeptuneSteps {
     // Arrange: (cluster state set up by Given steps)
     try (NeptuneClient client = world.session.neptuneClient()) {
       // Act
-      var response =
-          client.modifyDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
+      var response = client.modifyDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
       // Assert: store result
       world.setSuccess(response);
     } catch (Exception e) {
@@ -370,8 +361,7 @@ public class NeptuneSteps {
     // Arrange: (instance state set up by Given steps)
     try (NeptuneClient client = world.session.neptuneClient()) {
       // Act
-      var response =
-          client.modifyDBInstance(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
+      var response = client.modifyDBInstance(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
       // Assert: store result
       world.setSuccess(response);
     } catch (Exception e) {
@@ -384,8 +374,7 @@ public class NeptuneSteps {
     // Arrange: (instance state set up by Given steps)
     try (NeptuneClient client = world.session.neptuneClient()) {
       // Act
-      var response =
-          client.rebootDBInstance(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
+      var response = client.rebootDBInstance(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
       // Assert: store result
       world.setSuccess(response);
     } catch (Exception e) {
@@ -628,8 +617,7 @@ public class NeptuneSteps {
             + expectedSuccess);
     try (NeptuneClient client = world.session.neptuneClient()) {
       DescribeDbClusterSnapshotsResponse result =
-          client.describeDBClusterSnapshots(
-              r -> r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID));
+          client.describeDBClusterSnapshots(r -> r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID));
       List<DBClusterSnapshot> actualSnapshots = result.dbClusterSnapshots();
       assertNotNull(actualSnapshots, "expected DBClusterSnapshots list but got null");
       assertTrue(
@@ -665,8 +653,7 @@ public class NeptuneSteps {
             + expectedSuccess);
     try (NeptuneClient client = world.session.neptuneClient()) {
       DescribeDbClusterSnapshotsResponse result =
-          client.describeDBClusterSnapshots(
-              r -> r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID));
+          client.describeDBClusterSnapshots(r -> r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID));
       List<DBClusterSnapshot> actualSnapshots = result.dbClusterSnapshots();
       assertNotNull(actualSnapshots, "expected DBClusterSnapshots list but got null");
       assertTrue(

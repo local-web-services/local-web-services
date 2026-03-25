@@ -16,13 +16,13 @@ import software.amazon.awssdk.services.neptune.model.DescribeDbClustersResponse;
  * <p>Covers: create_cluster, deploy_function, invoke_function, start_cluster, stop_cluster,
  * invocation_fails_cluster_stopped, invocation_succeeds.
  *
- * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized",
- * "the operation is rejected"), {@link LambdaSteps} ("the function does not already exist",
- * "the function already exists", "the function exists", "the function does not exist",
- * "the function is {string}", "the function is not {string}"), and {@link NeptuneSteps}
- * ("the cluster does not already exist", "the cluster already exists", "the cluster exists",
- * "the cluster does not exist", "the cluster is {string}", "the cluster is not {string}") are
- * intentionally absent here to avoid duplicate step definition errors.
+ * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized", "the
+ * operation is rejected"), {@link LambdaSteps} ("the function does not already exist", "the
+ * function already exists", "the function exists", "the function does not exist", "the function is
+ * {string}", "the function is not {string}"), and {@link NeptuneSteps} ("the cluster does not
+ * already exist", "the cluster already exists", "the cluster exists", "the cluster does not exist",
+ * "the cluster is {string}", "the cluster is not {string}") are intentionally absent here to avoid
+ * duplicate step definition errors.
  */
 public class LambdaNeptuneSteps {
 
@@ -62,8 +62,7 @@ public class LambdaNeptuneSteps {
     // Arrange
     try (NeptuneClient client = world.session.neptuneClient()) {
       // Act
-      client.createDBCluster(
-          r -> r.dbClusterIdentifier(TEST_CLUSTER).engine("neptune"));
+      client.createDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER).engine("neptune"));
       // Assert: creation succeeded (no exception thrown)
     } catch (Exception e) {
       String msg = e.getMessage() != null ? e.getMessage() : "";
@@ -226,8 +225,7 @@ public class LambdaNeptuneSteps {
             "cannot trigger Lambda invocation failure: scenario is @internal"));
   }
 
-  @When(
-      "the Lambda function executes a graph query against the \"AVAILABLE\" cluster and succeeds")
+  @When("the Lambda function executes a graph query against the \"AVAILABLE\" cluster and succeeds")
   public void theLambdaFunctionExecutesAGraphQueryAgainstTheAvailableClusterAndSucceeds() {
     // @internal: Cannot trigger Lambda invocation success in lws.
     world.setFailure(

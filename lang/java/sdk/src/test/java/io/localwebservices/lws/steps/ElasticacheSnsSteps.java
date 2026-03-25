@@ -287,8 +287,7 @@ public class ElasticacheSnsSteps {
   public void theClusterModificationCompletes() {
     // @internal: no public API to advance cluster modification — no-op.
     world.setFailure(
-        new UnsupportedOperationException(
-            "cluster_modification_complete: scenario is @internal"));
+        new UnsupportedOperationException("cluster_modification_complete: scenario is @internal"));
   }
 
   // ── Then: assertions ──────────────────────────────────────────────────────────

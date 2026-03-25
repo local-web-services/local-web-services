@@ -35,8 +35,8 @@ const apigwDynamodbRegion = "us-east-1"
 
 // apigwDynamodbState holds mutable cross-service state for one scenario.
 type apigwDynamodbState struct {
-	restApiID string
-	itemKey   string
+	restApiID    string
+	itemKey      string
 	invokeStatus int
 }
 

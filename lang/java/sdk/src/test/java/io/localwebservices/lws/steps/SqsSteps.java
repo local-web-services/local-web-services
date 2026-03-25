@@ -25,8 +25,8 @@ import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
  *
  * <p>Steps already registered in CrossServiceSteps (the queue does not already exist, the queue
  * already exists, the queue exists, the queue is not {string}, the queue does not exist, the system
- * is initialized, the operation is rejected, every .* catch-all) are NOT re-registered here.
- * Those handlers have been updated in CrossServiceSteps to respect world.sqsActiveQueueName.
+ * is initialized, the operation is rejected, every .* catch-all) are NOT re-registered here. Those
+ * handlers have been updated in CrossServiceSteps to respect world.sqsActiveQueueName.
  */
 public class SqsSteps {
 
@@ -379,8 +379,7 @@ public class SqsSteps {
     String receiptHandle = world.sqsReceiptHandle;
     try (SqsClient client = world.session.sqsClient()) {
       // Act
-      client.deleteMessage(
-          r -> r.queueUrl(queueUrl(TEST_QUEUE)).receiptHandle(receiptHandle));
+      client.deleteMessage(r -> r.queueUrl(queueUrl(TEST_QUEUE)).receiptHandle(receiptHandle));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -395,10 +394,7 @@ public class SqsSteps {
     try (SqsClient client = world.session.sqsClient()) {
       // Act
       client.changeMessageVisibility(
-          r ->
-              r.queueUrl(queueUrl(TEST_QUEUE))
-                  .receiptHandle(receiptHandle)
-                  .visibilityTimeout(60));
+          r -> r.queueUrl(queueUrl(TEST_QUEUE)).receiptHandle(receiptHandle).visibilityTimeout(60));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -441,10 +437,7 @@ public class SqsSteps {
     try (SqsClient client = world.session.sqsClient()) {
       // Act
       client.changeMessageVisibility(
-          r ->
-              r.queueUrl(queueUrl(TEST_QUEUE))
-                  .receiptHandle(receiptHandle)
-                  .visibilityTimeout(0));
+          r -> r.queueUrl(queueUrl(TEST_QUEUE)).receiptHandle(receiptHandle).visibilityTimeout(0));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -543,22 +536,19 @@ public class SqsSteps {
           client.getQueueAttributes(
               r ->
                   r.queueUrl(queueUrl(TEST_QUEUE))
-                      .attributeNames(QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES_NOT_VISIBLE));
+                      .attributeNames(
+                          QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES_NOT_VISIBLE));
       String actualCountStr =
           result
               .attributes()
-              .getOrDefault(
-                  QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES_NOT_VISIBLE, "0");
+              .getOrDefault(QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES_NOT_VISIBLE, "0");
       int actualCount = Integer.parseInt(actualCountStr);
       int expectedCount = 1;
       // Assert
       assertEquals(
           expectedCount,
           actualCount,
-          "expected "
-              + expectedCount
-              + " in-flight message(s) but got "
-              + actualCount);
+          "expected " + expectedCount + " in-flight message(s) but got " + actualCount);
     }
   }
 
@@ -611,9 +601,7 @@ public class SqsSteps {
                   r.queueUrl(queueUrl(TEST_QUEUE))
                       .attributeNames(QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES));
       String actualCountStr =
-          result
-              .attributes()
-              .getOrDefault(QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES, "0");
+          result.attributes().getOrDefault(QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES, "0");
       int actualCount = Integer.parseInt(actualCountStr);
       // Assert
       if ("DELETED".equals(expectedState)) {

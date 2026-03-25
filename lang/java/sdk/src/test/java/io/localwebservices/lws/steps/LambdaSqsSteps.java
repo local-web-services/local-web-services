@@ -289,8 +289,7 @@ public class LambdaSqsSteps {
   public void theEventSourceMappingPollsTheQueueAndInvokesTheLambdaFunction() {
     // @internal: Cannot trigger ESM polling in lws.
     world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger ESM polling: scenario is @internal"));
+        new UnsupportedOperationException("cannot trigger ESM polling: scenario is @internal"));
   }
 
   @When("the Lambda function is invoked")
@@ -327,7 +326,8 @@ public class LambdaSqsSteps {
 
   // ── Then: assertions ──────────────────────────────────────────────────────────
   // "the function is {string}" is already registered in LambdaSteps — NOT re-registered here.
-  // "the operation is rejected" is already registered in CrossServiceSteps — NOT re-registered here.
+  // "the operation is rejected" is already registered in CrossServiceSteps — NOT re-registered
+  // here.
 
   @Then("the queue is \"ACTIVE\" with no dead-letter queue configured")
   public void theQueueIsActiveWithNoDeadLetterQueueConfigured() {
@@ -339,7 +339,8 @@ public class LambdaSqsSteps {
               r ->
                   r.queueUrl(queueUrl(TEST_QUEUE))
                       .attributeNames(QueueAttributeName.REDRIVE_POLICY));
-      String actualRedrive = result.attributes().getOrDefault(QueueAttributeName.REDRIVE_POLICY, "");
+      String actualRedrive =
+          result.attributes().getOrDefault(QueueAttributeName.REDRIVE_POLICY, "");
       // Assert
       String expectedRedrive = "";
       assertEquals(
@@ -356,8 +357,7 @@ public class LambdaSqsSteps {
   }
 
   @Then("failed messages will be redriven to the dead-letter queue after two receives")
-  public void failedMessagesWillBeRedrivenToTheDeadLetterQueueAfterTwoReceives()
-      throws Exception {
+  public void failedMessagesWillBeRedrivenToTheDeadLetterQueueAfterTwoReceives() throws Exception {
     // Arrange
     try (SqsClient client = world.session.sqsClient()) {
       // Act
@@ -366,18 +366,13 @@ public class LambdaSqsSteps {
               r ->
                   r.queueUrl(queueUrl(TEST_QUEUE))
                       .attributeNames(QueueAttributeName.REDRIVE_POLICY));
-      String actualPolicy =
-          result.attributes().getOrDefault(QueueAttributeName.REDRIVE_POLICY, "");
-      assertTrue(
-          !actualPolicy.isEmpty(),
-          "Expected a RedrivePolicy to be configured but got none");
+      String actualPolicy = result.attributes().getOrDefault(QueueAttributeName.REDRIVE_POLICY, "");
+      assertTrue(!actualPolicy.isEmpty(), "Expected a RedrivePolicy to be configured but got none");
       // Assert
       @SuppressWarnings("unchecked")
-      Map<String, Object> parsed =
-          MAPPER.readValue(actualPolicy, Map.class);
+      Map<String, Object> parsed = MAPPER.readValue(actualPolicy, Map.class);
       Object rawCount = parsed.get("maxReceiveCount");
-      int actualCount =
-          rawCount instanceof Number ? ((Number) rawCount).intValue() : 0;
+      int actualCount = rawCount instanceof Number ? ((Number) rawCount).intValue() : 0;
       int expectedCount = 2;
       assertEquals(
           expectedCount,

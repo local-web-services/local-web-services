@@ -44,9 +44,9 @@ func createLambdaMemoryDBCluster(world *World) error {
 	// Arrange
 	// Act
 	_, err := world.MemoryDBClient().CreateCluster(context.Background(), &memorydb.CreateClusterInput{
-		ClusterName:  aws.String(lambdaMemoryDBTestCluster),
-		NodeType:     aws.String("db.t4g.small"),
-		ACLName:      aws.String("open-access"),
+		ClusterName: aws.String(lambdaMemoryDBTestCluster),
+		NodeType:    aws.String("db.t4g.small"),
+		ACLName:     aws.String("open-access"),
 	})
 	// Assert: caller checks error
 	return err
@@ -109,9 +109,9 @@ func registerLambdaMemoryDBSteps(sc *godog.ScenarioContext, world *World) {
 		// Arrange
 		// Act
 		result, err := world.MemoryDBClient().CreateCluster(context.Background(), &memorydb.CreateClusterInput{
-			ClusterName:  aws.String(lambdaMemoryDBTestCluster),
-			NodeType:     aws.String("db.t4g.small"),
-			ACLName:      aws.String("open-access"),
+			ClusterName: aws.String(lambdaMemoryDBTestCluster),
+			NodeType:    aws.String("db.t4g.small"),
+			ACLName:     aws.String("open-access"),
 		})
 		// Assert: store result
 		setResult(world, result, err)

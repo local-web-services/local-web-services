@@ -171,10 +171,7 @@ public class StepfunctionsMemorydbSteps {
       // Act
       var result =
           client.createCluster(
-              r ->
-                  r.clusterName(TEST_CLUSTER)
-                      .nodeType("db.t4g.small")
-                      .aclName("open-access"));
+              r -> r.clusterName(TEST_CLUSTER).nodeType("db.t4g.small").aclName("open-access"));
       // Assert: result captured
       world.setSuccess(result);
     } catch (Exception e) {
@@ -197,8 +194,7 @@ public class StepfunctionsMemorydbSteps {
             "cannot force cluster update completion: scenario is @internal"));
   }
 
-  @When(
-      "a running execution connects to the \"AVAILABLE\" MemoryDB cluster and the task succeeds")
+  @When("a running execution connects to the \"AVAILABLE\" MemoryDB cluster and the task succeeds")
   public void aRunningExecutionConnectsToAvailableMemoryDbClusterAndTaskSucceeds() {
     // @internal: Cannot trigger internal execution step that connects to MemoryDB in lws.
     world.setFailure(
@@ -206,8 +202,7 @@ public class StepfunctionsMemorydbSteps {
             "cannot trigger internal execution step that connects to MemoryDB in lws"));
   }
 
-  @When(
-      "a running execution fails to connect because the MemoryDB cluster is updating")
+  @When("a running execution fails to connect because the MemoryDB cluster is updating")
   public void aRunningExecutionFailsToConnectBecauseMemoryDbClusterIsUpdating() {
     // @internal: Cannot trigger internal execution step that fails due to UPDATING cluster in lws.
     world.setFailure(
@@ -232,8 +227,7 @@ public class StepfunctionsMemorydbSteps {
       // Assert
       assertNotNull(result.clusters(), "expected cluster list to be non-null");
       boolean actualFound =
-          result.clusters().stream()
-              .anyMatch(c -> expectedClusterName.equals(c.name()));
+          result.clusters().stream().anyMatch(c -> expectedClusterName.equals(c.name()));
       assertTrue(
           actualFound,
           "expected cluster '"

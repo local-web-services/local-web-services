@@ -19,9 +19,8 @@ import software.amazon.awssdk.services.s3tables.model.GetTableBucketResponse;
  * <p>Covers: create_table_bucket, create_table, delete_table, deploy_function, invoke_function,
  * write_record, invocation_fails_table_deleting.
  *
- * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized",
- * "the operation is rejected") are intentionally absent here to avoid duplicate step definition
- * errors.
+ * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized", "the
+ * operation is rejected") are intentionally absent here to avoid duplicate step definition errors.
  */
 public class LambdaS3tablesSteps {
 
@@ -315,10 +314,7 @@ public class LambdaS3tablesSteps {
       String activeBucketArn = bucketArn != null ? bucketArn : ensureBucketArn();
       // Act
       client.deleteTable(
-          r ->
-              r.tableBucketARN(activeBucketArn)
-                  .namespace(TEST_TABLE_NAMESPACE)
-                  .name(TEST_TABLE));
+          r -> r.tableBucketARN(activeBucketArn).namespace(TEST_TABLE_NAMESPACE).name(TEST_TABLE));
       // Assert: store result
       world.setSuccess(TEST_TABLE);
     } catch (Exception e) {
@@ -356,9 +352,7 @@ public class LambdaS3tablesSteps {
   @When("the Lambda function writes a record to an \"ACTIVE\" table and succeeds")
   public void theLambdaFunctionWritesARecordToAnActiveTableAndSucceeds() {
     // @internal: Cannot trigger Lambda record write in lws without Docker.
-    world.setFailure(
-        new UnsupportedOperationException(
-            "write_record: scenario is @internal"));
+    world.setFailure(new UnsupportedOperationException("write_record: scenario is @internal"));
   }
 
   @When("the Lambda function fails to write because the table is being deleted")
@@ -378,7 +372,8 @@ public class LambdaS3tablesSteps {
     // Act
     try (S3TablesClient client = world.session.s3TablesClient()) {
       GetTableBucketResponse result =
-          client.getTableBucket(r -> r.tableBucketARN(bucketArn != null ? bucketArn : ensureBucketArn()));
+          client.getTableBucket(
+              r -> r.tableBucketARN(bucketArn != null ? bucketArn : ensureBucketArn()));
       // Assert
       assertNotNull(result, "expected table bucket response but got null");
       String actualName = result.name();

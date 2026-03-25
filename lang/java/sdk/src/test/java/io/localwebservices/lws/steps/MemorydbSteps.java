@@ -35,10 +35,9 @@ import software.amazon.awssdk.services.memorydb.model.User;
 /**
  * Step definitions for the MemoryDB informal specification feature files.
  *
- * <p>Covers: create_cluster, delete_cluster, create_user, delete_user, create_a_c_l,
- * delete_a_c_l, create_snapshot, delete_snapshot, associate_a_c_l_with_cluster,
- * add_user_to_a_c_l, remove_user_from_a_c_l, tag_resource, untag_resource, and
- * lifecycle/sequence features.
+ * <p>Covers: create_cluster, delete_cluster, create_user, delete_user, create_a_c_l, delete_a_c_l,
+ * create_snapshot, delete_snapshot, associate_a_c_l_with_cluster, add_user_to_a_c_l,
+ * remove_user_from_a_c_l, tag_resource, untag_resource, and lifecycle/sequence features.
  */
 public class MemorydbSteps {
 
@@ -387,8 +386,7 @@ public class MemorydbSteps {
               r ->
                   r.userName(USER_NAME)
                       .accessString("on ~* &* +@all")
-                      .authenticationMode(
-                          a -> a.type(InputAuthenticationType.PASSWORD))
+                      .authenticationMode(a -> a.type(InputAuthenticationType.PASSWORD))
                       .tags(Tag.builder().key(TAG_KEY).value(TAG_VALUE).build()));
       // Assert: store result
       world.setSuccess(result);
@@ -431,9 +429,7 @@ public class MemorydbSteps {
       // Act
       CreateAclResponse result =
           client.createACL(
-              r ->
-                  r.aclName(ACL_NAME)
-                      .tags(Tag.builder().key(TAG_KEY).value(TAG_VALUE).build()));
+              r -> r.aclName(ACL_NAME).tags(Tag.builder().key(TAG_KEY).value(TAG_VALUE).build()));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -566,8 +562,7 @@ public class MemorydbSteps {
     try (MemoryDbClient client = world.session.memoryDbClient()) {
       // Act
       UpdateClusterResponse result =
-          client.updateCluster(
-              r -> r.clusterName(CLUSTER_NAME).description("updated-description"));
+          client.updateCluster(r -> r.clusterName(CLUSTER_NAME).description("updated-description"));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -699,12 +694,14 @@ public class MemorydbSteps {
             + "; expected_success="
             + expectedSuccess);
     try (MemoryDbClient client = world.session.memoryDbClient()) {
-      DescribeClustersResponse result =
-          client.describeClusters(r -> r.clusterName(CLUSTER_NAME));
+      DescribeClustersResponse result = client.describeClusters(r -> r.clusterName(CLUSTER_NAME));
       List<Cluster> clusters = result.clusters();
       assertFalse(
           clusters.isEmpty(),
-          "expected cluster '" + CLUSTER_NAME + "' to exist but not found; expected_cluster=" + CLUSTER_NAME);
+          "expected cluster '"
+              + CLUSTER_NAME
+              + "' to exist but not found; expected_cluster="
+              + CLUSTER_NAME);
       String actualStatus = clusters.get(0).status();
       String expectedStatusLower = expectedStatus.toLowerCase();
       org.junit.jupiter.api.Assertions.assertEquals(
@@ -726,8 +723,7 @@ public class MemorydbSteps {
     // Arrange
     // Act
     try (MemoryDbClient client = world.session.memoryDbClient()) {
-      DescribeClustersResponse result =
-          client.describeClusters(r -> r.clusterName(CLUSTER_NAME));
+      DescribeClustersResponse result = client.describeClusters(r -> r.clusterName(CLUSTER_NAME));
       List<Cluster> clusters = result.clusters();
       // Assert
       for (Cluster c : clusters) {
@@ -801,12 +797,14 @@ public class MemorydbSteps {
             + "; expected_success="
             + expectedSuccess);
     try (MemoryDbClient client = world.session.memoryDbClient()) {
-      DescribeClustersResponse result =
-          client.describeClusters(r -> r.clusterName(CLUSTER_NAME));
+      DescribeClustersResponse result = client.describeClusters(r -> r.clusterName(CLUSTER_NAME));
       List<Cluster> clusters = result.clusters();
       assertFalse(
           clusters.isEmpty(),
-          "expected cluster '" + CLUSTER_NAME + "' to exist but not found; expected_cluster=" + CLUSTER_NAME);
+          "expected cluster '"
+              + CLUSTER_NAME
+              + "' to exist but not found; expected_cluster="
+              + CLUSTER_NAME);
       String expectedACLName = ACL_NAME;
       String actualACLName = clusters.get(0).aclName();
       org.junit.jupiter.api.Assertions.assertEquals(
@@ -1088,7 +1086,8 @@ public class MemorydbSteps {
   // ── Snapshot assertion steps ──────────────────────────────────────────────────
 
   @Then("the snapshot is in {string} state and the cluster is {string}")
-  public void theSnapshotIsInStateAndTheClusterIs(String expectedSnapshotStatus, String clusterStatus) {
+  public void theSnapshotIsInStateAndTheClusterIs(
+      String expectedSnapshotStatus, String clusterStatus) {
     // Arrange: no additional setup required
     // Act: action already performed in the When step
     // Assert
@@ -1301,9 +1300,7 @@ public class MemorydbSteps {
   private void createACL() {
     try (MemoryDbClient client = world.session.memoryDbClient()) {
       client.createACL(
-          r ->
-              r.aclName(ACL_NAME)
-                  .tags(Tag.builder().key(TAG_KEY).value(TAG_VALUE).build()));
+          r -> r.aclName(ACL_NAME).tags(Tag.builder().key(TAG_KEY).value(TAG_VALUE).build()));
     } catch (Exception e) {
       String msg = e.getMessage() != null ? e.getMessage() : "";
       if (!msg.contains("already exists") && !msg.contains("AlreadyExists")) {

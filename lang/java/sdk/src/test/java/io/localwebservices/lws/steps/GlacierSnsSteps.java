@@ -85,9 +85,7 @@ public class GlacierSnsSteps {
                   .vaultNotificationConfig(
                       cfg ->
                           cfg.snsTopic(activeTopicArn)
-                              .events(
-                                  "ArchiveRetrievalCompleted",
-                                  "InventoryRetrievalCompleted")));
+                              .events("ArchiveRetrievalCompleted", "InventoryRetrievalCompleted")));
       // Assert: notification configured (no error thrown)
     }
   }
@@ -277,9 +275,7 @@ public class GlacierSnsSteps {
                   .vaultNotificationConfig(
                       cfg ->
                           cfg.snsTopic(activeTopicArn)
-                              .events(
-                                  "ArchiveRetrievalCompleted",
-                                  "InventoryRetrievalCompleted")));
+                              .events("ArchiveRetrievalCompleted", "InventoryRetrievalCompleted")));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -306,8 +302,7 @@ public class GlacierSnsSteps {
     }
   }
 
-  @When(
-      "the Glacier job completes and publishes a notification to the configured \"SNS\" topic")
+  @When("the Glacier job completes and publishes a notification to the configured \"SNS\" topic")
   public void theGlacierJobCompletesAndPublishesANotificationToTheConfiguredSnsTopic() {
     // @internal: Glacier job completion notification delivery requires background processing.
     // This action cannot be performed via the public Glacier API.
@@ -316,10 +311,8 @@ public class GlacierSnsSteps {
             "InvalidParameterValueException: job completion notification requires internal processing"));
   }
 
-  @When(
-      "the Glacier job completes but notification delivery fails because the topic was deleted")
-  public void
-      theGlacierJobCompletesButNotificationDeliveryFailsBecauseTheTopicWasDeleted() {
+  @When("the Glacier job completes but notification delivery fails because the topic was deleted")
+  public void theGlacierJobCompletesButNotificationDeliveryFailsBecauseTheTopicWasDeleted() {
     // @internal: Glacier job completion with failed notification requires background processing.
     // This action cannot be performed via the public Glacier API.
     world.setFailure(

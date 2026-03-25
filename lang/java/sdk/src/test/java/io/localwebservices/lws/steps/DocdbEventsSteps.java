@@ -15,11 +15,11 @@ import software.amazon.awssdk.services.eventbridge.model.ListEventBusesResponse;
 /**
  * Step definitions for the docdb_events cross-service informal specification feature files.
  *
- * <p>Covers: create_cluster, create_event_bus, delete_event_bus,
- * cluster_modify_event_delivered, cluster_modify_event_fails, cluster_modify_complete.
+ * <p>Covers: create_cluster, create_event_bus, delete_event_bus, cluster_modify_event_delivered,
+ * cluster_modify_event_fails, cluster_modify_complete.
  *
- * <p>Steps already registered in {@link DocdbSteps} (cluster lifecycle/invariant steps)
- * are intentionally absent here to avoid duplicate step definition errors.
+ * <p>Steps already registered in {@link DocdbSteps} (cluster lifecycle/invariant steps) are
+ * intentionally absent here to avoid duplicate step definition errors.
  */
 public class DocdbEventsSteps {
 
@@ -101,7 +101,8 @@ public class DocdbEventsSteps {
   // "the cluster is not ..." steps are handled by the {string} Given in DocdbSteps;
   // specific literal variants for "AVAILABLE" and "MODIFYING" are NOT re-registered.
 
-  // "busid not in bus_status" is already registered in CrossServiceEventBusSteps; NOT re-registered.
+  // "busid not in bus_status" is already registered in CrossServiceEventBusSteps; NOT
+  // re-registered.
 
   // ── When: public API actions ───────────────────────────────────────────────
 
@@ -110,8 +111,8 @@ public class DocdbEventsSteps {
     // Arrange: (state set up by Given steps)
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
-      var result = client.createDBCluster(
-          r -> r.dbClusterIdentifier(TEST_CLUSTER_ID).engine(TEST_ENGINE));
+      var result =
+          client.createDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID).engine(TEST_ENGINE));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -148,8 +149,7 @@ public class DocdbEventsSteps {
   // ── When: @internal transitions ────────────────────────────────────────────
 
   @When(
-      "a cluster modification begins and DocumentDB delivers the event to the EventBridge"
-          + " bus")
+      "a cluster modification begins and DocumentDB delivers the event to the EventBridge" + " bus")
   public void aClusterModificationBeginsAndDocumentDbDeliversTheEventToTheEventBridgeBus() {
     // @internal: Cannot trigger internal DocumentDB->EventBridge event delivery via public API.
     world.setFailure(
@@ -157,8 +157,7 @@ public class DocdbEventsSteps {
             "cannot trigger DocDB->EventBridge event delivery: scenario is @internal"));
   }
 
-  @When(
-      "a cluster modification begins but event delivery fails because the bus is deleted")
+  @When("a cluster modification begins but event delivery fails because the bus is deleted")
   public void aClusterModificationBeginsButEventDeliveryFailsBecauseTheBusIsDeleted() {
     // @internal: Cannot trigger internal event delivery failure via public API.
     world.setFailure(
@@ -184,7 +183,10 @@ public class DocdbEventsSteps {
     // Arrange: no additional setup required
     // Act: verify bus exists in the list
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse result = client.listEventBuses(software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder().build());
+      ListEventBusesResponse result =
+          client.listEventBuses(
+              software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder()
+                  .build());
       List<EventBus> buses = result.eventBuses();
       assertNotNull(buses, "expected EventBuses list but got null");
       boolean actualFound = buses.stream().anyMatch(b -> TEST_BUS_NAME.equals(b.name()));

@@ -37,8 +37,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/apigateway"
 	"github.com/aws/aws-sdk-go-v2/service/apigateway/types"
 	"github.com/aws/aws-sdk-go-v2/service/sns"
-	core "github.com/local-web-services/local-web-services-go-core/lws"
 	"github.com/cucumber/godog"
+	core "github.com/local-web-services/local-web-services-go-core/lws"
 )
 
 const apigwSnsTestAPIName = "e2e-test-api-1"

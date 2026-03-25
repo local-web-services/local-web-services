@@ -12,9 +12,8 @@ import software.amazon.awssdk.services.neptune.NeptuneClient;
 /**
  * Step definitions for the neptune_events cross-service feature suite.
  *
- * <p>Covers: create_cluster, create_event_bus, delete_event_bus, cluster_stop_complete
- * (@internal), cluster_stop_event_delivered (@internal), cluster_stop_event_fails (@internal),
- * sequences.
+ * <p>Covers: create_cluster, create_event_bus, delete_event_bus, cluster_stop_complete (@internal),
+ * cluster_stop_event_delivered (@internal), cluster_stop_event_fails (@internal), sequences.
  *
  * <p>lws limitation note: NeptuneHandler does not dispatch state-change events to EventBridge when
  * clusters stop. Steps that verify internal event delivery use {@code Assumptions.assumeTrue(false,
@@ -93,10 +92,10 @@ public class NeptuneEventsSteps {
 
   @Given("the cluster is not {string}")
   public void theClusterIsNot(String status) {
-    // Arrange / Act / Assert — cannot force a cluster into a non-AVAILABLE state via public API; skip
+    // Arrange / Act / Assert — cannot force a cluster into a non-AVAILABLE state via public API;
+    // skip
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: cannot force cluster into non-AVAILABLE state via public API");
+        false, "lws limitation: cannot force cluster into non-AVAILABLE state via public API");
   }
 
   // ── Given: bus state ──────────────────────────────────────────────────────────
@@ -164,8 +163,7 @@ public class NeptuneEventsSteps {
     try (NeptuneClient client = world.session.neptuneClient()) {
       // Act
       var response =
-          client.createDBCluster(
-              r -> r.dbClusterIdentifier(TEST_CLUSTER_ID).engine(TEST_ENGINE));
+          client.createDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID).engine(TEST_ENGINE));
       // Assert
       world.setSuccess(response);
     } catch (Exception e) {
@@ -201,26 +199,25 @@ public class NeptuneEventsSteps {
 
   @When("the Neptune cluster stops and delivers the state change event to the EventBridge bus")
   public void theNeptuneClusterStopsAndDeliversStateChangeEventToEventBridgeBus() {
-    // @internal: cluster_stop_event_delivered — lws does not dispatch stop events to EventBridge; skip
+    // @internal: cluster_stop_event_delivered — lws does not dispatch stop events to EventBridge;
+    // skip
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: Neptune does not dispatch cluster stop events to EventBridge");
+        false, "lws limitation: Neptune does not dispatch cluster stop events to EventBridge");
   }
 
   @When("the Neptune cluster stops but event delivery fails because the bus is deleted")
   public void theNeptuneClusterStopsButEventDeliveryFailsBecauseBusIsDeleted() {
     // @internal: cluster_stop_event_fails — cannot trigger internal event delivery failure; skip
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: Neptune cluster stop event delivery failure not supported");
+        false, "lws limitation: Neptune cluster stop event delivery failure not supported");
   }
 
   @When("the Neptune cluster finishes stopping")
   public void theNeptuneClusterFinishesStopping() {
-    // @internal: cluster_stop_complete — cannot force cluster into STOPPING state via public API; skip
+    // @internal: cluster_stop_complete — cannot force cluster into STOPPING state via public API;
+    // skip
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: cannot force Neptune cluster into STOPPING state via public API");
+        false, "lws limitation: cannot force Neptune cluster into STOPPING state via public API");
   }
 
   // ── Then — bus state assertions ───────────────────────────────────────────────
@@ -233,14 +230,12 @@ public class NeptuneEventsSteps {
     boolean actualSuccess = world.lastSuccess;
     // Assert
     assertTrue(
-        actualSuccess,
-        "expected create cluster to succeed but got error: " + world.lastError);
+        actualSuccess, "expected create cluster to succeed but got error: " + world.lastError);
     try (NeptuneClient client = world.session.neptuneClient()) {
       var response = client.describeDBClusters(r -> r.dbClusterIdentifier(expectedClusterId));
       boolean actualFound = !response.dbClusters().isEmpty();
       assertTrue(
-          actualFound,
-          "expected cluster '" + expectedClusterId + "' to be AVAILABLE (found)");
+          actualFound, "expected cluster '" + expectedClusterId + "' to be AVAILABLE (found)");
     }
   }
 
@@ -275,8 +270,7 @@ public class NeptuneEventsSteps {
     }
     // Assert
     assertTrue(
-        actualBusGone,
-        "Expected event bus '" + expectedBusName + "' to be DELETED (deleted/gone)");
+        actualBusGone, "Expected event bus '" + expectedBusName + "' to be DELETED (deleted/gone)");
   }
 
   // ── Safety invariant Then steps ───────────────────────────────────────────────

@@ -18,13 +18,13 @@ import (
 )
 
 const (
-	ssmTestParamName  = "/e2e/ssm/test-param-1"
-	ssmTestParamValue = "test-value-1"
+	ssmTestParamName   = "/e2e/ssm/test-param-1"
+	ssmTestParamValue  = "test-value-1"
 	ssmTestParamValue2 = "test-value-2"
-	ssmTestParamType  = "String"
-	ssmTestTagKey     = "e2e-ssm-tag-key-1"
-	ssmTestTagValue   = "test-ssm-tag-value-1"
-	ssmTestPath       = "/e2e/ssm/"
+	ssmTestParamType   = "String"
+	ssmTestTagKey      = "e2e-ssm-tag-key-1"
+	ssmTestTagValue    = "test-ssm-tag-value-1"
+	ssmTestPath        = "/e2e/ssm/"
 )
 
 // ssmCreateParam is a helper that creates the test SSM parameter.

@@ -20,10 +20,10 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolDes
  * <p>Covers: create_rest_api, create_user_pool, configure_authorizer, confirm_user, issue_token,
  * authorize_request, reject_request.
  *
- * <p>Steps already registered in {@link ApigatewaySteps} (the "API" exists, the "API" is
- * "ACTIVE", etc.) and {@link CognitoIdpSteps} (the user pool exists, the user exists, etc.) are
- * NOT re-registered here. Only cross-service-specific steps that do not appear in either
- * constituent service file are defined below.
+ * <p>Steps already registered in {@link ApigatewaySteps} (the "API" exists, the "API" is "ACTIVE",
+ * etc.) and {@link CognitoIdpSteps} (the user pool exists, the user exists, etc.) are NOT
+ * re-registered here. Only cross-service-specific steps that do not appear in either constituent
+ * service file are defined below.
  *
  * <p>Invariant Then steps (every "API" with a configured authorizer references an "ACTIVE" pool,
  * etc.) are no-ops — verified by the spec, not the fake.
@@ -341,7 +341,8 @@ public class ApigatewayCognitoSteps {
     }
   }
 
-  @Then("the {string} will validate {string} tokens against the configured pool before routing requests")
+  @Then(
+      "the {string} will validate {string} tokens against the configured pool before routing requests")
   public void theApiWillValidateTokens(String resourceType, String tokenType) {
     // Arrange / Act / Assert — no-op: Cognito JWT authorizer validation is not supported in lws.
   }
@@ -361,7 +362,8 @@ public class ApigatewayCognitoSteps {
     // Arrange / Act / Assert — no-op: API Gateway Cognito authorizer routing is not supported.
   }
 
-  @Then("the request is {string} because the token's issuing pool does not match the configured authorizer")
+  @Then(
+      "the request is {string} because the token's issuing pool does not match the configured authorizer")
   public void theRequestIsRejectedDueToPoolMismatch(String expectedState) {
     // Arrange / Act / Assert — no-op: API Gateway Cognito authorizer rejection is not supported.
   }

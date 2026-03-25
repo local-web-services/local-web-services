@@ -25,9 +25,9 @@ func registerStepFunctionsMemoryDBSteps(sc *godog.ScenarioContext, world *World)
 		// Arrange: create the cluster so it already exists
 		// Act
 		_, err := world.MemoryDBClient().CreateCluster(context.Background(), &memorydb.CreateClusterInput{
-			ClusterName:  aws.String(sfnMemoryDBTestCluster),
-			NodeType:     aws.String("db.r6g.large"),
-			ACLName:      aws.String("open-access"),
+			ClusterName: aws.String(sfnMemoryDBTestCluster),
+			NodeType:    aws.String("db.r6g.large"),
+			ACLName:     aws.String("open-access"),
 		})
 		// Assert: ignore error if already exists
 		_ = err
@@ -38,9 +38,9 @@ func registerStepFunctionsMemoryDBSteps(sc *godog.ScenarioContext, world *World)
 		// Arrange: create the cluster
 		// Act
 		_, err := world.MemoryDBClient().CreateCluster(context.Background(), &memorydb.CreateClusterInput{
-			ClusterName:  aws.String(sfnMemoryDBTestCluster),
-			NodeType:     aws.String("db.r6g.large"),
-			ACLName:      aws.String("open-access"),
+			ClusterName: aws.String(sfnMemoryDBTestCluster),
+			NodeType:    aws.String("db.r6g.large"),
+			ACLName:     aws.String("open-access"),
 		})
 		// Assert: ignore error if already exists
 		_ = err
@@ -58,9 +58,9 @@ func registerStepFunctionsMemoryDBSteps(sc *godog.ScenarioContext, world *World)
 		// Arrange: ensure cluster exists; fresh clusters start AVAILABLE
 		// Act
 		_, err := world.MemoryDBClient().CreateCluster(context.Background(), &memorydb.CreateClusterInput{
-			ClusterName:  aws.String(sfnMemoryDBTestCluster),
-			NodeType:     aws.String("db.r6g.large"),
-			ACLName:      aws.String("open-access"),
+			ClusterName: aws.String(sfnMemoryDBTestCluster),
+			NodeType:    aws.String("db.r6g.large"),
+			ACLName:     aws.String("open-access"),
 		})
 		// Assert: ignore error if already exists
 		_ = err
@@ -76,9 +76,9 @@ func registerStepFunctionsMemoryDBSteps(sc *godog.ScenarioContext, world *World)
 		// Arrange: create the cluster so it is AVAILABLE (not UPDATING)
 		// Act
 		_, err := world.MemoryDBClient().CreateCluster(context.Background(), &memorydb.CreateClusterInput{
-			ClusterName:  aws.String(sfnMemoryDBTestCluster),
-			NodeType:     aws.String("db.r6g.large"),
-			ACLName:      aws.String("open-access"),
+			ClusterName: aws.String(sfnMemoryDBTestCluster),
+			NodeType:    aws.String("db.r6g.large"),
+			ACLName:     aws.String("open-access"),
 		})
 		// Assert: ignore error if already exists
 		_ = err
@@ -142,9 +142,9 @@ func registerStepFunctionsMemoryDBSteps(sc *godog.ScenarioContext, world *World)
 		// Arrange: use the test cluster name
 		// Act
 		_, err := world.MemoryDBClient().CreateCluster(context.Background(), &memorydb.CreateClusterInput{
-			ClusterName:  aws.String(sfnMemoryDBTestCluster),
-			NodeType:     aws.String("db.r6g.large"),
-			ACLName:      aws.String("open-access"),
+			ClusterName: aws.String(sfnMemoryDBTestCluster),
+			NodeType:    aws.String("db.r6g.large"),
+			ACLName:     aws.String("open-access"),
 		})
 		setResult(world, nil, err)
 		// Assert: result captured in world.lastResult

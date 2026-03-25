@@ -205,10 +205,7 @@ public class CognitoLambdaSteps {
       List<UserPoolDescriptionType> actualPools = result.userPools();
       boolean found = actualPools.stream().anyMatch(p -> expectedPoolName.equals(p.name()));
       assertTrue(
-          found,
-          "Expected pool \""
-              + expectedPoolName
-              + "\" to exist but not found in pool list");
+          found, "Expected pool \"" + expectedPoolName + "\" to exist but not found in pool list");
     }
   }
 
@@ -235,10 +232,7 @@ public class CognitoLambdaSteps {
       int actualCount = actualUsers.size();
       assertTrue(
           actualCount >= expectedMinCount,
-          "Expected at least "
-              + expectedMinCount
-              + " user but found "
-              + actualCount);
+          "Expected at least " + expectedMinCount + " user but found " + actualCount);
     }
   }
 

@@ -17,8 +17,8 @@ import software.amazon.awssdk.services.sfn.model.StateMachineType;
  * domain_processing_complete, start_execution, search_task_succeeds, search_task_fails.
  *
  * <p>Steps already registered in {@link StepfunctionsSteps} (state machine Given/When/Then) and
- * {@link CrossServiceSteps} (the system is initialized, the operation is rejected, every .* catch-alls)
- * are NOT re-registered here.
+ * {@link CrossServiceSteps} (the system is initialized, the operation is rejected, every .*
+ * catch-alls) are NOT re-registered here.
  */
 public class StepfunctionsOpensearchSteps {
 

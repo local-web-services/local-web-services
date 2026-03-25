@@ -18,9 +18,8 @@ import software.amazon.awssdk.services.lambda.model.Runtime;
  * <p>Covers: create_vault, delete_vault, deploy_function, invoke_function, upload_archive_task,
  * invocation_fails_vault_deleted.
  *
- * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized",
- * "the operation is rejected") are intentionally absent here to avoid duplicate step definition
- * errors.
+ * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized", "the
+ * operation is rejected") are intentionally absent here to avoid duplicate step definition errors.
  */
 public class LambdaGlacierSteps {
 
@@ -268,16 +267,14 @@ public class LambdaGlacierSteps {
   public void theLambdaFunctionUploadsAnArchiveToAnExistingVaultAndSucceeds() {
     // @internal: Cannot trigger Lambda archive upload in lws without Docker.
     world.setFailure(
-        new UnsupportedOperationException(
-            "upload_archive_task: scenario is @internal"));
+        new UnsupportedOperationException("upload_archive_task: scenario is @internal"));
   }
 
   @When("the Lambda function fails to upload because the vault has been deleted")
   public void theLambdaFunctionFailsToUploadBecauseTheVaultHasBeenDeleted() {
     // @internal: Cannot trigger Lambda upload failure in lws without Docker.
     world.setFailure(
-        new UnsupportedOperationException(
-            "invocation_fails_vault_deleted: scenario is @internal"));
+        new UnsupportedOperationException("invocation_fails_vault_deleted: scenario is @internal"));
   }
 
   // ── Then: assertions ───────────────────────────────────────────────────────────

@@ -26,9 +26,9 @@ import software.amazon.awssdk.services.sfn.model.ValidateStateMachineDefinitionR
 /**
  * Step definitions for the StepFunctions informal specification feature files.
  *
- * <p>Covers: create_state_machine, delete_state_machine, describe_state_machine, list_state_machines,
- * list_executions, list_state_machine_versions, list_tags_for_resource, start_execution,
- * start_sync_execution, stop_execution, describe_execution, get_execution_history,
+ * <p>Covers: create_state_machine, delete_state_machine, describe_state_machine,
+ * list_state_machines, list_executions, list_state_machine_versions, list_tags_for_resource,
+ * start_execution, start_sync_execution, stop_execution, describe_execution, get_execution_history,
  * update_state_machine, tag_resource, untag_resource, validate_state_machine_definition,
  * sync_execution_only_for_express.
  *
@@ -66,11 +66,7 @@ public class StepfunctionsSteps {
     try (SfnClient client = world.session.sfnClient()) {
       CreateStateMachineResponse result =
           client.createStateMachine(
-              r ->
-                  r.name(name)
-                      .definition(TEST_PASS_DEFINITION)
-                      .roleArn(TEST_ROLE_ARN)
-                      .type(type));
+              r -> r.name(name).definition(TEST_PASS_DEFINITION).roleArn(TEST_ROLE_ARN).type(type));
       world.lastStateMachineArn = result.stateMachineArn();
     }
   }
@@ -242,8 +238,7 @@ public class StepfunctionsSteps {
     try (SfnClient client = world.session.sfnClient()) {
       // Act
       try {
-        client.untagResource(
-            r -> r.resourceArn(smArn(TEST_SM)).tagKeys(TEST_TAG_KEY));
+        client.untagResource(r -> r.resourceArn(smArn(TEST_SM)).tagKeys(TEST_TAG_KEY));
       } catch (Exception ignored) {
         // ignore; desired state is tag absent
       }
@@ -278,10 +273,7 @@ public class StepfunctionsSteps {
       // Act
       CreateStateMachineResponse result =
           client.createStateMachine(
-              r ->
-                  r.name(TEST_SM)
-                      .definition(TEST_PASS_DEFINITION)
-                      .roleArn(TEST_ROLE_ARN));
+              r -> r.name(TEST_SM).definition(TEST_PASS_DEFINITION).roleArn(TEST_ROLE_ARN));
       world.setSuccess(result);
       world.lastStateMachineArn = result.stateMachineArn();
     } catch (Exception e) {
@@ -335,8 +327,7 @@ public class StepfunctionsSteps {
     // Arrange
     try (SfnClient client = world.session.sfnClient()) {
       // Act
-      ListExecutionsResponse result =
-          client.listExecutions(r -> r.stateMachineArn(smArn(TEST_SM)));
+      ListExecutionsResponse result = client.listExecutions(r -> r.stateMachineArn(smArn(TEST_SM)));
       world.setSuccess(result);
     } catch (Exception e) {
       world.setFailure(e);
@@ -627,7 +618,8 @@ public class StepfunctionsSteps {
             + actualSuccess);
     assertNotNull(world.lastOutput, "Expected non-null list_state_machines result");
     ListStateMachinesResponse result = (ListStateMachinesResponse) world.lastOutput;
-    assertNotNull(result.stateMachines(), "Expected 'stateMachines' in list_state_machines response");
+    assertNotNull(
+        result.stateMachines(), "Expected 'stateMachines' in list_state_machines response");
   }
 
   @Then("the list of executions is returned")
@@ -790,8 +782,7 @@ public class StepfunctionsSteps {
             + actualSuccess);
     assertNotNull(world.lastOutput, "Expected non-null describe_execution result");
     DescribeExecutionResponse result = (DescribeExecutionResponse) world.lastOutput;
-    assertNotNull(
-        result.executionArn(), "Expected 'executionArn' in describe_execution response");
+    assertNotNull(result.executionArn(), "Expected 'executionArn' in describe_execution response");
   }
 
   @Then("the execution history is returned")
@@ -880,8 +871,7 @@ public class StepfunctionsSteps {
             + expectedSuccess
             + " actual_success="
             + actualSuccess);
-    assertNotNull(
-        world.lastOutput, "Expected non-null validate_state_machine_definition result");
+    assertNotNull(world.lastOutput, "Expected non-null validate_state_machine_definition result");
     ValidateStateMachineDefinitionResponse result =
         (ValidateStateMachineDefinitionResponse) world.lastOutput;
     assertTrue(
@@ -908,8 +898,7 @@ public class StepfunctionsSteps {
 
   // ── Then: invariants ──────────────────────────────────────────────────────────
 
-  @Then(
-      "every state machine has a valid status (\"ACTIVE\", \"DELETING\", or \"DELETED\")")
+  @Then("every state machine has a valid status (\"ACTIVE\", \"DELETING\", or \"DELETED\")")
   public void everyStateMachineHasAValidStatus() {
     // Arrange
     // Act

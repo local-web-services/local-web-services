@@ -184,8 +184,7 @@ public class LambdaSteps {
     try (LambdaClient client = world.session.lambdaClient()) {
       // Act: remove, ignore errors
       try {
-        client.removePermission(
-            r -> r.functionName(TEST_FUNC).statementId(TEST_STATEMENT_ID));
+        client.removePermission(r -> r.functionName(TEST_FUNC).statementId(TEST_STATEMENT_ID));
       } catch (Exception ignored) {
         // permission may not exist
       }
@@ -200,7 +199,8 @@ public class LambdaSteps {
     // Arrange: tag the function
     try (LambdaClient client = world.session.lambdaClient()) {
       // Act
-      client.tagResource(r -> r.resource(funcArn()).tags(java.util.Map.of(TEST_TAG_KEY, TEST_TAG_VALUE)));
+      client.tagResource(
+          r -> r.resource(funcArn()).tags(java.util.Map.of(TEST_TAG_KEY, TEST_TAG_VALUE)));
     }
     // Assert: tag applied (no error thrown)
   }
@@ -412,8 +412,7 @@ public class LambdaSteps {
   public void aFailedFunctionIsDeleted() {
     // @internal: Cannot delete a FAILED Lambda function in lws (cannot reach FAILED state).
     world.setFailure(
-        new UnsupportedOperationException(
-            "cannot delete FAILED function: scenario is @internal"));
+        new UnsupportedOperationException("cannot delete FAILED function: scenario is @internal"));
   }
 
   @When("a function's code is updated")
@@ -422,9 +421,7 @@ public class LambdaSteps {
     try (LambdaClient client = world.session.lambdaClient()) {
       // Act
       client.updateFunctionCode(
-          r ->
-              r.functionName(TEST_FUNC)
-                  .zipFile(SdkBytes.fromUtf8String("updated-fake")));
+          r -> r.functionName(TEST_FUNC).zipFile(SdkBytes.fromUtf8String("updated-fake")));
       // Assert: store result
       world.setSuccess(TEST_FUNC);
     } catch (Exception e) {
@@ -482,8 +479,7 @@ public class LambdaSteps {
     // Arrange
     try (LambdaClient client = world.session.lambdaClient()) {
       // Act
-      client.putFunctionConcurrency(
-          r -> r.functionName(TEST_FUNC).reservedConcurrentExecutions(5));
+      client.putFunctionConcurrency(r -> r.functionName(TEST_FUNC).reservedConcurrentExecutions(5));
       // Assert: store result
       world.setSuccess(TEST_FUNC);
     } catch (Exception e) {
@@ -496,7 +492,8 @@ public class LambdaSteps {
     // Arrange
     try (LambdaClient client = world.session.lambdaClient()) {
       // Act
-      client.tagResource(r -> r.resource(funcArn()).tags(java.util.Map.of(TEST_TAG_KEY, TEST_TAG_VALUE)));
+      client.tagResource(
+          r -> r.resource(funcArn()).tags(java.util.Map.of(TEST_TAG_KEY, TEST_TAG_VALUE)));
       // Assert: store result
       world.setSuccess(TEST_FUNC);
     } catch (Exception e) {
@@ -520,24 +517,21 @@ public class LambdaSteps {
   @When("an event source mapping is created")
   public void anEventSourceMappingIsCreated() {
     // @internal: Cannot create ESM in lws without a real event source ARN.
-    world.setFailure(
-        new UnsupportedOperationException("cannot create ESM: scenario is @internal"));
+    world.setFailure(new UnsupportedOperationException("cannot create ESM: scenario is @internal"));
   }
 
   @When("an enabled event source mapping is deleted")
   public void anEnabledEventSourceMappingIsDeleted() {
     // @internal: Cannot delete ESM in lws without a real event source mapping UUID.
     world.setFailure(
-        new UnsupportedOperationException(
-            "cannot delete enabled ESM: scenario is @internal"));
+        new UnsupportedOperationException("cannot delete enabled ESM: scenario is @internal"));
   }
 
   @When("a disabled event source mapping is deleted")
   public void aDisabledEventSourceMappingIsDeleted() {
     // @internal: Cannot delete ESM in lws without a real event source mapping UUID.
     world.setFailure(
-        new UnsupportedOperationException(
-            "cannot delete disabled ESM: scenario is @internal"));
+        new UnsupportedOperationException("cannot delete disabled ESM: scenario is @internal"));
   }
 
   @When("an enabled event source mapping is disabled")
@@ -550,16 +544,14 @@ public class LambdaSteps {
   @When("a disabled event source mapping is enabled")
   public void aDisabledEventSourceMappingIsEnabled() {
     // @internal: Cannot enable ESM in lws without a real event source mapping UUID.
-    world.setFailure(
-        new UnsupportedOperationException("cannot enable ESM: scenario is @internal"));
+    world.setFailure(new UnsupportedOperationException("cannot enable ESM: scenario is @internal"));
   }
 
   @When("an event source mapping finishes creating")
   public void anEventSourceMappingFinishesCreating() {
     // @internal: Cannot trigger ESM lifecycle transition in lws.
     world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger ESM lifecycle: scenario is @internal"));
+        new UnsupportedOperationException("cannot trigger ESM lifecycle: scenario is @internal"));
   }
 
   @When("an event source mapping finishes being deleted")
@@ -574,8 +566,7 @@ public class LambdaSteps {
   public void aPendingFunctionResolvesItsDeployment() {
     // @internal: Cannot trigger Lambda PENDING->ACTIVE transition in lws.
     world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger PENDING->ACTIVE: scenario is @internal"));
+        new UnsupportedOperationException("cannot trigger PENDING->ACTIVE: scenario is @internal"));
   }
 
   @When("a function finishes being deleted")
@@ -598,8 +589,7 @@ public class LambdaSteps {
   public void aFunctionIsInvokedSynchronouslyWithoutAConcurrencyLimit() {
     // @internal: Cannot trigger Lambda sync invocation in lws without Docker.
     world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger sync invocation: scenario is @internal"));
+        new UnsupportedOperationException("cannot trigger sync invocation: scenario is @internal"));
   }
 
   @When("a function is invoked synchronously within its concurrency limit")
@@ -622,16 +612,14 @@ public class LambdaSteps {
   public void anAsyncInvocationSucceeds() {
     // @internal: Cannot trigger Lambda async invocation success in lws.
     world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger async success: scenario is @internal"));
+        new UnsupportedOperationException("cannot trigger async success: scenario is @internal"));
   }
 
   @When("an async invocation fails and is retried")
   public void anAsyncInvocationFailsAndIsRetried() {
     // @internal: Cannot trigger Lambda async retry in lws.
     world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger async retry: scenario is @internal"));
+        new UnsupportedOperationException("cannot trigger async retry: scenario is @internal"));
   }
 
   @When("an async invocation exhausts all retries")

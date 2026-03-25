@@ -37,20 +37,19 @@ import software.amazon.awssdk.services.lambda.model.Runtime;
  *
  * <ul>
  *   <li>{@link CrossServiceSteps}: "the system is initialized", "the operation is rejected"
- *   <li>{@link DynamodbSteps}: "the table does not already exist", "the table already exists",
- *       "the table exists", "the table does not exist", "the table is {string}",
- *       "the table is not {string}"
+ *   <li>{@link DynamodbSteps}: "the table does not already exist", "the table already exists", "the
+ *       table exists", "the table does not exist", "the table is {string}", "the table is not
+ *       {string}"
  *   <li>{@link LambdaSteps}: "the function does not already exist", "the function already exists",
- *       "the function exists", "the function does not exist", "the function is {string}",
- *       "the function is not {string}", "the event source mapping does not already exist",
- *       "the event source mapping already exists", "the event source mapping exists",
- *       "the event source mapping does not exist"
- *   <li>{@link LambdaDynamodbSteps}: "an invocation is \"IN_PROGRESS\"",
- *       "no invocation is \"IN_PROGRESS\"", "an invocation slot is available",
- *       "no invocation slot is available", "a Lambda function is deployed" (When),
- *       "the invocation is \"IN_PROGRESS\"" (Then), "the invocation is \"FAILED\"" (Then),
- *       "the invocation is \"SUCCESS\"" (Then),
- *       "every \"IN_PROGRESS\" invocation references an \"ACTIVE\" Lambda function" (Then)
+ *       "the function exists", "the function does not exist", "the function is {string}", "the
+ *       function is not {string}", "the event source mapping does not already exist", "the event
+ *       source mapping already exists", "the event source mapping exists", "the event source
+ *       mapping does not exist"
+ *   <li>{@link LambdaDynamodbSteps}: "an invocation is \"IN_PROGRESS\"", "no invocation is
+ *       \"IN_PROGRESS\"", "an invocation slot is available", "no invocation slot is available", "a
+ *       Lambda function is deployed" (When), "the invocation is \"IN_PROGRESS\"" (Then), "the
+ *       invocation is \"FAILED\"" (Then), "the invocation is \"SUCCESS\"" (Then), "every
+ *       \"IN_PROGRESS\" invocation references an \"ACTIVE\" Lambda function" (Then)
  * </ul>
  */
 public class DynamodbLambdaSteps {
@@ -284,8 +283,7 @@ public class DynamodbLambdaSteps {
     }
   }
 
-  @When(
-      "the event source mapping polls the stream and invokes the Lambda function with the record")
+  @When("the event source mapping polls the stream and invokes the Lambda function with the record")
   public void theEventSourceMappingPollsTheStreamAndInvokesTheLambdaFunctionWithTheRecord() {
     // Arrange / Act / Assert — @internal: cannot observe internal stream poll and Lambda
     // invocation via public API
@@ -299,8 +297,7 @@ public class DynamodbLambdaSteps {
   public void theLambdaInvocationProcessesTheStreamRecordSuccessfully() {
     // Arrange / Act / Assert — @internal: cannot observe DynamoDB->Lambda invocation completion
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: cannot observe DynamoDB->Lambda invocation completion in lws");
+        false, "lws limitation: cannot observe DynamoDB->Lambda invocation completion in lws");
   }
 
   @When("the Lambda invocation fails and the stream record is retried")
@@ -345,8 +342,7 @@ public class DynamodbLambdaSteps {
               + " event source mapping but found "
               + actualCount);
       boolean actualHasExpectedState =
-          resp.eventSourceMappings().stream()
-              .anyMatch(m -> expectedState.equals(m.state()));
+          resp.eventSourceMappings().stream().anyMatch(m -> expectedState.equals(m.state()));
       assertTrue(
           actualHasExpectedState,
           "expected at least one mapping with state '"
@@ -401,8 +397,7 @@ public class DynamodbLambdaSteps {
     // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated lws.
   }
 
-  @Then(
-      "every {string} event source mapping references an {string} table with streaming enabled")
+  @Then("every {string} event source mapping references an {string} table with streaming enabled")
   public void everyEventSourceMappingReferencesAnTableWithStreamingEnabled(
       String esmState, String tableState) {
     // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated lws.

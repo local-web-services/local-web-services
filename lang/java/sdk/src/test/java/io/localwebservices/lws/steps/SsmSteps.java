@@ -149,11 +149,7 @@ public class SsmSteps {
     // Arrange: (parameter may or may not exist — set up by Given steps)
     try (SsmClient client = world.session.ssmClient()) {
       // Act
-      client.putParameter(
-          r ->
-              r.name(TEST_PARAM)
-                  .value(TEST_VALUE)
-                  .type(ParameterType.STRING));
+      client.putParameter(r -> r.name(TEST_PARAM).value(TEST_VALUE).type(ParameterType.STRING));
       // Assert: store result
       world.setSuccess(TEST_PARAM);
     } catch (Exception e) {
@@ -197,8 +193,7 @@ public class SsmSteps {
       if (!actualInvalid.isEmpty()) {
         // Treat InvalidParameters as a failure to match reference semantics
         world.setFailure(
-            new RuntimeException(
-                "ParameterNotFound: parameter not found: " + actualInvalid));
+            new RuntimeException("ParameterNotFound: parameter not found: " + actualInvalid));
         return;
       }
       // Assert: store result
@@ -252,8 +247,7 @@ public class SsmSteps {
     // Arrange: check if parameter exists; lws returns 200 even when absent
     if (!paramExists()) {
       world.setFailure(
-          new RuntimeException(
-              "InvalidResourceId: parameter " + TEST_PARAM + " does not exist"));
+          new RuntimeException("InvalidResourceId: parameter " + TEST_PARAM + " does not exist"));
       return;
     }
     try (SsmClient client = world.session.ssmClient()) {
@@ -275,17 +269,14 @@ public class SsmSteps {
     // Arrange: check if parameter exists; lws returns 200 even when absent
     if (!paramExists()) {
       world.setFailure(
-          new RuntimeException(
-              "InvalidResourceId: parameter " + TEST_PARAM + " does not exist"));
+          new RuntimeException("InvalidResourceId: parameter " + TEST_PARAM + " does not exist"));
       return;
     }
     try (SsmClient client = world.session.ssmClient()) {
       // Act
       ListTagsForResourceResponse result =
           client.listTagsForResource(
-              r ->
-                  r.resourceType(ResourceTypeForTagging.PARAMETER)
-                      .resourceId(TEST_PARAM));
+              r -> r.resourceType(ResourceTypeForTagging.PARAMETER).resourceId(TEST_PARAM));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -300,9 +291,7 @@ public class SsmSteps {
     try (SsmClient client = world.session.ssmClient()) {
       ListTagsForResourceResponse tagResult =
           client.listTagsForResource(
-              r ->
-                  r.resourceType(ResourceTypeForTagging.PARAMETER)
-                      .resourceId(TEST_PARAM));
+              r -> r.resourceType(ResourceTypeForTagging.PARAMETER).resourceId(TEST_PARAM));
       List<Tag> tags = tagResult.tagList();
       tagFound = tags.stream().anyMatch(t -> TEST_TAG_KEY.equals(t.key()));
     } catch (Exception ignored) {
@@ -311,10 +300,7 @@ public class SsmSteps {
     if (!tagFound) {
       world.setFailure(
           new RuntimeException(
-              "InvalidResourceId: tag "
-                  + TEST_TAG_KEY
-                  + " is not associated with "
-                  + TEST_PARAM));
+              "InvalidResourceId: tag " + TEST_TAG_KEY + " is not associated with " + TEST_PARAM));
       return;
     }
     try (SsmClient client = world.session.ssmClient()) {
@@ -336,17 +322,12 @@ public class SsmSteps {
     // Arrange: verify parameter exists; lws creates param even when absent — reject if missing
     if (!paramExists()) {
       world.setFailure(
-          new RuntimeException(
-              "ParameterNotFound: parameter " + TEST_PARAM + " does not exist"));
+          new RuntimeException("ParameterNotFound: parameter " + TEST_PARAM + " does not exist"));
       return;
     }
     try (SsmClient client = world.session.ssmClient()) {
       // Act: put without Overwrite flag (default false)
-      client.putParameter(
-          r ->
-              r.name(TEST_PARAM)
-                  .value(TEST_VALUE2)
-                  .type(ParameterType.STRING));
+      client.putParameter(r -> r.name(TEST_PARAM).value(TEST_VALUE2).type(ParameterType.STRING));
       // Assert: store result
       world.setSuccess(TEST_PARAM);
     } catch (Exception e) {
@@ -359,18 +340,13 @@ public class SsmSteps {
     // Arrange: verify parameter exists; lws creates param even when absent — reject if missing
     if (!paramExists()) {
       world.setFailure(
-          new RuntimeException(
-              "ParameterNotFound: parameter " + TEST_PARAM + " does not exist"));
+          new RuntimeException("ParameterNotFound: parameter " + TEST_PARAM + " does not exist"));
       return;
     }
     try (SsmClient client = world.session.ssmClient()) {
       // Act: put with Overwrite=true
       client.putParameter(
-          r ->
-              r.name(TEST_PARAM)
-                  .value(TEST_VALUE2)
-                  .type(ParameterType.STRING)
-                  .overwrite(true));
+          r -> r.name(TEST_PARAM).value(TEST_VALUE2).type(ParameterType.STRING).overwrite(true));
       // Assert: store result
       world.setSuccess(TEST_PARAM);
     } catch (Exception e) {
@@ -418,8 +394,7 @@ public class SsmSteps {
     try (SsmClient client = world.session.ssmClient()) {
       DescribeParametersResponse result = client.describeParameters();
       List<ParameterMetadata> actualParameters = result.parameters();
-      boolean actualFound =
-          actualParameters.stream().anyMatch(p -> TEST_PARAM.equals(p.name()));
+      boolean actualFound = actualParameters.stream().anyMatch(p -> TEST_PARAM.equals(p.name()));
       // Assert
       assertFalse(
           actualFound,
@@ -437,8 +412,7 @@ public class SsmSteps {
     try (SsmClient client = world.session.ssmClient()) {
       DescribeParametersResponse result = client.describeParameters();
       List<ParameterMetadata> actualParameters = result.parameters();
-      boolean actualFound =
-          actualParameters.stream().anyMatch(p -> TEST_PARAM.equals(p.name()));
+      boolean actualFound = actualParameters.stream().anyMatch(p -> TEST_PARAM.equals(p.name()));
       // Assert
       assertFalse(
           actualFound,
@@ -645,11 +619,7 @@ public class SsmSteps {
 
   private void ssmCreateParam() {
     try (SsmClient client = world.session.ssmClient()) {
-      client.putParameter(
-          r ->
-              r.name(TEST_PARAM)
-                  .value(TEST_VALUE)
-                  .type(ParameterType.STRING));
+      client.putParameter(r -> r.name(TEST_PARAM).value(TEST_VALUE).type(ParameterType.STRING));
     } catch (Exception e) {
       String msg = e.getMessage() != null ? e.getMessage() : "";
       if (!msg.contains("ParameterAlreadyExists")) {

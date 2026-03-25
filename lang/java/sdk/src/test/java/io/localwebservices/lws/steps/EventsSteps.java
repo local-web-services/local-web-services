@@ -67,8 +67,7 @@ public class EventsSteps {
           r ->
               r.rule(TEST_RULE)
                   .eventBusName(TEST_BUS)
-                  .targets(
-                      Target.builder().id(TEST_TARGET_ID).arn(TEST_TARGET_ARN).build()));
+                  .targets(Target.builder().id(TEST_TARGET_ID).arn(TEST_TARGET_ARN).build()));
     }
   }
 
@@ -330,15 +329,13 @@ public class EventsSteps {
   @Given("the dead-letter queue is not empty")
   public void theDeadLetterQueueIsNotEmpty() {
     // Arrange / Act / Assert — skip: cannot populate dead-letter queue programmatically.
-    org.junit.jupiter.api.Assumptions.abort(
-        "Cannot populate dead-letter queue programmatically");
+    org.junit.jupiter.api.Assumptions.abort("Cannot populate dead-letter queue programmatically");
   }
 
   @Given("the dead-letter queue is empty")
   public void theDeadLetterQueueIsEmpty() {
     // Arrange / Act / Assert — skip: cannot reliably ensure dead-letter queue is empty.
-    org.junit.jupiter.api.Assumptions.abort(
-        "Cannot reliably ensure dead-letter queue is empty");
+    org.junit.jupiter.api.Assumptions.abort("Cannot reliably ensure dead-letter queue is empty");
   }
 
   // ── When: actions ─────────────────────────────────────────────────────────────
@@ -387,7 +384,10 @@ public class EventsSteps {
     // Arrange
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
       // Act
-      ListEventBusesResponse result = client.listEventBuses(software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder().build());
+      ListEventBusesResponse result =
+          client.listEventBuses(
+              software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder()
+                  .build());
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -515,8 +515,7 @@ public class EventsSteps {
     // Arrange
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
       // Act
-      client.removeTargets(
-          r -> r.rule(TEST_RULE).eventBusName(TEST_BUS).ids(TEST_TARGET_ID));
+      client.removeTargets(r -> r.rule(TEST_RULE).eventBusName(TEST_BUS).ids(TEST_TARGET_ID));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -564,7 +563,10 @@ public class EventsSteps {
     String expectedBus = TEST_BUS;
     // Act
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse result = client.listEventBuses(software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder().build());
+      ListEventBusesResponse result =
+          client.listEventBuses(
+              software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder()
+                  .build());
       List<EventBus> buses = result.eventBuses();
       boolean actualFound = buses.stream().anyMatch(b -> expectedBus.equals(b.name()));
       // Assert
@@ -583,7 +585,10 @@ public class EventsSteps {
     String expectedBus = TEST_BUS;
     // Act
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse result = client.listEventBuses(software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder().build());
+      ListEventBusesResponse result =
+          client.listEventBuses(
+              software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder()
+                  .build());
       List<EventBus> buses = result.eventBuses();
       boolean actualFound = buses.stream().anyMatch(b -> expectedBus.equals(b.name()));
       // Assert

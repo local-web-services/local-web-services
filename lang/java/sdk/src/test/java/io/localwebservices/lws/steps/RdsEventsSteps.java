@@ -1,7 +1,7 @@
 package io.localwebservices.lws.steps;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.cucumber.java.en.Given;
@@ -18,9 +18,9 @@ import software.amazon.awssdk.services.rds.RdsClient;
  *
  * <p>Covers: create_d_b_instance, create_event_bus, delete_event_bus.
  *
- * <p>Internal-only actions (d_b_stop_complete, d_b_stop_event_delivered,
- * d_b_stop_event_fails) are registered as no-ops with {@code @internal} comments because
- * they cannot be triggered via public AWS APIs in an lws environment.
+ * <p>Internal-only actions (d_b_stop_complete, d_b_stop_event_delivered, d_b_stop_event_fails) are
+ * registered as no-ops with {@code @internal} comments because they cannot be triggered via public
+ * AWS APIs in an lws environment.
  */
 public class RdsEventsSteps {
 
@@ -201,17 +201,14 @@ public class RdsEventsSteps {
   @When("the \"DB\" instance finishes stopping")
   public void theDbInstanceFinishesStopping() {
     // @internal: d_b_stop_complete cannot be triggered via public API.
-    world.setFailure(
-        new UnsupportedOperationException("d_b_stop_complete: scenario is @internal"));
+    world.setFailure(new UnsupportedOperationException("d_b_stop_complete: scenario is @internal"));
   }
 
-  @When(
-      "the \"RDS\" instance stops and delivers the state change event to the EventBridge bus")
+  @When("the \"RDS\" instance stops and delivers the state change event to the EventBridge bus")
   public void theRdsInstanceStopsAndDeliversTheStateChangeEvent() {
     // @internal: d_b_stop_event_delivered cannot be triggered via public API.
     world.setFailure(
-        new UnsupportedOperationException(
-            "d_b_stop_event_delivered: scenario is @internal"));
+        new UnsupportedOperationException("d_b_stop_event_delivered: scenario is @internal"));
   }
 
   @When(
@@ -245,7 +242,10 @@ public class RdsEventsSteps {
     // Arrange
     // Act
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse result = client.listEventBuses(software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder().build());
+      ListEventBusesResponse result =
+          client.listEventBuses(
+              software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder()
+                  .build());
       List<EventBus> buses = result.eventBuses();
       // Assert
       String expectedBus = TEST_BUS_NAME;
@@ -266,7 +266,10 @@ public class RdsEventsSteps {
     // Arrange
     // Act
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse result = client.listEventBuses(software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder().build());
+      ListEventBusesResponse result =
+          client.listEventBuses(
+              software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder()
+                  .build());
       List<EventBus> buses = result.eventBuses();
       // Assert
       String expectedBus = TEST_BUS_NAME;

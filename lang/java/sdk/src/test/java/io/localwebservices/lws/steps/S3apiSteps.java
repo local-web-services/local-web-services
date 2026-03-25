@@ -272,8 +272,7 @@ public class S3apiSteps {
       client.putBucketVersioning(
           r ->
               r.bucket(TEST_BUCKET)
-                  .versioningConfiguration(
-                      vc -> vc.status(BucketVersioningStatus.ENABLED)));
+                  .versioningConfiguration(vc -> vc.status(BucketVersioningStatus.ENABLED)));
     }
     // Assert: versioning enabled
   }
@@ -290,8 +289,7 @@ public class S3apiSteps {
       client.putBucketVersioning(
           r ->
               r.bucket(TEST_BUCKET)
-                  .versioningConfiguration(
-                      vc -> vc.status(BucketVersioningStatus.ENABLED)));
+                  .versioningConfiguration(vc -> vc.status(BucketVersioningStatus.ENABLED)));
     }
     // Assert: versioning is no longer disabled
   }
@@ -433,13 +431,8 @@ public class S3apiSteps {
       byte[] bodyBytes = TEST_BODY.getBytes(StandardCharsets.UTF_8);
       UploadPartResponse partResp =
           client.uploadPart(
-              r ->
-                  r.bucket(TEST_BUCKET)
-                      .key(TEST_KEY)
-                      .uploadId(uploadId)
-                      .partNumber(1),
-              RequestBody.fromInputStream(
-                  new ByteArrayInputStream(bodyBytes), bodyBytes.length));
+              r -> r.bucket(TEST_BUCKET).key(TEST_KEY).uploadId(uploadId).partNumber(1),
+              RequestBody.fromInputStream(new ByteArrayInputStream(bodyBytes), bodyBytes.length));
       etags.add(CompletedPart.builder().eTag(partResp.eTag()).partNumber(1).build());
     }
     // Assert: part uploaded
@@ -459,13 +452,8 @@ public class S3apiSteps {
       byte[] bodyBytes = TEST_BODY.getBytes(StandardCharsets.UTF_8);
       UploadPartResponse partResp =
           client.uploadPart(
-              r ->
-                  r.bucket(TEST_BUCKET)
-                      .key(TEST_KEY)
-                      .uploadId(uploadId)
-                      .partNumber(1),
-              RequestBody.fromInputStream(
-                  new ByteArrayInputStream(bodyBytes), bodyBytes.length));
+              r -> r.bucket(TEST_BUCKET).key(TEST_KEY).uploadId(uploadId).partNumber(1),
+              RequestBody.fromInputStream(new ByteArrayInputStream(bodyBytes), bodyBytes.length));
       etags = new ArrayList<>();
       etags.add(CompletedPart.builder().eTag(partResp.eTag()).partNumber(1).build());
     }
@@ -528,8 +516,7 @@ public class S3apiSteps {
       client.putBucketVersioning(
           r ->
               r.bucket(TEST_BUCKET)
-                  .versioningConfiguration(
-                      vc -> vc.status(BucketVersioningStatus.ENABLED)));
+                  .versioningConfiguration(vc -> vc.status(BucketVersioningStatus.ENABLED)));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -644,13 +631,8 @@ public class S3apiSteps {
       // Act
       UploadPartResponse partResp =
           client.uploadPart(
-              r ->
-                  r.bucket(TEST_BUCKET)
-                      .key(TEST_KEY)
-                      .uploadId(effectiveUploadId)
-                      .partNumber(1),
-              RequestBody.fromInputStream(
-                  new ByteArrayInputStream(bodyBytes), bodyBytes.length));
+              r -> r.bucket(TEST_BUCKET).key(TEST_KEY).uploadId(effectiveUploadId).partNumber(1),
+              RequestBody.fromInputStream(new ByteArrayInputStream(bodyBytes), bodyBytes.length));
       if (etags == null) {
         etags = new ArrayList<>();
       }
@@ -666,9 +648,10 @@ public class S3apiSteps {
   public void aMultipartUploadIsCompleted() {
     // Arrange
     String effectiveUploadId = uploadId != null ? uploadId : "invalid";
-    List<CompletedPart> parts = (etags != null && !etags.isEmpty())
-        ? etags
-        : List.of(CompletedPart.builder().eTag("etag1").partNumber(1).build());
+    List<CompletedPart> parts =
+        (etags != null && !etags.isEmpty())
+            ? etags
+            : List.of(CompletedPart.builder().eTag("etag1").partNumber(1).build());
     try (S3Client client = world.session.s3Client()) {
       // Act
       client.completeMultipartUpload(
@@ -676,8 +659,7 @@ public class S3apiSteps {
               r.bucket(TEST_BUCKET)
                   .key(TEST_KEY)
                   .uploadId(effectiveUploadId)
-                  .multipartUpload(
-                      CompletedMultipartUpload.builder().parts(parts).build()));
+                  .multipartUpload(CompletedMultipartUpload.builder().parts(parts).build()));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {
@@ -720,8 +702,8 @@ public class S3apiSteps {
     try (S3Client client = world.session.s3Client()) {
       // Act
       ListBucketsResponse result = client.listBuckets();
-      boolean actualFound = result.buckets().stream()
-          .anyMatch(b -> expectedBucket.equals(b.name()));
+      boolean actualFound =
+          result.buckets().stream().anyMatch(b -> expectedBucket.equals(b.name()));
       // Assert
       assertTrue(
           actualFound,
@@ -739,8 +721,8 @@ public class S3apiSteps {
     try (S3Client client = world.session.s3Client()) {
       // Act
       ListBucketsResponse result = client.listBuckets();
-      boolean actualFound = result.buckets().stream()
-          .anyMatch(b -> expectedBucket.equals(b.name()));
+      boolean actualFound =
+          result.buckets().stream().anyMatch(b -> expectedBucket.equals(b.name()));
       // Assert
       assertFalse(
           actualFound,
@@ -758,8 +740,8 @@ public class S3apiSteps {
     try (S3Client client = world.session.s3Client()) {
       // Act
       ListBucketsResponse result = client.listBuckets();
-      boolean actualFound = result.buckets().stream()
-          .anyMatch(b -> expectedBucket.equals(b.name()));
+      boolean actualFound =
+          result.buckets().stream().anyMatch(b -> expectedBucket.equals(b.name()));
       // Assert
       assertFalse(
           actualFound,
@@ -791,8 +773,7 @@ public class S3apiSteps {
     // Arrange
     try (S3Client client = world.session.s3Client()) {
       // Act
-      GetBucketVersioningResponse result =
-          client.getBucketVersioning(r -> r.bucket(TEST_BUCKET));
+      GetBucketVersioningResponse result = client.getBucketVersioning(r -> r.bucket(TEST_BUCKET));
       String actualStatus = result.status() != null ? result.status().toString() : "";
       Set<String> expectedStatuses = Set.of("Enabled", "Suspended");
       // Assert
@@ -814,8 +795,7 @@ public class S3apiSteps {
     try (S3Client client = world.session.s3Client()) {
       // Act
       ListObjectsV2Response result = client.listObjectsV2(r -> r.bucket(TEST_BUCKET));
-      boolean actualFound = result.contents().stream()
-          .anyMatch(o -> expectedKey.equals(o.key()));
+      boolean actualFound = result.contents().stream().anyMatch(o -> expectedKey.equals(o.key()));
       // Assert
       assertTrue(
           actualFound,
@@ -833,8 +813,7 @@ public class S3apiSteps {
     try (S3Client client = world.session.s3Client()) {
       // Act
       ListObjectsV2Response result = client.listObjectsV2(r -> r.bucket(TEST_BUCKET));
-      boolean actualFound = result.contents().stream()
-          .anyMatch(o -> expectedKey.equals(o.key()));
+      boolean actualFound = result.contents().stream().anyMatch(o -> expectedKey.equals(o.key()));
       // Assert
       assertTrue(
           actualFound,
@@ -968,8 +947,7 @@ public class S3apiSteps {
     try (S3Client client = world.session.s3Client()) {
       // Act
       ListObjectsV2Response result = client.listObjectsV2(r -> r.bucket(TEST_BUCKET));
-      boolean actualFound = result.contents().stream()
-          .anyMatch(o -> expectedKey.equals(o.key()));
+      boolean actualFound = result.contents().stream().anyMatch(o -> expectedKey.equals(o.key()));
       // Assert
       assertTrue(
           actualFound,

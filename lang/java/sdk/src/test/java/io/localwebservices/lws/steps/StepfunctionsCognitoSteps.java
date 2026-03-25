@@ -20,8 +20,8 @@ import software.amazon.awssdk.services.sfn.model.StateMachineType;
  * cognito_task_succeeds, cognito_task_fails.
  *
  * <p>Steps already registered in {@link StepfunctionsSteps} (state machine Given/When/Then) and
- * {@link CrossServiceSteps} (the system is initialized, the operation is rejected, every .* catch-alls)
- * are NOT re-registered here.
+ * {@link CrossServiceSteps} (the system is initialized, the operation is rejected, every .*
+ * catch-alls) are NOT re-registered here.
  */
 public class StepfunctionsCognitoSteps {
 
@@ -220,8 +220,7 @@ public class StepfunctionsCognitoSteps {
     // Arrange: look up the pool ID
     String actualPoolId = getPoolId();
     if (actualPoolId == null) {
-      world.setFailure(
-          new RuntimeException("ResourceNotFoundException: pool not found"));
+      world.setFailure(new RuntimeException("ResourceNotFoundException: pool not found"));
       return;
     }
     try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {

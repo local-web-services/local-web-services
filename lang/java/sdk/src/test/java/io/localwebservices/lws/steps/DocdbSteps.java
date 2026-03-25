@@ -12,8 +12,8 @@ import software.amazon.awssdk.services.docdb.DocDbClient;
 import software.amazon.awssdk.services.docdb.model.DBCluster;
 import software.amazon.awssdk.services.docdb.model.DBClusterSnapshot;
 import software.amazon.awssdk.services.docdb.model.DBInstance;
-import software.amazon.awssdk.services.docdb.model.DescribeDbClustersResponse;
 import software.amazon.awssdk.services.docdb.model.DescribeDbClusterSnapshotsResponse;
+import software.amazon.awssdk.services.docdb.model.DescribeDbClustersResponse;
 import software.amazon.awssdk.services.docdb.model.DescribeDbInstancesResponse;
 
 /**
@@ -23,8 +23,8 @@ import software.amazon.awssdk.services.docdb.model.DescribeDbInstancesResponse;
  * create_d_b_cluster_snapshot, delete_d_b_cluster_snapshot, modify_d_b_cluster,
  * modify_d_b_instance, restore_d_b_cluster_from_snapshot.
  *
- * <p>Internal model-state transitions (complete_cluster_creation, fail_cluster_creation,
- * failover, etc.) are registered as no-ops with @internal comments.
+ * <p>Internal model-state transitions (complete_cluster_creation, fail_cluster_creation, failover,
+ * etc.) are registered as no-ops with @internal comments.
  */
 public class DocdbSteps {
 
@@ -249,8 +249,8 @@ public class DocdbSteps {
     // Arrange: (state set up by Given steps)
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
-      var result = client.createDBCluster(
-          r -> r.dbClusterIdentifier(TEST_CLUSTER_ID).engine(TEST_ENGINE));
+      var result =
+          client.createDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID).engine(TEST_ENGINE));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -263,8 +263,7 @@ public class DocdbSteps {
     // Arrange: (state set up by Given steps)
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
-      var result = client.deleteDBCluster(
-          r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
+      var result = client.deleteDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -277,8 +276,7 @@ public class DocdbSteps {
     // Arrange: (state set up by Given steps)
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
-      var result = client.modifyDBCluster(
-          r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
+      var result = client.modifyDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -291,12 +289,13 @@ public class DocdbSteps {
     // Arrange: (state set up by Given steps)
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
-      var result = client.createDBInstance(
-          r ->
-              r.dbInstanceIdentifier(TEST_INSTANCE_ID)
-                  .dbClusterIdentifier(TEST_CLUSTER_ID)
-                  .dbInstanceClass(TEST_INSTANCE_CLASS)
-                  .engine(TEST_ENGINE));
+      var result =
+          client.createDBInstance(
+              r ->
+                  r.dbInstanceIdentifier(TEST_INSTANCE_ID)
+                      .dbClusterIdentifier(TEST_CLUSTER_ID)
+                      .dbInstanceClass(TEST_INSTANCE_CLASS)
+                      .engine(TEST_ENGINE));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -309,8 +308,7 @@ public class DocdbSteps {
     // Arrange: (state set up by Given steps)
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
-      var result = client.deleteDBInstance(
-          r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
+      var result = client.deleteDBInstance(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -323,8 +321,7 @@ public class DocdbSteps {
     // Arrange: (state set up by Given steps)
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
-      var result = client.modifyDBInstance(
-          r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
+      var result = client.modifyDBInstance(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -337,10 +334,11 @@ public class DocdbSteps {
     // Arrange: (state set up by Given steps)
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
-      var result = client.createDBClusterSnapshot(
-          r ->
-              r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID)
-                  .dbClusterIdentifier(TEST_CLUSTER_ID));
+      var result =
+          client.createDBClusterSnapshot(
+              r ->
+                  r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID)
+                      .dbClusterIdentifier(TEST_CLUSTER_ID));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -353,8 +351,8 @@ public class DocdbSteps {
     // Arrange: (state set up by Given steps)
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
-      var result = client.deleteDBClusterSnapshot(
-          r -> r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID));
+      var result =
+          client.deleteDBClusterSnapshot(r -> r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -367,11 +365,12 @@ public class DocdbSteps {
     // Arrange: (state set up by Given steps)
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
-      var result = client.restoreDBClusterFromSnapshot(
-          r ->
-              r.dbClusterIdentifier(TEST_CLUSTER_ID + "-restored")
-                  .snapshotIdentifier(TEST_SNAPSHOT_ID)
-                  .engine(TEST_ENGINE));
+      var result =
+          client.restoreDBClusterFromSnapshot(
+              r ->
+                  r.dbClusterIdentifier(TEST_CLUSTER_ID + "-restored")
+                      .snapshotIdentifier(TEST_SNAPSHOT_ID)
+                      .engine(TEST_ENGINE));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -465,8 +464,7 @@ public class DocdbSteps {
   public void aFailoverIsTriggeredAndAReplicaIsPromotedToPrimary() {
     // @internal: Cannot trigger internal failover via public API.
     world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger failover: scenario is @internal"));
+        new UnsupportedOperationException("cannot trigger failover: scenario is @internal"));
   }
 
   // ── Then: assertions ───────────────────────────────────────────────────────
@@ -486,13 +484,11 @@ public class DocdbSteps {
             + expectedSuccess);
     try (DocDbClient client = world.session.docDbClient()) {
       DescribeDbClustersResponse result =
-          client.describeDBClusters(
-              r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
+          client.describeDBClusters(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
       List<DBCluster> clusters = result.dbClusters();
       assertNotNull(clusters, "expected DBClusters list but got null");
       assertTrue(
-          !clusters.isEmpty(),
-          "expected cluster '" + TEST_CLUSTER_ID + "' to exist but not found");
+          !clusters.isEmpty(), "expected cluster '" + TEST_CLUSTER_ID + "' to exist but not found");
       String expectedStatus = "creating";
       String actualStatus = clusters.get(0).status();
       assertEquals(
@@ -524,13 +520,11 @@ public class DocdbSteps {
             + expectedSuccess);
     try (DocDbClient client = world.session.docDbClient()) {
       DescribeDbClustersResponse result =
-          client.describeDBClusters(
-              r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
+          client.describeDBClusters(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
       List<DBCluster> clusters = result.dbClusters();
       assertNotNull(clusters, "expected DBClusters list but got null");
       assertTrue(
-          !clusters.isEmpty(),
-          "expected cluster '" + TEST_CLUSTER_ID + "' to exist but not found");
+          !clusters.isEmpty(), "expected cluster '" + TEST_CLUSTER_ID + "' to exist but not found");
       String expectedStatus = "deleting";
       String actualStatus = clusters.get(0).status();
       assertEquals(
@@ -562,13 +556,11 @@ public class DocdbSteps {
             + expectedSuccess);
     try (DocDbClient client = world.session.docDbClient()) {
       DescribeDbClustersResponse result =
-          client.describeDBClusters(
-              r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
+          client.describeDBClusters(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
       List<DBCluster> clusters = result.dbClusters();
       assertNotNull(clusters, "expected DBClusters list but got null");
       assertTrue(
-          !clusters.isEmpty(),
-          "expected cluster '" + TEST_CLUSTER_ID + "' to exist but not found");
+          !clusters.isEmpty(), "expected cluster '" + TEST_CLUSTER_ID + "' to exist but not found");
       String expectedStatus = "modifying";
       String actualStatus = clusters.get(0).status();
       assertEquals(
@@ -600,8 +592,7 @@ public class DocdbSteps {
             + expectedSuccess);
     try (DocDbClient client = world.session.docDbClient()) {
       DescribeDbInstancesResponse result =
-          client.describeDBInstances(
-              r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
+          client.describeDBInstances(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
       List<DBInstance> instances = result.dbInstances();
       assertNotNull(instances, "expected DBInstances list but got null");
       assertTrue(
@@ -638,8 +629,7 @@ public class DocdbSteps {
             + expectedSuccess);
     try (DocDbClient client = world.session.docDbClient()) {
       DescribeDbInstancesResponse result =
-          client.describeDBInstances(
-              r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
+          client.describeDBInstances(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
       List<DBInstance> instances = result.dbInstances();
       assertNotNull(instances, "expected DBInstances list but got null");
       assertTrue(
@@ -676,8 +666,7 @@ public class DocdbSteps {
             + expectedSuccess);
     try (DocDbClient client = world.session.docDbClient()) {
       DescribeDbInstancesResponse result =
-          client.describeDBInstances(
-              r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
+          client.describeDBInstances(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
       List<DBInstance> instances = result.dbInstances();
       assertNotNull(instances, "expected DBInstances list but got null");
       assertTrue(
@@ -714,8 +703,7 @@ public class DocdbSteps {
             + expectedSuccess);
     try (DocDbClient client = world.session.docDbClient()) {
       DescribeDbClusterSnapshotsResponse result =
-          client.describeDBClusterSnapshots(
-              r -> r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID));
+          client.describeDBClusterSnapshots(r -> r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID));
       List<DBClusterSnapshot> snapshots = result.dbClusterSnapshots();
       assertNotNull(snapshots, "expected DBClusterSnapshots list but got null");
       assertTrue(
@@ -752,8 +740,7 @@ public class DocdbSteps {
             + expectedSuccess);
     try (DocDbClient client = world.session.docDbClient()) {
       DescribeDbClusterSnapshotsResponse result =
-          client.describeDBClusterSnapshots(
-              r -> r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID));
+          client.describeDBClusterSnapshots(r -> r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID));
       List<DBClusterSnapshot> snapshots = result.dbClusterSnapshots();
       assertNotNull(snapshots, "expected DBClusterSnapshots list but got null");
       assertTrue(
@@ -876,8 +863,7 @@ public class DocdbSteps {
     // Arrange
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
-      client.createDBCluster(
-          r -> r.dbClusterIdentifier(TEST_CLUSTER_ID).engine(TEST_ENGINE));
+      client.createDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID).engine(TEST_ENGINE));
       // Assert: cluster created (no exception thrown)
     } catch (Exception e) {
       String msg = e.getMessage() != null ? e.getMessage() : "";
@@ -912,8 +898,7 @@ public class DocdbSteps {
       // Act
       client.createDBClusterSnapshot(
           r ->
-              r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID)
-                  .dbClusterIdentifier(TEST_CLUSTER_ID));
+              r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID).dbClusterIdentifier(TEST_CLUSTER_ID));
       // Assert: snapshot created (no exception thrown)
     } catch (Exception e) {
       String msg = e.getMessage() != null ? e.getMessage() : "";

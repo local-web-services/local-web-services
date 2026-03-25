@@ -13,12 +13,11 @@ import software.amazon.awssdk.services.rds.model.Tag;
  * Step definitions for the RDS informal specification feature files.
  *
  * <p>Covers: create_d_b_instance, delete_d_b_instance_skip_snapshot,
- * delete_d_b_instance_with_snapshot, modify_d_b_instance, reboot_d_b_instance,
- * create_d_b_snapshot, delete_d_b_snapshot, enable_multi_a_z, tag_d_b_instance,
- * restore_d_b_instance_from_d_b_snapshot.
+ * delete_d_b_instance_with_snapshot, modify_d_b_instance, reboot_d_b_instance, create_d_b_snapshot,
+ * delete_d_b_snapshot, enable_multi_a_z, tag_d_b_instance, restore_d_b_instance_from_d_b_snapshot.
  *
- * <p>Internal-only actions (activate_d_b_instance, finish_*, multi_az_failover,
- * automated_backup) are registered as no-ops with {@code @internal} comments.
+ * <p>Internal-only actions (activate_d_b_instance, finish_*, multi_az_failover, automated_backup)
+ * are registered as no-ops with {@code @internal} comments.
  */
 public class RdsSteps {
 
@@ -196,8 +195,7 @@ public class RdsSteps {
       // Act
       var result =
           client.modifyDBInstance(
-              r ->
-                  r.dbInstanceIdentifier(TEST_DB_INSTANCE_ID).dbInstanceClass("db.t3.small"));
+              r -> r.dbInstanceIdentifier(TEST_DB_INSTANCE_ID).dbInstanceClass("db.t3.small"));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -210,8 +208,7 @@ public class RdsSteps {
     // Arrange: (instance state set up by Given steps)
     try (RdsClient client = world.session.rdsClient()) {
       // Act
-      var result =
-          client.rebootDBInstance(r -> r.dbInstanceIdentifier(TEST_DB_INSTANCE_ID));
+      var result = client.rebootDBInstance(r -> r.dbInstanceIdentifier(TEST_DB_INSTANCE_ID));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -241,8 +238,7 @@ public class RdsSteps {
     // Arrange: (snapshot state set up by Given steps)
     try (RdsClient client = world.session.rdsClient()) {
       // Act
-      var result =
-          client.deleteDBSnapshot(r -> r.dbSnapshotIdentifier(TEST_SNAPSHOT_ID));
+      var result = client.deleteDBSnapshot(r -> r.dbSnapshotIdentifier(TEST_SNAPSHOT_ID));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -256,8 +252,7 @@ public class RdsSteps {
     try (RdsClient client = world.session.rdsClient()) {
       // Act
       var result =
-          client.modifyDBInstance(
-              r -> r.dbInstanceIdentifier(TEST_DB_INSTANCE_ID).multiAZ(true));
+          client.modifyDBInstance(r -> r.dbInstanceIdentifier(TEST_DB_INSTANCE_ID).multiAZ(true));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -268,8 +263,7 @@ public class RdsSteps {
   @When("a tag is applied to a database instance")
   public void aTagIsAppliedToADatabaseInstance() {
     // Arrange: build the ARN for the DB instance
-    String resourceArn =
-        "arn:aws:rds:us-east-1:000000000000:db:" + TEST_DB_INSTANCE_ID;
+    String resourceArn = "arn:aws:rds:us-east-1:000000000000:db:" + TEST_DB_INSTANCE_ID;
     try (RdsClient client = world.session.rdsClient()) {
       // Act
       client.addTagsToResource(
@@ -290,9 +284,7 @@ public class RdsSteps {
       // Act
       var result =
           client.restoreDBInstanceFromDBSnapshot(
-              r ->
-                  r.dbInstanceIdentifier("test-rds-db-2")
-                      .dbSnapshotIdentifier(TEST_SNAPSHOT_ID));
+              r -> r.dbInstanceIdentifier("test-rds-db-2").dbSnapshotIdentifier(TEST_SNAPSHOT_ID));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -317,7 +309,8 @@ public class RdsSteps {
             + expectedSuccess
             + " expected_state="
             + expectedState);
-    assertNotNull(world.lastOutput, "expected output for state '" + expectedState + "' but got null");
+    assertNotNull(
+        world.lastOutput, "expected output for state '" + expectedState + "' but got null");
   }
 
   @Then("the instance is in {string} state and a snapshot is {string}")
@@ -467,9 +460,7 @@ public class RdsSteps {
   private void rdsCreateSnapshot() {
     try (RdsClient client = world.session.rdsClient()) {
       client.createDBSnapshot(
-          r ->
-              r.dbInstanceIdentifier(TEST_DB_INSTANCE_ID)
-                  .dbSnapshotIdentifier(TEST_SNAPSHOT_ID));
+          r -> r.dbInstanceIdentifier(TEST_DB_INSTANCE_ID).dbSnapshotIdentifier(TEST_SNAPSHOT_ID));
     } catch (Exception e) {
       String msg = e.getMessage() != null ? e.getMessage() : "";
       if (!msg.contains("already") && !msg.contains("DBSnapshotAlreadyExists")) {

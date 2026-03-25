@@ -16,13 +16,13 @@ import software.amazon.awssdk.services.opensearch.model.DescribeDomainResponse;
  * <p>Covers: deploy_function, create_domain, create_index, invoke_function, invocation_fails,
  * invocation_succeeds, index_document.
  *
- * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized",
- * "the operation is rejected"), {@link LambdaSteps} ("the function does not already exist",
- * "the function already exists", "the function exists", "the function does not exist",
- * "the function is {string}", "the function is not {string}"), and {@link OpensearchSteps}
- * ("the domain does not already exist", "the domain already exists", "the domain exists",
- * "the domain does not exist", "the domain is {string}", "the domain is not {string}") are
- * intentionally absent here to avoid duplicate step definition errors.
+ * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized", "the
+ * operation is rejected"), {@link LambdaSteps} ("the function does not already exist", "the
+ * function already exists", "the function exists", "the function does not exist", "the function is
+ * {string}", "the function is not {string}"), and {@link OpensearchSteps} ("the domain does not
+ * already exist", "the domain already exists", "the domain exists", "the domain does not exist",
+ * "the domain is {string}", "the domain is not {string}") are intentionally absent here to avoid
+ * duplicate step definition errors.
  */
 public class LambdaOpensearchSteps {
 
@@ -251,9 +251,7 @@ public class LambdaOpensearchSteps {
     try (OpenSearchClient client = world.session.openSearchClient()) {
       DescribeDomainResponse response = client.describeDomain(r -> r.domainName(TEST_DOMAIN));
       String actualName =
-          response.domainStatus().domainName() != null
-              ? response.domainStatus().domainName()
-              : "";
+          response.domainStatus().domainName() != null ? response.domainStatus().domainName() : "";
       // Assert
       assertEquals(
           expectedName,

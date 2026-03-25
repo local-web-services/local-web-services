@@ -166,10 +166,7 @@ public class ApigatewayDynamodbSteps {
     String capturedDeploymentId = deploymentId;
     try (ApiGatewayClient client = world.session.apiGatewayClient()) {
       client.createStage(
-          r ->
-              r.restApiId(capturedApiId)
-                  .stageName(TEST_STAGE)
-                  .deploymentId(capturedDeploymentId));
+          r -> r.restApiId(capturedApiId).stageName(TEST_STAGE).deploymentId(capturedDeploymentId));
     }
   }
 
@@ -215,7 +212,8 @@ public class ApigatewayDynamodbSteps {
 
   @Given("the \"API\" does not exist or is not \"ACTIVE\"")
   public void theApiDoesNotExistOrIsNotActive() {
-    // Arrange / Act / Assert — no-op: cannot simulate non-ACTIVE REST API in lws; @internal excluded.
+    // Arrange / Act / Assert — no-op: cannot simulate non-ACTIVE REST API in lws; @internal
+    // excluded.
   }
 
   @Given("the \"API\" has no DynamoDB integration configured")
@@ -225,7 +223,8 @@ public class ApigatewayDynamodbSteps {
 
   @Given("the \"API\" already has a DynamoDB integration configured")
   public void theApiAlreadyHasDynamoDbIntegrationConfigured() {
-    // Arrange / Act / Assert — no-op: cannot simulate pre-configured integration conflict in lws; @internal excluded.
+    // Arrange / Act / Assert — no-op: cannot simulate pre-configured integration conflict in lws;
+    // @internal excluded.
   }
 
   @Given("the \"API\" is \"ACTIVE\"")
@@ -235,7 +234,8 @@ public class ApigatewayDynamodbSteps {
 
   @Given("the \"API\" is not \"ACTIVE\"")
   public void theApiIsNotActive() {
-    // Arrange / Act / Assert — no-op: cannot simulate non-ACTIVE REST API in lws; @internal excluded.
+    // Arrange / Act / Assert — no-op: cannot simulate non-ACTIVE REST API in lws; @internal
+    // excluded.
   }
 
   @Given("the \"API\" has a DynamoDB integration configured")
@@ -282,7 +282,8 @@ public class ApigatewayDynamodbSteps {
 
   @Given("the table does not exist or is not \"ACTIVE\"")
   public void theTableDoesNotExistOrIsNotActive() {
-    // Arrange / Act / Assert — no-op: cannot simulate non-ACTIVE DynamoDB table in lws; @internal excluded.
+    // Arrange / Act / Assert — no-op: cannot simulate non-ACTIVE DynamoDB table in lws; @internal
+    // excluded.
   }
 
   @Given("the table exists")
@@ -312,12 +313,14 @@ public class ApigatewayDynamodbSteps {
 
   @Given("the target table is not \"ACTIVE\"")
   public void theTargetTableIsNotActive() {
-    // Arrange / Act / Assert — no-op: cannot simulate non-ACTIVE target table in lws; @internal excluded.
+    // Arrange / Act / Assert — no-op: cannot simulate non-ACTIVE target table in lws; @internal
+    // excluded.
   }
 
   @Given("the target table is \"DELETING\"")
   public void theTargetTableIsDeleting() {
-    // Arrange / Act / Assert — no-op: cannot simulate DELETING table state in lws; @internal excluded.
+    // Arrange / Act / Assert — no-op: cannot simulate DELETING table state in lws; @internal
+    // excluded.
   }
 
   @Given("the target table is not \"DELETING\"")
@@ -342,7 +345,8 @@ public class ApigatewayDynamodbSteps {
 
   @Given("no request slot is available")
   public void noRequestSlotIsAvailable() {
-    // Arrange / Act / Assert — no-op: cannot simulate exhausted request slots via public API; @internal excluded.
+    // Arrange / Act / Assert — no-op: cannot simulate exhausted request slots via public API;
+    // @internal excluded.
   }
 
   @Given("an item slot is available")
@@ -355,7 +359,8 @@ public class ApigatewayDynamodbSteps {
 
   @Given("no item slot is available")
   public void noItemSlotIsAvailable() {
-    // Arrange / Act / Assert — no-op: cannot simulate exhausted item slots via public API; @internal excluded.
+    // Arrange / Act / Assert — no-op: cannot simulate exhausted item slots via public API;
+    // @internal excluded.
   }
 
   // ── When: actions ─────────────────────────────────────────────────────────────
@@ -430,7 +435,8 @@ public class ApigatewayDynamodbSteps {
 
   @When("a request is received but the DynamoDB write fails because the table is being deleted")
   public void aRequestFailsTableDeleting() {
-    // Arrange / Act / Assert — no-op: cannot simulate DELETING table during request in lws; @internal excluded.
+    // Arrange / Act / Assert — no-op: cannot simulate DELETING table during request in lws;
+    // @internal excluded.
     world.setFailure(
         new UnsupportedOperationException(
             "cannot simulate DELETING table during request: @internal"));
@@ -512,18 +518,14 @@ public class ApigatewayDynamodbSteps {
     assertEquals(
         expectedInvokeStatus,
         actualInvokeStatus,
-        "Expected request status "
-            + expectedInvokeStatus
-            + " but got "
-            + actualInvokeStatus);
+        "Expected request status " + expectedInvokeStatus + " but got " + actualInvokeStatus);
     // Act
     try (DynamoDbClient client = world.session.dynamoDbClient()) {
       GetItemResponse resp =
           client.getItem(
               r ->
                   r.tableName(TEST_TABLE)
-                      .key(
-                          Map.of(TEST_PK, AttributeValue.builder().s(TEST_ITEM_KEY).build())));
+                      .key(Map.of(TEST_PK, AttributeValue.builder().s(TEST_ITEM_KEY).build())));
       // Assert
       Map<String, AttributeValue> actualItem = resp.item();
       assertNotNull(actualItem, "Expected item to exist in DynamoDB but it was not found");
@@ -532,7 +534,8 @@ public class ApigatewayDynamodbSteps {
 
   @Then("the request is \"FAILED\" and no item is written")
   public void theRequestIsFailedAndNoItemIsWritten() {
-    // Arrange / Act / Assert — no-op: cannot simulate DynamoDB write failure via API Gateway in lws; @internal excluded.
+    // Arrange / Act / Assert — no-op: cannot simulate DynamoDB write failure via API Gateway in
+    // lws; @internal excluded.
   }
 
   @Then("the table is \"DELETING\" and \"API\" requests targeting it will fail")
@@ -540,20 +543,20 @@ public class ApigatewayDynamodbSteps {
     // Arrange: delete_table should have succeeded
     // Act / Assert
     Throwable actualError = world.lastError;
-    assertNull(
-        actualError,
-        "Expected delete_table to succeed but got: " + actualError);
+    assertNull(actualError, "Expected delete_table to succeed but got: " + actualError);
   }
 
   // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
   @Then("every existing item references a table that exists")
   public void everyExistingItemReferencesATableThatExists() {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated lws context.
+    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated lws
+    // context.
   }
 
   @Then("every successful request references an \"API\" that exists")
   public void everySuccessfulRequestReferencesAnApiThatExists() {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated lws context.
+    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated lws
+    // context.
   }
 }

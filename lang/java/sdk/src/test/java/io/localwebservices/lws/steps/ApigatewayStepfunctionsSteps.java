@@ -94,11 +94,7 @@ public class ApigatewayStepfunctionsSteps {
       // Act
       CreateStateMachineResponse result =
           client.createStateMachine(
-              r ->
-                  r.name(name)
-                      .definition(TEST_PASS_DEFINITION)
-                      .roleArn(TEST_ROLE_ARN)
-                      .type(type));
+              r -> r.name(name).definition(TEST_PASS_DEFINITION).roleArn(TEST_ROLE_ARN).type(type));
       // Assert: store ARN
       world.lastStateMachineArn = result.stateMachineArn();
     }
@@ -161,10 +157,7 @@ public class ApigatewayStepfunctionsSteps {
     String capturedDeploymentId = deploymentId;
     try (ApiGatewayClient client = world.session.apiGatewayClient()) {
       client.createStage(
-          r ->
-              r.restApiId(capturedApiId)
-                  .stageName(TEST_STAGE)
-                  .deploymentId(capturedDeploymentId));
+          r -> r.restApiId(capturedApiId).stageName(TEST_STAGE).deploymentId(capturedDeploymentId));
     }
   }
 
@@ -214,7 +207,8 @@ public class ApigatewayStepfunctionsSteps {
   @Given("the \"API\" is not \"ACTIVE\"")
   public void theApiIsNotActive() {
     // Arrange / Act / Assert — cannot simulate non-ACTIVE REST API via public API.
-    world.setFailure(new UnsupportedOperationException("Cannot simulate non-ACTIVE REST API in lws"));
+    world.setFailure(
+        new UnsupportedOperationException("Cannot simulate non-ACTIVE REST API in lws"));
   }
 
   @Given("the \"API\" does not exist")
@@ -438,16 +432,13 @@ public class ApigatewayStepfunctionsSteps {
     String smArn = smArn(TEST_SM_NAME);
     String body =
         String.format(
-            "{\"stateMachineArn\":\"%s\",\"input\":\"{\\\"key\\\":\\\"value\\\"}\"}",
-            smArn);
+            "{\"stateMachineArn\":\"%s\",\"input\":\"{\\\"key\\\":\\\"value\\\"}\"}", smArn);
     // Act
     try {
       int status = apigwSfnInvokeApi(apiId, body);
       invokeStatusCode = status;
       if (status != 200) {
-        world.setFailure(
-            new IllegalStateException(
-                "API request failed with status " + status));
+        world.setFailure(new IllegalStateException("API request failed with status " + status));
       } else {
         world.setSuccess(status);
       }
@@ -482,14 +473,11 @@ public class ApigatewayStepfunctionsSteps {
     String expectedName = TEST_API_NAME;
     // Act
     String apiId = apigwSfnGetApiId();
-    assertNotNull(
-        apiId,
-        "Expected REST API '" + expectedName + "' to exist but it was not found");
+    assertNotNull(apiId, "Expected REST API '" + expectedName + "' to exist but it was not found");
     // Assert
     try (ApiGatewayClient client = world.session.apiGatewayClient()) {
       String capturedApiId = apiId;
-      String actualName =
-          client.getRestApi(r -> r.restApiId(capturedApiId)).name();
+      String actualName = client.getRestApi(r -> r.restApiId(capturedApiId)).name();
       assertEquals(
           expectedName,
           actualName,
@@ -511,11 +499,7 @@ public class ApigatewayStepfunctionsSteps {
       assertEquals(
           expectedStatus,
           actualStatus,
-          "Expected state machine status '"
-              + expectedStatus
-              + "' but got '"
-              + actualStatus
-              + "'");
+          "Expected state machine status '" + expectedStatus + "' but got '" + actualStatus + "'");
     }
   }
 
@@ -530,8 +514,7 @@ public class ApigatewayStepfunctionsSteps {
     String smArn = smArn(TEST_SM_NAME);
     String body =
         String.format(
-            "{\"stateMachineArn\":\"%s\",\"input\":\"{\\\"check\\\":\\\"ok\\\"}\"}",
-            smArn);
+            "{\"stateMachineArn\":\"%s\",\"input\":\"{\\\"check\\\":\\\"ok\\\"}\"}", smArn);
     // Act
     int expectedStatus = 200;
     int actualStatus = apigwSfnInvokeApi(apiId, body);

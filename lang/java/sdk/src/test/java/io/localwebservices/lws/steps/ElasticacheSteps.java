@@ -441,8 +441,7 @@ public class ElasticacheSteps {
     // Arrange: (replication group state set up by Given steps)
     try (ElastiCacheClient client = world.session.elastiCacheClient()) {
       // Act
-      var result =
-          client.deleteReplicationGroup(r -> r.replicationGroupId(TEST_REPLICATION_GROUP));
+      var result = client.deleteReplicationGroup(r -> r.replicationGroupId(TEST_REPLICATION_GROUP));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -455,8 +454,7 @@ public class ElasticacheSteps {
     // Arrange: (replication group state set up by Given steps)
     try (ElastiCacheClient client = world.session.elastiCacheClient()) {
       // Act
-      var result =
-          client.modifyReplicationGroup(r -> r.replicationGroupId(TEST_REPLICATION_GROUP));
+      var result = client.modifyReplicationGroup(r -> r.replicationGroupId(TEST_REPLICATION_GROUP));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -486,8 +484,7 @@ public class ElasticacheSteps {
   public void aFailoverIsInitiatedOnTheReplicationGroup() {
     // @internal: failover requires an active multi-AZ replication group.
     world.setFailure(
-        new UnsupportedOperationException(
-            "failover_replication_group: scenario is @internal"));
+        new UnsupportedOperationException("failover_replication_group: scenario is @internal"));
   }
 
   // ── When: snapshot actions ─────────────────────────────────────────────────────
@@ -498,8 +495,7 @@ public class ElasticacheSteps {
     try (ElastiCacheClient client = world.session.elastiCacheClient()) {
       // Act
       var result =
-          client.createSnapshot(
-              r -> r.cacheClusterId(TEST_CLUSTER).snapshotName(TEST_SNAPSHOT));
+          client.createSnapshot(r -> r.cacheClusterId(TEST_CLUSTER).snapshotName(TEST_SNAPSHOT));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {

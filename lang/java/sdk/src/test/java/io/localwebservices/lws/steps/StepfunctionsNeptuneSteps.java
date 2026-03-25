@@ -18,8 +18,8 @@ import software.amazon.awssdk.services.sfn.model.StateMachineType;
  * query_graph_task_succeeds, query_graph_task_fails.
  *
  * <p>Steps already registered in {@link StepfunctionsSteps} (state machine Given/When/Then) and
- * {@link CrossServiceSteps} (the system is initialized, the operation is rejected, every .* catch-alls)
- * are NOT re-registered here.
+ * {@link CrossServiceSteps} (the system is initialized, the operation is rejected, every .*
+ * catch-alls) are NOT re-registered here.
  */
 public class StepfunctionsNeptuneSteps {
 
@@ -216,8 +216,7 @@ public class StepfunctionsNeptuneSteps {
             "cannot trigger internal execution step that queries Neptune in lws"));
   }
 
-  @When(
-      "a running execution queries the \"AVAILABLE\" Neptune cluster and the task succeeds")
+  @When("a running execution queries the \"AVAILABLE\" Neptune cluster and the task succeeds")
   public void aRunningExecutionQueriesAvailableNeptuneClusterAndTaskSucceeds() {
     // @internal: Cannot trigger internal execution step that queries Neptune in lws.
     world.setFailure(

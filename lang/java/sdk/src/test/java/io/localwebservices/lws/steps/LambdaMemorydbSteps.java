@@ -1,5 +1,7 @@
 package io.localwebservices.lws.steps;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -8,21 +10,19 @@ import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.memorydb.MemoryDbClient;
 import software.amazon.awssdk.services.memorydb.model.DescribeClustersResponse;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 /**
  * Step definitions for the lambda_memorydb cross-service informal specification feature files.
  *
  * <p>Covers: create_cluster, deploy_function, invoke_function, cluster_update_begins,
  * cluster_update_complete, invocation_fails_cluster_updating, write_record.
  *
- * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized",
- * "the operation is rejected"), {@link LambdaSteps} ("the function does not already exist",
- * "the function already exists", "the function exists", "the function does not exist",
- * "the function is {string}", "the function is not {string}"), and {@link MemorydbSteps}
- * ("the cluster does not already exist", "the cluster already exists", "the cluster exists",
- * "the cluster does not exist", "the cluster is {string}", "the cluster is not {string}") are
- * intentionally absent here to avoid duplicate step definition errors.
+ * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized", "the
+ * operation is rejected"), {@link LambdaSteps} ("the function does not already exist", "the
+ * function already exists", "the function exists", "the function does not exist", "the function is
+ * {string}", "the function is not {string}"), and {@link MemorydbSteps} ("the cluster does not
+ * already exist", "the cluster already exists", "the cluster exists", "the cluster does not exist",
+ * "the cluster is {string}", "the cluster is not {string}") are intentionally absent here to avoid
+ * duplicate step definition errors.
  */
 public class LambdaMemorydbSteps {
 
@@ -138,10 +138,7 @@ public class LambdaMemorydbSteps {
       // Act
       var response =
           client.createCluster(
-              r ->
-                  r.clusterName(TEST_CLUSTER)
-                      .nodeType("db.t4g.small")
-                      .aclName("open-access"));
+              r -> r.clusterName(TEST_CLUSTER).nodeType("db.t4g.small").aclName("open-access"));
       // Assert: store result
       world.setSuccess(response);
     } catch (Exception e) {
@@ -221,12 +218,9 @@ public class LambdaMemorydbSteps {
     String expectedStatus = "available";
     // Act
     try (MemoryDbClient client = world.session.memoryDbClient()) {
-      DescribeClustersResponse response =
-          client.describeClusters(r -> r.clusterName(TEST_CLUSTER));
+      DescribeClustersResponse response = client.describeClusters(r -> r.clusterName(TEST_CLUSTER));
       String actualStatus =
-          response.clusters().get(0).status() != null
-              ? response.clusters().get(0).status()
-              : "";
+          response.clusters().get(0).status() != null ? response.clusters().get(0).status() : "";
       // Assert
       assertEquals(
           expectedStatus,

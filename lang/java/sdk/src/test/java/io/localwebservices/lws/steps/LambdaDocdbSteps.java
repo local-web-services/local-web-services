@@ -22,9 +22,9 @@ import software.amazon.awssdk.services.lambda.model.Runtime;
  * invocation_fails_cluster_stopped, invocation_succeeds, and invariant feature files.
  *
  * <p>Steps already registered in {@link LambdaSteps} (function existence, function lifecycle
- * states) and {@link DocdbSteps} (cluster existence, cluster lifecycle states) and
- * {@link CrossServiceSteps} ("the system is initialized", "the operation is rejected") are
- * intentionally absent here to avoid DuplicateStepDefinitionException.
+ * states) and {@link DocdbSteps} (cluster existence, cluster lifecycle states) and {@link
+ * CrossServiceSteps} ("the system is initialized", "the operation is rejected") are intentionally
+ * absent here to avoid DuplicateStepDefinitionException.
  */
 public class LambdaDocdbSteps {
 
@@ -291,8 +291,7 @@ public class LambdaDocdbSteps {
     // Arrange
     try (LambdaClient client = world.session.lambdaClient()) {
       // Act
-      GetFunctionResponse resp =
-          client.getFunction(r -> r.functionName(TEST_FUNC));
+      GetFunctionResponse resp = client.getFunction(r -> r.functionName(TEST_FUNC));
       // Assert
       String expectedState = "Active";
       String actualState = resp.configuration().stateAsString();

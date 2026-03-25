@@ -19,8 +19,8 @@ import software.amazon.awssdk.services.sfn.model.StateMachineType;
  * call_domain_task_succeeds.
  *
  * <p>Steps already registered in {@link StepfunctionsSteps} (state machine Given/When/Then) and
- * {@link CrossServiceSteps} (the system is initialized, the operation is rejected, every .* catch-alls)
- * are NOT re-registered here.
+ * {@link CrossServiceSteps} (the system is initialized, the operation is rejected, every .*
+ * catch-alls) are NOT re-registered here.
  */
 public class StepfunctionsElasticsearchSteps {
 
@@ -98,7 +98,8 @@ public class StepfunctionsElasticsearchSteps {
 
   @Given("the domain is \"PROCESSING\"")
   public void theDomainIsProcessing() {
-    // Arrange / Act / Assert — no-op: cannot drive a domain into PROCESSING state via public API in lws.
+    // Arrange / Act / Assert — no-op: cannot drive a domain into PROCESSING state via public API in
+    // lws.
   }
 
   @Given("the domain is not \"PROCESSING\"")
@@ -111,7 +112,8 @@ public class StepfunctionsElasticsearchSteps {
 
   @Given("the domain is not \"AVAILABLE\"")
   public void theDomainIsNotAvailable() {
-    // Arrange / Act / Assert — no-op: cannot drive a domain into a non-AVAILABLE state via public API in lws.
+    // Arrange / Act / Assert — no-op: cannot drive a domain into a non-AVAILABLE state via public
+    // API in lws.
   }
 
   // ── Given: execution state ────────────────────────────────────────────────────

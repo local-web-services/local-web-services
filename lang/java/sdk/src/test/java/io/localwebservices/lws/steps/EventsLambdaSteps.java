@@ -23,15 +23,15 @@ import software.amazon.awssdk.services.lambda.model.Runtime;
  * <p>Steps already registered in {@link EventsSteps} (e.g. "the event bus does not already exist",
  * "the event bus already exists", "the event bus exists", "the event bus is \"ACTIVE\"", "the event
  * bus is not \"ACTIVE\"", "the event bus does not exist", "the rule does not already exist", "the
- * rule already exists", "an EventBridge event bus is created", "the event bus is \"ACTIVE\"" (Then))
- * and in {@link LambdaSteps} (e.g. "the function does not already exist", "the function already
- * exists", "the function exists", "the function is \"ACTIVE\"", "the function is not \"ACTIVE\"",
- * "the function does not exist", "the function is {string}" (Then)) and in {@link LambdaSnsSteps}
- * (e.g. "an invocation is \"IN_PROGRESS\"", "no invocation is \"IN_PROGRESS\"", "an invocation
- * slot is available", "no invocation slot is available", "a Lambda function is deployed", "the
- * Lambda invocation fails", "the Lambda invocation completes successfully", "the invocation is
- * {string}", "every \"IN_PROGRESS\" invocation references an \"ACTIVE\" Lambda function") are
- * intentionally absent here to avoid duplicate step definition errors.
+ * rule already exists", "an EventBridge event bus is created", "the event bus is \"ACTIVE\""
+ * (Then)) and in {@link LambdaSteps} (e.g. "the function does not already exist", "the function
+ * already exists", "the function exists", "the function is \"ACTIVE\"", "the function is not
+ * \"ACTIVE\"", "the function does not exist", "the function is {string}" (Then)) and in {@link
+ * LambdaSnsSteps} (e.g. "an invocation is \"IN_PROGRESS\"", "no invocation is \"IN_PROGRESS\"", "an
+ * invocation slot is available", "no invocation slot is available", "a Lambda function is
+ * deployed", "the Lambda invocation fails", "the Lambda invocation completes successfully", "the
+ * invocation is {string}", "every \"IN_PROGRESS\" invocation references an \"ACTIVE\" Lambda
+ * function") are intentionally absent here to avoid duplicate step definition errors.
  */
 public class EventsLambdaSteps {
 
@@ -128,8 +128,7 @@ public class EventsLambdaSteps {
     // in lws without a real rule wired to an active function; lws does not fail put_events
     // when no matching rule exists.
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: cannot trigger EventBridge->Lambda routing without a wired rule");
+        false, "lws limitation: cannot trigger EventBridge->Lambda routing without a wired rule");
   }
 
   @Given("the target function is \"ACTIVE\"")
@@ -196,8 +195,15 @@ public class EventsLambdaSteps {
       assertEquals(
           expectedState,
           actualState,
-          "Expected rule state \"" + expectedState + "\" but got \"" + actualState + "\""
-              + "; expected_state=" + expectedState + " actual_state=" + actualState);
+          "Expected rule state \""
+              + expectedState
+              + "\" but got \""
+              + actualState
+              + "\""
+              + "; expected_state="
+              + expectedState
+              + " actual_state="
+              + actualState);
     }
   }
 

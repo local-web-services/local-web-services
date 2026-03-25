@@ -17,9 +17,8 @@ import software.amazon.awssdk.services.rds.RdsClient;
  * <p>Covers: create_d_b_instance, deploy_function, configure_lambda_integration,
  * stored_proc_invokes_lambda, invocation_fails_function_deleted, delete_function.
  *
- * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized",
- * "the operation is rejected") are intentionally absent here to avoid duplicate step definition
- * errors.
+ * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized", "the
+ * operation is rejected") are intentionally absent here to avoid duplicate step definition errors.
  */
 public class RdsLambdaSteps {
 

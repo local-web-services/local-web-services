@@ -17,9 +17,8 @@ import software.amazon.awssdk.services.lambda.model.Runtime;
  * <p>Covers: create_domain, deploy_function, invoke_function, domain_processing_begins,
  * domain_processing_complete, index_document_task, invocation_fails_domain_processing.
  *
- * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized",
- * "the operation is rejected") are intentionally absent here to avoid duplicate step definition
- * errors.
+ * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized", "the
+ * operation is rejected") are intentionally absent here to avoid duplicate step definition errors.
  */
 public class LambdaElasticsearchSteps {
 
@@ -246,16 +245,14 @@ public class LambdaElasticsearchSteps {
   public void theDomainConfigurationUpdateCompletes() {
     // @internal: Cannot force domain config update completion via public API in lws.
     world.setFailure(
-        new UnsupportedOperationException(
-            "domain_processing_complete: scenario is @internal"));
+        new UnsupportedOperationException("domain_processing_complete: scenario is @internal"));
   }
 
   @When("the Lambda function indexes a document into the \"AVAILABLE\" domain and succeeds")
   public void theLambdaFunctionIndexesADocumentIntoTheAvailableDomainAndSucceeds() {
     // @internal: Cannot trigger Lambda index operation in lws without Docker.
     world.setFailure(
-        new UnsupportedOperationException(
-            "index_document_task: scenario is @internal"));
+        new UnsupportedOperationException("index_document_task: scenario is @internal"));
   }
 
   @When("the Lambda function fails to write because the domain is processing a config update")

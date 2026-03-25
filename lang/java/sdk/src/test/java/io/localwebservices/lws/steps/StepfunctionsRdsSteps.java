@@ -14,12 +14,12 @@ import software.amazon.awssdk.services.sfn.model.StateMachineType;
 /**
  * Step definitions for the stepfunctions_rds cross-service feature files.
  *
- * <p>Covers: create_state_machine, create_d_b_instance, d_b_failover_begins,
- * d_b_failover_complete, start_execution, query_d_b_task_succeeds, query_d_b_task_fails.
+ * <p>Covers: create_state_machine, create_d_b_instance, d_b_failover_begins, d_b_failover_complete,
+ * start_execution, query_d_b_task_succeeds, query_d_b_task_fails.
  *
  * <p>Steps already registered in {@link StepfunctionsSteps} (state machine Given/When/Then) and
- * {@link CrossServiceSteps} (the system is initialized, the operation is rejected, every .* catch-alls)
- * are NOT re-registered here.
+ * {@link CrossServiceSteps} (the system is initialized, the operation is rejected, every .*
+ * catch-alls) are NOT re-registered here.
  */
 public class StepfunctionsRdsSteps {
 
@@ -106,7 +106,8 @@ public class StepfunctionsRdsSteps {
 
   @Given("the \"DB\" instance is not \"AVAILABLE\"")
   public void theDbInstanceIsNotAvailable() {
-    // Arrange / Act / Assert — no-op: fresh state has no DB instance (simulates unavailable instance).
+    // Arrange / Act / Assert — no-op: fresh state has no DB instance (simulates unavailable
+    // instance).
   }
 
   @Given("the \"DB\" instance is \"FAILING_OVER\"")

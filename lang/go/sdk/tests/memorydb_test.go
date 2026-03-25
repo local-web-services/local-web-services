@@ -29,10 +29,10 @@ const (
 // memorydbCreateCluster creates the test MemoryDB cluster.
 func memorydbCreateCluster(world *World) error {
 	_, err := world.MemoryDBClient().CreateCluster(context.Background(), &memorydb.CreateClusterInput{
-		ClusterName:  aws.String(memorydbTestClusterName),
-		NodeType:     aws.String("db.r6g.large"),
-		ACLName:      aws.String(memorydbTestACLName),
-		Tags:         []memorydbtypes.Tag{{Key: aws.String(memorydbTestTagKey), Value: aws.String(memorydbTestTagValue)}},
+		ClusterName: aws.String(memorydbTestClusterName),
+		NodeType:    aws.String("db.r6g.large"),
+		ACLName:     aws.String(memorydbTestACLName),
+		Tags:        []memorydbtypes.Tag{{Key: aws.String(memorydbTestTagKey), Value: aws.String(memorydbTestTagValue)}},
 	})
 	return err
 }
@@ -240,8 +240,8 @@ func registerMemoryDBSteps(sc *godog.ScenarioContext, world *World) {
 	sc.Given(`^the user is already a member of the "ACL"$`, func() error {
 		// Arrange / Act: add the user to the ACL.
 		_, err := world.MemoryDBClient().UpdateACL(context.Background(), &memorydb.UpdateACLInput{
-			ACLName:         aws.String(memorydbTestACLName),
-			UserNamesToAdd:  []string{memorydbTestUserName},
+			ACLName:        aws.String(memorydbTestACLName),
+			UserNamesToAdd: []string{memorydbTestUserName},
 		})
 		return err
 	})
@@ -254,8 +254,8 @@ func registerMemoryDBSteps(sc *godog.ScenarioContext, world *World) {
 	sc.Given(`^the user membership entry exists$`, func() error {
 		// Arrange / Act: add the user to the ACL.
 		_, err := world.MemoryDBClient().UpdateACL(context.Background(), &memorydb.UpdateACLInput{
-			ACLName:         aws.String(memorydbTestACLName),
-			UserNamesToAdd:  []string{memorydbTestUserName},
+			ACLName:        aws.String(memorydbTestACLName),
+			UserNamesToAdd: []string{memorydbTestUserName},
 		})
 		return err
 	})
@@ -472,10 +472,10 @@ func registerMemoryDBSteps(sc *godog.ScenarioContext, world *World) {
 		_ = memorydbCreateACL(world)
 		// Act
 		resp, err := world.MemoryDBClient().CreateCluster(context.Background(), &memorydb.CreateClusterInput{
-			ClusterName:  aws.String(memorydbTestClusterName),
-			NodeType:     aws.String("db.r6g.large"),
-			ACLName:      aws.String(memorydbTestACLName),
-			Tags:         []memorydbtypes.Tag{{Key: aws.String(memorydbTestTagKey), Value: aws.String(memorydbTestTagValue)}},
+			ClusterName: aws.String(memorydbTestClusterName),
+			NodeType:    aws.String("db.r6g.large"),
+			ACLName:     aws.String(memorydbTestACLName),
+			Tags:        []memorydbtypes.Tag{{Key: aws.String(memorydbTestTagKey), Value: aws.String(memorydbTestTagValue)}},
 		})
 		// Assert: captured in world
 		setResult(world, resp, err)
@@ -582,8 +582,8 @@ func registerMemoryDBSteps(sc *godog.ScenarioContext, world *World) {
 		// Arrange: (ACL and user state set up by Given steps)
 		// Act
 		resp, err := world.MemoryDBClient().UpdateACL(context.Background(), &memorydb.UpdateACLInput{
-			ACLName:         aws.String(memorydbTestACLName),
-			UserNamesToAdd:  []string{memorydbTestUserName},
+			ACLName:        aws.String(memorydbTestACLName),
+			UserNamesToAdd: []string{memorydbTestUserName},
 		})
 		// Assert: captured in world
 		setResult(world, resp, err)
@@ -594,8 +594,8 @@ func registerMemoryDBSteps(sc *godog.ScenarioContext, world *World) {
 		// Arrange: (ACL and user state set up by Given steps)
 		// Act
 		resp, err := world.MemoryDBClient().UpdateACL(context.Background(), &memorydb.UpdateACLInput{
-			ACLName:            aws.String(memorydbTestACLName),
-			UserNamesToRemove:  []string{memorydbTestUserName},
+			ACLName:           aws.String(memorydbTestACLName),
+			UserNamesToRemove: []string{memorydbTestUserName},
 		})
 		// Assert: captured in world
 		setResult(world, resp, err)

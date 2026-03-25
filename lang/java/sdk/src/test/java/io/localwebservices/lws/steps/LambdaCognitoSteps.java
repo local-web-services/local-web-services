@@ -20,12 +20,11 @@ import software.amazon.awssdk.services.lambda.model.State;
  * <p>Covers: create_user_pool, delete_user_pool, deploy_function, invoke_function,
  * invocation_succeeds, invocation_fails_pool_deleted — unique steps only.
  *
- * <p>Steps already registered in {@link LambdaSteps} ("the function does not already exist",
- * "the function already exists", "the function exists", "the function does not exist",
- * "the function is {string}", "the function is not {string}",
- * "an invocation slot is available", "no invocation slot is available"),
- * {@link CrossServiceSteps} ("the system is initialized", "the operation is rejected",
- * invariant catch-alls) are NOT re-registered here.
+ * <p>Steps already registered in {@link LambdaSteps} ("the function does not already exist", "the
+ * function already exists", "the function exists", "the function does not exist", "the function is
+ * {string}", "the function is not {string}", "an invocation slot is available", "no invocation slot
+ * is available"), {@link CrossServiceSteps} ("the system is initialized", "the operation is
+ * rejected", invariant catch-alls) are NOT re-registered here.
  */
 public class LambdaCognitoSteps {
 
@@ -300,8 +299,7 @@ public class LambdaCognitoSteps {
       String actualPoolId = lambdaCognitoFindPoolId();
       // Assert
       assertNull(
-          actualPoolId,
-          "Expected pool to be deleted but found pool with id " + actualPoolId);
+          actualPoolId, "Expected pool to be deleted but found pool with id " + actualPoolId);
     }
   }
 
@@ -318,8 +316,7 @@ public class LambdaCognitoSteps {
   // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
   @Then("every {string} invocation references an {string} Lambda function")
-  public void everyInvocationReferencesAnActiveLambdaFunction(
-      String invState, String funcState) {
+  public void everyInvocationReferencesAnActiveLambdaFunction(String invState, String funcState) {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
   }
 

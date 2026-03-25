@@ -19,8 +19,8 @@ import software.amazon.awssdk.services.sfn.model.StateMachineType;
  * query_document_task_fails, query_document_task_succeeds.
  *
  * <p>Steps already registered in {@link StepfunctionsSteps} (state machine Given/When/Then) and
- * {@link CrossServiceSteps} (the system is initialized, the operation is rejected, every .* catch-alls)
- * are NOT re-registered here.
+ * {@link CrossServiceSteps} (the system is initialized, the operation is rejected, every .*
+ * catch-alls) are NOT re-registered here.
  */
 public class StepfunctionsDocdbSteps {
 
@@ -98,7 +98,8 @@ public class StepfunctionsDocdbSteps {
 
   @Given("the cluster is \"STOPPED\"")
   public void theClusterIsStopped() {
-    // Arrange / Act / Assert — no-op: cannot drive a cluster into STOPPED state via public API in lws.
+    // Arrange / Act / Assert — no-op: cannot drive a cluster into STOPPED state via public API in
+    // lws.
   }
 
   @Given("the cluster is not \"STOPPED\"")
@@ -111,7 +112,8 @@ public class StepfunctionsDocdbSteps {
 
   @Given("the cluster is not \"AVAILABLE\"")
   public void theClusterIsNotAvailable() {
-    // Arrange / Act / Assert — no-op: cannot drive a cluster into a non-AVAILABLE state via public API in lws.
+    // Arrange / Act / Assert — no-op: cannot drive a cluster into a non-AVAILABLE state via public
+    // API in lws.
   }
 
   // ── Given: execution state ────────────────────────────────────────────────────
@@ -205,7 +207,8 @@ public class StepfunctionsDocdbSteps {
 
   @When("a running execution fails to connect because the DocumentDB cluster is stopped")
   public void aRunningExecutionFailsToConnectBecauseDocumentDBClusterIsStopped() {
-    // @internal: Cannot trigger internal execution step that fails due to stopped DocDB cluster in lws.
+    // @internal: Cannot trigger internal execution step that fails due to stopped DocDB cluster in
+    // lws.
     world.setFailure(
         new UnsupportedOperationException(
             "cannot trigger internal execution step that fails due to stopped DocDB cluster in lws"));
@@ -270,8 +273,13 @@ public class StepfunctionsDocdbSteps {
     try (DocDbClient client = world.session.docDbClient()) {
       var result = client.describeDBClusters(r -> r.dbClusterIdentifier(expectedClusterID));
       java.util.List<DBCluster> clusters = result.dbClusters();
-      assertNotNull(clusters, "Expected cluster list to be non-null; expected_cluster_id=" + expectedClusterID);
-      assertEquals(1, clusters.size(), "Expected exactly one cluster; expected_cluster_id=" + expectedClusterID);
+      assertNotNull(
+          clusters,
+          "Expected cluster list to be non-null; expected_cluster_id=" + expectedClusterID);
+      assertEquals(
+          1,
+          clusters.size(),
+          "Expected exactly one cluster; expected_cluster_id=" + expectedClusterID);
       String actualStatus = clusters.get(0).status();
       // Assert
       assertEquals(

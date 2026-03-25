@@ -65,16 +65,14 @@ public class OrganizationsSteps {
   private void doCreateAccount() {
     try (OrganizationsClient client = world.session.organizationsClient()) {
       var resp =
-          client.createAccount(
-              r -> r.accountName(TEST_ACCOUNT_NAME).email(TEST_ACCOUNT_EMAIL));
+          client.createAccount(r -> r.accountName(TEST_ACCOUNT_NAME).email(TEST_ACCOUNT_EMAIL));
       accountId = resp.createAccountStatus().accountId();
     }
   }
 
   private void doCreateOU(String parentId, String name) {
     try (OrganizationsClient client = world.session.organizationsClient()) {
-      var resp =
-          client.createOrganizationalUnit(r -> r.parentId(parentId).name(name));
+      var resp = client.createOrganizationalUnit(r -> r.parentId(parentId).name(name));
       ouId = resp.organizationalUnit().id();
     }
   }
@@ -84,10 +82,7 @@ public class OrganizationsSteps {
       var resp =
           client.createPolicy(
               r ->
-                  r.name(name)
-                      .description("e2e test policy")
-                      .content("{}")
-                      .type(TEST_POLICY_TYPE));
+                  r.name(name).description("e2e test policy").content("{}").type(TEST_POLICY_TYPE));
       policyId = resp.policy().policySummary().id();
     }
   }
@@ -222,8 +217,7 @@ public class OrganizationsSteps {
   public void theOrganizationalUnitHasChildOrganizationalUnits() {
     // Arrange / Act: create a child OU
     try (OrganizationsClient client = world.session.organizationsClient()) {
-      client.createOrganizationalUnit(
-          r -> r.parentId(ouId).name("e2e-orgs-test-child-ou-1"));
+      client.createOrganizationalUnit(r -> r.parentId(ouId).name("e2e-orgs-test-child-ou-1"));
     }
     // Assert: child OU created
   }
@@ -337,8 +331,7 @@ public class OrganizationsSteps {
     // Arrange / Act: create a destination OU
     try (OrganizationsClient client = world.session.organizationsClient()) {
       var resp =
-          client.createOrganizationalUnit(
-              r -> r.parentId(rootId).name("e2e-orgs-test-dest-ou-1"));
+          client.createOrganizationalUnit(r -> r.parentId(rootId).name("e2e-orgs-test-dest-ou-1"));
       // Assert: store destination parent
       destParent = resp.organizationalUnit().id();
     }
@@ -372,8 +365,7 @@ public class OrganizationsSteps {
     try (OrganizationsClient client = world.session.organizationsClient()) {
       // Act
       var resp =
-          client.createAccount(
-              r -> r.accountName(TEST_ACCOUNT_NAME).email(TEST_ACCOUNT_EMAIL));
+          client.createAccount(r -> r.accountName(TEST_ACCOUNT_NAME).email(TEST_ACCOUNT_EMAIL));
       // Assert: store result
       accountId = resp.createAccountStatus().accountId();
       world.setSuccess(resp);
@@ -388,8 +380,7 @@ public class OrganizationsSteps {
     String parentId = targetId != null ? targetId : rootId;
     try (OrganizationsClient client = world.session.organizationsClient()) {
       // Act
-      var resp =
-          client.createOrganizationalUnit(r -> r.parentId(parentId).name(TEST_OU_NAME));
+      var resp = client.createOrganizationalUnit(r -> r.parentId(parentId).name(TEST_OU_NAME));
       // Assert: store result
       ouId = resp.organizationalUnit().id();
       world.setSuccess(resp);
@@ -423,8 +414,7 @@ public class OrganizationsSteps {
     // Arrange: no additional setup required
     try (OrganizationsClient client = world.session.organizationsClient()) {
       // Act
-      var resp =
-          client.deleteOrganizationalUnit(r -> r.organizationalUnitId(ouId));
+      var resp = client.deleteOrganizationalUnit(r -> r.organizationalUnitId(ouId));
       // Assert: store result
       world.setSuccess(resp);
     } catch (Exception e) {
@@ -518,8 +508,7 @@ public class OrganizationsSteps {
             + "; expected_success="
             + expectedSuccess);
     try (OrganizationsClient client = world.session.organizationsClient()) {
-      DescribeAccountResponse accountResp =
-          client.describeAccount(r -> r.accountId(accountId));
+      DescribeAccountResponse accountResp = client.describeAccount(r -> r.accountId(accountId));
       String expectedStatus = "ACTIVE";
       String actualStatus = accountResp.account().statusAsString();
       // Assert: verify status
@@ -537,14 +526,10 @@ public class OrganizationsSteps {
       String rootId = rootsResp.roots().get(0).id();
       ListAccountsForParentResponse listResp =
           client.listAccountsForParent(r -> r.parentId(rootId));
-      List<String> actualAccountIds =
-          listResp.accounts().stream().map(Account::id).toList();
+      List<String> actualAccountIds = listResp.accounts().stream().map(Account::id).toList();
       assertTrue(
           actualAccountIds.contains(accountId),
-          "expected account '"
-              + accountId
-              + "' under root but found: "
-              + actualAccountIds);
+          "expected account '" + accountId + "' under root but found: " + actualAccountIds);
     }
   }
 
@@ -617,10 +602,7 @@ public class OrganizationsSteps {
       // Assert
       assertFalse(
           actualOuIds.contains(ouId),
-          "expected OU '"
-              + ouId
-              + "' to be deleted but found in: "
-              + actualOuIds);
+          "expected OU '" + ouId + "' to be deleted but found in: " + actualOuIds);
     }
   }
 
@@ -666,8 +648,7 @@ public class OrganizationsSteps {
     try (OrganizationsClient client = world.session.organizationsClient()) {
       ListAccountsForParentResponse listResp =
           client.listAccountsForParent(r -> r.parentId(destParent));
-      List<String> actualAccountIds =
-          listResp.accounts().stream().map(Account::id).toList();
+      List<String> actualAccountIds = listResp.accounts().stream().map(Account::id).toList();
       // Assert
       assertTrue(
           actualAccountIds.contains(accountId),

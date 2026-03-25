@@ -15,15 +15,15 @@ import software.amazon.awssdk.services.s3.S3Client;
  * <p>Covers: create_bucket, deploy_function, invocation_fails, invocation_succeeds,
  * invoke_function, put_object.
  *
- * <p>Steps already registered in LambdaSteps ("the function does not already exist",
- * "the function already exists", "the function exists", "the function is {string}",
- * "the function is not {string}", "the function does not exist") and S3apiSteps
- * ("the bucket does not already exist", "the bucket already exists", "the bucket exists",
- * "the bucket is {string}", "the bucket is not {string}", "the bucket does not exist",
- * "the object \"EXISTS\" in the bucket") are NOT re-registered here.
+ * <p>Steps already registered in LambdaSteps ("the function does not already exist", "the function
+ * already exists", "the function exists", "the function is {string}", "the function is not
+ * {string}", "the function does not exist") and S3apiSteps ("the bucket does not already exist",
+ * "the bucket already exists", "the bucket exists", "the bucket is {string}", "the bucket is not
+ * {string}", "the bucket does not exist", "the object \"EXISTS\" in the bucket") are NOT
+ * re-registered here.
  *
- * <p>Steps already registered in CrossServiceSteps ("the system is initialized",
- * "the operation is rejected") are NOT re-registered here.
+ * <p>Steps already registered in CrossServiceSteps ("the system is initialized", "the operation is
+ * rejected") are NOT re-registered here.
  */
 public class LambdaS3apiSteps {
 

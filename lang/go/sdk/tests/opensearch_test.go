@@ -17,12 +17,12 @@ import (
 )
 
 const (
-	osDomainName      = "test-opensearch-domain-1"
-	osLocalDomainName = "test-opensearch-domain-1"
+	osDomainName       = "test-opensearch-domain-1"
+	osLocalDomainName  = "test-opensearch-domain-1"
 	osRemoteDomainName = "test-opensearch-domain-2"
-	osTagKey          = "e2e-os-tag-key-1"
-	osTagValue        = "e2e-os-tag-value-1"
-	osConnectionAlias = "test-os-connection-1"
+	osTagKey           = "e2e-os-tag-key-1"
+	osTagValue         = "e2e-os-tag-value-1"
+	osConnectionAlias  = "test-os-connection-1"
 )
 
 // osState holds mutable scenario state for OpenSearch step definitions.

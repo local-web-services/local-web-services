@@ -14,20 +14,19 @@ import software.amazon.awssdk.services.lambda.model.Runtime;
 /**
  * Step definitions for the secretsmanager_lambda cross-service feature files.
  *
- * <p>Covers: create_secret, deploy_function, configure_rotation, trigger_rotation,
- * delete_function, rotation_succeeds, rotation_fails_function_deleted.
+ * <p>Covers: create_secret, deploy_function, configure_rotation, trigger_rotation, delete_function,
+ * rotation_succeeds, rotation_fails_function_deleted.
  *
  * <p>Steps already registered in {@link LambdaSteps} (function existence, function lifecycle
  * states, "the function does not already exist", "the function already exists", "the function
  * exists", "the function does not exist", "the function is {string}"), {@link
  * StepfunctionsSecretsmanagerSteps} ("the secret does not already exist", "the secret already
- * exists", "the secret exists and is {string}", "the secret does not exist or is not {string}",
- * "a secret is created in Secrets Manager", "the secret is \"ACTIVE\""), {@link
+ * exists", "the secret exists and is {string}", "the secret does not exist or is not {string}", "a
+ * secret is created in Secrets Manager", "the secret is \"ACTIVE\""), {@link
  * LambdaSecretsmanagerSteps} ("an invocation is \"IN_PROGRESS\"", "no invocation is
- * \"IN_PROGRESS\"", "an invocation slot is available", "no invocation slot is available",
- * "the function is \"ACTIVE\"" Then), and {@link CrossServiceSteps} ("the system is initialized",
- * "the operation is rejected") are intentionally absent here to avoid
- * DuplicateStepDefinitionException.
+ * \"IN_PROGRESS\"", "an invocation slot is available", "no invocation slot is available", "the
+ * function is \"ACTIVE\"" Then), and {@link CrossServiceSteps} ("the system is initialized", "the
+ * operation is rejected") are intentionally absent here to avoid DuplicateStepDefinitionException.
  *
  * <p>@internal scenarios (rotation_succeeds, rotation_fails_function_deleted) are excluded by the
  * tag filter "(@minimal or @standard) and not @internal". Their step definitions are no-ops.
@@ -222,7 +221,8 @@ public class SecretsmanagerLambdaSteps {
     boolean actualExists;
     try (LambdaClient client = world.session.lambdaClient()) {
       try {
-        GetFunctionResponse response = client.getFunction(r -> r.functionName(expectedFunctionName));
+        GetFunctionResponse response =
+            client.getFunction(r -> r.functionName(expectedFunctionName));
         actualExists = response.configuration() != null;
       } catch (Exception e) {
         actualExists = false;

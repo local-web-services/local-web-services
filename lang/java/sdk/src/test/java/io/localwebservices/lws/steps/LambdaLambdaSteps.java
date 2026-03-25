@@ -18,9 +18,9 @@ import software.amazon.awssdk.services.lambda.model.State;
  * <p>Covers: deploy_caller, deploy_callee, delete_callee, invoke_caller,
  * callee_invocation_succeeds, callee_invocation_fails.
  *
- * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized",
- * "the operation is rejected") are NOT re-registered here. All {@code @internal}-tagged
- * scenarios are excluded by the tag filter and their steps are implemented as no-ops.
+ * <p>Steps already registered in {@link CrossServiceSteps} ("the system is initialized", "the
+ * operation is rejected") are NOT re-registered here. All {@code @internal}-tagged scenarios are
+ * excluded by the tag filter and their steps are implemented as no-ops.
  */
 public class LambdaLambdaSteps {
 
