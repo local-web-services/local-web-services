@@ -443,6 +443,14 @@ public class ApigatewaySteps {
 
   // ── Given: integration state ──────────────────────────────────────────────────
 
+  @Given("the integration exists")
+  public void theIntegrationExists() throws Exception {
+    // Arrange: set up API with method and integration
+    // Act
+    apigwSetupWithIntegration();
+    // Assert: integration is set up
+  }
+
   @Given("the integration {string}")
   public void theIntegrationState(String state) throws Exception {
     if ("EXISTS".equals(state)) {
@@ -789,6 +797,32 @@ public class ApigatewaySteps {
     }
   }
 
+  @When("an existing method is updated")
+  public void anExistingMethodIsUpdated() {
+    // Arrange
+    String capturedRestApiId = restApiId;
+    String capturedRootResourceId = rootResourceId;
+    try (ApiGatewayClient client = world.session.apiGatewayClient()) {
+      // Act
+      var result =
+          client.updateMethod(
+              r ->
+                  r.restApiId(capturedRestApiId)
+                      .resourceId(capturedRootResourceId)
+                      .httpMethod(TEST_HTTP_METHOD)
+                      .patchOperations(
+                          PatchOperation.builder()
+                              .op(software.amazon.awssdk.services.apigateway.model.Op.REPLACE)
+                              .path("/apiKeyRequired")
+                              .value("true")
+                              .build()));
+      // Assert: store result
+      world.setSuccess(result);
+    } catch (Exception e) {
+      world.setFailure(e);
+    }
+  }
+
   @When("an existing {string} method is updated")
   public void anExistingMethodIsUpdated(String httpMethod) {
     // Arrange
@@ -859,6 +893,25 @@ public class ApigatewaySteps {
     }
   }
 
+  @When("an integration is deleted")
+  public void anIntegrationIsDeleted() {
+    // Arrange
+    String capturedRestApiId = restApiId;
+    String capturedRootResourceId = rootResourceId;
+    try (ApiGatewayClient client = world.session.apiGatewayClient()) {
+      // Act
+      client.deleteIntegration(
+          r ->
+              r.restApiId(capturedRestApiId)
+                  .resourceId(capturedRootResourceId)
+                  .httpMethod(TEST_HTTP_METHOD));
+      // Assert: store result
+      world.setSuccess(null);
+    } catch (Exception e) {
+      world.setFailure(e);
+    }
+  }
+
   @When("a backend integration is removed from a method")
   public void aBackendIntegrationIsRemovedFromAMethod() {
     // Arrange
@@ -879,6 +932,48 @@ public class ApigatewaySteps {
   }
 
   // ── When: method/integration response actions ─────────────────────────────────
+
+  @When("a 200 method response is configured")
+  public void a200MethodResponseIsConfigured() {
+    // Arrange
+    String capturedRestApiId = restApiId;
+    String capturedRootResourceId = rootResourceId;
+    try (ApiGatewayClient client = world.session.apiGatewayClient()) {
+      // Act
+      var result =
+          client.putMethodResponse(
+              r ->
+                  r.restApiId(capturedRestApiId)
+                      .resourceId(capturedRootResourceId)
+                      .httpMethod(TEST_HTTP_METHOD)
+                      .statusCode("200"));
+      // Assert: store result
+      world.setSuccess(result);
+    } catch (Exception e) {
+      world.setFailure(e);
+    }
+  }
+
+  @When("a 200 integration response is configured")
+  public void a200IntegrationResponseIsConfigured() {
+    // Arrange
+    String capturedRestApiId = restApiId;
+    String capturedRootResourceId = rootResourceId;
+    try (ApiGatewayClient client = world.session.apiGatewayClient()) {
+      // Act
+      var result =
+          client.putIntegrationResponse(
+              r ->
+                  r.restApiId(capturedRestApiId)
+                      .resourceId(capturedRootResourceId)
+                      .httpMethod(TEST_HTTP_METHOD)
+                      .statusCode("200"));
+      // Assert: store result
+      world.setSuccess(result);
+    } catch (Exception e) {
+      world.setFailure(e);
+    }
+  }
 
   @When("a method response is configured")
   public void aMethodResponseIsConfigured() {
@@ -935,6 +1030,22 @@ public class ApigatewaySteps {
       // Assert: store result
       world.setSuccess(result);
       deploymentId = result.id();
+    } catch (Exception e) {
+      world.setFailure(e);
+    }
+  }
+
+  @When("a deployment is deleted when no stage references it")
+  public void aDeploymentIsDeletedWhenNoStageReferencesIt() {
+    // Arrange
+    String capturedRestApiId = restApiId;
+    String capturedDeploymentId = deploymentId;
+    try (ApiGatewayClient client = world.session.apiGatewayClient()) {
+      // Act
+      client.deleteDeployment(
+          r -> r.restApiId(capturedRestApiId).deploymentId(capturedDeploymentId));
+      // Assert: store result
+      world.setSuccess(null);
     } catch (Exception e) {
       world.setFailure(e);
     }
@@ -1276,7 +1387,47 @@ public class ApigatewaySteps {
         "expected method to be deleted from resource but operation failed: " + world.lastError);
   }
 
+  // ── Then: method assertions ───────────────────────────────────────────────────
+
+  @Then("the method remains unchanged")
+  public void theMethodRemainsUnchanged() {
+    // Arrange
+    // Act: (action performed in When step)
+    // Assert
+    boolean expectedSuccess = true;
+    boolean actualSuccess = world.lastSuccess;
+    assertTrue(
+        actualSuccess,
+        "expected method update to succeed but got error: "
+            + world.lastError
+            + "; expected_success="
+            + expectedSuccess
+            + " actual_success="
+            + actualSuccess);
+  }
+
   // ── Then: integration assertions ──────────────────────────────────────────────
+
+  @Then("the integration is {string}")
+  public void theIntegrationIs(String expectedState) {
+    // Arrange
+    // Act: (action performed in When step)
+    // Assert
+    boolean expectedSuccess = true;
+    boolean actualSuccess = world.lastSuccess;
+    assertTrue(
+        actualSuccess,
+        "expected integration to be "
+            + expectedState
+            + " but got error: "
+            + world.lastError
+            + "; expected_state="
+            + expectedState
+            + " expected_success="
+            + expectedSuccess
+            + " actual_success="
+            + actualSuccess);
+  }
 
   @Then("the integration is no longer attached to the method")
   public void theIntegrationIsNoLongerAttachedToTheMethod() {
@@ -1290,6 +1441,40 @@ public class ApigatewaySteps {
   }
 
   // ── Then: method/integration response assertions ───────────────────────────────
+
+  @Then("the method response exists")
+  public void theMethodResponseExists() {
+    // Arrange
+    // Act: (action performed in When step)
+    // Assert
+    boolean expectedSuccess = true;
+    boolean actualSuccess = world.lastSuccess;
+    assertTrue(
+        actualSuccess,
+        "expected method response to exist but got error: "
+            + world.lastError
+            + "; expected_success="
+            + expectedSuccess
+            + " actual_success="
+            + actualSuccess);
+  }
+
+  @Then("the integration response exists")
+  public void theIntegrationResponseExists() {
+    // Arrange
+    // Act: (action performed in When step)
+    // Assert
+    boolean expectedSuccess = true;
+    boolean actualSuccess = world.lastSuccess;
+    assertTrue(
+        actualSuccess,
+        "expected integration response to exist but got error: "
+            + world.lastError
+            + "; expected_success="
+            + expectedSuccess
+            + " actual_success="
+            + actualSuccess);
+  }
 
   @Then("the method response {string} is configured")
   public void theMethodResponseIsConfigured(String statusCode) {

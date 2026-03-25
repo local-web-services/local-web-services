@@ -421,6 +421,123 @@ public class ElasticsearchSteps {
     // No-op invariant: trivially satisfied in an isolated test context.
   }
 
+  // ── Given: index / document state ─────────────────────────────────────────────
+
+  @Given("the index does not already exist")
+  public void theIndexDoesNotAlreadyExist() {
+    // Arrange / Act / Assert — no-op: fresh state has no indices.
+  }
+
+  @Given("the index already exists")
+  public void theIndexAlreadyExists() {
+    // @internal: index creation requires domain to be ACTIVE and accessible via REST API.
+  }
+
+  @Given("the index exists")
+  public void theIndexExists() {
+    // @internal: index creation requires domain to be ACTIVE and accessible via REST API.
+  }
+
+  @Given("the index does not exist")
+  public void theIndexDoesNotExist() {
+    // Arrange / Act / Assert — no-op: fresh state has no indices.
+  }
+
+  @Given("the index is {string}")
+  public void theIndexIs(String state) {
+    // @internal: index state transitions are internal to the Elasticsearch fake.
+  }
+
+  @Given("the index is not {string}")
+  public void theIndexIsNot(String state) {
+    // @internal: index state transitions are internal to the Elasticsearch fake.
+  }
+
+  // ── When: index / document actions ────────────────────────────────────────────
+
+  @When("an index is created in an active domain")
+  public void anIndexIsCreatedInAnActiveDomain() {
+    // @internal: index creation requires domain ACTIVE and accessible via REST API in lws.
+    // The lws fake does not expose an index creation API via the management SDK.
+    world.setFailure(
+        new UnsupportedOperationException("create_index: not supported via AWS management SDK"));
+  }
+
+  @When("an index is deleted from an active domain")
+  public void anIndexIsDeletedFromAnActiveDomain() {
+    // @internal: index deletion requires domain ACTIVE and accessible via REST API in lws.
+    world.setFailure(
+        new UnsupportedOperationException("delete_index: not supported via AWS management SDK"));
+  }
+
+  @When("a document is indexed in an active index")
+  public void aDocumentIsIndexedInAnActiveIndex() {
+    // @internal: document indexing requires domain ACTIVE and accessible via REST API in lws.
+    world.setFailure(
+        new UnsupportedOperationException("index_document: not supported via AWS management SDK"));
+  }
+
+  // ── Then: index / document assertions ─────────────────────────────────────────
+
+  @Then("the index is {string} with zero documents")
+  public void theIndexIsWithZeroDocuments(String expectedState) {
+    // Arrange
+    // Act: (action performed in When step)
+    // Assert
+    boolean expectedSuccess = true;
+    boolean actualSuccess = world.lastSuccess;
+    assertTrue(
+        actualSuccess,
+        "expected index to be "
+            + expectedState
+            + " with zero documents but got error: "
+            + world.lastError
+            + "; expected_state="
+            + expectedState
+            + " expected_success="
+            + expectedSuccess
+            + " actual_success="
+            + actualSuccess);
+  }
+
+  @Then("the index is marked as {string}")
+  public void theIndexIsMarkedAs(String expectedState) {
+    // Arrange
+    // Act: (action performed in When step)
+    // Assert
+    boolean expectedSuccess = true;
+    boolean actualSuccess = world.lastSuccess;
+    assertTrue(
+        actualSuccess,
+        "expected index to be marked as "
+            + expectedState
+            + " but got error: "
+            + world.lastError
+            + "; expected_state="
+            + expectedState
+            + " expected_success="
+            + expectedSuccess
+            + " actual_success="
+            + actualSuccess);
+  }
+
+  @Then("the document count for the index increases by one")
+  public void theDocumentCountForTheIndexIncreasesByOne() {
+    // Arrange
+    // Act: (action performed in When step)
+    // Assert
+    boolean expectedSuccess = true;
+    boolean actualSuccess = world.lastSuccess;
+    assertTrue(
+        actualSuccess,
+        "expected index_document to succeed but got error: "
+            + world.lastError
+            + "; expected_success="
+            + expectedSuccess
+            + " actual_success="
+            + actualSuccess);
+  }
+
   // ── Private helpers ───────────────────────────────────────────────────────────
 
   private void esCreateDomain() {

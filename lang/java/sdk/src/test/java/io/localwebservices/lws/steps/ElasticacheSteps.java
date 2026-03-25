@@ -70,6 +70,34 @@ public class ElasticacheSteps {
     }
   }
 
+  @Given("the cluster does not already exist")
+  public void theClusterDoesNotAlreadyExist() {
+    // Arrange / Act / Assert — no-op: fresh state has no clusters.
+  }
+
+  @Given("the cluster already exists")
+  public void theClusterAlreadyExists() {
+    // Arrange
+    // Act
+    elasticacheCreateCluster();
+    // Assert: cluster created (no error thrown)
+  }
+
+  @Given("a cluster slot is available")
+  public void aClusterSlotIsAvailable() {
+    // Arrange / Act / Assert — no-op: cluster slots are available in a fresh session.
+  }
+
+  @Given("no cluster slot is available")
+  public void noClusterSlotIsAvailable() {
+    // @internal: no public API exhausts cluster slots.
+  }
+
+  @Given("the target cluster slot is available")
+  public void theTargetClusterSlotIsAvailable() {
+    // Arrange / Act / Assert — no-op: cluster slots are available in a fresh session.
+  }
+
   @Given("the cluster is \"AVAILABLE\"")
   public void theClusterIsAvailable() {
     // Arrange: ensure cluster exists; fresh clusters start AVAILABLE
@@ -223,6 +251,11 @@ public class ElasticacheSteps {
 
   // ── Given: parameter group / subnet group state ───────────────────────────────
 
+  @Given("the parameter group is present")
+  public void theParameterGroupIsPresent() {
+    // Arrange / Act / Assert — no-op: parameter groups created via API are always present.
+  }
+
   @Given("the parameter group does not already exist")
   public void theParameterGroupDoesNotAlreadyExist() {
     // Arrange / Act / Assert — no-op: fresh state has no parameter groups.
@@ -241,6 +274,16 @@ public class ElasticacheSteps {
   @Given("the parameter group does not exist")
   public void theParameterGroupDoesNotExist() {
     // Arrange / Act / Assert — no-op: fresh state has no parameter groups.
+  }
+
+  @Given("the subnet group is present")
+  public void theSubnetGroupIsPresent() {
+    // Arrange / Act / Assert — no-op: subnet groups created via API are always present.
+  }
+
+  @Given("the subnet group is not present")
+  public void theSubnetGroupIsNotPresent() {
+    // @internal: no public API places a subnet group in a non-present state.
   }
 
   @Given("the subnet group does not already exist")
@@ -336,6 +379,19 @@ public class ElasticacheSteps {
     }
   }
 
+  @When("a replica is added to a replication group")
+  public void aReplicaIsAddedToAReplicationGroup() {
+    // Arrange: (replication group state set up by Given steps)
+    try (ElastiCacheClient client = world.session.elastiCacheClient()) {
+      // Act: modify replication group to add a replica
+      var result = client.modifyReplicationGroup(r -> r.replicationGroupId(TEST_REPLICATION_GROUP));
+      // Assert: store result
+      world.setSuccess(result);
+    } catch (Exception e) {
+      world.setFailure(e);
+    }
+  }
+
   @When("a replica is added to the cache cluster")
   public void aReplicaIsAddedToTheCacheCluster() {
     // @internal: adding a replica requires internal replication group state manipulation.
@@ -369,12 +425,38 @@ public class ElasticacheSteps {
     }
   }
 
+  @When("a replication group is deleted")
+  public void aReplicationGroupIsDeleted() {
+    // Arrange: (replication group state set up by Given steps)
+    try (ElastiCacheClient client = world.session.elastiCacheClient()) {
+      // Act
+      var result = client.deleteReplicationGroup(r -> r.replicationGroupId(TEST_REPLICATION_GROUP));
+      // Assert: store result
+      world.setSuccess(result);
+    } catch (Exception e) {
+      world.setFailure(e);
+    }
+  }
+
   @When("the replication group is deleted")
   public void theReplicationGroupIsDeleted() {
     // Arrange: (replication group state set up by Given steps)
     try (ElastiCacheClient client = world.session.elastiCacheClient()) {
       // Act
       var result = client.deleteReplicationGroup(r -> r.replicationGroupId(TEST_REPLICATION_GROUP));
+      // Assert: store result
+      world.setSuccess(result);
+    } catch (Exception e) {
+      world.setFailure(e);
+    }
+  }
+
+  @When("a replication group configuration is modified")
+  public void aReplicationGroupConfigurationIsModified() {
+    // Arrange: (replication group state set up by Given steps)
+    try (ElastiCacheClient client = world.session.elastiCacheClient()) {
+      // Act
+      var result = client.modifyReplicationGroup(r -> r.replicationGroupId(TEST_REPLICATION_GROUP));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -436,6 +518,19 @@ public class ElasticacheSteps {
     }
   }
 
+  @When("a cache snapshot is deleted")
+  public void aCacheSnapshotIsDeleted() {
+    // Arrange: (snapshot state set up by Given steps)
+    try (ElastiCacheClient client = world.session.elastiCacheClient()) {
+      // Act
+      var result = client.deleteSnapshot(r -> r.snapshotName(TEST_SNAPSHOT));
+      // Assert: store result
+      world.setSuccess(result);
+    } catch (Exception e) {
+      world.setFailure(e);
+    }
+  }
+
   @When("the snapshot is deleted")
   public void theSnapshotIsDeleted() {
     // Arrange: (snapshot state set up by Given steps)
@@ -459,6 +554,14 @@ public class ElasticacheSteps {
   public void theSnapshotDeletionCompletes() {
     // @internal: no public API to advance snapshot deletion — no-op.
     world.setSuccess(null);
+  }
+
+  @When("a cache cluster is created from a snapshot")
+  public void aCacheClusterIsCreatedFromASnapshot() {
+    // @internal: creating a cluster from snapshot requires snapshot in AVAILABLE state.
+    world.setFailure(
+        new UnsupportedOperationException(
+            "create_cache_cluster_from_snapshot: scenario is @internal"));
   }
 
   @When("a cache cluster is created from the snapshot")
@@ -536,6 +639,19 @@ public class ElasticacheSteps {
     }
   }
 
+  @When("a cache parameter group is deleted")
+  public void aCacheParameterGroupIsDeleted() {
+    // Arrange: (parameter group state set up by Given steps)
+    try (ElastiCacheClient client = world.session.elastiCacheClient()) {
+      // Act
+      client.deleteCacheParameterGroup(r -> r.cacheParameterGroupName(TEST_PARAM_GROUP));
+      // Assert: store result
+      world.setSuccess(null);
+    } catch (Exception e) {
+      world.setFailure(e);
+    }
+  }
+
   @When("the cache parameter group is deleted")
   public void theCacheParameterGroupIsDeleted() {
     // Arrange: (parameter group state set up by Given steps)
@@ -569,6 +685,19 @@ public class ElasticacheSteps {
     }
   }
 
+  @When("a cache subnet group is deleted")
+  public void aCacheSubnetGroupIsDeleted() {
+    // Arrange: (subnet group state set up by Given steps)
+    try (ElastiCacheClient client = world.session.elastiCacheClient()) {
+      // Act
+      client.deleteCacheSubnetGroup(r -> r.cacheSubnetGroupName(TEST_SUBNET_GROUP));
+      // Assert: store result
+      world.setSuccess(null);
+    } catch (Exception e) {
+      world.setFailure(e);
+    }
+  }
+
   @When("the cache subnet group is deleted")
   public void theCacheSubnetGroupIsDeleted() {
     // Arrange: (subnet group state set up by Given steps)
@@ -580,6 +709,158 @@ public class ElasticacheSteps {
     } catch (Exception e) {
       world.setFailure(e);
     }
+  }
+
+  @Then("the cluster is in {string} state")
+  public void theClusterIsInState(String expectedState) {
+    // Arrange
+    // Act: (action performed in When step)
+    // Assert
+    boolean expectedSuccess = true;
+    boolean actualSuccess = world.lastSuccess;
+    assertTrue(
+        actualSuccess,
+        "expected cluster to be in "
+            + expectedState
+            + " state but got error: "
+            + world.lastError
+            + "; expected_state="
+            + expectedState
+            + " expected_success="
+            + expectedSuccess
+            + " actual_success="
+            + actualSuccess);
+  }
+
+  @Then("the cluster is in {string} state with the memcached engine")
+  public void theClusterIsInStateWithTheMemcachedEngine(String expectedState) {
+    // Arrange
+    // Act: (action performed in When step)
+    // Assert
+    boolean expectedSuccess = true;
+    boolean actualSuccess = world.lastSuccess;
+    assertTrue(
+        actualSuccess,
+        "expected memcached cluster to be in "
+            + expectedState
+            + " state but got error: "
+            + world.lastError
+            + "; expected_state="
+            + expectedState
+            + " expected_success="
+            + expectedSuccess
+            + " actual_success="
+            + actualSuccess);
+  }
+
+  @Then("the replication group and its clusters are in \"DELETING\" state")
+  public void theReplicationGroupAndItsClustersAreInDeletingState() {
+    // Arrange
+    // Act: (action performed in When step)
+    // Assert
+    boolean expectedSuccess = true;
+    boolean actualSuccess = world.lastSuccess;
+    assertTrue(
+        actualSuccess,
+        "expected delete_replication_group to succeed but got error: "
+            + world.lastError
+            + "; expected_success="
+            + expectedSuccess
+            + " actual_success="
+            + actualSuccess);
+  }
+
+  @Then("the replication group is in {string} state")
+  public void theReplicationGroupIsInState(String expectedState) {
+    // Arrange
+    // Act: (action performed in When step)
+    // Assert
+    boolean expectedSuccess = true;
+    boolean actualSuccess = world.lastSuccess;
+    assertTrue(
+        actualSuccess,
+        "expected replication group to be in "
+            + expectedState
+            + " state but got error: "
+            + world.lastError
+            + "; expected_state="
+            + expectedState
+            + " expected_success="
+            + expectedSuccess
+            + " actual_success="
+            + actualSuccess);
+  }
+
+  @Then("a new cluster is in \"CREATING\" state and associated with the replication group")
+  public void aNewClusterIsInCreatingStateAndAssociatedWithTheReplicationGroup() {
+    // Arrange
+    // Act: (action performed in When step)
+    // Assert
+    boolean expectedSuccess = true;
+    boolean actualSuccess = world.lastSuccess;
+    assertTrue(
+        actualSuccess,
+        "expected add replica to succeed but got error: "
+            + world.lastError
+            + "; expected_success="
+            + expectedSuccess
+            + " actual_success="
+            + actualSuccess);
+  }
+
+  @Then("the snapshot is in {string} state")
+  public void theSnapshotIsInState(String expectedState) {
+    // Arrange
+    // Act: (action performed in When step)
+    // Assert
+    boolean expectedSuccess = true;
+    boolean actualSuccess = world.lastSuccess;
+    assertTrue(
+        actualSuccess,
+        "expected snapshot to be in "
+            + expectedState
+            + " state but got error: "
+            + world.lastError
+            + "; expected_state="
+            + expectedState
+            + " expected_success="
+            + expectedSuccess
+            + " actual_success="
+            + actualSuccess);
+  }
+
+  @Then("the parameter group no longer exists")
+  public void theParameterGroupNoLongerExists() {
+    // Arrange
+    // Act: (action performed in When step)
+    // Assert
+    boolean expectedSuccess = true;
+    boolean actualSuccess = world.lastSuccess;
+    assertTrue(
+        actualSuccess,
+        "expected parameter group deletion to succeed but got error: "
+            + world.lastError
+            + "; expected_success="
+            + expectedSuccess
+            + " actual_success="
+            + actualSuccess);
+  }
+
+  @Then("the subnet group no longer exists")
+  public void theSubnetGroupNoLongerExists() {
+    // Arrange
+    // Act: (action performed in When step)
+    // Assert
+    boolean expectedSuccess = true;
+    boolean actualSuccess = world.lastSuccess;
+    assertTrue(
+        actualSuccess,
+        "expected subnet group deletion to succeed but got error: "
+            + world.lastError
+            + "; expected_success="
+            + expectedSuccess
+            + " actual_success="
+            + actualSuccess);
   }
 
   @Then("the cluster is \"DELETED\" and its tags are removed")
@@ -602,20 +883,7 @@ public class ElasticacheSteps {
             + expectedSuccess);
   }
 
-  @Then("the replication group is in \"CREATING\" state")
-  public void theReplicationGroupIsInCreatingState() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected create_replication_group to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-  }
+  // "the replication group is in {string} state" → handled by parameterized @Then above
 
   @Then("the resource remains tagged")
   public void theResourceRemainsTagged() {

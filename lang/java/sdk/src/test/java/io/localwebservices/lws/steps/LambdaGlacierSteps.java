@@ -62,6 +62,19 @@ public class LambdaGlacierSteps {
     }
   }
 
+  @Given("the vault exists")
+  public void theVaultExists() {
+    // Arrange
+    // Act
+    lambdaGlacierCreateVault();
+    // Assert: vault created (no error thrown)
+  }
+
+  @Given("the vault does not exist")
+  public void theVaultDoesNotExist() {
+    // Arrange / Act / Assert — no-op: fresh state has no vaults.
+  }
+
   @Given("the vault \"EXISTS\" (not already \"DELETED\")")
   public void theVaultExistsNotAlreadyDeleted() {
     // Arrange

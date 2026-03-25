@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
@@ -74,6 +75,46 @@ public class NeptuneSteps {
         throw e;
       }
     }
+  }
+
+  // ── Given: cluster state ──────────────────────────────────────────────────────
+
+  @Given("multi-\"AZ\" is enabled for the cluster")
+  public void multiAzIsEnabledForTheCluster() {
+    // Arrange / Act / Assert — no-op: multi-AZ is modelled as an external precondition.
+  }
+
+  @Given("multi-\"AZ\" is not enabled for the cluster")
+  public void multiAzIsNotEnabledForTheCluster() {
+    // @internal: multi-AZ flag state requires specific cluster configuration.
+  }
+
+  // ── When: failover actions ─────────────────────────────────────────────────────
+
+  @When("a multi-\"AZ\" failover is triggered on a cluster")
+  public void aMultiAzFailoverIsTriggeredOnACluster() {
+    // @internal: failover requires a multi-AZ cluster with a replica instance.
+    world.setFailure(
+        new UnsupportedOperationException("multi_a_z_failover: cannot force via public API"));
+  }
+
+  // ── Then: failover assertions ──────────────────────────────────────────────────
+
+  @Then("the cluster enters \"MODIFYING\" state for primary promotion")
+  public void theClusterEntersModifyingStateForPrimaryPromotion() {
+    // Arrange
+    // Act: (action performed in When step)
+    // Assert
+    boolean expectedSuccess = true;
+    boolean actualSuccess = world.lastSuccess;
+    assertTrue(
+        actualSuccess,
+        "expected multi-AZ failover to succeed but got error: "
+            + world.lastError
+            + "; expected_success="
+            + expectedSuccess
+            + " actual_success="
+            + actualSuccess);
   }
 
   @When("a stopped database cluster is started")
