@@ -3,6 +3,7 @@
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { SnapshotHelpers } from "../support/world";
 
 const MEMORYDB_CLUSTER_NAME = "test-memorydb-cluster-1";
 const MEMORYDB_USER_NAME = "test-memorydb-user-1";
@@ -141,6 +142,22 @@ Before({ tags: "@memorydb" }, function (this: SdkWorld) {
       );
     },
   };
+
+  const snapshotHelpersImpl: SnapshotHelpers = {
+    setupSnapshotExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act
+      await createCluster(this);
+      await createSnapshot(this);
+      // Assert: snapshot created
+    },
+    setupSnapshotNotExists: async (world: SdkWorld) => {
+      // no-op: fresh state has no snapshots
+      void world;
+    },
+  };
+  this.snapshotHelpers = snapshotHelpersImpl;
 });
 
 // ── Background ────────────────────────────────────────────────────────────────
@@ -248,19 +265,9 @@ Given('the "ACL" is not {string}', async function (this: SdkWorld, _state: strin
 
 // ── Given: snapshot state setup ───────────────────────────────────────────────
 
-Given("the snapshot does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no snapshots.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the snapshot does not exist" is registered in cross_service_common.ts (dispatches via helpers).
 
-Given("the snapshot exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createCluster(this);
-  await createSnapshot(this);
-  // Assert: snapshot created
-});
+// "the snapshot exists" is registered in cross_service_common.ts (dispatches via helpers).
 
 Given("the snapshot is {string}", async function (this: SdkWorld, _state: string) {
   // Arrange / Act / Assert — no-op: snapshots are AVAILABLE after creation in lws,

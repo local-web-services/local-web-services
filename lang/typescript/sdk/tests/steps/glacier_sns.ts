@@ -1,8 +1,9 @@
 /** Step definitions: glacier_sns service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { VaultStepHelpers } from "../support/world";
 
 const GLACIER_SNS_TEST_VAULT = "test-glacier-vault-1";
 const GLACIER_SNS_TEST_TOPIC = "test-glacier-topic-1";
@@ -31,7 +32,21 @@ async function glacierSNSCreateVault(world: SdkWorld): Promise<void> {
   );
 }
 
-// ── Background ────────────────────────────────────────────────────────────────
+// ── Background
+// ── Before hook: register helpers for glaciersns scenarios ────────────────
+
+Before({ tags: "@glaciersns" }, function (this: SdkWorld) {
+  const vaultHelpersImpl: VaultStepHelpers = {
+    setupVaultExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act
+      await glacierSNSCreateVault(world);
+      // Assert: vault created
+    },
+  };
+  this.vaultHelpers = vaultHelpersImpl;
+});
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
@@ -50,18 +65,9 @@ Given("the vault already exists", async function (this: SdkWorld) {
   // Assert: vault created
 });
 
-Given("the vault exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await glacierSNSCreateVault(this);
-  // Assert: vault created
-});
+// "the vault exists" is registered in cross_service_common.ts (dispatches via helpers).
 
-Given("the vault does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no vaults.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the vault does not exist" is registered in cross_service_common.ts (dispatches via helpers).
 
 Given('the vault has no "SNS" notification configured', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: fresh vault has no SNS notification configured.

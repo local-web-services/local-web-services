@@ -11,11 +11,7 @@ import io.cucumber.java.en.When;
 import java.util.List;
 import software.amazon.awssdk.services.docdb.DocDbClient;
 import software.amazon.awssdk.services.docdb.model.DBCluster;
-import software.amazon.awssdk.services.docdb.model.DBClusterSnapshot;
-import software.amazon.awssdk.services.docdb.model.DBInstance;
-import software.amazon.awssdk.services.docdb.model.DescribeDbClusterSnapshotsResponse;
 import software.amazon.awssdk.services.docdb.model.DescribeDbClustersResponse;
-import software.amazon.awssdk.services.docdb.model.DescribeDbInstancesResponse;
 import software.amazon.awssdk.services.memorydb.MemoryDbClient;
 import software.amazon.awssdk.services.memorydb.model.Cluster;
 import software.amazon.awssdk.services.memorydb.model.DescribeClustersResponse;
@@ -292,6 +288,7 @@ public class DocdbSteps {
   @When("a database instance is created in an available cluster")
   public void aDatabaseInstanceIsCreatedInAnAvailableCluster() {
     // Arrange: (state set up by Given steps)
+    world.lastClusterService = "docdb";
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
       var result =
@@ -311,6 +308,7 @@ public class DocdbSteps {
   @When("a database instance is deleted")
   public void aDatabaseInstanceIsDeleted() {
     // Arrange: (state set up by Given steps)
+    world.lastClusterService = "docdb";
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
       var result = client.deleteDBInstance(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
@@ -324,6 +322,7 @@ public class DocdbSteps {
   @When("a database instance configuration is modified")
   public void aDatabaseInstanceConfigurationIsModified() {
     // Arrange: (state set up by Given steps)
+    world.lastClusterService = "docdb";
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
       var result = client.modifyDBInstance(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
@@ -337,6 +336,7 @@ public class DocdbSteps {
   @When("a database cluster snapshot is created")
   public void aDatabaseClusterSnapshotIsCreated() {
     // Arrange: (state set up by Given steps)
+    world.lastClusterService = "docdb";
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
       var result =
@@ -354,6 +354,7 @@ public class DocdbSteps {
   @When("a database cluster snapshot is deleted")
   public void aDatabaseClusterSnapshotIsDeleted() {
     // Arrange: (state set up by Given steps)
+    world.lastClusterService = "docdb";
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
       var result =
@@ -368,6 +369,7 @@ public class DocdbSteps {
   @When("a cluster is restored from a snapshot")
   public void aClusterIsRestoredFromASnapshot() {
     // Arrange: (state set up by Given steps)
+    world.lastClusterService = "docdb";
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
       var result =
@@ -587,206 +589,20 @@ public class DocdbSteps {
     }
   }
 
-  @Then("the instance is in \"CREATING\" state and associated with the cluster")
-  public void theInstanceIsInCreatingStateAndAssociatedWithTheCluster() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected CreateDBInstance to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    try (DocDbClient client = world.session.docDbClient()) {
-      DescribeDbInstancesResponse result =
-          client.describeDBInstances(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
-      List<DBInstance> instances = result.dbInstances();
-      assertNotNull(instances, "expected DBInstances list but got null");
-      assertTrue(
-          !instances.isEmpty(),
-          "expected instance '" + TEST_INSTANCE_ID + "' to exist but not found");
-      String expectedStatus = "creating";
-      String actualStatus = instances.get(0).dbInstanceStatus();
-      assertEquals(
-          expectedStatus,
-          actualStatus,
-          "expected instance status '"
-              + expectedStatus
-              + "' but got '"
-              + actualStatus
-              + "'; expected_status="
-              + expectedStatus
-              + " actual_status="
-              + actualStatus);
-    }
-  }
+  // "the instance is in {string} state and associated with the cluster" → NeptuneSteps
+  // (unified handler dispatching on world.lastClusterService; "docdb" → DocDB client)
 
-  @Then("the instance is in \"DELETING\" state")
-  public void theInstanceIsInDeletingState() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected DeleteDBInstance to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    try (DocDbClient client = world.session.docDbClient()) {
-      DescribeDbInstancesResponse result =
-          client.describeDBInstances(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
-      List<DBInstance> instances = result.dbInstances();
-      assertNotNull(instances, "expected DBInstances list but got null");
-      assertTrue(
-          !instances.isEmpty(),
-          "expected instance '" + TEST_INSTANCE_ID + "' to exist but not found");
-      String expectedStatus = "deleting";
-      String actualStatus = instances.get(0).dbInstanceStatus();
-      assertEquals(
-          expectedStatus,
-          actualStatus,
-          "expected instance status '"
-              + expectedStatus
-              + "' but got '"
-              + actualStatus
-              + "'; expected_status="
-              + expectedStatus
-              + " actual_status="
-              + actualStatus);
-    }
-  }
+  // "the instance is in {string} state" → NeptuneSteps
+  // (unified handler dispatching on world.lastClusterService; "docdb" → DocDB client)
 
-  @Then("the instance is in \"MODIFYING\" state")
-  public void theInstanceIsInModifyingState() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected ModifyDBInstance to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    try (DocDbClient client = world.session.docDbClient()) {
-      DescribeDbInstancesResponse result =
-          client.describeDBInstances(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
-      List<DBInstance> instances = result.dbInstances();
-      assertNotNull(instances, "expected DBInstances list but got null");
-      assertTrue(
-          !instances.isEmpty(),
-          "expected instance '" + TEST_INSTANCE_ID + "' to exist but not found");
-      String expectedStatus = "modifying";
-      String actualStatus = instances.get(0).dbInstanceStatus();
-      assertEquals(
-          expectedStatus,
-          actualStatus,
-          "expected instance status '"
-              + expectedStatus
-              + "' but got '"
-              + actualStatus
-              + "'; expected_status="
-              + expectedStatus
-              + " actual_status="
-              + actualStatus);
-    }
-  }
+  // "the snapshot is in {string} state and linked to the cluster" → NeptuneSteps
+  // (unified handler dispatching on world.lastClusterService; "docdb" → DocDB client)
 
-  @Then("the snapshot is in \"CREATING\" state and linked to the cluster")
-  public void theSnapshotIsInCreatingStateAndLinkedToTheCluster() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected CreateDBClusterSnapshot to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    try (DocDbClient client = world.session.docDbClient()) {
-      DescribeDbClusterSnapshotsResponse result =
-          client.describeDBClusterSnapshots(r -> r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID));
-      List<DBClusterSnapshot> snapshots = result.dbClusterSnapshots();
-      assertNotNull(snapshots, "expected DBClusterSnapshots list but got null");
-      assertTrue(
-          !snapshots.isEmpty(),
-          "expected snapshot '" + TEST_SNAPSHOT_ID + "' to exist but not found");
-      String expectedStatus = "creating";
-      String actualStatus = snapshots.get(0).status();
-      assertEquals(
-          expectedStatus,
-          actualStatus,
-          "expected snapshot status '"
-              + expectedStatus
-              + "' but got '"
-              + actualStatus
-              + "'; expected_status="
-              + expectedStatus
-              + " actual_status="
-              + actualStatus);
-    }
-  }
+  // "the snapshot is in {string} state" → MemorydbSteps
+  // (unified handler dispatching on world.lastClusterService; "docdb" → DocDB client)
 
-  @Then("the snapshot is in \"DELETING\" state")
-  public void theSnapshotIsInDeletingState() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected DeleteDBClusterSnapshot to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    try (DocDbClient client = world.session.docDbClient()) {
-      DescribeDbClusterSnapshotsResponse result =
-          client.describeDBClusterSnapshots(r -> r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID));
-      List<DBClusterSnapshot> snapshots = result.dbClusterSnapshots();
-      assertNotNull(snapshots, "expected DBClusterSnapshots list but got null");
-      assertTrue(
-          !snapshots.isEmpty(),
-          "expected snapshot '" + TEST_SNAPSHOT_ID + "' to exist but not found");
-      String expectedStatus = "deleting";
-      String actualStatus = snapshots.get(0).status();
-      assertEquals(
-          expectedStatus,
-          actualStatus,
-          "expected snapshot status '"
-              + expectedStatus
-              + "' but got '"
-              + actualStatus
-              + "'; expected_status="
-              + expectedStatus
-              + " actual_status="
-              + actualStatus);
-    }
-  }
-
-  @Then("the restored cluster is in \"RESTORING\" state")
-  public void theRestoredClusterIsInRestoringState() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected RestoreDBClusterFromSnapshot to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    assertNotNull(world.lastOutput, "expected RestoreDbClusterFromSnapshotResponse but got null");
-  }
+  // "the restored cluster is in {string} state" → MemorydbSteps
+  // (unified handler dispatching on world.lastClusterService; "docdb" → DocDB client)
 
   @Then("the cluster returns to {string} state")
   public void theClusterReturnsToState(String status) {

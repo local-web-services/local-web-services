@@ -232,19 +232,8 @@ Given('the target queue is not "ACTIVE"', async function (this: SdkWorld) {
 
 // ── Given: capacity slots ─────────────────────────────────────────────────────
 
-Given("a request slot is available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await this.session!.capacity("apigateway").unlimited().apply();
-});
-
-Given("no request slot is available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await this.session!.capacity("apigateway").exhaust().apply();
-});
+// "a request slot is available" is registered in capacity.ts.
+// "no request slot is available" is registered in capacity.ts.
 
 // "a message slot is available" is registered in cross_service_common.ts.
 // "no message slot is available" is registered in cross_service_common.ts.

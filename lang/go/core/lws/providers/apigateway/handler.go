@@ -215,8 +215,13 @@ func (s *Store) deleteResource(apiID, resourceID string) error {
 	if !ok {
 		return fmt.Errorf("NotFoundException: Rest API %s not found", apiID)
 	}
-	if _, ok := rm[resourceID]; !ok {
+	resource, ok := rm[resourceID]
+	if !ok {
 		return fmt.Errorf("NotFoundException: Resource %s not found", resourceID)
+	}
+	// Reject deletion of the root resource (path == "/" or no parent).
+	if resource.Path == "/" || resource.ParentID == nil {
+		return fmt.Errorf("BadRequestException: Cannot delete the root resource")
 	}
 	delete(rm, resourceID)
 	return nil

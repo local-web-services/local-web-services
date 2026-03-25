@@ -3,6 +3,7 @@
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { ExecutionStepHelpers } from "../support/world";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -87,6 +88,27 @@ Before({ tags: "@stepfunctionsdocdb" }, function (this: SdkWorld) {
       );
     },
   };
+
+  const executionHelpersImpl: ExecutionStepHelpers = {
+    setupExecutionRunning: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create state machine then start execution
+      const expectedSmArn = await sfnDocDBCreateSm(this);
+      (world as any)._sfnDocDBSmArn = expectedSmArn;
+      const { StartExecutionCommand } = require("@aws-sdk/client-sfn");
+      const execResult = await sfnDocDBSfnClient(this).send(
+        new StartExecutionCommand({
+          stateMachineArn: sfnDocDBSmArn(SFN_DOCDB_TEST_SM),
+          input: SFN_DOCDB_TEST_INPUT,
+        }),
+      );
+      // Assert: execution started
+      (world as any)._sfnDocDBExecArn = execResult.executionArn;
+      assert.ok(execResult.executionArn, "Expected executionArn in StartExecution response");
+    },
+  };
+  this.executionHelpers = executionHelpersImpl;
 });
 
 // ── Background ────────────────────────────────────────────────────────────────
@@ -101,28 +123,9 @@ Before({ tags: "@stepfunctionsdocdb" }, function (this: SdkWorld) {
 
 // ── Given: execution state ────────────────────────────────────────────────────
 
-Given('an execution is "RUNNING"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create state machine then start execution
-  const expectedSmArn = await sfnDocDBCreateSm(this);
-  (this as any)._sfnDocDBSmArn = expectedSmArn;
-  const { StartExecutionCommand } = require("@aws-sdk/client-sfn");
-  const execResult = await sfnDocDBSfnClient(this).send(
-    new StartExecutionCommand({
-      stateMachineArn: sfnDocDBSmArn(SFN_DOCDB_TEST_SM),
-      input: SFN_DOCDB_TEST_INPUT,
-    }),
-  );
-  // Assert: execution started
-  (this as any)._sfnDocDBExecArn = execResult.executionArn;
-  assert.ok(execResult.executionArn, "Expected executionArn in StartExecution response");
-});
+// "an execution is {string}" is registered in cross_service_common.ts (dispatches via executionHelpers).
 
-Given('no execution is "RUNNING"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no executions.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "no execution is {string}" is registered in cross_service_common.ts.
 
 // ── Given: capacity ───────────────────────────────────────────────────────────
 

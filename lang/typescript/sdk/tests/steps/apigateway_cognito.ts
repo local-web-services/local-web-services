@@ -188,20 +188,8 @@ Given("no such mismatched token exists", async function (this: SdkWorld) {
 
 // ── Given: request slot ───────────────────────────────────────────────────────
 
-Given("a request slot is available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: ensure apigateway capacity is unlimited
-  await this.session!.capacity("apigateway").unlimited().apply();
-  // Assert: capacity is unlimited
-  assert.ok(true, "Expected request slot capacity to be unlimited");
-});
-
-Given("no request slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: exhausting request slots via the authorizer flow
-  // is not supported in lws; the subsequent When step records a failure.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "a request slot is available" — registered in capacity.ts
+// "no request slot is available" — registered in capacity.ts
 
 // ── When: cross-service actions ───────────────────────────────────────────────
 

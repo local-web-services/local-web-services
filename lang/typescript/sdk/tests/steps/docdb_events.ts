@@ -1,8 +1,8 @@
 /** Step definitions: docdb_events cross-service scenarios — unique steps only */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, BusStepHelpers } from "../support/world";
 
 // docdb_events-specific resource names
 const DOCDB_EVENTS_CLUSTER_ID = "test-docdb-cluster-1";
@@ -21,6 +21,48 @@ function docdbEventsEbClient(world: SdkWorld) {
   return world.session!.client<typeof EventBridgeClient>("eventbridge");
 }
 
+// ── Before hook: register busHelpers for @docdbevents scenarios ────────────────
+
+Before({ tags: "@docdbevents" }, function (this: SdkWorld) {
+  const busHelpers: BusStepHelpers = {
+    createBus: async (world: SdkWorld) => {
+      const { CreateEventBusCommand } = require("@aws-sdk/client-eventbridge");
+      try {
+        await docdbEventsEbClient(world).send(
+          new CreateEventBusCommand({ Name: DOCDB_EVENTS_BUS_NAME }),
+        );
+      } catch {
+        // bus may already exist
+      }
+    },
+    deleteBus: async (world: SdkWorld) => {
+      const { DeleteEventBusCommand } = require("@aws-sdk/client-eventbridge");
+      try {
+        await docdbEventsEbClient(world).send(
+          new DeleteEventBusCommand({ Name: DOCDB_EVENTS_BUS_NAME }),
+        );
+      } catch {
+        // bus may not exist
+      }
+    },
+    assertBusStatus: async (world: SdkWorld, expectedState: string) => {
+      if (expectedState !== "ACTIVE") return;
+      assert.ok(world.session, "Expected session to be initialized");
+      const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
+      const result = await docdbEventsEbClient(world).send(new ListEventBusesCommand({}));
+      const buses: Array<{ Name?: string }> = result.EventBuses ?? [];
+      const expectedBus = DOCDB_EVENTS_BUS_NAME;
+      const actualFound = buses.some((b) => b.Name === expectedBus);
+      assert.strictEqual(
+        actualFound,
+        true,
+        `Expected event bus '${expectedBus}' to be ACTIVE but not found; expected_bus=${expectedBus}`,
+      );
+    },
+  };
+  this.busHelpers = busHelpers;
+});
+
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
@@ -38,25 +80,7 @@ Given("the bus does not exist", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given('the bus is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange: ensure the bus exists (buses are ACTIVE immediately after creation).
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateEventBusCommand } = require("@aws-sdk/client-eventbridge");
-  try {
-    await docdbEventsEbClient(this).send(
-      new CreateEventBusCommand({ Name: DOCDB_EVENTS_BUS_NAME }),
-    );
-  } catch {
-    // bus may already exist
-  }
-  // Assert: bus is ACTIVE
-});
-
-Given('the bus is "DELETED"', async function (this: SdkWorld) {
-  // @internal: Cannot place bus into DELETED state without deleting it; after deletion
-  // the bus no longer exists. Treated as no-op; scenario is tagged @internal.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the bus is {string}" (Given and Then) — registered in cross_service_common.ts (dispatches via busHelpers)
 
 Given('the bus is not "DELETED"', async function (this: SdkWorld) {
   // Arrange: ensure the bus exists and is therefore NOT deleted.
@@ -156,22 +180,7 @@ When("the cluster modification completes", async function (this: SdkWorld) {
 // "the cluster is \"AVAILABLE\"" is handled by the Then(/^the cluster is "([^"]*)"$/) no-op
 // in docdb.ts. It is intentionally absent here to avoid ambiguous step definition errors.
 
-Then('the bus is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: verify bus exists in the list
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
-  const actualResult = await docdbEventsEbClient(this).send(new ListEventBusesCommand({}));
-  const actualBuses: Array<{ Name?: string }> = actualResult.EventBuses ?? [];
-  // Assert
-  const expectedBus = DOCDB_EVENTS_BUS_NAME;
-  const actualFound = actualBuses.some((b) => b.Name === expectedBus);
-  assert.strictEqual(
-    actualFound,
-    true,
-    `Expected event bus '${expectedBus}' to be ACTIVE but not found; expected_bus=${expectedBus}`,
-  );
-});
+// "the bus is {string}" (Then) — registered in cross_service_common.ts (dispatches via busHelpers)
 
 Then(
   'the bus is "DELETED" and DocumentDB event delivery will fail',

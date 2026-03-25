@@ -1,8 +1,8 @@
 /** Step definitions: rds_events cross-service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, BusStepHelpers } from "../support/world";
 
 const RDS_EVENTS_TEST_DB_INSTANCE_ID = "test-rds-db-1";
 const RDS_EVENTS_TEST_BUS_NAME = "e2e-test-bus-1";
@@ -55,6 +55,40 @@ async function rdsEventsCreateBus(world: SdkWorld): Promise<void> {
   }
 }
 
+// ── Before hook: register busHelpers for @rdsevents scenarios ──────────────────
+
+Before({ tags: "@rdsevents" }, function (this: SdkWorld) {
+  const busHelpers: BusStepHelpers = {
+    createBus: async (world: SdkWorld) => {
+      await rdsEventsCreateBus(world);
+    },
+    deleteBus: async (world: SdkWorld) => {
+      const { DeleteEventBusCommand } = require("@aws-sdk/client-eventbridge");
+      try {
+        await rdsEventsEventBridgeClient(world).send(
+          new DeleteEventBusCommand({ Name: RDS_EVENTS_TEST_BUS_NAME }),
+        );
+      } catch {
+        // bus may not exist
+      }
+    },
+    assertBusStatus: async (world: SdkWorld, expectedState: string) => {
+      if (expectedState !== "ACTIVE") return;
+      assert.ok(world.session, "Expected session to be initialized");
+      const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
+      const result = await rdsEventsEventBridgeClient(world).send(new ListEventBusesCommand({}));
+      const buses: Array<{ Name?: string }> = result.EventBuses ?? [];
+      const expectedBus = RDS_EVENTS_TEST_BUS_NAME;
+      const actualFound = buses.some((b) => b.Name === expectedBus);
+      assert.ok(
+        actualFound,
+        `Expected event bus "${expectedBus}" to be ACTIVE but not found; expected_bus=${expectedBus} actual_found=${actualFound}`,
+      );
+    },
+  };
+  this.busHelpers = busHelpers;
+});
+
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
@@ -106,15 +140,7 @@ Given('the "DB" instance is not "STOPPING"', async function (this: SdkWorld) {
 
 // "the bus exists" is registered in cross_service_common.ts.
 
-Given('the bus is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: event buses in lws are ACTIVE immediately after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given('the bus is "DELETED"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no event buses (simulates deleted bus).
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the bus is {string}" (Given and Then) — registered in cross_service_common.ts (dispatches via busHelpers)
 
 Given('the bus is already "DELETED"', async function (this: SdkWorld) {
   // Arrange: delete the bus so it is in a DELETED state
@@ -234,21 +260,7 @@ Then('the "DB" instance is "AVAILABLE"', async function (this: SdkWorld) {
   );
 });
 
-Then('the bus is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  const result = await rdsEventsEventBridgeClient(this).send(new ListEventBusesCommand({}));
-  const buses: Array<{ Name?: string }> = result.EventBuses ?? [];
-  // Assert
-  const expectedBus = RDS_EVENTS_TEST_BUS_NAME;
-  const actualFound = buses.some((b) => b.Name === expectedBus);
-  assert.ok(
-    actualFound,
-    `Expected event bus "${expectedBus}" to be ACTIVE but not found; expected_bus=${expectedBus} actual_found=${actualFound}`,
-  );
-});
+// "the bus is {string}" (Then) — registered in cross_service_common.ts (dispatches via busHelpers)
 
 Then('the bus is "DELETED" and "RDS" event delivery will fail', async function (this: SdkWorld) {
   // Arrange

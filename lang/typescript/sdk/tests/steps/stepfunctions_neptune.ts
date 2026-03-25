@@ -3,6 +3,7 @@
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { ExecutionStepHelpers } from "../support/world";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -88,6 +89,27 @@ Before({ tags: "@stepfunctionsneptune" }, function (this: SdkWorld) {
       }
     },
   };
+
+  const executionHelpersImpl: ExecutionStepHelpers = {
+    setupExecutionRunning: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create state machine then start execution
+      const expectedSmArn = await sfnNeptuneCreateSm(this);
+      (world as any)._sfnNeptuneSmArn = expectedSmArn;
+      const { StartExecutionCommand } = require("@aws-sdk/client-sfn");
+      const execResult = await sfnNeptuneSfnClient(this).send(
+        new StartExecutionCommand({
+          stateMachineArn: sfnNeptuneSmArn(SFN_NEPTUNE_TEST_SM),
+          input: SFN_NEPTUNE_TEST_INPUT,
+        }),
+      );
+      // Assert: execution started
+      (world as any)._sfnNeptuneExecArn = execResult.executionArn;
+      assert.ok(execResult.executionArn, "Expected executionArn in StartExecution response");
+    },
+  };
+  this.executionHelpers = executionHelpersImpl;
 });
 
 // ── Background ────────────────────────────────────────────────────────────────
@@ -102,28 +124,9 @@ Before({ tags: "@stepfunctionsneptune" }, function (this: SdkWorld) {
 
 // ── Given: execution state ────────────────────────────────────────────────────
 
-Given(`an execution is "RUNNING"`, async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create state machine then start execution
-  const expectedSmArn = await sfnNeptuneCreateSm(this);
-  (this as any)._sfnNeptuneSmArn = expectedSmArn;
-  const { StartExecutionCommand } = require("@aws-sdk/client-sfn");
-  const execResult = await sfnNeptuneSfnClient(this).send(
-    new StartExecutionCommand({
-      stateMachineArn: sfnNeptuneSmArn(SFN_NEPTUNE_TEST_SM),
-      input: SFN_NEPTUNE_TEST_INPUT,
-    }),
-  );
-  // Assert: execution started
-  (this as any)._sfnNeptuneExecArn = execResult.executionArn;
-  assert.ok(execResult.executionArn, "Expected executionArn in StartExecution response");
-});
+// "an execution is {string}" is registered in cross_service_common.ts (dispatches via executionHelpers).
 
-Given(`no execution is "RUNNING"`, async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no executions.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "no execution is {string}" is registered in cross_service_common.ts.
 
 // ── Given: capacity ───────────────────────────────────────────────────────────
 

@@ -1,8 +1,9 @@
 /** Step definitions: opensearch service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { DomainStepHelpers } from "../support/world";
 
 const OS_DOMAIN_NAME = "test-opensearch-domain-1";
 const OS_LOCAL_DOMAIN_NAME = "test-opensearch-domain-1";
@@ -92,18 +93,27 @@ async function osCreateOutboundConnection(
   return result?.ConnectionId ?? "";
 }
 
+// ── Before hook: register domainHelpers for opensearch scenarios ──────────────
+
+Before({ tags: "@opensearch" }, function (this: SdkWorld) {
+  const domainHelpersImpl: DomainStepHelpers = {
+    setupDomainExists: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      await osEnsureDomainExists(world as OsWorld, OS_DOMAIN_NAME);
+    },
+  };
+  this.domainHelpers = domainHelpersImpl;
+});
+
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
 // ── Given: domain state setup ─────────────────────────────────────────────────
 
-// NOTE: "the domain does not already exist", "the domain already exists",
-// "the domain exists", "the domain is 'ACTIVE'", "the domain is not 'ACTIVE'",
-// "the domain is 'CREATING'", etc., are registered in elasticsearch.ts.
-// These steps share the same Cucumber registry (global), so opensearch feature
-// files reuse those registrations for domain lifecycle steps that have
-// identical step text.
+// "the domain exists" is registered in cross_service_common.ts (dispatches via domainHelpers).
+// "the domain does not exist" is registered in cross_service_common.ts.
+// "the domain is {string}" is registered in cross_service_common.ts (dispatches via domainHelpers).
 
 Given("the local domain exists", async function (this: OsWorld) {
   // Arrange

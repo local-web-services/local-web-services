@@ -245,11 +245,11 @@ func registerDynamodbLambdaSteps(sc *godog.ScenarioContext, world *World) {
 
 	sc.When(`^a Lambda function is deployed$`, func() error {
 		// Arrange
-		// Act: use lambdaTestFunctionName so this step is consistent with
-		// "the function already exists" / "the function does not already exist"
-		// Given steps which also use lambdaTestFunctionName.
+		// Act: use dlTestFunc ("e2e-test-func-1") which is consistent with the
+		// first-registered "Then the function is 'ACTIVE'" step (lambda_ssm_test.go)
+		// that also checks "e2e-test-func-1".
 		result, err := world.LambdaClient().CreateFunction(context.Background(), &lambda.CreateFunctionInput{
-			FunctionName: aws.String(lambdaTestFunctionName),
+			FunctionName: aws.String(dlTestFunc),
 			Runtime:      lambdatypes.RuntimePython312,
 			Role:         aws.String(dlTestRoleArn),
 			Handler:      aws.String("index.handler"),

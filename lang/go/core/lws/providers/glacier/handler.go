@@ -215,13 +215,18 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation strin
 
 	switch operation {
 	case "CreateVault":
+		h.store.mu.Lock()
+		if h.store.vaults[vaultName] != nil {
+			h.store.mu.Unlock()
+			sendError(w, 409, "ResourceInUseException", "Vault already exists: "+vaultName)
+			return
+		}
 		arn := fmt.Sprintf("arn:aws:glacier:%s:%s:vaults/%s", region, accountID, vaultName)
 		vault := &Vault{
 			VaultName: vaultName,
 			VaultARN:  arn,
 			CreatedAt: time.Now(),
 		}
-		h.store.mu.Lock()
 		h.store.vaults[vaultName] = vault
 		h.store.mu.Unlock()
 		w.Header().Set("Location", fmt.Sprintf("/%s/vaults/%s", accountID, vaultName))
@@ -229,6 +234,26 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation strin
 
 	case "DeleteVault":
 		h.store.mu.Lock()
+		vault := h.store.vaults[vaultName]
+		if vault == nil {
+			h.store.mu.Unlock()
+			sendError(w, 404, "ResourceNotFoundException", "Vault not found: "+vaultName)
+			return
+		}
+		if vault.ArchiveCount > 0 {
+			h.store.mu.Unlock()
+			sendError(w, 409, "InvalidParameterValueException", "Vault not empty: "+vaultName)
+			return
+		}
+		// Check for in-progress jobs
+		prefix := vaultName + "/"
+		for key, job := range h.store.jobs {
+			if strings.HasPrefix(key, prefix) && !job.Completed {
+				h.store.mu.Unlock()
+				sendError(w, 409, "InvalidParameterValueException", "Vault has in-progress jobs: "+vaultName)
+				return
+			}
+		}
 		delete(h.store.vaults, vaultName)
 		h.store.mu.Unlock()
 		w.WriteHeader(204)
@@ -257,6 +282,16 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation strin
 
 	case "UploadArchive":
 		h.store.mu.Lock()
+		if h.store.vaults[vaultName] == nil {
+			h.store.mu.Unlock()
+			sendError(w, 404, "ResourceNotFoundException", "Vault not found: "+vaultName)
+			return
+		}
+		if h.state.GetCapacityRule("glacier").IsExhausted() {
+			h.store.mu.Unlock()
+			sendError(w, 400, "LimitExceededException", "Archive slot limit reached for vault: "+vaultName)
+			return
+		}
 		archiveID := h.store.nextID()
 		archive := &Archive{
 			ArchiveId:    archiveID,
@@ -265,9 +300,7 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation strin
 			CreationDate: time.Now(),
 		}
 		h.store.archives[archiveID] = archive
-		if v := h.store.vaults[vaultName]; v != nil {
-			v.ArchiveCount++
-		}
+		h.store.vaults[vaultName].ArchiveCount++
 		h.store.mu.Unlock()
 		w.Header().Set("x-amz-archive-id", archiveID)
 		w.Header().Set("Location", fmt.Sprintf("/%s/vaults/%s/archives/%s", accountID, vaultName, archiveID))
@@ -276,7 +309,16 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation strin
 	case "DeleteArchive":
 		archiveID := parts[4]
 		h.store.mu.Lock()
+		archive := h.store.archives[archiveID]
+		if archive == nil {
+			h.store.mu.Unlock()
+			sendError(w, 404, "ResourceNotFoundException", "Archive not found: "+archiveID)
+			return
+		}
 		delete(h.store.archives, archiveID)
+		if v := h.store.vaults[vaultName]; v != nil && v.ArchiveCount > 0 {
+			v.ArchiveCount--
+		}
 		h.store.mu.Unlock()
 		w.WriteHeader(204)
 
@@ -291,6 +333,24 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation strin
 			action = v
 		}
 		h.store.mu.Lock()
+		if h.store.vaults[vaultName] == nil {
+			h.store.mu.Unlock()
+			sendError(w, 404, "ResourceNotFoundException", "Vault not found: "+vaultName)
+			return
+		}
+		if h.state.GetCapacityRule("glacier").IsExhausted() {
+			h.store.mu.Unlock()
+			sendError(w, 400, "LimitExceededException", "Job slot limit reached for vault: "+vaultName)
+			return
+		}
+		// For archive-retrieval jobs, verify the archive exists.
+		if archiveIDVal, ok := jobBody["ArchiveId"].(string); ok && archiveIDVal != "" {
+			if h.store.archives[archiveIDVal] == nil {
+				h.store.mu.Unlock()
+				sendError(w, 400, "InvalidParameterValueException", "Archive not found: "+archiveIDVal)
+				return
+			}
+		}
 		jobID := h.store.nextID()
 		job := &Job{
 			JobId:        jobID,
@@ -366,6 +426,11 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation strin
 
 	case "InitiateMultipartUpload":
 		h.store.mu.Lock()
+		if h.store.vaults[vaultName] == nil {
+			h.store.mu.Unlock()
+			sendError(w, 404, "ResourceNotFoundException", "Vault not found: "+vaultName)
+			return
+		}
 		uploadID := h.store.nextID()
 		mu := &MultipartUpload{
 			MultipartUploadId:  uploadID,

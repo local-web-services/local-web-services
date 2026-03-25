@@ -3,6 +3,7 @@
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { ExecutionStepHelpers } from "../support/world";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -98,6 +99,36 @@ Before({ tags: "@stepfunctionslambda" }, function (this: SdkWorld) {
       );
     },
   };
+
+  const executionHelpersImpl: ExecutionStepHelpers = {
+    setupExecutionRunning: async (world: SdkWorld) => {
+      // Arrange: ensure a state machine exists and start an execution
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateStateMachineCommand, StartExecutionCommand } = require("@aws-sdk/client-sfn");
+      try {
+        await sfnClient(this).send(
+          new CreateStateMachineCommand({
+            name: SFN_LAMBDA_TEST_SM,
+            definition: SFN_LAMBDA_PASS_DEFINITION,
+            roleArn: SFN_LAMBDA_ROLE_ARN,
+            type: "STANDARD",
+          }),
+        );
+      } catch {
+        // state machine may already exist
+      }
+      // Act: start the execution
+      const result = await sfnClient(this).send(
+        new StartExecutionCommand({
+          stateMachineArn: smArn(SFN_LAMBDA_TEST_SM),
+          input: SFN_LAMBDA_TEST_INPUT,
+        }),
+      );
+      (world as any)._sfnExecArn = result.executionArn as string;
+      // Assert: execution started
+    },
+  };
+  this.executionHelpers = executionHelpersImpl;
 });
 
 // ── Given: cross-service Lambda task configuration on state machine ───────────
@@ -148,37 +179,9 @@ Given("the state machine has a Lambda task configured", async function (this: Sd
 
 // ── Given: cross-service execution and invocation state ──────────────────────
 
-Given('an execution is "RUNNING"', async function (this: SdkWorld) {
-  // Arrange: ensure a state machine exists and start an execution
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateStateMachineCommand, StartExecutionCommand } = require("@aws-sdk/client-sfn");
-  try {
-    await sfnClient(this).send(
-      new CreateStateMachineCommand({
-        name: SFN_LAMBDA_TEST_SM,
-        definition: SFN_LAMBDA_PASS_DEFINITION,
-        roleArn: SFN_LAMBDA_ROLE_ARN,
-        type: "STANDARD",
-      }),
-    );
-  } catch {
-    // state machine may already exist
-  }
-  // Act: start the execution
-  const result = await sfnClient(this).send(
-    new StartExecutionCommand({
-      stateMachineArn: smArn(SFN_LAMBDA_TEST_SM),
-      input: SFN_LAMBDA_TEST_INPUT,
-    }),
-  );
-  (this as any)._sfnExecArn = result.executionArn as string;
-  // Assert: execution started
-});
+// "an execution is {string}" is registered in cross_service_common.ts (dispatches via executionHelpers).
 
-Given('no execution is "RUNNING"', async function (this: SdkWorld) {
-  // No-op: fresh state after session reset has no executions.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "no execution is {string}" is registered in cross_service_common.ts.
 
 // ── Given: cross-service slot availability ────────────────────────────────────
 

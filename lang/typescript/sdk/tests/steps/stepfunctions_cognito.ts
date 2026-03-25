@@ -1,8 +1,9 @@
 /** Step definitions: stepfunctions_cognito cross-service scenarios — unique steps only */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { ExecutionStepHelpers } from "../support/world";
 
 const SFN_COGNITO_TEST_SM = "test-sm-1";
 const SFN_COGNITO_TEST_POOL_NAME = "e2e-test-pool-1";
@@ -63,6 +64,30 @@ async function sfnCognitoGetPoolId(world: SdkWorld): Promise<string | null> {
 }
 
 // ── Background ────────────────────────────────────────────────────────────────
+// ── Before hook: register executionHelpers for stepfunctionscognito scenarios ────────────
+
+Before({ tags: "@stepfunctionscognito" }, function (this: SdkWorld) {
+  const executionHelpersImpl: ExecutionStepHelpers = {
+    setupExecutionRunning: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create state machine then start execution
+      const expectedSmArn = await sfnCognitoCreateSm(this);
+      (world as any)._sfnCognitoSmArn = expectedSmArn;
+      const { StartExecutionCommand } = require("@aws-sdk/client-sfn");
+      const execResult = await sfnCognitoSfnClient(this).send(
+        new StartExecutionCommand({
+          stateMachineArn: sfnCognitoSmArn(SFN_COGNITO_TEST_SM),
+          input: SFN_COGNITO_TEST_INPUT,
+        }),
+      );
+      // Assert: execution started
+      (world as any)._sfnCognitoExecArn = execResult.executionArn;
+      assert.ok(execResult.executionArn, "Expected executionArn in StartExecution response");
+    },
+  };
+  this.executionHelpers = executionHelpersImpl;
+});
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
@@ -159,28 +184,9 @@ Given("the pool is already {string}", async function (this: SdkWorld, state: str
 
 // ── Given: execution state ────────────────────────────────────────────────────
 
-Given(`an execution is "RUNNING"`, async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create state machine then start execution
-  const expectedSmArn = await sfnCognitoCreateSm(this);
-  (this as any)._sfnCognitoSmArn = expectedSmArn;
-  const { StartExecutionCommand } = require("@aws-sdk/client-sfn");
-  const execResult = await sfnCognitoSfnClient(this).send(
-    new StartExecutionCommand({
-      stateMachineArn: sfnCognitoSmArn(SFN_COGNITO_TEST_SM),
-      input: SFN_COGNITO_TEST_INPUT,
-    }),
-  );
-  // Assert: execution started
-  (this as any)._sfnCognitoExecArn = execResult.executionArn;
-  assert.ok(execResult.executionArn, "Expected executionArn in StartExecution response");
-});
+// "an execution is {string}" is registered in cross_service_common.ts (dispatches via executionHelpers).
 
-Given(`no execution is "RUNNING"`, async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no executions.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "no execution is {string}" is registered in cross_service_common.ts.
 
 // ── Given: capacity ───────────────────────────────────────────────────────────
 

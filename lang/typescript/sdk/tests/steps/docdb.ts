@@ -3,6 +3,7 @@
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { SnapshotHelpers } from "../support/world";
 
 const DOCDB_CLUSTER_ID = "test-docdb-cluster-1";
 const DOCDB_INSTANCE_ID = "test-docdb-instance-1";
@@ -64,6 +65,25 @@ Before({ tags: "@docdb or @docdbevents" }, function (this: SdkWorld) {
 });
 
 // ── Background ────────────────────────────────────────────────────────────────
+// ── Before hook: register helpers for docdb scenarios ────────────────
+
+Before({ tags: "@docdb" }, function (this: SdkWorld) {
+  const snapshotHelpersImpl: SnapshotHelpers = {
+    setupSnapshotExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      await docdbCreateCluster(this);
+      // Act
+      await docdbCreateSnapshot(this);
+      // Assert: snapshot created
+    },
+    setupSnapshotNotExists: async (world: SdkWorld) => {
+      // no-op: fresh state has no snapshots
+      void world;
+    },
+  };
+  this.snapshotHelpers = snapshotHelpersImpl;
+});
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
@@ -172,19 +192,9 @@ Given("the instance is not already the primary", async function (this: SdkWorld)
 
 // ── Given: snapshot state setup ───────────────────────────────────────────────
 
-Given("the snapshot does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no snapshots.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the snapshot does not exist" is registered in cross_service_common.ts (dispatches via helpers).
 
-Given("the snapshot exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  await docdbCreateCluster(this);
-  // Act
-  await docdbCreateSnapshot(this);
-  // Assert: snapshot created
-});
+// "the snapshot exists" is registered in cross_service_common.ts (dispatches via helpers).
 
 Given("the snapshot slot is available", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: fresh state after session reset has no snapshots.
@@ -200,10 +210,7 @@ Given("the snapshot slot is not available", async function (this: SdkWorld) {
   // Assert: slot taken
 });
 
-Given(/^the snapshot is "([^"]*)"$/, async function (this: SdkWorld, _status: string) {
-  // @internal: Cannot place snapshot into arbitrary lifecycle state via public API.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the snapshot is {string}" is registered in cross_service_common.ts (dispatches via snapshotHelpers).
 
 Given(/^the snapshot is not "([^"]*)"$/, async function (this: SdkWorld, _status: string) {
   // @internal: Cannot enforce snapshot is NOT in a given lifecycle state via public API.
@@ -767,10 +774,7 @@ Then(/^the instance returns to "([^"]*)" state$/, async function (this: SdkWorld
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then(/^the snapshot is "([^"]*)"$/, async function (this: SdkWorld, _status: string) {
-  // @internal: model-level invariant; trivially satisfied.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the snapshot is {string}" is registered in cross_service_common.ts (dispatches via snapshotHelpers).
 
 Then("the cluster has a new primary instance", async function (this: SdkWorld) {
   // @internal: model-level invariant; trivially satisfied.

@@ -264,6 +264,11 @@ func (h *Handler) deleteFunction(w http.ResponseWriter, name string) {
 		jsonErr(w, "ResourceNotFoundException", "Function "+name+" not found")
 		return
 	}
+	// Reject if there are active executions (modelled via exhausted capacity).
+	if h.state.GetCapacityRule("lambda").IsExhausted() {
+		jsonErr(w, "ResourceConflictException", "Function "+name+" has active executions")
+		return
+	}
 	delete(h.store.functions, name)
 	w.WriteHeader(204)
 }

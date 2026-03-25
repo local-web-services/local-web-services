@@ -1,8 +1,10 @@
 /** Step definitions: stepfunctions_opensearch cross-service scenarios — unique steps only */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { DomainStepHelpers } from "../support/world";
+import type { ExecutionStepHelpers } from "../support/world";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -55,6 +57,43 @@ async function sfnOpenSearchCreateDomain(world: SdkWorld): Promise<string> {
 }
 
 // ── Background ────────────────────────────────────────────────────────────────
+// ── Before hook: register executionHelpers for stepfunctionsopensearch scenarios ────────────
+
+Before({ tags: "@stepfunctionsopensearch" }, function (this: SdkWorld) {
+  const executionHelpersImpl: ExecutionStepHelpers = {
+    setupExecutionRunning: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create state machine then start execution
+      const expectedSmArn = await sfnOpenSearchCreateSm(this);
+      (world as any)._sfnOpenSearchSmArn = expectedSmArn;
+      const { StartExecutionCommand } = require("@aws-sdk/client-sfn");
+      const execResult = await sfnOpenSearchSfnClient(this).send(
+        new StartExecutionCommand({
+          stateMachineArn: sfnOpenSearchSmArn(SFN_OPENSEARCH_TEST_SM),
+          input: SFN_OPENSEARCH_TEST_INPUT,
+        }),
+      );
+      // Assert: execution started
+      (world as any)._sfnOpenSearchExecArn = execResult.executionArn;
+      assert.ok(execResult.executionArn, "Expected executionArn in StartExecution response");
+    },
+  };
+  this.executionHelpers = executionHelpersImpl;
+
+  const domainHelpersImpl: DomainStepHelpers = {
+    setupDomainExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act
+      const expectedDomainName = await sfnOpenSearchCreateDomain(this);
+      // Assert: domain created
+      (world as any)._sfnOpenSearchDomainName = expectedDomainName;
+      assert.ok(expectedDomainName, "Expected domain name to be defined");
+    },
+  };
+  this.domainHelpers = domainHelpersImpl;
+});
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
@@ -75,36 +114,15 @@ Given("the domain already exists", async function (this: SdkWorld) {
   assert.ok(expectedDomainName, "Expected domain name to be defined");
 });
 
-Given("the domain exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const expectedDomainName = await sfnOpenSearchCreateDomain(this);
-  // Assert: domain created
-  (this as any)._sfnOpenSearchDomainName = expectedDomainName;
-  assert.ok(expectedDomainName, "Expected domain name to be defined");
-});
+// "the domain exists" is registered in cross_service_common.ts (dispatches via domainHelpers).
 
-Given("the domain does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no OpenSearch domains.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the domain does not exist" is registered in cross_service_common.ts.
 
 // ── Given: domain status ──────────────────────────────────────────────────────
 
-Given('the domain is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create domain so it is ACTIVE
-  const expectedDomainName = await sfnOpenSearchCreateDomain(this);
-  // Assert: domain created
-  (this as any)._sfnOpenSearchDomainName = expectedDomainName;
-});
+// "the domain is {string}" is registered in cross_service_common.ts.
 
-Given('the domain is not "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no domain (simulates inactive domain).
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the domain is not {string}" is registered in cross_service_common.ts.
 
 Given('the domain is "PROCESSING"', async function (this: SdkWorld) {
   // @internal: Cannot force a domain into PROCESSING state via public API.
@@ -123,28 +141,9 @@ Given('the domain is not "PROCESSING"', async function (this: SdkWorld) {
 
 // ── Given: execution state ────────────────────────────────────────────────────
 
-Given(`an execution is "RUNNING"`, async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create state machine then start execution
-  const expectedSmArn = await sfnOpenSearchCreateSm(this);
-  (this as any)._sfnOpenSearchSmArn = expectedSmArn;
-  const { StartExecutionCommand } = require("@aws-sdk/client-sfn");
-  const execResult = await sfnOpenSearchSfnClient(this).send(
-    new StartExecutionCommand({
-      stateMachineArn: sfnOpenSearchSmArn(SFN_OPENSEARCH_TEST_SM),
-      input: SFN_OPENSEARCH_TEST_INPUT,
-    }),
-  );
-  // Assert: execution started
-  (this as any)._sfnOpenSearchExecArn = execResult.executionArn;
-  assert.ok(execResult.executionArn, "Expected executionArn in StartExecution response");
-});
+// "an execution is {string}" is registered in cross_service_common.ts (dispatches via executionHelpers).
 
-Given(`no execution is "RUNNING"`, async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no executions.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "no execution is {string}" is registered in cross_service_common.ts.
 
 // ── Given: capacity ───────────────────────────────────────────────────────────
 
@@ -230,21 +229,7 @@ When(
 
 // ── Then: cross-service assertions ────────────────────────────────────────────
 
-Then('the domain is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const expectedDomainName = SFN_OPENSEARCH_TEST_DOMAIN_NAME;
-  const { DescribeDomainCommand } = require("@aws-sdk/client-opensearch");
-  // Act
-  const result = await sfnOpenSearchOpenSearchClient(this).send(
-    new DescribeDomainCommand({ DomainName: expectedDomainName }),
-  );
-  // Assert
-  assert.ok(
-    result.DomainStatus,
-    `Expected domain "${expectedDomainName}" to be ACTIVE but status was not found; expected_domain_name=${expectedDomainName}`,
-  );
-});
+// "the domain is {string}" is registered in cross_service_common.ts.
 
 Then('the domain is "ACTIVE" again', async function (this: SdkWorld) {
   // @internal: Cannot observe internal domain ACTIVE recovery in lws.

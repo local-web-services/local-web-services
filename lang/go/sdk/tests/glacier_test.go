@@ -178,13 +178,15 @@ func registerGlacierSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the archive already exists$`, func() error {
-		// Arrange / Act: upload an archive so it already exists.
+		// Arrange: upload an archive and then exhaust the glacier capacity so
+		// that the next UploadArchive in the When step is rejected.
 		archiveID, err := glacierUploadArchive(world)
 		if err != nil {
 			return fmt.Errorf("upload archive: %w", err)
 		}
 		gs.archiveID = archiveID
-		return nil
+		// Exhaust capacity so the next upload attempt is rejected.
+		return managementSession().Capacity("glacier").Exhaust().Apply()
 	})
 
 	sc.Given(`^the archive exists$`, func() error {

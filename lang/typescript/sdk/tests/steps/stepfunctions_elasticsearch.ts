@@ -1,8 +1,10 @@
 /** Step definitions: stepfunctions_elasticsearch cross-service scenarios — unique steps only */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { DomainStepHelpers } from "../support/world";
+import type { ExecutionStepHelpers } from "../support/world";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -54,6 +56,45 @@ async function sfnElasticsearchCreateDomain(world: SdkWorld): Promise<void> {
 }
 
 // ── Background ────────────────────────────────────────────────────────────────
+// ── Before hook: register executionHelpers for stepfunctionselasticsearch scenarios ────────────
+
+Before({ tags: "@stepfunctionselasticsearch" }, function (this: SdkWorld) {
+  const executionHelpersImpl: ExecutionStepHelpers = {
+    setupExecutionRunning: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create state machine then start execution
+      const expectedSmArn = await sfnElasticsearchCreateSm(this);
+      (world as any)._sfnElasticsearchSmArn = expectedSmArn;
+      const { StartExecutionCommand } = require("@aws-sdk/client-sfn");
+      const execResult = await sfnElasticsearchSfnClient(this).send(
+        new StartExecutionCommand({
+          stateMachineArn: sfnElasticsearchSmArn(SFN_ELASTICSEARCH_TEST_SM),
+          input: SFN_ELASTICSEARCH_TEST_INPUT,
+        }),
+      );
+      // Assert: execution started
+      (world as any)._sfnElasticsearchExecArn = execResult.executionArn;
+      assert.ok(execResult.executionArn, "Expected executionArn in StartExecution response");
+    },
+  };
+  this.executionHelpers = executionHelpersImpl;
+
+  const domainHelpersImpl: DomainStepHelpers = {
+    setupDomainExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act
+      try {
+        await sfnElasticsearchCreateDomain(this);
+      } catch {
+        // domain may already exist
+      }
+      // Assert: domain exists
+    },
+  };
+  this.domainHelpers = domainHelpersImpl;
+});
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
@@ -76,22 +117,9 @@ Given("the domain already exists", async function (this: SdkWorld) {
   // Assert: domain exists
 });
 
-Given("the domain exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  try {
-    await sfnElasticsearchCreateDomain(this);
-  } catch {
-    // domain may already exist
-  }
-  // Assert: domain exists
-});
+// "the domain exists" is registered in cross_service_common.ts (dispatches via domainHelpers).
 
-Given("the domain does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no domains.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the domain does not exist" is registered in cross_service_common.ts.
 
 // ── Given: domain status ───────────────────────────────────────────────────────
 
@@ -131,28 +159,9 @@ Given('the domain is not "AVAILABLE"', async function (this: SdkWorld) {
 
 // ── Given: execution state ────────────────────────────────────────────────────
 
-Given('an execution is "RUNNING"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create state machine then start execution
-  const expectedSmArn = await sfnElasticsearchCreateSm(this);
-  (this as any)._sfnElasticsearchSmArn = expectedSmArn;
-  const { StartExecutionCommand } = require("@aws-sdk/client-sfn");
-  const execResult = await sfnElasticsearchSfnClient(this).send(
-    new StartExecutionCommand({
-      stateMachineArn: sfnElasticsearchSmArn(SFN_ELASTICSEARCH_TEST_SM),
-      input: SFN_ELASTICSEARCH_TEST_INPUT,
-    }),
-  );
-  // Assert: execution started
-  (this as any)._sfnElasticsearchExecArn = execResult.executionArn;
-  assert.ok(execResult.executionArn, "Expected executionArn in StartExecution response");
-});
+// "an execution is {string}" is registered in cross_service_common.ts (dispatches via executionHelpers).
 
-Given('no execution is "RUNNING"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no executions.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "no execution is {string}" is registered in cross_service_common.ts.
 
 // ── Given: capacity ───────────────────────────────────────────────────────────
 

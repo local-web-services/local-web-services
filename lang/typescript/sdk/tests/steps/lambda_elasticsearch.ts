@@ -10,6 +10,7 @@
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { DomainStepHelpers } from "../support/world";
 
 const LAMBDA_ELASTICSEARCH_TEST_FUNC = "test-lambda-elasticsearch-1";
 const LAMBDA_ELASTICSEARCH_TEST_DOMAIN = "test-lambda-elasticsearch-domain-1";
@@ -86,6 +87,17 @@ Before({ tags: "@lambdaelasticsearch" }, function (this: SdkWorld) {
       );
     },
   };
+
+  const domainHelpersImpl: DomainStepHelpers = {
+    setupDomainExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act
+      await lambdaElasticsearchCreateDomain(world);
+      // Assert: domain created
+    },
+  };
+  this.domainHelpers = domainHelpersImpl;
 });
 
 // ── Given: domain state ───────────────────────────────────────────────────────
@@ -103,48 +115,13 @@ Given("the domain already exists", async function (this: SdkWorld) {
   // Assert: domain created
 });
 
-Given("the domain exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await lambdaElasticsearchCreateDomain(this);
-  // Assert: domain created
-});
+// "the domain exists" is registered in cross_service_common.ts (dispatches via domainHelpers).
 
-Given("the domain is {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "AVAILABLE") {
-    // Act: create the domain so it is AVAILABLE
-    await lambdaElasticsearchCreateDomain(this);
-    return;
-  }
-  if (state === "PROCESSING") {
-    // Act: create the domain; PROCESSING state is set by UpdateElasticsearchDomainConfig
-    await lambdaElasticsearchCreateDomain(this);
-    return;
-  }
-});
+// "the domain is {string}" is registered in cross_service_common.ts (dispatches via domainHelpers).
 
-Given("the domain is not {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "AVAILABLE") {
-    // Act: create the domain; lws does not expose non-AVAILABLE state via public API
-    await lambdaElasticsearchCreateDomain(this);
-    return;
-  }
-  if (state === "PROCESSING") {
-    // Act: create the domain so it is not in PROCESSING state
-    await lambdaElasticsearchCreateDomain(this);
-    return;
-  }
-});
+// "the domain is not {string}" is registered in cross_service_common.ts.
 
-Given("the domain does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no domains.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the domain does not exist" is registered in cross_service_common.ts.
 
 // ── Given: invocation state ───────────────────────────────────────────────────
 

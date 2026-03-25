@@ -50,18 +50,8 @@ Given('the integrated function is not "ACTIVE"', async function (this: SdkWorld)
 
 // ── Given: capacity / slot state ──────────────────────────────────────────────
 
-Given("a request slot is available", async function (this: SdkWorld) {
-  // Arrange: set apigateway capacity to unlimited so request slots are available
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await this.session!.capacity("apigateway").unlimited().apply();
-  // Assert: capacity applied
-});
-
-Given("no request slot is available", async function (this: SdkWorld) {
-  // @internal: Cannot send requests through API Gateway Lambda integration in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "a request slot is available" — registered in capacity.ts
+// "no request slot is available" — registered in capacity.ts
 
 // ── When: actions ──────────────────────────────────────────────────────────────
 

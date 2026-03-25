@@ -8,6 +8,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
+import software.amazon.awssdk.services.docdb.DocDbClient;
 import software.amazon.awssdk.services.memorydb.MemoryDbClient;
 import software.amazon.awssdk.services.memorydb.model.ACL;
 import software.amazon.awssdk.services.memorydb.model.Cluster;
@@ -46,6 +47,9 @@ public class MemorydbSteps {
   private static final String TAG_VALUE = "test-memorydb-tag-value-1";
   private static final String CLUSTER_ARN =
       "arn:aws:memorydb:us-east-1:000000000000:cluster/" + CLUSTER_NAME;
+  // DocDB constants — used in dispatch for shared step text with DocDB scenarios.
+  // Must match DocdbSteps constants to enable cross-service dispatch.
+  private static final String DOCDB_SNAPSHOT_ID = "test-docdb-snapshot-1";
 
   private final WorldContext world;
 
@@ -722,6 +726,13 @@ public class MemorydbSteps {
 
   // ── Snapshot assertion steps ──────────────────────────────────────────────────
 
+  /**
+   * Unified snapshot + cluster state assertion for MemoryDB and ElastiCache scenarios.
+   *
+   * <p>Both services share this step text. For ElastiCache the snapshot status is only checked via
+   * success flag (ElastiCache snapshots resolve immediately); for MemoryDB the MemoryDB client is
+   * used to verify actual snapshot status.
+   */
   @Then("the snapshot is in {string} state and the cluster is {string}")
   public void theSnapshotIsInStateAndTheClusterIs(
       String expectedSnapshotStatus, String clusterStatus) {
@@ -736,6 +747,11 @@ public class MemorydbSteps {
             + world.lastError
             + "; expected_success="
             + expectedSuccess);
+    if ("elasticache".equals(world.lastClusterService)) {
+      // No-op for ElastiCache: snapshot status is immediately available; success check above
+      // is sufficient.
+      return;
+    }
     try (MemoryDbClient client = world.session.memoryDbClient()) {
       DescribeSnapshotsResponse result =
           client.describeSnapshots(r -> r.snapshotName(SNAPSHOT_NAME));
@@ -762,6 +778,12 @@ public class MemorydbSteps {
     }
   }
 
+  /**
+   * Unified snapshot state assertion for MemoryDB and DocDB scenarios.
+   *
+   * <p>Both services share this step text. Dispatches to the correct client based on {@link
+   * WorldContext#lastClusterService}; "docdb" → DocDB client, else → MemoryDB client.
+   */
   @Then("the snapshot is in {string} state")
   public void theSnapshotIsInState(String expectedStatus) {
     // Arrange: no additional setup required
@@ -775,22 +797,56 @@ public class MemorydbSteps {
             + world.lastError
             + "; expected_success="
             + expectedSuccess);
-    try (MemoryDbClient client = world.session.memoryDbClient()) {
-      DescribeSnapshotsResponse result =
-          client.describeSnapshots(r -> r.snapshotName(SNAPSHOT_NAME));
-      List<Snapshot> snapshots = result.snapshots();
+    if ("docdb".equals(world.lastClusterService)) {
+      assertDocDbSnapshotStatus(expectedStatus.toLowerCase(), DOCDB_SNAPSHOT_ID);
+    } else {
+      try (MemoryDbClient client = world.session.memoryDbClient()) {
+        DescribeSnapshotsResponse result =
+            client.describeSnapshots(r -> r.snapshotName(SNAPSHOT_NAME));
+        List<Snapshot> snapshots = result.snapshots();
+        assertFalse(
+            snapshots.isEmpty(),
+            "expected snapshot '"
+                + SNAPSHOT_NAME
+                + "' to exist but not found; expected_snapshot="
+                + SNAPSHOT_NAME);
+        String actualStatus = snapshots.get(0).status();
+        String expectedStatusLower = expectedStatus.toLowerCase();
+        org.junit.jupiter.api.Assertions.assertEquals(
+            expectedStatusLower,
+            actualStatus,
+            "expected snapshot status '"
+                + expectedStatusLower
+                + "' but got '"
+                + actualStatus
+                + "'; expected_status="
+                + expectedStatusLower
+                + " actual_status="
+                + actualStatus);
+      }
+    }
+  }
+
+  private void assertDocDbSnapshotStatus(String expectedStatusLower, String snapshotId) {
+    // Arrange
+    try (DocDbClient client = world.session.docDbClient()) {
+      // Act
+      software.amazon.awssdk.services.docdb.model.DescribeDbClusterSnapshotsResponse result =
+          client.describeDBClusterSnapshots(r -> r.dbClusterSnapshotIdentifier(snapshotId));
+      java.util.List<software.amazon.awssdk.services.docdb.model.DBClusterSnapshot> snapshots =
+          result.dbClusterSnapshots();
+      // Assert
       assertFalse(
           snapshots.isEmpty(),
-          "expected snapshot '"
-              + SNAPSHOT_NAME
+          "expected DocDB snapshot '"
+              + snapshotId
               + "' to exist but not found; expected_snapshot="
-              + SNAPSHOT_NAME);
+              + snapshotId);
       String actualStatus = snapshots.get(0).status();
-      String expectedStatusLower = expectedStatus.toLowerCase();
       org.junit.jupiter.api.Assertions.assertEquals(
           expectedStatusLower,
           actualStatus,
-          "expected snapshot status '"
+          "expected DocDB snapshot status '"
               + expectedStatusLower
               + "' but got '"
               + actualStatus

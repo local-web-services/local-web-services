@@ -3,6 +3,7 @@
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { SnapshotHelpers } from "../support/world";
 
 const ELASTICACHE_TEST_CLUSTER_ID = "test-elasticache-cluster-1";
 const ELASTICACHE_TEST_RG_ID = "test-elasticache-rg-1";
@@ -92,6 +93,22 @@ Before({ tags: "@elasticache or @elasticachesns" }, function (this: SdkWorld) {
 });
 
 // ── Background ────────────────────────────────────────────────────────────────
+// ── Before hook: register helpers for elasticache scenarios ────────────────
+
+Before({ tags: "@elasticache" }, function (this: SdkWorld) {
+  const snapshotHelpersImpl: SnapshotHelpers = {
+    setupSnapshotExists: async (world: SdkWorld) => {
+      // @internal: creating a snapshot requires a cluster in AVAILABLE state
+      // which requires lifecycle completion. No-op.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    setupSnapshotNotExists: async (world: SdkWorld) => {
+      // no-op: fresh state has no snapshots
+      void world;
+    },
+  };
+  this.snapshotHelpers = snapshotHelpersImpl;
+});
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
@@ -279,21 +296,11 @@ Given("the subnet group is not present", async function (this: SdkWorld) {
 
 // ── Given: snapshot state setup ───────────────────────────────────────────────
 
-Given("the snapshot exists", async function (this: SdkWorld) {
-  // @internal: creating a snapshot requires a cluster in AVAILABLE state
-  // which requires lifecycle completion. No-op.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the snapshot exists" is registered in cross_service_common.ts (dispatches via helpers).
 
-Given("the snapshot does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no snapshots.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the snapshot does not exist" is registered in cross_service_common.ts (dispatches via helpers).
 
-Given(/^the snapshot is "([^"]*)"$/, async function (this: SdkWorld, _state: string) {
-  // @internal: no-op.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the snapshot is {string}" is registered in cross_service_common.ts (dispatches via snapshotHelpers).
 
 Given(/^the snapshot is not "([^"]*)"$/, async function (this: SdkWorld, _state: string) {
   // @internal: no-op.

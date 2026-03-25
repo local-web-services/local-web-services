@@ -13,6 +13,7 @@
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { VaultStepHelpers } from "../support/world";
 
 const LAMBDA_GLACIER_TEST_FUNC = "test-lambda-glacier-1";
 const LAMBDA_GLACIER_TEST_VAULT = "test-lambda-glacier-vault-1";
@@ -91,6 +92,17 @@ Before({ tags: "@lambdaglacier" }, function (this: SdkWorld) {
       );
     },
   };
+
+  const vaultHelpersImpl: VaultStepHelpers = {
+    setupVaultExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act
+      await lambdaGlacierCreateVault(this);
+      // Assert: vault created
+    },
+  };
+  this.vaultHelpers = vaultHelpersImpl;
 });
 
 // ── Given: vault state ────────────────────────────────────────────────────────
@@ -108,13 +120,7 @@ Given("the vault already exists", async function (this: SdkWorld) {
   // Assert: vault created
 });
 
-Given("the vault exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await lambdaGlacierCreateVault(this);
-  // Assert: vault created
-});
+// "the vault exists" is registered in cross_service_common.ts (dispatches via helpers).
 
 Given('the vault "EXISTS"', async function (this: SdkWorld) {
   // Arrange
@@ -147,10 +153,7 @@ Given('the vault is not "DELETED"', async function (this: SdkWorld) {
   // Assert: vault created (not DELETED)
 });
 
-Given("the vault does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no vaults.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the vault does not exist" is registered in cross_service_common.ts (dispatches via helpers).
 
 Given('the vault does not exist or is "DELETED"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: fresh state has no vaults.

@@ -205,21 +205,8 @@ Given('the integrated state machine is not "ACTIVE"', async function (this: SdkW
 // Note: "the execution slot is available/not available" are registered in
 // stepfunctions.ts; the "a request slot" and "an execution slot" variants are new.
 
-Given("a request slot is available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: set unlimited capacity for apigateway
-  await this.session!.capacity("apigateway").unlimited().apply();
-  // Assert: capacity is unlimited
-});
-
-Given("no request slot is available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: exhaust apigateway request capacity
-  await this.session!.capacity("apigateway").exhaust().apply();
-  // Assert: capacity is exhausted
-});
+// "a request slot is available" is registered in capacity.ts.
+// "no request slot is available" is registered in capacity.ts.
 
 // "an execution slot is available" is registered in cross_service_common.ts.
 

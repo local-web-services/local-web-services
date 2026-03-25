@@ -1,8 +1,10 @@
 /** Step definitions: glacier service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { UploadStepHelpers } from "../support/world";
+import type { VaultStepHelpers } from "../support/world";
 
 const GLACIER_TEST_VAULT = "test-glacier-vault-1";
 const GLACIER_TEST_ARCHIVE = "test-glacier-archive-1";
@@ -51,6 +53,32 @@ async function glacierInitiateMultipartUpload(world: SdkWorld): Promise<string> 
 }
 
 // ── Background ────────────────────────────────────────────────────────────────
+// ── Before hook: register helpers for glacier scenarios ────────────────
+
+Before({ tags: "@glacier" }, function (this: SdkWorld) {
+  const vaultHelpersImpl: VaultStepHelpers = {
+    setupVaultExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act
+      await glacierCreateVault(world);
+      // Assert: vault created
+    },
+  };
+  this.vaultHelpers = vaultHelpersImpl;
+
+  const uploadHelpersImpl: UploadStepHelpers = {
+    setupUploadExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act
+      const uploadId = await glacierInitiateMultipartUpload(world);
+      // Assert: upload initiated
+      (world as any)._glacierUploadId = uploadId;
+    },
+  };
+  this.uploadHelpers = uploadHelpersImpl;
+});
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
@@ -69,13 +97,7 @@ Given("the vault already exists", async function (this: SdkWorld) {
   // Assert: vault created
 });
 
-Given("the vault exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await glacierCreateVault(this);
-  // Assert: vault created
-});
+// "the vault exists" is registered in cross_service_common.ts (dispatches via helpers).
 
 Given('the vault is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: vaults are always ACTIVE after creation in lws.
@@ -87,10 +109,7 @@ Given('the vault is not "ACTIVE"', async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("the vault does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no vaults.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the vault does not exist" is registered in cross_service_common.ts (dispatches via helpers).
 
 Given("the vault has no archives", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: fresh vault has no archives.
@@ -250,14 +269,7 @@ Given("the upload already exists", async function (this: SdkWorld) {
   (this as any)._glacierUploadId = uploadId;
 });
 
-Given("the upload exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const uploadId = await glacierInitiateMultipartUpload(this);
-  // Assert: upload initiated
-  (this as any)._glacierUploadId = uploadId;
-});
+// "the upload exists" is registered in cross_service_common.ts (dispatches via helpers).
 
 Given("the upload is InProgress", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: uploads are InProgress immediately after initiation.

@@ -2,7 +2,7 @@
 
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, BusStepHelpers } from "../support/world";
 
 const NEPTUNE_EVENTS_TEST_BUS = "test-neptune-events-bus-1";
 const NEPTUNE_EVENTS_TEST_CLUSTER = "test-neptune-events-cluster-1";
@@ -70,6 +70,32 @@ Before({ tags: "@neptuneevents" }, function (this: SdkWorld) {
       );
     },
   };
+  const busHelpers: BusStepHelpers = {
+    createBus: async (world: SdkWorld) => {
+      await ensureNeptuneEventsBus(world);
+    },
+    deleteBus: async (world: SdkWorld) => {
+      const { DeleteEventBusCommand } = require("@aws-sdk/client-eventbridge");
+      try {
+        await neptuneEventsEbClient(world).send(
+          new DeleteEventBusCommand({ Name: NEPTUNE_EVENTS_TEST_BUS }),
+        );
+      } catch {
+        // bus may not exist
+      }
+    },
+    assertBusStatus: async (world: SdkWorld, expectedState: string) => {
+      if (expectedState !== "ACTIVE") return;
+      assert.ok(world.session, "Expected session to be initialized");
+      const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
+      const result = await neptuneEventsEbClient(world).send(new ListEventBusesCommand({}));
+      const buses: Array<{ Name?: string }> = result.EventBuses ?? [];
+      const expectedBusName = NEPTUNE_EVENTS_TEST_BUS;
+      const actualFound = buses.some((b) => b.Name === expectedBusName);
+      assert.ok(actualFound, `Expected event bus "${expectedBusName}" to be ACTIVE but not found`);
+    },
+  };
+  this.busHelpers = busHelpers;
 });
 
 // ── Background ────────────────────────────────────────────────────────────────
@@ -103,10 +129,7 @@ Given("cid in cluster_status", async function (this: SdkWorld) {
 
 // "the bus exists" is registered in cross_service_common.ts.
 
-Given('the bus is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: buses are ACTIVE by default after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the bus is {string}" (Given and Then) — registered in cross_service_common.ts (dispatches via busHelpers)
 
 Given('the bus is already "DELETED"', async function (this: SdkWorld) {
   // Arrange
@@ -187,18 +210,7 @@ When("the Neptune cluster finishes stopping", async function (this: SdkWorld) {
 
 // "the cluster is {string}" is registered in cluster_common.ts (dispatches to assertClusterStatus).
 
-Then('the bus is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  const result = await neptuneEventsEbClient(this).send(new ListEventBusesCommand({}));
-  const buses: Array<{ Name?: string }> = result.EventBuses ?? [];
-  // Assert
-  const expectedBusName = NEPTUNE_EVENTS_TEST_BUS;
-  const actualFound = buses.some((b) => b.Name === expectedBusName);
-  assert.ok(actualFound, `Expected event bus "${expectedBusName}" to be ACTIVE but not found`);
-});
+// "the bus is {string}" (Then) — registered in cross_service_common.ts (dispatches via busHelpers)
 
 Then('the bus is "DELETED" and Neptune event delivery will fail', async function (this: SdkWorld) {
   // Arrange

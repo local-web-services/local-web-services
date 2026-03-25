@@ -494,6 +494,7 @@ public class ElasticacheSteps {
   @When("a snapshot is created from an available redis cache cluster")
   public void aSnapshotIsCreatedFromAnAvailableRedisCacheCluster() {
     // Arrange: (cluster state set up by Given steps)
+    world.lastClusterService = "elasticache";
     try (ElastiCacheClient client = world.session.elastiCacheClient()) {
       // Act
       var result =
@@ -817,20 +818,8 @@ public class ElasticacheSteps {
     // @internal: cluster deletion completion not observable via public API.
   }
 
-  @Then("the snapshot is in \"CREATING\" state and the cluster is \"SNAPSHOTTING\"")
-  public void theSnapshotIsInCreatingStateAndTheClusterIsSnapshotting() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected create_snapshot to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-  }
+  // "the snapshot is in {string} state and the cluster is {string}" → MemorydbSteps
+  // (unified handler; ElastiCache snapshot creation success verified by MemorydbSteps check)
 
   // "the replication group is in {string} state" → handled by parameterized @Then above
 

@@ -234,22 +234,8 @@ Given("the topic exists and is {string}", async function (this: SdkWorld, _state
 // "a message slot is available" and "no message slot is available" are
 // registered in cross_service_common.ts.
 
-Given("a request slot is available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: set apigateway capacity to unlimited
-  await this.session!.capacity("apigateway").unlimited().apply();
-  // Assert: capacity is unlimited
-});
-
-Given("no request slot is available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: exhaust apigateway request capacity
-  (this as any)._apigwSnsNoRequestSlot = true;
-  await this.session!.capacity("apigateway").exhaust().apply();
-  // Assert: capacity is exhausted
-});
+// "a request slot is available" is registered in capacity.ts.
+// "no request slot is available" is registered in capacity.ts.
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 

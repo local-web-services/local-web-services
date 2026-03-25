@@ -1,8 +1,9 @@
 /** Step definitions: elasticsearch service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { DomainStepHelpers } from "../support/world";
 
 const ES_DOMAIN_NAME = "test-elasticsearch-domain-1";
 const ES_TAG_KEY = "e2e-es-tag-key-1";
@@ -46,6 +47,23 @@ async function esDomainARN(world: SdkWorld): Promise<string | null> {
 }
 
 // ── Background ────────────────────────────────────────────────────────────────
+// ── Before hook: register domainHelpers for elasticsearch scenarios ────────────────
+
+Before({ tags: "@elasticsearch" }, function (this: SdkWorld) {
+  const domainHelpersImpl: DomainStepHelpers = {
+    setupDomainExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act
+      const exists = await esDomainExists(this);
+      if (!exists) {
+        await esCreateDomain(this);
+      }
+      // Assert: domain created or already present
+    },
+  };
+  this.domainHelpers = domainHelpersImpl;
+});
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
@@ -64,26 +82,11 @@ Given("the domain already exists", async function (this: SdkWorld) {
   // Assert: domain created
 });
 
-Given("the domain exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const exists = await esDomainExists(this);
-  if (!exists) {
-    await esCreateDomain(this);
-  }
-  // Assert: domain created or already present
-});
+// "the domain exists" is registered in cross_service_common.ts (dispatches via domainHelpers).
 
-Given('the domain is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: lws domains are immediately active after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the domain is {string}" is registered in cross_service_common.ts.
 
-Given('the domain is not "ACTIVE"', async function (this: SdkWorld) {
-  // @internal: requires internal state manipulation — not reachable via public API.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the domain is not {string}" is registered in cross_service_common.ts.
 
 Given('the domain is "CREATING"', async function (this: SdkWorld) {
   // @internal: domain is in CREATING immediately after CreateElasticsearchDomain — not reachable via public API.
@@ -141,10 +144,7 @@ Given("the domain is deleted", async function (this: SdkWorld) {
   // Assert: domain is deleted
 });
 
-Given("the domain does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no domains.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the domain does not exist" is registered in cross_service_common.ts.
 
 Given('the domain is "PROCESSING"', async function (this: SdkWorld) {
   // @internal: requires internal state manipulation — not reachable via public API.

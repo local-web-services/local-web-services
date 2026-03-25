@@ -1,8 +1,9 @@
 /** Step definitions: s3api service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { UploadStepHelpers } from "../support/world";
 
 const S3API_TEST_BUCKET = "e2e-s3api-test-bucket-1";
 const S3API_TEST_SRC_BUCKET = "e2e-src-bkt-1";
@@ -51,7 +52,27 @@ async function deleteObject(world: SdkWorld, bucketName: string, key: string): P
   }
 }
 
-// ── Background ────────────────────────────────────────────────────────────────
+// ── Before hook: register helpers for s3api scenarios ────────────────────────
+
+Before({ tags: "@s3api" }, function (this: SdkWorld) {
+  const uploadHelpersImpl: UploadStepHelpers = {
+    setupUploadExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateMultipartUploadCommand } = require("@aws-sdk/client-s3");
+      // Act
+      const resp = await s3Client(world).send(
+        new CreateMultipartUploadCommand({ Bucket: S3API_TEST_BUCKET, Key: S3API_TEST_KEY }),
+      );
+      (world as any)._s3UploadId = resp.UploadId;
+      (world as any)._s3Etags = [];
+      // Assert: upload created
+    },
+  };
+  this.uploadHelpers = uploadHelpersImpl;
+});
+
+// -- Background
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
@@ -314,18 +335,7 @@ Given("the upload does not exist", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("the upload exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateMultipartUploadCommand } = require("@aws-sdk/client-s3");
-  // Act
-  const resp = await s3Client(this).send(
-    new CreateMultipartUploadCommand({ Bucket: S3API_TEST_BUCKET, Key: S3API_TEST_KEY }),
-  );
-  (this as any)._s3UploadId = resp.UploadId;
-  (this as any)._s3Etags = [];
-  // Assert: upload created
-});
+// "the upload exists" is registered in cross_service_common.ts (dispatches via helpers).
 
 Given("the upload already exists", async function (this: SdkWorld) {
   // S3 allows multiple concurrent multipart uploads for the same key; no-op.

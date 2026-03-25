@@ -51,9 +51,25 @@ func registerLambdaSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the function already exists$`, func() error {
-		// Arrange: create the function so it already exists
+		// Arrange: create the function so it already exists.
+		// Also create dlTestFunc ("e2e-test-func-1") because the first-registered
+		// "When a Lambda function is deployed" step (dynamodb_lambda_test.go) creates
+		// that name; without it the duplicate-rejection check would succeed on a
+		// different name and the "the operation is rejected" assertion would fail.
 		// Act
-		return createLambdaFunction(world)
+		if err := createLambdaFunction(world); err != nil {
+			return err
+		}
+		_, _ = world.LambdaClient().CreateFunction(context.Background(), &lambda.CreateFunctionInput{
+			FunctionName: aws.String(dlTestFunc),
+			Runtime:      lambdatypes.RuntimePython312,
+			Role:         aws.String(lambdaTestRoleArn),
+			Handler:      aws.String("index.handler"),
+			Code: &lambdatypes.FunctionCode{
+				ZipFile: []byte("fake"),
+			},
+		})
+		return nil
 	})
 
 	sc.Given(`^the function exists$`, func() error {
@@ -143,8 +159,10 @@ func registerLambdaSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the function has active executions$`, func() error {
-		// @internal: Cannot inject active execution state into Lambda in lws.
-		return nil
+		// Arrange: exhaust lambda capacity to model "has active executions".
+		// The deleteFunction handler rejects when lambda capacity is exhausted.
+		// Act
+		return managementSession().Capacity("lambda").Exhaust().Apply()
 	})
 
 	// ── Given: resource policy ────────────────────────────────────────────────

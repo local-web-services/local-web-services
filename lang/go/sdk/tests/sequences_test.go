@@ -832,6 +832,7 @@ func isAlreadyExists(err error) bool {
 		strings.Contains(msg, "BucketAlreadyExists") ||
 		strings.Contains(msg, "QueueAlreadyExists") ||
 		strings.Contains(msg, "ParameterAlreadyExists") ||
+		strings.Contains(msg, "ConflictException") ||
 		strings.Contains(msg, "AlreadyExists")
 }
 

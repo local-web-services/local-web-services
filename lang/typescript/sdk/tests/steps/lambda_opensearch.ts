@@ -7,6 +7,7 @@
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { DomainStepHelpers } from "../support/world";
 
 const LAMBDA_OPENSEARCH_TEST_FUNC = "test-lambda-opensearch-1";
 const LAMBDA_OPENSEARCH_TEST_DOMAIN = "test-lambda-opensearch-domain-1";
@@ -76,6 +77,21 @@ Before({ tags: "@lambdaopensearch" }, function (this: SdkWorld) {
       );
     },
   };
+
+  const domainHelpersImpl: DomainStepHelpers = {
+    setupDomainExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act
+      try {
+        await lambdaOpenSearchCreateDomain(this);
+      } catch {
+        // domain may already exist
+      }
+      // Assert: domain exists
+    },
+  };
+  this.domainHelpers = domainHelpersImpl;
 });
 
 // ── Given: invocation state ───────────────────────────────────────────────────
@@ -95,34 +111,11 @@ Given("no document slot is available", async function (this: SdkWorld) {
 
 // ── Given: OpenSearch domain/index state unique to cross-service scenarios ─────
 
-Given("the domain exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  try {
-    await lambdaOpenSearchCreateDomain(this);
-  } catch {
-    // domain may already exist
-  }
-  // Assert: domain exists
-});
+// "the domain exists" is registered in cross_service_common.ts (dispatches via domainHelpers).
 
-Given("the domain is {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange: ensure domain exists (ACTIVE immediately after creation in lws)
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  try {
-    await lambdaOpenSearchCreateDomain(this);
-  } catch {
-    // domain may already exist
-  }
-  // Assert: domain is in requested state
-});
+// "the domain is {string}" is registered in cross_service_common.ts (dispatches via domainHelpers).
 
-Given("the domain is not {string}", async function (this: SdkWorld, _state: string) {
-  // @internal: Cannot force a domain into a non-ACTIVE state via public APIs.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the domain is not {string}" is registered in cross_service_common.ts.
 
 Given("the index exists", async function (this: SdkWorld) {
   // No-op: index existence is managed via the OpenSearch domain endpoint, not management API.
@@ -221,23 +214,7 @@ When(
 
 // "the function is {string}" is registered in lambda.ts (dispatches via functionHelpers.assertFunctionActive).
 
-Then("the domain is {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeDomainCommand } = require("@aws-sdk/client-opensearch");
-  // Act
-  const result = await lambdaOpenSearchOpenSearchClient(this).send(
-    new DescribeDomainCommand({ DomainName: LAMBDA_OPENSEARCH_TEST_DOMAIN }),
-  );
-  // Assert
-  const expectedName = LAMBDA_OPENSEARCH_TEST_DOMAIN;
-  const actualName = result.DomainStatus?.DomainName ?? "";
-  assert.strictEqual(
-    actualName,
-    expectedName,
-    `Expected domain name "${expectedName}" but got "${actualName}"; expected_name=${expectedName} actual_name=${actualName}`,
-  );
-});
+// "the domain is {string}" is registered in cross_service_common.ts (dispatches via domainHelpers).
 
 Then('the index "EXISTS" and is ready to receive documents', async function (this: SdkWorld) {
   // @internal: Cannot verify index existence via management API alone.

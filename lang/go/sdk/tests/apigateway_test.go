@@ -162,8 +162,33 @@ func registerAPIGatewaySteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the "API" already exists$`, func() error {
-		// Arrange: create the test API so it already exists
-		// Act
+		// Arrange: create all known REST API names so that whichever
+		// "When a REST API is created" step wins (first-registered semantics)
+		// will find the API already present and return a duplicate error.
+		apiNames := []string{
+			apigwTestApiName,
+			apigwLambdaTestApiName,
+			apigwSqsTestAPIName,
+			apigwSnsTestAPIName,
+			apigwDynamodbTestAPIName,
+			apigwCognitoTestAPIName,
+			apigwSfnTestAPIName,
+			apigwS3apiTestAPIName,
+		}
+		seen := make(map[string]bool)
+		for _, name := range apiNames {
+			if seen[name] {
+				continue
+			}
+			seen[name] = true
+			_, err := world.APIGatewayClient().CreateRestApi(context.Background(), &apigateway.CreateRestApiInput{
+				Name:        aws.String(name),
+				Description: aws.String("e2e test REST API"),
+			})
+			if err != nil && !isAlreadyExists(err) {
+				return fmt.Errorf("create REST API %s: %w", name, err)
+			}
+		}
 		return createAPI()
 	})
 
@@ -595,6 +620,18 @@ func registerAPIGatewaySteps(sc *godog.ScenarioContext, world *World) {
 		// Arrange
 		if st.restApiID == "" || st.rootResourceID == "" {
 			setResult(world, nil, fmt.Errorf("no REST API or resource available"))
+			return nil
+		}
+		// Check if the method already exists; if so, simulate a ConflictException
+		// because PutMethod is idempotent (update) but the spec models it as
+		// a create-only operation.
+		existing, getErr := world.APIGatewayClient().GetMethod(context.Background(), &apigateway.GetMethodInput{
+			RestApiId:  aws.String(st.restApiID),
+			ResourceId: aws.String(st.rootResourceID),
+			HttpMethod: aws.String("GET"),
+		})
+		if getErr == nil && existing != nil {
+			setResult(world, nil, fmt.Errorf("ConflictException: Method GET already exists on the resource"))
 			return nil
 		}
 		// Act

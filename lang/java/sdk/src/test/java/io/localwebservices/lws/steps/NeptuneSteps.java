@@ -8,6 +8,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
+import software.amazon.awssdk.services.docdb.DocDbClient;
 import software.amazon.awssdk.services.neptune.NeptuneClient;
 import software.amazon.awssdk.services.neptune.model.DBClusterSnapshot;
 import software.amazon.awssdk.services.neptune.model.DBInstance;
@@ -28,6 +29,10 @@ public class NeptuneSteps {
   private static final String TEST_SNAPSHOT_ID = "test-neptune-snapshot-1";
   private static final String TEST_DB_CLASS = "db.r5.large";
   private static final String TEST_ENGINE = "neptune";
+  // DocDB constants — used in dispatch for shared step text with DocDB scenarios.
+  // Must match DocdbSteps constants to enable cross-service dispatch.
+  private static final String DOCDB_INSTANCE_ID = "test-docdb-instance-1";
+  private static final String DOCDB_SNAPSHOT_ID = "test-docdb-snapshot-1";
 
   private final WorldContext world;
 
@@ -148,6 +153,7 @@ public class NeptuneSteps {
   @When("a database instance is rebooted")
   public void aDatabaseInstanceIsRebooted() {
     // Arrange: (instance state set up by Given steps)
+    world.lastClusterService = "neptune";
     try (NeptuneClient client = world.session.neptuneClient()) {
       // Act
       var response = client.rebootDBInstance(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
@@ -224,6 +230,12 @@ public class NeptuneSteps {
     world.setSuccess(null);
   }
 
+  /**
+   * Unified instance state + cluster association assertion for Neptune and DocDB scenarios.
+   *
+   * <p>Both services share this step text. Dispatches to the correct client based on {@link
+   * WorldContext#lastClusterService}.
+   */
   @Then("the instance is in {string} state and associated with the cluster")
   public void theInstanceIsInStateAndAssociatedWithTheCluster(String expectedStatus) {
     // Arrange: no additional setup required
@@ -237,29 +249,19 @@ public class NeptuneSteps {
             + world.lastError
             + "; expected_success="
             + expectedSuccess);
-    try (NeptuneClient client = world.session.neptuneClient()) {
-      DescribeDbInstancesResponse result =
-          client.describeDBInstances(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
-      List<DBInstance> actualInstances = result.dbInstances();
-      assertNotNull(actualInstances, "expected DBInstances list but got null");
-      assertTrue(
-          !actualInstances.isEmpty(),
-          "expected instance '" + TEST_INSTANCE_ID + "' to exist but not found");
-      String actualStatus = actualInstances.get(0).dbInstanceStatus();
-      assertEquals(
-          expectedStatus,
-          actualStatus,
-          "expected instance status '"
-              + expectedStatus
-              + "' but got '"
-              + actualStatus
-              + "'; expected_status="
-              + expectedStatus
-              + " actual_status="
-              + actualStatus);
+    if ("neptune".equals(world.lastClusterService)) {
+      assertNeptuneInstanceStatus(expectedStatus, TEST_INSTANCE_ID);
+    } else {
+      assertDocDbInstanceStatus(expectedStatus, DOCDB_INSTANCE_ID);
     }
   }
 
+  /**
+   * Unified instance state assertion for Neptune and DocDB scenarios.
+   *
+   * <p>Both services share this step text. Dispatches to the correct client based on {@link
+   * WorldContext#lastClusterService}.
+   */
   @Then("the instance is in {string} state")
   public void theInstanceIsInState(String expectedStatus) {
     // Arrange: no additional setup required
@@ -273,14 +275,51 @@ public class NeptuneSteps {
             + world.lastError
             + "; expected_success="
             + expectedSuccess);
+    if ("neptune".equals(world.lastClusterService)) {
+      assertNeptuneInstanceStatus(expectedStatus, TEST_INSTANCE_ID);
+    } else {
+      assertDocDbInstanceStatus(expectedStatus, DOCDB_INSTANCE_ID);
+    }
+  }
+
+  /**
+   * Unified snapshot state + cluster link assertion for Neptune and DocDB scenarios.
+   *
+   * <p>Both services share this step text. Dispatches to the correct client based on {@link
+   * WorldContext#lastClusterService}.
+   */
+  @Then("the snapshot is in {string} state and linked to the cluster")
+  public void theSnapshotIsInStateAndLinkedToTheCluster(String expectedStatus) {
+    // Arrange: no additional setup required
+    // Act: action already performed in the When step
+    // Assert
+    boolean expectedSuccess = true;
+    boolean actualSuccess = world.lastSuccess;
+    assertTrue(
+        actualSuccess,
+        "expected operation to succeed but got error: "
+            + world.lastError
+            + "; expected_success="
+            + expectedSuccess);
+    if ("neptune".equals(world.lastClusterService)) {
+      assertNeptuneSnapshotStatus(expectedStatus, TEST_SNAPSHOT_ID);
+    } else {
+      assertDocDbSnapshotStatus(expectedStatus, DOCDB_SNAPSHOT_ID);
+    }
+  }
+
+  private void assertNeptuneInstanceStatus(String expectedStatus, String instanceId) {
+    // Arrange
     try (NeptuneClient client = world.session.neptuneClient()) {
+      // Act
       DescribeDbInstancesResponse result =
-          client.describeDBInstances(r -> r.dbInstanceIdentifier(TEST_INSTANCE_ID));
+          client.describeDBInstances(r -> r.dbInstanceIdentifier(instanceId));
       List<DBInstance> actualInstances = result.dbInstances();
+      // Assert
       assertNotNull(actualInstances, "expected DBInstances list but got null");
       assertTrue(
           !actualInstances.isEmpty(),
-          "expected instance '" + TEST_INSTANCE_ID + "' to exist but not found");
+          "expected instance '" + instanceId + "' to exist but not found");
       String actualStatus = actualInstances.get(0).dbInstanceStatus();
       assertEquals(
           expectedStatus,
@@ -296,27 +335,74 @@ public class NeptuneSteps {
     }
   }
 
-  @Then("the snapshot is in {string} state and linked to the cluster")
-  public void theSnapshotIsInStateAndLinkedToTheCluster(String expectedStatus) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected operation to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
+  private void assertDocDbInstanceStatus(String expectedStatus, String instanceId) {
+    // Arrange
+    try (DocDbClient client = world.session.docDbClient()) {
+      // Act
+      software.amazon.awssdk.services.docdb.model.DescribeDbInstancesResponse result =
+          client.describeDBInstances(r -> r.dbInstanceIdentifier(instanceId));
+      java.util.List<software.amazon.awssdk.services.docdb.model.DBInstance> actualInstances =
+          result.dbInstances();
+      // Assert
+      assertNotNull(actualInstances, "expected DBInstances list but got null");
+      assertTrue(
+          !actualInstances.isEmpty(),
+          "expected instance '" + instanceId + "' to exist but not found");
+      String actualStatus = actualInstances.get(0).dbInstanceStatus();
+      assertEquals(
+          expectedStatus,
+          actualStatus,
+          "expected instance status '"
+              + expectedStatus
+              + "' but got '"
+              + actualStatus
+              + "'; expected_status="
+              + expectedStatus
+              + " actual_status="
+              + actualStatus);
+    }
+  }
+
+  private void assertNeptuneSnapshotStatus(String expectedStatus, String snapshotId) {
+    // Arrange
     try (NeptuneClient client = world.session.neptuneClient()) {
+      // Act
       DescribeDbClusterSnapshotsResponse result =
-          client.describeDBClusterSnapshots(r -> r.dbClusterSnapshotIdentifier(TEST_SNAPSHOT_ID));
+          client.describeDBClusterSnapshots(r -> r.dbClusterSnapshotIdentifier(snapshotId));
       List<DBClusterSnapshot> actualSnapshots = result.dbClusterSnapshots();
+      // Assert
       assertNotNull(actualSnapshots, "expected DBClusterSnapshots list but got null");
       assertTrue(
           !actualSnapshots.isEmpty(),
-          "expected snapshot '" + TEST_SNAPSHOT_ID + "' to exist but not found");
+          "expected snapshot '" + snapshotId + "' to exist but not found");
+      String actualStatus = actualSnapshots.get(0).status();
+      assertEquals(
+          expectedStatus,
+          actualStatus,
+          "expected snapshot status '"
+              + expectedStatus
+              + "' but got '"
+              + actualStatus
+              + "'; expected_status="
+              + expectedStatus
+              + " actual_status="
+              + actualStatus);
+    }
+  }
+
+  private void assertDocDbSnapshotStatus(String expectedStatus, String snapshotId) {
+    // Arrange
+    try (DocDbClient client = world.session.docDbClient()) {
+      // Act
+      software.amazon.awssdk.services.docdb.model.DescribeDbClusterSnapshotsResponse result =
+          client.describeDBClusterSnapshots(r -> r.dbClusterSnapshotIdentifier(snapshotId));
+      java.util.List<software.amazon.awssdk.services.docdb.model.DBClusterSnapshot>
+          actualSnapshots = result.dbClusterSnapshots();
+      // Assert
+      assertNotNull(actualSnapshots, "expected DBClusterSnapshots list but got null");
+      assertTrue(
+          !actualSnapshots.isEmpty(),
+          "expected snapshot '" + snapshotId + "' to exist but not found");
       String actualStatus = actualSnapshots.get(0).status();
       assertEquals(
           expectedStatus,

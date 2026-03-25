@@ -2,7 +2,7 @@
 
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, BusStepHelpers } from "../support/world";
 
 const LE_TEST_FUNC = "e2e-test-func-1";
 const LE_TEST_BUS = "e2e-test-bus-1";
@@ -66,6 +66,37 @@ Before({ tags: "@lambdaevents" }, function (this: SdkWorld) {
       );
     },
   };
+  const busHelpers: BusStepHelpers = {
+    createBus: async (world: SdkWorld) => {
+      try {
+        await createBus(world);
+      } catch {
+        // bus may already exist
+      }
+    },
+    deleteBus: async (world: SdkWorld) => {
+      const { DeleteEventBusCommand } = require("@aws-sdk/client-eventbridge");
+      try {
+        await ebClient(world).send(new DeleteEventBusCommand({ Name: LE_TEST_BUS }));
+      } catch {
+        // bus may not exist
+      }
+    },
+    assertBusStatus: async (world: SdkWorld, expectedState: string) => {
+      if (expectedState !== "ACTIVE") return;
+      assert.ok(world.session, "Expected session to be initialized");
+      const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
+      const result = await ebClient(world).send(new ListEventBusesCommand({}));
+      const buses: Array<{ Name?: string }> = result.EventBuses ?? [];
+      const expectedBus = LE_TEST_BUS;
+      const actualFound = buses.some((b) => b.Name === expectedBus);
+      assert.ok(
+        actualFound,
+        `Expected event bus "${expectedBus}" to be ACTIVE but not found; expected_bus="${expectedBus}"`,
+      );
+    },
+  };
+  this.busHelpers = busHelpers;
 });
 
 // ── Given: bus state ──────────────────────────────────────────────────────────
@@ -76,10 +107,7 @@ Before({ tags: "@lambdaevents" }, function (this: SdkWorld) {
 
 // "the bus exists" is registered in cross_service_common.ts.
 
-Given('the bus is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: event buses are ACTIVE immediately after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the bus is {string}" (Given and Then) — registered in cross_service_common.ts (dispatches via busHelpers)
 
 Given('the bus is already "DELETED"', async function (this: SdkWorld) {
   // Arrange: delete the bus if present to reach a DELETED state
