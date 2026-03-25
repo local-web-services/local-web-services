@@ -101,5 +101,5 @@ import org.junit.platform.suite.api.*;
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "progress")
 @ConfigurationParameter(
     key = FILTER_TAGS_PROPERTY_NAME,
-    value = "(@minimal or @standard) and not @internal")
+    value = "(@minimal or @standard) and not @internal and not @lifecycle")
 public class CucumberRunnerTest {}

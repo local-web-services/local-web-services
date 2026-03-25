@@ -401,6 +401,7 @@ module.exports = {
       "../../../lang/specification/core/informal/cognito_idp/admin_add_user_to_group.feature",
       "../../../lang/specification/core/informal/cognito_idp/admin_remove_user_from_group.feature",
     ],
+    tags: "(@minimal or @standard) and not @internal and not @lifecycle",
     format: ["progress"],
     timeout: 60000,
     strict: false,
