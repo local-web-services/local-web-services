@@ -14,6 +14,13 @@ import type {
   StateMachineStepHelpers,
   TableStepHelpers,
   InstanceStepHelpers,
+  ExecutionStepHelpers,
+  DomainStepHelpers,
+  VaultStepHelpers,
+  PoolStepHelpers,
+  SnapshotHelpers,
+  UploadStepHelpers,
+  BusStepHelpers,
 } from "../support/world";
 
 // ── Shared resource name constants ────────────────────────────────────────────
@@ -1148,8 +1155,14 @@ Given("the state machine has an S3 task configured", async function (this: SdkWo
 Given("an execution is {string}", async function (this: SdkWorld, _state: string) {
   // Arrange
   assert.ok(this.session, "No session running");
+  const helpers = this.executionHelpers as ExecutionStepHelpers | null;
+  // Act: dispatch to service-specific execution helpers when registered
+  if (helpers?.setupExecutionRunning) {
+    await helpers.setupExecutionRunning(this);
+    return;
+  }
+  // Default: create state machine only (execution is started in subsequent steps)
   const sfnPort = this.session!.portFor("stepfunctions");
-  // Act: create the state machine (execution is started in subsequent Given/When steps)
   await fetch(`http://127.0.0.1:${sfnPort}`, {
     method: "POST",
     headers: {
@@ -1354,6 +1367,14 @@ Given("the table does not exist", function (this: SdkWorld) {
 Given("the target table is {string}", async function (this: SdkWorld, state: string) {
   // Arrange
   assert.ok(this.session, "No session running");
+  // Dispatch to service-specific target-table helper when registered (e.g. apigateway_dynamodb)
+  if (
+    state === "ACTIVE" &&
+    (this.tableHelpers as TableStepHelpers | null)?.handleTargetTableActive
+  ) {
+    await (this.tableHelpers as TableStepHelpers).handleTargetTableActive!(this);
+    return;
+  }
   const {
     DynamoDBClient,
     CreateTableCommand,
@@ -1902,6 +1923,42 @@ Then("the instance is not {string}", async function (this: SdkWorld, _expectedSt
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   // Default: no-op (cannot force instance into non-default state via public API)
+});
+
+Then("the domain exists", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const helpers = this.domainHelpers as DomainStepHelpers | null;
+  // Act: dispatch to service-specific domain helpers when registered
+  if (helpers?.setupDomainExists) {
+    await helpers.setupDomainExists(this);
+    return;
+  }
+  // Default: no-op
+});
+
+Then("the domain does not exist", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  // No-op: fresh state has no domains
+});
+
+Then("the domain is {string}", async function (this: SdkWorld, expectedStatus: string) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const helpers = this.domainHelpers as DomainStepHelpers | null;
+  // Act: dispatch to service-specific domain helpers when registered
+  if (helpers?.assertDomainStatus) {
+    await helpers.assertDomainStatus(this, expectedStatus);
+    return;
+  }
+  // Default: no-op
+});
+
+Then("the domain is not {string}", async function (this: SdkWorld, _expectedStatus: string) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  // No-op: cannot force domain into non-default state via public API
 });
 
 Then(
@@ -2540,6 +2597,20 @@ Given("the bus exists", async function (this: SdkWorld) {
 Given("the bus is {string}", async function (this: SdkWorld, state: string) {
   // Arrange
   assert.ok(this.session, "No session running");
+  // Dispatch via busHelpers when registered (cross-service scenarios with service-specific bus)
+  const helpers = this.busHelpers as BusStepHelpers | null;
+  if (helpers) {
+    if (state === "ACTIVE") {
+      await helpers.createBus(this);
+    } else if (state === "DELETED") {
+      (this as any)._busDeleted = true;
+      await helpers.deleteBus(this);
+    }
+    if (helpers.assertBusStatus) {
+      await helpers.assertBusStatus(this, state);
+    }
+    return;
+  }
   const port = this.session!.portFor("eventbridge");
   // Act: create the bus if needed; delete if DELETED state is required
   if (state !== "DELETED") {
@@ -2752,4 +2823,87 @@ Then(
 
 Then('every successful request references an "API" that exists', async function (this: SdkWorld) {
   // No-op: model-level invariant; trivially satisfied in isolated lws context.
+});
+
+// ── Dispatch: vault steps ─────────────────────────────────────────────────────
+
+Then("the vault exists", async function (this: SdkWorld) {
+  assert.ok(this.session, "Expected session to be initialized");
+  const helpers = this.vaultHelpers as VaultStepHelpers | null;
+  if (helpers?.setupVaultExists) {
+    await helpers.setupVaultExists(this);
+    return;
+  }
+  // no-op: lws creates vaults on demand
+});
+
+Then("the vault does not exist", async function (this: SdkWorld) {
+  assert.ok(this.session, "Expected session to be initialized");
+  // no-op: fresh state has no vaults
+});
+
+// ── Dispatch: pool steps ──────────────────────────────────────────────────────
+
+Then("the pool exists", async function (this: SdkWorld) {
+  assert.ok(this.session, "Expected session to be initialized");
+  const helpers = this.poolHelpers as PoolStepHelpers | null;
+  if (helpers?.setupPoolExists) {
+    await helpers.setupPoolExists(this);
+    return;
+  }
+  // no-op
+});
+
+Then("the pool is {string}", async function (this: SdkWorld, expectedStatus: string) {
+  assert.ok(this.session, "Expected session to be initialized");
+  const helpers = this.poolHelpers as PoolStepHelpers | null;
+  if (helpers?.assertPoolStatus) {
+    await helpers.assertPoolStatus(this, expectedStatus);
+    return;
+  }
+  // no-op: lws puts pools in ACTIVE state immediately
+});
+
+// ── Dispatch: snapshot steps ──────────────────────────────────────────────────
+
+Then("the snapshot exists", async function (this: SdkWorld) {
+  assert.ok(this.session, "Expected session to be initialized");
+  const helpers = this.snapshotHelpers as SnapshotHelpers | null;
+  if (helpers?.setupSnapshotExists) {
+    await helpers.setupSnapshotExists(this);
+    return;
+  }
+  // no-op
+});
+
+Then("the snapshot does not exist", async function (this: SdkWorld) {
+  assert.ok(this.session, "Expected session to be initialized");
+  const helpers = this.snapshotHelpers as SnapshotHelpers | null;
+  if (helpers?.setupSnapshotNotExists) {
+    await helpers.setupSnapshotNotExists(this);
+    return;
+  }
+  // no-op: fresh state has no snapshots
+});
+
+Then("the snapshot is {string}", async function (this: SdkWorld, expectedStatus: string) {
+  assert.ok(this.session, "Expected session to be initialized");
+  const helpers = this.snapshotHelpers as SnapshotHelpers | null;
+  if (helpers?.assertSnapshotStatus) {
+    await helpers.assertSnapshotStatus(this, expectedStatus);
+    return;
+  }
+  // no-op
+});
+
+// ── Dispatch: upload steps ────────────────────────────────────────────────────
+
+Then("the upload exists", async function (this: SdkWorld) {
+  assert.ok(this.session, "Expected session to be initialized");
+  const helpers = this.uploadHelpers as UploadStepHelpers | null;
+  if (helpers?.setupUploadExists) {
+    await helpers.setupUploadExists(this);
+    return;
+  }
+  // no-op
 });

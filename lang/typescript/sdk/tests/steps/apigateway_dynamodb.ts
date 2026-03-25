@@ -2,7 +2,7 @@
 
 import { Before, Given, When, Then } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, TableStepHelpers } from "../support/world";
 
 const APIGW_DYNAMODB_API_NAME = "e2e-test-api-1";
 const APIGW_DYNAMODB_TABLE = "e2e-test-table-1";
@@ -145,6 +145,23 @@ Before({ tags: "@apigatewaydynamodb" }, function (this: SdkWorld) {
       await apigwDdbCreateApi(world);
     },
   };
+  const tableHelpersImpl: TableStepHelpers = {
+    handleTableActive: async (world: SdkWorld) => {
+      try {
+        await apigwDdbCreateTable(world);
+      } catch {
+        // May already exist
+      }
+    },
+    handleTargetTableActive: async (world: SdkWorld) => {
+      try {
+        await apigwDdbCreateTable(world);
+      } catch {
+        // May already exist
+      }
+    },
+  };
+  this.tableHelpers = tableHelpersImpl;
 });
 
 // ── Given: API state ──────────────────────────────────────────────────────────
@@ -215,17 +232,7 @@ Given('the table does not exist or is not "ACTIVE"', async function (this: SdkWo
 
 // "the table does not exist" is registered in cross_service_common.ts.
 
-Given('the target table is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  // Act: ensure table exists
-  try {
-    await apigwDdbCreateTable(this);
-  } catch {
-    // May already exist from a prior step
-  }
-  // Assert: table is immediately ACTIVE in lws
-});
+// "the target table is {string}" is registered in cross_service_common.ts (dispatches via tableHelpers.handleTargetTableActive).
 
 Given('the target table is not "ACTIVE"', async function (this: SdkWorld) {
   // No-op: cannot simulate non-ACTIVE target table in lws; @internal excluded.
@@ -245,23 +252,12 @@ Given('the table is already "DELETING"', async function (this: SdkWorld) {
 
 // ── Given: capacity / slot state ──────────────────────────────────────────────
 
-Given("a request slot is available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  // Act: set apigateway capacity to unlimited
-  await this.session!.capacity("apigateway").unlimited().apply();
-  // Assert: capacity configured
-});
-
-Given("no request slot is available", async function (this: SdkWorld) {
-  // No-op: cannot simulate exhausted request slots via public API; @internal excluded.
-});
+// "a request slot is available" — registered in capacity.ts
+// "no request slot is available" — registered in capacity.ts
 
 // "an item slot is available" is registered in cross_service_common.ts.
 
-Given("no item slot is available", async function (this: SdkWorld) {
-  // No-op: cannot simulate exhausted item slots via public API; @internal excluded.
-});
+// "no item slot is available" is registered in capacity.ts.
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 

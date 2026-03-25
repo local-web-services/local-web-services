@@ -90,15 +90,64 @@ export interface StateMachineStepHelpers {
   assertStateMachineActive?(world: SdkWorld): Promise<void>;
 }
 
-/** Callbacks for shared snapshot step definitions. Each step file that
- *  exercises snapshots registers these helpers in a tagged Before hook
- *  so the canonical consolidated step definitions can call them.
+/** Callbacks for shared vault step definitions (Glacier). Each step file that
+ *  exercises vaults registers these helpers in a tagged Before hook.
+ *
+ *  - setupVaultExists: creates the vault (Given "the vault exists") */
+export interface VaultStepHelpers {
+  setupVaultExists(world: SdkWorld): Promise<void>;
+}
+
+/** Callbacks for shared pool step definitions (Cognito). Each step file that
+ *  exercises user pools registers these helpers in a tagged Before hook.
+ *
+ *  - setupPoolExists: creates the pool (Given "the pool exists")
+ *  - assertPoolStatus (optional): asserts the pool is in the expected state */
+export interface PoolStepHelpers {
+  setupPoolExists(world: SdkWorld): Promise<void>;
+  assertPoolStatus?(world: SdkWorld, expectedStatus: string): Promise<void>;
+}
+
+/** Callbacks for shared snapshot step definitions (RDS-like services). Each step file
+ *  that exercises snapshots registers these helpers in a tagged Before hook.
  *
  *  - setupSnapshotExists: creates a snapshot (Given "the snapshot exists")
- *  - assertSnapshotStatus (optional): asserts the snapshot is in the expected state */
-export interface SnapshotStepHelpers {
+ *  - setupSnapshotNotExists: ensures no snapshot exists (Given "the snapshot does not exist")
+ *  - assertSnapshotStatus (optional): asserts the snapshot status */
+export interface SnapshotHelpers {
   setupSnapshotExists(world: SdkWorld): Promise<void>;
+  setupSnapshotNotExists?(world: SdkWorld): Promise<void>;
   assertSnapshotStatus?(world: SdkWorld, expectedStatus: string): Promise<void>;
+}
+
+/** Callbacks for shared upload step definitions. Each step file that exercises
+ *  multipart uploads registers these helpers in a tagged Before hook.
+ *
+ *  - setupUploadExists: creates a multipart upload (Given "the upload exists") */
+export interface UploadStepHelpers {
+  setupUploadExists(world: SdkWorld): Promise<void>;
+}
+
+/** Callbacks for shared domain step definitions (Elasticsearch/OpenSearch). Each step
+ *  file that exercises domains registers these helpers in a tagged Before hook
+ *  so the canonical consolidated step definitions can call them.
+ *
+ *  - setupDomainExists: creates the domain if it doesn't exist (Given "the domain exists")
+ *  - assertDomainStatus (optional): asserts the domain is in the expected state */
+export interface DomainStepHelpers {
+  setupDomainExists(world: SdkWorld): Promise<void>;
+  assertDomainStatus?(world: SdkWorld, expectedStatus: string): Promise<void>;
+}
+
+/** Callbacks for shared execution step definitions. Each cross-service step
+ *  file that exercises Step Functions executions registers these helpers in a
+ *  tagged Before hook so the canonical consolidated step definitions can call them.
+ *
+ *  - setupExecutionRunning: creates state machine and starts execution (Given "an execution is RUNNING")
+ *  - assertExecutionStatus (optional): asserts the execution is in the expected state */
+export interface ExecutionStepHelpers {
+  setupExecutionRunning(world: SdkWorld): Promise<void>;
+  assertExecutionStatus?(world: SdkWorld, expectedStatus: string): Promise<void>;
 }
 
 /** Callbacks for shared instance step definitions. Each step file that
@@ -119,6 +168,8 @@ export interface InstanceStepHelpers {
  *    text appears in both positions across different feature files. */
 export interface TableStepHelpers {
   handleTableActive(world: SdkWorld): Promise<void>;
+  /** Optional: handle target-table setup for cross-service scenarios (e.g. apigateway_dynamodb). */
+  handleTargetTableActive?(world: SdkWorld): Promise<void>;
 }
 
 export class SdkWorld extends World {
@@ -144,8 +195,18 @@ export class SdkWorld extends World {
   tableHelpers: TableStepHelpers | null = null;
   /** Instance step helpers registered by the active service's Before hook. */
   instanceHelpers: InstanceStepHelpers | null = null;
+  /** Execution step helpers registered by the active cross-service Before hook. */
+  executionHelpers: ExecutionStepHelpers | null = null;
+  /** Domain step helpers registered by the active service's Before hook. */
+  domainHelpers: DomainStepHelpers | null = null;
+  /** Vault step helpers registered by the active service's Before hook. */
+  vaultHelpers: VaultStepHelpers | null = null;
+  /** Pool step helpers registered by the active service's Before hook. */
+  poolHelpers: PoolStepHelpers | null = null;
   /** Snapshot step helpers registered by the active service's Before hook. */
-  snapshotHelpers: SnapshotStepHelpers | null = null;
+  snapshotHelpers: SnapshotHelpers | null = null;
+  /** Upload step helpers registered by the active service's Before hook. */
+  uploadHelpers: UploadStepHelpers | null = null;
 
   // Pending spec state for multi-step resource building
   _pendingSpec: {
@@ -203,6 +264,11 @@ Before(async function (this: SdkWorld, hookParam: ITestCaseHookParameter) {
   this.tableHelpers = null;
   this.instanceHelpers = null;
   this.snapshotHelpers = null;
+  this.executionHelpers = null;
+  this.domainHelpers = null;
+  this.vaultHelpers = null;
+  this.poolHelpers = null;
+  this.uploadHelpers = null;
 });
 
 After(async function (this: SdkWorld) {

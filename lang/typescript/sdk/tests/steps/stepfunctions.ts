@@ -661,23 +661,7 @@ Then("the list of tags is returned", async function (this: SdkWorld) {
   assert.ok(output && "tags" in output, "Expected 'tags' key in list_tags_for_resource response");
 });
 
-Then('the execution is "RUNNING"', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected start_execution to succeed but got error: ${this.lastCallResult.error}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  const output = this.lastCallResult.output as Record<string, unknown>;
-  assert.ok(
-    output && "executionArn" in output,
-    "Expected 'executionArn' in start_execution response",
-  );
-});
+// "the execution is {string}" is registered in stepfunctions_sqs.ts (handles RUNNING and other states).
 
 Then('the execution is "ABORTED"', async function (this: SdkWorld) {
   // Arrange
