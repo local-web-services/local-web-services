@@ -188,33 +188,6 @@ public class ApigatewayDynamodbSteps {
 
   // ── Given: API state ──────────────────────────────────────────────────────────
 
-  @Given("the \"API\" does not already exist")
-  public void theApiDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh session state has no REST APIs.
-  }
-
-  @Given("the \"API\" already exists")
-  public void theApiAlreadyExists() throws Exception {
-    // Arrange
-    // Act
-    apigwDdbCreateRestApi();
-    // Assert: creation succeeded
-  }
-
-  @Given("the \"API\" exists and is \"ACTIVE\"")
-  public void theApiExistsAndIsActive() throws Exception {
-    // Arrange
-    // Act
-    apigwDdbCreateRestApi();
-    // Assert: API is immediately ACTIVE in lws
-  }
-
-  @Given("the \"API\" does not exist or is not \"ACTIVE\"")
-  public void theApiDoesNotExistOrIsNotActive() {
-    // Arrange / Act / Assert — no-op: cannot simulate non-ACTIVE REST API in lws; @internal
-    // excluded.
-  }
-
   @Given("the \"API\" has no DynamoDB integration configured")
   public void theApiHasNoDynamoDbIntegrationConfigured() {
     // Arrange / Act / Assert — no-op: APIs have no DynamoDB integration by default.
@@ -224,17 +197,6 @@ public class ApigatewayDynamodbSteps {
   public void theApiAlreadyHasDynamoDbIntegrationConfigured() {
     // Arrange / Act / Assert — no-op: cannot simulate pre-configured integration conflict in lws;
     // @internal excluded.
-  }
-
-  @Given("the \"API\" is \"ACTIVE\"")
-  public void theApiIsActive() {
-    // Arrange / Act / Assert — no-op: REST APIs are ACTIVE immediately after creation in lws.
-  }
-
-  @Given("the \"API\" is not \"ACTIVE\"")
-  public void theApiIsNotActive() {
-    // Arrange / Act / Assert — no-op: cannot simulate non-ACTIVE REST API in lws; @internal
-    // excluded.
   }
 
   @Given("the \"API\" has a DynamoDB integration configured")

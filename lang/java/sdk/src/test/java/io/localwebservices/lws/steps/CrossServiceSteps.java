@@ -24,7 +24,6 @@ import software.amazon.awssdk.services.eventbridge.model.Target;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 import software.amazon.awssdk.services.sfn.SfnClient;
-import software.amazon.awssdk.services.sfn.model.ListExecutionsResponse;
 import software.amazon.awssdk.services.sfn.model.ListStateMachinesResponse;
 import software.amazon.awssdk.services.sfn.model.StateMachineType;
 import software.amazon.awssdk.services.sns.SnsClient;
@@ -1264,27 +1263,6 @@ public class CrossServiceSteps {
           response.stateMachines().stream().anyMatch(sm -> sm.name().equals(expectedSmName));
       // Assert
       assertTrue(actualExists, "expected state machine '" + expectedSmName + "' to be ACTIVE");
-    }
-  }
-
-  @Then("the execution is {string}")
-  public void theExecutionIs(String state) {
-    // Arrange
-    String expectedExecutionArn = world.lastExecutionArn;
-    // Act
-    try (SfnClient client = world.session.sfnClient()) {
-      ListExecutionsResponse response =
-          client.listExecutions(r -> r.stateMachineArn(world.lastStateMachineArn));
-      boolean actualFound =
-          response.executions().stream()
-              .anyMatch(e -> e.executionArn().equals(expectedExecutionArn));
-      // Assert
-      assertTrue(
-          actualFound, "expected execution " + expectedExecutionArn + " to be in state " + state);
-    } catch (Exception e) {
-      // If state machine or execution does not exist, execution is not running
-      assertFalse(
-          true, "expected execution to be " + state + " but got exception: " + e.getMessage());
     }
   }
 

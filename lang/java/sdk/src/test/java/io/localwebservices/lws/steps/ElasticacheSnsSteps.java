@@ -22,7 +22,7 @@ import software.amazon.awssdk.services.sns.model.CreateTopicResponse;
 public class ElasticacheSnsSteps {
 
   private static final String TEST_CLUSTER = "test-elasticachesns-cluster-1";
-  private static final String TEST_TOPIC = "test-elasticachesns-topic-1";
+  private static final String TEST_TOPIC = "test-topic-1";
   private static final String REGION = "us-east-1";
   private static final String AWS_ACCOUNT = "000000000000";
 
@@ -158,20 +158,6 @@ public class ElasticacheSnsSteps {
       var result = client.createCacheCluster(r -> r.cacheClusterId(TEST_CLUSTER).engine("redis"));
       // Assert: store result
       world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("the \"SNS\" topic is deleted")
-  public void theSnsTopicIsDeleted() {
-    // Arrange: (topic state set up by Given steps)
-    String activeTopicArn = topicArn != null ? topicArn : snsTopicArn(TEST_TOPIC);
-    try (SnsClient client = world.session.snsClient()) {
-      // Act
-      client.deleteTopic(r -> r.topicArn(activeTopicArn));
-      // Assert: store result
-      world.setSuccess(null);
     } catch (Exception e) {
       world.setFailure(e);
     }

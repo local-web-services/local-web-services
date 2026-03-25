@@ -35,7 +35,7 @@ import software.amazon.awssdk.services.apigateway.model.RestApi;
  */
 public class ApigatewaySteps {
 
-  private static final String TEST_API_NAME = "e2e-apigw-test-api-1";
+  private static final String TEST_API_NAME = "e2e-test-api-1";
   private static final String TEST_API_DESCRIPTION = "e2e test REST API";
   private static final String TEST_CHILD_PATH = "items";
   private static final String TEST_HTTP_METHOD = "GET";

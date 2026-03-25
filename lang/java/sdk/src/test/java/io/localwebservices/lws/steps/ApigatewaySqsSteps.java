@@ -170,19 +170,6 @@ public class ApigatewaySqsSteps {
     return response.statusCode();
   }
 
-  @Given("the \"API\" does not exist")
-  public void theApiDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh session state has no REST APIs.
-  }
-
-  @Given("the \"API\" exists")
-  public void theApiExists() throws Exception {
-    // Arrange
-    // Act
-    apigwSqsCreateRestApi();
-    // Assert: creation succeeded
-  }
-
   @Given("the \"API\" has an \"SQS\" integration configured")
   public void theApiHasSqsIntegrationConfigured() throws Exception {
     // Arrange: ensure API and queue exist

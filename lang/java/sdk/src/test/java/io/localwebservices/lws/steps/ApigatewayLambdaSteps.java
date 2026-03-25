@@ -7,7 +7,6 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
 import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
-import software.amazon.awssdk.services.apigateway.model.CreateRestApiResponse;
 import software.amazon.awssdk.services.apigateway.model.GetRestApisResponse;
 import software.amazon.awssdk.services.apigateway.model.RestApi;
 
@@ -72,19 +71,6 @@ public class ApigatewayLambdaSteps {
   }
 
   // ── When: actions ──────────────────────────────────────────────────────────────
-
-  @When("a \"REST\" \"API\" is created")
-  public void aRestApiIsCreated() {
-    // Arrange
-    try (ApiGatewayClient client = world.session.apiGatewayClient()) {
-      // Act
-      CreateRestApiResponse result = client.createRestApi(r -> r.name(TEST_API_NAME));
-      // Assert: store result
-      world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
 
   @When("a Lambda integration is configured on the \"REST\" \"API\"")
   public void aLambdaIntegrationIsConfiguredOnTheRestApi() {
