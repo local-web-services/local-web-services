@@ -247,7 +247,12 @@ jobs:
   # ── Python SDK ─────────────────────────────────────────────────────────────
   python-sdk-lint:
     needs: [changes, python-core-lint, python-core-unit-test, python-core-integration-test, python-core-architecture-test]
-    if: needs.changes.outputs.python-sdk == 'true'
+    if: |
+      needs.changes.outputs.python-sdk == 'true' &&
+      (needs.python-core-lint.result == 'success' || needs.python-core-lint.result == 'skipped') &&
+      (needs.python-core-unit-test.result == 'success' || needs.python-core-unit-test.result == 'skipped') &&
+      (needs.python-core-integration-test.result == 'success' || needs.python-core-integration-test.result == 'skipped') &&
+      (needs.python-core-architecture-test.result == 'success' || needs.python-core-architecture-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -264,7 +269,12 @@ jobs:
 
   python-sdk-unit-test:
     needs: [changes, python-core-lint, python-core-unit-test, python-core-integration-test, python-core-architecture-test]
-    if: needs.changes.outputs.python-sdk == 'true'
+    if: |
+      needs.changes.outputs.python-sdk == 'true' &&
+      (needs.python-core-lint.result == 'success' || needs.python-core-lint.result == 'skipped') &&
+      (needs.python-core-unit-test.result == 'success' || needs.python-core-unit-test.result == 'skipped') &&
+      (needs.python-core-integration-test.result == 'success' || needs.python-core-integration-test.result == 'skipped') &&
+      (needs.python-core-architecture-test.result == 'success' || needs.python-core-architecture-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -282,7 +292,12 @@ jobs:
 
   python-sdk-architecture-test:
     needs: [changes, python-core-lint, python-core-unit-test, python-core-integration-test, python-core-architecture-test]
-    if: needs.changes.outputs.python-sdk == 'true'
+    if: |
+      needs.changes.outputs.python-sdk == 'true' &&
+      (needs.python-core-lint.result == 'success' || needs.python-core-lint.result == 'skipped') &&
+      (needs.python-core-unit-test.result == 'success' || needs.python-core-unit-test.result == 'skipped') &&
+      (needs.python-core-integration-test.result == 'success' || needs.python-core-integration-test.result == 'skipped') &&
+      (needs.python-core-architecture-test.result == 'success' || needs.python-core-architecture-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -300,7 +315,12 @@ jobs:
 
   python-sdk-e2e-test:
     needs: [changes, python-core-lint, python-core-unit-test, python-core-integration-test, python-core-architecture-test]
-    if: needs.changes.outputs.python-sdk == 'true'
+    if: |
+      needs.changes.outputs.python-sdk == 'true' &&
+      (needs.python-core-lint.result == 'success' || needs.python-core-lint.result == 'skipped') &&
+      (needs.python-core-unit-test.result == 'success' || needs.python-core-unit-test.result == 'skipped') &&
+      (needs.python-core-integration-test.result == 'success' || needs.python-core-integration-test.result == 'skipped') &&
+      (needs.python-core-architecture-test.result == 'success' || needs.python-core-architecture-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -375,7 +395,11 @@ jobs:
   # ── TypeScript SDK ─────────────────────────────────────────────────────────
   typescript-sdk-lint:
     needs: [changes, typescript-core-lint, typescript-core-integration-test, typescript-core-architecture-test]
-    if: needs.changes.outputs.typescript-sdk == 'true'
+    if: |
+      needs.changes.outputs.typescript-sdk == 'true' &&
+      (needs.typescript-core-lint.result == 'success' || needs.typescript-core-lint.result == 'skipped') &&
+      (needs.typescript-core-integration-test.result == 'success' || needs.typescript-core-integration-test.result == 'skipped') &&
+      (needs.typescript-core-architecture-test.result == 'success' || needs.typescript-core-architecture-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -394,7 +418,11 @@ jobs:
 
   typescript-sdk-unit-test:
     needs: [changes, typescript-core-lint, typescript-core-integration-test, typescript-core-architecture-test]
-    if: needs.changes.outputs.typescript-sdk == 'true'
+    if: |
+      needs.changes.outputs.typescript-sdk == 'true' &&
+      (needs.typescript-core-lint.result == 'success' || needs.typescript-core-lint.result == 'skipped') &&
+      (needs.typescript-core-integration-test.result == 'success' || needs.typescript-core-integration-test.result == 'skipped') &&
+      (needs.typescript-core-architecture-test.result == 'success' || needs.typescript-core-architecture-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -416,7 +444,11 @@ jobs:
 
   typescript-sdk-architecture-test:
     needs: [changes, typescript-core-lint, typescript-core-integration-test, typescript-core-architecture-test]
-    if: needs.changes.outputs.typescript-sdk == 'true'
+    if: |
+      needs.changes.outputs.typescript-sdk == 'true' &&
+      (needs.typescript-core-lint.result == 'success' || needs.typescript-core-lint.result == 'skipped') &&
+      (needs.typescript-core-integration-test.result == 'success' || needs.typescript-core-integration-test.result == 'skipped') &&
+      (needs.typescript-core-architecture-test.result == 'success' || needs.typescript-core-architecture-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -438,7 +470,11 @@ jobs:
 
   typescript-sdk-e2e-test:
     needs: [changes, typescript-core-lint, typescript-core-integration-test, typescript-core-architecture-test]
-    if: needs.changes.outputs.typescript-sdk == 'true'
+    if: |
+      needs.changes.outputs.typescript-sdk == 'true' &&
+      (needs.typescript-core-lint.result == 'success' || needs.typescript-core-lint.result == 'skipped') &&
+      (needs.typescript-core-integration-test.result == 'success' || needs.typescript-core-integration-test.result == 'skipped') &&
+      (needs.typescript-core-architecture-test.result == 'success' || needs.typescript-core-architecture-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -461,7 +497,12 @@ jobs:
   # ── TypeScript Example ──────────────────────────────────────────────────────
   typescript-example-lint:
     needs: [changes, typescript-sdk-lint, typescript-sdk-unit-test, typescript-sdk-architecture-test, typescript-sdk-e2e-test]
-    if: needs.changes.outputs.typescript-example == 'true'
+    if: |
+      needs.changes.outputs.typescript-example == 'true' &&
+      (needs.typescript-sdk-lint.result == 'success' || needs.typescript-sdk-lint.result == 'skipped') &&
+      (needs.typescript-sdk-unit-test.result == 'success' || needs.typescript-sdk-unit-test.result == 'skipped') &&
+      (needs.typescript-sdk-architecture-test.result == 'success' || needs.typescript-sdk-architecture-test.result == 'skipped') &&
+      (needs.typescript-sdk-e2e-test.result == 'success' || needs.typescript-sdk-e2e-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -483,7 +524,12 @@ jobs:
 
   typescript-example-unit-test:
     needs: [changes, typescript-sdk-lint, typescript-sdk-unit-test, typescript-sdk-architecture-test, typescript-sdk-e2e-test]
-    if: needs.changes.outputs.typescript-example == 'true'
+    if: |
+      needs.changes.outputs.typescript-example == 'true' &&
+      (needs.typescript-sdk-lint.result == 'success' || needs.typescript-sdk-lint.result == 'skipped') &&
+      (needs.typescript-sdk-unit-test.result == 'success' || needs.typescript-sdk-unit-test.result == 'skipped') &&
+      (needs.typescript-sdk-architecture-test.result == 'success' || needs.typescript-sdk-architecture-test.result == 'skipped') &&
+      (needs.typescript-sdk-e2e-test.result == 'success' || needs.typescript-sdk-e2e-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -505,7 +551,12 @@ jobs:
 
   typescript-example-architecture-test:
     needs: [changes, typescript-sdk-lint, typescript-sdk-unit-test, typescript-sdk-architecture-test, typescript-sdk-e2e-test]
-    if: needs.changes.outputs.typescript-example == 'true'
+    if: |
+      needs.changes.outputs.typescript-example == 'true' &&
+      (needs.typescript-sdk-lint.result == 'success' || needs.typescript-sdk-lint.result == 'skipped') &&
+      (needs.typescript-sdk-unit-test.result == 'success' || needs.typescript-sdk-unit-test.result == 'skipped') &&
+      (needs.typescript-sdk-architecture-test.result == 'success' || needs.typescript-sdk-architecture-test.result == 'skipped') &&
+      (needs.typescript-sdk-e2e-test.result == 'success' || needs.typescript-sdk-e2e-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -527,7 +578,12 @@ jobs:
 
   typescript-example-e2e-test:
     needs: [changes, typescript-sdk-lint, typescript-sdk-unit-test, typescript-sdk-architecture-test, typescript-sdk-e2e-test]
-    if: needs.changes.outputs.typescript-example == 'true'
+    if: |
+      needs.changes.outputs.typescript-example == 'true' &&
+      (needs.typescript-sdk-lint.result == 'success' || needs.typescript-sdk-lint.result == 'skipped') &&
+      (needs.typescript-sdk-unit-test.result == 'success' || needs.typescript-sdk-unit-test.result == 'skipped') &&
+      (needs.typescript-sdk-architecture-test.result == 'success' || needs.typescript-sdk-architecture-test.result == 'skipped') &&
+      (needs.typescript-sdk-e2e-test.result == 'success' || needs.typescript-sdk-e2e-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -644,7 +700,12 @@ jobs:
   # ── Java SDK ────────────────────────────────────────────────────────────────
   java-sdk-lint:
     needs: [changes, java-core-lint, java-core-integration-test, java-core-architecture-test, java-core-unit-test]
-    if: needs.changes.outputs.java-sdk == 'true'
+    if: |
+      needs.changes.outputs.java-sdk == 'true' &&
+      (needs.java-core-lint.result == 'success' || needs.java-core-lint.result == 'skipped') &&
+      (needs.java-core-integration-test.result == 'success' || needs.java-core-integration-test.result == 'skipped') &&
+      (needs.java-core-architecture-test.result == 'success' || needs.java-core-architecture-test.result == 'skipped') &&
+      (needs.java-core-unit-test.result == 'success' || needs.java-core-unit-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -661,7 +722,12 @@ jobs:
 
   java-sdk-e2e-test:
     needs: [changes, java-core-lint, java-core-integration-test, java-core-architecture-test, java-core-unit-test]
-    if: needs.changes.outputs.java-sdk == 'true'
+    if: |
+      needs.changes.outputs.java-sdk == 'true' &&
+      (needs.java-core-lint.result == 'success' || needs.java-core-lint.result == 'skipped') &&
+      (needs.java-core-integration-test.result == 'success' || needs.java-core-integration-test.result == 'skipped') &&
+      (needs.java-core-architecture-test.result == 'success' || needs.java-core-architecture-test.result == 'skipped') &&
+      (needs.java-core-unit-test.result == 'success' || needs.java-core-unit-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -678,7 +744,12 @@ jobs:
 
   java-sdk-architecture-test:
     needs: [changes, java-core-lint, java-core-integration-test, java-core-architecture-test, java-core-unit-test]
-    if: needs.changes.outputs.java-sdk == 'true'
+    if: |
+      needs.changes.outputs.java-sdk == 'true' &&
+      (needs.java-core-lint.result == 'success' || needs.java-core-lint.result == 'skipped') &&
+      (needs.java-core-integration-test.result == 'success' || needs.java-core-integration-test.result == 'skipped') &&
+      (needs.java-core-architecture-test.result == 'success' || needs.java-core-architecture-test.result == 'skipped') &&
+      (needs.java-core-unit-test.result == 'success' || needs.java-core-unit-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -699,7 +770,11 @@ jobs:
   # ── Java Example ────────────────────────────────────────────────────────────
   java-example-lint:
     needs: [changes, java-sdk-lint, java-sdk-e2e-test, java-sdk-architecture-test]
-    if: needs.changes.outputs.java-example == 'true'
+    if: |
+      needs.changes.outputs.java-example == 'true' &&
+      (needs.java-sdk-lint.result == 'success' || needs.java-sdk-lint.result == 'skipped') &&
+      (needs.java-sdk-e2e-test.result == 'success' || needs.java-sdk-e2e-test.result == 'skipped') &&
+      (needs.java-sdk-architecture-test.result == 'success' || needs.java-sdk-architecture-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -719,7 +794,11 @@ jobs:
 
   java-example-e2e-test:
     needs: [changes, java-sdk-lint, java-sdk-e2e-test, java-sdk-architecture-test]
-    if: needs.changes.outputs.java-example == 'true'
+    if: |
+      needs.changes.outputs.java-example == 'true' &&
+      (needs.java-sdk-lint.result == 'success' || needs.java-sdk-lint.result == 'skipped') &&
+      (needs.java-sdk-e2e-test.result == 'success' || needs.java-sdk-e2e-test.result == 'skipped') &&
+      (needs.java-sdk-architecture-test.result == 'success' || needs.java-sdk-architecture-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -739,7 +818,11 @@ jobs:
 
   java-example-architecture-test:
     needs: [changes, java-sdk-lint, java-sdk-e2e-test, java-sdk-architecture-test]
-    if: needs.changes.outputs.java-example == 'true'
+    if: |
+      needs.changes.outputs.java-example == 'true' &&
+      (needs.java-sdk-lint.result == 'success' || needs.java-sdk-lint.result == 'skipped') &&
+      (needs.java-sdk-e2e-test.result == 'success' || needs.java-sdk-e2e-test.result == 'skipped') &&
+      (needs.java-sdk-architecture-test.result == 'success' || needs.java-sdk-architecture-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -763,7 +846,10 @@ jobs:
   # ── Go SDK ─────────────────────────────────────────────────────────────────
   go-sdk-lint:
     needs: [changes, go-core-lint, go-core-test]
-    if: needs.changes.outputs.go-sdk == 'true'
+    if: |
+      needs.changes.outputs.go-sdk == 'true' &&
+      (needs.go-core-lint.result == 'success' || needs.go-core-lint.result == 'skipped') &&
+      (needs.go-core-test.result == 'success' || needs.go-core-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -776,7 +862,10 @@ jobs:
 
   go-sdk-test:
     needs: [changes, go-core-lint, go-core-test]
-    if: needs.changes.outputs.go-sdk == 'true'
+    if: |
+      needs.changes.outputs.go-sdk == 'true' &&
+      (needs.go-core-lint.result == 'success' || needs.go-core-lint.result == 'skipped') &&
+      (needs.go-core-test.result == 'success' || needs.go-core-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -790,7 +879,12 @@ jobs:
   # ── Python Example ─────────────────────────────────────────────────────────
   python-example-lint:
     needs: [changes, python-sdk-lint, python-sdk-unit-test, python-sdk-architecture-test, python-sdk-e2e-test]
-    if: needs.changes.outputs.python-example == 'true'
+    if: |
+      needs.changes.outputs.python-example == 'true' &&
+      (needs.python-sdk-lint.result == 'success' || needs.python-sdk-lint.result == 'skipped') &&
+      (needs.python-sdk-unit-test.result == 'success' || needs.python-sdk-unit-test.result == 'skipped') &&
+      (needs.python-sdk-architecture-test.result == 'success' || needs.python-sdk-architecture-test.result == 'skipped') &&
+      (needs.python-sdk-e2e-test.result == 'success' || needs.python-sdk-e2e-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -807,7 +901,12 @@ jobs:
 
   python-example-unit-test:
     needs: [changes, python-sdk-lint, python-sdk-unit-test, python-sdk-architecture-test, python-sdk-e2e-test]
-    if: needs.changes.outputs.python-example == 'true'
+    if: |
+      needs.changes.outputs.python-example == 'true' &&
+      (needs.python-sdk-lint.result == 'success' || needs.python-sdk-lint.result == 'skipped') &&
+      (needs.python-sdk-unit-test.result == 'success' || needs.python-sdk-unit-test.result == 'skipped') &&
+      (needs.python-sdk-architecture-test.result == 'success' || needs.python-sdk-architecture-test.result == 'skipped') &&
+      (needs.python-sdk-e2e-test.result == 'success' || needs.python-sdk-e2e-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -824,7 +923,12 @@ jobs:
 
   python-example-architecture-test:
     needs: [changes, python-sdk-lint, python-sdk-unit-test, python-sdk-architecture-test, python-sdk-e2e-test]
-    if: needs.changes.outputs.python-example == 'true'
+    if: |
+      needs.changes.outputs.python-example == 'true' &&
+      (needs.python-sdk-lint.result == 'success' || needs.python-sdk-lint.result == 'skipped') &&
+      (needs.python-sdk-unit-test.result == 'success' || needs.python-sdk-unit-test.result == 'skipped') &&
+      (needs.python-sdk-architecture-test.result == 'success' || needs.python-sdk-architecture-test.result == 'skipped') &&
+      (needs.python-sdk-e2e-test.result == 'success' || needs.python-sdk-e2e-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -841,7 +945,12 @@ jobs:
 
   python-example-e2e-test:
     needs: [changes, python-sdk-lint, python-sdk-unit-test, python-sdk-architecture-test, python-sdk-e2e-test]
-    if: needs.changes.outputs.python-example == 'true'
+    if: |
+      needs.changes.outputs.python-example == 'true' &&
+      (needs.python-sdk-lint.result == 'success' || needs.python-sdk-lint.result == 'skipped') &&
+      (needs.python-sdk-unit-test.result == 'success' || needs.python-sdk-unit-test.result == 'skipped') &&
+      (needs.python-sdk-architecture-test.result == 'success' || needs.python-sdk-architecture-test.result == 'skipped') &&
+      (needs.python-sdk-e2e-test.result == 'success' || needs.python-sdk-e2e-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -1283,7 +1392,10 @@ jobs:
   # ── Go Example ──────────────────────────────────────────────────────────────
   go-example-lint:
     needs: [changes, go-sdk-lint, go-sdk-test]
-    if: needs.changes.outputs.go-example == 'true'
+    if: |
+      needs.changes.outputs.go-example == 'true' &&
+      (needs.go-sdk-lint.result == 'success' || needs.go-sdk-lint.result == 'skipped') &&
+      (needs.go-sdk-test.result == 'success' || needs.go-sdk-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -1296,7 +1408,10 @@ jobs:
 
   go-example-test:
     needs: [changes, go-sdk-lint, go-sdk-test]
-    if: needs.changes.outputs.go-example == 'true'
+    if: |
+      needs.changes.outputs.go-example == 'true' &&
+      (needs.go-sdk-lint.result == 'success' || needs.go-sdk-lint.result == 'skipped') &&
+      (needs.go-sdk-test.result == 'success' || needs.go-sdk-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
