@@ -165,11 +165,11 @@ public class LambdaCognitoSteps {
   // "the invocation is \"IN_PROGRESS\"", "the invocation is \"SUCCESS\"", and
   // "the invocation is \"FAILED\"" are registered in LambdaDynamodbSteps — not re-registered here
   // to avoid AmbiguousStepDefinitionsException.
-
-  @Then("the invocation is \"FAILED\" with a ResourceNotFoundException")
-  public void theInvocationIsFailedWithResourceNotFoundException() {
-    // @internal: Cannot observe Lambda invocation failure in lws.
-  }
+  //
+  // "the invocation is \"FAILED\" with a ResourceNotFoundException" is registered in
+  // LambdaEventsSteps and handles all lambda_X cross-service scenarios (lambda_cognito,
+  // lambda_events, lambda_secretsmanager, lambda_glacier, lambda_s3tables, lambda_lambda).
+  // Absent here to avoid DuplicateStepDefinitionException.
 
   // ── Invariant catch-all steps ─────────────────────────────────────────────────
 

@@ -117,12 +117,14 @@ type ServerState struct {
 	resetCallbacks []func()
 }
 
+// NewServerState creates a new ServerState with all maps initialized.
 func NewServerState() *ServerState {
 	return &ServerState{
-		chaosRules:     make(map[string]map[string]*ChaosRule),
-		fakeRules:      make(map[string][]FakeRule),
-		capacityRules:  make(map[string]CapacityRule),
-		lifecycleRules: make(map[string]LifecycleRule),
+		chaosRules:        make(map[string]map[string]*ChaosRule),
+		fakeRules:         make(map[string][]FakeRule),
+		capacityRules:     make(map[string]CapacityRule),
+		lifecycleRules:    make(map[string]LifecycleRule),
+		resourceCreatedAt: make(map[string]time.Time),
 		iamConfig: IamConfig{
 			Identities:       make(map[string]IamIdentity),
 			ResourcePolicies: make(map[string]IamPolicy),
@@ -130,18 +132,21 @@ func NewServerState() *ServerState {
 	}
 }
 
+// AddResetCallback registers a function to be called on Reset.
 func (s *ServerState) AddResetCallback(cb func()) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.resetCallbacks = append(s.resetCallbacks, cb)
 }
 
+// Reset clears all mutable state and calls all reset callbacks.
 func (s *ServerState) Reset() {
 	s.mu.Lock()
 	s.chaosRules = make(map[string]map[string]*ChaosRule)
 	s.fakeRules = make(map[string][]FakeRule)
 	s.capacityRules = make(map[string]CapacityRule)
 	s.lifecycleRules = make(map[string]LifecycleRule)
+	s.resourceCreatedAt = make(map[string]time.Time)
 	s.iamConfig = IamConfig{
 		Identities:       make(map[string]IamIdentity),
 		ResourcePolicies: make(map[string]IamPolicy),
@@ -155,6 +160,7 @@ func (s *ServerState) Reset() {
 	}
 }
 
+// GetChaosRule returns the chaos rule for a service+operation (falls back to wildcard).
 func (s *ServerState) GetChaosRule(service, operation string) *ChaosRule {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -168,6 +174,7 @@ func (s *ServerState) GetChaosRule(service, operation string) *ChaosRule {
 	return svcRules["*"]
 }
 
+// HasChaosRules returns true when chaos is enabled for a service.
 func (s *ServerState) HasChaosRules(service string) bool {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -175,6 +182,7 @@ func (s *ServerState) HasChaosRules(service string) bool {
 	return ok
 }
 
+// SetChaosRule sets or clears a chaos rule for a service+operation.
 func (s *ServerState) SetChaosRule(service, operation string, rule *ChaosRule) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -188,6 +196,7 @@ func (s *ServerState) SetChaosRule(service, operation string, rule *ChaosRule) {
 	}
 }
 
+// EnableChaos marks chaos as enabled for a service (without setting any specific rule).
 func (s *ServerState) EnableChaos(service string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -196,12 +205,14 @@ func (s *ServerState) EnableChaos(service string) {
 	}
 }
 
+// DisableChaos removes all chaos rules for a service.
 func (s *ServerState) DisableChaos(service string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.chaosRules, service)
 }
 
+// GetAllChaosStatus returns the chaos status for all known services.
 func (s *ServerState) GetAllChaosStatus() map[string]map[string]interface{} {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -229,18 +240,21 @@ func (s *ServerState) GetAllChaosStatus() map[string]map[string]interface{} {
 	return result
 }
 
+// GetIamConfig returns a copy of the current IAM configuration.
 func (s *ServerState) GetIamConfig() IamConfig {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	return s.iamConfig
 }
 
+// SetIamConfig replaces the current IAM configuration.
 func (s *ServerState) SetIamConfig(cfg IamConfig) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.iamConfig = cfg
 }
 
+// AppendLog adds a log entry to the circular buffer (max 500).
 func (s *ServerState) AppendLog(entry LogEntry) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -250,6 +264,7 @@ func (s *ServerState) AppendLog(entry LogEntry) {
 	}
 }
 
+// GetLogs returns a copy of all log entries.
 func (s *ServerState) GetLogs() []LogEntry {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -336,6 +351,33 @@ func (s *ServerState) GetAllCapacityStatus() map[string]CapacityRule {
 		result[k] = v
 	}
 	return result
+}
+
+// TrackResourceCreation records the creation time for a resource under a service.
+// The key is "service/resourceID".
+func (s *ServerState) TrackResourceCreation(service, resourceID string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	key := service + "/" + resourceID
+	s.resourceCreatedAt[key] = time.Now()
+}
+
+// IsResourceInDwell returns true when a resource was recently created and the
+// lifecycle create_dwell_ms window has not yet elapsed.
+func (s *ServerState) IsResourceInDwell(service, resourceID string) bool {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	rule := s.lifecycleRules[service]
+	if !rule.Enabled || rule.CreateDwellMs <= 0 {
+		return false
+	}
+	key := service + "/" + resourceID
+	createdAt, ok := s.resourceCreatedAt[key]
+	if !ok {
+		return false
+	}
+	elapsed := time.Since(createdAt).Milliseconds()
+	return elapsed < int64(rule.CreateDwellMs)
 }
 
 // toKebab converts CamelCase to kebab-case for operation matching.
