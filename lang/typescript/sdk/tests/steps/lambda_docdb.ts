@@ -98,15 +98,6 @@ Before({ tags: "@lambdadocdb" }, function (this: SdkWorld) {
 
 // ── Given: invocation state ───────────────────────────────────────────────────
 
-Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange: create the Lambda function so an invocation could be in progress
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await lambdaDocdbCreateFunction(this);
-  // Assert: function created
-});
-
-
 // ── Given: slot state ─────────────────────────────────────────────────────────
 
 Given("a document slot is available", async function (this: SdkWorld) {
@@ -120,28 +111,6 @@ Given("no document slot is available", async function (this: SdkWorld) {
 });
 
 // ── When: actions ─────────────────────────────────────────────────────────────
-
-When("a Lambda function is deployed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  try {
-    const result = await lambdaDocdbLambdaClient(this).send(
-      new CreateFunctionCommand({
-        FunctionName: LAMBDA_DOCDB_TEST_FUNC,
-        Runtime: "python3.12",
-        Role: LAMBDA_DOCDB_ROLE_ARN,
-        Handler: "index.handler",
-        Code: { ZipFile: Buffer.from("fake") },
-      }),
-    );
-    // Assert: store result
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-});
 
 When("a DocumentDB cluster is created", async function (this: SdkWorld) {
   // Arrange
@@ -184,16 +153,6 @@ When("the DocumentDB cluster is started", async function (this: SdkWorld) {
   };
 });
 
-When("the Lambda function is invoked", async function (this: SdkWorld) {
-  // @internal: Cannot trigger Lambda invocation in lws without Docker.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot trigger Lambda invocation: scenario is @internal"),
-  };
-});
-
 When(
   "the Lambda function fails to connect because the DocumentDB cluster is stopped",
   async function (this: SdkWorld) {
@@ -222,24 +181,6 @@ When(
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then('the function is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  const result = await lambdaDocdbLambdaClient(this).send(
-    new GetFunctionCommand({ FunctionName: LAMBDA_DOCDB_TEST_FUNC }),
-  );
-  // Assert
-  const expectedState = "Active";
-  const actualState = result.Configuration?.State as string;
-  assert.strictEqual(
-    actualState,
-    expectedState,
-    `Expected function state "${expectedState}" but got "${actualState}"`,
-  );
-});
-
 // "the cluster is {string}" is registered in cluster_common.ts (dispatches to assertClusterStatus).
 
 Then('the cluster is "AVAILABLE" and ready to accept connections', async function (this: SdkWorld) {
@@ -249,11 +190,6 @@ Then('the cluster is "AVAILABLE" and ready to accept connections', async functio
 
 Then('the cluster is "STOPPED" and connections will be rejected', async function (this: SdkWorld) {
   // @internal: StopDBCluster is not yet implemented in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation state in lws.
   assert.ok(this.session, "Expected session to be initialized");
 });
 

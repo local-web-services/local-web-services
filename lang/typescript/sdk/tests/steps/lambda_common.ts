@@ -58,24 +58,7 @@ When("the Lambda function is invoked", async function (this: SdkWorld) {
 
 // ── Then: function state assertions ──────────────────────────────────────────
 
-Then('the function is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const helpers = this.functionHelpers as FunctionStepHelpers | null;
-  if (helpers?.assertFunctionActive) {
-    // Act + Assert: delegate to service-specific assertion
-    await helpers.assertFunctionActive(this);
-    return;
-  }
-  // Fallback: check that the last call result was successful
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected function deployment to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+// "the function is {string}" is registered in lambda.ts (dispatches via functionHelpers).
 
 // ── Then: invocation state assertions ─────────────────────────────────────────
 

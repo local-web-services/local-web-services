@@ -1,11 +1,11 @@
 package elasticache
 
 import (
-	"encoding/json"
+	"encoding/xml"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
-	"io"
 	"sync"
 	"time"
 
@@ -100,64 +100,118 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.handle(w, action, params)
 }
 
-func sendJSON(w http.ResponseWriter, status int, v interface{}) {
-	w.Header().Set("Content-Type", "application/json")
+func sendXML(w http.ResponseWriter, status int, v interface{}) {
+	w.Header().Set("Content-Type", "text/xml")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(v) //nolint:errcheck
+	io.WriteString(w, xml.Header) //nolint:errcheck
+	xml.NewEncoder(w).Encode(v)   //nolint:errcheck
 }
 
 func sendError(w http.ResponseWriter, status int, code, msg string) {
-	sendJSON(w, status, map[string]string{"__type": code, "message": msg})
+	type xmlError struct {
+		XMLName   xml.Name `xml:"ErrorResponse"`
+		Code      string   `xml:"Error>Code"`
+		Message   string   `xml:"Error>Message"`
+		RequestID string   `xml:"RequestId"`
+	}
+	sendXML(w, status, xmlError{Code: code, Message: msg, RequestID: "00000000-0000-0000-0000-000000000000"})
 }
 
-func clusterDesc(c *CacheCluster) map[string]interface{} {
-	return map[string]interface{}{
-		"CacheClusterId":     c.CacheClusterId,
-		"CacheClusterStatus": c.CacheClusterStatus,
-		"Engine":             c.Engine,
-		"NumCacheNodes":      c.NumCacheNodes,
-		"CacheNodes": []map[string]interface{}{
+// XML types for CacheCluster
+
+type xmlCacheNode struct {
+	CacheNodeId     string      `xml:"CacheNodeId"`
+	CacheNodeStatus string      `xml:"CacheNodeStatus"`
+	Endpoint        xmlEndpoint `xml:"Endpoint"`
+}
+
+type xmlEndpoint struct {
+	Address string `xml:"Address"`
+	Port    int    `xml:"Port"`
+}
+
+type xmlCacheCluster struct {
+	CacheClusterId     string         `xml:"CacheClusterId"`
+	CacheClusterStatus string         `xml:"CacheClusterStatus"`
+	Engine             string         `xml:"Engine"`
+	NumCacheNodes      int            `xml:"NumCacheNodes"`
+	CacheNodes         []xmlCacheNode `xml:"CacheNodes>CacheNode"`
+	ARN                string         `xml:"ARN"`
+}
+
+type xmlReplicationGroup struct {
+	ReplicationGroupId       string `xml:"ReplicationGroupId"`
+	Description              string `xml:"Description"`
+	Status                   string `xml:"Status"`
+	AutomaticFailover        string `xml:"AutomaticFailover"`
+	AtRestEncryptionEnabled  bool   `xml:"AtRestEncryptionEnabled"`
+	TransitEncryptionEnabled bool   `xml:"TransitEncryptionEnabled"`
+	ARN                      string `xml:"ARN"`
+}
+
+type xmlCacheSubnetGroup struct {
+	CacheSubnetGroupName        string `xml:"CacheSubnetGroupName"`
+	CacheSubnetGroupDescription string `xml:"CacheSubnetGroupDescription"`
+	VpcId                       string `xml:"VpcId"`
+	ARN                         string `xml:"ARN"`
+}
+
+type xmlSnapshot struct {
+	SnapshotName   string `xml:"SnapshotName"`
+	CacheClusterId string `xml:"CacheClusterId"`
+	SnapshotStatus string `xml:"SnapshotStatus"`
+	Engine         string `xml:"Engine"`
+	ARN            string `xml:"ARN"`
+}
+
+func clusterToXML(c *CacheCluster) xmlCacheCluster {
+	return xmlCacheCluster{
+		CacheClusterId:     c.CacheClusterId,
+		CacheClusterStatus: c.CacheClusterStatus,
+		Engine:             c.Engine,
+		NumCacheNodes:      c.NumCacheNodes,
+		CacheNodes: []xmlCacheNode{
 			{
-				"CacheNodeId":     "0001",
-				"CacheNodeStatus": "available",
-				"Endpoint": map[string]interface{}{
-					"Address": "localhost",
-					"Port":    6379,
+				CacheNodeId:     "0001",
+				CacheNodeStatus: "available",
+				Endpoint: xmlEndpoint{
+					Address: "localhost",
+					Port:    6379,
 				},
 			},
 		},
-		"ARN": fmt.Sprintf("arn:aws:elasticache:%s:%s:cluster:%s", region, accountID, c.CacheClusterId),
+		ARN: fmt.Sprintf("arn:aws:elasticache:%s:%s:cluster:%s", region, accountID, c.CacheClusterId),
 	}
 }
 
-func rgDesc(rg *ReplicationGroup) map[string]interface{} {
-	return map[string]interface{}{
-		"ReplicationGroupId":       rg.ReplicationGroupId,
-		"Description":              rg.Description,
-		"Status":                   rg.Status,
-		"AutomaticFailover":        rg.AutomaticFailover,
-		"AtRestEncryptionEnabled":  rg.AtRestEncryptionEnabled,
-		"TransitEncryptionEnabled": rg.TransitEncryptionEnabled,
-		"ARN":                      fmt.Sprintf("arn:aws:elasticache:%s:%s:replicationgroup:%s", region, accountID, rg.ReplicationGroupId),
+func rgToXML(rg *ReplicationGroup) xmlReplicationGroup {
+	return xmlReplicationGroup{
+		ReplicationGroupId:       rg.ReplicationGroupId,
+		Description:              rg.Description,
+		Status:                   rg.Status,
+		AutomaticFailover:        rg.AutomaticFailover,
+		AtRestEncryptionEnabled:  rg.AtRestEncryptionEnabled,
+		TransitEncryptionEnabled: rg.TransitEncryptionEnabled,
+		ARN:                      fmt.Sprintf("arn:aws:elasticache:%s:%s:replicationgroup:%s", region, accountID, rg.ReplicationGroupId),
 	}
 }
 
-func subnetGroupDesc(sg *CacheSubnetGroup) map[string]interface{} {
-	return map[string]interface{}{
-		"CacheSubnetGroupName":        sg.CacheSubnetGroupName,
-		"CacheSubnetGroupDescription": sg.CacheSubnetGroupDescription,
-		"VpcId":                       sg.VpcId,
-		"ARN":                         fmt.Sprintf("arn:aws:elasticache:%s:%s:subnetgroup:%s", region, accountID, sg.CacheSubnetGroupName),
+func subnetGroupToXML(sg *CacheSubnetGroup) xmlCacheSubnetGroup {
+	return xmlCacheSubnetGroup{
+		CacheSubnetGroupName:        sg.CacheSubnetGroupName,
+		CacheSubnetGroupDescription: sg.CacheSubnetGroupDescription,
+		VpcId:                       sg.VpcId,
+		ARN:                         fmt.Sprintf("arn:aws:elasticache:%s:%s:subnetgroup:%s", region, accountID, sg.CacheSubnetGroupName),
 	}
 }
 
-func snapshotDesc(s *CacheSnapshot) map[string]interface{} {
-	return map[string]interface{}{
-		"SnapshotName":   s.SnapshotName,
-		"CacheClusterId": s.CacheClusterId,
-		"SnapshotStatus": s.Status,
-		"Engine":         s.Engine,
-		"ARN":            fmt.Sprintf("arn:aws:elasticache:%s:%s:snapshot:%s", region, accountID, s.SnapshotName),
+func snapshotToXML(s *CacheSnapshot) xmlSnapshot {
+	return xmlSnapshot{
+		SnapshotName:   s.SnapshotName,
+		CacheClusterId: s.CacheClusterId,
+		SnapshotStatus: s.Status,
+		Engine:         s.Engine,
+		ARN:            fmt.Sprintf("arn:aws:elasticache:%s:%s:snapshot:%s", region, accountID, s.SnapshotName),
 	}
 }
 
@@ -170,7 +224,7 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 			engine = "redis"
 		}
 		h.store.mu.Lock()
-		if _, exists := h.store.clusters[id]; exists {
+		if existing, exists := h.store.clusters[id]; exists && existing.CacheClusterStatus != "deleting" {
 			h.store.mu.Unlock()
 			sendError(w, 400, "CacheClusterAlreadyExistsFault", "Cache cluster already exists: "+id)
 			return
@@ -184,34 +238,47 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		}
 		h.store.clusters[id] = cluster
 		h.store.mu.Unlock()
-		sendJSON(w, 200, map[string]interface{}{"CacheCluster": clusterDesc(cluster)})
+		type createCacheClusterResp struct {
+			XMLName xml.Name        `xml:"CreateCacheClusterResponse"`
+			Result  xmlCacheCluster `xml:"CreateCacheClusterResult>CacheCluster"`
+		}
+		sendXML(w, 200, createCacheClusterResp{Result: clusterToXML(cluster)})
 
 	case "DeleteCacheCluster":
 		id := params.Get("CacheClusterId")
 		h.store.mu.Lock()
 		cluster := h.store.clusters[id]
-		delete(h.store.clusters, id)
-		h.store.mu.Unlock()
 		if cluster == nil {
+			h.store.mu.Unlock()
 			sendError(w, 404, "CacheClusterNotFound", "Cache cluster not found: "+id)
 			return
 		}
-		sendJSON(w, 200, map[string]interface{}{"CacheCluster": clusterDesc(cluster)})
+		cluster.CacheClusterStatus = "deleting"
+		h.store.mu.Unlock()
+		type deleteCacheClusterResp struct {
+			XMLName xml.Name        `xml:"DeleteCacheClusterResponse"`
+			Result  xmlCacheCluster `xml:"DeleteCacheClusterResult>CacheCluster"`
+		}
+		sendXML(w, 200, deleteCacheClusterResp{Result: clusterToXML(cluster)})
 
 	case "DescribeCacheClusters":
 		filterID := params.Get("CacheClusterId")
 		h.store.mu.RLock()
-		var clusters []map[string]interface{}
+		var clusters []xmlCacheCluster
 		for _, c := range h.store.clusters {
 			if filterID == "" || c.CacheClusterId == filterID {
-				clusters = append(clusters, clusterDesc(c))
+				clusters = append(clusters, clusterToXML(c))
 			}
 		}
 		h.store.mu.RUnlock()
 		if clusters == nil {
-			clusters = []map[string]interface{}{}
+			clusters = []xmlCacheCluster{}
 		}
-		sendJSON(w, 200, map[string]interface{}{"CacheClusters": clusters})
+		type describeCacheClustersResp struct {
+			XMLName  xml.Name          `xml:"DescribeCacheClustersResponse"`
+			Clusters []xmlCacheCluster `xml:"DescribeCacheClustersResult>CacheClusters>CacheCluster"`
+		}
+		sendXML(w, 200, describeCacheClustersResp{Clusters: clusters})
 
 	case "ModifyCacheCluster":
 		id := params.Get("CacheClusterId")
@@ -222,12 +289,16 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 			sendError(w, 404, "CacheClusterNotFound", "Cache cluster not found: "+id)
 			return
 		}
-		sendJSON(w, 200, map[string]interface{}{"CacheCluster": clusterDesc(cluster)})
+		type modifyCacheClusterResp struct {
+			XMLName xml.Name        `xml:"ModifyCacheClusterResponse"`
+			Result  xmlCacheCluster `xml:"ModifyCacheClusterResult>CacheCluster"`
+		}
+		sendXML(w, 200, modifyCacheClusterResp{Result: clusterToXML(cluster)})
 
 	case "CreateReplicationGroup":
 		id := params.Get("ReplicationGroupId")
 		h.store.mu.Lock()
-		if _, exists := h.store.replicationGroups[id]; exists {
+		if existing, exists := h.store.replicationGroups[id]; exists && existing.Status != "deleting" {
 			h.store.mu.Unlock()
 			sendError(w, 400, "ReplicationGroupAlreadyExistsFault", "Replication group already exists: "+id)
 			return
@@ -241,34 +312,47 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		}
 		h.store.replicationGroups[id] = rg
 		h.store.mu.Unlock()
-		sendJSON(w, 200, map[string]interface{}{"ReplicationGroup": rgDesc(rg)})
+		type createRGResp struct {
+			XMLName xml.Name            `xml:"CreateReplicationGroupResponse"`
+			Result  xmlReplicationGroup `xml:"CreateReplicationGroupResult>ReplicationGroup"`
+		}
+		sendXML(w, 200, createRGResp{Result: rgToXML(rg)})
 
 	case "DeleteReplicationGroup":
 		id := params.Get("ReplicationGroupId")
 		h.store.mu.Lock()
 		rg := h.store.replicationGroups[id]
-		delete(h.store.replicationGroups, id)
-		h.store.mu.Unlock()
 		if rg == nil {
+			h.store.mu.Unlock()
 			sendError(w, 404, "ReplicationGroupNotFoundFault", "Replication group not found: "+id)
 			return
 		}
-		sendJSON(w, 200, map[string]interface{}{"ReplicationGroup": rgDesc(rg)})
+		rg.Status = "deleting"
+		h.store.mu.Unlock()
+		type deleteRGResp struct {
+			XMLName xml.Name            `xml:"DeleteReplicationGroupResponse"`
+			Result  xmlReplicationGroup `xml:"DeleteReplicationGroupResult>ReplicationGroup"`
+		}
+		sendXML(w, 200, deleteRGResp{Result: rgToXML(rg)})
 
 	case "DescribeReplicationGroups":
 		filterID := params.Get("ReplicationGroupId")
 		h.store.mu.RLock()
-		var groups []map[string]interface{}
+		var groups []xmlReplicationGroup
 		for _, rg := range h.store.replicationGroups {
 			if filterID == "" || rg.ReplicationGroupId == filterID {
-				groups = append(groups, rgDesc(rg))
+				groups = append(groups, rgToXML(rg))
 			}
 		}
 		h.store.mu.RUnlock()
 		if groups == nil {
-			groups = []map[string]interface{}{}
+			groups = []xmlReplicationGroup{}
 		}
-		sendJSON(w, 200, map[string]interface{}{"ReplicationGroups": groups})
+		type describeRGResp struct {
+			XMLName xml.Name              `xml:"DescribeReplicationGroupsResponse"`
+			Groups  []xmlReplicationGroup `xml:"DescribeReplicationGroupsResult>ReplicationGroups>ReplicationGroup"`
+		}
+		sendXML(w, 200, describeRGResp{Groups: groups})
 
 	case "ModifyReplicationGroup":
 		id := params.Get("ReplicationGroupId")
@@ -279,7 +363,11 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 			sendError(w, 404, "ReplicationGroupNotFoundFault", "Replication group not found: "+id)
 			return
 		}
-		sendJSON(w, 200, map[string]interface{}{"ReplicationGroup": rgDesc(rg)})
+		type modifyRGResp struct {
+			XMLName xml.Name            `xml:"ModifyReplicationGroupResponse"`
+			Result  xmlReplicationGroup `xml:"ModifyReplicationGroupResult>ReplicationGroup"`
+		}
+		sendXML(w, 200, modifyRGResp{Result: rgToXML(rg)})
 
 	case "CreateCacheSubnetGroup":
 		name := params.Get("CacheSubnetGroupName")
@@ -297,7 +385,11 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		}
 		h.store.subnetGroups[name] = sg
 		h.store.mu.Unlock()
-		sendJSON(w, 200, map[string]interface{}{"CacheSubnetGroup": subnetGroupDesc(sg)})
+		type createSGResp struct {
+			XMLName xml.Name            `xml:"CreateCacheSubnetGroupResponse"`
+			Result  xmlCacheSubnetGroup `xml:"CreateCacheSubnetGroupResult>CacheSubnetGroup"`
+		}
+		sendXML(w, 200, createSGResp{Result: subnetGroupToXML(sg)})
 
 	case "DeleteCacheSubnetGroup":
 		name := params.Get("CacheSubnetGroupName")
@@ -309,29 +401,36 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 			sendError(w, 404, "CacheSubnetGroupNotFoundFault", "Cache subnet group not found: "+name)
 			return
 		}
-		sendJSON(w, 200, map[string]interface{}{})
+		type deleteSGResp struct {
+			XMLName xml.Name `xml:"DeleteCacheSubnetGroupResponse"`
+		}
+		sendXML(w, 200, deleteSGResp{})
 
 	case "DescribeCacheSubnetGroups":
 		filterName := params.Get("CacheSubnetGroupName")
 		h.store.mu.RLock()
-		var groups []map[string]interface{}
+		var groups []xmlCacheSubnetGroup
 		for _, sg := range h.store.subnetGroups {
 			if filterName == "" || sg.CacheSubnetGroupName == filterName {
-				groups = append(groups, subnetGroupDesc(sg))
+				groups = append(groups, subnetGroupToXML(sg))
 			}
 		}
 		h.store.mu.RUnlock()
 		if groups == nil {
-			groups = []map[string]interface{}{}
+			groups = []xmlCacheSubnetGroup{}
 		}
-		sendJSON(w, 200, map[string]interface{}{"CacheSubnetGroups": groups})
+		type describeSGResp struct {
+			XMLName xml.Name              `xml:"DescribeCacheSubnetGroupsResponse"`
+			Groups  []xmlCacheSubnetGroup `xml:"DescribeCacheSubnetGroupsResult>CacheSubnetGroups>CacheSubnetGroup"`
+		}
+		sendXML(w, 200, describeSGResp{Groups: groups})
 
 	case "CreateSnapshot":
 		snapName := params.Get("SnapshotName")
 		clusterId := params.Get("CacheClusterId")
 		h.store.mu.Lock()
 		cluster, clusterExists := h.store.clusters[clusterId]
-		if !clusterExists {
+		if !clusterExists || cluster.CacheClusterStatus == "deleting" {
 			h.store.mu.Unlock()
 			sendError(w, 404, "CacheClusterNotFound", "Cache cluster not found: "+clusterId)
 			return
@@ -341,7 +440,7 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 			sendError(w, 400, "SnapshotFeatureNotSupportedFault", "Snapshots are only supported for Redis clusters")
 			return
 		}
-		if _, exists := h.store.snapshots[snapName]; exists {
+		if existing, exists := h.store.snapshots[snapName]; exists && existing.Status != "deleting" {
 			h.store.mu.Unlock()
 			sendError(w, 400, "SnapshotAlreadyExistsFault", "Snapshot already exists: "+snapName)
 			return
@@ -355,42 +454,61 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		}
 		h.store.snapshots[snapName] = snap
 		h.store.mu.Unlock()
-		sendJSON(w, 200, map[string]interface{}{"Snapshot": snapshotDesc(snap)})
+		type createSnapResp struct {
+			XMLName xml.Name    `xml:"CreateSnapshotResponse"`
+			Result  xmlSnapshot `xml:"CreateSnapshotResult>Snapshot"`
+		}
+		sendXML(w, 200, createSnapResp{Result: snapshotToXML(snap)})
 
 	case "DeleteSnapshot":
 		snapName := params.Get("SnapshotName")
 		h.store.mu.Lock()
 		snap := h.store.snapshots[snapName]
-		delete(h.store.snapshots, snapName)
-		h.store.mu.Unlock()
 		if snap == nil {
+			h.store.mu.Unlock()
 			sendError(w, 404, "SnapshotNotFoundFault", "Snapshot not found: "+snapName)
 			return
 		}
-		sendJSON(w, 200, map[string]interface{}{"Snapshot": snapshotDesc(snap)})
+		snap.Status = "deleting"
+		h.store.mu.Unlock()
+		type deleteSnapResp struct {
+			XMLName xml.Name    `xml:"DeleteSnapshotResponse"`
+			Result  xmlSnapshot `xml:"DeleteSnapshotResult>Snapshot"`
+		}
+		sendXML(w, 200, deleteSnapResp{Result: snapshotToXML(snap)})
 
 	case "DescribeSnapshots":
 		filterName := params.Get("SnapshotName")
 		filterCluster := params.Get("CacheClusterId")
 		h.store.mu.RLock()
-		var snaps []map[string]interface{}
+		var snaps []xmlSnapshot
 		for _, s := range h.store.snapshots {
 			if (filterName == "" || s.SnapshotName == filterName) &&
 				(filterCluster == "" || s.CacheClusterId == filterCluster) {
-				snaps = append(snaps, snapshotDesc(s))
+				snaps = append(snaps, snapshotToXML(s))
 			}
 		}
 		h.store.mu.RUnlock()
 		if snaps == nil {
-			snaps = []map[string]interface{}{}
+			snaps = []xmlSnapshot{}
 		}
-		sendJSON(w, 200, map[string]interface{}{"Snapshots": snaps})
+		type describeSnapsResp struct {
+			XMLName   xml.Name      `xml:"DescribeSnapshotsResponse"`
+			Snapshots []xmlSnapshot `xml:"DescribeSnapshotsResult>Snapshots>Snapshot"`
+		}
+		sendXML(w, 200, describeSnapsResp{Snapshots: snaps})
 
 	case "AddTagsToResource", "RemoveTagsFromResource":
-		sendJSON(w, 200, map[string]interface{}{"TagList": []interface{}{}})
+		type tagsResp struct {
+			XMLName xml.Name `xml:"AddTagsToResourceResponse"`
+		}
+		sendXML(w, 200, tagsResp{})
 
 	case "ListTagsForResource":
-		sendJSON(w, 200, map[string]interface{}{"TagList": []interface{}{}})
+		type listTagsResp struct {
+			XMLName xml.Name `xml:"ListTagsForResourceResponse"`
+		}
+		sendXML(w, 200, listTagsResp{})
 
 	default:
 		sendError(w, 400, "InvalidAction", "Unknown action: "+action)

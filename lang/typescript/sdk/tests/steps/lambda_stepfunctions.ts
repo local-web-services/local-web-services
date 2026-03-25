@@ -207,42 +207,7 @@ Given('no execution is "RUNNING"', async function (this: SdkWorld) {
 
 // ── Given: invocation state ────────────────────────────────────────────────────
 
-Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange: create a Lambda function to represent an in-progress invocation context.
-  // In lws, creating a function is the closest observable analogue; actual invocation
-  // state is internal.
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createFunction(this);
-  // Assert: function created (no error thrown)
-});
-
-
-
-
 // ── When: actions ──────────────────────────────────────────────────────────────
-
-When("a Lambda function is deployed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  try {
-    const result = await lambdaClient(this).send(
-      new CreateFunctionCommand({
-        FunctionName: LAMBDA_SF_FUNC,
-        Runtime: "python3.12",
-        Role: LAMBDA_SF_ROLE_ARN,
-        Handler: "index.handler",
-        Code: { ZipFile: Buffer.from("fake") },
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
 
 // "a Step Functions state machine is created" is registered in cross_service_common.ts.
 
@@ -270,18 +235,6 @@ When("a running execution completes successfully", async function (this: SdkWorl
     success: false,
     output: null,
     error: new Error("cannot trigger internal execution completion via public API in lws"),
-  };
-  // Assert: captured in lastCallResult
-});
-
-When("the Lambda function is invoked", async function (this: SdkWorld) {
-  // @internal: Cannot trigger Lambda invocation via public API in lws without Docker.
-  // This scenario is tagged @internal and excluded by the tag filter.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot trigger Lambda invocation via public API in lws"),
   };
   // Assert: captured in lastCallResult
 });
@@ -317,24 +270,6 @@ When(
 );
 
 // ── Then: assertions ───────────────────────────────────────────────────────────
-
-Then('the function is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
-  const expectedState = "Active";
-  // Act
-  const result = await lambdaClient(this).send(
-    new GetFunctionCommand({ FunctionName: LAMBDA_SF_FUNC }),
-  );
-  // Assert
-  const actualState: string = result.Configuration?.State ?? "";
-  assert.strictEqual(
-    actualState,
-    expectedState,
-    `Expected function state "${expectedState}" but got "${actualState}"`,
-  );
-});
 
 Then('the state machine is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange
@@ -385,11 +320,6 @@ Then('the execution is "SUCCEEDED"', async function (this: SdkWorld) {
 
 Then('the execution is "RUNNING" and the invocation is "SUCCESS"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda invocation result or execution state via public API in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation state via public API in lws.
   assert.ok(this.session, "Expected session to be initialized");
 });
 

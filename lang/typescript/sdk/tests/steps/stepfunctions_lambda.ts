@@ -150,22 +150,11 @@ Given('no execution is "RUNNING"', async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-
-
 // ── Given: cross-service slot availability ────────────────────────────────────
 
 // "an execution slot is available" is registered in cross_service_common.ts.
 
 // "no execution slot is available" is registered in cross_service_common.ts.
-
-
-Given("no invocation slot is available", async function (this: SdkWorld) {
-  // Arrange: exhaust the lambda invocation capacity
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await this.session!.capacity("lambda").exhaust().apply();
-  // Assert: capacity is exhausted
-});
 
 // ── Given: configured function state ──────────────────────────────────────────
 
@@ -301,12 +290,6 @@ Then(
     assert.ok(this.session, "Expected session to be initialized");
   },
 );
-
-Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Cannot observe internal Lambda invocation IN_PROGRESS state in lws.
-  // No-op: treat as invariant satisfied.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 Then('the invocation is "FAILED" and the execution is "FAILED"', async function (this: SdkWorld) {
   // @internal: Cannot observe internal Lambda invocation failure in lws.

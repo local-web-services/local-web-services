@@ -207,52 +207,11 @@ Given(
 
 // "no object slot is available" is registered in cross_service_common.ts.
 
-Given("an invocation slot is available", async function (this: SdkWorld) {
-  // Arrange: set Lambda capacity to unlimited
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await this.session!.capacity("lambda").unlimited().apply();
-  // Assert: capacity set
-});
-
-
 // ── Given: invocation in-progress state ──────────────────────────────────────
-
-Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange: create the function so an invocation could be in progress.
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: the lws fake does not expose invocation state; creating the function
-  // is the closest reachable precondition.
-  await s3apiLambdaCreateFunction(this);
-  // Assert: function created
-});
-
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
 // "an S3 bucket is created" is registered in cross_service_common.ts.
-
-When("a Lambda function is deployed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  try {
-    const result = await lambdaClient(this).send(
-      new CreateFunctionCommand({
-        FunctionName: S3API_LAMBDA_FUNC,
-        Runtime: "python3.12",
-        Role: S3API_LAMBDA_ROLE_ARN,
-        Handler: "index.handler",
-        Code: { ZipFile: Buffer.from("fake") },
-      }),
-    );
-    // Assert: captured in lastCallResult
-    this.lastCallResult = { success: true, output: result };
-  } catch (err) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-});
 
 When(
   'an S3 event notification is configured to invoke a Lambda function on object "PUT"',
@@ -344,24 +303,6 @@ Then(
   },
 );
 
-Then('the function is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  const result = await lambdaClient(this).send(
-    new GetFunctionCommand({ FunctionName: S3API_LAMBDA_FUNC }),
-  );
-  // Assert
-  const expectedState = "Active";
-  const actualState: string = result.Configuration?.State ?? "";
-  assert.strictEqual(
-    actualState,
-    expectedState,
-    `Expected function state "${expectedState}" but got "${actualState}"`,
-  );
-});
-
 Then(
   "the bucket will asynchronously invoke the function when an object is put",
   async function (this: SdkWorld) {
@@ -418,11 +359,6 @@ Then(
 );
 
 // ── Then: @internal scenario assertions (no-op) ───────────────────────────────
-
-Then('the invocation is "SUCCESS"', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation SUCCESS state in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 Then('the invocation is "FAILED"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda invocation FAILED state in lws.

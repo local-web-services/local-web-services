@@ -200,17 +200,6 @@ Given('the callee is not "DELETED"', async function (this: SdkWorld) {
 
 // ── Given: invocation state ────────────────────────────────────────────────────
 
-Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange: create the caller function to represent an in-progress invocation context
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createCallerFunction(this);
-  // Assert: caller created
-});
-
-
-
-
 // ── When: actions ─────────────────────────────────────────────────────────────
 
 When("a caller Lambda function is deployed", async function (this: SdkWorld) {
@@ -375,12 +364,6 @@ Then(
   },
 );
 
-Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation state in lws.
-  // Only reached by @internal scenarios excluded by the tag filter.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
 Then(
   'the invocation is "FAILED" with a ResourceNotFoundException',
   async function (this: SdkWorld) {
@@ -389,12 +372,6 @@ Then(
     assert.ok(this.session, "Expected session to be initialized");
   },
 );
-
-Then('the invocation is "SUCCESS"', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation success in lws.
-  // Only reached by @internal scenarios excluded by the tag filter.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 // ── Invariant catch-all steps ─────────────────────────────────────────────────
 

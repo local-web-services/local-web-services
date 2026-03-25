@@ -106,57 +106,11 @@ Given('the target function is not "ACTIVE"', async function (this: SdkWorld) {
 
 // ── Given: invocation slot state ─────────────────────────────────────────────
 
-Given("an invocation slot is available", async function (this: SdkWorld) {
-  // Arrange: set Lambda capacity to unlimited
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await this.session!.capacity("lambda").unlimited().apply();
-  // Assert: capacity applied
-});
-
-Given("no invocation slot is available", async function (this: SdkWorld) {
-  // Arrange: exhaust Lambda capacity so no invocation slot is available
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await this.session!.capacity("lambda").exhaust().apply();
-  // Assert: capacity exhausted
-});
-
 // ── Given: invocation state ───────────────────────────────────────────────────
-
-Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — skip: cannot trigger internal EventBridge->Lambda routing
-  // in lws to place an invocation into IN_PROGRESS state.
-  assert.ok(this.session, "Expected session to be initialized");
-  return "pending";
-});
-
 
 // ── When: cross-service actions ───────────────────────────────────────────────
 
 // "an EventBridge event bus is created" is registered in cross_service_common.ts.
-
-When("a Lambda function is deployed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  try {
-    const actualOutput = await elLambdaClient(this).send(
-      new CreateFunctionCommand({
-        FunctionName: EL_FUNC,
-        Runtime: "python3.12",
-        Role: EL_ROLE_ARN,
-        Handler: "index.handler",
-        Code: { ZipFile: Buffer.from("fake") },
-      }),
-    );
-    this.lastCallResult = { success: true, output: actualOutput };
-  } catch (error) {
-    this.lastCallResult = { success: false, output: null, error };
-  }
-  // Assert: captured in lastCallResult
-});
 
 When(
   "an EventBridge rule is created to asynchronously invoke a Lambda function on matching events",
@@ -236,16 +190,6 @@ Then(
     );
   },
 );
-
-Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: @internal — cannot observe Lambda IN_PROGRESS state in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Then('the invocation is "SUCCESS"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: @internal — cannot observe Lambda invocation SUCCESS in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 Then('the invocation is "FAILED"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: @internal — cannot observe Lambda invocation FAILED in lws.

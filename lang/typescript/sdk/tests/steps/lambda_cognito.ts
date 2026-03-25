@@ -138,38 +138,7 @@ Given("the pool is not {string}", async function (this: SdkWorld, state: string)
 
 // ── Given: invocation state ───────────────────────────────────────────────────
 
-Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange: create the Lambda function so an invocation could be in progress
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createFunction(this);
-  // Assert: function created
-});
-
-
 // ── When: actions ─────────────────────────────────────────────────────────────
-
-When("a Lambda function is deployed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  try {
-    const result = await lambdaClient(this).send(
-      new CreateFunctionCommand({
-        FunctionName: LAMBDA_COGNITO_TEST_FUNC,
-        Runtime: "python3.12",
-        Role: LAMBDA_COGNITO_TEST_ROLE_ARN,
-        Handler: "index.handler",
-        Code: { ZipFile: Buffer.from("fake") },
-      }),
-    );
-    // Assert: store result
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-});
 
 When("a Cognito user pool is created", async function (this: SdkWorld) {
   // Arrange
@@ -205,16 +174,6 @@ When("a Cognito user pool is deleted", async function (this: SdkWorld) {
   }
 });
 
-When("the Lambda function is invoked", async function (this: SdkWorld) {
-  // @internal: Cannot trigger Lambda invocation in lws without Docker.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot trigger Lambda invocation: scenario requires @internal runtime"),
-  };
-});
-
 When(
   "the Lambda function fails to call Cognito because the pool has been deleted",
   async function (this: SdkWorld) {
@@ -244,24 +203,6 @@ When(
 );
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
-
-Then('the function is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  const result = await lambdaClient(this).send(
-    new GetFunctionCommand({ FunctionName: LAMBDA_COGNITO_TEST_FUNC }),
-  );
-  // Assert
-  const expectedState = "Active";
-  const actualState = result.Configuration?.State as string;
-  assert.strictEqual(
-    actualState,
-    expectedState,
-    `Expected function state "${expectedState}" but got "${actualState}"`,
-  );
-});
 
 Then('the pool is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange
@@ -300,11 +241,6 @@ Then(
   },
 );
 
-Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation state in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
 Then(
   'the invocation is "FAILED" with a ResourceNotFoundException',
   async function (this: SdkWorld) {
@@ -313,20 +249,9 @@ Then(
   },
 );
 
-Then('the invocation is "SUCCESS"', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation success in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
 // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
-Then(
-  "every {string} invocation references an {string} Lambda function",
-  async function (this: SdkWorld, _invState: string, _funcState: string) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+// "every {string} invocation references an {string} Lambda function" is registered in lambda_common.ts.
 
 Then("every successful invocation recorded which pool it called", async function (this: SdkWorld) {
   // No-op: model-level invariant; trivially satisfied in isolated lws context.

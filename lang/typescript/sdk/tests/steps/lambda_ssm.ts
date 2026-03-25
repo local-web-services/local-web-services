@@ -110,51 +110,7 @@ Given('the parameter is not "DELETED"', async function (this: SdkWorld) {
 
 // ── Given: invocation state ───────────────────────────────────────────────────
 
-Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange: create a Lambda function so an invocation can be considered in-progress
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  try {
-    await lambdaSsmCreateFunction(this);
-  } catch {
-    // function may already exist; desired state is presence
-  }
-  // Assert: function created
-});
-
-
-
-Given("no invocation slot is available", async function (this: SdkWorld) {
-  // Arrange: exhaust Lambda invocation capacity
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await this.session!.capacity("lambda").exhaust().apply();
-  // Assert: capacity is exhausted
-});
-
 // ── When: actions ─────────────────────────────────────────────────────────────
-
-When("a Lambda function is deployed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  try {
-    const result = await lambdaSsmLambdaClient(this).send(
-      new CreateFunctionCommand({
-        FunctionName: LAMBDA_SSM_TEST_FUNC,
-        Runtime: "python3.12",
-        Role: LAMBDA_SSM_ROLE_ARN,
-        Handler: "index.handler",
-        Code: { ZipFile: Buffer.from("fake") },
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
 
 When('a parameter is created in "SSM" Parameter Store', async function (this: SdkWorld) {
   // Arrange
@@ -192,16 +148,6 @@ When('a parameter is deleted from "SSM" Parameter Store', async function (this: 
   // Assert: captured in lastCallResult
 });
 
-When("the Lambda function is invoked", async function (this: SdkWorld) {
-  // @internal: Cannot trigger Lambda invocation in lws without Docker.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot trigger Lambda invocation: scenario is @internal"),
-  };
-});
-
 When(
   "the Lambda function fails because the parameter has been deleted",
   async function (this: SdkWorld) {
@@ -229,24 +175,6 @@ When(
 );
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
-
-Then('the function is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  const result = await lambdaSsmLambdaClient(this).send(
-    new GetFunctionCommand({ FunctionName: LAMBDA_SSM_TEST_FUNC }),
-  );
-  // Assert
-  const expectedState = "Active";
-  const actualState = result?.Configuration?.State;
-  assert.strictEqual(
-    actualState,
-    expectedState,
-    `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
-  );
-});
 
 Then('the parameter "EXISTS" and can be read by Lambda', async function (this: SdkWorld) {
   // Arrange
@@ -294,18 +222,8 @@ Then(
   },
 );
 
-Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation state in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
 Then('the invocation is "FAILED" with a ParameterNotFound error', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda invocation failure in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Then('the invocation is "SUCCESS"', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation success in lws.
   assert.ok(this.session, "Expected session to be initialized");
 });
 

@@ -93,7 +93,13 @@ Given("the function does not exist", async function (this: SdkWorld) {
 Given("the function is {string}", async function (this: SdkWorld, state: string) {
   assert.ok(this.session, "Expected session to be initialized");
   if (state === "ACTIVE") {
-    // No-op: lws resolves functions to ACTIVE immediately after creation.
+    const helpers = this.functionHelpers as FunctionStepHelpers | null;
+    if (helpers?.assertFunctionActive) {
+      // Act + Assert: delegate to service-specific assertion (used as a Then step)
+      await helpers.assertFunctionActive(this);
+      return;
+    }
+    // No-op: lws resolves functions to ACTIVE immediately after creation (Given context).
     return;
   }
   if (state === "DELETING" || state === "DELETED" || state === "PENDING" || state === "FAILED") {

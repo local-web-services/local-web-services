@@ -115,15 +115,6 @@ Given("the domain does not exist", async function (this: SdkWorld) {
 
 // ── Given: invocation state ───────────────────────────────────────────────────
 
-Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange: create the Lambda function so an invocation could be in progress
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await lambdaElasticsearchCreateFunction(this);
-  // Assert: function created
-});
-
-
 // ── Given: slot state ─────────────────────────────────────────────────────────
 
 Given("a document slot is available", async function (this: SdkWorld) {
@@ -183,28 +174,6 @@ Given("iid in inv_status", async function (this: SdkWorld) {
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When("a Lambda function is deployed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  try {
-    const result = await lambdaElasticsearchLambdaClient(this).send(
-      new CreateFunctionCommand({
-        FunctionName: LAMBDA_ELASTICSEARCH_TEST_FUNC,
-        Runtime: "python3.12",
-        Role: LAMBDA_ELASTICSEARCH_ROLE_ARN,
-        Handler: "index.handler",
-        Code: { ZipFile: Buffer.from("fake") },
-      }),
-    );
-    // Assert: store result
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-});
-
 When('an Elasticsearch domain is created and becomes "AVAILABLE"', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "No session running");
@@ -253,16 +222,6 @@ When("the domain configuration update completes", async function (this: SdkWorld
   };
 });
 
-When("the Lambda function is invoked", async function (this: SdkWorld) {
-  // @internal: Cannot trigger Lambda invocation in lws without Docker.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot trigger Lambda invocation: scenario is @internal"),
-  };
-});
-
 When(
   "the Lambda function fails to write because the domain is processing a config update",
   async function (this: SdkWorld) {
@@ -290,24 +249,6 @@ When(
 );
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
-
-Then('the function is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  const result = await lambdaElasticsearchLambdaClient(this).send(
-    new GetFunctionCommand({ FunctionName: LAMBDA_ELASTICSEARCH_TEST_FUNC }),
-  );
-  // Assert
-  const expectedState = "Active";
-  const actualState = result.Configuration?.State as string;
-  assert.strictEqual(
-    actualState,
-    expectedState,
-    `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
-  );
-});
 
 Then('the domain is "AVAILABLE"', async function (this: SdkWorld) {
   // Arrange
@@ -348,11 +289,6 @@ Then('the domain is "PROCESSING" and write operations may fail', async function 
     expectedProcessing,
     `Expected domain to be processing but it is not; expected_processing=${expectedProcessing} actual_processing=${actualProcessing}`,
   );
-});
-
-Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation state in lws.
-  assert.ok(this.session, "Expected session to be initialized");
 });
 
 Then('the invocation is "FAILED" with a connection error', async function (this: SdkWorld) {

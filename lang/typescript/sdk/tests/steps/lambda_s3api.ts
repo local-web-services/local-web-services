@@ -35,19 +35,7 @@ async function lambdaS3apiCreateFunction(world: SdkWorld): Promise<void> {
 
 // ── Given: invocation slot state ──────────────────────────────────────────────
 
-
-
 // ── Given: invocation in-progress state ──────────────────────────────────────
-
-Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange: create the function so an invocation could be in progress.
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: lws fake does not expose invocation state; creating the function
-  // is the closest reachable precondition.
-  await lambdaS3apiCreateFunction(this);
-  // Assert: function created
-});
-
 
 // ── Given: object slot state ──────────────────────────────────────────────────
 
@@ -57,39 +45,7 @@ Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When("a Lambda function is deployed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  try {
-    const result = await lambdaClient(this).send(
-      new CreateFunctionCommand({
-        FunctionName: LAMBDA_S3API_FUNC,
-        Runtime: "python3.12",
-        Role: LAMBDA_S3API_ROLE_ARN,
-        Handler: "index.handler",
-        Code: { ZipFile: Buffer.from("fake") },
-      }),
-    );
-    // Assert: captured in lastCallResult
-    this.lastCallResult = { success: true, output: result };
-  } catch (err) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-});
-
 // "an S3 bucket is created" is registered in cross_service_common.ts.
-
-When("the Lambda function is invoked", async function (this: SdkWorld) {
-  // @internal: Cannot trigger Lambda function invocation via public API in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot invoke Lambda function: not reachable via public API in lws"),
-  };
-});
 
 When("the Lambda invocation fails", async function (this: SdkWorld) {
   // @internal: Cannot trigger Lambda invocation failure via public API in lws.
@@ -134,18 +90,8 @@ When(
 
 // "the object \"EXISTS\" in the bucket" is already registered in s3api.ts.
 
-Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation IN_PROGRESS state in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
 Then('the invocation is "FAILED"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda invocation FAILED state in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Then('the invocation is "SUCCESS"', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation SUCCESS state in lws.
   assert.ok(this.session, "Expected session to be initialized");
 });
 

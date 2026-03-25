@@ -253,24 +253,6 @@ Then('the secret is "ACTIVE"', async function (this: SdkWorld) {
   );
 });
 
-Then('the function is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  const result = await smLambdaLambdaClient(this).send(
-    new GetFunctionCommand({ FunctionName: SM_LAMBDA_FUNC }),
-  );
-  // Assert
-  const expectedState = "Active";
-  const actualState = result.Configuration?.State ?? "";
-  assert.strictEqual(
-    actualState,
-    expectedState,
-    `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
-  );
-});
-
 Then("the secret has a rotation function configured", async function (this: SdkWorld) {
   // Cannot verify rotation function configuration in lws.
   // Scenarios requiring this assertion also require rotation configuration which is

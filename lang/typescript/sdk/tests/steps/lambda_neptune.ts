@@ -73,6 +73,31 @@ Before({ tags: "@lambdaneptune" }, function (this: SdkWorld) {
       );
     },
   };
+  this.functionHelpers = {
+    functionName: LAMBDA_NEPTUNE_TEST_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      try {
+        await lambdaNeptuneCreateFunction(world);
+        world.lastCallResult = { success: true, output: { FunctionName: LAMBDA_NEPTUNE_TEST_FUNC } };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    assertFunctionActive: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
+      const result = await lambdaNeptuneLambdaClient(world).send(
+        new GetFunctionCommand({ FunctionName: LAMBDA_NEPTUNE_TEST_FUNC }),
+      );
+      const expectedState = "Active";
+      const actualState = result.Configuration?.State ?? "";
+      assert.strictEqual(
+        actualState,
+        expectedState,
+        `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
+      );
+    },
+  };
 });
 
 // ── Given: invocation state ───────────────────────────────────────────────────
@@ -96,8 +121,6 @@ Given("no invocation is {string}", async function (this: SdkWorld, _state: strin
   // No-op: fresh state after reset has no in-progress invocations.
   assert.ok(this.session, "Expected session to be initialized");
 });
-
-
 
 // ── Given: Neptune cluster state unique to cross-service scenarios ────────────
 
@@ -159,28 +182,6 @@ Given('the Neptune cluster is not "AVAILABLE"', async function (this: SdkWorld) 
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When("a Lambda function is deployed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  try {
-    const result = await lambdaNeptuneLambdaClient(this).send(
-      new CreateFunctionCommand({
-        FunctionName: LAMBDA_NEPTUNE_TEST_FUNC,
-        Runtime: "python3.12",
-        Role: LAMBDA_NEPTUNE_ROLE_ARN,
-        Handler: "index.handler",
-        Code: { ZipFile: Buffer.from("fake") },
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
 When("a Neptune cluster is created", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "No session running");
@@ -232,16 +233,6 @@ When("the Neptune cluster is started", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When("the Lambda function is invoked", async function (this: SdkWorld) {
-  // @internal: Cannot trigger Lambda invocation in lws without Docker.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot trigger Lambda invocation: scenario is @internal"),
-  };
-});
-
 When(
   "the Lambda function fails to connect because the Neptune cluster is stopped",
   async function (this: SdkWorld) {
@@ -270,25 +261,7 @@ When(
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then("the function is {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "ACTIVE") {
-    const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
-    // Act
-    const result = await lambdaNeptuneLambdaClient(this).send(
-      new GetFunctionCommand({ FunctionName: LAMBDA_NEPTUNE_TEST_FUNC }),
-    );
-    // Assert
-    const expectedState = "Active";
-    const actualState = result.Configuration?.State ?? "";
-    assert.strictEqual(
-      actualState,
-      expectedState,
-      `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
-    );
-  }
-});
+// "the function is {string}" is registered in lambda.ts (dispatches via functionHelpers.assertFunctionActive).
 
 // "the cluster is {string}" is registered in cluster_common.ts (dispatches to assertClusterStatus).
 

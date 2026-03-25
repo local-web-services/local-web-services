@@ -78,6 +78,31 @@ Before({ tags: "@lambdamemorydb" }, function (this: SdkWorld) {
       );
     },
   };
+  this.functionHelpers = {
+    functionName: LAMBDA_MEMORYDB_TEST_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      try {
+        await lambdaMemorydbCreateFunction(world);
+        world.lastCallResult = { success: true, output: { FunctionName: LAMBDA_MEMORYDB_TEST_FUNC } };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    assertFunctionActive: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
+      const result = await lambdaMemorydbLambdaClient(world).send(
+        new GetFunctionCommand({ FunctionName: LAMBDA_MEMORYDB_TEST_FUNC }),
+      );
+      const expectedState = "Active";
+      const actualState = result.Configuration?.State ?? "";
+      assert.strictEqual(
+        actualState,
+        expectedState,
+        `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
+      );
+    },
+  };
 });
 
 // ── Given: invocation state ───────────────────────────────────────────────────
@@ -102,8 +127,6 @@ Given("no invocation is {string}", async function (this: SdkWorld, _state: strin
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-
-
 Given("a record slot is available", async function (this: SdkWorld) {
   // No-op: always room for records in lws.
   assert.ok(this.session, "Expected session to be initialized");
@@ -115,28 +138,6 @@ Given("no record slot is available", async function (this: SdkWorld) {
 });
 
 // ── When: actions ─────────────────────────────────────────────────────────────
-
-When("a Lambda function is deployed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  try {
-    const result = await lambdaMemorydbLambdaClient(this).send(
-      new CreateFunctionCommand({
-        FunctionName: LAMBDA_MEMORYDB_TEST_FUNC,
-        Runtime: "python3.12",
-        Role: LAMBDA_MEMORYDB_ROLE_ARN,
-        Handler: "index.handler",
-        Code: { ZipFile: Buffer.from("fake") },
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
 
 When("a MemoryDB cluster is created", async function (this: SdkWorld) {
   // Arrange
@@ -178,16 +179,6 @@ When("the MemoryDB cluster update completes", async function (this: SdkWorld) {
   };
 });
 
-When("the Lambda function is invoked", async function (this: SdkWorld) {
-  // @internal: Cannot trigger Lambda invocation in lws without Docker.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot trigger Lambda invocation: scenario is @internal"),
-  };
-});
-
 When(
   "the Lambda function fails to write because the cluster is updating",
   async function (this: SdkWorld) {
@@ -216,25 +207,7 @@ When(
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then("the function is {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "ACTIVE") {
-    const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
-    // Act
-    const result = await lambdaMemorydbLambdaClient(this).send(
-      new GetFunctionCommand({ FunctionName: LAMBDA_MEMORYDB_TEST_FUNC }),
-    );
-    // Assert
-    const expectedState = "Active";
-    const actualState = result.Configuration?.State ?? "";
-    assert.strictEqual(
-      actualState,
-      expectedState,
-      `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
-    );
-  }
-});
+// "the function is {string}" is registered in lambda.ts (dispatches via functionHelpers.assertFunctionActive).
 
 // "the cluster is {string}" is registered in cluster_common.ts (dispatches to assertClusterStatus).
 

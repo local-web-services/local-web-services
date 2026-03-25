@@ -80,8 +80,6 @@ Given("no invocation is {string}", async function (this: SdkWorld, _state: strin
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-
-
 Given("a record slot is available", async function (this: SdkWorld) {
   // No-op: always room for records in lws.
   assert.ok(this.session, "Expected session to be initialized");
@@ -202,28 +200,6 @@ Given('the table is already "DELETING"', async function (this: SdkWorld) {
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When("a Lambda function is deployed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  try {
-    const result = await lambdaS3TablesLambdaClient(this).send(
-      new CreateFunctionCommand({
-        FunctionName: LAMBDA_S3TABLES_TEST_FUNC,
-        Runtime: "python3.12",
-        Role: LAMBDA_S3TABLES_ROLE_ARN,
-        Handler: "index.handler",
-        Code: { ZipFile: Buffer.from("fake") },
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
 When("an S3 table bucket is created", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "No session running");
@@ -279,16 +255,6 @@ When("a table deletion is initiated", async function (this: SdkWorld) {
     this.lastCallResult = { success: false, output: null, error: err };
   }
   // Assert: captured in lastCallResult
-});
-
-When("the Lambda function is invoked", async function (this: SdkWorld) {
-  // @internal: Cannot trigger Lambda invocation in lws without Docker.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot trigger Lambda invocation: scenario is @internal"),
-  };
 });
 
 When(

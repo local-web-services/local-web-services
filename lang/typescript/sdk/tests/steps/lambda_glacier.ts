@@ -126,15 +126,6 @@ Given('the vault does not exist or is "DELETED"', async function (this: SdkWorld
 
 // ── Given: invocation state ───────────────────────────────────────────────────
 
-Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange: create the Lambda function so an invocation could be in progress
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await lambdaGlacierCreateFunction(this);
-  // Assert: function created
-});
-
-
 // ── Given: slot state ─────────────────────────────────────────────────────────
 
 Given("an archive slot is available", async function (this: SdkWorld) {
@@ -194,28 +185,6 @@ Given("iid in inv_status", async function (this: SdkWorld) {
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When("a Lambda function is deployed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  try {
-    const result = await lambdaGlacierLambdaClient(this).send(
-      new CreateFunctionCommand({
-        FunctionName: LAMBDA_GLACIER_TEST_FUNC,
-        Runtime: "python3.12",
-        Role: LAMBDA_GLACIER_ROLE_ARN,
-        Handler: "index.handler",
-        Code: { ZipFile: Buffer.from("fake") },
-      }),
-    );
-    // Assert: store result
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-});
-
 When("a Glacier vault is created", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "No session running");
@@ -254,16 +223,6 @@ When("a Glacier vault is deleted", async function (this: SdkWorld) {
   }
 });
 
-When("the Lambda function is invoked", async function (this: SdkWorld) {
-  // @internal: Cannot trigger Lambda invocation in lws without Docker.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot trigger Lambda invocation: scenario is @internal"),
-  };
-});
-
 When(
   "the Lambda function uploads an archive to an existing vault and succeeds",
   async function (this: SdkWorld) {
@@ -291,24 +250,6 @@ When(
 );
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
-
-Then('the function is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  const result = await lambdaGlacierLambdaClient(this).send(
-    new GetFunctionCommand({ FunctionName: LAMBDA_GLACIER_TEST_FUNC }),
-  );
-  // Assert
-  const expectedState = "Active";
-  const actualState = result.Configuration?.State as string;
-  assert.strictEqual(
-    actualState,
-    expectedState,
-    `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
-  );
-});
 
 Then('the vault "EXISTS"', async function (this: SdkWorld) {
   // Arrange
@@ -342,11 +283,6 @@ Then('the vault is "DELETED" and archive uploads will fail', async function (thi
     expectedSuccess,
     `Expected delete_vault to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
-});
-
-Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation state in lws.
-  assert.ok(this.session, "Expected session to be initialized");
 });
 
 Then(

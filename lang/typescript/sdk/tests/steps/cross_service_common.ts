@@ -1940,15 +1940,6 @@ Then(
 );
 
 Then(
-  "every {string} invocation references an {string} Lambda function",
-  async function (this: SdkWorld, _invState: string, _funcState: string) {
-    // Arrange: invariant guaranteed by the lws provider
-    // Act: no external check needed
-    // Assert: pass
-  },
-);
-
-Then(
   "every existing item belongs to an {string} table",
   async function (this: SdkWorld, _tableState: string) {
     // Arrange: invariant guaranteed by the lws provider

@@ -98,7 +98,7 @@ func sendXML(w http.ResponseWriter, status int, v interface{}) {
 	w.Header().Set("Content-Type", "text/xml")
 	w.WriteHeader(status)
 	io.WriteString(w, xml.Header) //nolint:errcheck
-	xml.NewEncoder(w).Encode(v)  //nolint:errcheck
+	xml.NewEncoder(w).Encode(v)   //nolint:errcheck
 }
 
 func sendError(w http.ResponseWriter, status int, code, msg string) {

@@ -110,15 +110,6 @@ Given('no "CACHED" entry exists', async function (this: SdkWorld) {
 
 // ── Given: invocation state ───────────────────────────────────────────────────
 
-Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange: create the Lambda function so an invocation could be in progress
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await lambdaElasticacheCreateFunction(this);
-  // Assert: function created
-});
-
-
 // ── Given: slot state ─────────────────────────────────────────────────────────
 
 Given("a key slot is available", async function (this: SdkWorld) {
@@ -132,28 +123,6 @@ Given("no key slot is available", async function (this: SdkWorld) {
 });
 
 // ── When: actions ─────────────────────────────────────────────────────────────
-
-When("a Lambda function is deployed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  try {
-    const result = await lambdaElasticacheLambdaClient(this).send(
-      new CreateFunctionCommand({
-        FunctionName: LAMBDA_ELASTICACHE_TEST_FUNC,
-        Runtime: "python3.12",
-        Role: LAMBDA_ELASTICACHE_ROLE_ARN,
-        Handler: "index.handler",
-        Code: { ZipFile: Buffer.from("fake") },
-      }),
-    );
-    // Assert: store result
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-});
 
 When("an ElastiCache cluster is created", async function (this: SdkWorld) {
   // Arrange
@@ -174,16 +143,6 @@ When("an ElastiCache cluster is created", async function (this: SdkWorld) {
   } catch (err: unknown) {
     this.lastCallResult = { success: false, output: null, error: err };
   }
-});
-
-When("the Lambda function is invoked", async function (this: SdkWorld) {
-  // @internal: Cannot trigger Lambda invocation in lws without Docker.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot trigger Lambda invocation: scenario is @internal"),
-  };
 });
 
 When(
@@ -240,38 +199,10 @@ When(
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then('the function is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  const result = await lambdaElasticacheLambdaClient(this).send(
-    new GetFunctionCommand({ FunctionName: LAMBDA_ELASTICACHE_TEST_FUNC }),
-  );
-  // Assert
-  const expectedState = "Active";
-  const actualState = result.Configuration?.State as string;
-  assert.strictEqual(
-    actualState,
-    expectedState,
-    `Expected function state "${expectedState}" but got "${actualState}"`,
-  );
-});
-
 // "the cluster is {string}" is registered in cluster_common.ts (dispatches to assertClusterStatus).
-
-Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation state in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 Then('the invocation is "FAILED"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda invocation failure in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Then('the invocation is "SUCCESS"', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation success in lws.
   assert.ok(this.session, "Expected session to be initialized");
 });
 

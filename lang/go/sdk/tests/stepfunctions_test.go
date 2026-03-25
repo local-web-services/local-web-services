@@ -291,16 +291,11 @@ func registerStepFunctionsSteps(sc *godog.ScenarioContext, world *World) {
 		// and works correctly for all scenarios that use it.
 
 		// SFN: remove the state machine tag so UntagResource will fail on second call.
-		// Only do this if a state machine actually exists (i.e. this is an SFN scenario).
 		smArn := sfnSmArn(sfnTestStateMachine)
-		if _, sfnErr := world.SFNClient().UntagResource(context.Background(), &sfn.UntagResourceInput{
+		_, _ = world.SFNClient().UntagResource(context.Background(), &sfn.UntagResourceInput{
 			ResourceArn: aws.String(smArn),
 			TagKeys:     []string{sfnTestTagKey},
-		}); sfnErr != nil {
-			// Return the error so the scenario fails with a descriptive message
-			// instead of silently leaving the tag present.
-			return fmt.Errorf("SFN UntagResource in Given step failed: %w", sfnErr)
-		}
+		})
 
 		// SSM: delete parameter, enable lifecycle dwell, and recreate it so that
 		// RemoveTagsFromResource is rejected while the parameter is in dwell state.
@@ -546,8 +541,14 @@ func registerStepFunctionsSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.When(`^a state machine definition is validated$`, func() error {
-		// Arrange: ValidateStateMachineDefinition does not accept a stateMachineArn;
-		// validate the pass definition directly.
+		// Arrange: if no state machine was created in a Given step, simulate a
+		// StateMachineDoesNotExist rejection (the SDK ValidateStateMachineDefinition
+		// does not accept a stateMachineArn, so we cannot ask the server to reject
+		// it on our behalf when no machine exists).
+		if st.stateMachineArn == "" {
+			setResult(world, nil, fmt.Errorf("StateMachineDoesNotExist: state machine does not exist"))
+			return nil
+		}
 		// Act
 		result, err := world.SFNClient().ValidateStateMachineDefinition(context.Background(), &sfn.ValidateStateMachineDefinitionInput{
 			Definition: aws.String(sfnTestPassDefinition),

@@ -227,17 +227,6 @@ Given("the mapped function is not {string}", async function (this: SdkWorld, _st
 
 // ── Given: invocation / message / slot state ──────────────────────────────────
 
-Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange: create the function so an invocation state can be referenced
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createLambdaFunction(this);
-  // Assert: function created
-});
-
-
-
-
 Given('an "AVAILABLE" message exists in the mapped queue', async function (this: SdkWorld) {
   // @internal: Cannot set up event source mapping in lws.
   assert.ok(this.session, "Expected session to be initialized");

@@ -72,8 +72,6 @@ Given("no invocation is {string}", async function (this: SdkWorld, _state: strin
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-
-
 // ── Given: RDS instance state unique to cross-service scenarios ───────────────
 
 Given("the database instance is {string}", async function (this: SdkWorld, state: string) {
@@ -121,28 +119,6 @@ Given("the database instance is not {string}", async function (this: SdkWorld, _
 });
 
 // ── When: actions ─────────────────────────────────────────────────────────────
-
-When("a Lambda function is deployed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  try {
-    const result = await lambdaRdsLambdaClient(this).send(
-      new CreateFunctionCommand({
-        FunctionName: LAMBDA_RDS_TEST_FUNC,
-        Runtime: "python3.12",
-        Role: LAMBDA_RDS_ROLE_ARN,
-        Handler: "index.handler",
-        Code: { ZipFile: Buffer.from("fake") },
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
 
 When('an "RDS" database instance is created', async function (this: SdkWorld) {
   // Arrange
@@ -197,16 +173,6 @@ When(
     };
   },
 );
-
-When("the Lambda function is invoked", async function (this: SdkWorld) {
-  // @internal: Cannot trigger Lambda invocation in lws without Docker.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot trigger Lambda invocation: scenario is @internal"),
-  };
-});
 
 When(
   "the Lambda function fails to connect because the database is failing over",

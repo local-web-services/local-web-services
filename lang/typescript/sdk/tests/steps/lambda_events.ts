@@ -90,59 +90,15 @@ Given('the bus is not "DELETED"', async function (this: SdkWorld) {
 
 // ── Given: invocation / slot state ────────────────────────────────────────────
 
-Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create the function so an invocation can be IN_PROGRESS
-  await createFunction(this);
-  // Assert: function created
-});
-
-
-
-
 // "an event slot is available" is registered in cross_service_common.ts.
 
 // "no event slot is available" is registered in cross_service_common.ts.
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When("a Lambda function is deployed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  try {
-    const result = await lambdaClient(this).send(
-      new CreateFunctionCommand({
-        FunctionName: LE_TEST_FUNC,
-        Runtime: "python3.12",
-        Role: LE_ROLE_ARN,
-        Handler: "index.handler",
-        Code: { ZipFile: Buffer.from("fake") },
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
 // "an EventBridge event bus is created" is registered in cross_service_common.ts.
 
 // "the EventBridge event bus is deleted" is registered in cross_service_common.ts.
-
-When("the Lambda function is invoked", async function (this: SdkWorld) {
-  // @internal: Cannot trigger Lambda invocation in lws without Docker.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot trigger Lambda invocation: scenario is @internal"),
-  };
-  // Assert: captured in lastCallResult
-});
 
 When(
   "the Lambda function fails to publish because the event bus has been deleted",
@@ -208,11 +164,6 @@ Then(
     );
   },
 );
-
-Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation state in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 Then(
   'the invocation is "FAILED" with a ResourceNotFoundException',

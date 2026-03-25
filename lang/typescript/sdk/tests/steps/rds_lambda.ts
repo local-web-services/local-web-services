@@ -203,8 +203,6 @@ Given('the function is already "DELETED"', async function (this: SdkWorld) {
 
 // ── Given: invocation slot state ──────────────────────────────────────────────
 
-
-
 // ── When: actions ─────────────────────────────────────────────────────────────
 
 When('an "RDS" "DB" instance is created', async function (this: SdkWorld) {
@@ -220,28 +218,6 @@ When('an "RDS" "DB" instance is created', async function (this: SdkWorld) {
         Engine: RDS_LAMBDA_TEST_DB_ENGINE,
         MasterUsername: "admin",
         MasterUserPassword: "password123",
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("a Lambda function is deployed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  try {
-    const result = await rdsLambdaLambdaClient(this).send(
-      new CreateFunctionCommand({
-        FunctionName: RDS_LAMBDA_TEST_FUNC_NAME,
-        Runtime: "python3.12",
-        Role: RDS_LAMBDA_TEST_ROLE_ARN,
-        Handler: "index.handler",
-        Code: { ZipFile: Buffer.from("fake") },
       }),
     );
     this.lastCallResult = { success: true, output: result };
@@ -336,19 +312,6 @@ Then(
   },
 );
 
-Then('the function is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected Lambda function deployment to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
-
 Then(
   'the function is "DELETED" and stored procedure invocations targeting it will fail',
   async function (this: SdkWorld) {
@@ -380,11 +343,6 @@ Then(
     );
   },
 );
-
-Then('the invocation is "SUCCESS"', async function (this: SdkWorld) {
-  // @internal: stored_proc_invokes_lambda outcome not observable via public API.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 Then('the invocation is "FAILED" with a function not found error', async function (this: SdkWorld) {
   // @internal: invocation_fails_function_deleted outcome not observable via public API.
