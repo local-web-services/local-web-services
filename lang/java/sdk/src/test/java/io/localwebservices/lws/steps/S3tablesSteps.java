@@ -41,35 +41,10 @@ public class S3tablesSteps {
     this.world = world;
   }
 
-  @Given("the bucket is \"ACTIVE\"")
-  public void theBucketIsActive() {
-    // Arrange / Act / Assert — no-op: table buckets are ACTIVE immediately in lws.
-  }
-
-  @Given("the bucket is not \"ACTIVE\"")
-  public void theBucketIsNotActive() {
-    // @internal: no public API can place a bucket in a non-ACTIVE state.
-  }
-
-  @Given("the bucket is \"CREATING\"")
-  public void theBucketIsCreating() {
-    // @internal: no public API can place a bucket in CREATING state.
-  }
-
-  @Given("the bucket is not \"CREATING\"")
-  public void theBucketIsNotCreating() {
-    // @internal: no public API can place a bucket in non-CREATING state selectively.
-  }
-
-  @Given("the bucket is \"DELETING\"")
-  public void theBucketIsDeleting() {
-    // @internal: no public API can place a bucket in DELETING state.
-  }
-
-  @Given("the bucket is not \"DELETING\"")
-  public void theBucketIsNotDeleting() {
-    // @internal: no public API can place a bucket in non-DELETING state selectively.
-  }
+  // "the bucket is {string}" is registered in CrossServiceSteps (no-op).
+  // "the bucket is not \"ACTIVE\"" is registered in CrossServiceSteps (Assumptions skip).
+  // "the bucket is not \"CREATING\"/\"DELETING\"" — @internal scenarios only; handled by
+  // CrossServiceSteps skip.
 
   @Given("the bucket has no active namespaces")
   public void theBucketHasNoActiveNamespaces() {
@@ -145,35 +120,10 @@ public class S3tablesSteps {
     // Arrange / Act / Assert — no-op: fresh bucket has no namespaces.
   }
 
-  @Given("the table is \"ACTIVE\"")
-  public void theTableIsActive() {
-    // Arrange / Act / Assert — no-op: tables transition to ACTIVE immediately in lws.
-  }
-
-  @Given("the table is not \"ACTIVE\"")
-  public void theTableIsNotActive() {
-    // @internal: no public API can place a table in a non-ACTIVE state.
-  }
-
-  @Given("the table is \"CREATING\"")
-  public void theTableIsCreating() {
-    // @internal: no public API can place a table in CREATING state.
-  }
-
-  @Given("the table is not \"CREATING\"")
-  public void theTableIsNotCreating() {
-    // @internal: no public API can place a table in non-CREATING state selectively.
-  }
-
-  @Given("the table is \"DELETING\"")
-  public void theTableIsDeleting() {
-    // @internal: no public API can place a table in DELETING state.
-  }
-
-  @Given("the table is not \"DELETING\"")
-  public void theTableIsNotDeleting() {
-    // @internal: no public API can place a table in non-DELETING state selectively.
-  }
+  // "the table is \"ACTIVE\"/\"CREATING\"/\"DELETING\"" is registered in CrossServiceSteps (no-op).
+  // "the table is not \"ACTIVE\"/\"DELETING\"" is registered in CrossServiceSteps (Assumptions
+  // skip).
+  // @internal table state scenarios are excluded by the tag filter.
 
   @Given("the table is in \"MAINTENANCE\" state")
   public void theTableIsInMaintenanceState() {
