@@ -83,21 +83,9 @@ public class LambdaStepfunctionsSteps {
     }
   }
 
-  @Given("the function is not \"ACTIVE\"")
-  public void theFunctionIsNotActive() throws Exception {
-    // Arrange: delete the function, apply create dwell so next create is non-ACTIVE
-    try (LambdaClient client = world.session.lambdaClient()) {
-      try {
-        client.deleteFunction(r -> r.functionName(TEST_FUNC));
-      } catch (Exception ignored) {
-        // function may not exist
-      }
-    }
-    // Act: set lifecycle dwell to prevent immediate ACTIVE transition
-    world.session.lifecycle("lambda").createDwellMs(5000).apply();
-    lambdaCreateFunction();
-    // Assert: function exists but is in a non-ACTIVE state
-  }
+  // "the function is not \"ACTIVE\"" — registered as @Given("the function is not {string}")
+  // in LambdaSteps and covers this literal case; absent here to avoid
+  // DuplicateStepDefinitionException.
 
   @Given("the state machine is already \"DELETED\"")
   public void theStateMachineIsAlreadyDeleted() throws Exception {

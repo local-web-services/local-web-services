@@ -8,7 +8,6 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
-import software.amazon.awssdk.services.lambda.model.GetFunctionResponse;
 import software.amazon.awssdk.services.lambda.model.Runtime;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.DescribeSecretResponse;
@@ -152,28 +151,9 @@ public class LambdaSecretsmanagerSteps {
 
   // ── Then: assertions ──────────────────────────────────────────────────────────
 
-  @Then("the function is \"ACTIVE\"")
-  public void theFunctionIsActive() {
-    // Arrange
-    String expectedState = "Active";
-    // Act
-    try (LambdaClient client = world.session.lambdaClient()) {
-      GetFunctionResponse result = client.getFunction(r -> r.functionName(TEST_FUNC));
-      String actualState = result.configuration().state().toString();
-      // Assert
-      assertEquals(
-          expectedState,
-          actualState,
-          "expected function state '"
-              + expectedState
-              + "' but got '"
-              + actualState
-              + "'; expected_state="
-              + expectedState
-              + " actual_state="
-              + actualState);
-    }
-  }
+  // "the function is \"ACTIVE\"" — registered as @Given("the function is {string}")
+  // in LambdaSteps and covers this literal case; absent here to avoid
+  // DuplicateStepDefinitionException.
 
   @Then("the secret is \"ACTIVE\" and can be read by Lambda")
   public void theSecretIsActiveAndCanBeReadByLambda() {
