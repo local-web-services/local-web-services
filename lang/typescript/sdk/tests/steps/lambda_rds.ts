@@ -7,6 +7,7 @@
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { InstanceStepHelpers } from "../support/world";
 
 const LAMBDA_RDS_TEST_FUNC = "test-lambda-rds-1";
 const LAMBDA_RDS_TEST_INSTANCE = "test-lambda-rds-instance-1";
@@ -78,6 +79,26 @@ Before({ tags: "@lambdards" }, function (this: SdkWorld) {
       );
     },
   };
+  const instanceHelpersImpl: InstanceStepHelpers = {
+    assertInstanceStatus: async (world: SdkWorld, expectedStatus: string) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      if (expectedStatus === "AVAILABLE") {
+        const { DescribeDBInstancesCommand } = require("@aws-sdk/client-rds");
+        const result = await lambdaRdsRdsClient(world).send(
+          new DescribeDBInstancesCommand({ DBInstanceIdentifier: LAMBDA_RDS_TEST_INSTANCE }),
+        );
+        const expectedDbStatus = "available";
+        const actualDbStatus = result.DBInstances?.[0]?.DBInstanceStatus ?? "";
+        assert.strictEqual(
+          actualDbStatus,
+          expectedDbStatus,
+          `Expected instance status "${expectedDbStatus}" but got "${actualDbStatus}"; expected_status=${expectedDbStatus} actual_status=${actualDbStatus}`,
+        );
+      }
+      // For other statuses: no-op
+    },
+  };
+  this.instanceHelpers = instanceHelpersImpl;
 });
 
 // ── Given: invocation state ───────────────────────────────────────────────────
@@ -217,25 +238,7 @@ When(
 
 // "the function is {string}" is registered in lambda.ts (dispatches via functionHelpers.assertFunctionActive).
 
-Then("the instance is {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "AVAILABLE") {
-    const { DescribeDBInstancesCommand } = require("@aws-sdk/client-rds");
-    // Act
-    const result = await lambdaRdsRdsClient(this).send(
-      new DescribeDBInstancesCommand({ DBInstanceIdentifier: LAMBDA_RDS_TEST_INSTANCE }),
-    );
-    // Assert
-    const expectedStatus = "available";
-    const actualStatus = result.DBInstances?.[0]?.DBInstanceStatus ?? "";
-    assert.strictEqual(
-      actualStatus,
-      expectedStatus,
-      `Expected instance status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-    );
-  }
-});
+// "the instance is {string}" is registered in cross_service_common.ts (dispatches via instanceHelpers).
 
 Then(
   'the instance is "FAILING_OVER" and temporarily unavailable for connections',

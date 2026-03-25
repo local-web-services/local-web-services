@@ -142,41 +142,9 @@ Given('the parameter is not "DELETED"', async function (this: SdkWorld) {
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When('a parameter is created in "SSM" Parameter Store', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { PutParameterCommand } = require("@aws-sdk/client-ssm");
-  // Act
-  try {
-    const result = await lambdaSsmSsmClient(this).send(
-      new PutParameterCommand({
-        Name: LAMBDA_SSM_PARAM,
-        Value: LAMBDA_SSM_PARAM_VALUE,
-        Type: "String",
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a parameter is created in {string} Parameter Store" is registered in cross_service_common.ts.
 
-When('a parameter is deleted from "SSM" Parameter Store', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { DeleteParameterCommand } = require("@aws-sdk/client-ssm");
-  // Act
-  try {
-    const result = await lambdaSsmSsmClient(this).send(
-      new DeleteParameterCommand({ Name: LAMBDA_SSM_PARAM }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a parameter is deleted from {string} Parameter Store" is registered in cross_service_common.ts.
 
 When(
   "the Lambda function fails because the parameter has been deleted",

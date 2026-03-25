@@ -185,29 +185,9 @@ Given('the state machine does not exist or is "DELETED"', async function (this: 
 
 // ── Given: execution state ─────────────────────────────────────────────────────
 
-Given('an execution is "RUNNING"', async function (this: SdkWorld) {
-  // Arrange: create a state machine and start an execution
-  assert.ok(this.session, "Expected session to be initialized");
-  if (!(this as any)._lambdaSfnSmArn) {
-    const arn = await createStateMachine(this);
-    (this as any)._lambdaSfnSmArn = arn;
-  }
-  const { StartExecutionCommand } = require("@aws-sdk/client-sfn");
-  // Act
-  const result = await sfnClient(this).send(
-    new StartExecutionCommand({
-      stateMachineArn: smArn(),
-      input: JSON.stringify({ key: "value" }),
-    }),
-  );
-  (this as any)._lambdaSfnExecArn = result.executionArn;
-  // Assert: execution started (no error thrown)
-});
+// "an execution is {string}" is registered in cross_service_common.ts.
 
-Given('no execution is "RUNNING"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh session has no executions.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "no execution is {string}" is registered in cross_service_common.ts.
 
 // "an execution slot is available" is registered in cross_service_common.ts.
 

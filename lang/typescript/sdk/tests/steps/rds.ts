@@ -90,16 +90,8 @@ Given(
   },
 );
 
-Given("the instance is {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange / Act / Assert — no-op: DB instances in lws are available after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the instance is not {string}", async function (this: SdkWorld, _state: string) {
-  // @internal: Cannot force a DB instance into a non-AVAILABLE state via public API.
-  // Only reached by @lifecycle scenarios excluded by the tag filter.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the instance is {string}" is registered in cross_service_common.ts.
+// "the instance is not {string}" is registered in cross_service_common.ts.
 
 Given(
   "the instance is neither {string} nor {string}",

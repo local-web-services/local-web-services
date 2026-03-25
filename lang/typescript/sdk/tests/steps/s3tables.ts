@@ -1,8 +1,9 @@
 /** Step definitions: s3tables service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { TableStepHelpers } from "../support/world";
 
 const S3TABLES_BUCKET_NAME = "test-s3tables-bucket-1";
 const S3TABLES_NAMESPACE_NAME = "test-s3tables-namespace-1";
@@ -52,6 +53,23 @@ async function createTable(world: SdkWorld): Promise<void> {
   );
 }
 
+// ── Before hook: register tableHelpers for s3tables scenarios ────────────────
+
+Before({ tags: "@s3tables" }, function (this: SdkWorld) {
+  const tableHelpersImpl: TableStepHelpers = {
+    handleTableActive: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create table so it is ACTIVE (idempotent if already exists)
+      try {
+        await createTable(world);
+      } catch {
+        // table may already exist
+      }
+    },
+  };
+  this.tableHelpers = tableHelpersImpl;
+});
+
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
@@ -64,10 +82,7 @@ async function createTable(world: SdkWorld): Promise<void> {
 
 // "the bucket exists" is registered in cross_service_common.ts.
 
-Given('the bucket is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: table buckets are ACTIVE immediately in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the bucket is {string}" is registered in cross_service_common.ts.
 
 Given('the bucket is not "ACTIVE"', async function (this: SdkWorld) {
   // @internal: no public API can place a bucket in a non-ACTIVE state.
@@ -178,10 +193,7 @@ Given("the namespace does not exist", async function (this: SdkWorld) {
 
 // "the table exists" is registered in cross_service_common.ts.
 
-Given('the table is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: tables transition to ACTIVE immediately in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the table is {string}" is registered in cross_service_common.ts (dispatches via tableHelpers).
 
 Given('the table is not "ACTIVE"', async function (this: SdkWorld) {
   // @internal: no public API can place a table in a non-ACTIVE state.
@@ -705,9 +717,7 @@ Then('the bucket enters "DELETING" state', async function (this: SdkWorld) {
   );
 });
 
-Then('the bucket is "ACTIVE"', async function (this: SdkWorld) {
-  // @internal: internal state assertion — no-op in public API test context.
-});
+// "the bucket is {string}" is registered in cross_service_common.ts.
 
 Then(
   'the bucket is "DELETED" and all its namespaces and tables are "DELETED"',

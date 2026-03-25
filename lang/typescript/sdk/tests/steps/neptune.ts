@@ -115,15 +115,8 @@ Given("the instance exists", async function (this: SdkWorld) {
   // Assert: cluster and instance created
 });
 
-Given(/^the instance is "([^"]*)"$/, async function (this: SdkWorld, _status: string) {
-  // Arrange / Act / Assert — no-op: lws sets instances to AVAILABLE by default after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given(/^the instance is not "([^"]*)"$/, async function (this: SdkWorld, _status: string) {
-  // Arrange / Act / Assert — skip: cannot force an instance into a non-AVAILABLE state via public API.
-  return "pending";
-});
+// "the instance is {string}" is registered in cross_service_common.ts.
+// "the instance is not {string}" is registered in cross_service_common.ts.
 
 Given("the instance does not exist", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: fresh state after reset has no instances.
@@ -670,17 +663,7 @@ Then(
 
 // ── Safety invariant Then steps ───────────────────────────────────────────────
 
-Then("every cluster has a valid status", async function (this: SdkWorld) {
-  // No-op invariant: trivially satisfied in an isolated test context.
-});
-
-Then("every instance has a valid status", async function (this: SdkWorld) {
-  // No-op invariant: trivially satisfied in an isolated test context.
-});
-
-Then("every snapshot has a valid status", async function (this: SdkWorld) {
-  // No-op invariant: trivially satisfied in an isolated test context.
-});
+// "every cluster/instance/snapshot has a valid status" is registered in cross_service_common.ts.
 
 Then("a stopped cluster has no available instances", async function (this: SdkWorld) {
   // No-op invariant: trivially satisfied in an isolated test context.
@@ -704,6 +687,4 @@ Then(
   },
 );
 
-Then("a failed cluster has no available instances", async function (this: SdkWorld) {
-  // No-op invariant: trivially satisfied in an isolated test context.
-});
+// "a failed cluster has no available instances" is registered in cross_service_common.ts.

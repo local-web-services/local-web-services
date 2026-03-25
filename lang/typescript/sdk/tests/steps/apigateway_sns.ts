@@ -475,7 +475,4 @@ Then('every "PUBLISHED" message references a topic that exists', async function 
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then('every successful request references an "API" that exists', async function (this: SdkWorld) {
-  // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'every successful request references an "API" that exists' — registered in cross_service_common.ts

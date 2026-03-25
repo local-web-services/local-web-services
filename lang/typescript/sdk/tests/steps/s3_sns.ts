@@ -9,19 +9,7 @@ const TEST_OBJECT_KEY = "test-object-1.txt";
 
 // ── Additional Given steps unique to s3api_sns ────────────────────────────────
 
-Given("the topic exists and is {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { SNSClient, CreateTopicCommand } = require("@aws-sdk/client-sns");
-  const client = this.session!.client<typeof SNSClient>("sns");
-  // Act
-  try {
-    await client.send(new CreateTopicCommand({ Name: SNS_TOPIC }));
-  } catch {
-    // May already exist
-  }
-  // Assert: no error thrown
-});
+// "the topic exists and is {string}" is registered in apigateway_sns.ts.
 
 Given(
   "the topic does not exist or is not {string}",

@@ -941,9 +941,4 @@ Then(
   },
 );
 
-Then(
-  "every snapshotting cluster has a corresponding in-progress snapshot",
-  async function (this: SdkWorld) {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  },
-);
+// "every snapshotting cluster has a corresponding in-progress snapshot" — registered in cross_service_common.ts

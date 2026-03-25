@@ -19,6 +19,7 @@ import software.amazon.awssdk.services.docdb.model.DescribeDbInstancesResponse;
 import software.amazon.awssdk.services.memorydb.MemoryDbClient;
 import software.amazon.awssdk.services.memorydb.model.Cluster;
 import software.amazon.awssdk.services.memorydb.model.DescribeClustersResponse;
+import software.amazon.awssdk.services.neptune.NeptuneClient;
 
 /**
  * Step definitions for the DocDB informal specification feature files.
@@ -40,6 +41,9 @@ public class DocdbSteps {
   // MemoryDB cluster name — used in the shared "the cluster is in {string} state" handler.
   // Must match MemorydbSteps.CLUSTER_NAME to enable cross-service dispatch.
   private static final String MEMORYDB_CLUSTER_NAME = "test-memorydb-cluster-1";
+  // Neptune cluster name — used in the shared "the cluster is in {string} state" handler.
+  // Must match NeptuneSteps.TEST_CLUSTER_ID to enable cross-service dispatch.
+  private static final String NEPTUNE_CLUSTER_ID = "test-neptune-cluster-1";
 
   private final WorldContext world;
 
@@ -493,6 +497,8 @@ public class DocdbSteps {
     String expectedStatusLower = expectedStatus.toLowerCase();
     if ("memorydb".equals(world.lastClusterService)) {
       assertMemoryDbClusterStatus(expectedStatusLower);
+    } else if ("neptune".equals(world.lastClusterService)) {
+      assertNeptuneClusterStatus(expectedStatusLower);
     } else {
       assertDocDbClusterStatus(expectedStatusLower);
     }
@@ -514,6 +520,34 @@ public class DocdbSteps {
           expectedStatusLower,
           actualStatus,
           "expected DocDB cluster status '"
+              + expectedStatusLower
+              + "' but got '"
+              + actualStatus
+              + "'; expected_status="
+              + expectedStatusLower
+              + " actual_status="
+              + actualStatus);
+    }
+  }
+
+  private void assertNeptuneClusterStatus(String expectedStatusLower) {
+    // Arrange
+    try (NeptuneClient client = world.session.neptuneClient()) {
+      // Act
+      software.amazon.awssdk.services.neptune.model.DescribeDbClustersResponse result =
+          client.describeDBClusters(r -> r.dbClusterIdentifier(NEPTUNE_CLUSTER_ID));
+      java.util.List<software.amazon.awssdk.services.neptune.model.DBCluster> clusters =
+          result.dbClusters();
+      // Assert
+      assertNotNull(clusters, "expected DBClusters list but got null");
+      assertTrue(
+          !clusters.isEmpty(),
+          "expected Neptune cluster '" + NEPTUNE_CLUSTER_ID + "' to exist but not found");
+      String actualStatus = clusters.get(0).status();
+      assertEquals(
+          expectedStatusLower,
+          actualStatus,
+          "expected Neptune cluster status '"
               + expectedStatusLower
               + "' but got '"
               + actualStatus

@@ -472,6 +472,4 @@ Then(
 
 // "every existing item references a table that exists" is registered in cross_service_common.ts.
 
-Then('every successful request references an "API" that exists', async function (this: SdkWorld) {
-  // No-op: model-level invariant; trivially satisfied in isolated lws context.
-});
+// 'every successful request references an "API" that exists' — registered in cross_service_common.ts

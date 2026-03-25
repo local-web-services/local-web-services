@@ -182,9 +182,7 @@ Given("the execution exists", async function (this: SdkWorld) {
   // Assert: execution started (no error thrown)
 });
 
-Given('the execution is "RUNNING"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: newly started executions are RUNNING.
-});
+// "the execution is {string}" is registered in stepfunctions_sqs.ts.
 
 Given('the execution is not "RUNNING"', async function (this: SdkWorld) {
   // Arrange: ensure a state machine exists so the execution can start and complete

@@ -57,13 +57,19 @@ func registerSQSSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the queue already exists$`, func() error {
-		// Arrange: create the test queue so it already exists
+		// Arrange: create all known queue names so that whichever
+		// "When an SQS queue is created" step wins (first-registered semantics)
+		// will find the queue already present and return a duplicate error.
 		// Act
-		_, err := world.SQSClient().CreateQueue(context.Background(), &sqs.CreateQueueInput{
-			QueueName: aws.String(sqsTestQueue),
-		})
-		// Assert: creation succeeded (or queue already exists — idempotent)
-		return err
+		for _, queueName := range []string{sqsTestQueue, lambdaSqsTestQueue} {
+			_, err := world.SQSClient().CreateQueue(context.Background(), &sqs.CreateQueueInput{
+				QueueName: aws.String(queueName),
+			})
+			if err != nil && !isAlreadyExists(err) {
+				return fmt.Errorf("expected_queue=%s: %w", queueName, err)
+			}
+		}
+		return nil
 	})
 
 	sc.Given(`^the queue exists$`, func() error {

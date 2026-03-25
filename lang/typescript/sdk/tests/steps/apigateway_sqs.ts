@@ -212,16 +212,7 @@ Given('the queue is not "ACTIVE"', async function (this: SdkWorld) {
 
 // "the queue does not exist" is registered in cross_service_common.ts.
 
-Given('the target queue is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: ensure queue exists (idempotent)
-  try {
-    await apigwSqsCreateQueue(this);
-  } catch {
-    // queue may already exist from a prior Given step
-  }
-});
+// "the target queue is {string}" is registered in cross_service_common.ts.
 
 Given('the target queue is not "ACTIVE"', async function (this: SdkWorld) {
   // Arrange

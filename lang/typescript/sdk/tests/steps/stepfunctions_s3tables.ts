@@ -1,8 +1,9 @@
 /** Step definitions: stepfunctions_s3tables cross-service scenarios — unique steps only */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { TableStepHelpers } from "../support/world";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -62,6 +63,24 @@ async function sfnS3TablesCreateTable(world: SdkWorld): Promise<string> {
   return result.name as string;
 }
 
+// ── Before hook: register tableHelpers for stepfunctionss3tables scenarios ────
+
+Before({ tags: "@stepfunctionss3tables" }, function (this: SdkWorld) {
+  const tableHelpersImpl: TableStepHelpers = {
+    handleTableActive: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create table so it is ACTIVE (idempotent if already exists)
+      try {
+        const expectedTableName = await sfnS3TablesCreateTable(world);
+        (world as any)._sfnS3TablesTableName = expectedTableName;
+      } catch {
+        // table may already exist
+      }
+    },
+  };
+  this.tableHelpers = tableHelpersImpl;
+});
+
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
@@ -83,14 +102,7 @@ Given("the table does not exist or is {string}", async function (this: SdkWorld,
 
 // ── Given: table status ───────────────────────────────────────────────────────
 
-Given('the table is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create table so it is ACTIVE
-  const expectedTableName = await sfnS3TablesCreateTable(this);
-  // Assert: table created
-  (this as any)._sfnS3TablesTableName = expectedTableName;
-});
+// "the table is {string}" is registered in cross_service_common.ts (dispatches via tableHelpers).
 
 Given('the table is "DELETING"', async function (this: SdkWorld) {
   // @internal: Cannot force a table into DELETING state via public API.

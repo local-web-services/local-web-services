@@ -117,15 +117,8 @@ Given("the instance slot is not available", async function (this: SdkWorld) {
   // Assert: slot taken
 });
 
-Given(/^the instance is "([^"]*)"$/, async function (this: SdkWorld, _status: string) {
-  // @internal: Cannot place instance into arbitrary lifecycle state via public API.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given(/^the instance is not "([^"]*)"$/, async function (this: SdkWorld, _status: string) {
-  // @internal: Cannot enforce instance is NOT in a given lifecycle state via public API.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the instance is {string}" is registered in cross_service_common.ts.
+// "the instance is not {string}" is registered in cross_service_common.ts.
 
 Given("the instance is the primary", async function (this: SdkWorld) {
   // @internal: Primary instance state is set internally.
@@ -786,25 +779,13 @@ Then("the cluster has a new primary instance", async function (this: SdkWorld) {
 
 // ── Then: model invariants (no-ops) ───────────────────────────────────────────
 
-Then("every cluster has a valid status", async function (this: SdkWorld) {
-  // No-op invariant: trivially satisfied in an isolated test context.
-});
-
-Then("every instance has a valid status", async function (this: SdkWorld) {
-  // No-op invariant: trivially satisfied in an isolated test context.
-});
-
-Then("every snapshot has a valid status", async function (this: SdkWorld) {
-  // No-op invariant: trivially satisfied in an isolated test context.
-});
+// "every cluster/instance/snapshot has a valid status" is registered in cross_service_common.ts.
 
 Then("a deleted cluster has no non-deleted instances", async function (this: SdkWorld) {
   // No-op invariant: trivially satisfied in an isolated test context.
 });
 
-Then("a failed cluster has no available instances", async function (this: SdkWorld) {
-  // No-op invariant: trivially satisfied in an isolated test context.
-});
+// "a failed cluster has no available instances" is registered in cross_service_common.ts.
 
 Then("a deleting cluster receives no new instances", async function (this: SdkWorld) {
   // No-op invariant: trivially satisfied in an isolated test context.

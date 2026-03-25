@@ -1349,12 +1349,7 @@ Then("every active cluster has write durability enabled", async function (this: 
   // No-op invariant: trivially satisfied in an isolated test context.
 });
 
-Then(
-  "every snapshotting cluster has a corresponding in-progress snapshot",
-  async function (this: SdkWorld) {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  },
-);
+// "every snapshotting cluster has a corresponding in-progress snapshot" — registered in cross_service_common.ts
 
 Then(
   'no "ACL" in "DELETING" state is currently associated with a cluster',

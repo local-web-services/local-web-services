@@ -145,25 +145,6 @@ Given("the bucket has a notification configured", async function (this: SdkWorld
 // "the function is {string}" is registered in lambda.ts (dispatches via functionHelpers).
 // "the function is not {string}" is registered in lambda.ts.
 
-Given("the function is not {string}", async function (this: SdkWorld, state: string) {
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "ACTIVE") {
-    // Arrange: apply lifecycle dwell so next created function starts in a non-ACTIVE state
-    const { DeleteFunctionCommand } = require("@aws-sdk/client-lambda");
-    // Act
-    try {
-      await lambdaClient(this).send(new DeleteFunctionCommand({ FunctionName: S3API_LAMBDA_FUNC }));
-    } catch {
-      // function may not exist
-    }
-    await this.session!.lifecycle("lambda").createDwellMs(5000).apply();
-    await s3apiLambdaCreateFunction(this);
-    // Assert: function is in non-ACTIVE state
-    return;
-  }
-  // @internal: Cannot observe other Lambda states in lws.
-});
-
 // ── Given: notification target function state ─────────────────────────────────
 
 Given(

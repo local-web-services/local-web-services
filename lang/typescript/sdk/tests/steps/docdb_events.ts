@@ -215,6 +215,4 @@ Then('every "DELIVERED" event references a cluster that exists', async function 
   // No-op invariant: trivially satisfied in an isolated test context.
 });
 
-Then('every "DELIVERED" event references a bus that exists', async function (this: SdkWorld) {
-  // No-op invariant: trivially satisfied in an isolated test context.
-});
+// 'every "DELIVERED" event references a bus that exists' — registered in cross_service_common.ts

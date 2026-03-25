@@ -197,16 +197,9 @@ Given('the integrated state machine is not "ACTIVE"', async function (this: SdkW
 
 // ── Given: execution presence — unique to cross-service suite ─────────────────
 
-Given('an execution is "RUNNING"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — cannot simulate running execution state.
-  assert.ok(this.session, "Expected session to be initialized");
-  (this as any)._apigwSfnSkip = "Cannot simulate running execution state in lws";
-});
+// "an execution is {string}" is registered in cross_service_common.ts.
 
-Given('no execution is "RUNNING"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no running executions.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "no execution is {string}" is registered in cross_service_common.ts.
 
 // ── Given: capacity — unique phrasing for cross-service suite ─────────────────
 // Note: "the execution slot is available/not available" are registered in

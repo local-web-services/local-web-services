@@ -42,20 +42,27 @@ func registerDynamoDBSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the table already exists$`, func() error {
-		// Arrange: create the test table so it already exists
+		// Arrange: create both the DynamoDB-native test table and the shared
+		// cross-service table name so that whichever "When a DynamoDB table is
+		// created" step wins (first-registered semantics) will find the table
+		// already present and return a duplicate error.
 		// Act
-		_, err := world.DynamoDBClient().CreateTable(context.Background(), &dynamodb.CreateTableInput{
-			TableName: aws.String(dynamodbTestTable),
-			KeySchema: []dynamodbtypes.KeySchemaElement{
-				{AttributeName: aws.String(dynamodbTestPK), KeyType: dynamodbtypes.KeyTypeHash},
-			},
-			AttributeDefinitions: []dynamodbtypes.AttributeDefinition{
-				{AttributeName: aws.String(dynamodbTestPK), AttributeType: dynamodbtypes.ScalarAttributeTypeS},
-			},
-			BillingMode: dynamodbtypes.BillingModePayPerRequest,
-		})
-		// Assert: creation succeeded
-		return err
+		for _, tableName := range []string{dynamodbTestTable, apigwDynamodbTestTable} {
+			_, err := world.DynamoDBClient().CreateTable(context.Background(), &dynamodb.CreateTableInput{
+				TableName: aws.String(tableName),
+				KeySchema: []dynamodbtypes.KeySchemaElement{
+					{AttributeName: aws.String(dynamodbTestPK), KeyType: dynamodbtypes.KeyTypeHash},
+				},
+				AttributeDefinitions: []dynamodbtypes.AttributeDefinition{
+					{AttributeName: aws.String(dynamodbTestPK), AttributeType: dynamodbtypes.ScalarAttributeTypeS},
+				},
+				BillingMode: dynamodbtypes.BillingModePayPerRequest,
+			})
+			if err != nil && !isAlreadyExists(err) {
+				return fmt.Errorf("expected_table=%s: %w", tableName, err)
+			}
+		}
+		return nil
 	})
 
 	sc.Given(`^the table exists$`, func() error {

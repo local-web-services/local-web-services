@@ -90,6 +90,37 @@ export interface StateMachineStepHelpers {
   assertStateMachineActive?(world: SdkWorld): Promise<void>;
 }
 
+/** Callbacks for shared snapshot step definitions. Each step file that
+ *  exercises snapshots registers these helpers in a tagged Before hook
+ *  so the canonical consolidated step definitions can call them.
+ *
+ *  - setupSnapshotExists: creates a snapshot (Given "the snapshot exists")
+ *  - assertSnapshotStatus (optional): asserts the snapshot is in the expected state */
+export interface SnapshotStepHelpers {
+  setupSnapshotExists(world: SdkWorld): Promise<void>;
+  assertSnapshotStatus?(world: SdkWorld, expectedStatus: string): Promise<void>;
+}
+
+/** Callbacks for shared instance step definitions. Each step file that
+ *  exercises database instances registers these helpers in a tagged Before hook
+ *  so the canonical consolidated step definitions can call them.
+ *
+ *  - assertInstanceStatus (optional): asserts the instance is in the expected state */
+export interface InstanceStepHelpers {
+  assertInstanceStatus?(world: SdkWorld, expectedStatus: string): Promise<void>;
+}
+
+/** Callbacks for shared table step definitions. Each step file that
+ *  exercises tables (S3Tables, DynamoDB, etc.) registers these helpers in a
+ *  tagged Before hook so the canonical consolidated step definitions can call them.
+ *
+ *  - handleTableActive: creates the table if needed and/or asserts it is ACTIVE;
+ *    used both in Given (setup) and Then (assert) contexts since the same step
+ *    text appears in both positions across different feature files. */
+export interface TableStepHelpers {
+  handleTableActive(world: SdkWorld): Promise<void>;
+}
+
 export class SdkWorld extends World {
   session: LwsSession | null = null;
   lastCallResult: LastCallResult = { success: false, output: null };
@@ -109,6 +140,12 @@ export class SdkWorld extends World {
   functionHelpers: FunctionStepHelpers | null = null;
   /** State machine step helpers registered by the active cross-service Before hook. */
   smHelpers: StateMachineStepHelpers | null = null;
+  /** Table step helpers registered by the active service's Before hook. */
+  tableHelpers: TableStepHelpers | null = null;
+  /** Instance step helpers registered by the active service's Before hook. */
+  instanceHelpers: InstanceStepHelpers | null = null;
+  /** Snapshot step helpers registered by the active service's Before hook. */
+  snapshotHelpers: SnapshotStepHelpers | null = null;
 
   // Pending spec state for multi-step resource building
   _pendingSpec: {
@@ -163,6 +200,9 @@ Before(async function (this: SdkWorld, hookParam: ITestCaseHookParameter) {
   this.busHelpers = null;
   this.functionHelpers = null;
   this.smHelpers = null;
+  this.tableHelpers = null;
+  this.instanceHelpers = null;
+  this.snapshotHelpers = null;
 });
 
 After(async function (this: SdkWorld) {

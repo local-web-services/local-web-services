@@ -67,6 +67,27 @@ Before({ tags: "@stepfunctionselasticache" }, function (this: SdkWorld) {
         // cluster may already exist
       }
     },
+    assertClusterStatus: async (world: SdkWorld, expectedState: string) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DescribeCacheClustersCommand } = require("@aws-sdk/client-elasticache");
+      const expectedClusterID = SFN_ELASTICACHE_TEST_CLUSTER;
+      const expectedStatus = expectedState.toLowerCase();
+      const result = await sfnElastiCacheClient(world).send(
+        new DescribeCacheClustersCommand({ CacheClusterId: expectedClusterID }),
+      );
+      const clusters: Array<{ CacheClusterId: string; CacheClusterStatus: string }> =
+        result.CacheClusters ?? [];
+      assert.ok(
+        clusters.length > 0,
+        `Expected cluster "${expectedClusterID}" to exist but it was not found; expected_cluster_id=${expectedClusterID}`,
+      );
+      const actualStatus = clusters[0].CacheClusterStatus;
+      assert.strictEqual(
+        actualStatus,
+        expectedStatus,
+        `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+      );
+    },
   };
 });
 
@@ -179,30 +200,7 @@ When(
 // "the execution is "RUNNING"" is registered in stepfunctions.ts.
 // "the operation is rejected" is registered in cross_service_common.ts.
 
-Then('the cluster is "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeCacheClustersCommand } = require("@aws-sdk/client-elasticache");
-  const expectedClusterID = SFN_ELASTICACHE_TEST_CLUSTER;
-  const expectedStatus = "available";
-  // Act
-  const result = await sfnElastiCacheClient(this).send(
-    new DescribeCacheClustersCommand({ CacheClusterId: expectedClusterID }),
-  );
-  const clusters: Array<{ CacheClusterId: string; CacheClusterStatus: string }> =
-    result.CacheClusters ?? [];
-  assert.ok(
-    clusters.length > 0,
-    `Expected cluster "${expectedClusterID}" to exist but it was not found; expected_cluster_id=${expectedClusterID}`,
-  );
-  const actualStatus = clusters[0].CacheClusterStatus;
-  // Assert
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
+// "the cluster is {string}" — registered in cluster_common.ts (dispatches via clusterHelpers.assertClusterStatus)
 
 Then('the cluster is "MODIFYING" and connections may be refused', async function (this: SdkWorld) {
   // @internal: Cannot observe MODIFYING cluster state via public API in lws.

@@ -120,6 +120,7 @@ public class NeptuneSteps {
   @When("a stopped database cluster is started")
   public void aStoppedDatabaseClusterIsStarted() {
     // Arrange: (cluster state set up by Given steps)
+    world.lastClusterService = "neptune";
     try (NeptuneClient client = world.session.neptuneClient()) {
       // Act
       var response = client.startDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
@@ -133,6 +134,7 @@ public class NeptuneSteps {
   @When("a database cluster is stopped")
   public void aDatabaseClusterIsStopped() {
     // Arrange: (cluster state set up by Given steps)
+    world.lastClusterService = "neptune";
     try (NeptuneClient client = world.session.neptuneClient()) {
       // Act
       var response = client.stopDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));

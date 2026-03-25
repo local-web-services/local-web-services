@@ -294,7 +294,4 @@ Then(
   },
 );
 
-Then('every "DELIVERED" event references a bus that exists', async function (this: SdkWorld) {
-  // No-op invariant: trivially satisfied in an isolated test context.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'every "DELIVERED" event references a bus that exists' — registered in cross_service_common.ts
