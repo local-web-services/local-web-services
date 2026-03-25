@@ -158,7 +158,7 @@ export function secret(name: string): Resource {
 }
 
 export class LwsSession {
-  private readonly _basePort: number;
+  private _basePort: number;
   private readonly _projectDir: string;
   private readonly _spec: ResourceSpec;
   private _server: LwsServer | null = null;
@@ -250,7 +250,22 @@ export class LwsSession {
 
   private async _start(_mode?: string): Promise<void> {
     const { startServer } = await import("local-web-services-typescript-core");
-    this._server = await startServer({ basePort: this._basePort });
+    const maxAttempts = 5;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        this._server = await startServer({ basePort: this._basePort });
+        break;
+      } catch (err: unknown) {
+        const isAddrInUse =
+          err instanceof Error && (err as NodeJS.ErrnoException).code === "EADDRINUSE";
+        if (isAddrInUse && attempt < maxAttempts) {
+          // Race: port was grabbed between freePort() probe and startServer() bind — pick a new one
+          this._basePort = await freePort();
+        } else {
+          throw err;
+        }
+      }
+    }
     this._patchEnv();
   }
 
@@ -406,7 +421,7 @@ export class LwsSession {
         return new ElastiCacheClient({ endpoint: endpointUrl, credentials, region }) as T;
       }
       case "memorydb": {
-        const { MemoryDBClient } = require("@aws-sdk/client-memory-db");
+        const { MemoryDBClient } = require("@aws-sdk/client-memorydb");
         return new MemoryDBClient({ endpoint: endpointUrl, credentials, region }) as T;
       }
       case "glacier": {
@@ -414,7 +429,7 @@ export class LwsSession {
         return new GlacierClient({ endpoint: endpointUrl, credentials, region }) as T;
       }
       case "elasticsearch": {
-        const { ElasticsearchServiceClient } = require("@aws-sdk/client-elasticsearch");
+        const { ElasticsearchServiceClient } = require("@aws-sdk/client-elasticsearch-service");
         return new ElasticsearchServiceClient({ endpoint: endpointUrl, credentials, region }) as T;
       }
       case "opensearch": {
@@ -424,6 +439,10 @@ export class LwsSession {
       case "s3tables": {
         const { S3TablesClient } = require("@aws-sdk/client-s3tables");
         return new S3TablesClient({ endpoint: endpointUrl, credentials, region }) as T;
+      }
+      case "eventbridge": {
+        const { EventBridgeClient } = require("@aws-sdk/client-eventbridge");
+        return new EventBridgeClient({ endpoint: endpointUrl, credentials, region }) as T;
       }
       default: {
         throw new Error(`No SDK client implementation for service "${service}"`);
