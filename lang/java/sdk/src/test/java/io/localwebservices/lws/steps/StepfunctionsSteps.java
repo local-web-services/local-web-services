@@ -127,10 +127,7 @@ public class StepfunctionsSteps {
     // Assert: state machine is deleted (no error thrown)
   }
 
-  @Given("the state machine is not \"DELETED\"")
-  public void theStateMachineIsNotDeleted() {
-    // Arrange / Act / Assert — no-op: state machines are not DELETED by default.
-  }
+  // "the state machine is not \"DELETED\"" → LambdaStepfunctionsSteps
 
   @Given("the state machine is a \"STANDARD\" type")
   public void theStateMachineIsStandardType() {
