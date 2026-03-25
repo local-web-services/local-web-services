@@ -30,6 +30,17 @@ public class WorldContext {
   public String lastStateMachineArn;
   public String lastExecutionArn;
 
+  // SQS spec state — receipt handle for in-flight message operations
+  public String sqsReceiptHandle;
+
+  // Active SQS queue name — set by SQS spec steps; null means use the default cross-service queue.
+  public String sqsActiveQueueName;
+
+  // Cognito IDP spec state
+  public String cognitoPoolId;
+  public String cognitoUsername;
+  public String cognitoGroupName;
+
   public void setSuccess(Object output) {
     lastSuccess = true;
     lastOutput = output;
