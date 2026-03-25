@@ -681,6 +681,7 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			writeErr(w, "ResourceInUseException", "Table already exists: "+name, 400)
 			return
 		}
+		h.state.TrackResourceCreation("dynamodb", name)
 		writeOK(w, map[string]interface{}{"TableDescription": tableDesc(t)})
 
 	case "DeleteTable":
@@ -699,6 +700,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		t := h.store.getTable(name)
 		if t == nil {
 			writeErr(w, "ResourceNotFoundException", "Table not found: "+name, 400)
+			return
+		}
+		if h.state.IsResourceInDwell("dynamodb", name) {
+			writeErr(w, "ResourceNotFoundException", "Table "+name+" is not ACTIVE", 400)
 			return
 		}
 		writeOK(w, map[string]interface{}{"Table": tableDesc(t)})

@@ -652,6 +652,10 @@ func (h *Handler) handleForm(w http.ResponseWriter, action string, form url.Valu
 			writeXMLErr("NotFound", "Topic not found: "+topicArn)
 			return
 		}
+		if h.state.GetCapacityRule("sns").IsExhausted() {
+			writeXMLErr("ServiceUnavailableException", "No delivery slot is available")
+			return
+		}
 		// Fail if no subscriptions exist for the topic (all subscriptions are treated as confirmed).
 		h.store.mu.RLock()
 		hasSubscription := len(t.Subscriptions) > 0
@@ -683,6 +687,11 @@ func (h *Handler) handleForm(w http.ResponseWriter, action string, form url.Valu
 		// Verify topic exists.
 		if h.store.getTopic(topicArn) == nil {
 			writeXMLErr("NotFound", "Topic not found: "+topicArn)
+			return
+		}
+
+		if h.state.GetCapacityRule("sns").IsExhausted() {
+			writeXMLErr("ServiceUnavailableException", "No subscription slot is available")
 			return
 		}
 

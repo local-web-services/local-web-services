@@ -19,8 +19,9 @@ const s3apiTestBody = "test-object-body-1"
 
 // s3apiState holds mutable state for S3 step definitions within one scenario.
 type s3apiState struct {
-	uploadID string
-	etags    []s3types.CompletedPart
+	uploadID       string
+	etags          []s3types.CompletedPart
+	sendEmptyParts bool // when true, CompleteMultipartUpload sends an empty parts list
 }
 
 func registerS3APISteps(sc *godog.ScenarioContext, world *World) {
@@ -29,6 +30,7 @@ func registerS3APISteps(sc *godog.ScenarioContext, world *World) {
 	sc.Before(func(ctx context.Context, scenario *godog.Scenario) (context.Context, error) {
 		st.uploadID = ""
 		st.etags = nil
+		st.sendEmptyParts = false
 		return ctx, nil
 	})
 
@@ -76,8 +78,15 @@ func registerS3APISteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the bucket already exists$`, func() error {
-		// Arrange / Act: create the test bucket so it already exists
-		return createBucket(s3apiTestBucket)
+		// Arrange / Act: create the test bucket so it already exists.
+		// Also create the cross-service bucket name "e2e-test-bucket-1" used by
+		// lambda_s3api, s3api_lambda, and apigateway_s3api test files so that
+		// their When steps encounter a conflict.
+		if err := createBucket(s3apiTestBucket); err != nil {
+			return err
+		}
+		_ = createBucket("e2e-test-bucket-1")
+		return nil
 	})
 
 	sc.Given(`^the bucket exists$`, func() error {
@@ -329,8 +338,20 @@ func registerS3APISteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the upload already exists$`, func() error {
-		// S3 allows multiple concurrent multipart uploads for the same key.
-		// This scenario is tagged @internal and will not be reached in normal runs.
+		// Arrange: pre-create a multipart upload for the test bucket+key so a
+		// second CreateMultipartUpload for the same key will be rejected.
+		result, err := world.S3Client().CreateMultipartUpload(context.Background(), &s3.CreateMultipartUploadInput{
+			Bucket: aws.String(s3apiTestBucket),
+			Key:    aws.String(s3apiTestKey),
+		})
+		if err != nil {
+			return fmt.Errorf("pre-create upload: %w", err)
+		}
+		// Act: store upload ID so cleanup can abort it if needed
+		if result.UploadId != nil {
+			st.uploadID = *result.UploadId
+		}
+		// Assert: upload now exists for this bucket+key
 		return nil
 	})
 
@@ -359,7 +380,10 @@ func registerS3APISteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the upload has no parts$`, func() error {
-		// No-op: freshly created upload has no parts.
+		// Arrange: mark that the When step should send an empty parts list.
+		// A freshly created upload has no parts; we must NOT substitute a fake
+		// part or the server's "no parts" check will never trigger.
+		st.sendEmptyParts = true
 		return nil
 	})
 
@@ -390,9 +414,19 @@ func registerS3APISteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the upload is not "IN_PROGRESS"$`, func() error {
-		// No-op: upload is not in-progress by default; scenarios that need this state
-		// are tagged @internal and excluded from the test run.
-		return nil
+		// Arrange: abort the existing upload so it is no longer IN_PROGRESS.
+		// A subsequent UploadPart call will return NoSuchUpload (rejected).
+		if st.uploadID == "" {
+			return nil
+		}
+		// Act: abort the upload
+		_, err := world.S3Client().AbortMultipartUpload(context.Background(), &s3.AbortMultipartUploadInput{
+			Bucket:   aws.String(s3apiTestBucket),
+			Key:      aws.String(s3apiTestKey),
+			UploadId: aws.String(st.uploadID),
+		})
+		// Assert: abort succeeded (upload no longer IN_PROGRESS)
+		return err
 	})
 
 	// ── When: actions ─────────────────────────────────────────────────────────────
@@ -562,9 +596,15 @@ func registerS3APISteps(sc *godog.ScenarioContext, world *World) {
 		if uploadID == "" {
 			uploadID = "invalid"
 		}
-		parts := st.etags
-		if len(parts) == 0 {
-			parts = []s3types.CompletedPart{{ETag: aws.String("etag1"), PartNumber: aws.Int32(1)}}
+		// Use an empty parts list when the scenario explicitly set sendEmptyParts
+		// (e.g. "the upload has no parts"). Otherwise fall back to the recorded
+		// etags or a default fake part so that the happy-path scenarios still work.
+		var parts []s3types.CompletedPart
+		if !st.sendEmptyParts {
+			parts = st.etags
+			if len(parts) == 0 {
+				parts = []s3types.CompletedPart{{ETag: aws.String("etag1"), PartNumber: aws.Int32(1)}}
+			}
 		}
 		// Act
 		result, err := world.S3Client().CompleteMultipartUpload(context.Background(), &s3.CompleteMultipartUploadInput{

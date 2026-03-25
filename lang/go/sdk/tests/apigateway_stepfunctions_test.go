@@ -323,9 +323,11 @@ func registerAPIGatewayStepFunctionsSteps(sc *godog.ScenarioContext, world *Worl
 	})
 
 	sc.When(`^a Step Functions Express Workflow state machine is created$`, func() error {
-		// Arrange: use the test state machine name with EXPRESS type
+		// Arrange: use the shared sfnTestStateMachine name so that "the state machine already exists"
+		// (registered in stepfunctions_test.go) and "Then the state machine is ACTIVE" operate on
+		// the same machine. The apigwSfnTestSMName is used exclusively by integration helpers.
 		result, err := world.SFNClient().CreateStateMachine(context.Background(), &sfn.CreateStateMachineInput{
-			Name:       aws.String(apigwSfnTestSMName),
+			Name:       aws.String(sfnTestStateMachine),
 			Definition: aws.String(apigwSfnPassDefinition),
 			RoleArn:    aws.String(apigwSfnRoleArn),
 			Type:       sfntypes.StateMachineTypeExpress,
