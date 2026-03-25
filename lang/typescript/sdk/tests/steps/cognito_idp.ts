@@ -166,9 +166,7 @@ Given("the user is {string}", async function (this: SdkWorld, state: string) {
   const username = (this as any)._cognitoUsername as string;
   if (state === "CONFIRMED") {
     // Act: set a permanent password to confirm the user
-    const {
-      AdminSetUserPasswordCommand,
-    } = require("@aws-sdk/client-cognito-identity-provider");
+    const { AdminSetUserPasswordCommand } = require("@aws-sdk/client-cognito-identity-provider");
     await cognitoClient(this).send(
       new AdminSetUserPasswordCommand({
         UserPoolId: poolId,
@@ -197,9 +195,7 @@ Given("the user is not {string}", async function (this: SdkWorld, state: string)
   }
   if (state === "UNCONFIRMED" || state === "DELETED") {
     // Act: confirm the user so they are no longer UNCONFIRMED
-    const {
-      AdminSetUserPasswordCommand,
-    } = require("@aws-sdk/client-cognito-identity-provider");
+    const { AdminSetUserPasswordCommand } = require("@aws-sdk/client-cognito-identity-provider");
     await cognitoClient(this).send(
       new AdminSetUserPasswordCommand({
         UserPoolId: poolId,
@@ -219,9 +215,7 @@ Given("the user is in {string} state", async function (this: SdkWorld, state: st
   const username = (this as any)._cognitoUsername as string;
   if (state === "RESET_REQUIRED") {
     // Act: reset user password to put them in RESET_REQUIRED
-    const {
-      AdminResetUserPasswordCommand,
-    } = require("@aws-sdk/client-cognito-identity-provider");
+    const { AdminResetUserPasswordCommand } = require("@aws-sdk/client-cognito-identity-provider");
     await cognitoClient(this).send(
       new AdminResetUserPasswordCommand({ UserPoolId: poolId, Username: username }),
     );
@@ -244,9 +238,7 @@ Given("the user is not in {string} state", async function (this: SdkWorld, state
   }
   if (state === "FORCE_CHANGE_PASSWORD") {
     // Act: set a permanent password so user is CONFIRMED (not FORCE_CHANGE_PASSWORD)
-    const {
-      AdminSetUserPasswordCommand,
-    } = require("@aws-sdk/client-cognito-identity-provider");
+    const { AdminSetUserPasswordCommand } = require("@aws-sdk/client-cognito-identity-provider");
     await cognitoClient(this).send(
       new AdminSetUserPasswordCommand({
         UserPoolId: poolId,
@@ -386,7 +378,10 @@ Given("the user and group belong to the same pool", async function (this: SdkWor
 Given("the user and group belong to different pools", async function (this: SdkWorld) {
   // Arrange: create a second pool and a group in it (simulating cross-pool scenario)
   // Act
-  const { CreateUserPoolCommand, CreateGroupCommand } = require("@aws-sdk/client-cognito-identity-provider");
+  const {
+    CreateUserPoolCommand,
+    CreateGroupCommand,
+  } = require("@aws-sdk/client-cognito-identity-provider");
   const poolResult = await cognitoClient(this).send(
     new CreateUserPoolCommand({ PoolName: "e2e-cognito-test-pool-2" }),
   );
@@ -455,29 +450,26 @@ When("a user pool is deleted", async function (this: SdkWorld) {
   }
 });
 
-When(
-  "a user is created by an admin in an active user pool",
-  async function (this: SdkWorld) {
-    // Arrange
-    const poolId = (this as any)._cognitoPoolId as string;
-    const { AdminCreateUserCommand } = require("@aws-sdk/client-cognito-identity-provider");
-    // Act
-    try {
-      const result = await cognitoClient(this).send(
-        new AdminCreateUserCommand({
-          UserPoolId: poolId,
-          Username: COGNITO_TEST_USERNAME,
-          TemporaryPassword: COGNITO_TEST_TEMP_PASSWORD,
-        }),
-      );
-      // Assert: store result
-      (this as any)._cognitoUsername = COGNITO_TEST_USERNAME;
-      this.lastCallResult = { success: true, output: result };
-    } catch (err) {
-      this.lastCallResult = { success: false, output: null, error: err };
-    }
-  },
-);
+When("a user is created by an admin in an active user pool", async function (this: SdkWorld) {
+  // Arrange
+  const poolId = (this as any)._cognitoPoolId as string;
+  const { AdminCreateUserCommand } = require("@aws-sdk/client-cognito-identity-provider");
+  // Act
+  try {
+    const result = await cognitoClient(this).send(
+      new AdminCreateUserCommand({
+        UserPoolId: poolId,
+        Username: COGNITO_TEST_USERNAME,
+        TemporaryPassword: COGNITO_TEST_TEMP_PASSWORD,
+      }),
+    );
+    // Assert: store result
+    (this as any)._cognitoUsername = COGNITO_TEST_USERNAME;
+    this.lastCallResult = { success: true, output: result };
+  } catch (err) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+});
 
 When("a user is deleted by an admin", async function (this: SdkWorld) {
   // Arrange
@@ -573,9 +565,7 @@ When("an admin updates attributes for a confirmed user", async function (this: S
   // Arrange
   const poolId = (this as any)._cognitoPoolId as string;
   const username = ((this as any)._cognitoUsername as string) || COGNITO_TEST_USERNAME;
-  const {
-    AdminUpdateUserAttributesCommand,
-  } = require("@aws-sdk/client-cognito-identity-provider");
+  const { AdminUpdateUserAttributesCommand } = require("@aws-sdk/client-cognito-identity-provider");
   // Act
   try {
     const result = await cognitoClient(this).send(
@@ -696,25 +686,22 @@ When("a user account is marked as compromised", async function (this: SdkWorld) 
   // Assert: result stored
 });
 
-When(
-  "a verification code delivery fails for an unconfirmed user",
-  async function (this: SdkWorld) {
-    // Arrange
-    const poolId = (this as any)._cognitoPoolId as string;
-    const username = ((this as any)._cognitoUsername as string) || COGNITO_TEST_USERNAME;
-    const { AdminConfirmSignUpCommand } = require("@aws-sdk/client-cognito-identity-provider");
-    // Act — AdminConfirmSignUp is the closest public API for confirming an unconfirmed user
-    try {
-      const result = await cognitoClient(this).send(
-        new AdminConfirmSignUpCommand({ UserPoolId: poolId, Username: username }),
-      );
-      // Assert: store result
-      this.lastCallResult = { success: true, output: result };
-    } catch (err) {
-      this.lastCallResult = { success: false, output: null, error: err };
-    }
-  },
-);
+When("a verification code delivery fails for an unconfirmed user", async function (this: SdkWorld) {
+  // Arrange
+  const poolId = (this as any)._cognitoPoolId as string;
+  const username = ((this as any)._cognitoUsername as string) || COGNITO_TEST_USERNAME;
+  const { AdminConfirmSignUpCommand } = require("@aws-sdk/client-cognito-identity-provider");
+  // Act — AdminConfirmSignUp is the closest public API for confirming an unconfirmed user
+  try {
+    const result = await cognitoClient(this).send(
+      new AdminConfirmSignUpCommand({ UserPoolId: poolId, Username: username }),
+    );
+    // Assert: store result
+    this.lastCallResult = { success: true, output: result };
+  } catch (err) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+});
 
 When("a group is created in an active user pool", async function (this: SdkWorld) {
   // Arrange
@@ -759,7 +746,11 @@ When("an admin adds a user to a group in the same pool", async function (this: S
   // Act
   try {
     const result = await cognitoClient(this).send(
-      new AdminAddUserToGroupCommand({ UserPoolId: poolId, Username: username, GroupName: groupName }),
+      new AdminAddUserToGroupCommand({
+        UserPoolId: poolId,
+        Username: username,
+        GroupName: groupName,
+      }),
     );
     // Assert: store result
     this.lastCallResult = { success: true, output: result };
@@ -773,9 +764,7 @@ When("an admin removes a user from a group", async function (this: SdkWorld) {
   const poolId = (this as any)._cognitoPoolId as string;
   const username = ((this as any)._cognitoUsername as string) || COGNITO_TEST_USERNAME;
   const groupName = (this as any)._cognitoGroupName as string;
-  const {
-    AdminRemoveUserFromGroupCommand,
-  } = require("@aws-sdk/client-cognito-identity-provider");
+  const { AdminRemoveUserFromGroupCommand } = require("@aws-sdk/client-cognito-identity-provider");
   // Act
   try {
     const result = await cognitoClient(this).send(
@@ -1033,9 +1022,7 @@ Then(
     const expectedGroupName = COGNITO_TEST_GROUP_NAME;
     const { ListGroupsCommand } = require("@aws-sdk/client-cognito-identity-provider");
     // Act
-    const result = await cognitoClient(this).send(
-      new ListGroupsCommand({ UserPoolId: poolId }),
-    );
+    const result = await cognitoClient(this).send(new ListGroupsCommand({ UserPoolId: poolId }));
     const actualGroups: Array<{ GroupName?: string }> = result.Groups ?? [];
     const actualGroupNames = actualGroups.map((g) => g.GroupName);
     // Assert
@@ -1056,9 +1043,7 @@ Then(
     const expectedGroupName = COGNITO_TEST_GROUP_NAME;
     const { ListGroupsCommand } = require("@aws-sdk/client-cognito-identity-provider");
     // Act
-    const result = await cognitoClient(this).send(
-      new ListGroupsCommand({ UserPoolId: poolId }),
-    );
+    const result = await cognitoClient(this).send(new ListGroupsCommand({ UserPoolId: poolId }));
     const actualGroups: Array<{ GroupName?: string }> = result.Groups ?? [];
     const actualGroupNames = actualGroups.map((g) => g.GroupName);
     // Assert

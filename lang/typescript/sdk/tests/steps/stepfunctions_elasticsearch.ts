@@ -177,24 +177,21 @@ Given("no execution slot is available", async function (this: SdkWorld) {
 // "a Step Functions state machine is created" is registered in stepfunctions.ts.
 // "an execution of the state machine is started" is registered in stepfunctions.ts.
 
-When(
-  'an Elasticsearch domain is created and becomes "AVAILABLE"',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
-    // Act
-    try {
-      const result = await sfnElasticsearchClient(this).send(
-        new CreateElasticsearchDomainCommand({ DomainName: SFN_ELASTICSEARCH_TEST_DOMAIN }),
-      );
-      this.lastCallResult = { success: true, output: result };
-    } catch (err: unknown) {
-      this.lastCallResult = { success: false, output: null, error: err };
-    }
-    // Assert: captured in lastCallResult
-  },
-);
+When('an Elasticsearch domain is created and becomes "AVAILABLE"', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
+  // Act
+  try {
+    const result = await sfnElasticsearchClient(this).send(
+      new CreateElasticsearchDomainCommand({ DomainName: SFN_ELASTICSEARCH_TEST_DOMAIN }),
+    );
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
 
 When("a domain configuration update begins", async function (this: SdkWorld) {
   // Arrange
@@ -285,14 +282,11 @@ Then('the domain is "AVAILABLE"', async function (this: SdkWorld) {
   );
 });
 
-Then(
-  'the domain is "PROCESSING" and "API" calls may fail',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe PROCESSING domain state via public API in lws.
-    // No-op: treat as invariant satisfied.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the domain is "PROCESSING" and "API" calls may fail', async function (this: SdkWorld) {
+  // @internal: Cannot observe PROCESSING domain state via public API in lws.
+  // No-op: treat as invariant satisfied.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then('the domain is "AVAILABLE" again', async function (this: SdkWorld) {
   // @internal: Cannot observe domain returning to AVAILABLE after update via public API in lws.
@@ -322,10 +316,7 @@ Then(
   },
 );
 
-Then(
-  "every succeeded execution recorded which domain it called",
-  async function (this: SdkWorld) {
-    // Invariant: trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then("every succeeded execution recorded which domain it called", async function (this: SdkWorld) {
+  // Invariant: trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});

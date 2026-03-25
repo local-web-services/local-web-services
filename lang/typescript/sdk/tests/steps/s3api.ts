@@ -35,22 +35,14 @@ async function deleteBucket(world: SdkWorld, bucketName: string): Promise<void> 
   }
 }
 
-async function putObject(
-  world: SdkWorld,
-  bucketName: string,
-  key: string,
-): Promise<void> {
+async function putObject(world: SdkWorld, bucketName: string, key: string): Promise<void> {
   const { PutObjectCommand } = require("@aws-sdk/client-s3");
   const { Readable } = require("stream");
   const body = Readable.from([Buffer.from(S3API_TEST_BODY)]);
   await s3Client(world).send(new PutObjectCommand({ Bucket: bucketName, Key: key, Body: body }));
 }
 
-async function deleteObject(
-  world: SdkWorld,
-  bucketName: string,
-  key: string,
-): Promise<void> {
+async function deleteObject(world: SdkWorld, bucketName: string, key: string): Promise<void> {
   const { DeleteObjectCommand } = require("@aws-sdk/client-s3");
   try {
     await s3Client(world).send(new DeleteObjectCommand({ Bucket: bucketName, Key: key }));
@@ -463,7 +455,9 @@ When("a bucket is created", async function (this: SdkWorld) {
   const { CreateBucketCommand } = require("@aws-sdk/client-s3");
   // Act
   try {
-    const result = await s3Client(this).send(new CreateBucketCommand({ Bucket: S3API_TEST_BUCKET }));
+    const result = await s3Client(this).send(
+      new CreateBucketCommand({ Bucket: S3API_TEST_BUCKET }),
+    );
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
     this.lastCallResult = { success: false, output: null, error: err };
@@ -477,7 +471,9 @@ When("a bucket is deleted", async function (this: SdkWorld) {
   const { DeleteBucketCommand } = require("@aws-sdk/client-s3");
   // Act
   try {
-    const result = await s3Client(this).send(new DeleteBucketCommand({ Bucket: S3API_TEST_BUCKET }));
+    const result = await s3Client(this).send(
+      new DeleteBucketCommand({ Bucket: S3API_TEST_BUCKET }),
+    );
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
     this.lastCallResult = { success: false, output: null, error: err };
@@ -590,7 +586,9 @@ When("objects in a bucket are listed", async function (this: SdkWorld) {
   const { ListObjectsV2Command } = require("@aws-sdk/client-s3");
   // Act
   try {
-    const result = await s3Client(this).send(new ListObjectsV2Command({ Bucket: S3API_TEST_BUCKET }));
+    const result = await s3Client(this).send(
+      new ListObjectsV2Command({ Bucket: S3API_TEST_BUCKET }),
+    );
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
     this.lastCallResult = { success: false, output: null, error: err };
@@ -670,8 +668,9 @@ When("a multipart upload is completed", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
   const { CompleteMultipartUploadCommand } = require("@aws-sdk/client-s3");
   const uploadId: string = (this as any)._s3UploadId ?? "invalid";
-  const etags: Array<{ ETag: string; PartNumber: number }> =
-    (this as any)._s3Etags ?? [{ ETag: "etag1", PartNumber: 1 }];
+  const etags: Array<{ ETag: string; PartNumber: number }> = (this as any)._s3Etags ?? [
+    { ETag: "etag1", PartNumber: 1 },
+  ];
   // Act
   try {
     const result = await s3Client(this).send(

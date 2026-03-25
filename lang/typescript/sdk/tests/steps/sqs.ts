@@ -285,10 +285,13 @@ Given("the queue has a maximum receive count configured", async function (this: 
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("the queue does not have a maximum receive count configured", async function (this: SdkWorld) {
-  // No-op: redrive scenarios are tagged @internal and excluded from the test run.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+Given(
+  "the queue does not have a maximum receive count configured",
+  async function (this: SdkWorld) {
+    // No-op: redrive scenarios are tagged @internal and excluded from the test run.
+    assert.ok(this.session, "Expected session to be initialized");
+  },
+);
 
 Given("the message has exceeded the maximum receive count", async function (this: SdkWorld) {
   // No-op: redrive scenarios are tagged @internal and excluded from the test run.
@@ -349,7 +352,9 @@ When("a queue is created", async function (this: SdkWorld) {
   const { CreateQueueCommand } = require("@aws-sdk/client-sqs");
   // Act
   try {
-    const result = await sqsClient(this).send(new CreateQueueCommand({ QueueName: SQS_TEST_QUEUE }));
+    const result = await sqsClient(this).send(
+      new CreateQueueCommand({ QueueName: SQS_TEST_QUEUE }),
+    );
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
     this.lastCallResult = { success: false, output: null, error: err };
@@ -651,22 +656,16 @@ Then("the queue attributes are returned", async function (this: SdkWorld) {
   );
 });
 
-Then(
-  "the message becomes {string} again",
-  async function (this: SdkWorld, expectedState: string) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    // Act
-    const msg = await receiveMessage(this, SQS_TEST_QUEUE);
-    // Assert
-    if (expectedState === "AVAILABLE") {
-      assert.ok(
-        msg !== undefined,
-        `Expected message to become AVAILABLE again but found none`,
-      );
-    }
-  },
-);
+Then("the message becomes {string} again", async function (this: SdkWorld, expectedState: string) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  // Act
+  const msg = await receiveMessage(this, SQS_TEST_QUEUE);
+  // Assert
+  if (expectedState === "AVAILABLE") {
+    assert.ok(msg !== undefined, `Expected message to become AVAILABLE again but found none`);
+  }
+});
 
 Then(
   "the message is {string} in the dead-letter queue",
@@ -687,23 +686,14 @@ Then(
 
 // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
-Then(
-  /^every non-deleted message belongs to an "ACTIVE" queue$/,
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  },
-);
+Then(/^every non-deleted message belongs to an "ACTIVE" queue$/, async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+});
 
-Then(
-  /^every in-flight message belongs to an "ACTIVE" queue$/,
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  },
-);
+Then(/^every in-flight message belongs to an "ACTIVE" queue$/, async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+});
 
-Then(
-  /^every message has a non-negative receive count$/,
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  },
-);
+Then(/^every message has a non-negative receive count$/, async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+});

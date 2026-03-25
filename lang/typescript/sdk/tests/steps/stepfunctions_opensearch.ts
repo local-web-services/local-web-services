@@ -264,14 +264,11 @@ Then('the domain is "ACTIVE" again', async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then(
-  'the domain is "PROCESSING" and "API" calls may fail',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe internal domain PROCESSING state in lws.
-    // No-op: invariant trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the domain is "PROCESSING" and "API" calls may fail', async function (this: SdkWorld) {
+  // @internal: Cannot observe internal domain PROCESSING state in lws.
+  // No-op: invariant trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then(`the execution is "SUCCEEDED"`, async function (this: SdkWorld) {
   // @internal: Cannot observe internal execution OpenSearch task success in lws.
@@ -295,10 +292,7 @@ Then(
   },
 );
 
-Then(
-  "every succeeded execution recorded which domain it called",
-  async function (this: SdkWorld) {
-    // Invariant: trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then("every succeeded execution recorded which domain it called", async function (this: SdkWorld) {
+  // Invariant: trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});

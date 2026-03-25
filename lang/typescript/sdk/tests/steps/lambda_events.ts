@@ -279,13 +279,10 @@ Then(
   },
 );
 
-Then(
-  'the event is "PUBLISHED" and the invocation is "SUCCESS"',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe Lambda invocation result in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the event is "PUBLISHED" and the invocation is "SUCCESS"', async function (this: SdkWorld) {
+  // @internal: Cannot observe Lambda invocation result in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
@@ -297,10 +294,7 @@ Then(
   },
 );
 
-Then(
-  'every "PUBLISHED" event references a bus that exists',
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('every "PUBLISHED" event references a bus that exists', async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});

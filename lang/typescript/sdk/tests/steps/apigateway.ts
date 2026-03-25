@@ -31,9 +31,7 @@ async function createRestApi(world: SdkWorld): Promise<string> {
 async function fetchRootResource(world: SdkWorld): Promise<string> {
   const { GetResourcesCommand } = require("@aws-sdk/client-api-gateway");
   const restApiId = (world as any)._apigwRestApiId as string;
-  const result = await apigwClient(world).send(
-    new GetResourcesCommand({ restApiId }),
-  );
+  const result = await apigwClient(world).send(new GetResourcesCommand({ restApiId }));
   const items: Array<{ id: string; path: string }> = result.items ?? [];
   const root = items.find((r) => r.path === "/");
   if (!root) throw new Error("Root resource not found");
@@ -81,9 +79,7 @@ async function setupDeployment(world: SdkWorld): Promise<string> {
   await setupApiWithIntegration(world);
   const { CreateDeploymentCommand } = require("@aws-sdk/client-api-gateway");
   const restApiId = (world as any)._apigwRestApiId as string;
-  const result = await apigwClient(world).send(
-    new CreateDeploymentCommand({ restApiId }),
-  );
+  const result = await apigwClient(world).send(new CreateDeploymentCommand({ restApiId }));
   (world as any)._apigwDeploymentId = result.id;
   return result.id as string;
 }
@@ -1157,23 +1153,20 @@ When("throttling is disabled for the prod stage", async function (this: SdkWorld
 
 // ── Then: assertions ───────────────────────────────────────────────────────────
 
-Then(
-  'the "API" is "ACTIVE" and its root resource is "ACTIVE"',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { GetRestApisCommand } = require("@aws-sdk/client-api-gateway");
-    // Act
-    const result = await apigwClient(this).send(new GetRestApisCommand({}));
-    const actualApis: unknown[] = result.items ?? [];
-    // Assert
-    const expectedMinCount = 1;
-    assert.ok(
-      actualApis.length >= expectedMinCount,
-      `Expected at least ${expectedMinCount} REST API to be ACTIVE but found ${actualApis.length}`,
-    );
-  },
-);
+Then('the "API" is "ACTIVE" and its root resource is "ACTIVE"', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { GetRestApisCommand } = require("@aws-sdk/client-api-gateway");
+  // Act
+  const result = await apigwClient(this).send(new GetRestApisCommand({}));
+  const actualApis: unknown[] = result.items ?? [];
+  // Assert
+  const expectedMinCount = 1;
+  assert.ok(
+    actualApis.length >= expectedMinCount,
+    `Expected at least ${expectedMinCount} REST API to be ACTIVE but found ${actualApis.length}`,
+  );
+});
 
 Then(
   'the "API" is "DELETED" along with all its resources, methods, integrations, deployments, and stages',
@@ -1502,19 +1495,13 @@ Then(
   },
 );
 
-Then(
-  /^all "ACTIVE" resources belong to "ACTIVE" APIs$/,
-  async function (this: SdkWorld) {
-    // No-op: resource-API membership is an internal invariant in lws; always passes.
-  },
-);
+Then(/^all "ACTIVE" resources belong to "ACTIVE" APIs$/, async function (this: SdkWorld) {
+  // No-op: resource-API membership is an internal invariant in lws; always passes.
+});
 
-Then(
-  /^all "EXISTING" methods belong to "ACTIVE" resources$/,
-  async function (this: SdkWorld) {
-    // No-op: method-resource membership is an internal invariant in lws; always passes.
-  },
-);
+Then(/^all "EXISTING" methods belong to "ACTIVE" resources$/, async function (this: SdkWorld) {
+  // No-op: method-resource membership is an internal invariant in lws; always passes.
+});
 
 Then(
   /^all "EXISTING" integrations correspond to "EXISTING" methods$/,
@@ -1523,23 +1510,14 @@ Then(
   },
 );
 
-Then(
-  /^all "ACTIVE" deployments belong to "ACTIVE" APIs$/,
-  async function (this: SdkWorld) {
-    // No-op: deployment-API membership is an internal invariant in lws; always passes.
-  },
-);
+Then(/^all "ACTIVE" deployments belong to "ACTIVE" APIs$/, async function (this: SdkWorld) {
+  // No-op: deployment-API membership is an internal invariant in lws; always passes.
+});
 
-Then(
-  /^all active stages belong to "ACTIVE" APIs$/,
-  async function (this: SdkWorld) {
-    // No-op: stage-API membership is an internal invariant in lws; always passes.
-  },
-);
+Then(/^all active stages belong to "ACTIVE" APIs$/, async function (this: SdkWorld) {
+  // No-op: stage-API membership is an internal invariant in lws; always passes.
+});
 
-Then(
-  /^all active stages reference "ACTIVE" deployments$/,
-  async function (this: SdkWorld) {
-    // No-op: stage-deployment references are an internal invariant in lws; always passes.
-  },
-);
+Then(/^all active stages reference "ACTIVE" deployments$/, async function (this: SdkWorld) {
+  // No-op: stage-deployment references are an internal invariant in lws; always passes.
+});

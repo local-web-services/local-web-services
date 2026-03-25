@@ -121,22 +121,16 @@ Given("the secret has a rotation function configured", async function (this: Sdk
 
 // ── Given: rotation function state (@internal) ────────────────────────────────
 
-Given(
-  "the rotation function is {string}",
-  async function (this: SdkWorld, _state: string) {
-    // @internal: Cannot configure SecretsManager->Lambda rotation function state in lws.
-    // Scenarios using this step are tagged @internal and excluded by the tag filter.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Given("the rotation function is {string}", async function (this: SdkWorld, _state: string) {
+  // @internal: Cannot configure SecretsManager->Lambda rotation function state in lws.
+  // Scenarios using this step are tagged @internal and excluded by the tag filter.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
-Given(
-  "the rotation function is not {string}",
-  async function (this: SdkWorld, _state: string) {
-    // @internal: Cannot configure SecretsManager->Lambda rotation function state in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Given("the rotation function is not {string}", async function (this: SdkWorld, _state: string) {
+  // @internal: Cannot configure SecretsManager->Lambda rotation function state in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
@@ -254,7 +248,7 @@ When(
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then("the secret is \"ACTIVE\"", async function (this: SdkWorld) {
+Then('the secret is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { DescribeSecretCommand } = require("@aws-sdk/client-secrets-manager");
@@ -276,7 +270,7 @@ Then("the secret is \"ACTIVE\"", async function (this: SdkWorld) {
   );
 });
 
-Then("the function is \"ACTIVE\"", async function (this: SdkWorld) {
+Then('the function is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
@@ -302,7 +296,7 @@ Then("the secret has a rotation function configured", async function (this: SdkW
 });
 
 Then(
-  "the secret is \"ROTATING\" and Secrets Manager invokes the Lambda rotation function",
+  'the secret is "ROTATING" and Secrets Manager invokes the Lambda rotation function',
   async function (this: SdkWorld) {
     // Cannot trigger SecretsManager->Lambda rotation in lws.
     // No-op: scenarios reaching this assertion are excluded.
@@ -310,16 +304,14 @@ Then(
   },
 );
 
-Then("the function is \"DELETED\" and rotation will fail", async function (this: SdkWorld) {
+Then('the function is "DELETED" and rotation will fail', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
   // Act: verify function is gone
   let actualExists: boolean;
   try {
-    await smLambdaLambdaClient(this).send(
-      new GetFunctionCommand({ FunctionName: SM_LAMBDA_FUNC }),
-    );
+    await smLambdaLambdaClient(this).send(new GetFunctionCommand({ FunctionName: SM_LAMBDA_FUNC }));
     actualExists = true;
   } catch {
     actualExists = false;
@@ -334,7 +326,7 @@ Then("the function is \"DELETED\" and rotation will fail", async function (this:
 });
 
 Then(
-  "the invocation is \"SUCCESS\" and the secret is \"ACTIVE\" with a new version",
+  'the invocation is "SUCCESS" and the secret is "ACTIVE" with a new version',
   async function (this: SdkWorld) {
     // @internal: Cannot trigger SecretsManager->Lambda invocation in lws.
     // No-op: invariant assertion for excluded @internal scenarios.
@@ -343,7 +335,7 @@ Then(
 );
 
 Then(
-  "the invocation is \"FAILED\" and the secret remains \"ACTIVE\" with the old version",
+  'the invocation is "FAILED" and the secret remains "ACTIVE" with the old version',
   async function (this: SdkWorld) {
     // @internal: Cannot trigger SecretsManager->Lambda invocation in lws.
     // No-op: invariant assertion for excluded @internal scenarios.
@@ -354,7 +346,7 @@ Then(
 // ── Invariant catch-all steps ──────────────────────────────────────────────────
 
 Then(
-  "every \"ROTATING\" secret has an \"IN_PROGRESS\" rotation invocation",
+  'every "ROTATING" secret has an "IN_PROGRESS" rotation invocation',
   async function (this: SdkWorld) {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
   },

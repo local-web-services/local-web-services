@@ -107,26 +107,19 @@ When("the Lambda invocation fails", async function (this: SdkWorld) {
   this.lastCallResult = {
     success: false,
     output: null,
-    error: new Error(
-      "cannot trigger Lambda invocation failure: scenario is @internal",
-    ),
+    error: new Error("cannot trigger Lambda invocation failure: scenario is @internal"),
   };
 });
 
-When(
-  "the Lambda invocation completes successfully",
-  async function (this: SdkWorld) {
-    // @internal: Cannot trigger Lambda invocation success in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-    this.lastCallResult = {
-      success: false,
-      output: null,
-      error: new Error(
-        "cannot trigger Lambda invocation success: scenario is @internal",
-      ),
-    };
-  },
-);
+When("the Lambda invocation completes successfully", async function (this: SdkWorld) {
+  // @internal: Cannot trigger Lambda invocation success in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+  this.lastCallResult = {
+    success: false,
+    output: null,
+    error: new Error("cannot trigger Lambda invocation success: scenario is @internal"),
+  };
+});
 
 When(
   "the Lambda function writes an item to the DynamoDB table during invocation",
@@ -136,9 +129,7 @@ When(
     this.lastCallResult = {
       success: false,
       output: null,
-      error: new Error(
-        "cannot trigger Lambda item write: scenario is @internal",
-      ),
+      error: new Error("cannot trigger Lambda item write: scenario is @internal"),
     };
   },
 );
@@ -156,13 +147,10 @@ Then("the invocation is {string}", async function (this: SdkWorld, _state: strin
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then(
-  'the item "EXISTS" in the table',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe Lambda item write result in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the item "EXISTS" in the table', async function (this: SdkWorld) {
+  // @internal: Cannot observe Lambda item write result in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 // ── Invariant Then steps ──────────────────────────────────────────────────────
 
@@ -174,10 +162,7 @@ Then(
   },
 );
 
-Then(
-  'every existing item belongs to an "ACTIVE" table',
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('every existing item belongs to an "ACTIVE" table', async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});

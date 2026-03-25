@@ -50,9 +50,7 @@ async function createPool(world: SdkWorld): Promise<string> {
 
 async function findPoolId(world: SdkWorld): Promise<string | null> {
   const { ListUserPoolsCommand } = require("@aws-sdk/client-cognito-identity-provider");
-  const result = await cognitoClient(world).send(
-    new ListUserPoolsCommand({ MaxResults: 10 }),
-  );
+  const result = await cognitoClient(world).send(new ListUserPoolsCommand({ MaxResults: 10 }));
   const pools: Array<{ Id: string; Name: string }> = result.UserPools ?? [];
   const found = pools.find((p) => p.Name === LAMBDA_COGNITO_TEST_POOL_NAME);
   return found ? found.Id : null;
@@ -107,9 +105,7 @@ Given("the pool is already {string}", async function (this: SdkWorld, state: str
     const { DeleteUserPoolCommand } = require("@aws-sdk/client-cognito-identity-provider");
     const poolId = await findPoolId(this);
     if (poolId) {
-      await cognitoClient(this).send(
-        new DeleteUserPoolCommand({ UserPoolId: poolId }),
-      );
+      await cognitoClient(this).send(new DeleteUserPoolCommand({ UserPoolId: poolId }));
     }
     // Assert: pool is now deleted
     return;
@@ -291,29 +287,35 @@ Then('the pool is "ACTIVE"', async function (this: SdkWorld) {
   );
 });
 
-Then('the pool is "DELETED" and Lambda calls targeting it will fail', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const actualPoolId = await findPoolId(this);
-  // Assert
-  const expectedPoolId = null;
-  assert.strictEqual(
-    actualPoolId,
-    expectedPoolId,
-    `Expected pool to be deleted but found pool with id "${actualPoolId}"`,
-  );
-});
+Then(
+  'the pool is "DELETED" and Lambda calls targeting it will fail',
+  async function (this: SdkWorld) {
+    // Arrange
+    assert.ok(this.session, "Expected session to be initialized");
+    // Act
+    const actualPoolId = await findPoolId(this);
+    // Assert
+    const expectedPoolId = null;
+    assert.strictEqual(
+      actualPoolId,
+      expectedPoolId,
+      `Expected pool to be deleted but found pool with id "${actualPoolId}"`,
+    );
+  },
+);
 
 Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda invocation state in lws.
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then('the invocation is "FAILED" with a ResourceNotFoundException', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation failure in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+Then(
+  'the invocation is "FAILED" with a ResourceNotFoundException',
+  async function (this: SdkWorld) {
+    // @internal: Cannot observe Lambda invocation failure in lws.
+    assert.ok(this.session, "Expected session to be initialized");
+  },
+);
 
 Then('the invocation is "SUCCESS"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda invocation success in lws.

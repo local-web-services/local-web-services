@@ -42,51 +42,46 @@ const SNS_LAMBDA_ROLE_ARN = "arn:aws:iam::000000000000:role/test";
 
 // ── Given: subscribed function state ─────────────────────────────────────────
 
-Given(
-  "the subscribed function is {string}",
-  async function (this: SdkWorld, state: string) {
-    assert.ok(this.session, "Expected session to be initialized");
-    if (state === "ACTIVE") {
-      // No-op: Lambda functions are ACTIVE immediately after creation in lws.
-      return;
-    }
-    // For other states, no-op.
-  },
-);
+Given("the subscribed function is {string}", async function (this: SdkWorld, state: string) {
+  assert.ok(this.session, "Expected session to be initialized");
+  if (state === "ACTIVE") {
+    // No-op: Lambda functions are ACTIVE immediately after creation in lws.
+    return;
+  }
+  // For other states, no-op.
+});
 
-Given(
-  "the subscribed function is not {string}",
-  async function (this: SdkWorld, state: string) {
-    assert.ok(this.session, "Expected session to be initialized");
-    if (state === "ACTIVE") {
-      // Arrange: apply lifecycle dwell so the next created function starts in a non-ACTIVE state
-      const { LambdaClient, DeleteFunctionCommand, CreateFunctionCommand } =
-        require("@aws-sdk/client-lambda");
-      const client = this.session!.client<typeof LambdaClient>("lambda");
-      // Act
-      try {
-        await client.send(
-          new DeleteFunctionCommand({ FunctionName: SNS_LAMBDA_TEST_FUNC }),
-        );
-      } catch {
-        // function may not exist; desired state is absence
-      }
-      await this.session!.lifecycle("lambda").createDwellMs(5000).apply();
-      await client.send(
-        new CreateFunctionCommand({
-          FunctionName: SNS_LAMBDA_TEST_FUNC,
-          Runtime: "python3.12",
-          Role: SNS_LAMBDA_ROLE_ARN,
-          Handler: "index.handler",
-          Code: { ZipFile: Buffer.from("fake") },
-        }),
-      );
-      // Assert: function created in non-ACTIVE state due to dwell
-      return;
+Given("the subscribed function is not {string}", async function (this: SdkWorld, state: string) {
+  assert.ok(this.session, "Expected session to be initialized");
+  if (state === "ACTIVE") {
+    // Arrange: apply lifecycle dwell so the next created function starts in a non-ACTIVE state
+    const {
+      LambdaClient,
+      DeleteFunctionCommand,
+      CreateFunctionCommand,
+    } = require("@aws-sdk/client-lambda");
+    const client = this.session!.client<typeof LambdaClient>("lambda");
+    // Act
+    try {
+      await client.send(new DeleteFunctionCommand({ FunctionName: SNS_LAMBDA_TEST_FUNC }));
+    } catch {
+      // function may not exist; desired state is absence
     }
-    // For other states, no-op.
-  },
-);
+    await this.session!.lifecycle("lambda").createDwellMs(5000).apply();
+    await client.send(
+      new CreateFunctionCommand({
+        FunctionName: SNS_LAMBDA_TEST_FUNC,
+        Runtime: "python3.12",
+        Role: SNS_LAMBDA_ROLE_ARN,
+        Handler: "index.handler",
+        Code: { ZipFile: Buffer.from("fake") },
+      }),
+    );
+    // Assert: function created in non-ACTIVE state due to dwell
+    return;
+  }
+  // For other states, no-op.
+});
 
 // ── When: cross-service actions ───────────────────────────────────────────────
 
@@ -135,12 +130,7 @@ Then(
 
 Then(
   "every {string} subscription references an {string} {string} topic",
-  async function (
-    this: SdkWorld,
-    _subState: string,
-    _topicState: string,
-    _service: string,
-  ) {
+  async function (this: SdkWorld, _subState: string, _topicState: string, _service: string) {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
     assert.ok(this.session, "Expected session to be initialized");
   },

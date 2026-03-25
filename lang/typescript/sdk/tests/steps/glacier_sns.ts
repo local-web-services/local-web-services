@@ -316,31 +316,28 @@ When('an "SNS" notification is configured on the vault', async function (this: S
   // Assert: captured in lastCallResult
 });
 
-When(
-  "a Glacier archive retrieval job is initiated on the vault",
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { InitiateJobCommand } = require("@aws-sdk/client-glacier");
-    // Act
-    try {
-      const result = await glacierSNSGlacierClient(this).send(
-        new InitiateJobCommand({
-          accountId: GLACIER_SNS_ACCOUNT_ID,
-          vaultName: GLACIER_SNS_TEST_VAULT,
-          jobParameters: { Type: "inventory-retrieval" },
-        }),
-      );
-      if (result.jobId) {
-        (this as any)._glacierSNSJobId = result.jobId;
-      }
-      this.lastCallResult = { success: true, output: result };
-    } catch (err: unknown) {
-      this.lastCallResult = { success: false, output: null, error: err };
+When("a Glacier archive retrieval job is initiated on the vault", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { InitiateJobCommand } = require("@aws-sdk/client-glacier");
+  // Act
+  try {
+    const result = await glacierSNSGlacierClient(this).send(
+      new InitiateJobCommand({
+        accountId: GLACIER_SNS_ACCOUNT_ID,
+        vaultName: GLACIER_SNS_TEST_VAULT,
+        jobParameters: { Type: "inventory-retrieval" },
+      }),
+    );
+    if (result.jobId) {
+      (this as any)._glacierSNSJobId = result.jobId;
     }
-    // Assert: captured in lastCallResult
-  },
-);
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
 
 When(
   'the Glacier job completes and publishes a notification to the configured "SNS" topic',
@@ -424,21 +421,18 @@ Then('the topic is "ACTIVE"', async function (this: SdkWorld) {
   );
 });
 
-Then(
-  'the topic is "DELETED" and Glacier notifications will fail',
-  async function (this: SdkWorld) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected delete_topic to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-  },
-);
+Then('the topic is "DELETED" and Glacier notifications will fail', async function (this: SdkWorld) {
+  // Arrange: no additional setup required
+  // Act: action already performed in the When step
+  // Assert
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected delete_topic to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+  );
+});
 
 Then(
   "the vault will publish job completion notifications to the topic",
@@ -473,14 +467,11 @@ Then('the job is "IN_PROGRESS"', async function (this: SdkWorld) {
   );
 });
 
-Then(
-  'the job is "SUCCEEDED" and the notification is "PUBLISHED"',
-  async function (this: SdkWorld) {
-    // @internal: job_completed_notification_delivered requires background processing. No assertion performed.
-  },
-);
+Then('the job is "SUCCEEDED" and the notification is "PUBLISHED"', async function (this: SdkWorld) {
+  // @internal: job_completed_notification_delivered requires background processing. No assertion performed.
+});
 
-Then("the job is \"SUCCEEDED\" but no notification is published", async function (this: SdkWorld) {
+Then('the job is "SUCCEEDED" but no notification is published', async function (this: SdkWorld) {
   // @internal: job_completed_notification_fails requires background processing. No assertion performed.
 });
 
@@ -499,19 +490,13 @@ Then("the operation is rejected", async function (this: SdkWorld) {
 
 // ── Safety invariant Then steps ───────────────────────────────────────────────
 
-Then(
-  '"PUBLISHED" notification references a job that exists',
-  async function (this: SdkWorld) {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  },
-);
+Then('"PUBLISHED" notification references a job that exists', async function (this: SdkWorld) {
+  // No-op invariant: trivially satisfied in an isolated test context.
+});
 
-Then(
-  '"PUBLISHED" notification references a topic that exists',
-  async function (this: SdkWorld) {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  },
-);
+Then('"PUBLISHED" notification references a topic that exists', async function (this: SdkWorld) {
+  // No-op invariant: trivially satisfied in an isolated test context.
+});
 
 Then(
   'every "PUBLISHED" notification references a job that exists',

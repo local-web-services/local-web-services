@@ -24,9 +24,7 @@ function snsTopicArn(): string {
 
 async function createTopic(world: SdkWorld): Promise<string> {
   const { CreateTopicCommand } = require("@aws-sdk/client-sns");
-  const result = await snsClient(world).send(
-    new CreateTopicCommand({ Name: SNS_TEST_TOPIC }),
-  );
+  const result = await snsClient(world).send(new CreateTopicCommand({ Name: SNS_TEST_TOPIC }));
   return result.TopicArn ?? snsTopicArn();
 }
 
@@ -74,8 +72,7 @@ Given("the topic is {string}", async function (this: SdkWorld, state: string) {
 Given("the subscription exists", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const topicArn =
-    (this as any)._snsTopicArn ?? (await createTopic(this));
+  const topicArn = (this as any)._snsTopicArn ?? (await createTopic(this));
   (this as any)._snsTopicArn = topicArn;
   // Act: subscribe with email endpoint (pending confirmation by default)
   const { SubscribeCommand } = require("@aws-sdk/client-sns");
@@ -103,48 +100,41 @@ Given("the subscription does not exist", async function (this: SdkWorld) {
 
 // ── Given: subscription lifecycle state ──────────────────────────────────────
 
-Given(
-  "the subscription is {string}",
-  async function (this: SdkWorld, state: string) {
-    assert.ok(this.session, "Expected session to be initialized");
-    if (state === "PENDING_CONFIRMATION") {
-      // No-op: email subscriptions are PENDING_CONFIRMATION by default.
-      return;
-    }
-    if (state === "CONFIRMED") {
-      // Arrange: subscribe with SQS queue which is auto-confirmed in lws
-      const topicArn =
-        (this as any)._snsTopicArn ?? (await createTopic(this));
-      (this as any)._snsTopicArn = topicArn;
-      await createSubQueue(this);
-      const queueArn = `arn:aws:sqs:${REGION}:${ACCOUNT_ID}:${SNS_TEST_SUB_QUEUE}`;
-      const { SubscribeCommand } = require("@aws-sdk/client-sns");
-      // Act
-      const result = await snsClient(this).send(
-        new SubscribeCommand({
-          TopicArn: topicArn,
-          Protocol: "sqs",
-          Endpoint: queueArn,
-        }),
-      );
-      // Assert
-      (this as any)._snsSubscriptionArn = result.SubscriptionArn ?? "";
-      return;
-    }
-    // For other states, no-op.
-  },
-);
+Given("the subscription is {string}", async function (this: SdkWorld, state: string) {
+  assert.ok(this.session, "Expected session to be initialized");
+  if (state === "PENDING_CONFIRMATION") {
+    // No-op: email subscriptions are PENDING_CONFIRMATION by default.
+    return;
+  }
+  if (state === "CONFIRMED") {
+    // Arrange: subscribe with SQS queue which is auto-confirmed in lws
+    const topicArn = (this as any)._snsTopicArn ?? (await createTopic(this));
+    (this as any)._snsTopicArn = topicArn;
+    await createSubQueue(this);
+    const queueArn = `arn:aws:sqs:${REGION}:${ACCOUNT_ID}:${SNS_TEST_SUB_QUEUE}`;
+    const { SubscribeCommand } = require("@aws-sdk/client-sns");
+    // Act
+    const result = await snsClient(this).send(
+      new SubscribeCommand({
+        TopicArn: topicArn,
+        Protocol: "sqs",
+        Endpoint: queueArn,
+      }),
+    );
+    // Assert
+    (this as any)._snsSubscriptionArn = result.SubscriptionArn ?? "";
+    return;
+  }
+  // For other states, no-op.
+});
 
-Given(
-  "the subscription is not {string}",
-  async function (this: SdkWorld, _state: string) {
-    // Cannot reliably produce a non-CONFIRMED/non-PENDING_CONFIRMATION subscription
-    // without an external confirmation flow.
-    // Set a flag so When steps can return "pending" for this scenario.
-    assert.ok(this.session, "Expected session to be initialized");
-    (this as any)._snsSubscriptionStateBlocked = true;
-  },
-);
+Given("the subscription is not {string}", async function (this: SdkWorld, _state: string) {
+  // Cannot reliably produce a non-CONFIRMED/non-PENDING_CONFIRMATION subscription
+  // without an external confirmation flow.
+  // Set a flag so When steps can return "pending" for this scenario.
+  assert.ok(this.session, "Expected session to be initialized");
+  (this as any)._snsSubscriptionStateBlocked = true;
+});
 
 // ── Given: subscription belongs to topic ─────────────────────────────────────
 
@@ -153,15 +143,12 @@ Given("the subscription belongs to this topic", async function (this: SdkWorld) 
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given(
-  "the subscription does not belong to this topic",
-  async function (this: SdkWorld) {
-    // Cannot test cross-topic subscription isolation via public API.
-    // Set a flag so When steps can return "pending".
-    assert.ok(this.session, "Expected session to be initialized");
-    (this as any)._snsCrossTopicBlocked = true;
-  },
-);
+Given("the subscription does not belong to this topic", async function (this: SdkWorld) {
+  // Cannot test cross-topic subscription isolation via public API.
+  // Set a flag so When steps can return "pending".
+  assert.ok(this.session, "Expected session to be initialized");
+  (this as any)._snsCrossTopicBlocked = true;
+});
 
 // ── Given: delivery slot ──────────────────────────────────────────────────────
 
@@ -180,59 +167,44 @@ Given("no delivery slot is available", async function (this: SdkWorld) {
 
 // ── Given: subscription's topic ──────────────────────────────────────────────
 
-Given(
-  "the subscription's topic exists",
-  async function (this: SdkWorld) {
-    // No-op: topic was created in a prior Given step.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Given("the subscription's topic exists", async function (this: SdkWorld) {
+  // No-op: topic was created in a prior Given step.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
-Given(
-  "the subscription's topic is {string}",
-  async function (this: SdkWorld, state: string) {
-    assert.ok(this.session, "Expected session to be initialized");
-    if (state === "ACTIVE") {
-      // No-op: topic is ACTIVE by default after creation.
-      return;
-    }
-    // For other lifecycle states, set flag for When step detection.
-    (this as any)._snsSubscriptionTopicNotActive = true;
-  },
-);
+Given("the subscription's topic is {string}", async function (this: SdkWorld, state: string) {
+  assert.ok(this.session, "Expected session to be initialized");
+  if (state === "ACTIVE") {
+    // No-op: topic is ACTIVE by default after creation.
+    return;
+  }
+  // For other lifecycle states, set flag for When step detection.
+  (this as any)._snsSubscriptionTopicNotActive = true;
+});
 
-Given(
-  "the subscription's topic does not exist",
-  async function (this: SdkWorld) {
-    // Cannot test subscription with non-existent topic via public API.
-    // Set flag so When steps can return "pending".
-    assert.ok(this.session, "Expected session to be initialized");
-    (this as any)._snsSubscriptionTopicMissing = true;
-  },
-);
+Given("the subscription's topic does not exist", async function (this: SdkWorld) {
+  // Cannot test subscription with non-existent topic via public API.
+  // Set flag so When steps can return "pending".
+  assert.ok(this.session, "Expected session to be initialized");
+  (this as any)._snsSubscriptionTopicMissing = true;
+});
 
-Given(
-  "the subscription's topic is not {string}",
-  async function (this: SdkWorld, _state: string) {
-    // Arrange: use lifecycle API to simulate a non-ACTIVE topic
-    assert.ok(this.session, "Expected session to be initialized");
-    // Act
-    await this.session!.lifecycle("sns").createDwellMs(5000).apply();
-    const { CreateTopicCommand, DeleteTopicCommand } = require("@aws-sdk/client-sns");
-    const topicArn =
-      (this as any)._snsTopicArn ?? snsTopicArn();
-    try {
-      await snsClient(this).send(new DeleteTopicCommand({ TopicArn: topicArn }));
-    } catch {
-      // Best effort — topic may not exist yet
-    }
-    const result = await snsClient(this).send(
-      new CreateTopicCommand({ Name: SNS_TEST_TOPIC }),
-    );
-    (this as any)._snsTopicArn = result.TopicArn ?? snsTopicArn();
-    // Assert: topic is in CREATING state
-  },
-);
+Given("the subscription's topic is not {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange: use lifecycle API to simulate a non-ACTIVE topic
+  assert.ok(this.session, "Expected session to be initialized");
+  // Act
+  await this.session!.lifecycle("sns").createDwellMs(5000).apply();
+  const { CreateTopicCommand, DeleteTopicCommand } = require("@aws-sdk/client-sns");
+  const topicArn = (this as any)._snsTopicArn ?? snsTopicArn();
+  try {
+    await snsClient(this).send(new DeleteTopicCommand({ TopicArn: topicArn }));
+  } catch {
+    // Best effort — topic may not exist yet
+  }
+  const result = await snsClient(this).send(new CreateTopicCommand({ Name: SNS_TEST_TOPIC }));
+  (this as any)._snsTopicArn = result.TopicArn ?? snsTopicArn();
+  // Assert: topic is in CREATING state
+});
 
 // ── Given: delivery and retry state (@internal — never executed by tag filter) ─
 
@@ -241,21 +213,15 @@ Given("the delivery exists", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given(
-  "the delivery is {string}",
-  async function (this: SdkWorld, _state: string) {
-    // No-op: delivery scenarios are all @internal and will not run under tag filter.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Given("the delivery is {string}", async function (this: SdkWorld, _state: string) {
+  // No-op: delivery scenarios are all @internal and will not run under tag filter.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
-Given(
-  "the delivery is not {string}",
-  async function (this: SdkWorld, _state: string) {
-    // No-op: delivery scenarios are all @internal and will not run under tag filter.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Given("the delivery is not {string}", async function (this: SdkWorld, _state: string) {
+  // No-op: delivery scenarios are all @internal and will not run under tag filter.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Given("the delivery does not exist", async function (this: SdkWorld) {
   // No-op: delivery scenarios are all @internal and will not run under tag filter.
@@ -267,13 +233,10 @@ Given("the retry count is below the limit", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given(
-  "the retry count has reached the limit",
-  async function (this: SdkWorld) {
-    // No-op: delivery scenarios are all @internal and will not run under tag filter.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Given("the retry count has reached the limit", async function (this: SdkWorld) {
+  // No-op: delivery scenarios are all @internal and will not run under tag filter.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 // ── Given: confirmation token (@internal — never executed by tag filter) ──────
 
@@ -299,14 +262,11 @@ Given("the confirmation token has expired", async function (this: SdkWorld) {
 When("an {string} topic is deleted", async function (this: SdkWorld, _service: string) {
   // Arrange
   assert.ok(this.session, "No session running");
-  const topicArn =
-    (this as any)._snsTopicArn ?? snsTopicArn();
+  const topicArn = (this as any)._snsTopicArn ?? snsTopicArn();
   const { DeleteTopicCommand } = require("@aws-sdk/client-sns");
   // Act
   try {
-    const result = await snsClient(this).send(
-      new DeleteTopicCommand({ TopicArn: topicArn }),
-    );
+    const result = await snsClient(this).send(new DeleteTopicCommand({ TopicArn: topicArn }));
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
     this.lastCallResult = { success: false, output: null, error: err };
@@ -317,14 +277,10 @@ When("an {string} topic is deleted", async function (this: SdkWorld, _service: s
 When("an endpoint subscribes to a topic", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "No session running");
-  if (
-    (this as any)._snsTopicNotActive ||
-    (this as any)._snsSubscriptionStateBlocked
-  ) {
+  if ((this as any)._snsTopicNotActive || (this as any)._snsSubscriptionStateBlocked) {
     return "pending";
   }
-  const topicArn =
-    (this as any)._snsTopicArn ?? snsTopicArn();
+  const topicArn = (this as any)._snsTopicArn ?? snsTopicArn();
   const { SubscribeCommand } = require("@aws-sdk/client-sns");
   // Act
   try {
@@ -355,9 +311,7 @@ When("an endpoint unsubscribes from a topic", async function (this: SdkWorld) {
   const { UnsubscribeCommand } = require("@aws-sdk/client-sns");
   // Act
   try {
-    const result = await snsClient(this).send(
-      new UnsubscribeCommand({ SubscriptionArn: subArn }),
-    );
+    const result = await snsClient(this).send(new UnsubscribeCommand({ SubscriptionArn: subArn }));
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
     this.lastCallResult = { success: false, output: null, error: err };
@@ -368,14 +322,10 @@ When("an endpoint unsubscribes from a topic", async function (this: SdkWorld) {
 When("a message is published to a topic", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "No session running");
-  if (
-    (this as any)._snsTopicNotActive ||
-    (this as any)._snsCrossTopicBlocked
-  ) {
+  if ((this as any)._snsTopicNotActive || (this as any)._snsCrossTopicBlocked) {
     return "pending";
   }
-  const topicArn =
-    (this as any)._snsTopicArn ?? snsTopicArn();
+  const topicArn = (this as any)._snsTopicArn ?? snsTopicArn();
   const { PublishCommand } = require("@aws-sdk/client-sns");
   // Act
   try {
@@ -402,9 +352,7 @@ When("a subscription is removed", async function (this: SdkWorld) {
   const { UnsubscribeCommand } = require("@aws-sdk/client-sns");
   // Act
   try {
-    const result = await snsClient(this).send(
-      new UnsubscribeCommand({ SubscriptionArn: subArn }),
-    );
+    const result = await snsClient(this).send(new UnsubscribeCommand({ SubscriptionArn: subArn }));
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
     this.lastCallResult = { success: false, output: null, error: err };
@@ -417,13 +365,10 @@ When("a delivery attempt succeeds", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-When(
-  "a delivery attempt fails and is retried",
-  async function (this: SdkWorld) {
-    // No-op: delivery scenarios are all @internal and will not run under tag filter.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+When("a delivery attempt fails and is retried", async function (this: SdkWorld) {
+  // No-op: delivery scenarios are all @internal and will not run under tag filter.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 When("a delivery attempt fails", async function (this: SdkWorld) {
   // No-op: delivery scenarios are all @internal and will not run under tag filter.
@@ -435,13 +380,10 @@ When("all delivery retries are exhausted", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-When(
-  "a subscription confirmation token expires",
-  async function (this: SdkWorld) {
-    // No-op: confirmation token scenarios are all @internal and will not run under tag filter.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+When("a subscription confirmation token expires", async function (this: SdkWorld) {
+  // No-op: confirmation token scenarios are all @internal and will not run under tag filter.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 When("the confirmation token expires", async function (this: SdkWorld) {
   // No-op: confirmation token scenarios are all @internal and will not run under tag filter.
@@ -462,12 +404,9 @@ Then(
     // Act
     const result = await snsClient(this).send(new ListTopicsCommand({}));
     // Assert
-    const actualTopics: Array<{ TopicArn?: string }> =
-      result.Topics ?? [];
+    const actualTopics: Array<{ TopicArn?: string }> = result.Topics ?? [];
     const actualFound = actualTopics.some(
-      (t) =>
-        t.TopicArn !== undefined &&
-        t.TopicArn.endsWith(`:${SNS_TEST_TOPIC}`),
+      (t) => t.TopicArn !== undefined && t.TopicArn.endsWith(`:${SNS_TEST_TOPIC}`),
     );
     if (expectedState === "DELETED") {
       assert.strictEqual(
@@ -489,8 +428,7 @@ Then("the topic is deleted", async function (this: SdkWorld) {
   const expectedTopic = SNS_TEST_TOPIC;
   const actualTopics: Array<{ TopicArn?: string }> = result.Topics ?? [];
   const actualFound = actualTopics.some(
-    (t) =>
-      t.TopicArn !== undefined && t.TopicArn.endsWith(`:${expectedTopic}`),
+    (t) => t.TopicArn !== undefined && t.TopicArn.endsWith(`:${expectedTopic}`),
   );
   assert.strictEqual(
     actualFound,
@@ -553,21 +491,18 @@ Then("the subscription is {string}", async function (this: SdkWorld, expectedSta
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then(
-  "the message is delivered to confirmed subscriptions",
-  async function (this: SdkWorld) {
-    // Arrange
-    // Act: (action performed in When step)
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected publish to succeed but it failed; actual_error=${this.lastCallResult.error}`,
-    );
-  },
-);
+Then("the message is delivered to confirmed subscriptions", async function (this: SdkWorld) {
+  // Arrange
+  // Act: (action performed in When step)
+  // Assert
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected publish to succeed but it failed; actual_error=${this.lastCallResult.error}`,
+  );
+});
 
 Then("the delivery is {string}", async function (this: SdkWorld, _state: string) {
   // No-op: delivery scenarios are all @internal and will not run under tag filter.
@@ -584,13 +519,10 @@ Then("the delivery is abandoned", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then(
-  "the pending subscription is {string}",
-  async function (this: SdkWorld, _state: string) {
-    // No-op: confirmation token scenarios are all @internal and will not run under tag filter.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then("the pending subscription is {string}", async function (this: SdkWorld, _state: string) {
+  // No-op: confirmation token scenarios are all @internal and will not run under tag filter.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then("the delivery retry count is incremented", async function (this: SdkWorld) {
   // No-op: delivery scenarios are all @internal and will not run under tag filter.
@@ -604,21 +536,15 @@ Then("the delivery is marked {string}", async function (this: SdkWorld, _state: 
 
 // ── Invariant Then steps ──────────────────────────────────────────────────────
 
-Then(
-  "no delivery is in-flight to a deleted subscription",
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then("no delivery is in-flight to a deleted subscription", async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
-Then(
-  "no delivery is in-flight to an unconfirmed subscription",
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then("no delivery is in-flight to an unconfirmed subscription", async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then(
   "every active subscription references an {string} topic",
@@ -628,10 +554,7 @@ Then(
   },
 );
 
-Then(
-  "every delivery retry count is within the allowed limit",
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then("every delivery retry count is within the allowed limit", async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});

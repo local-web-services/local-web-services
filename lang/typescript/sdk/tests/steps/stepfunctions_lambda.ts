@@ -351,13 +351,10 @@ Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then(
-  'the invocation is "FAILED" and the execution is "FAILED"',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe internal Lambda invocation failure in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the invocation is "FAILED" and the execution is "FAILED"', async function (this: SdkWorld) {
+  // @internal: Cannot observe internal Lambda invocation failure in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then(
   'the invocation is "SUCCESS" and the execution is "SUCCEEDED"',

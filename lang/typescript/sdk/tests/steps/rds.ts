@@ -82,10 +82,13 @@ Given("the database instance exists", async function (this: SdkWorld) {
   // Assert: DB instance created
 });
 
-Given("the instance is {string} or {string}", async function (this: SdkWorld, _state1: string, _state2: string) {
-  // Arrange / Act / Assert — no-op: DB instances in lws are available after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+Given(
+  "the instance is {string} or {string}",
+  async function (this: SdkWorld, _state1: string, _state2: string) {
+    // Arrange / Act / Assert — no-op: DB instances in lws are available after creation.
+    assert.ok(this.session, "Expected session to be initialized");
+  },
+);
 
 Given("the instance is {string}", async function (this: SdkWorld, _state: string) {
   // Arrange / Act / Assert — no-op: DB instances in lws are available after creation.
@@ -98,11 +101,14 @@ Given("the instance is not {string}", async function (this: SdkWorld, _state: st
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("the instance is neither {string} nor {string}", async function (this: SdkWorld, _state1: string, _state2: string) {
-  // @internal: Cannot force a DB instance into neither AVAILABLE nor FAILED via public API.
-  // Only reached by @lifecycle scenarios excluded by the tag filter.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+Given(
+  "the instance is neither {string} nor {string}",
+  async function (this: SdkWorld, _state1: string, _state2: string) {
+    // @internal: Cannot force a DB instance into neither AVAILABLE nor FAILED via public API.
+    // Only reached by @lifecycle scenarios excluded by the tag filter.
+    assert.ok(this.session, "Expected session to be initialized");
+  },
+);
 
 Given("the database instance does not exist", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: fresh state after session reset has no DB instances.
@@ -293,24 +299,27 @@ When("a database snapshot is deleted", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When('multi-{string} is enabled on a database instance', async function (this: SdkWorld, _az: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ModifyDBInstanceCommand } = require("@aws-sdk/client-rds");
-  // Act
-  try {
-    const result = await rdsClient(this).send(
-      new ModifyDBInstanceCommand({
-        DBInstanceIdentifier: RDS_TEST_DB_INSTANCE_ID,
-        MultiAZ: true,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+When(
+  "multi-{string} is enabled on a database instance",
+  async function (this: SdkWorld, _az: string) {
+    // Arrange
+    assert.ok(this.session, "Expected session to be initialized");
+    const { ModifyDBInstanceCommand } = require("@aws-sdk/client-rds");
+    // Act
+    try {
+      const result = await rdsClient(this).send(
+        new ModifyDBInstanceCommand({
+          DBInstanceIdentifier: RDS_TEST_DB_INSTANCE_ID,
+          MultiAZ: true,
+        }),
+      );
+      this.lastCallResult = { success: true, output: result };
+    } catch (err: unknown) {
+      this.lastCallResult = { success: false, output: null, error: err };
+    }
+    // Assert: captured in lastCallResult
+  },
+);
 
 When("a tag is applied to a database instance", async function (this: SdkWorld) {
   // Arrange
@@ -352,7 +361,7 @@ When("a database instance is restored from a snapshot", async function (this: Sd
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then('the instance is in {string} state', async function (this: SdkWorld, expectedState: string) {
+Then("the instance is in {string} state", async function (this: SdkWorld, expectedState: string) {
   // Arrange: no additional setup required
   // Act: action already performed in the When step
   // Assert
@@ -369,33 +378,39 @@ Then('the instance is in {string} state', async function (this: SdkWorld, expect
   );
 });
 
-Then('the instance is in {string} state and a snapshot is {string}', async function (this: SdkWorld, _instanceState: string, _snapshotState: string) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected delete_db_instance with snapshot to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+Then(
+  "the instance is in {string} state and a snapshot is {string}",
+  async function (this: SdkWorld, _instanceState: string, _snapshotState: string) {
+    // Arrange: no additional setup required
+    // Act: action already performed in the When step
+    // Assert
+    const expectedSuccess = true;
+    const actualSuccess = this.lastCallResult.success;
+    assert.strictEqual(
+      actualSuccess,
+      expectedSuccess,
+      `Expected delete_db_instance with snapshot to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+    );
+  },
+);
 
-Then('the snapshot is {string} and the instance is in {string} state', async function (this: SdkWorld, _snapshotState: string, _instanceState: string) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected create_db_snapshot to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+Then(
+  "the snapshot is {string} and the instance is in {string} state",
+  async function (this: SdkWorld, _snapshotState: string, _instanceState: string) {
+    // Arrange: no additional setup required
+    // Act: action already performed in the When step
+    // Assert
+    const expectedSuccess = true;
+    const actualSuccess = this.lastCallResult.success;
+    assert.strictEqual(
+      actualSuccess,
+      expectedSuccess,
+      `Expected create_db_snapshot to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+    );
+  },
+);
 
-Then('the snapshot is in {string} state', async function (this: SdkWorld, _state: string) {
+Then("the snapshot is in {string} state", async function (this: SdkWorld, _state: string) {
   // Arrange: no additional setup required
   // Act: action already performed in the When step
   // Assert
@@ -408,18 +423,21 @@ Then('the snapshot is in {string} state', async function (this: SdkWorld, _state
   );
 });
 
-Then('the instance is configured for multi-{string} deployment', async function (this: SdkWorld, _az: string) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected modify_db_instance (multi-AZ) to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+Then(
+  "the instance is configured for multi-{string} deployment",
+  async function (this: SdkWorld, _az: string) {
+    // Arrange: no additional setup required
+    // Act: action already performed in the When step
+    // Assert
+    const expectedSuccess = true;
+    const actualSuccess = this.lastCallResult.success;
+    assert.strictEqual(
+      actualSuccess,
+      expectedSuccess,
+      `Expected modify_db_instance (multi-AZ) to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+    );
+  },
+);
 
 Then("the instance tag state is unchanged (no-op model)", async function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -434,7 +452,7 @@ Then("the instance tag state is unchanged (no-op model)", async function (this: 
   );
 });
 
-Then('the restored instance is in {string} state', async function (this: SdkWorld, _state: string) {
+Then("the restored instance is in {string} state", async function (this: SdkWorld, _state: string) {
   // Arrange: no additional setup required
   // Act: action already performed in the When step
   // Assert
@@ -447,9 +465,12 @@ Then('the restored instance is in {string} state', async function (this: SdkWorl
   );
 });
 
-Then('the instance is {string} or {string}', async function (this: SdkWorld, _state1: string, _state2: string) {
-  // @internal: activate_d_b_instance outcome not observable via public API.
-});
+Then(
+  "the instance is {string} or {string}",
+  async function (this: SdkWorld, _state1: string, _state2: string) {
+    // @internal: activate_d_b_instance outcome not observable via public API.
+  },
+);
 
 // ── Invariant Then steps ──────────────────────────────────────────────────────
 
@@ -461,6 +482,9 @@ Then("every database snapshot has a valid status", async function (this: SdkWorl
   // No-op invariant: trivially satisfied in an isolated test context.
 });
 
-Then("every backing-up instance has a corresponding in-progress snapshot", async function (this: SdkWorld) {
-  // No-op invariant: trivially satisfied in an isolated test context.
-});
+Then(
+  "every backing-up instance has a corresponding in-progress snapshot",
+  async function (this: SdkWorld) {
+    // No-op invariant: trivially satisfied in an isolated test context.
+  },
+);

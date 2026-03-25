@@ -335,21 +335,18 @@ Then('the vault "EXISTS"', async function (this: SdkWorld) {
   );
 });
 
-Then(
-  'the vault is "DELETED" and archive uploads will fail',
-  async function (this: SdkWorld) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected delete_vault to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-  },
-);
+Then('the vault is "DELETED" and archive uploads will fail', async function (this: SdkWorld) {
+  // Arrange: no additional setup required
+  // Act: action already performed in the When step
+  // Assert
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected delete_vault to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+  );
+});
 
 Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda invocation state in lws.
@@ -382,10 +379,7 @@ Then(
   },
 );
 
-Then(
-  "every existing archive references a vault that exists",
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then("every existing archive references a vault that exists", async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});

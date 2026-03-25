@@ -7,8 +7,7 @@ import type { SdkWorld } from "../support/world";
 const EVENTS_TEST_BUS = "e2e-events-test-bus-1";
 const EVENTS_TEST_RULE = "e2e-events-test-rule-1";
 const EVENTS_TEST_TARGET_ID = "e2e-events-test-target-1";
-const EVENTS_TEST_TARGET_ARN =
-  "arn:aws:lambda:us-east-1:000000000000:function:e2e-test-func-1";
+const EVENTS_TEST_TARGET_ARN = "arn:aws:lambda:us-east-1:000000000000:function:e2e-test-func-1";
 const EVENTS_EVENT_PATTERN = JSON.stringify({ source: ["test.source"] });
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -624,18 +623,15 @@ Then("the list of event buses is returned", async function (this: SdkWorld) {
   );
 });
 
-Then(
-  'every event bus has a valid status ("ACTIVE" or "DELETED")',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
-    // Act
-    const actualResult = await ebClient(this).send(new ListEventBusesCommand({}));
-    // Assert: buses present in the list are always ACTIVE (deleted buses are absent)
-    assert.ok(actualResult, "Expected list_event_buses to return a result");
-  },
-);
+Then('every event bus has a valid status ("ACTIVE" or "DELETED")', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
+  // Act
+  const actualResult = await ebClient(this).send(new ListEventBusesCommand({}));
+  // Assert: buses present in the list are always ACTIVE (deleted buses are absent)
+  assert.ok(actualResult, "Expected list_event_buses to return a result");
+});
 
 Then(
   'every rule has a valid status ("ENABLED", "DISABLED", or "DELETED")',
@@ -651,14 +647,11 @@ Then(
       if (!bus.Name) continue;
       let rulesResult;
       try {
-        rulesResult = await ebClient(this).send(
-          new ListRulesCommand({ EventBusName: bus.Name }),
-        );
+        rulesResult = await ebClient(this).send(new ListRulesCommand({ EventBusName: bus.Name }));
       } catch {
         continue;
       }
-      const actualRules: Array<{ Name?: string; State?: string }> =
-        rulesResult.Rules ?? [];
+      const actualRules: Array<{ Name?: string; State?: string }> = rulesResult.Rules ?? [];
       for (const rule of actualRules) {
         const actualState = rule.State ?? "";
         // Assert
@@ -834,29 +827,26 @@ Then("the targets are disassociated from the rule", async function (this: SdkWor
   );
 });
 
-Then(
-  "matching enabled rules route the event to their targets",
-  async function (this: SdkWorld) {
-    // Arrange: action performed in When step
-    // Act: (no-op)
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected put_events to succeed but got error: ${this.lastCallResult.error}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-    const actualOutput = this.lastCallResult.output as { FailedEntryCount?: number } | null;
-    const expectedFailedCount = 0;
-    const actualFailedCount = actualOutput?.FailedEntryCount ?? -1;
-    assert.strictEqual(
-      actualFailedCount,
-      expectedFailedCount,
-      `Expected FailedEntryCount ${expectedFailedCount} but got ${actualFailedCount}; expected_failed=${expectedFailedCount} actual_failed=${actualFailedCount}`,
-    );
-  },
-);
+Then("matching enabled rules route the event to their targets", async function (this: SdkWorld) {
+  // Arrange: action performed in When step
+  // Act: (no-op)
+  // Assert
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected put_events to succeed but got error: ${this.lastCallResult.error}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+  );
+  const actualOutput = this.lastCallResult.output as { FailedEntryCount?: number } | null;
+  const expectedFailedCount = 0;
+  const actualFailedCount = actualOutput?.FailedEntryCount ?? -1;
+  assert.strictEqual(
+    actualFailedCount,
+    expectedFailedCount,
+    `Expected FailedEntryCount ${expectedFailedCount} but got ${actualFailedCount}; expected_failed=${expectedFailedCount} actual_failed=${actualFailedCount}`,
+  );
+});
 
 Then("the entry is removed from the dead-letter queue", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: retry_dead_letter scenarios are @internal.

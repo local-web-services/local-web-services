@@ -63,10 +63,7 @@ async function apigwSfnCreateStateMachine(world: SdkWorld): Promise<string> {
   return result.stateMachineArn as string;
 }
 
-async function apigwSfnConfigureIntegration(
-  world: SdkWorld,
-  apiId: string,
-): Promise<void> {
+async function apigwSfnConfigureIntegration(world: SdkWorld, apiId: string): Promise<void> {
   const {
     GetResourcesCommand,
     PutMethodCommand,
@@ -144,85 +141,69 @@ async function apigwSfnInvokeApi(
 
 // ── Given: API integration state — unique to cross-service suite ──────────────
 
-Given("the \"API\" has no integration configured", async function (this: SdkWorld) {
+Given('the "API" has no integration configured', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: APIs have no integration configured by default.
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given(
-  "the \"API\" already has an integration configured",
-  async function (this: SdkWorld) {
-    // Arrange / Act / Assert — cannot simulate pre-configured integration conflict.
-    assert.ok(this.session, "Expected session to be initialized");
-    (this as any)._apigwSfnSkip =
-      "Cannot simulate pre-configured StepFunctions integration conflict in lws";
-  },
-);
+Given('the "API" already has an integration configured', async function (this: SdkWorld) {
+  // Arrange / Act / Assert — cannot simulate pre-configured integration conflict.
+  assert.ok(this.session, "Expected session to be initialized");
+  (this as any)._apigwSfnSkip =
+    "Cannot simulate pre-configured StepFunctions integration conflict in lws";
+});
 
-Given(
-  "the \"API\" has a Step Functions integration configured",
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    let apiId: string = (this as any)._apigwSfnRestApiId ?? null;
-    if (!apiId) {
-      apiId = (await apigwSfnGetApiId(this)) ?? "";
-    }
-    if (!apiId) {
-      apiId = await apigwSfnCreateRestApi(this);
-    }
-    // Act: create state machine and configure integration
-    await apigwSfnCreateStateMachine(this).catch(() => {
-      // Tolerate already-exists errors
-    });
-    await apigwSfnConfigureIntegration(this, apiId);
-    (this as any)._apigwSfnRestApiId = apiId;
-    // Assert: integration configured (no error thrown)
-  },
-);
+Given('the "API" has a Step Functions integration configured', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  let apiId: string = (this as any)._apigwSfnRestApiId ?? null;
+  if (!apiId) {
+    apiId = (await apigwSfnGetApiId(this)) ?? "";
+  }
+  if (!apiId) {
+    apiId = await apigwSfnCreateRestApi(this);
+  }
+  // Act: create state machine and configure integration
+  await apigwSfnCreateStateMachine(this).catch(() => {
+    // Tolerate already-exists errors
+  });
+  await apigwSfnConfigureIntegration(this, apiId);
+  (this as any)._apigwSfnRestApiId = apiId;
+  // Assert: integration configured (no error thrown)
+});
 
-Given(
-  "the \"API\" has no Step Functions integration configured",
-  async function (this: SdkWorld) {
-    // Arrange / Act / Assert — no-op: APIs have no StepFunctions integration by default.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Given('the "API" has no Step Functions integration configured', async function (this: SdkWorld) {
+  // Arrange / Act / Assert — no-op: APIs have no StepFunctions integration by default.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 // ── Given: integrated state machine — unique to cross-service suite ────────────
 
-Given(
-  "the integrated state machine is \"ACTIVE\"",
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    // Act: create state machine (idempotent — ignore already-exists errors)
-    await apigwSfnCreateStateMachine(this).catch(() => {
-      // Tolerate already-exists errors
-    });
-    // Assert: state machine is ACTIVE (no error thrown)
-  },
-);
+Given('the integrated state machine is "ACTIVE"', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  // Act: create state machine (idempotent — ignore already-exists errors)
+  await apigwSfnCreateStateMachine(this).catch(() => {
+    // Tolerate already-exists errors
+  });
+  // Assert: state machine is ACTIVE (no error thrown)
+});
 
-Given(
-  "the integrated state machine is not \"ACTIVE\"",
-  async function (this: SdkWorld) {
-    // Arrange / Act / Assert — cannot simulate non-ACTIVE integrated state machine.
-    assert.ok(this.session, "Expected session to be initialized");
-    (this as any)._apigwSfnSkip =
-      "Cannot simulate non-ACTIVE integrated state machine in lws";
-  },
-);
+Given('the integrated state machine is not "ACTIVE"', async function (this: SdkWorld) {
+  // Arrange / Act / Assert — cannot simulate non-ACTIVE integrated state machine.
+  assert.ok(this.session, "Expected session to be initialized");
+  (this as any)._apigwSfnSkip = "Cannot simulate non-ACTIVE integrated state machine in lws";
+});
 
 // ── Given: execution presence — unique to cross-service suite ─────────────────
 
-Given("an execution is \"RUNNING\"", async function (this: SdkWorld) {
+Given('an execution is "RUNNING"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — cannot simulate running execution state.
   assert.ok(this.session, "Expected session to be initialized");
   (this as any)._apigwSfnSkip = "Cannot simulate running execution state in lws";
 });
 
-Given("no execution is \"RUNNING\"", async function (this: SdkWorld) {
+Given('no execution is "RUNNING"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: fresh state has no running executions.
   assert.ok(this.session, "Expected session to be initialized");
 });
@@ -282,29 +263,26 @@ When('a "REST" "API" is created', async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When(
-  "a Step Functions Express Workflow state machine is created",
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    // Act
-    try {
-      const { CreateStateMachineCommand } = require("@aws-sdk/client-sfn");
-      const result = await sfnClient(this).send(
-        new CreateStateMachineCommand({
-          name: APIGW_SFN_TEST_SM_NAME,
-          definition: APIGW_SFN_PASS_DEFINITION,
-          roleArn: APIGW_SFN_ROLE_ARN,
-          type: "EXPRESS",
-        }),
-      );
-      this.lastCallResult = { success: true, output: result };
-    } catch (err: unknown) {
-      this.lastCallResult = { success: false, output: null, error: err };
-    }
-    // Assert: captured in lastCallResult
-  },
-);
+When("a Step Functions Express Workflow state machine is created", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  // Act
+  try {
+    const { CreateStateMachineCommand } = require("@aws-sdk/client-sfn");
+    const result = await sfnClient(this).send(
+      new CreateStateMachineCommand({
+        name: APIGW_SFN_TEST_SM_NAME,
+        definition: APIGW_SFN_PASS_DEFINITION,
+        roleArn: APIGW_SFN_ROLE_ARN,
+        type: "EXPRESS",
+      }),
+    );
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
 
 When(
   'a Step Functions direct integration is configured on the "REST" "API"',
@@ -396,9 +374,7 @@ When(
     this.lastCallResult = {
       success: false,
       output: null,
-      error: new Error(
-        "Cannot simulate Step Functions execution failure via API Gateway in lws",
-      ),
+      error: new Error("Cannot simulate Step Functions execution failure via API Gateway in lws"),
     };
     // Assert: captured in lastCallResult
   },
@@ -415,13 +391,8 @@ Then(
     const expectedName = APIGW_SFN_TEST_API_NAME;
     const apiId = await apigwSfnGetApiId(this);
     // Assert
-    assert.ok(
-      apiId,
-      `Expected REST API "${expectedName}" to exist but it was not found`,
-    );
-    const result = await apigwClient(this).send(
-      new GetRestApiCommand({ restApiId: apiId }),
-    );
+    assert.ok(apiId, `Expected REST API "${expectedName}" to exist but it was not found`);
+    const result = await apigwClient(this).send(new GetRestApiCommand({ restApiId: apiId }));
     const actualName = result.name as string;
     assert.strictEqual(
       actualName,
@@ -472,41 +443,32 @@ Then(
   },
 );
 
-Then(
-  'the execution is "SUCCEEDED" and the request is "SUCCESS"',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    // Act: action already performed in When step
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    // Assert
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected request status SUCCESS but got: ${JSON.stringify(this.lastCallResult.error)}`,
-    );
-  },
-);
+Then('the execution is "SUCCEEDED" and the request is "SUCCESS"', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  // Act: action already performed in When step
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  // Assert
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected request status SUCCESS but got: ${JSON.stringify(this.lastCallResult.error)}`,
+  );
+});
 
-Then(
-  'the execution is "FAILED" and the request is "FAILED"',
-  async function (this: SdkWorld) {
-    // Arrange / Act / Assert — cannot simulate Step Functions execution failure via API Gateway.
-    // Invariant: trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the execution is "FAILED" and the request is "FAILED"', async function (this: SdkWorld) {
+  // Arrange / Act / Assert — cannot simulate Step Functions execution failure via API Gateway.
+  // Invariant: trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 // ── Then: invariants ──────────────────────────────────────────────────────────
 
-Then(
-  'every "IN_PROGRESS" request references an "ACTIVE" "API"',
-  async function (this: SdkWorld) {
-    // Invariant: trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('every "IN_PROGRESS" request references an "ACTIVE" "API"', async function (this: SdkWorld) {
+  // Invariant: trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then(
   'every "RUNNING" execution references an "ACTIVE" state machine',

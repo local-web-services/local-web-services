@@ -65,9 +65,7 @@ Given("the function does not exist", async function (this: SdkWorld) {
   const { DeleteFunctionCommand } = require("@aws-sdk/client-lambda");
   // Act: delete, ignore errors (function may not exist)
   try {
-    await lambdaClient(this).send(
-      new DeleteFunctionCommand({ FunctionName: LAMBDA_TEST_FUNC }),
-    );
+    await lambdaClient(this).send(new DeleteFunctionCommand({ FunctionName: LAMBDA_TEST_FUNC }));
   } catch {
     // function may not exist; desired state is absence
   }
@@ -95,9 +93,7 @@ Given("the function is not {string}", async function (this: SdkWorld, state: str
     const { DeleteFunctionCommand } = require("@aws-sdk/client-lambda");
     // Act
     try {
-      await lambdaClient(this).send(
-        new DeleteFunctionCommand({ FunctionName: LAMBDA_TEST_FUNC }),
-      );
+      await lambdaClient(this).send(new DeleteFunctionCommand({ FunctionName: LAMBDA_TEST_FUNC }));
     } catch {
       // function may not exist
     }
@@ -245,13 +241,10 @@ Given("the function does not have active executions tracked", async function (th
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given(
-  "the active executions are below the concurrency limit",
-  async function (this: SdkWorld) {
-    // @internal: Cannot trigger Lambda concurrency-based invocation in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Given("the active executions are below the concurrency limit", async function (this: SdkWorld) {
+  // @internal: Cannot trigger Lambda concurrency-based invocation in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Given(
   "the active executions are at or above the concurrency limit",
@@ -263,13 +256,10 @@ Given(
 
 // ── Given: event source mapping ───────────────────────────────────────────────
 
-Given(
-  "the event source mapping does not already exist",
-  async function (this: SdkWorld) {
-    // No-op: fresh state has no event source mappings.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Given("the event source mapping does not already exist", async function (this: SdkWorld) {
+  // No-op: fresh state has no event source mappings.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Given("the event source mapping already exists", async function (this: SdkWorld) {
   // @internal: Cannot create ESM in lws without a real event source ARN.
@@ -355,13 +345,10 @@ Given("the function has active execution tracking", async function (this: SdkWor
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given(
-  "the function does not have active execution tracking",
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe Lambda execution tracking state in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Given("the function does not have active execution tracking", async function (this: SdkWorld) {
+  // @internal: Cannot observe Lambda execution tracking state in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Given("the function has at least one active execution", async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda execution tracking state in lws.
@@ -457,51 +444,45 @@ When("a function's configuration is updated", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When(
-  "a permission is added to a function's resource policy",
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { AddPermissionCommand } = require("@aws-sdk/client-lambda");
-    // Act
-    try {
-      const result = await lambdaClient(this).send(
-        new AddPermissionCommand({
-          FunctionName: LAMBDA_TEST_FUNC,
-          StatementId: LAMBDA_STATEMENT_ID,
-          Action: "lambda:InvokeFunction",
-          Principal: "s3.amazonaws.com",
-        }),
-      );
-      this.lastCallResult = { success: true, output: result };
-    } catch (err: unknown) {
-      this.lastCallResult = { success: false, output: null, error: err };
-    }
-    // Assert: captured in lastCallResult
-  },
-);
+When("a permission is added to a function's resource policy", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { AddPermissionCommand } = require("@aws-sdk/client-lambda");
+  // Act
+  try {
+    const result = await lambdaClient(this).send(
+      new AddPermissionCommand({
+        FunctionName: LAMBDA_TEST_FUNC,
+        StatementId: LAMBDA_STATEMENT_ID,
+        Action: "lambda:InvokeFunction",
+        Principal: "s3.amazonaws.com",
+      }),
+    );
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
 
-When(
-  "a permission is removed from a function's resource policy",
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { RemovePermissionCommand } = require("@aws-sdk/client-lambda");
-    // Act
-    try {
-      const result = await lambdaClient(this).send(
-        new RemovePermissionCommand({
-          FunctionName: LAMBDA_TEST_FUNC,
-          StatementId: LAMBDA_STATEMENT_ID,
-        }),
-      );
-      this.lastCallResult = { success: true, output: result };
-    } catch (err: unknown) {
-      this.lastCallResult = { success: false, output: null, error: err };
-    }
-    // Assert: captured in lastCallResult
-  },
-);
+When("a permission is removed from a function's resource policy", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { RemovePermissionCommand } = require("@aws-sdk/client-lambda");
+  // Act
+  try {
+    const result = await lambdaClient(this).send(
+      new RemovePermissionCommand({
+        FunctionName: LAMBDA_TEST_FUNC,
+        StatementId: LAMBDA_STATEMENT_ID,
+      }),
+    );
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
 
 When("reserved concurrency is set for a function", async function (this: SdkWorld) {
   // Arrange
@@ -692,9 +673,7 @@ When(
     this.lastCallResult = {
       success: false,
       output: null,
-      error: new Error(
-        "cannot trigger sync invocation with concurrency: scenario is @internal",
-      ),
+      error: new Error("cannot trigger sync invocation with concurrency: scenario is @internal"),
     };
     // Assert: captured in lastCallResult
   },
@@ -748,21 +727,18 @@ When("an async invocation exhausts all retries", async function (this: SdkWorld)
 
 // "the operation is rejected" is already registered in cross_service_common.ts.
 
-Then(
-  /^the function is in "PENDING" state$/,
-  async function (this: SdkWorld) {
-    // Arrange: no additional setup required
-    // Act: action performed in When step
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected create_function to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-  },
-);
+Then(/^the function is in "PENDING" state$/, async function (this: SdkWorld) {
+  // Arrange: no additional setup required
+  // Act: action performed in When step
+  // Assert
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected create_function to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+  );
+});
 
 Then(
   /^the function becomes "ACTIVE" or "FAILED" non-deterministically$/,
@@ -771,28 +747,22 @@ Then(
   },
 );
 
-Then(
-  /^the function enters "DELETING" state$/,
-  async function (this: SdkWorld) {
-    // Arrange: no additional setup required
-    // Act: action performed in When step
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected delete_function to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-  },
-);
+Then(/^the function enters "DELETING" state$/, async function (this: SdkWorld) {
+  // Arrange: no additional setup required
+  // Act: action performed in When step
+  // Assert
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected delete_function to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+  );
+});
 
-Then(
-  /^the function is "DELETED"$/,
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe Lambda DELETED state in lws.
-  },
-);
+Then(/^the function is "DELETED"$/, async function (this: SdkWorld) {
+  // @internal: Cannot observe Lambda DELETED state in lws.
+});
 
 Then("the function has a resource policy", async function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -841,9 +811,7 @@ Then("the function has the tag set", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
   const { ListTagsCommand } = require("@aws-sdk/client-lambda");
   // Act
-  const result = await lambdaClient(this).send(
-    new ListTagsCommand({ Resource: lambdaFuncArn() }),
-  );
+  const result = await lambdaClient(this).send(new ListTagsCommand({ Resource: lambdaFuncArn() }));
   const actualTags: Record<string, string> = result.Tags ?? {};
   // Assert
   const expectedTagKey = LAMBDA_TAG_KEY;
@@ -873,40 +841,25 @@ Then(
   },
 );
 
-Then(
-  /^the mapping is "ENABLED"$/,
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe ESM ENABLED state in lws.
-  },
-);
+Then(/^the mapping is "ENABLED"$/, async function (this: SdkWorld) {
+  // @internal: Cannot observe ESM ENABLED state in lws.
+});
 
-Then(
-  /^the mapping is "DISABLED" and inactive$/,
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe ESM DISABLED state in lws.
-  },
-);
+Then(/^the mapping is "DISABLED" and inactive$/, async function (this: SdkWorld) {
+  // @internal: Cannot observe ESM DISABLED state in lws.
+});
 
-Then(
-  /^the mapping is "ENABLED" and active$/,
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe ESM ENABLED state in lws.
-  },
-);
+Then(/^the mapping is "ENABLED" and active$/, async function (this: SdkWorld) {
+  // @internal: Cannot observe ESM ENABLED state in lws.
+});
 
-Then(
-  /^the mapping enters "DELETING" state$/,
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe ESM DELETING state in lws.
-  },
-);
+Then(/^the mapping enters "DELETING" state$/, async function (this: SdkWorld) {
+  // @internal: Cannot observe ESM DELETING state in lws.
+});
 
-Then(
-  /^the mapping is "DELETED"$/,
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe ESM DELETED state in lws.
-  },
-);
+Then(/^the mapping is "DELETED"$/, async function (this: SdkWorld) {
+  // @internal: Cannot observe ESM DELETED state in lws.
+});
 
 Then("the event is queued in an async slot", async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda async slot state in lws.
@@ -953,21 +906,18 @@ Then(
   },
 );
 
-Then(
-  /^the function returns to "PENDING" state for redeployment$/,
-  async function (this: SdkWorld) {
-    // Arrange: no additional setup required
-    // Act: action performed in When step
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected update_function_code to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-  },
-);
+Then(/^the function returns to "PENDING" state for redeployment$/, async function (this: SdkWorld) {
+  // Arrange: no additional setup required
+  // Act: action performed in When step
+  // Assert
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected update_function_code to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+  );
+});
 
 // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
@@ -978,12 +928,9 @@ Then(
   },
 );
 
-Then(
-  /^no function in "DELETING" state has active executions$/,
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  },
-);
+Then(/^no function in "DELETING" state has active executions$/, async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+});
 
 Then(
   /^active execution count never exceeds reserved concurrency when set$/,
@@ -992,26 +939,17 @@ Then(
   },
 );
 
-Then(
-  /^async retry count never exceeds two$/,
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  },
-);
+Then(/^async retry count never exceeds two$/, async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+});
 
-Then(
-  /^every event source mapping has a valid status$/,
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  },
-);
+Then(/^every event source mapping has a valid status$/, async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+});
 
-Then(
-  /^every function has a valid status$/,
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  },
-);
+Then(/^every function has a valid status$/, async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+});
 
 Then(
   /^all async slots reference known function IDs or are empty$/,

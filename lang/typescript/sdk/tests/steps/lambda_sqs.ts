@@ -53,9 +53,7 @@ async function createQueue(world: SdkWorld, queueName: string): Promise<void> {
 async function deleteQueue(world: SdkWorld, queueName: string): Promise<void> {
   const { DeleteQueueCommand } = require("@aws-sdk/client-sqs");
   try {
-    await sqsClient(world).send(
-      new DeleteQueueCommand({ QueueUrl: queueUrl(world, queueName) }),
-    );
+    await sqsClient(world).send(new DeleteQueueCommand({ QueueUrl: queueUrl(world, queueName) }));
   } catch {
     // queue may not exist; desired state is absence
   }
@@ -209,21 +207,15 @@ Given("no invocation slot is available", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given(
-  'an "AVAILABLE" message exists in the mapped queue',
-  async function (this: SdkWorld) {
-    // @internal: Cannot set up event source mapping in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Given('an "AVAILABLE" message exists in the mapped queue', async function (this: SdkWorld) {
+  // @internal: Cannot set up event source mapping in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
-Given(
-  'no "AVAILABLE" message exists in the mapped queue',
-  async function (this: SdkWorld) {
-    // @internal: Cannot set up event source mapping in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Given('no "AVAILABLE" message exists in the mapped queue', async function (this: SdkWorld) {
+  // @internal: Cannot set up event source mapping in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Given("a message slot is available", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: always room for messages in lws.
@@ -307,9 +299,7 @@ When(
     this.lastCallResult = {
       success: false,
       output: null,
-      error: new Error(
-        "cannot create ESM linking queue to function: scenario is @internal",
-      ),
+      error: new Error("cannot create ESM linking queue to function: scenario is @internal"),
     };
     // Assert: captured in lastCallResult
   },
@@ -346,9 +336,7 @@ When("the Lambda invocation fails", async function (this: SdkWorld) {
   this.lastCallResult = {
     success: false,
     output: null,
-    error: new Error(
-      "cannot trigger Lambda invocation failure: scenario is @internal",
-    ),
+    error: new Error("cannot trigger Lambda invocation failure: scenario is @internal"),
   };
   // Assert: captured in lastCallResult
 });
@@ -359,9 +347,7 @@ When("the Lambda invocation completes successfully", async function (this: SdkWo
   this.lastCallResult = {
     success: false,
     output: null,
-    error: new Error(
-      "cannot trigger Lambda invocation success: scenario is @internal",
-    ),
+    error: new Error("cannot trigger Lambda invocation success: scenario is @internal"),
   };
   // Assert: captured in lastCallResult
 });
@@ -372,9 +358,7 @@ When('a message arrives in the "SQS" queue', async function (this: SdkWorld) {
   this.lastCallResult = {
     success: false,
     output: null,
-    error: new Error(
-      "cannot trigger internal message arrival: scenario is @internal",
-    ),
+    error: new Error("cannot trigger internal message arrival: scenario is @internal"),
   };
   // Assert: captured in lastCallResult
 });
@@ -399,30 +383,27 @@ Then('the function is "ACTIVE"', async function (this: SdkWorld) {
   );
 });
 
-Then(
-  'the queue is "ACTIVE" with no dead-letter queue configured',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { GetQueueAttributesCommand } = require("@aws-sdk/client-sqs");
-    // Act
-    const result = await sqsClient(this).send(
-      new GetQueueAttributesCommand({
-        QueueUrl: queueUrl(this, LAMBDA_SQS_TEST_QUEUE),
-        AttributeNames: ["RedrivePolicy"],
-      }),
-    );
-    const actualAttributes: Record<string, string> = result.Attributes ?? {};
-    const actualRedrive = actualAttributes["RedrivePolicy"] ?? "";
-    // Assert
-    const expectedRedrive = "";
-    assert.strictEqual(
-      actualRedrive,
-      expectedRedrive,
-      `Expected no RedrivePolicy but got "${actualRedrive}"; expected_redrive="${expectedRedrive}" actual_redrive="${actualRedrive}"`,
-    );
-  },
-);
+Then('the queue is "ACTIVE" with no dead-letter queue configured', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { GetQueueAttributesCommand } = require("@aws-sdk/client-sqs");
+  // Act
+  const result = await sqsClient(this).send(
+    new GetQueueAttributesCommand({
+      QueueUrl: queueUrl(this, LAMBDA_SQS_TEST_QUEUE),
+      AttributeNames: ["RedrivePolicy"],
+    }),
+  );
+  const actualAttributes: Record<string, string> = result.Attributes ?? {};
+  const actualRedrive = actualAttributes["RedrivePolicy"] ?? "";
+  // Assert
+  const expectedRedrive = "";
+  assert.strictEqual(
+    actualRedrive,
+    expectedRedrive,
+    `Expected no RedrivePolicy but got "${actualRedrive}"; expected_redrive="${expectedRedrive}" actual_redrive="${actualRedrive}"`,
+  );
+});
 
 Then(
   "failed messages will be redriven to the dead-letter queue after two receives",
@@ -439,10 +420,7 @@ Then(
     );
     const actualAttributes: Record<string, string> = result.Attributes ?? {};
     const actualPolicy = actualAttributes["RedrivePolicy"] ?? "";
-    assert.ok(
-      actualPolicy !== "",
-      "Expected a RedrivePolicy to be configured but got none",
-    );
+    assert.ok(actualPolicy !== "", "Expected a RedrivePolicy to be configured but got none");
     const parsedPolicy = JSON.parse(actualPolicy) as { maxReceiveCount?: number };
     const actualCount = parsedPolicy.maxReceiveCount ?? 0;
     // Assert

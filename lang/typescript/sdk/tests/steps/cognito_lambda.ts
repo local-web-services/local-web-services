@@ -190,25 +190,20 @@ When("the pre-signup Lambda denies the signup", async function (this: SdkWorld) 
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then(
-  'the pool is "ACTIVE" with no pre-signup trigger configured',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { ListUserPoolsCommand } = require("@aws-sdk/client-cognito-identity-provider");
-    // Act
-    const result = await cognitoClient(this).send(new ListUserPoolsCommand({ MaxResults: 60 }));
-    // Assert
-    const expectedPoolName = CL_TEST_POOL_NAME;
-    const actualPoolNames: string[] = (result.UserPools ?? []).map(
-      (p: { Name: string }) => p.Name,
-    );
-    assert.ok(
-      actualPoolNames.includes(expectedPoolName),
-      `Expected pool "${expectedPoolName}" to exist but found: ${JSON.stringify(actualPoolNames)}`,
-    );
-  },
-);
+Then('the pool is "ACTIVE" with no pre-signup trigger configured', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { ListUserPoolsCommand } = require("@aws-sdk/client-cognito-identity-provider");
+  // Act
+  const result = await cognitoClient(this).send(new ListUserPoolsCommand({ MaxResults: 60 }));
+  // Assert
+  const expectedPoolName = CL_TEST_POOL_NAME;
+  const actualPoolNames: string[] = (result.UserPools ?? []).map((p: { Name: string }) => p.Name);
+  assert.ok(
+    actualPoolNames.includes(expectedPoolName),
+    `Expected pool "${expectedPoolName}" to exist but found: ${JSON.stringify(actualPoolNames)}`,
+  );
+});
 
 Then(
   "all subsequent signups will synchronously invoke the function before confirming",
@@ -233,9 +228,7 @@ Then('the user is immediately "CONFIRMED"', async function (this: SdkWorld) {
   // Act
   const poolId = await findPoolId(this);
   assert.ok(poolId, "Expected pool to exist in order to list users");
-  const result = await cognitoClient(this).send(
-    new ListUsersCommand({ UserPoolId: poolId }),
-  );
+  const result = await cognitoClient(this).send(new ListUsersCommand({ UserPoolId: poolId }));
   // Assert
   const expectedMinCount = 1;
   const actualCount: number = (result.Users ?? []).length;
@@ -245,31 +238,22 @@ Then('the user is immediately "CONFIRMED"', async function (this: SdkWorld) {
   );
 });
 
-Then(
-  'the invocation is "SUCCESS" and the user is "CONFIRMED"',
-  async function (this: SdkWorld) {
-    // @internal: Cannot trigger Cognito->Lambda invocation in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the invocation is "SUCCESS" and the user is "CONFIRMED"', async function (this: SdkWorld) {
+  // @internal: Cannot trigger Cognito->Lambda invocation in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
-Then(
-  'the invocation is "FAILED" and the user is "REJECTED"',
-  async function (this: SdkWorld) {
-    // @internal: Cannot trigger Cognito->Lambda invocation in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the invocation is "FAILED" and the user is "REJECTED"', async function (this: SdkWorld) {
+  // @internal: Cannot trigger Cognito->Lambda invocation in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 // ── Invariant catch-all steps ──────────────────────────────────────────────────
 
-Then(
-  'every "IN_PROGRESS" invocation is for a "PENDING" user',
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('every "IN_PROGRESS" invocation is for a "PENDING" user', async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then(
   'every "PENDING" user has a corresponding "IN_PROGRESS" invocation',

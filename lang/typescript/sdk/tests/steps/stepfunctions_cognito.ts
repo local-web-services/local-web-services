@@ -249,9 +249,7 @@ When(
     this.lastCallResult = {
       success: false,
       output: null,
-      error: new Error(
-        "cannot trigger internal execution step that calls Cognito in lws",
-      ),
+      error: new Error("cannot trigger internal execution step that calls Cognito in lws"),
     };
     // Assert: captured in lastCallResult
     return "pending";
@@ -327,14 +325,11 @@ Then(`the execution is "SUCCEEDED"`, async function (this: SdkWorld) {
   return "pending";
 });
 
-Then(
-  `the execution is "FAILED" with a ResourceNotFoundException`,
-  async function (this: SdkWorld) {
-    // @internal scenario: cannot observe internal execution Cognito task failure in lws.
-    // No-op: invariant trivially satisfied in isolated lws context.
-    return "pending";
-  },
-);
+Then(`the execution is "FAILED" with a ResourceNotFoundException`, async function (this: SdkWorld) {
+  // @internal scenario: cannot observe internal execution Cognito task failure in lws.
+  // No-op: invariant trivially satisfied in isolated lws context.
+  return "pending";
+});
 
 // ── Then: invariants ──────────────────────────────────────────────────────────
 

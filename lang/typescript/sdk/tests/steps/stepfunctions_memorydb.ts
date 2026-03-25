@@ -290,14 +290,11 @@ Then('the cluster is "AVAILABLE"', async function (this: SdkWorld) {
   );
 });
 
-Then(
-  'the cluster is "UPDATING" and connections may be refused',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe UPDATING cluster state via public API in lws.
-    // No-op: treat as invariant satisfied.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the cluster is "UPDATING" and connections may be refused', async function (this: SdkWorld) {
+  // @internal: Cannot observe UPDATING cluster state via public API in lws.
+  // No-op: treat as invariant satisfied.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then('the cluster is "AVAILABLE" again', async function (this: SdkWorld) {
   // @internal: Cannot observe cluster returning to AVAILABLE after update via public API in lws.

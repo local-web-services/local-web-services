@@ -81,21 +81,16 @@ When('a "REST" "API" is created', async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When(
-  'a Lambda integration is configured on the "REST" "API"',
-  async function (this: SdkWorld) {
-    // @internal: Cannot configure Lambda integration on REST API in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-    this.lastCallResult = {
-      success: false,
-      output: null,
-      error: new Error(
-        "cannot configure Lambda integration: scenario is @internal",
-      ),
-    };
-    // Assert: captured in lastCallResult
-  },
-);
+When('a Lambda integration is configured on the "REST" "API"', async function (this: SdkWorld) {
+  // @internal: Cannot configure Lambda integration on REST API in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+  this.lastCallResult = {
+    success: false,
+    output: null,
+    error: new Error("cannot configure Lambda integration: scenario is @internal"),
+  };
+  // Assert: captured in lastCallResult
+});
 
 When(
   'the "API" receives an "HTTP" request and synchronously invokes the Lambda function',
@@ -154,9 +149,7 @@ Then(
     assert.ok(this.session, "Expected session to be initialized");
     const { GetRestApisCommand } = require("@aws-sdk/client-api-gateway");
     // Act
-    const result = await apigwLambdaApigwClient(this).send(
-      new GetRestApisCommand({}),
-    );
+    const result = await apigwLambdaApigwClient(this).send(new GetRestApisCommand({}));
     const items: Array<{ name: string }> = result.items ?? [];
     // Assert
     const expectedName = APIGW_LAMBDA_TEST_API_NAME;
@@ -176,39 +169,27 @@ Then(
   },
 );
 
-Then(
-  'the request and invocation are both "IN_PROGRESS"',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe in-progress request and invocation state in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the request and invocation are both "IN_PROGRESS"', async function (this: SdkWorld) {
+  // @internal: Cannot observe in-progress request and invocation state in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
-Then(
-  'the invocation is "SUCCESS" and the request is "SUCCESS"',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe invocation and request success state in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the invocation is "SUCCESS" and the request is "SUCCESS"', async function (this: SdkWorld) {
+  // @internal: Cannot observe invocation and request success state in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
-Then(
-  'the invocation is "FAILED" and the request is "FAILED"',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe invocation and request failure state in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the invocation is "FAILED" and the request is "FAILED"', async function (this: SdkWorld) {
+  // @internal: Cannot observe invocation and request failure state in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 // ── Invariant catch-all steps ──────────────────────────────────────────────────
 
-Then(
-  'every "IN_PROGRESS" request references an "ACTIVE" "API"',
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('every "IN_PROGRESS" request references an "ACTIVE" "API"', async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then(
   'every "IN_PROGRESS" invocation has a corresponding "IN_PROGRESS" request',

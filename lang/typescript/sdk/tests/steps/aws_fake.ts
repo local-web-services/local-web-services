@@ -190,23 +190,20 @@ When('an operation is removed from an "AWS" fake', async function (this: SdkWorl
   }
 });
 
-When(
-  'a request matching an "AWS" fake operation is intercepted',
-  function (this: SdkWorld) {
-    // Arrange: fake is already configured by Given steps
-    // Act: the interception is verified via last call result
-    // Assert: the last operation was added successfully
-    if (!operationAdded) {
-      this.lastCallResult = {
-        success: false,
-        output: null,
-        error: new Error("operation not configured"),
-      };
-      return;
-    }
-    this.lastCallResult = { success: true, output: lastOperationBody };
-  },
-);
+When('a request matching an "AWS" fake operation is intercepted', function (this: SdkWorld) {
+  // Arrange: fake is already configured by Given steps
+  // Act: the interception is verified via last call result
+  // Assert: the last operation was added successfully
+  if (!operationAdded) {
+    this.lastCallResult = {
+      success: false,
+      output: null,
+      error: new Error("operation not configured"),
+    };
+    return;
+  }
+  this.lastCallResult = { success: true, output: lastOperationBody };
+});
 
 When(
   'a request for an operation not covered by the "AWS" fake reaches the provider',
@@ -260,44 +257,38 @@ Then('the "AWS" fake is "ACTIVE"', function (this: SdkWorld) {
   );
 });
 
-Then(
-  'the "AWS" fake is "DELETED" and its operations are removed',
-  function (this: SdkWorld) {
-    // Arrange: no additional setup required
-    // Act
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    // Assert
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected AWS fake deletion to succeed but got: ${JSON.stringify(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-    const expectedConfigured = false;
-    const actualConfigured = fakeConfigured;
-    assert.strictEqual(
-      actualConfigured,
-      expectedConfigured,
-      `Expected fake to be removed but state shows configured; expected_configured=${expectedConfigured} actual_configured=${actualConfigured}`,
-    );
-  },
-);
+Then('the "AWS" fake is "DELETED" and its operations are removed', function (this: SdkWorld) {
+  // Arrange: no additional setup required
+  // Act
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  // Assert
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected AWS fake deletion to succeed but got: ${JSON.stringify(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+  );
+  const expectedConfigured = false;
+  const actualConfigured = fakeConfigured;
+  assert.strictEqual(
+    actualConfigured,
+    expectedConfigured,
+    `Expected fake to be removed but state shows configured; expected_configured=${expectedConfigured} actual_configured=${actualConfigured}`,
+  );
+});
 
-Then(
-  'the operation is "ACTIVE" on the "AWS" fake',
-  function (this: SdkWorld) {
-    // Arrange: no additional setup required
-    // Act
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    // Assert
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected operation to be active on AWS fake but got: ${JSON.stringify(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-  },
-);
+Then('the operation is "ACTIVE" on the "AWS" fake', function (this: SdkWorld) {
+  // Arrange: no additional setup required
+  // Act
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  // Assert
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected operation to be active on AWS fake but got: ${JSON.stringify(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+  );
+});
 
 Then('the operation is "DELETED"', function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -328,46 +319,37 @@ Then(
   },
 );
 
-Then(
-  "the canned response is returned when the request header matches",
-  function (this: SdkWorld) {
-    // Arrange: no additional setup required
-    // Act
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    // Assert
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected header-matched canned response but got: ${JSON.stringify(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-  },
-);
+Then("the canned response is returned when the request header matches", function (this: SdkWorld) {
+  // Arrange: no additional setup required
+  // Act
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  // Assert
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected header-matched canned response but got: ${JSON.stringify(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+  );
+});
 
-Then(
-  'the request passes through to the real "AWS" provider unchanged',
-  function (this: SdkWorld) {
-    // Arrange: no additional setup required
-    // Act
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    // Assert
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected pass-through to real provider but got: ${JSON.stringify(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-  },
-);
+Then('the request passes through to the real "AWS" provider unchanged', function (this: SdkWorld) {
+  // Arrange: no additional setup required
+  // Act
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  // Assert
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected pass-through to real provider but got: ${JSON.stringify(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+  );
+});
 
 // ── Invariant catch-all steps ──────────────────────────────────────────────────
 
-Then(
-  'every "ACTIVE" operation belongs to an "ACTIVE" "AWS" fake',
-  function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  },
-);
+Then('every "ACTIVE" operation belongs to an "ACTIVE" "AWS" fake', function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+});
 
 Then('every "AWS" fake is tied to a known service', function (this: SdkWorld) {
   // No-op: model-level invariant; trivially satisfied in isolated lws context.

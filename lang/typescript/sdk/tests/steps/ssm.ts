@@ -206,7 +206,9 @@ When('multiple parameters are deleted from "SSM"', async function (this: SdkWorl
       this.lastCallResult = {
         success: false,
         output: null,
-        error: new Error(`ParameterNotFound: parameter not found: ${JSON.stringify(invalidParameters)}`),
+        error: new Error(
+          `ParameterNotFound: parameter not found: ${JSON.stringify(invalidParameters)}`,
+        ),
       };
     } else {
       this.lastCallResult = { success: true, output: result };
@@ -323,7 +325,10 @@ When("tags for a parameter are listed", async function (this: SdkWorld) {
 When("tags are removed from a parameter", async function (this: SdkWorld) {
   // Arrange: check if the tag is associated; lws returns 200 even when absent
   assert.ok(this.session, "Expected session to be initialized");
-  const { ListTagsForResourceCommand, RemoveTagsFromResourceCommand } = require("@aws-sdk/client-ssm");
+  const {
+    ListTagsForResourceCommand,
+    RemoveTagsFromResourceCommand,
+  } = require("@aws-sdk/client-ssm");
   let tagFound = false;
   try {
     const tagResult = await ssmClient(this).send(
@@ -363,34 +368,37 @@ When("tags are removed from a parameter", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When("a parameter is written without overwrite when it already exists", async function (this: SdkWorld) {
-  // Arrange: verify parameter exists; lws creates param even when absent — reject if missing
-  assert.ok(this.session, "Expected session to be initialized");
-  const { PutParameterCommand } = require("@aws-sdk/client-ssm");
-  const paramExists = await describeParam(this);
-  if (!paramExists) {
-    this.lastCallResult = {
-      success: false,
-      output: null,
-      error: new Error(`ParameterNotFound: parameter ${SSM_TEST_PARAM} does not exist`),
-    };
-    return;
-  }
-  // Act: put without Overwrite flag (default false)
-  try {
-    const result = await ssmClient(this).send(
-      new PutParameterCommand({
-        Name: SSM_TEST_PARAM,
-        Value: SSM_TEST_VALUE2,
-        Type: SSM_TEST_TYPE,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+When(
+  "a parameter is written without overwrite when it already exists",
+  async function (this: SdkWorld) {
+    // Arrange: verify parameter exists; lws creates param even when absent — reject if missing
+    assert.ok(this.session, "Expected session to be initialized");
+    const { PutParameterCommand } = require("@aws-sdk/client-ssm");
+    const paramExists = await describeParam(this);
+    if (!paramExists) {
+      this.lastCallResult = {
+        success: false,
+        output: null,
+        error: new Error(`ParameterNotFound: parameter ${SSM_TEST_PARAM} does not exist`),
+      };
+      return;
+    }
+    // Act: put without Overwrite flag (default false)
+    try {
+      const result = await ssmClient(this).send(
+        new PutParameterCommand({
+          Name: SSM_TEST_PARAM,
+          Value: SSM_TEST_VALUE2,
+          Type: SSM_TEST_TYPE,
+        }),
+      );
+      this.lastCallResult = { success: true, output: result };
+    } catch (err: unknown) {
+      this.lastCallResult = { success: false, output: null, error: err };
+    }
+    // Assert: captured in lastCallResult
+  },
+);
 
 When("an existing parameter value is updated", async function (this: SdkWorld) {
   // Arrange: verify parameter exists; lws creates param even when absent — reject if missing
@@ -600,12 +608,9 @@ Then("param_exists values are always valid booleans", async function (this: SdkW
   // No-op invariant: trivially satisfied in an isolated test context.
 });
 
-Then(
-  "the error log only contains ParameterAlreadyExists entries",
-  async function (this: SdkWorld) {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  },
-);
+Then("the error log only contains ParameterAlreadyExists entries", async function (this: SdkWorld) {
+  // No-op invariant: trivially satisfied in an isolated test context.
+});
 
 Then("a ParameterAlreadyExists error is recorded", async function (this: SdkWorld) {
   // Arrange: no additional setup required

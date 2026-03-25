@@ -37,9 +37,7 @@ Given("the bus already exists", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
   const { CreateEventBusCommand } = require("@aws-sdk/client-eventbridge");
   // Act
-  await docdbEventsEbClient(this).send(
-    new CreateEventBusCommand({ Name: DOCDB_EVENTS_BUS_NAME }),
-  );
+  await docdbEventsEbClient(this).send(new CreateEventBusCommand({ Name: DOCDB_EVENTS_BUS_NAME }));
   // Assert: bus created
 });
 
@@ -48,9 +46,7 @@ Given("the bus exists", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
   const { CreateEventBusCommand } = require("@aws-sdk/client-eventbridge");
   // Act
-  await docdbEventsEbClient(this).send(
-    new CreateEventBusCommand({ Name: DOCDB_EVENTS_BUS_NAME }),
-  );
+  await docdbEventsEbClient(this).send(new CreateEventBusCommand({ Name: DOCDB_EVENTS_BUS_NAME }));
   // Assert: bus exists
 });
 
@@ -178,9 +174,7 @@ When(
     this.lastCallResult = {
       success: false,
       output: null,
-      error: new Error(
-        "cannot trigger DocDB->EventBridge event delivery: scenario is @internal",
-      ),
+      error: new Error("cannot trigger DocDB->EventBridge event delivery: scenario is @internal"),
     };
   },
 );
@@ -261,22 +255,16 @@ Then(
   },
 );
 
-Then(
-  'the cluster is "MODIFYING" but no event is delivered',
-  async function (this: SdkWorld) {
-    // @internal: model-level invariant; trivially satisfied.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the cluster is "MODIFYING" but no event is delivered', async function (this: SdkWorld) {
+  // @internal: model-level invariant; trivially satisfied.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 // ── Then: model invariants (no-ops) ───────────────────────────────────────────
 
-Then(
-  'every "DELIVERED" event references a cluster that exists',
-  async function (this: SdkWorld) {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  },
-);
+Then('every "DELIVERED" event references a cluster that exists', async function (this: SdkWorld) {
+  // No-op invariant: trivially satisfied in an isolated test context.
+});
 
 Then('every "DELIVERED" event references a bus that exists', async function (this: SdkWorld) {
   // No-op invariant: trivially satisfied in an isolated test context.

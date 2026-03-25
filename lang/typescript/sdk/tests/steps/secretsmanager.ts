@@ -71,13 +71,13 @@ When("a secret is deleted", async function (this: SdkWorld) {
       this.lastCallResult = {
         success: false,
         output: null,
-        error: new Error(`InvalidRequestException: Secret ${SM_SECRET} is already scheduled for deletion`),
+        error: new Error(
+          `InvalidRequestException: Secret ${SM_SECRET} is already scheduled for deletion`,
+        ),
       };
       return;
     }
-    const result = await smClient(this).send(
-      new DeleteSecretCommand({ SecretId: SM_SECRET }),
-    );
+    const result = await smClient(this).send(new DeleteSecretCommand({ SecretId: SM_SECRET }));
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
     this.lastCallResult = { success: false, output: null, error: err };
@@ -91,9 +91,7 @@ When("the current value of an active secret is retrieved", async function (this:
   const { GetSecretValueCommand } = require("@aws-sdk/client-secrets-manager");
   // Act
   try {
-    const result = await smClient(this).send(
-      new GetSecretValueCommand({ SecretId: SM_SECRET }),
-    );
+    const result = await smClient(this).send(new GetSecretValueCommand({ SecretId: SM_SECRET }));
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
     this.lastCallResult = { success: false, output: null, error: err };
@@ -137,9 +135,7 @@ When("a secret is described", async function (this: SdkWorld) {
   const { DescribeSecretCommand } = require("@aws-sdk/client-secrets-manager");
   // Act
   try {
-    const result = await smClient(this).send(
-      new DescribeSecretCommand({ SecretId: SM_SECRET }),
-    );
+    const result = await smClient(this).send(new DescribeSecretCommand({ SecretId: SM_SECRET }));
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
     this.lastCallResult = { success: false, output: null, error: err };
@@ -178,9 +174,7 @@ When("a deleted secret is restored within the recovery window", async function (
       // Secret is not deleted — delete it first to put it in the required state
       await smClient(this).send(new DeleteSecretCommand({ SecretId: SM_SECRET }));
     }
-    const result = await smClient(this).send(
-      new RestoreSecretCommand({ SecretId: SM_SECRET }),
-    );
+    const result = await smClient(this).send(new RestoreSecretCommand({ SecretId: SM_SECRET }));
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
     this.lastCallResult = { success: false, output: null, error: err };
@@ -199,7 +193,9 @@ When("tags are added to an active secret", async function (this: SdkWorld) {
       this.lastCallResult = {
         success: false,
         output: null,
-        error: new Error(`InvalidRequestException: Secret ${SM_SECRET} is scheduled for deletion and cannot be tagged`),
+        error: new Error(
+          `InvalidRequestException: Secret ${SM_SECRET} is scheduled for deletion and cannot be tagged`,
+        ),
       };
       return;
     }
@@ -219,7 +215,10 @@ When("tags are added to an active secret", async function (this: SdkWorld) {
 When("tags are removed from an active secret", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeSecretCommand, UntagResourceCommand } = require("@aws-sdk/client-secrets-manager");
+  const {
+    DescribeSecretCommand,
+    UntagResourceCommand,
+  } = require("@aws-sdk/client-secrets-manager");
   // Act: check if the secret is already deleted before untagging
   try {
     const desc = await smClient(this).send(new DescribeSecretCommand({ SecretId: SM_SECRET }));
@@ -227,7 +226,9 @@ When("tags are removed from an active secret", async function (this: SdkWorld) {
       this.lastCallResult = {
         success: false,
         output: null,
-        error: new Error(`InvalidRequestException: Secret ${SM_SECRET} is scheduled for deletion and cannot be untagged`),
+        error: new Error(
+          `InvalidRequestException: Secret ${SM_SECRET} is scheduled for deletion and cannot be untagged`,
+        ),
       };
       return;
     }
@@ -268,7 +269,7 @@ When("the recovery window for a deleted secret expires", async function (this: S
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then("the secret is \"ACTIVE\" with an initial version", async function (this: SdkWorld) {
+Then('the secret is "ACTIVE" with an initial version', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { DescribeSecretCommand } = require("@aws-sdk/client-secrets-manager");
@@ -288,21 +289,18 @@ Then("the secret is \"ACTIVE\" with an initial version", async function (this: S
   );
 });
 
-Then(
-  "the secret is \"DELETED\" and the recovery window is open",
-  async function (this: SdkWorld) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected delete_secret to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-  },
-);
+Then('the secret is "DELETED" and the recovery window is open', async function (this: SdkWorld) {
+  // Arrange: no additional setup required
+  // Act: action already performed in the When step
+  // Assert
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected delete_secret to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+  );
+});
 
 Then("the current secret value is returned", async function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -396,7 +394,7 @@ Then("the secret metadata is updated", async function (this: SdkWorld) {
 });
 
 Then(
-  "the secret is \"ACTIVE\" again and the recovery window is closed",
+  'the secret is "ACTIVE" again and the recovery window is closed',
   async function (this: SdkWorld) {
     // Arrange
     assert.ok(this.session, "Expected session to be initialized");
@@ -431,18 +429,21 @@ Then("the specified tags are associated with the secret", async function (this: 
   );
 });
 
-Then("the specified tags are no longer associated with the secret", async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected untag_resource to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+Then(
+  "the specified tags are no longer associated with the secret",
+  async function (this: SdkWorld) {
+    // Arrange: no additional setup required
+    // Act: action already performed in the When step
+    // Assert
+    const expectedSuccess = true;
+    const actualSuccess = this.lastCallResult.success;
+    assert.strictEqual(
+      actualSuccess,
+      expectedSuccess,
+      `Expected untag_resource to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+    );
+  },
+);
 
 Then(
   "a new secret version is created and the previous version is retained",
@@ -455,19 +456,13 @@ Then(
 
 // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
-Then(
-  /^every "ACTIVE" secret has a current version assigned$/,
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  },
-);
+Then(/^every "ACTIVE" secret has a current version assigned$/, async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+});
 
-Then(
-  /^every active secret has a current version assigned$/,
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  },
-);
+Then(/^every active secret has a current version assigned$/, async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+});
 
 Then(
   /^every deleted secret with an open recovery window can still be restored or expired$/,
@@ -476,19 +471,13 @@ Then(
   },
 );
 
-Then(
-  /^at most one current version exists per secret$/,
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  },
-);
+Then(/^at most one current version exists per secret$/, async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+});
 
-Then(
-  /^at most one previous version exists per secret$/,
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  },
-);
+Then(/^at most one previous version exists per secret$/, async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+});
 
 Then(
   /^a deleted secret with a closed recovery window cannot be restored$/,
@@ -497,19 +486,13 @@ Then(
   },
 );
 
-Then(
-  /^all secret names are unique$/,
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  },
-);
+Then(/^all secret names are unique$/, async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+});
 
-Then(
-  /^all version identifiers are unique across secrets$/,
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  },
-);
+Then(/^all version identifiers are unique across secrets$/, async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+});
 
 // ── Common rejection assertion ─────────────────────────────────────────────────
 

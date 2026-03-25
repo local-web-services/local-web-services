@@ -792,13 +792,10 @@ Then(
   },
 );
 
-Then(
-  /^the instance returns to "([^"]*)" state$/,
-  async function (this: SdkWorld, _status: string) {
-    // @internal: model-level invariant; trivially satisfied.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then(/^the instance returns to "([^"]*)" state$/, async function (this: SdkWorld, _status: string) {
+  // @internal: model-level invariant; trivially satisfied.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then(/^the snapshot is "([^"]*)"$/, async function (this: SdkWorld, _status: string) {
   // @internal: model-level invariant; trivially satisfied.

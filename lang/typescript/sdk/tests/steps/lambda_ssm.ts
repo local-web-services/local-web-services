@@ -110,7 +110,7 @@ Given('the parameter is not "DELETED"', async function (this: SdkWorld) {
 
 // ── Given: invocation state ───────────────────────────────────────────────────
 
-Given("an invocation is \"IN_PROGRESS\"", async function (this: SdkWorld) {
+Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   // Arrange: create a Lambda function so an invocation can be considered in-progress
   assert.ok(this.session, "Expected session to be initialized");
   // Act
@@ -122,7 +122,7 @@ Given("an invocation is \"IN_PROGRESS\"", async function (this: SdkWorld) {
   // Assert: function created
 });
 
-Given("no invocation is \"IN_PROGRESS\"", async function (this: SdkWorld) {
+Given('no invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   // No-op: fresh state after reset has no in-progress invocations.
   assert.ok(this.session, "Expected session to be initialized");
 });
@@ -302,18 +302,15 @@ Then(
   },
 );
 
-Then("the invocation is \"IN_PROGRESS\"", async function (this: SdkWorld) {
+Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda invocation state in lws.
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then(
-  'the invocation is "FAILED" with a ParameterNotFound error',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe Lambda invocation failure in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the invocation is "FAILED" with a ParameterNotFound error', async function (this: SdkWorld) {
+  // @internal: Cannot observe Lambda invocation failure in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then('the invocation is "SUCCESS"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda invocation success in lws.
@@ -330,7 +327,10 @@ Then(
   },
 );
 
-Then("every successful invocation recorded which parameter it read", async function (this: SdkWorld) {
-  // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+Then(
+  "every successful invocation recorded which parameter it read",
+  async function (this: SdkWorld) {
+    // No-op: model-level invariant; trivially satisfied in isolated lws context.
+    assert.ok(this.session, "Expected session to be initialized");
+  },
+);

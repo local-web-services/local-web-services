@@ -30,9 +30,7 @@ async function getBucketArn(world: SdkWorld): Promise<string> {
 
 async function createBucket(world: SdkWorld): Promise<void> {
   const { CreateTableBucketCommand } = require("@aws-sdk/client-s3tables");
-  await s3tablesClient(world).send(
-    new CreateTableBucketCommand({ name: S3TABLES_BUCKET_NAME }),
-  );
+  await s3tablesClient(world).send(new CreateTableBucketCommand({ name: S3TABLES_BUCKET_NAME }));
 }
 
 async function createNamespace(world: SdkWorld): Promise<void> {
@@ -832,12 +830,9 @@ Then('the table is "ACTIVE"', async function (this: SdkWorld) {
   // @internal: internal state assertion — no-op in public API test context.
 });
 
-Then(
-  'the table is "DELETED" and all its snapshots are "DELETED"',
-  async function (this: SdkWorld) {
-    // @internal: internal state assertion — no-op in public API test context.
-  },
-);
+Then('the table is "DELETED" and all its snapshots are "DELETED"', async function (this: SdkWorld) {
+  // @internal: internal state assertion — no-op in public API test context.
+});
 
 Then('the table returns to "ACTIVE" state', async function (this: SdkWorld) {
   // @internal: internal state assertion — no-op in public API test context.
@@ -861,14 +856,14 @@ Then('the table enters "MAINTENANCE" state', async function (this: SdkWorld) {
 });
 
 Then(
-  "the snapshot is \"ACTIVE\" and the table snapshot count increases",
+  'the snapshot is "ACTIVE" and the table snapshot count increases',
   async function (this: SdkWorld) {
     // @internal: snapshot state assertion — no-op in public API test context.
   },
 );
 
 Then(
-  "the snapshot is \"DELETED\" and the table snapshot count decreases",
+  'the snapshot is "DELETED" and the table snapshot count decreases',
   async function (this: SdkWorld) {
     // @internal: snapshot state assertion — no-op in public API test context.
   },
@@ -945,19 +940,13 @@ Then("the operation is rejected", async function (this: SdkWorld) {
 
 // ── Then: safety invariants (no-op) ───────────────────────────────────────────
 
-Then(
-  'a bucket in "DELETING" state has no "ACTIVE" namespaces',
-  async function (this: SdkWorld) {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  },
-);
+Then('a bucket in "DELETING" state has no "ACTIVE" namespaces', async function (this: SdkWorld) {
+  // No-op invariant: trivially satisfied in an isolated test context.
+});
 
-Then(
-  'a namespace in "DELETING" state has no "ACTIVE" tables',
-  async function (this: SdkWorld) {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  },
-);
+Then('a namespace in "DELETING" state has no "ACTIVE" tables', async function (this: SdkWorld) {
+  // No-op invariant: trivially satisfied in an isolated test context.
+});
 
 Then("snapshot count is never negative", async function (this: SdkWorld) {
   // No-op invariant: trivially satisfied in an isolated test context.

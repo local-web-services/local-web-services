@@ -261,28 +261,22 @@ Then('the bus is "ACTIVE"', async function (this: SdkWorld) {
   // Assert
   const expectedBusName = COGNITO_EVENTS_TEST_BUS;
   const actualFound = buses.some((b) => b.Name === expectedBusName);
-  assert.ok(
-    actualFound,
-    `Expected event bus "${expectedBusName}" to be ACTIVE but not found`,
-  );
+  assert.ok(actualFound, `Expected event bus "${expectedBusName}" to be ACTIVE but not found`);
 });
 
-Then(
-  'the bus is "DELETED" and Cognito event delivery will fail',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    // Act: verify deletion succeeded
-    const actualSuccess = this.lastCallResult.success;
-    const expectedSuccess = true;
-    // Assert
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected delete_event_bus to succeed but got: ${JSON.stringify(this.lastCallResult.error)}`,
-    );
-  },
-);
+Then('the bus is "DELETED" and Cognito event delivery will fail', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  // Act: verify deletion succeeded
+  const actualSuccess = this.lastCallResult.success;
+  const expectedSuccess = true;
+  // Assert
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected delete_event_bus to succeed but got: ${JSON.stringify(this.lastCallResult.error)}`,
+  );
+});
 
 Then('the pool is "ACTIVE" with no EventBridge configuration', async function (this: SdkWorld) {
   // Arrange

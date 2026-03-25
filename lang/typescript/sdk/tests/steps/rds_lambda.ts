@@ -116,11 +116,14 @@ Given('the "DB" instance has no Lambda integration configured', async function (
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given('the "DB" instance already has a Lambda integration configured', async function (this: SdkWorld) {
-  // @internal: Cannot configure Lambda integration on a DB instance via public API in lws.
-  // Only reached by excluded scenarios.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+Given(
+  'the "DB" instance already has a Lambda integration configured',
+  async function (this: SdkWorld) {
+    // @internal: Cannot configure Lambda integration on a DB instance via public API in lws.
+    // Only reached by excluded scenarios.
+    assert.ok(this.session, "Expected session to be initialized");
+  },
+);
 
 Given('the "DB" instance has a Lambda integration configured', async function (this: SdkWorld) {
   // @internal: Cannot configure Lambda integration state in lws via public API.
@@ -370,18 +373,21 @@ Then(
   },
 );
 
-Then('stored procedures on the "DB" can invoke the Lambda function', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected configure_lambda_integration to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+Then(
+  'stored procedures on the "DB" can invoke the Lambda function',
+  async function (this: SdkWorld) {
+    // Arrange: no additional setup required
+    // Act: action already performed in the When step
+    // Assert
+    const expectedSuccess = true;
+    const actualSuccess = this.lastCallResult.success;
+    assert.strictEqual(
+      actualSuccess,
+      expectedSuccess,
+      `Expected configure_lambda_integration to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+    );
+  },
+);
 
 Then('the invocation is "SUCCESS"', async function (this: SdkWorld) {
   // @internal: stored_proc_invokes_lambda outcome not observable via public API.

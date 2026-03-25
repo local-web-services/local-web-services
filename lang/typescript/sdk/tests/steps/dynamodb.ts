@@ -23,9 +23,7 @@ async function createTable(world: SdkWorld, tableName: string): Promise<void> {
     new CreateTableCommand({
       TableName: tableName,
       KeySchema: [{ AttributeName: DYNAMODB_TEST_PK, KeyType: "HASH" }],
-      AttributeDefinitions: [
-        { AttributeName: DYNAMODB_TEST_PK, AttributeType: "S" },
-      ],
+      AttributeDefinitions: [{ AttributeName: DYNAMODB_TEST_PK, AttributeType: "S" }],
       BillingMode: "PAY_PER_REQUEST",
     }),
   );
@@ -115,9 +113,7 @@ Given("the table is not {string}", async function (this: SdkWorld, state: string
     await this.session!.lifecycle("dynamodb").createDwellMs(5000).apply();
     const { DeleteTableCommand } = require("@aws-sdk/client-dynamodb");
     try {
-      await dynamodbClient(this).send(
-        new DeleteTableCommand({ TableName: DYNAMODB_TEST_TABLE }),
-      );
+      await dynamodbClient(this).send(new DeleteTableCommand({ TableName: DYNAMODB_TEST_TABLE }));
     } catch {
       // table may not exist
     }
@@ -283,36 +279,30 @@ Given("the transaction's table is not {string}", async function (this: SdkWorld,
 
 // ── Given: GSI propagation state ──────────────────────────────────────────────
 
-Given("the \"GSI\" exists", async function (this: SdkWorld) {
+Given('the "GSI" exists', async function (this: SdkWorld) {
   // No-op: GSI scenarios are tagged @internal and excluded from the test run.
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("the table has pending \"GSI\" propagation", async function (this: SdkWorld) {
+Given('the table has pending "GSI" propagation', async function (this: SdkWorld) {
   // No-op: GSI propagation scenarios are tagged @internal and excluded.
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("the table does not have pending \"GSI\" propagation", async function (this: SdkWorld) {
+Given('the table does not have pending "GSI" propagation', async function (this: SdkWorld) {
   // No-op: no GSI propagation is configured by default.
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given(
-  "there are writes pending propagation to the \"GSI\"",
-  async function (this: SdkWorld) {
-    // No-op: GSI propagation scenarios are tagged @internal and excluded.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Given('there are writes pending propagation to the "GSI"', async function (this: SdkWorld) {
+  // No-op: GSI propagation scenarios are tagged @internal and excluded.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
-Given(
-  "there are no writes pending propagation to the \"GSI\"",
-  async function (this: SdkWorld) {
-    // No-op: no GSI writes are pending by default.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Given('there are no writes pending propagation to the "GSI"', async function (this: SdkWorld) {
+  // No-op: no GSI writes are pending by default.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 // ── When: actions ──────────────────────────────────────────────────────────────
 
@@ -326,9 +316,7 @@ When("a table is created", async function (this: SdkWorld) {
       new CreateTableCommand({
         TableName: DYNAMODB_TEST_TABLE,
         KeySchema: [{ AttributeName: DYNAMODB_TEST_PK, KeyType: "HASH" }],
-        AttributeDefinitions: [
-          { AttributeName: DYNAMODB_TEST_PK, AttributeType: "S" },
-        ],
+        AttributeDefinitions: [{ AttributeName: DYNAMODB_TEST_PK, AttributeType: "S" }],
         BillingMode: "PAY_PER_REQUEST",
       }),
     );
@@ -339,21 +327,18 @@ When("a table is created", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When(
-  "a table finishes creating and becomes active",
-  async function (this: SdkWorld) {
-    // Arrange: disable lifecycle dwell so the table transitions to ACTIVE
-    assert.ok(this.session, "Expected session to be initialized");
-    // Act
-    try {
-      await this.session!.lifecycle("dynamodb").createDwellMs(0).apply();
-      this.lastCallResult = { success: true, output: null };
-    } catch (err: unknown) {
-      this.lastCallResult = { success: false, output: null, error: err };
-    }
-    // Assert: captured in lastCallResult
-  },
-);
+When("a table finishes creating and becomes active", async function (this: SdkWorld) {
+  // Arrange: disable lifecycle dwell so the table transitions to ACTIVE
+  assert.ok(this.session, "Expected session to be initialized");
+  // Act
+  try {
+    await this.session!.lifecycle("dynamodb").createDwellMs(0).apply();
+    this.lastCallResult = { success: true, output: null };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
 
 When("a table is deleted", async function (this: SdkWorld) {
   // Arrange
@@ -434,32 +419,29 @@ When("an item is written to the table", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When(
-  "an item is conditionally written to the table",
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { PutItemCommand } = require("@aws-sdk/client-dynamodb");
-    // Act
-    try {
-      const result = await dynamodbClient(this).send(
-        new PutItemCommand({
-          TableName: DYNAMODB_TEST_TABLE,
-          Item: {
-            [DYNAMODB_TEST_PK]: { S: DYNAMODB_TEST_ITEM_KEY },
-            data: { S: DYNAMODB_TEST_ATTR_VAL },
-          },
-          ConditionExpression: "attribute_not_exists(#pk)",
-          ExpressionAttributeNames: { "#pk": DYNAMODB_TEST_PK },
-        }),
-      );
-      this.lastCallResult = { success: true, output: result };
-    } catch (err: unknown) {
-      this.lastCallResult = { success: false, output: null, error: err };
-    }
-    // Assert: captured in lastCallResult
-  },
-);
+When("an item is conditionally written to the table", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { PutItemCommand } = require("@aws-sdk/client-dynamodb");
+  // Act
+  try {
+    const result = await dynamodbClient(this).send(
+      new PutItemCommand({
+        TableName: DYNAMODB_TEST_TABLE,
+        Item: {
+          [DYNAMODB_TEST_PK]: { S: DYNAMODB_TEST_ITEM_KEY },
+          data: { S: DYNAMODB_TEST_ATTR_VAL },
+        },
+        ConditionExpression: "attribute_not_exists(#pk)",
+        ExpressionAttributeNames: { "#pk": DYNAMODB_TEST_PK },
+      }),
+    );
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
 
 When("an item is read from the table", async function (this: SdkWorld) {
   // Arrange: ensure item exists for the happy path
@@ -493,60 +475,54 @@ When("an item is read from the table", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When(
-  "an existing item is updated in the table",
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { UpdateItemCommand } = require("@aws-sdk/client-dynamodb");
-    // Act
-    try {
-      const result = await dynamodbClient(this).send(
-        new UpdateItemCommand({
-          TableName: DYNAMODB_TEST_TABLE,
-          Key: { [DYNAMODB_TEST_PK]: { S: DYNAMODB_TEST_ITEM_KEY } },
-          UpdateExpression: "SET #d = :val",
-          ConditionExpression: "attribute_exists(#pk)",
-          ExpressionAttributeNames: {
-            "#d": "data",
-            "#pk": DYNAMODB_TEST_PK,
-          },
-          ExpressionAttributeValues: {
-            ":val": { S: DYNAMODB_TEST_UPDATED_VAL },
-          },
-        }),
-      );
-      this.lastCallResult = { success: true, output: result };
-    } catch (err: unknown) {
-      this.lastCallResult = { success: false, output: null, error: err };
-    }
-    // Assert: captured in lastCallResult
-  },
-);
+When("an existing item is updated in the table", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { UpdateItemCommand } = require("@aws-sdk/client-dynamodb");
+  // Act
+  try {
+    const result = await dynamodbClient(this).send(
+      new UpdateItemCommand({
+        TableName: DYNAMODB_TEST_TABLE,
+        Key: { [DYNAMODB_TEST_PK]: { S: DYNAMODB_TEST_ITEM_KEY } },
+        UpdateExpression: "SET #d = :val",
+        ConditionExpression: "attribute_exists(#pk)",
+        ExpressionAttributeNames: {
+          "#d": "data",
+          "#pk": DYNAMODB_TEST_PK,
+        },
+        ExpressionAttributeValues: {
+          ":val": { S: DYNAMODB_TEST_UPDATED_VAL },
+        },
+      }),
+    );
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
 
-When(
-  "an existing item is deleted from the table",
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { DeleteItemCommand } = require("@aws-sdk/client-dynamodb");
-    // Act
-    try {
-      const result = await dynamodbClient(this).send(
-        new DeleteItemCommand({
-          TableName: DYNAMODB_TEST_TABLE,
-          Key: { [DYNAMODB_TEST_PK]: { S: DYNAMODB_TEST_ITEM_KEY } },
-          ConditionExpression: "attribute_exists(#pk)",
-          ExpressionAttributeNames: { "#pk": DYNAMODB_TEST_PK },
-        }),
-      );
-      this.lastCallResult = { success: true, output: result };
-    } catch (err: unknown) {
-      this.lastCallResult = { success: false, output: null, error: err };
-    }
-    // Assert: captured in lastCallResult
-  },
-);
+When("an existing item is deleted from the table", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { DeleteItemCommand } = require("@aws-sdk/client-dynamodb");
+  // Act
+  try {
+    const result = await dynamodbClient(this).send(
+      new DeleteItemCommand({
+        TableName: DYNAMODB_TEST_TABLE,
+        Key: { [DYNAMODB_TEST_PK]: { S: DYNAMODB_TEST_ITEM_KEY } },
+        ConditionExpression: "attribute_exists(#pk)",
+        ExpressionAttributeNames: { "#pk": DYNAMODB_TEST_PK },
+      }),
+    );
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
 
 When("items are queried from the table by key", async function (this: SdkWorld) {
   // Arrange
@@ -618,19 +594,16 @@ When(
   },
 );
 
-When(
-  "a pending transaction resolves non-deterministically",
-  async function (this: SdkWorld) {
-    // No-op: @internal scenarios are excluded from the test run.
-    assert.ok(this.session, "Expected session to be initialized");
-    this.lastCallResult = {
-      success: false,
-      output: null,
-      error: new Error("commit_transaction is @internal and excluded from the test run"),
-    };
-    // Assert: captured in lastCallResult
-  },
-);
+When("a pending transaction resolves non-deterministically", async function (this: SdkWorld) {
+  // No-op: @internal scenarios are excluded from the test run.
+  assert.ok(this.session, "Expected session to be initialized");
+  this.lastCallResult = {
+    success: false,
+    output: null,
+    error: new Error("commit_transaction is @internal and excluded from the test run"),
+  };
+  // Assert: captured in lastCallResult
+});
 
 When("a transaction is committed", async function (this: SdkWorld) {
   // No-op: @internal scenarios are excluded from the test run.
@@ -676,33 +649,27 @@ When("a rolled-back transaction is cleared", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When(
-  '"GSI" propagation completes for the pending write',
-  async function (this: SdkWorld) {
-    // No-op: GSI propagation scenarios are tagged @internal and excluded.
-    assert.ok(this.session, "Expected session to be initialized");
-    this.lastCallResult = {
-      success: false,
-      output: null,
-      error: new Error("propagate_gsi is @internal and excluded from the test run"),
-    };
-    // Assert: captured in lastCallResult
-  },
-);
+When('"GSI" propagation completes for the pending write', async function (this: SdkWorld) {
+  // No-op: GSI propagation scenarios are tagged @internal and excluded.
+  assert.ok(this.session, "Expected session to be initialized");
+  this.lastCallResult = {
+    success: false,
+    output: null,
+    error: new Error("propagate_gsi is @internal and excluded from the test run"),
+  };
+  // Assert: captured in lastCallResult
+});
 
-When(
-  'a "GSI" catches up with pending write propagation',
-  async function (this: SdkWorld) {
-    // No-op: GSI propagation scenarios are tagged @internal and excluded.
-    assert.ok(this.session, "Expected session to be initialized");
-    this.lastCallResult = {
-      success: false,
-      output: null,
-      error: new Error("propagate_gsi is @internal and excluded from the test run"),
-    };
-    // Assert: captured in lastCallResult
-  },
-);
+When('a "GSI" catches up with pending write propagation', async function (this: SdkWorld) {
+  // No-op: GSI propagation scenarios are tagged @internal and excluded.
+  assert.ok(this.session, "Expected session to be initialized");
+  this.lastCallResult = {
+    success: false,
+    output: null,
+    error: new Error("propagate_gsi is @internal and excluded from the test run"),
+  };
+  // Assert: captured in lastCallResult
+});
 
 When("read throttling is toggled on or off", async function (this: SdkWorld) {
   // No-op: set_throttle_reads uses internal admin API not accessible via SDK.
@@ -769,23 +736,20 @@ Then('the table is in "CREATING" state', async function (this: SdkWorld) {
   );
 });
 
-Then(
-  'the table is "ACTIVE" and ready for reads and writes',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { ListTablesCommand } = require("@aws-sdk/client-dynamodb");
-    // Act
-    const result = await dynamodbClient(this).send(new ListTablesCommand({}));
-    const actualTableNames: string[] = result.TableNames ?? [];
-    // Assert
-    const expectedTable = DYNAMODB_TEST_TABLE;
-    assert.ok(
-      actualTableNames.includes(expectedTable),
-      `Expected table "${expectedTable}" to be ACTIVE but not found in: ${JSON.stringify(actualTableNames)}; expected_table="${expectedTable}"`,
-    );
-  },
-);
+Then('the table is "ACTIVE" and ready for reads and writes', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { ListTablesCommand } = require("@aws-sdk/client-dynamodb");
+  // Act
+  const result = await dynamodbClient(this).send(new ListTablesCommand({}));
+  const actualTableNames: string[] = result.TableNames ?? [];
+  // Assert
+  const expectedTable = DYNAMODB_TEST_TABLE;
+  assert.ok(
+    actualTableNames.includes(expectedTable),
+    `Expected table "${expectedTable}" to be ACTIVE but not found in: ${JSON.stringify(actualTableNames)}; expected_table="${expectedTable}"`,
+  );
+});
 
 Then('the table is "DELETED"', async function (this: SdkWorld) {
   // Arrange
@@ -950,44 +914,38 @@ Then("the item value is returned", async function (this: SdkWorld) {
   );
 });
 
-Then(
-  "the item is updated or unchanged (conditional update)",
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { GetItemCommand } = require("@aws-sdk/client-dynamodb");
-    // Act
-    const result = await dynamodbClient(this).send(
-      new GetItemCommand({
-        TableName: DYNAMODB_TEST_TABLE,
-        Key: { [DYNAMODB_TEST_PK]: { S: DYNAMODB_TEST_ITEM_KEY } },
-      }),
-    );
-    const actualItem = result.Item;
-    // Assert
-    const expectedKey = DYNAMODB_TEST_ITEM_KEY;
-    assert.ok(
-      actualItem !== undefined && Object.keys(actualItem).length > 0,
-      `Expected item "${expectedKey}" to exist after update; expected_key="${expectedKey}"`,
-    );
-  },
-);
+Then("the item is updated or unchanged (conditional update)", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { GetItemCommand } = require("@aws-sdk/client-dynamodb");
+  // Act
+  const result = await dynamodbClient(this).send(
+    new GetItemCommand({
+      TableName: DYNAMODB_TEST_TABLE,
+      Key: { [DYNAMODB_TEST_PK]: { S: DYNAMODB_TEST_ITEM_KEY } },
+    }),
+  );
+  const actualItem = result.Item;
+  // Assert
+  const expectedKey = DYNAMODB_TEST_ITEM_KEY;
+  assert.ok(
+    actualItem !== undefined && Object.keys(actualItem).length > 0,
+    `Expected item "${expectedKey}" to exist after update; expected_key="${expectedKey}"`,
+  );
+});
 
-Then(
-  "the item is deleted or unchanged (conditional delete)",
-  async function (this: SdkWorld) {
-    // Arrange: no additional setup required
-    // Act: action performed in When step
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected delete to succeed (item deleted or not present) but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-  },
-);
+Then("the item is deleted or unchanged (conditional delete)", async function (this: SdkWorld) {
+  // Arrange: no additional setup required
+  // Act: action performed in When step
+  // Assert
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected delete to succeed (item deleted or not present) but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+  );
+});
 
 Then("all items are returned", async function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -1062,12 +1020,9 @@ Then('the transaction is "COMMITTED"', async function (this: SdkWorld) {
   );
 });
 
-Then(
-  'the transaction is "COMMITTED" or "ROLLED_BACK"',
-  async function (this: SdkWorld) {
-    // No-op: @internal — cannot observe non-deterministic transaction resolution.
-  },
-);
+Then('the transaction is "COMMITTED" or "ROLLED_BACK"', async function (this: SdkWorld) {
+  // No-op: @internal — cannot observe non-deterministic transaction resolution.
+});
 
 Then('the transaction is "ROLLED_BACK"', async function (this: SdkWorld) {
   // No-op: @internal — cannot observe ROLLED_BACK state via public API.
@@ -1123,23 +1078,17 @@ Then(
   },
 );
 
-Then(
-  '"GSI" pending write count is never negative',
-  async function (this: SdkWorld) {
-    // No-op: GSI pending write counts are internal state; always passes.
-  },
-);
+Then('"GSI" pending write count is never negative', async function (this: SdkWorld) {
+  // No-op: GSI pending write counts are internal state; always passes.
+});
 
 Then("transaction status is always a valid value", async function (this: SdkWorld) {
   // No-op: transaction status validity is an internal invariant; always passes.
 });
 
-Then(
-  "a pending transaction always references an existing table",
-  async function (this: SdkWorld) {
-    // No-op: transaction-table reference integrity is an internal invariant; always passes.
-  },
-);
+Then("a pending transaction always references an existing table", async function (this: SdkWorld) {
+  // No-op: transaction-table reference integrity is an internal invariant; always passes.
+});
 
 Then("items only exist in non-deleted tables", async function (this: SdkWorld) {
   // No-op: item-table consistency is an internal invariant; always passes.

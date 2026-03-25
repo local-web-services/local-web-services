@@ -316,31 +316,28 @@ When("a DynamoDB table is created", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When(
-  'a direct DynamoDB integration is configured on the "API"',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "No session running");
-    const apiId = await apigwDdbGetApiId(this);
-    if (!apiId) {
-      this.lastCallResult = {
-        success: false,
-        output: null,
-        error: new Error("REST API not found"),
-      };
-      return;
-    }
-    // Act
-    try {
-      await apigwDdbConfigureIntegration(this, apiId);
-      (this as any)._apigwDdbApiId = apiId;
-      this.lastCallResult = { success: true, output: { configured: true } };
-    } catch (err) {
-      this.lastCallResult = { success: false, output: null, error: err };
-    }
-    // Assert: captured in lastCallResult
-  },
-);
+When('a direct DynamoDB integration is configured on the "API"', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const apiId = await apigwDdbGetApiId(this);
+  if (!apiId) {
+    this.lastCallResult = {
+      success: false,
+      output: null,
+      error: new Error("REST API not found"),
+    };
+    return;
+  }
+  // Act
+  try {
+    await apigwDdbConfigureIntegration(this, apiId);
+    (this as any)._apigwDdbApiId = apiId;
+    this.lastCallResult = { success: true, output: { configured: true } };
+  } catch (err) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
 
 When(
   'a request is received, the "API" writes to the DynamoDB table, and returns 200',
@@ -414,7 +411,10 @@ Then(
     // Arrange
     assert.ok(this.session, "No session running");
     const apiId = await apigwDdbGetApiId(this);
-    assert.ok(apiId, `Expected REST API "${APIGW_DYNAMODB_API_NAME}" to exist but it was not found`);
+    assert.ok(
+      apiId,
+      `Expected REST API "${APIGW_DYNAMODB_API_NAME}" to exist but it was not found`,
+    );
     const { GetRestApiCommand } = require("@aws-sdk/client-api-gateway");
     // Act
     const result = await apigwDdbApigwClient(this).send(
@@ -526,9 +526,6 @@ Then("every existing item references a table that exists", async function (this:
   // No-op: model-level invariant; trivially satisfied in isolated lws context.
 });
 
-Then(
-  'every successful request references an "API" that exists',
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  },
-);
+Then('every successful request references an "API" that exists', async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+});

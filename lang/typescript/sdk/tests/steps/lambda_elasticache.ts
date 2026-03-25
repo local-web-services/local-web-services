@@ -327,10 +327,7 @@ Then(
   },
 );
 
-Then(
-  'every "CACHED" entry belongs to an "AVAILABLE" cluster',
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('every "CACHED" entry belongs to an "AVAILABLE" cluster', async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});

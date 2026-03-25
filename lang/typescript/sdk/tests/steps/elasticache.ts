@@ -188,21 +188,15 @@ Given("the replication group does not exist", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given(
-  /^the replication group is "([^"]*)"$/,
-  async function (this: SdkWorld, _state: string) {
-    // @internal: replication group lifecycle states are managed internally.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Given(/^the replication group is "([^"]*)"$/, async function (this: SdkWorld, _state: string) {
+  // @internal: replication group lifecycle states are managed internally.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
-Given(
-  /^the replication group is not "([^"]*)"$/,
-  async function (this: SdkWorld, _state: string) {
-    // @internal: no-op.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Given(/^the replication group is not "([^"]*)"$/, async function (this: SdkWorld, _state: string) {
+  // @internal: no-op.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Given("a cluster slot is available", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: cluster slots are available in a fresh session.
@@ -249,13 +243,10 @@ Given("the cluster is part of this replication group", async function (this: Sdk
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given(
-  "the cluster is not part of this replication group",
-  async function (this: SdkWorld) {
-    // @internal: no-op.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Given("the cluster is not part of this replication group", async function (this: SdkWorld) {
+  // @internal: no-op.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Given("the cluster is not already the primary", async function (this: SdkWorld) {
   // @internal: no-op.
@@ -323,13 +314,10 @@ Given(/^the snapshot is "([^"]*)"$/, async function (this: SdkWorld, _state: str
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given(
-  /^the snapshot is not "([^"]*)"$/,
-  async function (this: SdkWorld, _state: string) {
-    // @internal: no-op.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Given(/^the snapshot is not "([^"]*)"$/, async function (this: SdkWorld, _state: string) {
+  // @internal: no-op.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 // ── Given: tag / resource state setup ─────────────────────────────────────────
 
@@ -683,25 +671,22 @@ When("tags are removed from a cache resource", async function (this: SdkWorld) {
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then(
-  /^the cluster is in "([^"]*)" state$/,
-  async function (this: SdkWorld, expectedState: string) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected create_cache_cluster to succeed but got error: ${String(this.lastCallResult.error)}; expected_state=${expectedState} expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-    assert.ok(
-      this.lastCallResult.output !== null && this.lastCallResult.output !== undefined,
-      `Expected CreateCacheClusterOutput but got null; expected_state=${expectedState}`,
-    );
-  },
-);
+Then(/^the cluster is in "([^"]*)" state$/, async function (this: SdkWorld, expectedState: string) {
+  // Arrange: no additional setup required
+  // Act: action already performed in the When step
+  // Assert
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected create_cache_cluster to succeed but got error: ${String(this.lastCallResult.error)}; expected_state=${expectedState} expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+  );
+  assert.ok(
+    this.lastCallResult.output !== null && this.lastCallResult.output !== undefined,
+    `Expected CreateCacheClusterOutput but got null; expected_state=${expectedState}`,
+  );
+});
 
 Then(
   /^the cluster is in "([^"]*)" state with the memcached engine$/,
@@ -752,15 +737,12 @@ Then(
   },
 );
 
-Then(
-  /^the cluster is "([^"]*)" again$/,
-  async function (this: SdkWorld, _expectedState: string) {
-    // @internal: no-op invariant.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then(/^the cluster is "([^"]*)" again$/, async function (this: SdkWorld, _expectedState: string) {
+  // @internal: no-op invariant.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
-Then("the cluster is \"DELETING\" state", async function (this: SdkWorld) {
+Then('the cluster is "DELETING" state', async function (this: SdkWorld) {
   // Arrange: no additional setup required
   // Act: action already performed in the When step
   // Assert
@@ -786,13 +768,10 @@ Then('the cluster is in "DELETING" state', async function (this: SdkWorld) {
   );
 });
 
-Then(
-  'the cluster is "DELETED" and its tags are removed',
-  async function (this: SdkWorld) {
-    // @internal: no-op invariant.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the cluster is "DELETED" and its tags are removed', async function (this: SdkWorld) {
+  // @internal: no-op invariant.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then('the cluster returns to "AVAILABLE" state', async function (this: SdkWorld) {
   // @internal: no-op invariant.
@@ -851,13 +830,10 @@ Then(
   },
 );
 
-Then(
-  'the replication group returns to "AVAILABLE" state',
-  async function (this: SdkWorld) {
-    // @internal: no-op invariant.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the replication group returns to "AVAILABLE" state', async function (this: SdkWorld) {
+  // @internal: no-op invariant.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then("the replication group has a new primary cluster", async function (this: SdkWorld) {
   // @internal: no-op invariant.

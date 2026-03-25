@@ -48,9 +48,7 @@ async function sfnGlacierCreateSm(world: SdkWorld): Promise<string> {
 
 async function sfnGlacierCreateVault(world: SdkWorld): Promise<void> {
   const { CreateVaultCommand } = require("@aws-sdk/client-glacier");
-  await sfnGlacierClient(world).send(
-    new CreateVaultCommand({ vaultName: SFN_GLACIER_TEST_VAULT }),
-  );
+  await sfnGlacierClient(world).send(new CreateVaultCommand({ vaultName: SFN_GLACIER_TEST_VAULT }));
 }
 
 // ── Background ────────────────────────────────────────────────────────────────
@@ -95,7 +93,7 @@ Given("the vault does not exist", async function (this: SdkWorld) {
 
 // ── Given: vault status ────────────────────────────────────────────────────────
 
-Given('the vault {string}', async function (this: SdkWorld, state: string) {
+Given("the vault {string}", async function (this: SdkWorld, state: string) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   if (state === "EXISTS") {
@@ -108,7 +106,7 @@ Given('the vault {string}', async function (this: SdkWorld, state: string) {
     // Assert: vault exists
     return;
   }
-  if (state === "EXISTS (not already \"DELETED\")") {
+  if (state === 'EXISTS (not already "DELETED")') {
     // Act: create vault so it exists and is not deleted
     try {
       await sfnGlacierCreateVault(this);
@@ -267,9 +265,7 @@ When(
     this.lastCallResult = {
       success: false,
       output: null,
-      error: new Error(
-        "cannot trigger internal execution step that calls Glacier vault in lws",
-      ),
+      error: new Error("cannot trigger internal execution step that calls Glacier vault in lws"),
     };
     // Assert: captured in lastCallResult
   },
@@ -281,7 +277,7 @@ When(
 // "the execution is "RUNNING"" is registered in stepfunctions.ts.
 // "the operation is rejected" is registered in cross_service_common.ts.
 
-Then('the vault {string}', async function (this: SdkWorld, expectedState: string) {
+Then("the vault {string}", async function (this: SdkWorld, expectedState: string) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { DescribeVaultCommand } = require("@aws-sdk/client-glacier");
@@ -310,9 +306,7 @@ Then(
     const expectedVaultName = SFN_GLACIER_TEST_VAULT;
     // Act: describe must fail (vault does not exist)
     try {
-      await sfnGlacierClient(this).send(
-        new DescribeVaultCommand({ vaultName: expectedVaultName }),
-      );
+      await sfnGlacierClient(this).send(new DescribeVaultCommand({ vaultName: expectedVaultName }));
       // Assert: if no error, vault still exists — fail the assertion
       assert.fail(
         `Expected vault "${expectedVaultName}" to be deleted but it still exists; expected_vault_name=${expectedVaultName}`,
@@ -330,14 +324,11 @@ Then('the execution is "SUCCEEDED"', async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then(
-  'the execution is "FAILED" with a ResourceNotFoundException',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe internal execution Glacier task failure in lws.
-    // No-op: treat as invariant satisfied.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the execution is "FAILED" with a ResourceNotFoundException', async function (this: SdkWorld) {
+  // @internal: Cannot observe internal execution Glacier task failure in lws.
+  // No-op: treat as invariant satisfied.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 // ── Then: invariants ──────────────────────────────────────────────────────────
 

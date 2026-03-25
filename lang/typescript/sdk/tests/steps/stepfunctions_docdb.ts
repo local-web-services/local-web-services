@@ -279,8 +279,7 @@ Then('the cluster is "AVAILABLE"', async function (this: SdkWorld) {
   const result = await sfnDocDBDocDBClient(this).send(
     new DescribeDBClustersCommand({ DBClusterIdentifier: expectedClusterID }),
   );
-  const clusters: Array<{ DBClusterIdentifier: string; Status: string }> =
-    result.DBClusters ?? [];
+  const clusters: Array<{ DBClusterIdentifier: string; Status: string }> = result.DBClusters ?? [];
   assert.ok(
     clusters.length > 0,
     `Expected cluster "${expectedClusterID}" to exist but it was not found; expected_cluster_id=${expectedClusterID}`,
@@ -294,41 +293,35 @@ Then('the cluster is "AVAILABLE"', async function (this: SdkWorld) {
   );
 });
 
-Then(
-  'the cluster is "AVAILABLE" and ready to accept connections',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { DescribeDBClustersCommand } = require("@aws-sdk/client-docdb");
-    const expectedClusterID = SFN_DOCDB_TEST_CLUSTER;
-    const expectedStatus = "available";
-    // Act
-    const result = await sfnDocDBDocDBClient(this).send(
-      new DescribeDBClustersCommand({ DBClusterIdentifier: expectedClusterID }),
-    );
-    const clusters: Array<{ Status: string }> = result.DBClusters ?? [];
-    assert.ok(
-      clusters.length > 0,
-      `Expected cluster "${expectedClusterID}" to be available but it was not found; expected_cluster_id=${expectedClusterID}`,
-    );
-    const actualStatus = clusters[0].Status;
-    // Assert
-    assert.strictEqual(
-      actualStatus,
-      expectedStatus,
-      `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-    );
-  },
-);
+Then('the cluster is "AVAILABLE" and ready to accept connections', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { DescribeDBClustersCommand } = require("@aws-sdk/client-docdb");
+  const expectedClusterID = SFN_DOCDB_TEST_CLUSTER;
+  const expectedStatus = "available";
+  // Act
+  const result = await sfnDocDBDocDBClient(this).send(
+    new DescribeDBClustersCommand({ DBClusterIdentifier: expectedClusterID }),
+  );
+  const clusters: Array<{ Status: string }> = result.DBClusters ?? [];
+  assert.ok(
+    clusters.length > 0,
+    `Expected cluster "${expectedClusterID}" to be available but it was not found; expected_cluster_id=${expectedClusterID}`,
+  );
+  const actualStatus = clusters[0].Status;
+  // Assert
+  assert.strictEqual(
+    actualStatus,
+    expectedStatus,
+    `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+  );
+});
 
-Then(
-  'the cluster is "STOPPED" and connections will be rejected',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe STOPPED cluster state via public API in lws.
-    // No-op: treat as invariant satisfied.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the cluster is "STOPPED" and connections will be rejected', async function (this: SdkWorld) {
+  // @internal: Cannot observe STOPPED cluster state via public API in lws.
+  // No-op: treat as invariant satisfied.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then('the execution is "SUCCEEDED"', async function (this: SdkWorld) {
   // @internal: Cannot observe internal execution DocDB task success in lws.

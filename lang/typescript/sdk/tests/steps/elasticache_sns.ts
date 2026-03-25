@@ -61,9 +61,7 @@ async function elasticacheSnsTopicExists(world: SdkWorld): Promise<boolean> {
   try {
     const resp = await elasticacheSnsSnsClient(world).send(new ListTopicsCommand({}));
     const arn = elasticacheSnsTopicArn();
-    return (resp.Topics ?? []).some(
-      (t: { TopicArn?: string }) => t.TopicArn === arn,
-    );
+    return (resp.Topics ?? []).some((t: { TopicArn?: string }) => t.TopicArn === arn);
   } catch {
     return false;
   }
@@ -97,16 +95,13 @@ Given("the cluster already exists", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given(
-  /^the cluster exists and is "([^"]*)"$/,
-  async function (this: SdkWorld, _state: string) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    // Act: create the cluster in available state
-    await elasticacheSnsCreateCluster(this);
-    // Assert: cluster created
-  },
-);
+Given(/^the cluster exists and is "([^"]*)"$/, async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  // Act: create the cluster in available state
+  await elasticacheSnsCreateCluster(this);
+  // Assert: cluster created
+});
 
 Given(
   /^the cluster does not exist or is not "([^"]*)"$/,
@@ -179,16 +174,13 @@ Given("the topic does not exist", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given(
-  /^the topic exists and is "([^"]*)"$/,
-  async function (this: SdkWorld, _state: string) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    // Act: create the topic (SNS topics are ACTIVE on creation)
-    await elasticacheSnsCreateTopic(this);
-    // Assert: topic created
-  },
-);
+Given(/^the topic exists and is "([^"]*)"$/, async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  // Act: create the topic (SNS topics are ACTIVE on creation)
+  await elasticacheSnsCreateTopic(this);
+  // Assert: topic created
+});
 
 Given(
   /^the topic does not exist or is not "([^"]*)"$/,
@@ -261,24 +253,21 @@ When(/^an "([^"]*)" topic is created$/, async function (this: SdkWorld, _service
   // Assert: captured in lastCallResult
 });
 
-When(
-  /^the "([^"]*)" topic is deleted$/,
-  async function (this: SdkWorld, _service: string) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { DeleteTopicCommand } = require("@aws-sdk/client-sns");
-    // Act
-    try {
-      const result = await elasticacheSnsSnsClient(this).send(
-        new DeleteTopicCommand({ TopicArn: elasticacheSnsTopicArn() }),
-      );
-      this.lastCallResult = { success: true, output: result };
-    } catch (err: unknown) {
-      this.lastCallResult = { success: false, output: null, error: err };
-    }
-    // Assert: captured in lastCallResult
-  },
-);
+When(/^the "([^"]*)" topic is deleted$/, async function (this: SdkWorld, _service: string) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { DeleteTopicCommand } = require("@aws-sdk/client-sns");
+  // Act
+  try {
+    const result = await elasticacheSnsSnsClient(this).send(
+      new DeleteTopicCommand({ TopicArn: elasticacheSnsTopicArn() }),
+    );
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
 
 When(
   /^an "([^"]*)" notification is configured on the ElastiCache cluster$/,
@@ -396,21 +385,18 @@ Then(
   },
 );
 
-Then(
-  "the cluster will publish lifecycle events to the topic",
-  async function (this: SdkWorld) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected configure_notification to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-  },
-);
+Then("the cluster will publish lifecycle events to the topic", async function (this: SdkWorld) {
+  // Arrange: no additional setup required
+  // Act: action already performed in the When step
+  // Assert
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected configure_notification to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+  );
+});
 
 Then("the operation is rejected", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: already registered in elasticache.ts.

@@ -78,7 +78,9 @@ async function apigwS3apiCreateBucket(world: SdkWorld): Promise<void> {
   const { CreateBucketCommand } = require("@aws-sdk/client-s3");
   // Act
   try {
-    await apigwS3apiS3Client(world).send(new CreateBucketCommand({ Bucket: APIGW_S3API_TEST_BUCKET }));
+    await apigwS3apiS3Client(world).send(
+      new CreateBucketCommand({ Bucket: APIGW_S3API_TEST_BUCKET }),
+    );
   } catch {
     // May already exist; desired state is existence
   }
@@ -311,9 +313,7 @@ When("a request fails because the S3 bucket has been deleted", async function (t
   this.lastCallResult = {
     success: false,
     output: null,
-    error: new Error(
-      "request failure due to deleted bucket: not reachable via public API in lws",
-    ),
+    error: new Error("request failure due to deleted bucket: not reachable via public API in lws"),
   };
 });
 

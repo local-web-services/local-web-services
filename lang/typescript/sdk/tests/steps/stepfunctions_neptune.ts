@@ -262,8 +262,7 @@ Then('the cluster is "AVAILABLE"', async function (this: SdkWorld) {
   const result = await sfnNeptuneNeptuneClient(this).send(
     new DescribeDBClustersCommand({ DBClusterIdentifier: expectedClusterID }),
   );
-  const clusters: Array<{ DBClusterIdentifier: string; Status?: string }> =
-    result.DBClusters ?? [];
+  const clusters: Array<{ DBClusterIdentifier: string; Status?: string }> = result.DBClusters ?? [];
   // Assert
   const actualCluster = clusters.find((c) => c.DBClusterIdentifier === expectedClusterID);
   assert.ok(
@@ -312,7 +311,10 @@ Then(
   },
 );
 
-Then("every succeeded execution recorded which cluster it queried", async function (this: SdkWorld) {
-  // Invariant: trivially satisfied in isolated lws context.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+Then(
+  "every succeeded execution recorded which cluster it queried",
+  async function (this: SdkWorld) {
+    // Invariant: trivially satisfied in isolated lws context.
+    assert.ok(this.session, "Expected session to be initialized");
+  },
+);

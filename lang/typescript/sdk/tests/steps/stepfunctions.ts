@@ -32,11 +32,7 @@ function smArn(name: string): string {
   return `arn:aws:states:${REGION}:${ACCOUNT_ID}:stateMachine:${name}`;
 }
 
-async function createStateMachine(
-  world: SdkWorld,
-  name: string,
-  type: string,
-): Promise<string> {
+async function createStateMachine(world: SdkWorld, name: string, type: string): Promise<string> {
   const { CreateStateMachineCommand } = require("@aws-sdk/client-sfn");
   const result = await sfnClient(world).send(
     new CreateStateMachineCommand({
@@ -433,9 +429,7 @@ When("a running execution is stopped", async function (this: SdkWorld) {
   const executionArn: string = (this as any)._sfnExecArn ?? "";
   // Act
   try {
-    const result = await sfnClient(this).send(
-      new StopExecutionCommand({ executionArn }),
-    );
+    const result = await sfnClient(this).send(new StopExecutionCommand({ executionArn }));
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
     this.lastCallResult = { success: false, output: null, error: err };
@@ -450,9 +444,7 @@ When("an execution is described", async function (this: SdkWorld) {
   const executionArn: string = (this as any)._sfnExecArn ?? "";
   // Act
   try {
-    const result = await sfnClient(this).send(
-      new DescribeExecutionCommand({ executionArn }),
-    );
+    const result = await sfnClient(this).send(new DescribeExecutionCommand({ executionArn }));
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
     this.lastCallResult = { success: false, output: null, error: err };
@@ -467,9 +459,7 @@ When("the event history of an execution is retrieved", async function (this: Sdk
   const executionArn: string = (this as any)._sfnExecArn ?? "";
   // Act
   try {
-    const result = await sfnClient(this).send(
-      new GetExecutionHistoryCommand({ executionArn }),
-    );
+    const result = await sfnClient(this).send(new GetExecutionHistoryCommand({ executionArn }));
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
     this.lastCallResult = { success: false, output: null, error: err };
@@ -638,10 +628,7 @@ Then("the state machine details are returned", async function (this: SdkWorld) {
     `Expected describe_state_machine to succeed but got error: ${this.lastCallResult.error}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
   const output = this.lastCallResult.output as Record<string, unknown>;
-  assert.ok(
-    output && "name" in output,
-    "Expected 'name' key in describe_state_machine response",
-  );
+  assert.ok(output && "name" in output, "Expected 'name' key in describe_state_machine response");
 });
 
 Then("the list of state machines is returned", async function (this: SdkWorld) {
@@ -674,10 +661,7 @@ Then("the list of executions is returned", async function (this: SdkWorld) {
     `Expected list_executions to succeed but got error: ${this.lastCallResult.error}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
   const output = this.lastCallResult.output as Record<string, unknown>;
-  assert.ok(
-    output && "executions" in output,
-    "Expected 'executions' in list_executions response",
-  );
+  assert.ok(output && "executions" in output, "Expected 'executions' in list_executions response");
 });
 
 Then("the list of state machine versions is returned", async function (this: SdkWorld) {
@@ -710,10 +694,7 @@ Then("the list of tags is returned", async function (this: SdkWorld) {
     `Expected list_tags_for_resource to succeed but got error: ${this.lastCallResult.error}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
   const output = this.lastCallResult.output as Record<string, unknown>;
-  assert.ok(
-    output && "tags" in output,
-    "Expected 'tags' key in list_tags_for_resource response",
-  );
+  assert.ok(output && "tags" in output, "Expected 'tags' key in list_tags_for_resource response");
 });
 
 Then('the execution is "RUNNING"', async function (this: SdkWorld) {
@@ -747,9 +728,7 @@ Then('the execution is "ABORTED"', async function (this: SdkWorld) {
   );
   const executionArn: string = (this as any)._sfnExecArn ?? "";
   // Act
-  const result = await sfnClient(this).send(
-    new DescribeExecutionCommand({ executionArn }),
-  );
+  const result = await sfnClient(this).send(new DescribeExecutionCommand({ executionArn }));
   // Assert
   const expectedStatus = "ABORTED";
   const actualStatus = result.status as string;
@@ -760,28 +739,25 @@ Then('the execution is "ABORTED"', async function (this: SdkWorld) {
   );
 });
 
-Then(
-  'the execution is "SUCCEEDED" or "FAILED"',
-  async function (this: SdkWorld) {
-    // Arrange: no additional setup required
-    // Act: action already performed in When step
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected sync execution to complete but got error: ${this.lastCallResult.error}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-    const output = this.lastCallResult.output as Record<string, unknown>;
-    const actualStatus = output?.status as string;
-    const expectedStatuses = ["SUCCEEDED", "FAILED"];
-    assert.ok(
-      expectedStatuses.includes(actualStatus),
-      `Expected execution status SUCCEEDED or FAILED but got '${actualStatus}'; expected_statuses=${expectedStatuses.join(",")} actual_status=${actualStatus}`,
-    );
-  },
-);
+Then('the execution is "SUCCEEDED" or "FAILED"', async function (this: SdkWorld) {
+  // Arrange: no additional setup required
+  // Act: action already performed in When step
+  // Assert
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected sync execution to complete but got error: ${this.lastCallResult.error}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+  );
+  const output = this.lastCallResult.output as Record<string, unknown>;
+  const actualStatus = output?.status as string;
+  const expectedStatuses = ["SUCCEEDED", "FAILED"];
+  assert.ok(
+    expectedStatuses.includes(actualStatus),
+    `Expected execution status SUCCEEDED or FAILED but got '${actualStatus}'; expected_statuses=${expectedStatuses.join(",")} actual_status=${actualStatus}`,
+  );
+});
 
 Then("the execution details are returned", async function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -813,10 +789,7 @@ Then("the execution history is returned", async function (this: SdkWorld) {
     `Expected get_execution_history to succeed but got error: ${this.lastCallResult.error}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
   const output = this.lastCallResult.output as Record<string, unknown>;
-  assert.ok(
-    output && "events" in output,
-    "Expected 'events' in get_execution_history response",
-  );
+  assert.ok(output && "events" in output, "Expected 'events' in get_execution_history response");
 });
 
 Then("the state machine version is incremented", async function (this: SdkWorld) {
@@ -896,7 +869,10 @@ Then(
   async function (this: SdkWorld) {
     // Arrange
     assert.ok(this.session, "Expected session to be initialized");
-    const { ListStateMachinesCommand, DescribeStateMachineCommand } = require("@aws-sdk/client-sfn");
+    const {
+      ListStateMachinesCommand,
+      DescribeStateMachineCommand,
+    } = require("@aws-sdk/client-sfn");
     const expectedStatuses = new Set(["ACTIVE", "DELETING", "DELETED"]);
     // Act
     const listResult = await sfnClient(this).send(new ListStateMachinesCommand({}));
@@ -930,12 +906,9 @@ Then(
   },
 );
 
-Then(
-  "synchronous executions only run on express state machines",
-  async function (this: SdkWorld) {
-    // Invariant: trivially satisfied in isolated lws context.
-  },
-);
+Then("synchronous executions only run on express state machines", async function (this: SdkWorld) {
+  // Invariant: trivially satisfied in isolated lws context.
+});
 
 Then("every execution belongs to a known state machine", async function (this: SdkWorld) {
   // Invariant: trivially satisfied in isolated lws context.

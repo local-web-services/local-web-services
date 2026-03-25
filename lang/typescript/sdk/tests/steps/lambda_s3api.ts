@@ -191,10 +191,7 @@ Then(
   },
 );
 
-Then(
-  'every existing object belongs to an "ACTIVE" bucket',
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('every existing object belongs to an "ACTIVE" bucket', async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});

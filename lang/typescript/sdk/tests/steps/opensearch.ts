@@ -179,7 +179,11 @@ Given("the outbound connection exists", async function (this: OsWorld) {
   await osEnsureDomainExists(this, OS_LOCAL_DOMAIN_NAME);
   await osEnsureDomainExists(this, OS_REMOTE_DOMAIN_NAME);
   // Act
-  const connectionId = await osCreateOutboundConnection(this, OS_LOCAL_DOMAIN_NAME, OS_REMOTE_DOMAIN_NAME);
+  const connectionId = await osCreateOutboundConnection(
+    this,
+    OS_LOCAL_DOMAIN_NAME,
+    OS_REMOTE_DOMAIN_NAME,
+  );
   this.osOutboundConnectionId = connectionId;
   // Assert: outbound connection created
 });
@@ -237,7 +241,11 @@ Given("the inbound connection exists", async function (this: OsWorld) {
   await osEnsureDomainExists(this, OS_LOCAL_DOMAIN_NAME);
   await osEnsureDomainExists(this, OS_REMOTE_DOMAIN_NAME);
   // Act
-  const connectionId = await osCreateOutboundConnection(this, OS_LOCAL_DOMAIN_NAME, OS_REMOTE_DOMAIN_NAME);
+  const connectionId = await osCreateOutboundConnection(
+    this,
+    OS_LOCAL_DOMAIN_NAME,
+    OS_REMOTE_DOMAIN_NAME,
+  );
   this.osOutboundConnectionId = connectionId;
   // The inbound connection ID matches the outbound connection ID in lws.
   this.osInboundConnectionId = connectionId;
@@ -474,13 +482,10 @@ When("a blue-green deployment completes", async function (this: OsWorld) {
   this.lastCallResult = { success: true, output: null };
 });
 
-When(
-  "the new cluster for a blue-green deployment becomes ready",
-  async function (this: OsWorld) {
-    // @internal: no public API to advance blue-green lifecycle — no-op.
-    this.lastCallResult = { success: true, output: null };
-  },
-);
+When("the new cluster for a blue-green deployment becomes ready", async function (this: OsWorld) {
+  // @internal: no public API to advance blue-green lifecycle — no-op.
+  this.lastCallResult = { success: true, output: null };
+});
 
 When(
   "traffic is swapped to the new cluster during a blue-green deployment",
@@ -594,12 +599,9 @@ Then(
   },
 );
 
-Then(
-  'the domain is "ACTIVE" with the new configuration applied',
-  async function (this: OsWorld) {
-    // @internal: state transition controlled internally — no-op.
-  },
-);
+Then('the domain is "ACTIVE" with the new configuration applied', async function (this: OsWorld) {
+  // @internal: state transition controlled internally — no-op.
+});
 
 Then(
   "the domain has a new cluster prepared but traffic is not yet swapped",
@@ -608,19 +610,13 @@ Then(
   },
 );
 
-Then(
-  "the domain is now serving requests from the new cluster",
-  async function (this: OsWorld) {
-    // @internal: state transition controlled internally — no-op.
-  },
-);
+Then("the domain is now serving requests from the new cluster", async function (this: OsWorld) {
+  // @internal: state transition controlled internally — no-op.
+});
 
-Then(
-  "the instance count is updated without data loss",
-  async function (this: OsWorld) {
-    // @internal: state transition controlled internally — no-op.
-  },
-);
+Then("the instance count is updated without data loss", async function (this: OsWorld) {
+  // @internal: state transition controlled internally — no-op.
+});
 
 Then(
   'the domain is "DELETED" and all associated connections are removed',
@@ -633,12 +629,9 @@ Then("no active connection references a deleted domain", async function (this: O
   // No-op invariant: trivially satisfied in an isolated test context.
 });
 
-Then(
-  "traffic can only be swapped after the new cluster is ready",
-  async function (this: OsWorld) {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  },
-);
+Then("traffic can only be swapped after the new cluster is ready", async function (this: OsWorld) {
+  // No-op invariant: trivially satisfied in an isolated test context.
+});
 
 Then(
   'an outbound connection that is "ACTIVE" cannot have a "REJECTED" inbound connection',

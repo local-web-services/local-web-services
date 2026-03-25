@@ -63,14 +63,9 @@ async function apigwSnsGetApiId(world: SdkWorld): Promise<string | undefined> {
   return api?.id;
 }
 
-async function apigwSnsGetRootResourceId(
-  world: SdkWorld,
-  apiId: string,
-): Promise<string> {
+async function apigwSnsGetRootResourceId(world: SdkWorld, apiId: string): Promise<string> {
   const { GetResourcesCommand } = require("@aws-sdk/client-api-gateway");
-  const result = await apigwClient(world).send(
-    new GetResourcesCommand({ restApiId: apiId }),
-  );
+  const result = await apigwClient(world).send(new GetResourcesCommand({ restApiId: apiId }));
   const items: Array<{ id: string; path: string }> = result.items ?? [];
   const root = items.find((r) => r.path === "/");
   if (!root) throw new Error(`Root resource not found for API ${apiId}`);
@@ -80,18 +75,13 @@ async function apigwSnsGetRootResourceId(
 async function apigwSnsCreateTopic(world: SdkWorld): Promise<void> {
   const { CreateTopicCommand } = require("@aws-sdk/client-sns");
   try {
-    await snsClient(world).send(
-      new CreateTopicCommand({ Name: APIGW_SNS_TOPIC_NAME }),
-    );
+    await snsClient(world).send(new CreateTopicCommand({ Name: APIGW_SNS_TOPIC_NAME }));
   } catch {
     // May already exist
   }
 }
 
-async function apigwSnsConfigureIntegration(
-  world: SdkWorld,
-  apiId: string,
-): Promise<void> {
+async function apigwSnsConfigureIntegration(world: SdkWorld, apiId: string): Promise<void> {
   const {
     PutMethodCommand,
     PutIntegrationCommand,
@@ -188,9 +178,7 @@ Given(
     this.lastCallResult = {
       success: false,
       output: null,
-      error: new Error(
-        `${apiType} already has a ${service} integration configured`,
-      ),
+      error: new Error(`${apiType} already has a ${service} integration configured`),
     };
   },
 );
@@ -268,65 +256,59 @@ Given("no request slot is available", async function (this: SdkWorld) {
 // "an {string} topic is created" is registered in cross_service_common.ts.
 // "the {string} topic is deleted" is registered in cross_service_common.ts.
 
-When(
-  'an "API" Gateway "REST" "API" is created',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "No session running");
-    if ((this as any)._apigwSnsApiNotActive) {
-      // Pre-condition set a failure; skip actual creation
-      return;
-    }
-    const { CreateRestApiCommand } = require("@aws-sdk/client-api-gateway");
-    // Act
-    try {
-      const result = await apigwClient(this).send(
-        new CreateRestApiCommand({ name: APIGW_SNS_API_NAME }),
-      );
-      (this as any)._apigwSnsApiId = result.id;
-      this.lastCallResult = { success: true, output: result };
-    } catch (err: unknown) {
-      this.lastCallResult = { success: false, output: null, error: err };
-    }
-    // Assert: captured in lastCallResult
-  },
-);
+When('an "API" Gateway "REST" "API" is created', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  if ((this as any)._apigwSnsApiNotActive) {
+    // Pre-condition set a failure; skip actual creation
+    return;
+  }
+  const { CreateRestApiCommand } = require("@aws-sdk/client-api-gateway");
+  // Act
+  try {
+    const result = await apigwClient(this).send(
+      new CreateRestApiCommand({ name: APIGW_SNS_API_NAME }),
+    );
+    (this as any)._apigwSnsApiId = result.id;
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
 
-When(
-  'a direct "SNS" integration is configured on the "API"',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "No session running");
-    if (!this.lastCallResult.success && this.lastCallResult.error != null) {
-      // Pre-condition set a failure; do not attempt configuration
-      return;
-    }
-    let apiId = (this as any)._apigwSnsApiId as string | undefined;
-    if (!apiId) {
-      apiId = await apigwSnsGetApiId(this);
-    }
-    if (!apiId) {
-      this.lastCallResult = {
-        success: false,
-        output: null,
-        error: new Error("REST API not found"),
-      };
-      return;
-    }
-    // Act
-    try {
-      await apigwSnsConfigureIntegration(this, apiId);
-      (this as any)._apigwSnsApiId = apiId;
-      this.lastCallResult = {
-        success: true,
-        output: { configured: true, apiId },
-      };
-    } catch (err: unknown) {
-      this.lastCallResult = { success: false, output: null, error: err };
-    }
-    // Assert: captured in lastCallResult
-  },
-);
+When('a direct "SNS" integration is configured on the "API"', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  if (!this.lastCallResult.success && this.lastCallResult.error != null) {
+    // Pre-condition set a failure; do not attempt configuration
+    return;
+  }
+  let apiId = (this as any)._apigwSnsApiId as string | undefined;
+  if (!apiId) {
+    apiId = await apigwSnsGetApiId(this);
+  }
+  if (!apiId) {
+    this.lastCallResult = {
+      success: false,
+      output: null,
+      error: new Error("REST API not found"),
+    };
+    return;
+  }
+  // Act
+  try {
+    await apigwSnsConfigureIntegration(this, apiId);
+    (this as any)._apigwSnsApiId = apiId;
+    this.lastCallResult = {
+      success: true,
+      output: { configured: true, apiId },
+    };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
 
 When(
   'a request is received, the "API" publishes to the "SNS" topic, and returns 200',
@@ -398,34 +380,26 @@ When(
 
 // "the topic is {string}" is registered in cross_service_common.ts.
 
-Then(
-  'the "API" is "ACTIVE" with no "SNS" integration configured',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { GetRestApiCommand } = require("@aws-sdk/client-api-gateway");
-    let apiId = (this as any)._apigwSnsApiId as string | undefined;
-    if (!apiId) {
-      apiId = await apigwSnsGetApiId(this);
-    }
-    assert.ok(
-      apiId,
-      `Expected REST API "${APIGW_SNS_API_NAME}" to exist but it was not found`,
-    );
-    // Act
-    const result = await apigwClient(this).send(
-      new GetRestApiCommand({ restApiId: apiId }),
-    );
-    // Assert
-    const expectedName = APIGW_SNS_API_NAME;
-    const actualName = result.name ?? "";
-    assert.strictEqual(
-      actualName,
-      expectedName,
-      `Expected API name "${expectedName}" but got "${actualName}"; expected_name=${expectedName} actual_name=${actualName}`,
-    );
-  },
-);
+Then('the "API" is "ACTIVE" with no "SNS" integration configured', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { GetRestApiCommand } = require("@aws-sdk/client-api-gateway");
+  let apiId = (this as any)._apigwSnsApiId as string | undefined;
+  if (!apiId) {
+    apiId = await apigwSnsGetApiId(this);
+  }
+  assert.ok(apiId, `Expected REST API "${APIGW_SNS_API_NAME}" to exist but it was not found`);
+  // Act
+  const result = await apigwClient(this).send(new GetRestApiCommand({ restApiId: apiId }));
+  // Assert
+  const expectedName = APIGW_SNS_API_NAME;
+  const actualName = result.name ?? "";
+  assert.strictEqual(
+    actualName,
+    expectedName,
+    `Expected API name "${expectedName}" but got "${actualName}"; expected_name=${expectedName} actual_name=${actualName}`,
+  );
+});
 
 Then(
   'the "API" will publish to the topic when requests are received',
@@ -452,37 +426,31 @@ Then(
   },
 );
 
-Then(
-  'the message is "PUBLISHED" and the request is "SUCCESS"',
-  async function (this: SdkWorld) {
-    // Arrange
-    // Act: (action performed in When step)
-    // Assert
-    const expectedStatus = 200;
-    const actualStatus = (this as any)._apigwSnsInvokeStatus as number;
-    assert.strictEqual(
-      actualStatus,
-      expectedStatus,
-      `Expected request status ${expectedStatus} but got ${actualStatus}; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-    );
-  },
-);
+Then('the message is "PUBLISHED" and the request is "SUCCESS"', async function (this: SdkWorld) {
+  // Arrange
+  // Act: (action performed in When step)
+  // Assert
+  const expectedStatus = 200;
+  const actualStatus = (this as any)._apigwSnsInvokeStatus as number;
+  assert.strictEqual(
+    actualStatus,
+    expectedStatus,
+    `Expected request status ${expectedStatus} but got ${actualStatus}; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+  );
+});
 
-Then(
-  'the request is "FAILED" and no message is published',
-  async function (this: SdkWorld) {
-    // Arrange
-    // Act: (action performed in When step — failure pre-loaded)
-    // Assert
-    const expectedSuccess = false;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected request to fail but it succeeded; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-  },
-);
+Then('the request is "FAILED" and no message is published', async function (this: SdkWorld) {
+  // Arrange
+  // Act: (action performed in When step — failure pre-loaded)
+  // Assert
+  const expectedSuccess = false;
+  const actualSuccess = this.lastCallResult.success;
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected request to fail but it succeeded; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+  );
+});
 
 Then(
   'the topic is "DELETED" and "API" requests targeting it will fail',
@@ -502,18 +470,12 @@ Then(
 
 // ── Invariant Then steps (no-op) ──────────────────────────────────────────────
 
-Then(
-  'every "PUBLISHED" message references a topic that exists',
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('every "PUBLISHED" message references a topic that exists', async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
-Then(
-  'every successful request references an "API" that exists',
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('every successful request references an "API" that exists', async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});

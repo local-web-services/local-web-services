@@ -320,10 +320,13 @@ Then('the "DB" instance is "STOPPED"', async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then('the "DB" instance is "STOPPING" and the event is "DELIVERED"', async function (this: SdkWorld) {
-  // @internal: d_b_stop_event_delivered outcome not observable via public API.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+Then(
+  'the "DB" instance is "STOPPING" and the event is "DELIVERED"',
+  async function (this: SdkWorld) {
+    // @internal: d_b_stop_event_delivered outcome not observable via public API.
+    assert.ok(this.session, "Expected session to be initialized");
+  },
+);
 
 Then('the "DB" instance is "STOPPING" but no event is delivered', async function (this: SdkWorld) {
   // @internal: d_b_stop_event_fails outcome not observable via public API.
@@ -332,10 +335,13 @@ Then('the "DB" instance is "STOPPING" but no event is delivered', async function
 
 // ── Invariant Then steps ──────────────────────────────────────────────────────
 
-Then('every "DELIVERED" event references a "DB" instance that exists', async function (this: SdkWorld) {
-  // No-op invariant: trivially satisfied in an isolated test context.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+Then(
+  'every "DELIVERED" event references a "DB" instance that exists',
+  async function (this: SdkWorld) {
+    // No-op invariant: trivially satisfied in an isolated test context.
+    assert.ok(this.session, "Expected session to be initialized");
+  },
+);
 
 Then('every "DELIVERED" event references a bus that exists', async function (this: SdkWorld) {
   // No-op invariant: trivially satisfied in an isolated test context.

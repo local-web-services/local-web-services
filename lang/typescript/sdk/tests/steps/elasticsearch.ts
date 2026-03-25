@@ -17,9 +17,7 @@ function esClient(world: SdkWorld) {
 
 async function esCreateDomain(world: SdkWorld): Promise<void> {
   const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
-  await esClient(world).send(
-    new CreateElasticsearchDomainCommand({ DomainName: ES_DOMAIN_NAME }),
-  );
+  await esClient(world).send(new CreateElasticsearchDomainCommand({ DomainName: ES_DOMAIN_NAME }));
 }
 
 async function esDomainExists(world: SdkWorld): Promise<boolean> {
@@ -118,9 +116,7 @@ Given("the domain is being deleted", async function (this: SdkWorld) {
   const { DeleteElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
   // Act
   try {
-    await esClient(this).send(
-      new DeleteElasticsearchDomainCommand({ DomainName: ES_DOMAIN_NAME }),
-    );
+    await esClient(this).send(new DeleteElasticsearchDomainCommand({ DomainName: ES_DOMAIN_NAME }));
   } catch {
     // domain may not exist; desired state is DELETING
   }
@@ -138,9 +134,7 @@ Given("the domain is deleted", async function (this: SdkWorld) {
   const { DeleteElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
   // Act
   try {
-    await esClient(this).send(
-      new DeleteElasticsearchDomainCommand({ DomainName: ES_DOMAIN_NAME }),
-    );
+    await esClient(this).send(new DeleteElasticsearchDomainCommand({ DomainName: ES_DOMAIN_NAME }));
   } catch {
     // domain may not exist; desired state is deleted
   }
@@ -357,18 +351,21 @@ Then('the domain is in "DELETING" state', async function (this: SdkWorld) {
   );
 });
 
-Then('the domain is in "PROCESSING" state with a pending config change', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected update_elasticsearch_domain_config to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+Then(
+  'the domain is in "PROCESSING" state with a pending config change',
+  async function (this: SdkWorld) {
+    // Arrange: no additional setup required
+    // Act: action already performed in the When step
+    // Assert
+    const expectedSuccess = true;
+    const actualSuccess = this.lastCallResult.success;
+    assert.strictEqual(
+      actualSuccess,
+      expectedSuccess,
+      `Expected update_elasticsearch_domain_config to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+    );
+  },
+);
 
 Then('"ACTIVE" and ready for use', async function (this: SdkWorld) {
   // @internal: state transition controlled internally — no-op.
@@ -406,29 +403,32 @@ Then("the specified tags are associated with the domain", async function (this: 
   );
 });
 
-Then("the specified tags are no longer associated with the domain", async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected remove_tags to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  const { ListTagsCommand } = require("@aws-sdk/client-elasticsearch");
-  const arn = await esDomainARN(this);
-  assert.ok(arn, "Expected domain ARN to be available");
-  const listResult = await esClient(this).send(new ListTagsCommand({ ARN: arn }));
-  const tagList: Array<{ Key?: string }> = listResult?.TagList ?? [];
-  const expectedAbsentKey = ES_TAG_KEY;
-  const actualFound = tagList.some((t) => t.Key === expectedAbsentKey);
-  assert.ok(
-    !actualFound,
-    `Expected tag "${expectedAbsentKey}" to be removed from domain but it still exists; expected_absent_key=${expectedAbsentKey} actual_found=${actualFound}`,
-  );
-});
+Then(
+  "the specified tags are no longer associated with the domain",
+  async function (this: SdkWorld) {
+    // Arrange: no additional setup required
+    // Act: action already performed in the When step
+    // Assert
+    const expectedSuccess = true;
+    const actualSuccess = this.lastCallResult.success;
+    assert.strictEqual(
+      actualSuccess,
+      expectedSuccess,
+      `Expected remove_tags to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+    );
+    const { ListTagsCommand } = require("@aws-sdk/client-elasticsearch");
+    const arn = await esDomainARN(this);
+    assert.ok(arn, "Expected domain ARN to be available");
+    const listResult = await esClient(this).send(new ListTagsCommand({ ARN: arn }));
+    const tagList: Array<{ Key?: string }> = listResult?.TagList ?? [];
+    const expectedAbsentKey = ES_TAG_KEY;
+    const actualFound = tagList.some((t) => t.Key === expectedAbsentKey);
+    assert.ok(
+      !actualFound,
+      `Expected tag "${expectedAbsentKey}" to be removed from domain but it still exists; expected_absent_key=${expectedAbsentKey} actual_found=${actualFound}`,
+    );
+  },
+);
 
 Then("the operation is rejected", async function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -443,9 +443,12 @@ Then("the operation is rejected", async function (this: SdkWorld) {
   );
 });
 
-Then("every active index belongs to an existing non-deleted domain", async function (this: SdkWorld) {
-  // No-op invariant: trivially satisfied in an isolated test context.
-});
+Then(
+  "every active index belongs to an existing non-deleted domain",
+  async function (this: SdkWorld) {
+    // No-op invariant: trivially satisfied in an isolated test context.
+  },
+);
 
 Then("every active tag belongs to an existing non-deleted domain", async function (this: SdkWorld) {
   // No-op invariant: trivially satisfied in an isolated test context.

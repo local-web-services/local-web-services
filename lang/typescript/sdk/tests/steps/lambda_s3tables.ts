@@ -388,13 +388,10 @@ Then("the table is {string}", async function (this: SdkWorld, _state: string) {
   );
 });
 
-Then(
-  'the table is "DELETING" and write operations will fail',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe table DELETING state in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the table is "DELETING" and write operations will fail', async function (this: SdkWorld) {
+  // @internal: Cannot observe table DELETING state in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then("the invocation is {string}", async function (this: SdkWorld, _state: string) {
   // @internal: Cannot observe Lambda invocation state in lws.
@@ -409,13 +406,10 @@ Then(
   },
 );
 
-Then(
-  'the record "EXISTS" and the invocation is "SUCCESS"',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe Lambda record write result in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the record "EXISTS" and the invocation is "SUCCESS"', async function (this: SdkWorld) {
+  // @internal: Cannot observe Lambda record write result in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 // ── Invariant Then steps ──────────────────────────────────────────────────────
 
@@ -427,10 +421,7 @@ Then(
   },
 );
 
-Then(
-  "every existing record references a table that exists",
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then("every existing record references a table that exists", async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});

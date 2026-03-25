@@ -284,21 +284,15 @@ Then('the cluster is "AVAILABLE"', async function (this: SdkWorld) {
   );
 });
 
-Then(
-  'the cluster is "AVAILABLE" and ready to accept connections',
-  async function (this: SdkWorld) {
-    // @internal: StartDBCluster is not yet implemented in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the cluster is "AVAILABLE" and ready to accept connections', async function (this: SdkWorld) {
+  // @internal: StartDBCluster is not yet implemented in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
-Then(
-  'the cluster is "STOPPED" and connections will be rejected',
-  async function (this: SdkWorld) {
-    // @internal: StopDBCluster is not yet implemented in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the cluster is "STOPPED" and connections will be rejected', async function (this: SdkWorld) {
+  // @internal: StopDBCluster is not yet implemented in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda invocation state in lws.
@@ -325,10 +319,7 @@ Then(
   },
 );
 
-Then(
-  "every existing document references a cluster that exists",
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then("every existing document references a cluster that exists", async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});

@@ -209,26 +209,23 @@ When("a Lambda function is deployed", async function (this: SdkWorld) {
   }
 });
 
-When(
-  'an Elasticsearch domain is created and becomes "AVAILABLE"',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "No session running");
-    const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
-    // Act
-    try {
-      const result = await lambdaElasticsearchEsClient(this).send(
-        new CreateElasticsearchDomainCommand({
-          DomainName: LAMBDA_ELASTICSEARCH_TEST_DOMAIN,
-        }),
-      );
-      // Assert: store result
-      this.lastCallResult = { success: true, output: result };
-    } catch (err: unknown) {
-      this.lastCallResult = { success: false, output: null, error: err };
-    }
-  },
-);
+When('an Elasticsearch domain is created and becomes "AVAILABLE"', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
+  // Act
+  try {
+    const result = await lambdaElasticsearchEsClient(this).send(
+      new CreateElasticsearchDomainCommand({
+        DomainName: LAMBDA_ELASTICSEARCH_TEST_DOMAIN,
+      }),
+    );
+    // Assert: store result
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+});
 
 When("a domain configuration update begins", async function (this: SdkWorld) {
   // Arrange
@@ -337,26 +334,23 @@ Then('the domain is "AVAILABLE" again', async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then(
-  'the domain is "PROCESSING" and write operations may fail',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { DescribeElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
-    // Act
-    const result = await lambdaElasticsearchEsClient(this).send(
-      new DescribeElasticsearchDomainCommand({ DomainName: LAMBDA_ELASTICSEARCH_TEST_DOMAIN }),
-    );
-    // Assert
-    const expectedProcessing = true;
-    const actualProcessing = result.DomainStatus?.Processing ?? false;
-    assert.strictEqual(
-      actualProcessing,
-      expectedProcessing,
-      `Expected domain to be processing but it is not; expected_processing=${expectedProcessing} actual_processing=${actualProcessing}`,
-    );
-  },
-);
+Then('the domain is "PROCESSING" and write operations may fail', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { DescribeElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
+  // Act
+  const result = await lambdaElasticsearchEsClient(this).send(
+    new DescribeElasticsearchDomainCommand({ DomainName: LAMBDA_ELASTICSEARCH_TEST_DOMAIN }),
+  );
+  // Assert
+  const expectedProcessing = true;
+  const actualProcessing = result.DomainStatus?.Processing ?? false;
+  assert.strictEqual(
+    actualProcessing,
+    expectedProcessing,
+    `Expected domain to be processing but it is not; expected_processing=${expectedProcessing} actual_processing=${actualProcessing}`,
+  );
+});
 
 Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda invocation state in lws.
@@ -383,10 +377,7 @@ Then(
   },
 );
 
-Then(
-  "every existing document references a domain that exists",
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then("every existing document references a domain that exists", async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});

@@ -264,36 +264,27 @@ Then('the bus is "ACTIVE"', async function (this: SdkWorld) {
   // Assert
   const expectedBusName = NEPTUNE_EVENTS_TEST_BUS;
   const actualFound = buses.some((b) => b.Name === expectedBusName);
-  assert.ok(
-    actualFound,
-    `Expected event bus "${expectedBusName}" to be ACTIVE but not found`,
+  assert.ok(actualFound, `Expected event bus "${expectedBusName}" to be ACTIVE but not found`);
+});
+
+Then('the bus is "DELETED" and Neptune event delivery will fail', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  // Act: verify deletion succeeded
+  const actualSuccess = this.lastCallResult.success;
+  const expectedSuccess = true;
+  // Assert
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected delete_event_bus to succeed but got: ${JSON.stringify(this.lastCallResult.error)}`,
   );
 });
 
-Then(
-  'the bus is "DELETED" and Neptune event delivery will fail',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    // Act: verify deletion succeeded
-    const actualSuccess = this.lastCallResult.success;
-    const expectedSuccess = true;
-    // Assert
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected delete_event_bus to succeed but got: ${JSON.stringify(this.lastCallResult.error)}`,
-    );
-  },
-);
-
 // ── Safety invariant Then steps ───────────────────────────────────────────────
 
-Then(
-  /^every "DELIVERED" event references a cluster that exists$/,
-  async function (this: SdkWorld) {
-    // Arrange / Act / Assert — no-op: model-level invariant; guaranteed by construction in lws.
-  },
-);
+Then(/^every "DELIVERED" event references a cluster that exists$/, async function (this: SdkWorld) {
+  // Arrange / Act / Assert — no-op: model-level invariant; guaranteed by construction in lws.
+});
 
 // `every "DELIVERED" event references a bus that exists` is registered in cross_service_common.ts.

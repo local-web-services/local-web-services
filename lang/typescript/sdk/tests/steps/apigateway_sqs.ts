@@ -43,9 +43,7 @@ async function apigwSqsFetchRootResourceId(world: SdkWorld, restApiId: string): 
   // Arrange
   const { GetResourcesCommand } = require("@aws-sdk/client-api-gateway");
   // Act
-  const result = await apigwSqsApigwClient(world).send(
-    new GetResourcesCommand({ restApiId }),
-  );
+  const result = await apigwSqsApigwClient(world).send(new GetResourcesCommand({ restApiId }));
   const items: Array<{ id: string; path: string }> = result.items ?? [];
   const root = items.find((r: { id: string; path: string }) => r.path === "/");
   // Assert
@@ -65,7 +63,11 @@ async function apigwSqsGetApiId(world: SdkWorld): Promise<string | undefined> {
   return found?.id;
 }
 
-async function apigwSqsConfigureIntegration(world: SdkWorld, restApiId: string, rootResourceId: string): Promise<void> {
+async function apigwSqsConfigureIntegration(
+  world: SdkWorld,
+  restApiId: string,
+  rootResourceId: string,
+): Promise<void> {
   // Arrange: put POST method
   const {
     PutMethodCommand,
@@ -437,24 +439,21 @@ When("a backend consumer processes the message from the queue", async function (
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then(
-  'the "API" is "ACTIVE" with no "SQS" integration configured',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { GetRestApisCommand } = require("@aws-sdk/client-api-gateway");
-    // Act
-    const result = await apigwSqsApigwClient(this).send(new GetRestApisCommand({}));
-    const items: Array<{ id: string; name: string }> = result.items ?? [];
-    // Assert
-    const expectedName = APIGW_SQS_API_NAME;
-    const actualFound = items.some((a: { id: string; name: string }) => a.name === expectedName);
-    assert.ok(
-      actualFound,
-      `Expected REST API "${expectedName}" to be ACTIVE but not found; actual_found=${actualFound}`,
-    );
-  },
-);
+Then('the "API" is "ACTIVE" with no "SQS" integration configured', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { GetRestApisCommand } = require("@aws-sdk/client-api-gateway");
+  // Act
+  const result = await apigwSqsApigwClient(this).send(new GetRestApisCommand({}));
+  const items: Array<{ id: string; name: string }> = result.items ?? [];
+  // Assert
+  const expectedName = APIGW_SQS_API_NAME;
+  const actualFound = items.some((a: { id: string; name: string }) => a.name === expectedName);
+  assert.ok(
+    actualFound,
+    `Expected REST API "${expectedName}" to be ACTIVE but not found; actual_found=${actualFound}`,
+  );
+});
 
 Then('the queue is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange
@@ -483,10 +482,7 @@ Then(
     if (!restApiId) {
       restApiId = await apigwSqsGetApiId(this);
     }
-    assert.ok(
-      restApiId,
-      `Expected REST API "${APIGW_SQS_API_NAME}" to exist but not found`,
-    );
+    assert.ok(restApiId, `Expected REST API "${APIGW_SQS_API_NAME}" to exist but not found`);
     // Act: POST a test request
     const result = await apigwSqsInvokeApi(this, restApiId!, {
       event: "check",
@@ -549,21 +545,15 @@ Then('the message is "DELETED"', async function (this: SdkWorld) {
 
 // ── Invariant catch-all Then steps ────────────────────────────────────────────
 
-Then(
-  'every "ACCEPTED" request references an "ACTIVE" "API"',
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('every "ACCEPTED" request references an "ACTIVE" "API"', async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
-Then(
-  'every "AVAILABLE" message belongs to an "ACTIVE" queue',
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('every "AVAILABLE" message belongs to an "ACTIVE" queue', async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 // ── Common rejection assertion ─────────────────────────────────────────────────
 

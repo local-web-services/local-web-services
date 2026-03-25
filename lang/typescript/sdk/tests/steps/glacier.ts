@@ -588,9 +588,7 @@ When("a job fails", async function (this: SdkWorld) {
   this.lastCallResult = {
     success: false,
     output: null,
-    error: new Error(
-      "InvalidParameterValueException: job failure requires internal processing",
-    ),
+    error: new Error("InvalidParameterValueException: job failure requires internal processing"),
   };
   // Assert: captured in lastCallResult
 });
@@ -601,9 +599,7 @@ When("a job completes successfully", async function (this: SdkWorld) {
   this.lastCallResult = {
     success: false,
     output: null,
-    error: new Error(
-      "InvalidParameterValueException: job success requires internal processing",
-    ),
+    error: new Error("InvalidParameterValueException: job success requires internal processing"),
   };
   // Assert: captured in lastCallResult
 });

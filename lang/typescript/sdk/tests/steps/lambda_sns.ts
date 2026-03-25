@@ -161,10 +161,7 @@ Then(
   },
 );
 
-Then(
-  'publishing requires an "ACTIVE" topic to be present',
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('publishing requires an "ACTIVE" topic to be present', async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});

@@ -154,7 +154,7 @@ Given('no "VALID" token exists', async function (this: SdkWorld) {
 });
 
 Given(
-  "the token belongs to a \"CONFIRMED\" user in the \"API\"'s configured pool",
+  'the token belongs to a "CONFIRMED" user in the "API"\'s configured pool',
   async function (this: SdkWorld) {
     // Arrange / Act / Assert — no-op: cross-service token/pool membership state is not
     // reachable via public API in lws; the subsequent When step records a failure.
@@ -259,7 +259,7 @@ When('Cognito issues a "JWT" token for a confirmed user', async function (this: 
 });
 
 When(
-  "a request with a valid token from a user in the \"API\"'s configured pool is authorized",
+  'a request with a valid token from a user in the "API"\'s configured pool is authorized',
   async function (this: SdkWorld) {
     // Arrange: API Gateway Cognito authorizer request flow is not supported in lws
     // Act: record failure so 'the operation is rejected' Then passes
@@ -344,7 +344,7 @@ Then('the request is "AUTHORIZED" and routed to the backend', async function (th
 });
 
 Then(
-  "the request is \"REJECTED\" because the token's issuing pool does not match the configured authorizer",
+  'the request is "REJECTED" because the token\'s issuing pool does not match the configured authorizer',
   async function (this: SdkWorld) {
     // Arrange / Act / Assert — no-op: API Gateway Cognito authorizer rejection is not supported.
     assert.ok(this.session, "Expected session to be initialized");
@@ -370,7 +370,7 @@ Then(
 );
 
 Then(
-  "every \"AUTHORIZED\" request's token belongs to a user in the \"API\"'s configured pool",
+  'every "AUTHORIZED" request\'s token belongs to a user in the "API"\'s configured pool',
   async function (this: SdkWorld) {
     // Arrange / Act / Assert — no-op: safety invariant; verified by the spec, not the fake.
     assert.ok(this.session, "Expected session to be initialized");
@@ -378,7 +378,7 @@ Then(
 );
 
 Then(
-  "every \"REJECTED\" request's token belongs to a user in a different pool than the configured authorizer",
+  'every "REJECTED" request\'s token belongs to a user in a different pool than the configured authorizer',
   async function (this: SdkWorld) {
     // Arrange / Act / Assert — no-op: safety invariant; verified by the spec, not the fake.
     assert.ok(this.session, "Expected session to be initialized");

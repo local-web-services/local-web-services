@@ -778,7 +778,10 @@ Then('the cluster is in "CREATING" state', async function (this: SdkWorld) {
     new DescribeClustersCommand({ ClusterName: MEMORYDB_CLUSTER_NAME }),
   );
   const clusters: Array<{ Name?: string; Status?: string }> = result.Clusters ?? [];
-  assert.ok(clusters.length > 0, `Expected cluster "${MEMORYDB_CLUSTER_NAME}" to exist but not found`);
+  assert.ok(
+    clusters.length > 0,
+    `Expected cluster "${MEMORYDB_CLUSTER_NAME}" to exist but not found`,
+  );
   const expectedStatus = "creating";
   const actualStatus = clusters[0].Status;
   assert.strictEqual(
@@ -804,7 +807,10 @@ Then('the cluster is in "DELETING" state', async function (this: SdkWorld) {
     new DescribeClustersCommand({ ClusterName: MEMORYDB_CLUSTER_NAME }),
   );
   const clusters: Array<{ Name?: string; Status?: string }> = result.Clusters ?? [];
-  assert.ok(clusters.length > 0, `Expected cluster "${MEMORYDB_CLUSTER_NAME}" to exist in DELETING state`);
+  assert.ok(
+    clusters.length > 0,
+    `Expected cluster "${MEMORYDB_CLUSTER_NAME}" to exist in DELETING state`,
+  );
   const expectedStatus = "deleting";
   const actualStatus = clusters[0].Status;
   assert.strictEqual(
@@ -886,7 +892,7 @@ Then('the cluster remains "AVAILABLE" after the shard failover', async function 
   // No-op invariant: shard failover is internal; trivially satisfied in lws context.
 });
 
-Then("the restored cluster is in \"RESTORING\" state", async function (this: SdkWorld) {
+Then('the restored cluster is in "RESTORING" state', async function (this: SdkWorld) {
   // Arrange: no additional setup required
   // Act: action already performed in the When step
   // Assert
@@ -919,7 +925,10 @@ Then('the cluster is linked to the active "ACL"', async function (this: SdkWorld
     new DescribeClustersCommand({ ClusterName: MEMORYDB_CLUSTER_NAME }),
   );
   const clusters: Array<{ Name?: string; ACLName?: string }> = result.Clusters ?? [];
-  assert.ok(clusters.length > 0, `Expected cluster "${MEMORYDB_CLUSTER_NAME}" to exist but not found`);
+  assert.ok(
+    clusters.length > 0,
+    `Expected cluster "${MEMORYDB_CLUSTER_NAME}" to exist but not found`,
+  );
   const expectedACLName = MEMORYDB_ACL_NAME;
   const actualACLName = clusters[0].ACLName;
   assert.strictEqual(
@@ -1225,31 +1234,37 @@ Then('the "ACL" returns to "ACTIVE" state', async function (this: SdkWorld) {
 
 // ── Snapshot assertion steps ──────────────────────────────────────────────────
 
-Then('the snapshot is in "CREATING" state and the cluster is "SNAPSHOTTING"', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected create_snapshot to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  const { DescribeSnapshotsCommand } = require("@aws-sdk/client-memory-db");
-  const result = await memorydbClient(this).send(
-    new DescribeSnapshotsCommand({ SnapshotName: MEMORYDB_SNAPSHOT_NAME }),
-  );
-  const snapshots: Array<{ Name?: string; Status?: string }> = result.Snapshots ?? [];
-  assert.ok(snapshots.length > 0, `Expected snapshot "${MEMORYDB_SNAPSHOT_NAME}" to exist but not found`);
-  const expectedStatus = "creating";
-  const actualStatus = snapshots[0].Status;
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
+Then(
+  'the snapshot is in "CREATING" state and the cluster is "SNAPSHOTTING"',
+  async function (this: SdkWorld) {
+    // Arrange: no additional setup required
+    // Act: action already performed in the When step
+    // Assert
+    const expectedSuccess = true;
+    const actualSuccess = this.lastCallResult.success;
+    assert.strictEqual(
+      actualSuccess,
+      expectedSuccess,
+      `Expected create_snapshot to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+    );
+    const { DescribeSnapshotsCommand } = require("@aws-sdk/client-memory-db");
+    const result = await memorydbClient(this).send(
+      new DescribeSnapshotsCommand({ SnapshotName: MEMORYDB_SNAPSHOT_NAME }),
+    );
+    const snapshots: Array<{ Name?: string; Status?: string }> = result.Snapshots ?? [];
+    assert.ok(
+      snapshots.length > 0,
+      `Expected snapshot "${MEMORYDB_SNAPSHOT_NAME}" to exist but not found`,
+    );
+    const expectedStatus = "creating";
+    const actualStatus = snapshots[0].Status;
+    assert.strictEqual(
+      actualStatus,
+      expectedStatus,
+      `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+    );
+  },
+);
 
 Then('the snapshot is in "DELETING" state', async function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -1267,7 +1282,10 @@ Then('the snapshot is in "DELETING" state', async function (this: SdkWorld) {
     new DescribeSnapshotsCommand({ SnapshotName: MEMORYDB_SNAPSHOT_NAME }),
   );
   const snapshots: Array<{ Name?: string; Status?: string }> = result.Snapshots ?? [];
-  assert.ok(snapshots.length > 0, `Expected snapshot "${MEMORYDB_SNAPSHOT_NAME}" to exist in DELETING state`);
+  assert.ok(
+    snapshots.length > 0,
+    `Expected snapshot "${MEMORYDB_SNAPSHOT_NAME}" to exist in DELETING state`,
+  );
   const expectedStatus = "deleting";
   const actualStatus = snapshots[0].Status;
   assert.strictEqual(
@@ -1277,22 +1295,25 @@ Then('the snapshot is in "DELETING" state', async function (this: SdkWorld) {
   );
 });
 
-Then('the snapshot is "AVAILABLE" and the cluster returns to "AVAILABLE" state', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected operation to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  assert.ok(
-    this.lastCallResult.output !== null && this.lastCallResult.output !== undefined,
-    "Expected output but got null",
-  );
-});
+Then(
+  'the snapshot is "AVAILABLE" and the cluster returns to "AVAILABLE" state',
+  async function (this: SdkWorld) {
+    // Arrange: no additional setup required
+    // Act: action already performed in the When step
+    // Assert
+    const expectedSuccess = true;
+    const actualSuccess = this.lastCallResult.success;
+    assert.strictEqual(
+      actualSuccess,
+      expectedSuccess,
+      `Expected operation to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+    );
+    assert.ok(
+      this.lastCallResult.output !== null && this.lastCallResult.output !== undefined,
+      "Expected output but got null",
+    );
+  },
+);
 
 Then('the snapshot is "DELETED" and its tags are removed', async function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -1377,17 +1398,26 @@ Then("every active cluster has write durability enabled", async function (this: 
   // No-op invariant: trivially satisfied in an isolated test context.
 });
 
-Then("every snapshotting cluster has a corresponding in-progress snapshot", async function (this: SdkWorld) {
-  // No-op invariant: trivially satisfied in an isolated test context.
-});
+Then(
+  "every snapshotting cluster has a corresponding in-progress snapshot",
+  async function (this: SdkWorld) {
+    // No-op invariant: trivially satisfied in an isolated test context.
+  },
+);
 
-Then('no "ACL" in "DELETING" state is currently associated with a cluster', async function (this: SdkWorld) {
-  // No-op invariant: trivially satisfied in an isolated test context.
-});
+Then(
+  'no "ACL" in "DELETING" state is currently associated with a cluster',
+  async function (this: SdkWorld) {
+    // No-op invariant: trivially satisfied in an isolated test context.
+  },
+);
 
-Then('no user in "DELETING" state is currently a member of an "ACL"', async function (this: SdkWorld) {
-  // No-op invariant: trivially satisfied in an isolated test context.
-});
+Then(
+  'no user in "DELETING" state is currently a member of an "ACL"',
+  async function (this: SdkWorld) {
+    // No-op invariant: trivially satisfied in an isolated test context.
+  },
+);
 
 Then("every active cluster and snapshot has tags", async function (this: SdkWorld) {
   // No-op invariant: trivially satisfied in an isolated test context.

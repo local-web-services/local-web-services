@@ -66,37 +66,31 @@ async function elCreateRuleWithTarget(world: SdkWorld): Promise<void> {
 
 // ── Given: cross-service rule + target state ──────────────────────────────────
 
-Given(
-  'an "ENABLED" rule exists on the bus targeting a function',
-  async function (this: SdkWorld) {
-    // Arrange: ensure bus and function exist, then create rule with Lambda target
-    assert.ok(this.session, "Expected session to be initialized");
-    try {
-      await elCreateBus(this);
-    } catch {
-      // bus may already exist
-    }
-    try {
-      await elCreateFunction(this);
-    } catch {
-      // function may already exist
-    }
-    // Act
-    await elCreateRuleWithTarget(this);
-    // Assert: rule and target created
-  },
-);
+Given('an "ENABLED" rule exists on the bus targeting a function', async function (this: SdkWorld) {
+  // Arrange: ensure bus and function exist, then create rule with Lambda target
+  assert.ok(this.session, "Expected session to be initialized");
+  try {
+    await elCreateBus(this);
+  } catch {
+    // bus may already exist
+  }
+  try {
+    await elCreateFunction(this);
+  } catch {
+    // function may already exist
+  }
+  // Act
+  await elCreateRuleWithTarget(this);
+  // Assert: rule and target created
+});
 
-Given(
-  'no "ENABLED" rule exists on the bus targeting a function',
-  async function (this: SdkWorld) {
-    // Arrange / Act / Assert — skip: cannot trigger internal EventBridge->Lambda routing
-    // in lws without a real rule wired to an active function; lws does not fail put_events
-    // when no matching rule exists.
-    assert.ok(this.session, "Expected session to be initialized");
-    return "pending";
-  },
-);
+Given('no "ENABLED" rule exists on the bus targeting a function', async function (this: SdkWorld) {
+  // Arrange / Act / Assert — skip: cannot trigger internal EventBridge->Lambda routing
+  // in lws without a real rule wired to an active function; lws does not fail put_events
+  // when no matching rule exists.
+  assert.ok(this.session, "Expected session to be initialized");
+  return "pending";
+});
 
 Given('the target function is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: Lambda functions are ACTIVE immediately after creation.
@@ -150,9 +144,7 @@ When("an EventBridge event bus is created", async function (this: SdkWorld) {
   const { CreateEventBusCommand } = require("@aws-sdk/client-eventbridge");
   // Act
   try {
-    const actualOutput = await elEbClient(this).send(
-      new CreateEventBusCommand({ Name: EL_BUS }),
-    );
+    const actualOutput = await elEbClient(this).send(new CreateEventBusCommand({ Name: EL_BUS }));
     this.lastCallResult = { success: true, output: actualOutput };
   } catch (error) {
     this.lastCallResult = { success: false, output: null, error };
@@ -236,46 +228,40 @@ When("the Lambda invocation fails", async function (this: SdkWorld) {
 
 // ── Then: cross-service assertions ────────────────────────────────────────────
 
-Then(
-  'the event bus is "ACTIVE"',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
-    // Act
-    const actualResult = await elEbClient(this).send(new ListEventBusesCommand({}));
-    const actualBuses: Array<{ Name?: string }> = actualResult.EventBuses ?? [];
-    // Assert
-    const expectedBus = EL_BUS;
-    const actualFound = actualBuses.some((b) => b.Name === expectedBus);
-    assert.strictEqual(
-      actualFound,
-      true,
-      `Expected event bus '${expectedBus}' to be ACTIVE but not found; expected_bus=${expectedBus}`,
-    );
-  },
-);
+Then('the event bus is "ACTIVE"', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
+  // Act
+  const actualResult = await elEbClient(this).send(new ListEventBusesCommand({}));
+  const actualBuses: Array<{ Name?: string }> = actualResult.EventBuses ?? [];
+  // Assert
+  const expectedBus = EL_BUS;
+  const actualFound = actualBuses.some((b) => b.Name === expectedBus);
+  assert.strictEqual(
+    actualFound,
+    true,
+    `Expected event bus '${expectedBus}' to be ACTIVE but not found; expected_bus=${expectedBus}`,
+  );
+});
 
-Then(
-  'the function is "ACTIVE"',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
-    // Act
-    const actualResult = await elLambdaClient(this).send(
-      new GetFunctionCommand({ FunctionName: EL_FUNC }),
-    );
-    // Assert
-    const expectedState = "Active";
-    const actualState = actualResult.Configuration?.State ?? "";
-    assert.strictEqual(
-      actualState,
-      expectedState,
-      `Expected function state '${expectedState}' but got '${actualState}'; expected_state=${expectedState} actual_state=${actualState}`,
-    );
-  },
-);
+Then('the function is "ACTIVE"', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
+  // Act
+  const actualResult = await elLambdaClient(this).send(
+    new GetFunctionCommand({ FunctionName: EL_FUNC }),
+  );
+  // Assert
+  const expectedState = "Active";
+  const actualState = actualResult.Configuration?.State ?? "";
+  assert.strictEqual(
+    actualState,
+    expectedState,
+    `Expected function state '${expectedState}' but got '${actualState}'; expected_state=${expectedState} actual_state=${actualState}`,
+  );
+});
 
 Then(
   'the rule is "ENABLED" and will trigger the function when matching events are published',
@@ -331,10 +317,7 @@ Then(
   },
 );
 
-Then(
-  'every "ENABLED" rule references an "ACTIVE" event bus',
-  async function (this: SdkWorld) {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('every "ENABLED" rule references an "ACTIVE" event bus', async function (this: SdkWorld) {
+  // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied.
+  assert.ok(this.session, "Expected session to be initialized");
+});

@@ -214,9 +214,7 @@ Given("the function is not {string}", async function (this: SdkWorld, state: str
     const { DeleteFunctionCommand } = require("@aws-sdk/client-lambda");
     // Act
     try {
-      await lambdaClient(this).send(
-        new DeleteFunctionCommand({ FunctionName: S3API_LAMBDA_FUNC }),
-      );
+      await lambdaClient(this).send(new DeleteFunctionCommand({ FunctionName: S3API_LAMBDA_FUNC }));
     } catch {
       // function may not exist
     }
@@ -230,16 +228,19 @@ Given("the function is not {string}", async function (this: SdkWorld, state: str
 
 // ── Given: notification target function state ─────────────────────────────────
 
-Given("the notification target function is {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "ACTIVE") {
-    // No-op: Lambda functions are ACTIVE immediately after creation in lws.
-    return;
-  }
-  // @internal: Cannot place Lambda notification target function in a non-ACTIVE state in lws.
-  // Assert: no-op
-});
+Given(
+  "the notification target function is {string}",
+  async function (this: SdkWorld, state: string) {
+    // Arrange
+    assert.ok(this.session, "Expected session to be initialized");
+    if (state === "ACTIVE") {
+      // No-op: Lambda functions are ACTIVE immediately after creation in lws.
+      return;
+    }
+    // @internal: Cannot place Lambda notification target function in a non-ACTIVE state in lws.
+    // Assert: no-op
+  },
+);
 
 Given(
   "the notification target function is not {string}",
@@ -411,21 +412,21 @@ When("the Lambda invocation fails", async function (this: SdkWorld) {
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then('the bucket is "ACTIVE" with no event notification configured', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ListBucketsCommand } = require("@aws-sdk/client-s3");
-  // Act
-  const result = await s3Client(this).send(new ListBucketsCommand({}));
-  const buckets: Array<{ Name?: string }> = result.Buckets ?? [];
-  const actualExists = buckets.some((b) => b.Name === S3API_LAMBDA_BUCKET);
-  // Assert
-  const expectedBucketName = S3API_LAMBDA_BUCKET;
-  assert.ok(
-    actualExists,
-    `Expected bucket "${expectedBucketName}" to be ACTIVE but not found`,
-  );
-});
+Then(
+  'the bucket is "ACTIVE" with no event notification configured',
+  async function (this: SdkWorld) {
+    // Arrange
+    assert.ok(this.session, "Expected session to be initialized");
+    const { ListBucketsCommand } = require("@aws-sdk/client-s3");
+    // Act
+    const result = await s3Client(this).send(new ListBucketsCommand({}));
+    const buckets: Array<{ Name?: string }> = result.Buckets ?? [];
+    const actualExists = buckets.some((b) => b.Name === S3API_LAMBDA_BUCKET);
+    // Assert
+    const expectedBucketName = S3API_LAMBDA_BUCKET;
+    assert.ok(actualExists, `Expected bucket "${expectedBucketName}" to be ACTIVE but not found`);
+  },
+);
 
 Then('the function is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange

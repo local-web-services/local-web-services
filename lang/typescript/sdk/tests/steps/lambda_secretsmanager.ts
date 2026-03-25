@@ -43,7 +43,7 @@ async function createLsSecret(world: SdkWorld): Promise<void> {
 
 // ── Given: invocation state ───────────────────────────────────────────────────
 
-Given("an invocation is \"IN_PROGRESS\"", async function (this: SdkWorld) {
+Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   // Arrange: create the Lambda function so an invocation could be in progress
   assert.ok(this.session, "Expected session to be initialized");
   // Act
@@ -51,7 +51,7 @@ Given("an invocation is \"IN_PROGRESS\"", async function (this: SdkWorld) {
   // Assert: function created
 });
 
-Given("no invocation is \"IN_PROGRESS\"", async function (this: SdkWorld) {
+Given('no invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   // No-op: fresh state has no invocations.
   assert.ok(this.session, "Expected session to be initialized");
 });
@@ -68,7 +68,7 @@ Given("no invocation slot is available", async function (this: SdkWorld) {
 
 // ── Given: secret state unique to cross-service scenarios ─────────────────────
 
-Given("the secret exists and is \"ACTIVE\"", async function (this: SdkWorld) {
+Given('the secret exists and is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   // Act: create the secret
@@ -76,13 +76,10 @@ Given("the secret exists and is \"ACTIVE\"", async function (this: SdkWorld) {
   // Assert: secret is ACTIVE immediately after creation in lws
 });
 
-Given("the secret is \"PENDING_DELETION\"", async function (this: SdkWorld) {
+Given('the secret is "PENDING_DELETION"', async function (this: SdkWorld) {
   // Arrange: create and then soft-delete the secret so it is PENDING_DELETION
   assert.ok(this.session, "Expected session to be initialized");
-  const {
-    CreateSecretCommand,
-    DeleteSecretCommand,
-  } = require("@aws-sdk/client-secrets-manager");
+  const { CreateSecretCommand, DeleteSecretCommand } = require("@aws-sdk/client-secrets-manager");
   // Act
   try {
     await smClient(this).send(
@@ -187,7 +184,7 @@ When(
 );
 
 When(
-  "the Lambda function reads an \"ACTIVE\" secret and completes successfully",
+  'the Lambda function reads an "ACTIVE" secret and completes successfully',
   async function (this: SdkWorld) {
     // @internal: Cannot trigger Lambda invocation success in lws.
     assert.ok(this.session, "Expected session to be initialized");
@@ -202,7 +199,7 @@ When(
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then("the function is \"ACTIVE\"", async function (this: SdkWorld) {
+Then('the function is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
@@ -220,14 +217,12 @@ Then("the function is \"ACTIVE\"", async function (this: SdkWorld) {
   );
 });
 
-Then("the secret is \"ACTIVE\" and can be read by Lambda", async function (this: SdkWorld) {
+Then('the secret is "ACTIVE" and can be read by Lambda', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { DescribeSecretCommand } = require("@aws-sdk/client-secrets-manager");
   // Act
-  const result = await smClient(this).send(
-    new DescribeSecretCommand({ SecretId: LS_TEST_SECRET }),
-  );
+  const result = await smClient(this).send(new DescribeSecretCommand({ SecretId: LS_TEST_SECRET }));
   // Assert
   const expectedName = LS_TEST_SECRET;
   const actualName = result.Name ?? "";
@@ -239,7 +234,7 @@ Then("the secret is \"ACTIVE\" and can be read by Lambda", async function (this:
 });
 
 Then(
-  "the secret is \"PENDING_DELETION\" and will be unavailable to Lambda during the recovery window",
+  'the secret is "PENDING_DELETION" and will be unavailable to Lambda during the recovery window',
   async function (this: SdkWorld) {
     // Arrange
     assert.ok(this.session, "Expected session to be initialized");
@@ -257,20 +252,20 @@ Then(
   },
 );
 
-Then("the invocation is \"IN_PROGRESS\"", async function (this: SdkWorld) {
+Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda invocation state in lws.
   assert.ok(this.session, "Expected session to be initialized");
 });
 
 Then(
-  "the invocation is \"FAILED\" with a ResourceNotFoundException",
+  'the invocation is "FAILED" with a ResourceNotFoundException',
   async function (this: SdkWorld) {
     // @internal: Cannot observe Lambda invocation failure in lws.
     assert.ok(this.session, "Expected session to be initialized");
   },
 );
 
-Then("the invocation is \"SUCCESS\"", async function (this: SdkWorld) {
+Then('the invocation is "SUCCESS"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda invocation success in lws.
   assert.ok(this.session, "Expected session to be initialized");
 });

@@ -85,9 +85,7 @@ Given("the function does not exist", async function (this: SdkWorld) {
   const { DeleteFunctionCommand } = require("@aws-sdk/client-lambda");
   // Act: delete, ignore errors (function may not exist)
   try {
-    await lambdaClient(this).send(
-      new DeleteFunctionCommand({ FunctionName: LAMBDA_SF_FUNC }),
-    );
+    await lambdaClient(this).send(new DeleteFunctionCommand({ FunctionName: LAMBDA_SF_FUNC }));
   } catch {
     // function may not exist; desired state is absence
   }
@@ -106,9 +104,7 @@ Given('the function is not "ACTIVE"', async function (this: SdkWorld) {
   const mgmtPort = (this.session as any)._basePort as number;
   // Act
   try {
-    await lambdaClient(this).send(
-      new DeleteFunctionCommand({ FunctionName: LAMBDA_SF_FUNC }),
-    );
+    await lambdaClient(this).send(new DeleteFunctionCommand({ FunctionName: LAMBDA_SF_FUNC }));
   } catch {
     // function may not exist
   }
@@ -447,13 +443,10 @@ Then('the execution is "SUCCEEDED"', async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then(
-  'the execution is "RUNNING" and the invocation is "SUCCESS"',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe Lambda invocation result or execution state via public API in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the execution is "RUNNING" and the invocation is "SUCCESS"', async function (this: SdkWorld) {
+  // @internal: Cannot observe Lambda invocation result or execution state via public API in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda invocation state via public API in lws.

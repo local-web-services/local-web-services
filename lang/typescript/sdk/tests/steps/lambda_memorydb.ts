@@ -233,13 +233,10 @@ Then("the cluster is {string}", async function (this: SdkWorld, state: string) {
   }
 });
 
-Then(
-  'the cluster is "UPDATING" and write operations may fail',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe cluster UPDATING state in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the cluster is "UPDATING" and write operations may fail', async function (this: SdkWorld) {
+  // @internal: Cannot observe cluster UPDATING state in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then('the cluster is "AVAILABLE" again', async function (this: SdkWorld) {
   // @internal: Cannot observe cluster AVAILABLE-again state in lws.
@@ -251,13 +248,10 @@ Then("the invocation is {string}", async function (this: SdkWorld, _state: strin
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then(
-  'the invocation is "FAILED" with a connection refused error',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe Lambda invocation failure in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the invocation is "FAILED" with a connection refused error', async function (this: SdkWorld) {
+  // @internal: Cannot observe Lambda invocation failure in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then(
   'the record "EXISTS" in the cluster and the invocation is "SUCCESS"',
@@ -277,10 +271,7 @@ Then(
   },
 );
 
-Then(
-  "every existing record references a cluster that exists",
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then("every existing record references a cluster that exists", async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});

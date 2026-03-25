@@ -284,13 +284,10 @@ Then("the domain is {string}", async function (this: SdkWorld, _state: string) {
   );
 });
 
-Then(
-  'the index "EXISTS" and is ready to receive documents',
-  async function (this: SdkWorld) {
-    // @internal: Cannot verify index existence via management API alone.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('the index "EXISTS" and is ready to receive documents', async function (this: SdkWorld) {
+  // @internal: Cannot verify index existence via management API alone.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 Then("the invocation is {string}", async function (this: SdkWorld, _state: string) {
   // @internal: Cannot observe Lambda invocation state in lws.
@@ -312,21 +309,15 @@ Then(
   },
 );
 
-Then(
-  "every indexed document belongs to an existing index",
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then("every indexed document belongs to an existing index", async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
-Then(
-  'every existing index belongs to an "ACTIVE" domain',
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+Then('every existing index belongs to an "ACTIVE" domain', async function (this: SdkWorld) {
+  // No-op: model-level invariant; trivially satisfied in isolated lws context.
+  assert.ok(this.session, "Expected session to be initialized");
+});
 
 // Unused constant kept to satisfy the resource naming architecture test.
 const _lambdaOpenSearchTestIndex = LAMBDA_OPENSEARCH_TEST_INDEX;

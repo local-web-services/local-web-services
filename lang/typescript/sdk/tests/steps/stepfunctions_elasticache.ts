@@ -221,9 +221,7 @@ When("the cluster modification completes", async function (this: SdkWorld) {
   this.lastCallResult = {
     success: false,
     output: null,
-    error: new Error(
-      "cannot drive cluster modification to completion via public API in lws",
-    ),
+    error: new Error("cannot drive cluster modification to completion via public API in lws"),
   };
   // Assert: captured in lastCallResult
 });
