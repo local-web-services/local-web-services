@@ -1,6 +1,6 @@
 /** Step definitions: rds_lambda cross-service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -65,6 +65,39 @@ async function rdsLambdaCreateFunction(world: SdkWorld): Promise<void> {
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
+
+// ── Before hook: register functionHelpers for rdslambda scenarios ─────────────
+
+Before({ tags: "@rdslambda" }, function (this: SdkWorld) {
+  this.functionHelpers = {
+    functionName: RDS_LAMBDA_TEST_FUNC_NAME,
+    deployFunction: async (world: SdkWorld) => {
+      try {
+        await rdsLambdaCreateFunction(world);
+        world.lastCallResult = {
+          success: true,
+          output: { FunctionName: RDS_LAMBDA_TEST_FUNC_NAME },
+        };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    assertFunctionActive: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
+      const result = await rdsLambdaLambdaClient(world).send(
+        new GetFunctionCommand({ FunctionName: RDS_LAMBDA_TEST_FUNC_NAME }),
+      );
+      const expectedState = "Active";
+      const actualState = result.Configuration?.State ?? "";
+      assert.strictEqual(
+        actualState,
+        expectedState,
+        `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
+      );
+    },
+  };
+});
 
 // ── Given: DB instance state setup ───────────────────────────────────────────
 
@@ -131,27 +164,6 @@ Given('the "DB" instance has a Lambda integration configured', async function (t
 });
 
 // ── Given: Lambda function state ──────────────────────────────────────────────
-
-Given("the function does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no Lambda functions.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the function already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await rdsLambdaCreateFunction(this);
-  // Assert: function created
-});
-
-Given("the function exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await rdsLambdaCreateFunction(this);
-  // Assert: function created
-});
 
 Given('the function exists and is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange

@@ -1,6 +1,6 @@
 /** Step definitions: lambda_stepfunctions cross-service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -56,41 +56,37 @@ async function createStateMachine(world: SdkWorld): Promise<string> {
   return result.stateMachineArn as string;
 }
 
+// ── Before hook: register functionHelpers for lambdastepfunctions scenarios ─────────────
+
+Before({ tags: "@lambdastepfunctions" }, function (this: SdkWorld) {
+  this.functionHelpers = {
+    functionName: LAMBDA_SF_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      try {
+        await createFunction(world);
+        world.lastCallResult = { success: true, output: { FunctionName: LAMBDA_SF_FUNC } };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    assertFunctionActive: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
+      const result = await lambdaClient(world).send(
+        new GetFunctionCommand({ FunctionName: LAMBDA_SF_FUNC }),
+      );
+      const expectedState = "Active";
+      const actualState = result.Configuration?.State ?? "";
+      assert.strictEqual(
+        actualState,
+        expectedState,
+        `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
+      );
+    },
+  };
+});
+
 // ── Given: function state ──────────────────────────────────────────────────────
-
-Given("the function does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh session has no Lambda functions.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the function already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createFunction(this);
-  // Assert: function created (no error thrown)
-});
-
-Given("the function exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createFunction(this);
-  // Assert: function created (no error thrown)
-});
-
-Given("the function does not exist", async function (this: SdkWorld) {
-  // Arrange: delete the function if present so it does not exist
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act: delete, ignore errors (function may not exist)
-  try {
-    await lambdaClient(this).send(new DeleteFunctionCommand({ FunctionName: LAMBDA_SF_FUNC }));
-  } catch {
-    // function may not exist; desired state is absence
-  }
-  // Assert: desired state is absence
-});
 
 Given('the function is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: functions are ACTIVE immediately after creation in lws.

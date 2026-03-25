@@ -78,7 +78,10 @@ Before({ tags: "@lambdaneptune" }, function (this: SdkWorld) {
     deployFunction: async (world: SdkWorld) => {
       try {
         await lambdaNeptuneCreateFunction(world);
-        world.lastCallResult = { success: true, output: { FunctionName: LAMBDA_NEPTUNE_TEST_FUNC } };
+        world.lastCallResult = {
+          success: true,
+          output: { FunctionName: LAMBDA_NEPTUNE_TEST_FUNC },
+        };
       } catch (err: unknown) {
         world.lastCallResult = { success: false, output: null, error: err };
       }

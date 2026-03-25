@@ -7,7 +7,7 @@
 // capacity.ts, cross_service_common.ts ("the system is initialized"), and
 // sqs.ts ("the operation is rejected") are NOT re-registered here.
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -54,6 +54,39 @@ async function lambdaElasticsearchCreateDomain(world: SdkWorld): Promise<void> {
   );
   // Assert: caller checks result
 }
+
+// ── Before hook: register functionHelpers for lambdaelasticsearch scenarios ─────────────
+
+Before({ tags: "@lambdaelasticsearch" }, function (this: SdkWorld) {
+  this.functionHelpers = {
+    functionName: LAMBDA_ELASTICSEARCH_TEST_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      try {
+        await lambdaElasticsearchCreateFunction(world);
+        world.lastCallResult = {
+          success: true,
+          output: { FunctionName: LAMBDA_ELASTICSEARCH_TEST_FUNC },
+        };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    assertFunctionActive: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
+      const result = await lambdaElasticsearchLambdaClient(world).send(
+        new GetFunctionCommand({ FunctionName: LAMBDA_ELASTICSEARCH_TEST_FUNC }),
+      );
+      const expectedState = "Active";
+      const actualState = result.Configuration?.State ?? "";
+      assert.strictEqual(
+        actualState,
+        expectedState,
+        `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
+      );
+    },
+  };
+});
 
 // ── Given: domain state ───────────────────────────────────────────────────────
 

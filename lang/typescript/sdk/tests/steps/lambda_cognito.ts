@@ -1,6 +1,6 @@
 /** Step definitions: lambda_cognito cross-service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -55,6 +55,39 @@ async function findPoolId(world: SdkWorld): Promise<string | null> {
   const found = pools.find((p) => p.Name === LAMBDA_COGNITO_TEST_POOL_NAME);
   return found ? found.Id : null;
 }
+
+// ── Before hook: register functionHelpers for lambdacognito scenarios ─────────────
+
+Before({ tags: "@lambdacognito" }, function (this: SdkWorld) {
+  this.functionHelpers = {
+    functionName: LAMBDA_COGNITO_TEST_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      try {
+        await createFunction(world);
+        world.lastCallResult = {
+          success: true,
+          output: { FunctionName: LAMBDA_COGNITO_TEST_FUNC },
+        };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    assertFunctionActive: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
+      const result = await lambdaClient(world).send(
+        new GetFunctionCommand({ FunctionName: LAMBDA_COGNITO_TEST_FUNC }),
+      );
+      const expectedState = "Active";
+      const actualState = result.Configuration?.State ?? "";
+      assert.strictEqual(
+        actualState,
+        expectedState,
+        `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
+      );
+    },
+  };
+});
 
 // ── Given: pool state ─────────────────────────────────────────────────────────
 

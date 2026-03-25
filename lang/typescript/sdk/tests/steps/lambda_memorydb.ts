@@ -83,7 +83,10 @@ Before({ tags: "@lambdamemorydb" }, function (this: SdkWorld) {
     deployFunction: async (world: SdkWorld) => {
       try {
         await lambdaMemorydbCreateFunction(world);
-        world.lastCallResult = { success: true, output: { FunctionName: LAMBDA_MEMORYDB_TEST_FUNC } };
+        world.lastCallResult = {
+          success: true,
+          output: { FunctionName: LAMBDA_MEMORYDB_TEST_FUNC },
+        };
       } catch (err: unknown) {
         world.lastCallResult = { success: false, output: null, error: err };
       }

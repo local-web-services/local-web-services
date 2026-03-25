@@ -1,6 +1,6 @@
 /** Step definitions: lambda_ssm cross-service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -60,6 +60,36 @@ async function lambdaSsmCreateParam(world: SdkWorld): Promise<void> {
     }),
   );
 }
+
+// ── Before hook: register functionHelpers for lambdassm scenarios ─────────────
+
+Before({ tags: "@lambdassm" }, function (this: SdkWorld) {
+  this.functionHelpers = {
+    functionName: LAMBDA_SSM_TEST_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      try {
+        await lambdaSsmCreateFunction(world);
+        world.lastCallResult = { success: true, output: { FunctionName: LAMBDA_SSM_TEST_FUNC } };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    assertFunctionActive: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
+      const result = await lambdaSsmLambdaClient(world).send(
+        new GetFunctionCommand({ FunctionName: LAMBDA_SSM_TEST_FUNC }),
+      );
+      const expectedState = "Active";
+      const actualState = result.Configuration?.State ?? "";
+      assert.strictEqual(
+        actualState,
+        expectedState,
+        `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
+      );
+    },
+  };
+});
 
 // ── Given: parameter state — exact-string overrides ───────────────────────────
 // These use exact string literals so Cucumber.js picks them over the parameterised

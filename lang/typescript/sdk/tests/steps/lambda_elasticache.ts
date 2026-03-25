@@ -88,6 +88,34 @@ Before({ tags: "@lambdaelasticache" }, function (this: SdkWorld) {
       );
     },
   };
+  this.functionHelpers = {
+    functionName: LAMBDA_ELASTICACHE_TEST_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      try {
+        await lambdaElasticacheCreateFunction(world);
+        world.lastCallResult = {
+          success: true,
+          output: { FunctionName: LAMBDA_ELASTICACHE_TEST_FUNC },
+        };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    assertFunctionActive: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
+      const result = await lambdaElasticacheLambdaClient(world).send(
+        new GetFunctionCommand({ FunctionName: LAMBDA_ELASTICACHE_TEST_FUNC }),
+      );
+      const expectedState = "Active";
+      const actualStatus = result.Configuration?.State as string;
+      assert.strictEqual(
+        actualStatus,
+        expectedState,
+        `Expected function state "${expectedState}" but got "${actualStatus}"; expected_state=${expectedState} actual_state=${actualStatus}`,
+      );
+    },
+  };
 });
 
 // ── Given: cluster state ───────────────────────────────────────────────────────

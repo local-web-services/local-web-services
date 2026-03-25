@@ -4,7 +4,7 @@
 // conflict.  All other lambda-side invocation steps follow the same pattern as
 // lambda_secretsmanager.ts.
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -44,6 +44,39 @@ async function lambdaOpenSearchCreateDomain(world: SdkWorld): Promise<void> {
     new CreateDomainCommand({ DomainName: LAMBDA_OPENSEARCH_TEST_DOMAIN }),
   );
 }
+
+// ── Before hook: register functionHelpers for lambdaopensearch scenarios ─────────────
+
+Before({ tags: "@lambdaopensearch" }, function (this: SdkWorld) {
+  this.functionHelpers = {
+    functionName: LAMBDA_OPENSEARCH_TEST_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      try {
+        await lambdaOpenSearchCreateFunction(world);
+        world.lastCallResult = {
+          success: true,
+          output: { FunctionName: LAMBDA_OPENSEARCH_TEST_FUNC },
+        };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    assertFunctionActive: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
+      const result = await lambdaOpenSearchLambdaClient(world).send(
+        new GetFunctionCommand({ FunctionName: LAMBDA_OPENSEARCH_TEST_FUNC }),
+      );
+      const expectedState = "Active";
+      const actualState = result.Configuration?.State ?? "";
+      assert.strictEqual(
+        actualState,
+        expectedState,
+        `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
+      );
+    },
+  };
+});
 
 // ── Given: invocation state ───────────────────────────────────────────────────
 

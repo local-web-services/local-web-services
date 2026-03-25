@@ -1,6 +1,6 @@
 /** Step definitions: lambda_sns cross-service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -36,6 +36,36 @@ async function lambdaSnsCreateFunction(world: SdkWorld): Promise<void> {
     }),
   );
 }
+
+// ── Before hook: register functionHelpers for lambdasns scenarios ─────────────
+
+Before({ tags: "@lambdasns" }, function (this: SdkWorld) {
+  this.functionHelpers = {
+    functionName: LAMBDA_SNS_TEST_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      try {
+        await lambdaSnsCreateFunction(world);
+        world.lastCallResult = { success: true, output: { FunctionName: LAMBDA_SNS_TEST_FUNC } };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    assertFunctionActive: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
+      const result = await lambdaSnsLambdaClient(world).send(
+        new GetFunctionCommand({ FunctionName: LAMBDA_SNS_TEST_FUNC }),
+      );
+      const expectedState = "Active";
+      const actualState = result.Configuration?.State ?? "";
+      assert.strictEqual(
+        actualState,
+        expectedState,
+        `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
+      );
+    },
+  };
+});
 
 // ── Given: invocation state ───────────────────────────────────────────────────
 

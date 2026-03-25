@@ -4,7 +4,7 @@
 // conflict.  All other lambda-side invocation steps follow the same pattern as
 // lambda_secretsmanager.ts.
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -49,6 +49,36 @@ async function lambdaRdsCreateInstance(world: SdkWorld): Promise<void> {
     }),
   );
 }
+
+// ── Before hook: register functionHelpers for lambdards scenarios ─────────────
+
+Before({ tags: "@lambdards" }, function (this: SdkWorld) {
+  this.functionHelpers = {
+    functionName: LAMBDA_RDS_TEST_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      try {
+        await lambdaRdsCreateFunction(world);
+        world.lastCallResult = { success: true, output: { FunctionName: LAMBDA_RDS_TEST_FUNC } };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    assertFunctionActive: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
+      const result = await lambdaRdsLambdaClient(world).send(
+        new GetFunctionCommand({ FunctionName: LAMBDA_RDS_TEST_FUNC }),
+      );
+      const expectedState = "Active";
+      const actualState = result.Configuration?.State ?? "";
+      assert.strictEqual(
+        actualState,
+        expectedState,
+        `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
+      );
+    },
+  };
+});
 
 // ── Given: invocation state ───────────────────────────────────────────────────
 

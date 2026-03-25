@@ -1,6 +1,6 @@
 /** Step definitions: s3api_lambda cross-service scenarios — unique steps only */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -71,6 +71,36 @@ async function s3apiLambdaConfigureNotification(world: SdkWorld): Promise<void> 
   );
 }
 
+// ── Before hook: register functionHelpers for s3apilambda scenarios ─────────────
+
+Before({ tags: "@s3apilambda" }, function (this: SdkWorld) {
+  this.functionHelpers = {
+    functionName: S3API_LAMBDA_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      try {
+        await s3apiLambdaCreateFunction(world);
+        world.lastCallResult = { success: true, output: { FunctionName: S3API_LAMBDA_FUNC } };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    assertFunctionActive: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
+      const result = await lambdaClient(world).send(
+        new GetFunctionCommand({ FunctionName: S3API_LAMBDA_FUNC }),
+      );
+      const expectedState = "Active";
+      const actualState = result.Configuration?.State ?? "";
+      assert.strictEqual(
+        actualState,
+        expectedState,
+        `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
+      );
+    },
+  };
+});
+
 // ── Given: bucket state ───────────────────────────────────────────────────────
 
 // "the bucket does not already exist" is registered in cross_service_common.ts.
@@ -113,40 +143,6 @@ Given("the bucket has a notification configured", async function (this: SdkWorld
 });
 
 // ── Given: function state ─────────────────────────────────────────────────────
-
-Given("the function does not already exist", async function (this: SdkWorld) {
-  // No-op: fresh state after session reset has no Lambda functions.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the function already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await s3apiLambdaCreateFunction(this);
-  // Assert: function created
-});
-
-Given("the function exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await s3apiLambdaCreateFunction(this);
-  // Assert: function created
-});
-
-Given("the function does not exist", async function (this: SdkWorld) {
-  // Arrange: delete the function if present so it does not exist
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act: delete, ignore errors (function may not exist)
-  try {
-    await lambdaClient(this).send(new DeleteFunctionCommand({ FunctionName: S3API_LAMBDA_FUNC }));
-  } catch {
-    // function may not exist; desired state is absence
-  }
-  // Assert: desired state is absence
-});
 
 Given("the function is {string}", async function (this: SdkWorld, state: string) {
   assert.ok(this.session, "Expected session to be initialized");

@@ -88,6 +88,31 @@ Before({ tags: "@lambdadocdb" }, function (this: SdkWorld) {
       );
     },
   };
+  this.functionHelpers = {
+    functionName: LAMBDA_DOCDB_TEST_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      try {
+        await lambdaDocdbCreateFunction(world);
+        world.lastCallResult = { success: true, output: { FunctionName: LAMBDA_DOCDB_TEST_FUNC } };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    assertFunctionActive: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
+      const result = await lambdaDocdbLambdaClient(world).send(
+        new GetFunctionCommand({ FunctionName: LAMBDA_DOCDB_TEST_FUNC }),
+      );
+      const expectedState = "Active";
+      const actualState = result.Configuration?.State as string;
+      assert.strictEqual(
+        actualState,
+        expectedState,
+        `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
+      );
+    },
+  };
 });
 
 // ── Given: cluster state ───────────────────────────────────────────────────────
