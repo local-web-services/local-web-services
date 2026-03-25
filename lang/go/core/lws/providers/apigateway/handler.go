@@ -99,9 +99,26 @@ func (s *Store) Reset() {
 	s.stages = make(map[string]map[string]*Stage)
 }
 
-func (s *Store) createRestAPI(name, description string, tags map[string]string) *RestAPI {
+func (s *Store) findAPIByName(name string) *RestAPI {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	for _, a := range s.apis {
+		if a.Name == name {
+			return a
+		}
+	}
+	return nil
+}
+
+func (s *Store) createRestAPI(name, description string, tags map[string]string) (*RestAPI, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	// Check for duplicate name.
+	for _, a := range s.apis {
+		if a.Name == name {
+			return nil, fmt.Errorf("REST API with name %q already exists", name)
+		}
+	}
 	id := uuid10()
 	if tags == nil {
 		tags = map[string]string{}
@@ -114,7 +131,7 @@ func (s *Store) createRestAPI(name, description string, tags map[string]string) 
 	}
 	s.deployments[id] = make(map[string]*Deployment)
 	s.stages[id] = make(map[string]*Stage)
-	return api
+	return api, nil
 }
 
 func (s *Store) getRestAPI(id string) *RestAPI {
@@ -475,7 +492,15 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch {
 	// POST /restapis
 	case method == http.MethodPost && path == "/restapis":
-		api := h.store.createRestAPI(strVal(body, "name"), strVal(body, "description"), mapStrStr(body, "tags"))
+		if h.state.GetCapacityRule("apigateway").IsExhausted() {
+			sendError(w, 429, "TooManyRequestsException", "No resource slot is available")
+			return
+		}
+		api, err := h.store.createRestAPI(strVal(body, "name"), strVal(body, "description"), mapStrStr(body, "tags"))
+		if err != nil {
+			sendError(w, 409, "ConflictException", err.Error())
+			return
+		}
 		sendJSON(w, 201, api)
 
 	// GET /restapis

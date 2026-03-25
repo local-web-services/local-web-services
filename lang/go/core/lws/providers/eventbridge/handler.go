@@ -454,6 +454,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			writeErr(w, "ResourceNotFoundException", "Event bus not found: "+name)
 			return
 		}
+		if h.state.IsResourceInDwell("eventbridge", name) {
+			writeErr(w, "ResourceNotFoundException", "Event bus "+name+" is not ACTIVE")
+			return
+		}
 		writeOK(w, map[string]string{"Name": b.Name, "Arn": b.Arn})
 
 	case "PutRule":
@@ -472,6 +476,12 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		if _, busExists := h.store.eventBuses[busName]; !busExists {
 			h.store.mu.Unlock()
 			writeErr(w, "ResourceNotFoundException", "Event bus not found: "+busName)
+			return
+		}
+		// Check bus is ACTIVE (not in lifecycle dwell)
+		if h.state.IsResourceInDwell("eventbridge", busName) {
+			h.store.mu.Unlock()
+			writeErr(w, "ResourceNotFoundException", "Event bus "+busName+" is not ACTIVE")
 			return
 		}
 		// Check if rule already exists
@@ -558,6 +568,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		h.store.mu.RUnlock()
 		if !busExists {
 			writeErr(w, "ResourceNotFoundException", "Event bus not found: "+busName)
+			return
+		}
+		if h.state.IsResourceInDwell("eventbridge", busName) {
+			writeErr(w, "ResourceNotFoundException", "Event bus "+busName+" is not ACTIVE")
 			return
 		}
 		if rules == nil {
