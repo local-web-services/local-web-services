@@ -202,10 +202,7 @@ Given('the Lambda function is not "DELETED"', async function (this: SdkWorld) {
   // Assert: function created
 });
 
-Given('the function is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: Lambda functions in lws are ACTIVE after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the function is {string}" is registered in lambda.ts (dispatches via functionHelpers).
 
 Given('the function is already "DELETED"', async function (this: SdkWorld) {
   // @internal: Cannot force a function into DELETED state via public API while still tracked.

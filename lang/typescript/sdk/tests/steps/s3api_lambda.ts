@@ -142,16 +142,8 @@ Given("the bucket has a notification configured", async function (this: SdkWorld
   // Assert: notification configured
 });
 
-// ── Given: function state ─────────────────────────────────────────────────────
-
-Given("the function is {string}", async function (this: SdkWorld, state: string) {
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "ACTIVE") {
-    // No-op: lws resolves functions to ACTIVE immediately after creation.
-    return;
-  }
-  // @internal: Cannot observe other Lambda states in lws without lifecycle dwell or internal APIs.
-});
+// "the function is {string}" is registered in lambda.ts (dispatches via functionHelpers).
+// "the function is not {string}" is registered in lambda.ts.
 
 Given("the function is not {string}", async function (this: SdkWorld, state: string) {
   assert.ok(this.session, "Expected session to be initialized");

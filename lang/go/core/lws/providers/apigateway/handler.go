@@ -505,7 +505,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// GET /restapis
 	case method == http.MethodGet && path == "/restapis":
-		sendJSON(w, 200, map[string]interface{}{"items": h.store.listRestAPIs()})
+		sendJSON(w, 200, map[string]interface{}{"item": h.store.listRestAPIs()})
 
 	// GET /restapis/:id
 	case method == http.MethodGet && len(parts) == 2 && parts[0] == "restapis":
@@ -528,7 +528,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if resources, err := h.store.getResources(parts[1]); err != nil {
 			sendError(w, 404, "NotFoundException", err.Error())
 		} else {
-			sendJSON(w, 200, map[string]interface{}{"items": resources})
+			sendJSON(w, 200, map[string]interface{}{"item": resources})
 		}
 
 	// POST /restapis/:id/resources/:parentId
@@ -654,7 +654,7 @@ func (h *Handler) handleDeploymentRoute(w http.ResponseWriter, method string, pa
 		if err != nil {
 			sendError(w, 404, "NotFoundException", err.Error())
 		} else {
-			sendJSON(w, 200, map[string]interface{}{"items": deps})
+			sendJSON(w, 200, map[string]interface{}{"item": deps})
 		}
 	case method == http.MethodGet && len(parts) == 4:
 		if d := h.store.getDeployment(apiID, parts[3]); d != nil {

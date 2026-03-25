@@ -239,19 +239,6 @@ Given('the target queue is not "ACTIVE"', async function (this: SdkWorld) {
   await apigwSqsCreateQueue(this);
 });
 
-// ── Given: message state ──────────────────────────────────────────────────────
-
-Given('an "AVAILABLE" message exists in the queue', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: cannot pre-seed messages for API Gateway integration in lws;
-  // scenarios using this step go through the When/Then happy-path flow.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given('no "AVAILABLE" message exists in the queue', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no messages.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
 // ── Given: capacity slots ─────────────────────────────────────────────────────
 
 Given("a request slot is available", async function (this: SdkWorld) {
@@ -450,19 +437,6 @@ Then(
     );
   },
 );
-
-Then('the message is "DELETED"', async function (this: SdkWorld) {
-  // Arrange: action already performed in the When step
-  // Act: (no-op)
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected message to be deleted but got error: ${JSON.stringify(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
 
 // ── Invariant catch-all Then steps ────────────────────────────────────────────
 

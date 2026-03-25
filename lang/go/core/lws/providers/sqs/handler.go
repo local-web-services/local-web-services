@@ -644,22 +644,24 @@ func (h *Handler) handleJSON(w http.ResponseWriter, r *http.Request, action stri
 	case "SetQueueAttributes":
 		queueURL := getString(body, "QueueUrl")
 		q := h.store.getQueue(queueURL)
-		if q != nil {
-			if attrs, ok := body["Attributes"].(map[string]interface{}); ok {
-				if rpJSON, ok := attrs["RedrivePolicy"].(string); ok && rpJSON != "" {
-					var rpMap map[string]interface{}
-					if err := json.Unmarshal([]byte(rpJSON), &rpMap); err == nil {
-						rp := &RedrivePolicy{}
-						if v, ok := rpMap["deadLetterTargetArn"].(string); ok {
-							rp.DeadLetterTargetArn = v
-						}
-						if v, ok := rpMap["maxReceiveCount"].(float64); ok {
-							rp.MaxReceiveCount = int(v)
-						}
-						q.mu.Lock()
-						q.RedrivePolicy = rp
-						q.mu.Unlock()
+		if q == nil {
+			writeErr("AWS.SimpleQueueService.NonExistentQueue", "Queue not found: "+queueURL)
+			return
+		}
+		if attrs, ok := body["Attributes"].(map[string]interface{}); ok {
+			if rpJSON, ok := attrs["RedrivePolicy"].(string); ok && rpJSON != "" {
+				var rpMap map[string]interface{}
+				if err := json.Unmarshal([]byte(rpJSON), &rpMap); err == nil {
+					rp := &RedrivePolicy{}
+					if v, ok := rpMap["deadLetterTargetArn"].(string); ok {
+						rp.DeadLetterTargetArn = v
 					}
+					if v, ok := rpMap["maxReceiveCount"].(float64); ok {
+						rp.MaxReceiveCount = int(v)
+					}
+					q.mu.Lock()
+					q.RedrivePolicy = rp
+					q.mu.Unlock()
 				}
 			}
 		}

@@ -93,25 +93,8 @@ Before({ tags: "@lambdas3tables" }, function (this: SdkWorld) {
 
 // ── Given: invocation state ───────────────────────────────────────────────────
 
-Given("an invocation is {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "IN_PROGRESS") {
-    // Act: create a Lambda function so an invocation can be considered in-progress
-    try {
-      await lambdaS3TablesCreateFunction(this);
-    } catch {
-      // function may already exist; desired state is presence
-    }
-    return;
-  }
-  // For other states, no-op.
-});
-
-Given("no invocation is {string}", async function (this: SdkWorld, _state: string) {
-  // No-op: fresh state after reset has no in-progress invocations.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "an invocation is {string}" — registered in capacity.ts (dispatches via functionHelpers)
+// "no invocation is {string}" — registered in capacity.ts
 
 Given("a record slot is available", async function (this: SdkWorld) {
   // No-op: always room for records in lws.
@@ -318,25 +301,7 @@ When(
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then("the function is {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "ACTIVE") {
-    const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
-    // Act
-    const result = await lambdaS3TablesLambdaClient(this).send(
-      new GetFunctionCommand({ FunctionName: LAMBDA_S3TABLES_TEST_FUNC }),
-    );
-    // Assert
-    const expectedState = "Active";
-    const actualState = result.Configuration?.State ?? "";
-    assert.strictEqual(
-      actualState,
-      expectedState,
-      `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
-    );
-  }
-});
+// "the function is {string}" is registered in lambda.ts (dispatches via functionHelpers.assertFunctionActive).
 
 // "the bucket is {string}" is registered in cross_service_common.ts.
 
@@ -347,18 +312,8 @@ Then('the table is "DELETING" and write operations will fail', async function (t
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then("the invocation is {string}", async function (this: SdkWorld, _state: string) {
-  // @internal: Cannot observe Lambda invocation state in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Then(
-  'the invocation is "FAILED" with a ResourceNotFoundException',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe Lambda invocation failure in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+// "the invocation is {string}" — registered in lambda_common.ts
+// "the invocation is FAILED with a ResourceNotFoundException" — registered in lambda_common.ts
 
 Then('the record "EXISTS" and the invocation is "SUCCESS"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda record write result in lws.

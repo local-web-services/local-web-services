@@ -82,25 +82,8 @@ Before({ tags: "@lambdards" }, function (this: SdkWorld) {
 
 // ── Given: invocation state ───────────────────────────────────────────────────
 
-Given("an invocation is {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "IN_PROGRESS") {
-    // Act: create a Lambda function so an invocation can be considered in-progress
-    try {
-      await lambdaRdsCreateFunction(this);
-    } catch {
-      // function may already exist; desired state is presence
-    }
-    return;
-  }
-  // For other states, no-op.
-});
-
-Given("no invocation is {string}", async function (this: SdkWorld, _state: string) {
-  // No-op: fresh state after reset has no in-progress invocations.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "an invocation is {string}" — registered in capacity.ts (dispatches via functionHelpers)
+// "no invocation is {string}" — registered in capacity.ts
 
 // ── Given: RDS instance state unique to cross-service scenarios ───────────────
 
@@ -232,25 +215,7 @@ When(
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then("the function is {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "ACTIVE") {
-    const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
-    // Act
-    const result = await lambdaRdsLambdaClient(this).send(
-      new GetFunctionCommand({ FunctionName: LAMBDA_RDS_TEST_FUNC }),
-    );
-    // Assert
-    const expectedState = "Active";
-    const actualState = result.Configuration?.State ?? "";
-    assert.strictEqual(
-      actualState,
-      expectedState,
-      `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
-    );
-  }
-});
+// "the function is {string}" is registered in lambda.ts (dispatches via functionHelpers.assertFunctionActive).
 
 Then("the instance is {string}", async function (this: SdkWorld, state: string) {
   // Arrange
@@ -298,15 +263,8 @@ Then('the instance is "AVAILABLE" again', async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then("the invocation is {string}", async function (this: SdkWorld, _state: string) {
-  // @internal: Cannot observe Lambda invocation state in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Then('the invocation is "FAILED" with a connection error', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation failure in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the invocation is {string}" — registered in lambda_common.ts
+// "the invocation is FAILED with a connection error" — registered in lambda_common.ts
 
 // ── Invariant Then steps ──────────────────────────────────────────────────────
 

@@ -9,7 +9,7 @@
 import { Given, When, Then } from "@cucumber/cucumber";
 import assert from "assert";
 import { LwsSession } from "../../src/session";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, StateMachineStepHelpers } from "../support/world";
 
 // ── Shared resource name constants ────────────────────────────────────────────
 
@@ -939,7 +939,14 @@ Given("the state machine does not exist", async function (this: SdkWorld) {
   // Assert: nothing to assert
 });
 
-Given("the state machine is {string}", function (this: SdkWorld, _state: string) {
+Given("the state machine is {string}", async function (this: SdkWorld, state: string) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  if (state === "ACTIVE" && this.smHelpers?.assertStateMachineActive) {
+    // Act + Assert: delegate to service-specific assertion (used as a Then step)
+    await this.smHelpers.assertStateMachineActive(this);
+    return;
+  }
   // Arrange + Act: no-op — state machines are ACTIVE immediately after creation
   // Assert: nothing to assert
 });

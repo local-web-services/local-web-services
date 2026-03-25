@@ -702,8 +702,17 @@ func registerStepFunctionsSteps(sc *godog.ScenarioContext, world *World) {
 			return fmt.Errorf("expected list_tags_for_resource to succeed but got error: %v; expected_success=%v actual_success=%v",
 				world.lastResult.Error, expectedSuccess, actualSuccess)
 		}
-		result, ok := world.lastResult.Output.(*sfn.ListTagsForResourceOutput)
-		if !ok || result == nil {
+		// Accept both sfn and ssm ListTagsForResourceOutput types
+		switch out := world.lastResult.Output.(type) {
+		case *sfn.ListTagsForResourceOutput:
+			if out == nil {
+				return fmt.Errorf("expected Tags field in list_tags_for_resource response")
+			}
+		case *ssm.ListTagsForResourceOutput:
+			if out == nil {
+				return fmt.Errorf("expected Tags field in list_tags_for_resource response")
+			}
+		default:
 			return fmt.Errorf("expected Tags field in list_tags_for_resource response")
 		}
 		return nil

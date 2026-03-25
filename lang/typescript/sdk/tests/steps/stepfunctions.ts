@@ -1,8 +1,9 @@
 /** Step definitions: stepfunctions service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { StateMachineStepHelpers } from "../support/world";
 
 const SFN_TEST_SM = "e2e-sfn-test-sm-1";
 const SFN_TEST_SM_EXPRESS = "e2e-sfn-test-sm-express-1";
@@ -56,6 +57,28 @@ async function startExecution(world: SdkWorld, smName: string): Promise<string> 
   return result.executionArn as string;
 }
 
+// ── Before hook: register smHelpers for stepfunctions scenarios ───────────────
+
+Before({ tags: "@stepfunctions" }, function (this: SdkWorld) {
+  const smHelpersImpl: StateMachineStepHelpers = {
+    assertStateMachineActive: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DescribeStateMachineCommand } = require("@aws-sdk/client-sfn");
+      const expectedStatus = "ACTIVE";
+      const result = await sfnClient(world).send(
+        new DescribeStateMachineCommand({ stateMachineArn: smArn(SFN_TEST_SM) }),
+      );
+      const actualStatus = result.status as string;
+      assert.strictEqual(
+        actualStatus,
+        expectedStatus,
+        `Expected state machine status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+      );
+    },
+  };
+  this.smHelpers = smHelpersImpl;
+});
+
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
@@ -72,9 +95,7 @@ async function startExecution(world: SdkWorld, smName: string): Promise<string> 
 
 // ── Given: state machine status / type ───────────────────────────────────────
 
-Given('the state machine is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: state machines are ACTIVE immediately after creation.
-});
+// "the state machine is {string}" is registered in cross_service_common.ts.
 
 Given('the state machine is not "ACTIVE"', async function (this: SdkWorld) {
   // Arrange: use lifecycle API to simulate CREATING state
@@ -533,23 +554,7 @@ When("a running execution exceeds its timeout", async function (this: SdkWorld) 
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then('the state machine is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeStateMachineCommand } = require("@aws-sdk/client-sfn");
-  const expectedStatus = "ACTIVE";
-  // Act
-  const result = await sfnClient(this).send(
-    new DescribeStateMachineCommand({ stateMachineArn: smArn(SFN_TEST_SM) }),
-  );
-  // Assert
-  const actualStatus = result.status as string;
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected state machine status '${expectedStatus}' but got '${actualStatus}'; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
+// "the state machine is {string}" is registered in cross_service_common.ts (dispatches via smHelpers).
 
 Then('the state machine is in "DELETING" state', async function (this: SdkWorld) {
   // Arrange: no additional setup required

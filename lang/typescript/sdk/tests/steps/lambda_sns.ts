@@ -69,25 +69,8 @@ Before({ tags: "@lambdasns" }, function (this: SdkWorld) {
 
 // ── Given: invocation state ───────────────────────────────────────────────────
 
-Given("an invocation is {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "IN_PROGRESS") {
-    // Act: create a Lambda function so an invocation can be considered in-progress
-    try {
-      await lambdaSnsCreateFunction(this);
-    } catch {
-      // function may already exist; desired state is presence
-    }
-    return;
-  }
-  // For other states, no-op.
-});
-
-Given("no invocation is {string}", async function (this: SdkWorld, _state: string) {
-  // No-op: fresh state after reset has no in-progress invocations.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "an invocation is {string}" — registered in capacity.ts (dispatches via functionHelpers)
+// "no invocation is {string}" — registered in capacity.ts
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
@@ -126,10 +109,7 @@ When(
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then("the invocation is {string}", async function (this: SdkWorld, _state: string) {
-  // @internal: Cannot observe Lambda invocation state in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the invocation is {string}" — registered in lambda_common.ts (literal versions for IN_PROGRESS/SUCCESS/FAILED)
 
 Then("the message is published to the topic", async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda SNS publish result in lws.

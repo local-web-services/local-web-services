@@ -218,10 +218,7 @@ Then('the cluster is "STOPPED" and connections will be rejected', async function
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then('the invocation is "FAILED" with a connection error', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation failure in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the invocation is FAILED with a connection error" — registered in lambda_common.ts
 
 Then('the document "EXISTS" and the invocation is "SUCCESS"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda document write result in lws.

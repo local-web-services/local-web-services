@@ -3,6 +3,7 @@
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { StateMachineStepHelpers } from "../support/world";
 
 const LAMBDA_SF_FUNC = "e2e-test-func-1";
 const LAMBDA_SF_SM = "test-sm-1";
@@ -84,14 +85,28 @@ Before({ tags: "@lambdastepfunctions" }, function (this: SdkWorld) {
       );
     },
   };
+  const smHelpersImpl: StateMachineStepHelpers = {
+    assertStateMachineActive: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DescribeStateMachineCommand } = require("@aws-sdk/client-sfn");
+      const expectedStatus = "ACTIVE";
+      const result = await sfnClient(world).send(
+        new DescribeStateMachineCommand({ stateMachineArn: smArn() }),
+      );
+      const actualStatus: string = result.status ?? "";
+      assert.strictEqual(
+        actualStatus,
+        expectedStatus,
+        `Expected state machine status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+      );
+    },
+  };
+  this.smHelpers = smHelpersImpl;
 });
 
 // ── Given: function state ──────────────────────────────────────────────────────
 
-Given('the function is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: functions are ACTIVE immediately after creation in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the function is {string}" is registered in lambda.ts (dispatches via functionHelpers).
 
 Given('the function is not "ACTIVE"', async function (this: SdkWorld) {
   // Arrange: apply lifecycle dwell so next created function starts in a non-ACTIVE state
@@ -121,10 +136,7 @@ Given('the function is not "ACTIVE"', async function (this: SdkWorld) {
 
 // "the state machine exists" is registered in cross_service_common.ts.
 
-Given('the state machine is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: state machines are ACTIVE immediately after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the state machine is {string}" is registered in cross_service_common.ts.
 
 Given('the state machine is already "DELETED"', async function (this: SdkWorld) {
   // Arrange: create a state machine, apply a delete dwell, then delete it
@@ -267,23 +279,7 @@ When(
 
 // ── Then: assertions ───────────────────────────────────────────────────────────
 
-Then('the state machine is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeStateMachineCommand } = require("@aws-sdk/client-sfn");
-  const expectedStatus = "ACTIVE";
-  // Act
-  const result = await sfnClient(this).send(
-    new DescribeStateMachineCommand({ stateMachineArn: smArn() }),
-  );
-  // Assert
-  const actualStatus: string = result.status ?? "";
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected state machine status "${expectedStatus}" but got "${actualStatus}"`,
-  );
-});
+// "the state machine is {string}" is registered in cross_service_common.ts (dispatches via smHelpers).
 
 Then(
   'the state machine is "DELETED" and Lambda StartExecution calls will fail',

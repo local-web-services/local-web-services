@@ -105,25 +105,8 @@ Before({ tags: "@lambdaneptune" }, function (this: SdkWorld) {
 
 // ── Given: invocation state ───────────────────────────────────────────────────
 
-Given("an invocation is {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "IN_PROGRESS") {
-    // Act: create a Lambda function so an invocation can be considered in-progress
-    try {
-      await lambdaNeptuneCreateFunction(this);
-    } catch {
-      // function may already exist; desired state is presence
-    }
-    return;
-  }
-  // For other states, no-op.
-});
-
-Given("no invocation is {string}", async function (this: SdkWorld, _state: string) {
-  // No-op: fresh state after reset has no in-progress invocations.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "an invocation is {string}" — registered in capacity.ts (dispatches via functionHelpers)
+// "no invocation is {string}" — registered in capacity.ts
 
 // ── Given: Neptune cluster state unique to cross-service scenarios ────────────
 
@@ -310,15 +293,8 @@ Then(
   },
 );
 
-Then("the invocation is {string}", async function (this: SdkWorld, _state: string) {
-  // @internal: Cannot observe Lambda invocation state in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Then('the invocation is "FAILED" with a connection error', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation failure in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the invocation is {string}" — registered in lambda_common.ts
+// "the invocation is FAILED with a connection error" — registered in lambda_common.ts
 
 // ── Invariant Then steps ──────────────────────────────────────────────────────
 

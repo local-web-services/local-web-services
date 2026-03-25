@@ -80,25 +80,8 @@ Before({ tags: "@lambdaopensearch" }, function (this: SdkWorld) {
 
 // ── Given: invocation state ───────────────────────────────────────────────────
 
-Given("an invocation is {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "IN_PROGRESS") {
-    // Act: create a Lambda function so an invocation can be considered in-progress
-    try {
-      await lambdaOpenSearchCreateFunction(this);
-    } catch {
-      // function may already exist; desired state is presence
-    }
-    return;
-  }
-  // For other states, no-op.
-});
-
-Given("no invocation is {string}", async function (this: SdkWorld, _state: string) {
-  // No-op: fresh state after reset has no in-progress invocations.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "an invocation is {string}" — registered in capacity.ts (dispatches via functionHelpers)
+// "no invocation is {string}" — registered in capacity.ts
 
 Given("a document slot is available", async function (this: SdkWorld) {
   // No-op: always room for documents in lws.
@@ -236,25 +219,7 @@ When(
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then("the function is {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "ACTIVE") {
-    const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
-    // Act
-    const result = await lambdaOpenSearchLambdaClient(this).send(
-      new GetFunctionCommand({ FunctionName: LAMBDA_OPENSEARCH_TEST_FUNC }),
-    );
-    // Assert
-    const expectedState = "Active";
-    const actualState = result.Configuration?.State ?? "";
-    assert.strictEqual(
-      actualState,
-      expectedState,
-      `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
-    );
-  }
-});
+// "the function is {string}" is registered in lambda.ts (dispatches via functionHelpers.assertFunctionActive).
 
 Then("the domain is {string}", async function (this: SdkWorld, _state: string) {
   // Arrange
@@ -279,10 +244,7 @@ Then('the index "EXISTS" and is ready to receive documents', async function (thi
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then("the invocation is {string}", async function (this: SdkWorld, _state: string) {
-  // @internal: Cannot observe Lambda invocation state in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the invocation is {string}" — registered in lambda_common.ts (literal versions for IN_PROGRESS/SUCCESS/FAILED)
 
 Then('the document is "INDEXED"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda document indexing result in lws.

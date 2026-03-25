@@ -81,6 +81,15 @@ export interface FunctionStepHelpers {
   functionName: string;
 }
 
+/** Callbacks for shared state machine step definitions. Each step file that
+ *  exercises Step Functions state machines registers these helpers in a tagged
+ *  Before hook so the canonical consolidated step definitions can call them.
+ *
+ *  - assertStateMachineActive (optional): asserts the state machine is ACTIVE */
+export interface StateMachineStepHelpers {
+  assertStateMachineActive?(world: SdkWorld): Promise<void>;
+}
+
 export class SdkWorld extends World {
   session: LwsSession | null = null;
   lastCallResult: LastCallResult = { success: false, output: null };
@@ -98,6 +107,8 @@ export class SdkWorld extends World {
   busHelpers: BusStepHelpers | null = null;
   /** Lambda function step helpers registered by the active cross-service Before hook. */
   functionHelpers: FunctionStepHelpers | null = null;
+  /** State machine step helpers registered by the active cross-service Before hook. */
+  smHelpers: StateMachineStepHelpers | null = null;
 
   // Pending spec state for multi-step resource building
   _pendingSpec: {
@@ -145,12 +156,13 @@ Before(async function (this: SdkWorld, hookParam: ITestCaseHookParameter) {
   // Capture scenario tags for service dispatch in shared step definitions
   const tags = hookParam.pickle.tags.map((t) => t.name.replace(/^@/, ""));
   this.scenarioTags = tags;
-  // clusterHelpers, userHelpers, apiHelpers, busHelpers, and functionHelpers will be populated by service-specific Before hooks
+  // clusterHelpers, userHelpers, apiHelpers, busHelpers, functionHelpers, and smHelpers will be populated by service-specific Before hooks
   this.clusterHelpers = null;
   this.userHelpers = null;
   this.apiHelpers = null;
   this.busHelpers = null;
   this.functionHelpers = null;
+  this.smHelpers = null;
 });
 
 After(async function (this: SdkWorld) {

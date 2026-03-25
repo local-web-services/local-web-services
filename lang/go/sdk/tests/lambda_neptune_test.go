@@ -214,6 +214,10 @@ func registerLambdaNeptuneSteps(sc *godog.ScenarioContext, world *World) {
 		}
 		// Assert
 		expectedStatus := "available"
+		if len(resp.DBClusters) == 0 {
+			return fmt.Errorf("expected cluster status %q but cluster not found; expected_status=%s",
+				expectedStatus, expectedStatus)
+		}
 		actualStatus := aws.ToString(resp.DBClusters[0].Status)
 		if actualStatus != expectedStatus {
 			return fmt.Errorf("expected cluster status %q but got %q; expected_status=%s actual_status=%s",
@@ -233,6 +237,10 @@ func registerLambdaNeptuneSteps(sc *godog.ScenarioContext, world *World) {
 		}
 		// Assert
 		expectedStatus := "available"
+		if len(resp.DBClusters) == 0 {
+			return fmt.Errorf("expected cluster status %q but cluster not found; expected_status=%s",
+				expectedStatus, expectedStatus)
+		}
 		actualStatus := aws.ToString(resp.DBClusters[0].Status)
 		if actualStatus != expectedStatus {
 			return fmt.Errorf("expected cluster status %q but got %q; expected_status=%s actual_status=%s",
@@ -252,6 +260,10 @@ func registerLambdaNeptuneSteps(sc *godog.ScenarioContext, world *World) {
 		}
 		// Assert
 		expectedStatus := "stopped"
+		if len(resp.DBClusters) == 0 {
+			return fmt.Errorf("expected cluster status %q but cluster not found; expected_status=%s",
+				expectedStatus, expectedStatus)
+		}
 		actualStatus := aws.ToString(resp.DBClusters[0].Status)
 		if actualStatus != expectedStatus {
 			return fmt.Errorf("expected cluster status %q but got %q; expected_status=%s actual_status=%s",

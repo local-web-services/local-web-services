@@ -206,6 +206,10 @@ func registerLambdaRDSSteps(sc *godog.ScenarioContext, world *World) {
 		}
 		// Assert
 		expectedStatus := "available"
+		if len(resp.DBInstances) == 0 {
+			return fmt.Errorf("expected instance status %q but instance not found; expected_status=%s",
+				expectedStatus, expectedStatus)
+		}
 		actualStatus := aws.ToString(resp.DBInstances[0].DBInstanceStatus)
 		if actualStatus != expectedStatus {
 			return fmt.Errorf("expected instance status %q but got %q; expected_status=%s actual_status=%s",
@@ -225,6 +229,10 @@ func registerLambdaRDSSteps(sc *godog.ScenarioContext, world *World) {
 		}
 		// Assert
 		expectedStatus := "failing-over"
+		if len(resp.DBInstances) == 0 {
+			return fmt.Errorf("expected instance status %q but instance not found; expected_status=%s",
+				expectedStatus, expectedStatus)
+		}
 		actualStatus := aws.ToString(resp.DBInstances[0].DBInstanceStatus)
 		if actualStatus != expectedStatus {
 			return fmt.Errorf("expected instance status %q but got %q; expected_status=%s actual_status=%s",

@@ -1,7 +1,7 @@
 /** Step definitions: capacity_management */
 
 import { Given } from "@cucumber/cucumber";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, FunctionStepHelpers } from "../support/world";
 
 // ── Capacity setup steps ───────────────────────────────────────────────────────
 
@@ -27,8 +27,18 @@ Given("no invocation slot is available", async function (this: SdkWorld) {
 });
 
 Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // @internal: Cannot observe in-progress invocation state via public API in lws.
+  // Arrange: create the function if functionHelpers is set (cross-service scenarios)
   if (!this.session) throw new Error("No session running");
+  const helpers = this.functionHelpers as FunctionStepHelpers | null;
+  if (helpers) {
+    try {
+      await helpers.deployFunction(this);
+    } catch {
+      // function may already exist; desired state is presence
+    }
+    // Clear lastCallResult so this Given step doesn't affect When/Then
+    this.lastCallResult = { success: false, output: null };
+  }
 });
 
 Given('no invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
