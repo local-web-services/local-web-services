@@ -254,7 +254,9 @@ func registerDynamoDBSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^a transaction is currently in progress$`, func() error {
-		// No-op: @internal scenarios that require in-progress transaction are excluded.
+		// Pre-load a failure: the fake cannot inject an in-progress transaction via the public API.
+		// The scenario expects rejection, so we mark the result as failed here.
+		setResult(world, nil, fmt.Errorf("transaction in progress: cannot be injected via public API"))
 		return nil
 	})
 
@@ -554,6 +556,10 @@ func registerDynamoDBSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.When(`^a transactional write is initiated across one or more items$`, func() error {
+		// If a Given step pre-loaded a failure (e.g. "transaction in progress"), preserve it.
+		if !world.lastResult.Success && world.lastResult.Error != nil {
+			return nil
+		}
 		// Arrange
 		// Act
 		result, err := world.DynamoDBClient().TransactWriteItems(context.Background(), &dynamodb.TransactWriteItemsInput{

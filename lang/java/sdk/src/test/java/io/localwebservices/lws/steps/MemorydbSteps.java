@@ -22,14 +22,12 @@ import software.amazon.awssdk.services.memorydb.model.DeleteUserResponse;
 import software.amazon.awssdk.services.memorydb.model.DescribeAcLsResponse;
 import software.amazon.awssdk.services.memorydb.model.DescribeClustersResponse;
 import software.amazon.awssdk.services.memorydb.model.DescribeSnapshotsResponse;
-import software.amazon.awssdk.services.memorydb.model.DescribeUsersResponse;
 import software.amazon.awssdk.services.memorydb.model.InputAuthenticationType;
 import software.amazon.awssdk.services.memorydb.model.Snapshot;
 import software.amazon.awssdk.services.memorydb.model.Tag;
 import software.amazon.awssdk.services.memorydb.model.UpdateAclResponse;
 import software.amazon.awssdk.services.memorydb.model.UpdateClusterResponse;
 import software.amazon.awssdk.services.memorydb.model.UpdateUserResponse;
-import software.amazon.awssdk.services.memorydb.model.User;
 
 /**
  * Step definitions for the MemoryDB informal specification feature files.
@@ -173,6 +171,7 @@ public class MemorydbSteps {
   @When("a MemoryDB cluster is created")
   public void aMemoryDbClusterIsCreated() {
     // Arrange: ensure ACL exists first
+    world.lastClusterService = "memorydb";
     createACL();
     try (MemoryDbClient client = world.session.memoryDbClient()) {
       // Act
@@ -193,6 +192,7 @@ public class MemorydbSteps {
   @When("a MemoryDB cluster is deleted")
   public void aMemoryDbClusterIsDeleted() {
     // Arrange: (cluster state set up by Given steps)
+    world.lastClusterService = "memorydb";
     try (MemoryDbClient client = world.session.memoryDbClient()) {
       // Act
       DeleteClusterResponse result = client.deleteCluster(r -> r.clusterName(CLUSTER_NAME));
@@ -366,6 +366,7 @@ public class MemorydbSteps {
   @When("a MemoryDB cluster configuration is updated")
   public void aMemoryDbClusterConfigurationIsUpdated() {
     // Arrange: (cluster state set up by Given steps)
+    world.lastClusterService = "memorydb";
     try (MemoryDbClient client = world.session.memoryDbClient()) {
       // Act
       UpdateClusterResponse result =
@@ -487,43 +488,9 @@ public class MemorydbSteps {
 
   // ── Then: assertions ──────────────────────────────────────────────────────────
 
-  @Then("the cluster is in {string} state")
-  public void theClusterIsInState(String expectedStatus) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected cluster operation to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    try (MemoryDbClient client = world.session.memoryDbClient()) {
-      DescribeClustersResponse result = client.describeClusters(r -> r.clusterName(CLUSTER_NAME));
-      List<Cluster> clusters = result.clusters();
-      assertFalse(
-          clusters.isEmpty(),
-          "expected cluster '"
-              + CLUSTER_NAME
-              + "' to exist but not found; expected_cluster="
-              + CLUSTER_NAME);
-      String actualStatus = clusters.get(0).status();
-      String expectedStatusLower = expectedStatus.toLowerCase();
-      org.junit.jupiter.api.Assertions.assertEquals(
-          expectedStatusLower,
-          actualStatus,
-          "expected cluster status '"
-              + expectedStatusLower
-              + "' but got '"
-              + actualStatus
-              + "'; expected_status="
-              + expectedStatusLower
-              + " actual_status="
-              + actualStatus);
-    }
-  }
+  // "the cluster is in {string} state" is registered in DocdbSteps as a unified handler for
+  // both DocDB and MemoryDB scenarios, dispatching on world.lastClusterService — not re-registered
+  // here to avoid AmbiguousStepDefinitionsException with DocdbSteps' literal forms.
 
   @Then("the cluster remains {string} after the shard failover")
   public void theClusterRemainsAfterTheShardFailover(String state) {
@@ -584,33 +551,9 @@ public class MemorydbSteps {
     }
   }
 
-  @Then("the user is \"DELETED\"")
-  public void theUserIsDeleted() {
-    // Arrange
-    // Act
-    try (MemoryDbClient client = world.session.memoryDbClient()) {
-      DescribeUsersResponse result = client.describeUsers(r -> r.userName(USER_NAME));
-      List<User> users = result.users();
-      // Assert
-      for (User u : users) {
-        if (USER_NAME.equals(u.name())) {
-          String actualStatus = u.status();
-          assertTrue(
-              "deleting".equals(actualStatus) || "deleted".equals(actualStatus),
-              "expected user '"
-                  + USER_NAME
-                  + "' to be deleted but status is '"
-                  + actualStatus
-                  + "'; expected_deleted="
-                  + USER_NAME
-                  + " actual_status="
-                  + actualStatus);
-        }
-      }
-    } catch (Exception ignored) {
-      // User not found — treat as deleted
-    }
-  }
+  // "the user is \"DELETED\"" is omitted here because it conflicts with CognitoIdpSteps' generic
+  // @Given("the user is {string}"). The MemoryDB scenario using this step is @internal (excluded).
+  // CognitoIdpSteps handles all non-@internal uses of "the user is {string}".
 
   @Then("the user returns to {string} state")
   public void theUserReturnsToState(String state) {

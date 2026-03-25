@@ -25,7 +25,7 @@ function sfnMemoryDBSfnClient(world: SdkWorld) {
 }
 
 function sfnMemoryDBClient(world: SdkWorld) {
-  const { MemoryDBClient } = require("@aws-sdk/client-memory-db");
+  const { MemoryDBClient } = require("@aws-sdk/client-memorydb");
   return world.session!.client<typeof MemoryDBClient>("memorydb");
 }
 
@@ -47,7 +47,7 @@ async function sfnMemoryDBCreateSm(world: SdkWorld): Promise<string> {
 }
 
 async function sfnMemoryDBCreateCluster(world: SdkWorld): Promise<void> {
-  const { CreateClusterCommand } = require("@aws-sdk/client-memory-db");
+  const { CreateClusterCommand } = require("@aws-sdk/client-memorydb");
   await sfnMemoryDBClient(world).send(
     new CreateClusterCommand({
       ClusterName: SFN_MEMORYDB_TEST_CLUSTER,
@@ -172,7 +172,7 @@ Given('no execution is "RUNNING"', async function (this: SdkWorld) {
 When("a MemoryDB cluster is created", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { CreateClusterCommand } = require("@aws-sdk/client-memory-db");
+  const { CreateClusterCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await sfnMemoryDBClient(this).send(
@@ -192,7 +192,7 @@ When("a MemoryDB cluster is created", async function (this: SdkWorld) {
 When("a MemoryDB cluster update begins", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { UpdateClusterCommand } = require("@aws-sdk/client-memory-db");
+  const { UpdateClusterCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await sfnMemoryDBClient(this).send(
@@ -257,7 +257,7 @@ When(
 Then('the cluster is "AVAILABLE"', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeClustersCommand } = require("@aws-sdk/client-memory-db");
+  const { DescribeClustersCommand } = require("@aws-sdk/client-memorydb");
   const expectedClusterName = SFN_MEMORYDB_TEST_CLUSTER;
   const expectedStatus = "available";
   // Act

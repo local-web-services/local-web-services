@@ -20,7 +20,7 @@ function lambdaMemorydbLambdaClient(world: SdkWorld) {
 }
 
 function lambdaMemorydbMemoryDbClient(world: SdkWorld) {
-  const { MemoryDBClient } = require("@aws-sdk/client-memory-db");
+  const { MemoryDBClient } = require("@aws-sdk/client-memorydb");
   return world.session!.client<typeof MemoryDBClient>("memorydb");
 }
 
@@ -38,7 +38,7 @@ async function lambdaMemorydbCreateFunction(world: SdkWorld): Promise<void> {
 }
 
 async function lambdaMemorydbCreateCluster(world: SdkWorld): Promise<void> {
-  const { CreateClusterCommand } = require("@aws-sdk/client-memory-db");
+  const { CreateClusterCommand } = require("@aws-sdk/client-memorydb");
   await lambdaMemorydbMemoryDbClient(world).send(
     new CreateClusterCommand({
       ClusterName: LAMBDA_MEMORYDB_TEST_CLUSTER,
@@ -118,7 +118,7 @@ When("a Lambda function is deployed", async function (this: SdkWorld) {
 When("a MemoryDB cluster is created", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "No session running");
-  const { CreateClusterCommand } = require("@aws-sdk/client-memory-db");
+  const { CreateClusterCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await lambdaMemorydbMemoryDbClient(this).send(
@@ -217,7 +217,7 @@ Then("the cluster is {string}", async function (this: SdkWorld, state: string) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   if (state === "AVAILABLE") {
-    const { DescribeClustersCommand } = require("@aws-sdk/client-memory-db");
+    const { DescribeClustersCommand } = require("@aws-sdk/client-memorydb");
     // Act
     const result = await lambdaMemorydbMemoryDbClient(this).send(
       new DescribeClustersCommand({ ClusterName: LAMBDA_MEMORYDB_TEST_CLUSTER }),

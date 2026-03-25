@@ -30,6 +30,10 @@ public class WorldContext {
   public String lastStateMachineArn;
   public String lastExecutionArn;
 
+  // Last cluster service used in a When step — used to dispatch shared "the cluster is in X state"
+  // assertions between DocDB and MemoryDB (both share identical step text).
+  public String lastClusterService;
+
   // SQS spec state — receipt handle for in-flight message operations
   public String sqsReceiptHandle;
 

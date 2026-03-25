@@ -1,6 +1,7 @@
 package io.localwebservices.lws.steps;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -15,6 +16,9 @@ import software.amazon.awssdk.services.docdb.model.DBInstance;
 import software.amazon.awssdk.services.docdb.model.DescribeDbClusterSnapshotsResponse;
 import software.amazon.awssdk.services.docdb.model.DescribeDbClustersResponse;
 import software.amazon.awssdk.services.docdb.model.DescribeDbInstancesResponse;
+import software.amazon.awssdk.services.memorydb.MemoryDbClient;
+import software.amazon.awssdk.services.memorydb.model.Cluster;
+import software.amazon.awssdk.services.memorydb.model.DescribeClustersResponse;
 
 /**
  * Step definitions for the DocDB informal specification feature files.
@@ -33,6 +37,9 @@ public class DocdbSteps {
   private static final String TEST_SNAPSHOT_ID = "test-docdb-snapshot-1";
   private static final String TEST_ENGINE = "docdb";
   private static final String TEST_INSTANCE_CLASS = "db.t3.medium";
+  // MemoryDB cluster name — used in the shared "the cluster is in {string} state" handler.
+  // Must match MemorydbSteps.CLUSTER_NAME to enable cross-service dispatch.
+  private static final String MEMORYDB_CLUSTER_NAME = "test-memorydb-cluster-1";
 
   private final WorldContext world;
 
@@ -82,17 +89,14 @@ public class DocdbSteps {
     // Assert: instance created in cluster (no error thrown)
   }
 
-  // ── Given: lifecycle states (@internal — no-op) ────────────────────────────
-
-  @Given("the cluster is {string}")
-  public void theClusterIs(String status) {
-    // @internal: Cannot place cluster into arbitrary lifecycle state via public API.
-  }
-
-  @Given("the cluster is not {string}")
-  public void theClusterIsNot(String status) {
-    // @internal: Cannot enforce cluster is NOT in a given lifecycle state via public API.
-  }
+  // ── Given: lifecycle states ────────────────────────────────────────────────
+  // "the cluster is {string}" and "the cluster is not {string}" are omitted here because they
+  // conflict with ElasticacheSteps ("the cluster is \"AVAILABLE\""),
+  // LambdaDocdbSteps ("the cluster is \"STOPPED\""), and
+  // StepfunctionsMemorydbSteps ("the cluster is \"UPDATING\"").
+  // Non-@internal docdb scenarios that use "the cluster is \"AVAILABLE\"" are handled by
+  // ElasticacheSteps.theClusterIsAvailable() (creates an ElastiCache cluster, harmless for DocDB).
+  // All other cluster state steps in docdb are in @internal scenarios (excluded by tag filter).
 
   // ── Given: instance state setup ────────────────────────────────────────────
 
@@ -124,15 +128,9 @@ public class DocdbSteps {
     // Assert: slot taken (no error thrown)
   }
 
-  @Given("the instance is {string}")
-  public void theInstanceIs(String status) {
-    // @internal: Cannot place instance into arbitrary lifecycle state via public API.
-  }
-
-  @Given("the instance is not {string}")
-  public void theInstanceIsNot(String status) {
-    // @internal: Cannot enforce instance is NOT in a given lifecycle state via public API.
-  }
+  // "the instance is {string}" and "the instance is not {string}" are omitted here because they
+  // conflict with LambdaRdsSteps ("the instance is \"AVAILABLE\""). All instance lifecycle
+  // state steps in docdb are in @internal scenarios (excluded by tag filter).
 
   @Given("the instance is the primary")
   public void theInstanceIsThePrimary() {
@@ -247,6 +245,7 @@ public class DocdbSteps {
   @When("a database cluster is created")
   public void aDatabaseClusterIsCreated() {
     // Arrange: (state set up by Given steps)
+    world.lastClusterService = "docdb";
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
       var result =
@@ -261,6 +260,7 @@ public class DocdbSteps {
   @When("a database cluster is deleted")
   public void aDatabaseClusterIsDeleted() {
     // Arrange: (state set up by Given steps)
+    world.lastClusterService = "docdb";
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
       var result = client.deleteDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
@@ -274,6 +274,7 @@ public class DocdbSteps {
   @When("a database cluster configuration is modified")
   public void aDatabaseClusterConfigurationIsModified() {
     // Arrange: (state set up by Given steps)
+    world.lastClusterService = "docdb";
     try (DocDbClient client = world.session.docDbClient()) {
       // Act
       var result = client.modifyDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
@@ -469,8 +470,15 @@ public class DocdbSteps {
 
   // ── Then: assertions ───────────────────────────────────────────────────────
 
-  @Then("the cluster is in \"CREATING\" state")
-  public void theClusterIsInCreatingState() {
+  /**
+   * Unified cluster state assertion for DocDB and MemoryDB scenarios.
+   *
+   * <p>DocDB and MemoryDB share the step text "the cluster is in {string} state". This single
+   * handler dispatches to the correct service based on {@link WorldContext#lastClusterService}, set
+   * by the When step that preceded this assertion.
+   */
+  @Then("the cluster is in {string} state")
+  public void theClusterIsInState(String expectedStatus) {
     // Arrange: no additional setup required
     // Act: action already performed in the When step
     // Assert
@@ -478,100 +486,68 @@ public class DocdbSteps {
     boolean actualSuccess = world.lastSuccess;
     assertTrue(
         actualSuccess,
-        "expected CreateDBCluster to succeed but got error: "
+        "expected cluster operation to succeed but got error: "
             + world.lastError
             + "; expected_success="
             + expectedSuccess);
+    String expectedStatusLower = expectedStatus.toLowerCase();
+    if ("memorydb".equals(world.lastClusterService)) {
+      assertMemoryDbClusterStatus(expectedStatusLower);
+    } else {
+      assertDocDbClusterStatus(expectedStatusLower);
+    }
+  }
+
+  private void assertDocDbClusterStatus(String expectedStatusLower) {
+    // Arrange
     try (DocDbClient client = world.session.docDbClient()) {
+      // Act
       DescribeDbClustersResponse result =
           client.describeDBClusters(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
       List<DBCluster> clusters = result.dbClusters();
+      // Assert
       assertNotNull(clusters, "expected DBClusters list but got null");
       assertTrue(
           !clusters.isEmpty(), "expected cluster '" + TEST_CLUSTER_ID + "' to exist but not found");
-      String expectedStatus = "creating";
       String actualStatus = clusters.get(0).status();
       assertEquals(
-          expectedStatus,
+          expectedStatusLower,
           actualStatus,
-          "expected cluster status '"
-              + expectedStatus
+          "expected DocDB cluster status '"
+              + expectedStatusLower
               + "' but got '"
               + actualStatus
               + "'; expected_status="
-              + expectedStatus
+              + expectedStatusLower
               + " actual_status="
               + actualStatus);
     }
   }
 
-  @Then("the cluster is in \"DELETING\" state")
-  public void theClusterIsInDeletingState() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected DeleteDBCluster to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    try (DocDbClient client = world.session.docDbClient()) {
-      DescribeDbClustersResponse result =
-          client.describeDBClusters(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
-      List<DBCluster> clusters = result.dbClusters();
-      assertNotNull(clusters, "expected DBClusters list but got null");
-      assertTrue(
-          !clusters.isEmpty(), "expected cluster '" + TEST_CLUSTER_ID + "' to exist but not found");
-      String expectedStatus = "deleting";
+  private void assertMemoryDbClusterStatus(String expectedStatusLower) {
+    // Arrange
+    try (MemoryDbClient client = world.session.memoryDbClient()) {
+      // Act
+      DescribeClustersResponse result =
+          client.describeClusters(r -> r.clusterName(MEMORYDB_CLUSTER_NAME));
+      List<Cluster> clusters = result.clusters();
+      // Assert
+      assertFalse(
+          clusters.isEmpty(),
+          "expected MemoryDB cluster '"
+              + MEMORYDB_CLUSTER_NAME
+              + "' to exist but not found; expected_cluster="
+              + MEMORYDB_CLUSTER_NAME);
       String actualStatus = clusters.get(0).status();
       assertEquals(
-          expectedStatus,
+          expectedStatusLower,
           actualStatus,
-          "expected cluster status '"
-              + expectedStatus
+          "expected MemoryDB cluster status '"
+              + expectedStatusLower
               + "' but got '"
               + actualStatus
               + "'; expected_status="
-              + expectedStatus
-              + " actual_status="
-              + actualStatus);
-    }
-  }
-
-  @Then("the cluster is in \"MODIFYING\" state")
-  public void theClusterIsInModifyingState() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected ModifyDBCluster to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    try (DocDbClient client = world.session.docDbClient()) {
-      DescribeDbClustersResponse result =
-          client.describeDBClusters(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID));
-      List<DBCluster> clusters = result.dbClusters();
-      assertNotNull(clusters, "expected DBClusters list but got null");
-      assertTrue(
-          !clusters.isEmpty(), "expected cluster '" + TEST_CLUSTER_ID + "' to exist but not found");
-      String expectedStatus = "modifying";
-      String actualStatus = clusters.get(0).status();
-      assertEquals(
-          expectedStatus,
-          actualStatus,
-          "expected cluster status '"
-              + expectedStatus
-              + "' but got '"
-              + actualStatus
-              + "'; expected_status="
-              + expectedStatus
+              + expectedStatusLower
               + " actual_status="
               + actualStatus);
     }

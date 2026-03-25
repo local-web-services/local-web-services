@@ -167,14 +167,24 @@ public class DynamodbSteps {
     // No-op: fresh state has no pending transactions.
   }
 
-  @Given("the transaction is {string}")
-  public void theTransactionIs(String state) {
-    // No-op: @internal scenarios are excluded from the test run.
+  @Given("the transaction is \"COMMITTED\"")
+  public void theTransactionIsCommittedGiven() {
+    // @internal: @internal scenarios are excluded from the test run.
   }
 
-  @Given("the transaction is not {string}")
-  public void theTransactionIsNot(String state) {
-    // No-op: default state has no committed/rolled-back transaction.
+  @Given("the transaction is \"ROLLED_BACK\"")
+  public void theTransactionIsRolledBackGiven() {
+    // @internal: @internal scenarios are excluded from the test run.
+  }
+
+  @Given("the transaction is not \"COMMITTED\"")
+  public void theTransactionIsNotCommitted() {
+    // @internal: default state has no committed transaction.
+  }
+
+  @Given("the transaction is not \"ROLLED_BACK\"")
+  public void theTransactionIsNotRolledBack() {
+    // @internal: default state has no rolled-back transaction.
   }
 
   @Given("the transaction's table exists")

@@ -4,6 +4,7 @@ package state
 import (
 	"strings"
 	"sync"
+	"time"
 )
 
 // ChaosRule holds chaos injection configuration for a service/operation.
@@ -78,6 +79,15 @@ type FakeRule struct {
 	Response  FakeResponse
 }
 
+// LifecycleRule holds lifecycle simulation configuration for a service.
+// When create_dwell_ms > 0, newly created resources start in CREATING state
+// and become ACTIVE after the specified duration.
+type LifecycleRule struct {
+	Enabled       bool `json:"enabled"`
+	CreateDwellMs int  `json:"create_dwell_ms"`
+	DeleteDwellMs int  `json:"delete_dwell_ms"`
+}
+
 // ServerState holds all mutable server state.
 type ServerState struct {
 	mu sync.RWMutex
@@ -97,15 +107,22 @@ type ServerState struct {
 	// capacityRules: service -> CapacityRule
 	capacityRules map[string]CapacityRule
 
+	// lifecycleRules: service -> LifecycleRule
+	lifecycleRules map[string]LifecycleRule
+
+	// resourceCreatedAt: "service/resourceID" -> creation time
+	resourceCreatedAt map[string]time.Time
+
 	// resetCallbacks called on POST /_ldk/reset
 	resetCallbacks []func()
 }
 
 func NewServerState() *ServerState {
 	return &ServerState{
-		chaosRules:    make(map[string]map[string]*ChaosRule),
-		fakeRules:     make(map[string][]FakeRule),
-		capacityRules: make(map[string]CapacityRule),
+		chaosRules:     make(map[string]map[string]*ChaosRule),
+		fakeRules:      make(map[string][]FakeRule),
+		capacityRules:  make(map[string]CapacityRule),
+		lifecycleRules: make(map[string]LifecycleRule),
 		iamConfig: IamConfig{
 			Identities:       make(map[string]IamIdentity),
 			ResourcePolicies: make(map[string]IamPolicy),
@@ -124,6 +141,7 @@ func (s *ServerState) Reset() {
 	s.chaosRules = make(map[string]map[string]*ChaosRule)
 	s.fakeRules = make(map[string][]FakeRule)
 	s.capacityRules = make(map[string]CapacityRule)
+	s.lifecycleRules = make(map[string]LifecycleRule)
 	s.iamConfig = IamConfig{
 		Identities:       make(map[string]IamIdentity),
 		ResourcePolicies: make(map[string]IamPolicy),
@@ -272,6 +290,20 @@ func (s *ServerState) ClearFakeRules(service string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.fakeRules, service)
+}
+
+// GetLifecycleRule returns the LifecycleRule for a service.
+func (s *ServerState) GetLifecycleRule(service string) LifecycleRule {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.lifecycleRules[service]
+}
+
+// SetLifecycleRule sets the LifecycleRule for a service.
+func (s *ServerState) SetLifecycleRule(service string, rule LifecycleRule) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.lifecycleRules[service] = rule
 }
 
 // GetCapacityRule returns the CapacityRule for a service (default: unlimited).

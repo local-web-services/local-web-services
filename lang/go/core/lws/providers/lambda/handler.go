@@ -175,13 +175,21 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// ── Tags ──────────────────────────────────────────────────────────────────
 	case r.Method == http.MethodPost && strings.HasPrefix(path, "/2017-03-31/tags/"):
-		h.tagResource(w, r)
+		arn := strings.TrimPrefix(path, "/2017-03-31/tags/")
+		h.tagResource(w, r, arn)
+	case r.Method == http.MethodGet && strings.HasPrefix(path, "/2017-03-31/tags/"):
+		arn := strings.TrimPrefix(path, "/2017-03-31/tags/")
+		h.listTags(w, arn)
 	case r.Method == http.MethodDelete && strings.HasPrefix(path, "/2017-03-31/tags/"):
-		h.untagResource(w, r)
+		arn := strings.TrimPrefix(path, "/2017-03-31/tags/")
+		h.untagResource(w, r, arn)
 
 	// ── Concurrency ───────────────────────────────────────────────────────────
 	case strings.Contains(path, "/concurrency"):
-		jsonOK(w, map[string]interface{}{"ReservedConcurrentExecutions": 0})
+		parts := strings.Split(path, "/")
+		if len(parts) >= 5 {
+			h.putFunctionConcurrency(w, parts[3])
+		}
 
 	default:
 		w.Header().Set("Content-Type", "application/json")
@@ -392,6 +400,10 @@ func (h *Handler) updateEventSourceMapping(w http.ResponseWriter, r *http.Reques
 // ── Permission operations ─────────────────────────────────────────────────────
 
 func (h *Handler) addPermission(w http.ResponseWriter, r *http.Request, name string) {
+	if _, ok := h.store.functions[name]; !ok {
+		jsonErr(w, "ResourceNotFoundException", "Function "+name+" not found")
+		return
+	}
 	var body map[string]interface{}
 	json.NewDecoder(r.Body).Decode(&body) //nolint:errcheck
 	if _, ok := h.store.permissions[name]; !ok {
@@ -408,12 +420,23 @@ func (h *Handler) removePermission(w http.ResponseWriter, name, statementID stri
 		return
 	}
 	perms := h.store.permissions[name]
+	if len(perms) == 0 {
+		jsonErr(w, "ResourceNotFoundException", "Function "+name+" has no resource policy")
+		return
+	}
 	var updated []map[string]interface{}
+	found := false
 	for _, p := range perms {
 		sid, _ := p["StatementId"].(string)
-		if sid != statementID {
+		if sid == statementID {
+			found = true
+		} else {
 			updated = append(updated, p)
 		}
+	}
+	if !found {
+		jsonErr(w, "ResourceNotFoundException", "Statement "+statementID+" not found in resource policy")
+		return
 	}
 	h.store.permissions[name] = updated
 	w.WriteHeader(204)
@@ -432,12 +455,82 @@ func (h *Handler) getPolicy(w http.ResponseWriter, name string) {
 	})
 }
 
-func (h *Handler) tagResource(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) arnToFunctionName(arn string) string {
+	// arn:aws:lambda:us-east-1:000000000000:function:{name}
+	parts := strings.Split(arn, ":")
+	if len(parts) >= 7 && parts[5] == "function" {
+		return parts[6]
+	}
+	// If it's already a name, return as-is
+	return arn
+}
+
+func (h *Handler) tagResource(w http.ResponseWriter, r *http.Request, arn string) {
+	name := h.arnToFunctionName(arn)
+	fn, ok := h.store.functions[name]
+	if !ok {
+		jsonErr(w, "ResourceNotFoundException", "Function "+name+" not found")
+		return
+	}
+	var body map[string]interface{}
+	json.NewDecoder(r.Body).Decode(&body) //nolint:errcheck
+	if tags, ok := body["Tags"].(map[string]interface{}); ok {
+		if fn.Tags == nil {
+			fn.Tags = make(map[string]string)
+		}
+		for k, v := range tags {
+			if s, ok := v.(string); ok {
+				fn.Tags[k] = s
+			}
+		}
+	}
 	w.WriteHeader(204)
 }
 
-func (h *Handler) untagResource(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) listTags(w http.ResponseWriter, arn string) {
+	name := h.arnToFunctionName(arn)
+	fn, ok := h.store.functions[name]
+	if !ok {
+		jsonErr(w, "ResourceNotFoundException", "Function "+name+" not found")
+		return
+	}
+	tags := map[string]string{}
+	for k, v := range fn.Tags {
+		tags[k] = v
+	}
+	jsonOK(w, map[string]interface{}{"Tags": tags})
+}
+
+func (h *Handler) untagResource(w http.ResponseWriter, r *http.Request, arn string) {
+	name := h.arnToFunctionName(arn)
+	fn, ok := h.store.functions[name]
+	if !ok {
+		jsonErr(w, "ResourceNotFoundException", "Function "+name+" not found")
+		return
+	}
+	tagKeys := r.URL.Query()["tagKeys"]
+	if len(tagKeys) == 0 {
+		w.WriteHeader(204)
+		return
+	}
+	for _, key := range tagKeys {
+		if _, exists := fn.Tags[key]; !exists {
+			jsonErr(w, "ResourceNotFoundException", "Tag key "+key+" does not exist on function "+name)
+			return
+		}
+	}
+	for _, key := range tagKeys {
+		delete(fn.Tags, key)
+	}
 	w.WriteHeader(204)
+}
+
+func (h *Handler) putFunctionConcurrency(w http.ResponseWriter, name string) {
+	if _, ok := h.store.functions[name]; !ok {
+		jsonErr(w, "ResourceNotFoundException", "Function "+name+" not found")
+		return
+	}
+	jsonOK(w, map[string]interface{}{"ReservedConcurrentExecutions": 5})
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

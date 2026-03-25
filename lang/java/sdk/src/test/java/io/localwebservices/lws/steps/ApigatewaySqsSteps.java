@@ -265,25 +265,10 @@ public class ApigatewaySqsSteps {
   }
 
   // ── Then: assertions ──────────────────────────────────────────────────────────
-
-  @Then("the \"API\" is \"ACTIVE\" with no \"SQS\" integration configured")
-  public void theApiIsActiveWithNoSqsIntegration() throws Exception {
-    // Arrange
-    try (ApiGatewayClient client = world.session.apiGatewayClient()) {
-      // Act
-      GetRestApisResponse result = client.getRestApis(r -> {});
-      List<RestApi> items = result.items();
-      // Assert
-      String expectedName = TEST_API_NAME;
-      boolean actualFound = items.stream().anyMatch(a -> expectedName.equals(a.name()));
-      assertTrue(
-          actualFound,
-          "Expected REST API \""
-              + expectedName
-              + "\" to be ACTIVE but not found; expected_found=true actual_found="
-              + actualFound);
-    }
-  }
+  // "the \"API\" is \"ACTIVE\" with no \"SQS\" integration configured" is omitted here because it
+  // conflicts with ApigatewaySnsSteps' generic
+  // @Then("the {string} is {string} with no {string} integration configured"). The ApigatewaySns
+  // handler verifies the API exists by name and is sufficient for both SQS and SNS contexts.
 
   @Then("the \"API\" will enqueue incoming requests as \"SQS\" messages without invoking Lambda")
   public void theApiWillEnqueueRequestsWithoutLambda() throws Exception {

@@ -25,7 +25,7 @@ function sfnElasticsearchSfnClient(world: SdkWorld) {
 }
 
 function sfnElasticsearchClient(world: SdkWorld) {
-  const { ElasticsearchServiceClient } = require("@aws-sdk/client-elasticsearch");
+  const { ElasticsearchServiceClient } = require("@aws-sdk/client-elasticsearch-service");
   return world.session!.client<typeof ElasticsearchServiceClient>("elasticsearch");
 }
 
@@ -47,7 +47,7 @@ async function sfnElasticsearchCreateSm(world: SdkWorld): Promise<string> {
 }
 
 async function sfnElasticsearchCreateDomain(world: SdkWorld): Promise<void> {
-  const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
+  const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch-service");
   await sfnElasticsearchClient(world).send(
     new CreateElasticsearchDomainCommand({ DomainName: SFN_ELASTICSEARCH_TEST_DOMAIN }),
   );
@@ -168,7 +168,7 @@ Given('no execution is "RUNNING"', async function (this: SdkWorld) {
 When('an Elasticsearch domain is created and becomes "AVAILABLE"', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
+  const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch-service");
   // Act
   try {
     const result = await sfnElasticsearchClient(this).send(
@@ -184,7 +184,9 @@ When('an Elasticsearch domain is created and becomes "AVAILABLE"', async functio
 When("a domain configuration update begins", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { UpdateElasticsearchDomainConfigCommand } = require("@aws-sdk/client-elasticsearch");
+  const {
+    UpdateElasticsearchDomainConfigCommand,
+  } = require("@aws-sdk/client-elasticsearch-service");
   // Act
   try {
     const result = await sfnElasticsearchClient(this).send(
@@ -251,7 +253,7 @@ When(
 Then('the domain is "AVAILABLE"', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
+  const { DescribeElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch-service");
   const expectedDomainName = SFN_ELASTICSEARCH_TEST_DOMAIN;
   // Act
   const result = await sfnElasticsearchClient(this).send(

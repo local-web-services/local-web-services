@@ -23,7 +23,7 @@ function lambdaElasticsearchLambdaClient(world: SdkWorld) {
 }
 
 function lambdaElasticsearchEsClient(world: SdkWorld) {
-  const { ElasticsearchServiceClient } = require("@aws-sdk/client-elasticsearch");
+  const { ElasticsearchServiceClient } = require("@aws-sdk/client-elasticsearch-service");
   return world.session!.client<typeof ElasticsearchServiceClient>("elasticsearch");
 }
 
@@ -45,7 +45,7 @@ async function lambdaElasticsearchCreateFunction(world: SdkWorld): Promise<void>
 
 async function lambdaElasticsearchCreateDomain(world: SdkWorld): Promise<void> {
   // Arrange
-  const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
+  const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch-service");
   // Act
   await lambdaElasticsearchEsClient(world).send(
     new CreateElasticsearchDomainCommand({
@@ -212,7 +212,7 @@ When("a Lambda function is deployed", async function (this: SdkWorld) {
 When('an Elasticsearch domain is created and becomes "AVAILABLE"', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "No session running");
-  const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
+  const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch-service");
   // Act
   try {
     const result = await lambdaElasticsearchEsClient(this).send(
@@ -230,7 +230,9 @@ When('an Elasticsearch domain is created and becomes "AVAILABLE"', async functio
 When("a domain configuration update begins", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "No session running");
-  const { UpdateElasticsearchDomainConfigCommand } = require("@aws-sdk/client-elasticsearch");
+  const {
+    UpdateElasticsearchDomainConfigCommand,
+  } = require("@aws-sdk/client-elasticsearch-service");
   // Act
   try {
     const result = await lambdaElasticsearchEsClient(this).send(
@@ -314,7 +316,7 @@ Then('the function is "ACTIVE"', async function (this: SdkWorld) {
 Then('the domain is "AVAILABLE"', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
+  const { DescribeElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch-service");
   // Act
   const result = await lambdaElasticsearchEsClient(this).send(
     new DescribeElasticsearchDomainCommand({ DomainName: LAMBDA_ELASTICSEARCH_TEST_DOMAIN }),
@@ -337,7 +339,7 @@ Then('the domain is "AVAILABLE" again', async function (this: SdkWorld) {
 Then('the domain is "PROCESSING" and write operations may fail', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
+  const { DescribeElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch-service");
   // Act
   const result = await lambdaElasticsearchEsClient(this).send(
     new DescribeElasticsearchDomainCommand({ DomainName: LAMBDA_ELASTICSEARCH_TEST_DOMAIN }),

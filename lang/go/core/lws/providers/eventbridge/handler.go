@@ -417,6 +417,15 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			writeErr(w, "ResourceNotFoundException", "Event bus not found: "+name)
 			return
 		}
+		// Check for existing rules on this bus
+		prefix := name + "/"
+		for key := range h.store.rules {
+			if strings.HasPrefix(key, prefix) {
+				h.store.mu.Unlock()
+				writeErr(w, "ValidationException", "Event bus cannot be deleted when it has rules: "+name)
+				return
+			}
+		}
 		delete(h.store.eventBuses, name)
 		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{})

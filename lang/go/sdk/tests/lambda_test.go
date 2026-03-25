@@ -210,7 +210,11 @@ func registerLambdaSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the tag is not set$`, func() error {
-		// @internal: Cannot verify tag absence without prior tag removal step.
+		// Remove the tag so the function does not have it set (enables rejection scenario).
+		_, _ = world.LambdaClient().UntagResource(context.Background(), &lambda.UntagResourceInput{
+			Resource: aws.String(lambdaFuncARN()),
+			TagKeys:  []string{lambdaTestTagKey},
+		})
 		return nil
 	})
 

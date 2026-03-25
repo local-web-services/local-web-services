@@ -15,12 +15,12 @@ const MEMORYDB_ARN = `arn:aws:memorydb:us-east-1:000000000000:cluster/${MEMORYDB
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function memorydbClient(world: SdkWorld) {
-  const { MemoryDBClient } = require("@aws-sdk/client-memory-db");
+  const { MemoryDBClient } = require("@aws-sdk/client-memorydb");
   return world.session!.client<typeof MemoryDBClient>("memorydb");
 }
 
 async function createACL(world: SdkWorld): Promise<void> {
-  const { CreateACLCommand } = require("@aws-sdk/client-memory-db");
+  const { CreateACLCommand } = require("@aws-sdk/client-memorydb");
   try {
     await memorydbClient(world).send(
       new CreateACLCommand({
@@ -34,7 +34,7 @@ async function createACL(world: SdkWorld): Promise<void> {
 }
 
 async function createCluster(world: SdkWorld): Promise<void> {
-  const { CreateClusterCommand } = require("@aws-sdk/client-memory-db");
+  const { CreateClusterCommand } = require("@aws-sdk/client-memorydb");
   await createACL(world);
   await memorydbClient(world).send(
     new CreateClusterCommand({
@@ -47,7 +47,7 @@ async function createCluster(world: SdkWorld): Promise<void> {
 }
 
 async function createUser(world: SdkWorld): Promise<void> {
-  const { CreateUserCommand } = require("@aws-sdk/client-memory-db");
+  const { CreateUserCommand } = require("@aws-sdk/client-memorydb");
   await memorydbClient(world).send(
     new CreateUserCommand({
       UserName: MEMORYDB_USER_NAME,
@@ -59,7 +59,7 @@ async function createUser(world: SdkWorld): Promise<void> {
 }
 
 async function createSnapshot(world: SdkWorld): Promise<void> {
-  const { CreateSnapshotCommand } = require("@aws-sdk/client-memory-db");
+  const { CreateSnapshotCommand } = require("@aws-sdk/client-memorydb");
   await memorydbClient(world).send(
     new CreateSnapshotCommand({
       ClusterName: MEMORYDB_CLUSTER_NAME,
@@ -170,7 +170,7 @@ Given('the user is not already a member of the "ACL"', async function (this: Sdk
 Given('the user is already a member of the "ACL"', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { UpdateACLCommand } = require("@aws-sdk/client-memory-db");
+  const { UpdateACLCommand } = require("@aws-sdk/client-memorydb");
   // Act
   await memorydbClient(this).send(
     new UpdateACLCommand({
@@ -189,7 +189,7 @@ Given("the user membership entry does not exist", async function (this: SdkWorld
 Given("the user membership entry exists", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { UpdateACLCommand } = require("@aws-sdk/client-memory-db");
+  const { UpdateACLCommand } = require("@aws-sdk/client-memorydb");
   // Act
   await memorydbClient(this).send(
     new UpdateACLCommand({
@@ -368,7 +368,7 @@ Given("cid in tag_exists", async function (this: SdkWorld) {
 When("a MemoryDB cluster is created", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { CreateClusterCommand } = require("@aws-sdk/client-memory-db");
+  const { CreateClusterCommand } = require("@aws-sdk/client-memorydb");
   await createACL(this);
   // Act
   try {
@@ -390,7 +390,7 @@ When("a MemoryDB cluster is created", async function (this: SdkWorld) {
 When("a MemoryDB cluster is deleted", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteClusterCommand } = require("@aws-sdk/client-memory-db");
+  const { DeleteClusterCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await memorydbClient(this).send(
@@ -406,7 +406,7 @@ When("a MemoryDB cluster is deleted", async function (this: SdkWorld) {
 When("a user is created", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { CreateUserCommand } = require("@aws-sdk/client-memory-db");
+  const { CreateUserCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await memorydbClient(this).send(
@@ -427,7 +427,7 @@ When("a user is created", async function (this: SdkWorld) {
 When("a user is deleted", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteUserCommand } = require("@aws-sdk/client-memory-db");
+  const { DeleteUserCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await memorydbClient(this).send(
@@ -443,7 +443,7 @@ When("a user is deleted", async function (this: SdkWorld) {
 When("a user is updated", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { UpdateUserCommand } = require("@aws-sdk/client-memory-db");
+  const { UpdateUserCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await memorydbClient(this).send(
@@ -462,7 +462,7 @@ When("a user is updated", async function (this: SdkWorld) {
 When('an "ACL" is created', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { CreateACLCommand } = require("@aws-sdk/client-memory-db");
+  const { CreateACLCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await memorydbClient(this).send(
@@ -481,7 +481,7 @@ When('an "ACL" is created', async function (this: SdkWorld) {
 When('an "ACL" is deleted', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteACLCommand } = require("@aws-sdk/client-memory-db");
+  const { DeleteACLCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await memorydbClient(this).send(
@@ -497,7 +497,7 @@ When('an "ACL" is deleted', async function (this: SdkWorld) {
 When('an "ACL" is updated', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { UpdateACLCommand } = require("@aws-sdk/client-memory-db");
+  const { UpdateACLCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await memorydbClient(this).send(
@@ -513,7 +513,7 @@ When('an "ACL" is updated', async function (this: SdkWorld) {
 When('an "ACL" is associated with a cluster', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { UpdateClusterCommand } = require("@aws-sdk/client-memory-db");
+  const { UpdateClusterCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await memorydbClient(this).send(
@@ -532,7 +532,7 @@ When('an "ACL" is associated with a cluster', async function (this: SdkWorld) {
 When('a user is added to an "ACL"', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { UpdateACLCommand } = require("@aws-sdk/client-memory-db");
+  const { UpdateACLCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await memorydbClient(this).send(
@@ -551,7 +551,7 @@ When('a user is added to an "ACL"', async function (this: SdkWorld) {
 When('a user is removed from an "ACL"', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { UpdateACLCommand } = require("@aws-sdk/client-memory-db");
+  const { UpdateACLCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await memorydbClient(this).send(
@@ -570,7 +570,7 @@ When('a user is removed from an "ACL"', async function (this: SdkWorld) {
 When("a snapshot is created from an available cluster", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { CreateSnapshotCommand } = require("@aws-sdk/client-memory-db");
+  const { CreateSnapshotCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await memorydbClient(this).send(
@@ -590,7 +590,7 @@ When("a snapshot is created from an available cluster", async function (this: Sd
 When("a snapshot is deleted", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteSnapshotCommand } = require("@aws-sdk/client-memory-db");
+  const { DeleteSnapshotCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await memorydbClient(this).send(
@@ -606,7 +606,7 @@ When("a snapshot is deleted", async function (this: SdkWorld) {
 When("a cluster is restored from a snapshot", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { CreateClusterCommand } = require("@aws-sdk/client-memory-db");
+  const { CreateClusterCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await memorydbClient(this).send(
@@ -628,7 +628,7 @@ When("a cluster is restored from a snapshot", async function (this: SdkWorld) {
 When("a MemoryDB cluster configuration is updated", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { UpdateClusterCommand } = require("@aws-sdk/client-memory-db");
+  const { UpdateClusterCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await memorydbClient(this).send(
@@ -725,7 +725,7 @@ When("a snapshot deletion completes", async function (this: SdkWorld) {
 When("tags are added to a MemoryDB resource", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { TagResourceCommand } = require("@aws-sdk/client-memory-db");
+  const { TagResourceCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await memorydbClient(this).send(
@@ -744,7 +744,7 @@ When("tags are added to a MemoryDB resource", async function (this: SdkWorld) {
 When("tags are removed from a MemoryDB resource", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { UntagResourceCommand } = require("@aws-sdk/client-memory-db");
+  const { UntagResourceCommand } = require("@aws-sdk/client-memorydb");
   // Act
   try {
     const result = await memorydbClient(this).send(
@@ -773,7 +773,7 @@ Then('the cluster is in "CREATING" state', async function (this: SdkWorld) {
     expectedSuccess,
     `Expected create_cluster to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
-  const { DescribeClustersCommand } = require("@aws-sdk/client-memory-db");
+  const { DescribeClustersCommand } = require("@aws-sdk/client-memorydb");
   const result = await memorydbClient(this).send(
     new DescribeClustersCommand({ ClusterName: MEMORYDB_CLUSTER_NAME }),
   );
@@ -802,7 +802,7 @@ Then('the cluster is in "DELETING" state', async function (this: SdkWorld) {
     expectedSuccess,
     `Expected delete_cluster to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
-  const { DescribeClustersCommand } = require("@aws-sdk/client-memory-db");
+  const { DescribeClustersCommand } = require("@aws-sdk/client-memorydb");
   const result = await memorydbClient(this).send(
     new DescribeClustersCommand({ ClusterName: MEMORYDB_CLUSTER_NAME }),
   );
@@ -853,7 +853,7 @@ Then('the cluster is "AVAILABLE"', async function (this: SdkWorld) {
 Then('the cluster is "DELETED" and its tags are removed', async function (this: SdkWorld) {
   // Arrange: no additional setup required
   // Act
-  const { DescribeClustersCommand } = require("@aws-sdk/client-memory-db");
+  const { DescribeClustersCommand } = require("@aws-sdk/client-memorydb");
   try {
     const result = await memorydbClient(this).send(
       new DescribeClustersCommand({ ClusterName: MEMORYDB_CLUSTER_NAME }),
@@ -920,7 +920,7 @@ Then('the cluster is linked to the active "ACL"', async function (this: SdkWorld
     expectedSuccess,
     `Expected update_cluster to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
-  const { DescribeClustersCommand } = require("@aws-sdk/client-memory-db");
+  const { DescribeClustersCommand } = require("@aws-sdk/client-memorydb");
   const result = await memorydbClient(this).send(
     new DescribeClustersCommand({ ClusterName: MEMORYDB_CLUSTER_NAME }),
   );
@@ -951,7 +951,7 @@ Then('the user is in "CREATING" state', async function (this: SdkWorld) {
     expectedSuccess,
     `Expected create_user to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
-  const { DescribeUsersCommand } = require("@aws-sdk/client-memory-db");
+  const { DescribeUsersCommand } = require("@aws-sdk/client-memorydb");
   const result = await memorydbClient(this).send(
     new DescribeUsersCommand({ UserName: MEMORYDB_USER_NAME }),
   );
@@ -977,7 +977,7 @@ Then('the user is in "DELETING" state', async function (this: SdkWorld) {
     expectedSuccess,
     `Expected delete_user to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
-  const { DescribeUsersCommand } = require("@aws-sdk/client-memory-db");
+  const { DescribeUsersCommand } = require("@aws-sdk/client-memorydb");
   const result = await memorydbClient(this).send(
     new DescribeUsersCommand({ UserName: MEMORYDB_USER_NAME }),
   );
@@ -1025,7 +1025,7 @@ Then('the user is "ACTIVE"', async function (this: SdkWorld) {
 Then('the user is "DELETED"', async function (this: SdkWorld) {
   // Arrange: no additional setup required
   // Act
-  const { DescribeUsersCommand } = require("@aws-sdk/client-memory-db");
+  const { DescribeUsersCommand } = require("@aws-sdk/client-memorydb");
   try {
     const result = await memorydbClient(this).send(
       new DescribeUsersCommand({ UserName: MEMORYDB_USER_NAME }),
@@ -1071,7 +1071,7 @@ Then('the user is a member of the "ACL"', async function (this: SdkWorld) {
     expectedSuccess,
     `Expected update_acl to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
-  const { DescribeACLsCommand } = require("@aws-sdk/client-memory-db");
+  const { DescribeACLsCommand } = require("@aws-sdk/client-memorydb");
   const result = await memorydbClient(this).send(
     new DescribeACLsCommand({ ACLName: MEMORYDB_ACL_NAME }),
   );
@@ -1096,7 +1096,7 @@ Then('the user is no longer a member of the "ACL"', async function (this: SdkWor
     expectedSuccess,
     `Expected update_acl to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
-  const { DescribeACLsCommand } = require("@aws-sdk/client-memory-db");
+  const { DescribeACLsCommand } = require("@aws-sdk/client-memorydb");
   const result = await memorydbClient(this).send(
     new DescribeACLsCommand({ ACLName: MEMORYDB_ACL_NAME }),
   );
@@ -1123,7 +1123,7 @@ Then('the "ACL" is in "CREATING" state', async function (this: SdkWorld) {
     expectedSuccess,
     `Expected create_acl to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
-  const { DescribeACLsCommand } = require("@aws-sdk/client-memory-db");
+  const { DescribeACLsCommand } = require("@aws-sdk/client-memorydb");
   const result = await memorydbClient(this).send(
     new DescribeACLsCommand({ ACLName: MEMORYDB_ACL_NAME }),
   );
@@ -1149,7 +1149,7 @@ Then('the "ACL" is in "DELETING" state', async function (this: SdkWorld) {
     expectedSuccess,
     `Expected delete_acl to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
-  const { DescribeACLsCommand } = require("@aws-sdk/client-memory-db");
+  const { DescribeACLsCommand } = require("@aws-sdk/client-memorydb");
   const result = await memorydbClient(this).send(
     new DescribeACLsCommand({ ACLName: MEMORYDB_ACL_NAME }),
   );
@@ -1197,7 +1197,7 @@ Then('the "ACL" is "ACTIVE"', async function (this: SdkWorld) {
 Then('the "ACL" is "DELETED"', async function (this: SdkWorld) {
   // Arrange: no additional setup required
   // Act
-  const { DescribeACLsCommand } = require("@aws-sdk/client-memory-db");
+  const { DescribeACLsCommand } = require("@aws-sdk/client-memorydb");
   try {
     const result = await memorydbClient(this).send(
       new DescribeACLsCommand({ ACLName: MEMORYDB_ACL_NAME }),
@@ -1247,7 +1247,7 @@ Then(
       expectedSuccess,
       `Expected create_snapshot to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
     );
-    const { DescribeSnapshotsCommand } = require("@aws-sdk/client-memory-db");
+    const { DescribeSnapshotsCommand } = require("@aws-sdk/client-memorydb");
     const result = await memorydbClient(this).send(
       new DescribeSnapshotsCommand({ SnapshotName: MEMORYDB_SNAPSHOT_NAME }),
     );
@@ -1277,7 +1277,7 @@ Then('the snapshot is in "DELETING" state', async function (this: SdkWorld) {
     expectedSuccess,
     `Expected delete_snapshot to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
-  const { DescribeSnapshotsCommand } = require("@aws-sdk/client-memory-db");
+  const { DescribeSnapshotsCommand } = require("@aws-sdk/client-memorydb");
   const result = await memorydbClient(this).send(
     new DescribeSnapshotsCommand({ SnapshotName: MEMORYDB_SNAPSHOT_NAME }),
   );
@@ -1318,7 +1318,7 @@ Then(
 Then('the snapshot is "DELETED" and its tags are removed', async function (this: SdkWorld) {
   // Arrange: no additional setup required
   // Act
-  const { DescribeSnapshotsCommand } = require("@aws-sdk/client-memory-db");
+  const { DescribeSnapshotsCommand } = require("@aws-sdk/client-memorydb");
   try {
     const result = await memorydbClient(this).send(
       new DescribeSnapshotsCommand({ SnapshotName: MEMORYDB_SNAPSHOT_NAME }),
@@ -1353,7 +1353,7 @@ Then("the resource remains tagged", async function (this: SdkWorld) {
     expectedSuccess,
     `Expected tag_resource to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
-  const { ListTagsCommand } = require("@aws-sdk/client-memory-db");
+  const { ListTagsCommand } = require("@aws-sdk/client-memorydb");
   const result = await memorydbClient(this).send(
     new ListTagsCommand({ ResourceArn: MEMORYDB_ARN }),
   );

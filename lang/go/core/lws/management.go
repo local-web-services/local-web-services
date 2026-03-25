@@ -130,6 +130,39 @@ func RegisterManagementAPI(mux *http.ServeMux, state *ServerState, shutdownCh ch
 		}
 	})
 
+	// GET /_ldk/lifecycle and POST /_ldk/lifecycle
+	mux.HandleFunc("/_ldk/lifecycle", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			// Return current lifecycle rules (not yet implemented for GET)
+			writeJSON(w, map[string]interface{}{}, 200)
+		case http.MethodPost:
+			var body map[string]map[string]interface{}
+			if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+				writeJSONError(w, "ValidationException", "invalid JSON", 400)
+				return
+			}
+			for svc, config := range body {
+				rule := LifecycleRule{}
+				if v, ok := config["enabled"].(bool); ok {
+					rule.Enabled = v
+				} else {
+					rule.Enabled = true
+				}
+				if v, ok := config["create_dwell_ms"].(float64); ok {
+					rule.CreateDwellMs = int(v)
+				}
+				if v, ok := config["delete_dwell_ms"].(float64); ok {
+					rule.DeleteDwellMs = int(v)
+				}
+				state.SetLifecycleRule(svc, rule)
+			}
+			writeJSON(w, map[string]string{"status": "ok"}, 200)
+		default:
+			http.NotFound(w, r)
+		}
+	})
+
 	// GET /_ldk/capacity and POST /_ldk/capacity
 	mux.HandleFunc("/_ldk/capacity", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {

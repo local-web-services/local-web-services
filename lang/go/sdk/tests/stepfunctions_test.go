@@ -409,11 +409,14 @@ func registerStepFunctionsSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.When(`^an execution is started on a standard state machine$`, func() error {
-		// Arrange
-		smName := sfnTestStateMachine
+		// Arrange: use the state machine ARN set by the Given step, falling back to default
+		smArn := st.stateMachineArn
+		if smArn == "" {
+			smArn = sfnSmArn(sfnTestStateMachine)
+		}
 		// Act
 		result, err := world.SFNClient().StartExecution(context.Background(), &sfn.StartExecutionInput{
-			StateMachineArn: aws.String(sfnSmArn(smName)),
+			StateMachineArn: aws.String(smArn),
 			Input:           aws.String(sfnTestInput),
 		})
 		setResult(world, result, err)

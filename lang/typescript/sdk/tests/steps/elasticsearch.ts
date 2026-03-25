@@ -11,17 +11,17 @@ const ES_TAG_VALUE = "e2e-es-tag-value-1";
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function esClient(world: SdkWorld) {
-  const { ElasticsearchServiceClient } = require("@aws-sdk/client-elasticsearch");
+  const { ElasticsearchServiceClient } = require("@aws-sdk/client-elasticsearch-service");
   return world.session!.client<typeof ElasticsearchServiceClient>("elasticsearch");
 }
 
 async function esCreateDomain(world: SdkWorld): Promise<void> {
-  const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
+  const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch-service");
   await esClient(world).send(new CreateElasticsearchDomainCommand({ DomainName: ES_DOMAIN_NAME }));
 }
 
 async function esDomainExists(world: SdkWorld): Promise<boolean> {
-  const { DescribeElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
+  const { DescribeElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch-service");
   try {
     const result = await esClient(world).send(
       new DescribeElasticsearchDomainCommand({ DomainName: ES_DOMAIN_NAME }),
@@ -34,7 +34,7 @@ async function esDomainExists(world: SdkWorld): Promise<boolean> {
 }
 
 async function esDomainARN(world: SdkWorld): Promise<string | null> {
-  const { DescribeElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
+  const { DescribeElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch-service");
   try {
     const result = await esClient(world).send(
       new DescribeElasticsearchDomainCommand({ DomainName: ES_DOMAIN_NAME }),
@@ -113,7 +113,7 @@ Given("the domain is not being deleted", async function (this: SdkWorld) {
 Given("the domain is being deleted", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
+  const { DeleteElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch-service");
   // Act
   try {
     await esClient(this).send(new DeleteElasticsearchDomainCommand({ DomainName: ES_DOMAIN_NAME }));
@@ -131,7 +131,7 @@ Given("the domain is not deleted", async function (this: SdkWorld) {
 Given("the domain is deleted", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
+  const { DeleteElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch-service");
   // Act
   try {
     await esClient(this).send(new DeleteElasticsearchDomainCommand({ DomainName: ES_DOMAIN_NAME }));
@@ -161,7 +161,7 @@ Given('the domain is not "PROCESSING"', async function (this: SdkWorld) {
 Given("the tag key exists", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { AddTagsCommand } = require("@aws-sdk/client-elasticsearch");
+  const { AddTagsCommand } = require("@aws-sdk/client-elasticsearch-service");
   const arn = await esDomainARN(this);
   assert.ok(arn, "Expected domain ARN to be available");
   // Act
@@ -184,7 +184,7 @@ Given("the tag key does not exist", async function (this: SdkWorld) {
 When("a search domain is created", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
+  const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch-service");
   // Act
   try {
     const result = await esClient(this).send(
@@ -200,7 +200,7 @@ When("a search domain is created", async function (this: SdkWorld) {
 When("a search domain is deleted", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
+  const { DeleteElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch-service");
   // Act
   try {
     const result = await esClient(this).send(
@@ -216,7 +216,7 @@ When("a search domain is deleted", async function (this: SdkWorld) {
 When("tags are added to a domain", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { AddTagsCommand } = require("@aws-sdk/client-elasticsearch");
+  const { AddTagsCommand } = require("@aws-sdk/client-elasticsearch-service");
   const arn = await esDomainARN(this);
   if (!arn) {
     this.lastCallResult = {
@@ -244,7 +244,7 @@ When("tags are added to a domain", async function (this: SdkWorld) {
 When("tags are removed from a domain", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { RemoveTagsCommand } = require("@aws-sdk/client-elasticsearch");
+  const { RemoveTagsCommand } = require("@aws-sdk/client-elasticsearch-service");
   const arn = await esDomainARN(this);
   if (!arn) {
     this.lastCallResult = {
@@ -269,7 +269,9 @@ When("tags are removed from a domain", async function (this: SdkWorld) {
 When("a domain configuration update is requested", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { UpdateElasticsearchDomainConfigCommand } = require("@aws-sdk/client-elasticsearch");
+  const {
+    UpdateElasticsearchDomainConfigCommand,
+  } = require("@aws-sdk/client-elasticsearch-service");
   // Act
   try {
     const result = await esClient(this).send(
@@ -325,7 +327,7 @@ Then('the domain is in "CREATING" state', async function (this: SdkWorld) {
     expectedSuccess,
     `Expected create_elasticsearch_domain to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
-  const { DescribeElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch");
+  const { DescribeElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch-service");
   const result = await esClient(this).send(
     new DescribeElasticsearchDomainCommand({ DomainName: ES_DOMAIN_NAME }),
   );
@@ -390,7 +392,7 @@ Then("the specified tags are associated with the domain", async function (this: 
     expectedSuccess,
     `Expected add_tags to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
-  const { ListTagsCommand } = require("@aws-sdk/client-elasticsearch");
+  const { ListTagsCommand } = require("@aws-sdk/client-elasticsearch-service");
   const arn = await esDomainARN(this);
   assert.ok(arn, "Expected domain ARN to be available");
   const listResult = await esClient(this).send(new ListTagsCommand({ ARN: arn }));
@@ -416,7 +418,7 @@ Then(
       expectedSuccess,
       `Expected remove_tags to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
     );
-    const { ListTagsCommand } = require("@aws-sdk/client-elasticsearch");
+    const { ListTagsCommand } = require("@aws-sdk/client-elasticsearch-service");
     const arn = await esDomainARN(this);
     assert.ok(arn, "Expected domain ARN to be available");
     const listResult = await esClient(this).send(new ListTagsCommand({ ARN: arn }));

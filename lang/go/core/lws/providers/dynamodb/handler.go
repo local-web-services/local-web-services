@@ -737,6 +737,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			writeErr(w, "ResourceNotFoundException", "Table not found: "+name, 400)
 			return
 		}
+		if h.state.GetCapacityRule("dynamodb").IsExhausted() {
+			writeErr(w, "ProvisionedThroughputExceededException", "Reads are throttled", 400)
+			return
+		}
 		key, _ := body["Key"].(map[string]interface{})
 		k := keyFromKey(t, key)
 		item := t.Items[k]
@@ -833,6 +837,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			writeErr(w, "ResourceNotFoundException", "Table not found: "+name, 400)
 			return
 		}
+		if h.state.GetCapacityRule("dynamodb").IsExhausted() {
+			writeErr(w, "ProvisionedThroughputExceededException", "Reads are throttled", 400)
+			return
+		}
 		var items []interface{}
 		for _, item := range t.Items {
 			items = append(items, item)
@@ -852,6 +860,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		t := h.store.getTable(name)
 		if t == nil {
 			writeErr(w, "ResourceNotFoundException", "Table not found: "+name, 400)
+			return
+		}
+		if h.state.GetCapacityRule("dynamodb").IsExhausted() {
+			writeErr(w, "ProvisionedThroughputExceededException", "Reads are throttled", 400)
 			return
 		}
 		var items []interface{}
@@ -949,6 +961,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		writeOK(w, map[string]interface{}{"Responses": responses})
 
 	case "TransactWriteItems":
+		if h.state.GetCapacityRule("dynamodb").IsExhausted() {
+			writeErr(w, "ProvisionedThroughputExceededException", "Writes are throttled", 400)
+			return
+		}
 		transItems, _ := body["TransactItems"].([]interface{})
 		// First pass: validate all tables exist.
 		for _, tRaw := range transItems {

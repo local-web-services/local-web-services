@@ -470,6 +470,11 @@ func registerSNSSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.When(`^a message is published to a topic$`, func() error {
+		// If a Given step pre-loaded a failure (e.g. "no confirmed subscription", "cross-topic"),
+		// preserve that failure instead of overwriting it.
+		if !world.lastResult.Success && world.lastResult.Error != nil {
+			return nil
+		}
 		// Arrange
 		topicArn := st.topicArn
 		if topicArn == "" {
