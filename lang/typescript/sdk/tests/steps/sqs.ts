@@ -105,15 +105,14 @@ Given("the message exists", async function (this: SdkWorld) {
 });
 
 Given("the message is {string}", async function (this: SdkWorld, state: string) {
+  assert.ok(this.session, "Expected session to be initialized");
   if (state === "AVAILABLE") {
     // No-op: after send_message the message is AVAILABLE by default.
-    assert.ok(this.session, "Expected session to be initialized");
     (this as any)._sqsActiveQueue = SQS_TEST_QUEUE;
     return;
   }
   if (state === "IN_FLIGHT") {
     // Arrange: receive the message to put it IN_FLIGHT
-    assert.ok(this.session, "Expected session to be initialized");
     (this as any)._sqsActiveQueue = SQS_TEST_QUEUE;
     // Act
     const { ReceiveMessageCommand } = require("@aws-sdk/client-sqs");
@@ -130,6 +129,20 @@ Given("the message is {string}", async function (this: SdkWorld, state: string) 
       (this as any)._sqsReceiptHandle = messages[0].ReceiptHandle;
     }
     return;
+  }
+  if (state === "DELETED") {
+    // Assert: the queue has no messages (used as Then step)
+    const { ReceiveMessageCommand } = require("@aws-sdk/client-sqs");
+    const activeQueue: string = (this as any)._sqsActiveQueue ?? SQS_TEST_QUEUE;
+    const receiveResult = await sqsClient(this).send(
+      new ReceiveMessageCommand({ QueueUrl: queueUrl(this, activeQueue), MaxNumberOfMessages: 1 }),
+    );
+    const actualMessages: unknown[] = receiveResult.Messages ?? [];
+    assert.strictEqual(
+      actualMessages.length,
+      0,
+      `Expected message to be DELETED (no messages) but found ${actualMessages.length}`,
+    );
   }
 });
 

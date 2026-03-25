@@ -166,29 +166,7 @@ Then(
   },
 );
 
-Then("the message is {string}", async function (this: SdkWorld, expectedState: string) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { SQSClient, GetQueueUrlCommand, ReceiveMessageCommand } = require("@aws-sdk/client-sqs");
-  const client = this.session!.client<typeof SQSClient>("sqs");
-  // Act
-  const urlResult = await client.send(new GetQueueUrlCommand({ QueueName: SQS_QUEUE }));
-  const queueUrl = urlResult.QueueUrl as string;
-  const receiveResult = await client.send(
-    new ReceiveMessageCommand({ QueueUrl: queueUrl, MaxNumberOfMessages: 1 }),
-  );
-  const actualMessages: unknown[] = receiveResult.Messages ?? [];
-  // Assert
-  if (expectedState === "DELETED") {
-    assert.strictEqual(
-      actualMessages.length,
-      0,
-      `Expected message to be DELETED (no messages) but found ${actualMessages.length}`,
-    );
-  } else if (expectedState === "AVAILABLE") {
-    assert.ok(actualMessages.length > 0, `Expected AVAILABLE message but found none`);
-  }
-});
+// "the message is {string}" is registered in sqs.ts (handles AVAILABLE, IN_FLIGHT, DELETED).
 
 // Note: "the topic is {string} and notification delivery to it will fail" is defined
 // in cross_service_common.ts.
