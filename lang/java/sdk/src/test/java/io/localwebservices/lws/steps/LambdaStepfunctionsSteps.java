@@ -210,5 +210,6 @@ public class LambdaStepfunctionsSteps {
     // @internal: Cannot observe Lambda invocation failure via public API in lws.
   }
 
-  // "every \"RUNNING\" execution references a state machine that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"RUNNING\" execution references a state machine that exists" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
 }

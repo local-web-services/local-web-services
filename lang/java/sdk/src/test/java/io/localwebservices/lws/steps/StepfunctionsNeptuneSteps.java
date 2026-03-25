@@ -70,5 +70,6 @@ public class StepfunctionsNeptuneSteps {
 
   // ── Then: assertions ──────────────────────────────────────────────────────────
 
-  // "every succeeded execution recorded which cluster it queried" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every succeeded execution recorded which cluster it queried" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

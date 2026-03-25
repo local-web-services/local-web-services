@@ -314,7 +314,8 @@ public class RdsSteps {
 
   // "every database instance has a valid status" → CrossServiceSteps (catch-all @And("^every .*$"))
   // "every database snapshot has a valid status" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every backing-up instance has a corresponding in-progress snapshot" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every backing-up instance has a corresponding in-progress snapshot" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
 
   // ── Private helpers ───────────────────────────────────────────────────────────
 

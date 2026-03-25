@@ -334,8 +334,12 @@ public class LambdaSqsSteps {
 
   // ── Then: invariants ──────────────────────────────────────────────────────────
 
-  // "every in-progress invocation was initiated by an \"ENABLED\" event source mapping" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every in-progress invocation references an \"ACTIVE\" Lambda function" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every \"AVAILABLE\" or \"IN_FLIGHT\" message belongs to an \"ACTIVE\" queue" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every \"ENABLED\" event source mapping references an \"ACTIVE\" queue" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every in-progress invocation was initiated by an \"ENABLED\" event source mapping" →
+  // CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every in-progress invocation references an \"ACTIVE\" Lambda function" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
+  // "every \"AVAILABLE\" or \"IN_FLIGHT\" message belongs to an \"ACTIVE\" queue" →
+  // CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"ENABLED\" event source mapping references an \"ACTIVE\" queue" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
 }

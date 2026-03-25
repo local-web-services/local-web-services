@@ -644,7 +644,10 @@ public class ElasticacheSteps {
     // No-op invariant: trivially satisfied in an isolated test context.
   }
 
-  // "every available replication group has a primary cluster assigned" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every active cluster, replication group, and snapshot has tags" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every snapshotting cluster has a corresponding in-progress snapshot" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every available replication group has a primary cluster assigned" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
+  // "every active cluster, replication group, and snapshot has tags" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
+  // "every snapshotting cluster has a corresponding in-progress snapshot" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
 }

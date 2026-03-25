@@ -299,7 +299,8 @@ public class GlacierSnsSteps {
 
   // ── Safety invariant Then steps ───────────────────────────────────────────────
 
-  // "every \"PUBLISHED\" notification references a job that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"PUBLISHED\" notification references a job that exists" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 
   // ── Private helpers ───────────────────────────────────────────────────────────
 

@@ -52,5 +52,6 @@ public class LambdaSqsProducerSteps {
 
   // ── Then: invariant catch-all steps unique to lambda_sqs_producer ─────────────
 
-  // "every \"AVAILABLE\" message belongs to an \"ACTIVE\" queue" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"AVAILABLE\" message belongs to an \"ACTIVE\" queue" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

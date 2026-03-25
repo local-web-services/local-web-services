@@ -748,7 +748,8 @@ public class GlacierSteps {
 
   // ── Safety invariant Then steps ───────────────────────────────────────────────
 
-  // "every in-progress job references an active vault" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every in-progress job references an active vault" → CrossServiceSteps (catch-all @And("^every
+  // .*$"))
 
   @Then("vault archive count is never negative")
   public void vaultArchiveCountIsNeverNegative() {
@@ -765,7 +766,8 @@ public class GlacierSteps {
     // No-op invariant: trivially satisfied in an isolated test context.
   }
 
-  // "every archive retrieval job references a non-empty archive \"ID\"" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every archive retrieval job references a non-empty archive \"ID\"" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
 
   // ── Private helpers ───────────────────────────────────────────────────────────
 

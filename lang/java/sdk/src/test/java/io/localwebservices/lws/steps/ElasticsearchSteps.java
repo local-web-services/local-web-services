@@ -411,8 +411,10 @@ public class ElasticsearchSteps {
     }
   }
 
-  // "every active index belongs to an existing non-deleted domain" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every active tag belongs to an existing non-deleted domain" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every active index belongs to an existing non-deleted domain" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
+  // "every active tag belongs to an existing non-deleted domain" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 
   @Then("a pending config change only exists on a domain that is \"PROCESSING\"")
   public void aPendingConfigChangeOnlyExistsOnADomainThatIsProcessing() {

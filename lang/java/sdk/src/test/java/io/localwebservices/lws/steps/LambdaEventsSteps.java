@@ -128,5 +128,6 @@ public class LambdaEventsSteps {
     // @internal: Cannot observe Lambda invocation result in lws.
   }
 
-  // "every {string} event references a bus that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every {string} event references a bus that exists" → CrossServiceSteps (catch-all @And("^every
+  // .*$"))
 }

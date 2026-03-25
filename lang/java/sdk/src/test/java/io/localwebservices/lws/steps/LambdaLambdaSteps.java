@@ -359,6 +359,8 @@ public class LambdaLambdaSteps {
 
   // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
-  // "every \"IN_PROGRESS\" invocation references an \"ACTIVE\" caller function" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every successful invocation recorded which callee was invoked" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"IN_PROGRESS\" invocation references an \"ACTIVE\" caller function" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
+  // "every successful invocation recorded which callee was invoked" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

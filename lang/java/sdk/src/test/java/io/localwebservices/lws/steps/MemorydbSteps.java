@@ -918,7 +918,8 @@ public class MemorydbSteps {
             + expectedSuccess);
   }
 
-  // "every active cluster has write durability enabled" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every active cluster has write durability enabled" → CrossServiceSteps (catch-all @And("^every
+  // .*$"))
 
   @Then("no {string} in {string} state is currently associated with a cluster")
   public void noAclInStateIsCurrentlyAssociatedWithACluster(String acl, String state) {

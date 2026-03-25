@@ -459,6 +459,8 @@ public class ApigatewayDynamodbSteps {
 
   // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
-  // "every existing item references a table that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every successful request references an \"API\" that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every existing item references a table that exists" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
+  // "every successful request references an \"API\" that exists" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

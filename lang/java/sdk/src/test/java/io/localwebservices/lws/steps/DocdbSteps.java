@@ -829,7 +829,8 @@ public class DocdbSteps {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
   }
 
-  // "every creating snapshot references a cluster that has not been deleted" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every creating snapshot references a cluster that has not been deleted" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
 
   // ── Private helpers ────────────────────────────────────────────────────────
 

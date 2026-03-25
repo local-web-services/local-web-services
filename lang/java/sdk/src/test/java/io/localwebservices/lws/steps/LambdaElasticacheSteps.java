@@ -136,5 +136,6 @@ public class LambdaElasticacheSteps {
     // Only reached by @internal scenarios excluded by the tag filter.
   }
 
-  // "every \"CACHED\" entry belongs to an \"AVAILABLE\" cluster" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"CACHED\" entry belongs to an \"AVAILABLE\" cluster" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

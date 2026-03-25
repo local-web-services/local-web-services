@@ -220,5 +220,6 @@ public class LambdaSsmSteps {
     // @internal: Cannot observe Lambda invocation failure in lws.
   }
 
-  // "every successful invocation recorded which parameter it read" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every successful invocation recorded which parameter it read" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

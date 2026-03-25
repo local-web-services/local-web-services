@@ -198,5 +198,6 @@ public class LambdaDocdbSteps {
     // Only reached by @internal scenarios excluded by the tag filter.
   }
 
-  // "every existing document references a cluster that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every existing document references a cluster that exists" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

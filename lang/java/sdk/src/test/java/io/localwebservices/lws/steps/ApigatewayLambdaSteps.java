@@ -165,6 +165,8 @@ public class ApigatewayLambdaSteps {
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────
 
-  // "every \"IN_PROGRESS\" request references an \"ACTIVE\" \"API\"" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every \"IN_PROGRESS\" invocation has a corresponding \"IN_PROGRESS\" request" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"IN_PROGRESS\" request references an \"ACTIVE\" \"API\"" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
+  // "every \"IN_PROGRESS\" invocation has a corresponding \"IN_PROGRESS\" request" →
+  // CrossServiceSteps (catch-all @And("^every .*$"))
 }

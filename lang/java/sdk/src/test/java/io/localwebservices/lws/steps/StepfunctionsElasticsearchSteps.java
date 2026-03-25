@@ -77,5 +77,6 @@ public class StepfunctionsElasticsearchSteps {
     // No-op: treat as invariant satisfied.
   }
 
-  // "every succeeded execution recorded which domain it called" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every succeeded execution recorded which domain it called" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

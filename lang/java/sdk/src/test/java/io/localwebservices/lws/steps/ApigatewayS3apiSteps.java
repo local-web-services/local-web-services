@@ -439,5 +439,6 @@ public class ApigatewayS3apiSteps {
 
   // ── Then: invariant assertions (no-op) ───────────────────────────────────────
 
-  // "every existing object references a bucket that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every existing object references a bucket that exists" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

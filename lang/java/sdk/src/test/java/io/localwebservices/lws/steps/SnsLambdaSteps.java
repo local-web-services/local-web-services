@@ -120,6 +120,8 @@ public class SnsLambdaSteps {
 
   // ── Invariant Then steps ────────────────────────────────────────────────────────
 
-  // "every \"CONFIRMED\" subscription references an \"ACTIVE\" \"SNS\" topic" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every \"IN_PROGRESS\" invocation was triggered by a \"CONFIRMED\" subscription" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"CONFIRMED\" subscription references an \"ACTIVE\" \"SNS\" topic" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
+  // "every \"IN_PROGRESS\" invocation was triggered by a \"CONFIRMED\" subscription" →
+  // CrossServiceSteps (catch-all @And("^every .*$"))
 }

@@ -542,8 +542,10 @@ public class SsmSteps {
     }
   }
 
-  // "every parameter version is a positive integer" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every parameter has a valid type (String, SecureString, or StringList)" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every parameter version is a positive integer" → CrossServiceSteps (catch-all @And("^every
+  // .*$"))
+  // "every parameter has a valid type (String, SecureString, or StringList)" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
 
   @Then("no parameter exists after it has been deleted")
   public void noParameterExistsAfterItHasBeenDeleted() {

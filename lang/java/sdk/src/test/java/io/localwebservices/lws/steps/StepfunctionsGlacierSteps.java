@@ -86,5 +86,6 @@ public class StepfunctionsGlacierSteps {
             + expectedSuccess);
   }
 
-  // "every succeeded execution recorded which vault it called" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every succeeded execution recorded which vault it called" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

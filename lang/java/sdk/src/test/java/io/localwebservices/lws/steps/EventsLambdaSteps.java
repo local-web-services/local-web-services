@@ -209,6 +209,8 @@ public class EventsLambdaSteps {
 
   // ── Invariant Then steps (no-ops) ─────────────────────────────────────────────
 
-  // "every \"IN_PROGRESS\" invocation was triggered by an \"ENABLED\" rule" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every \"ENABLED\" rule references an \"ACTIVE\" event bus" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"IN_PROGRESS\" invocation was triggered by an \"ENABLED\" rule" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
+  // "every \"ENABLED\" rule references an \"ACTIVE\" event bus" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

@@ -105,5 +105,6 @@ public class StepfunctionsElasticacheSteps {
     // No-op: treat as invariant satisfied.
   }
 
-  // "every succeeded execution recorded which cluster it read" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every succeeded execution recorded which cluster it read" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

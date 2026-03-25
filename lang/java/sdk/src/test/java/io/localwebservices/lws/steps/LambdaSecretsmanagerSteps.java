@@ -217,5 +217,6 @@ public class LambdaSecretsmanagerSteps {
     }
   }
 
-  // "every successful invocation recorded which secret it read" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every successful invocation recorded which secret it read" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

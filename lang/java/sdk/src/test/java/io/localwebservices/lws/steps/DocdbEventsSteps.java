@@ -132,8 +132,10 @@ public class DocdbEventsSteps {
 
   // ── Then: model invariants (no-ops) ───────────────────────────────────────
 
-  // "every \"DELIVERED\" event references a cluster that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every \"DELIVERED\" event references a bus that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"DELIVERED\" event references a cluster that exists" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
+  // "every \"DELIVERED\" event references a bus that exists" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 
   // ── Private helpers ────────────────────────────────────────────────────────
 

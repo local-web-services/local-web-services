@@ -71,5 +71,6 @@ public class StepfunctionsDocdbSteps {
 
   // ── Then: assertions ──────────────────────────────────────────────────────────
 
-  // "every succeeded execution recorded which cluster it connected to" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every succeeded execution recorded which cluster it connected to" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
 }

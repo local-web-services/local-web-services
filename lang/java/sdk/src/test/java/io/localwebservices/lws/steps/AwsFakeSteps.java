@@ -347,6 +347,8 @@ public class AwsFakeSteps {
 
   // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
-  // "every {string} operation belongs to an {string} {string} fake" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every {string} fake is tied to a known service" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every {string} operation belongs to an {string} {string} fake" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
+  // "every {string} fake is tied to a known service" → CrossServiceSteps (catch-all @And("^every
+  // .*$"))
 }

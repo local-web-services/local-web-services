@@ -227,6 +227,8 @@ public class CognitoLambdaSteps {
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────
 
-  // "every {string} invocation is for a {string} user" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every {string} user has a corresponding {string} invocation" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every {string} invocation is for a {string} user" → CrossServiceSteps (catch-all @And("^every
+  // .*$"))
+  // "every {string} user has a corresponding {string} invocation" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

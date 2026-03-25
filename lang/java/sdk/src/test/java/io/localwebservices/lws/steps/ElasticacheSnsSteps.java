@@ -273,6 +273,8 @@ public class ElasticacheSnsSteps {
 
   // ── Safety invariant Then steps ───────────────────────────────────────────────
 
-  // "every \"PUBLISHED\" notification references a cluster that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every \"PUBLISHED\" notification references a topic that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"PUBLISHED\" notification references a cluster that exists" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
+  // "every \"PUBLISHED\" notification references a topic that exists" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
 }

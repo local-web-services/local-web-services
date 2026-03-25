@@ -205,6 +205,8 @@ public class LambdaCognitoSteps {
 
   // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
-  // "every {string} invocation references an {string} Lambda function" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every successful invocation recorded which pool it called" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every {string} invocation references an {string} Lambda function" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
+  // "every successful invocation recorded which pool it called" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

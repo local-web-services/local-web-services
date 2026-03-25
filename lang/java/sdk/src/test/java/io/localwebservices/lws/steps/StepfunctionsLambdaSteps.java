@@ -251,5 +251,6 @@ public class StepfunctionsLambdaSteps {
     // No-op: treat as invariant satisfied.
   }
 
-  // "every \"IN_PROGRESS\" invocation has a corresponding \"RUNNING\" execution" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"IN_PROGRESS\" invocation has a corresponding \"RUNNING\" execution" →
+  // CrossServiceSteps (catch-all @And("^every .*$"))
 }

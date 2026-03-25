@@ -195,5 +195,6 @@ public class LambdaS3tablesSteps {
     // Only reached by @internal scenarios excluded by the tag filter.
   }
 
-  // "every existing record references a table that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every existing record references a table that exists" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

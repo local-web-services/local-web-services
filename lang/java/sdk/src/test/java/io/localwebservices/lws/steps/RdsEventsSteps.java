@@ -161,7 +161,8 @@ public class RdsEventsSteps {
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────
 
-  // "every \"DELIVERED\" event references a \"DB\" instance that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"DELIVERED\" event references a \"DB\" instance that exists" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
 
   // ── Private helpers ───────────────────────────────────────────────────────────
 

@@ -836,7 +836,8 @@ public class LambdaSteps {
 
   // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
-  // "every active event source mapping references an existing non-deleted function" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every active event source mapping references an existing non-deleted function" →
+  // CrossServiceSteps (catch-all @And("^every .*$"))
 
   @Then("no function in {string} state has active executions")
   public void noFunctionInStateHasActiveExecutions(String state) {
@@ -853,7 +854,8 @@ public class LambdaSteps {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
   }
 
-  // "every event source mapping has a valid status" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every event source mapping has a valid status" → CrossServiceSteps (catch-all @And("^every
+  // .*$"))
   // "every function has a valid status" → CrossServiceSteps (catch-all @And("^every .*$"))
 
   @Then("all async slots reference known function IDs or are empty")

@@ -377,6 +377,8 @@ public class ApigatewayStepfunctionsSteps {
     // Invariant: trivially satisfied in isolated lws context.
   }
 
-  // "every \"RUNNING\" execution references an \"ACTIVE\" state machine" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every \"RUNNING\" execution has a corresponding \"IN_PROGRESS\" request" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"RUNNING\" execution references an \"ACTIVE\" state machine" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
+  // "every \"RUNNING\" execution has a corresponding \"IN_PROGRESS\" request" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
 }

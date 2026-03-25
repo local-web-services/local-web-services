@@ -145,5 +145,6 @@ public class LambdaElasticsearchSteps {
     // Only reached by @internal scenarios excluded by the tag filter.
   }
 
-  // "every existing document references a domain that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every existing document references a domain that exists" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

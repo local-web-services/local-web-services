@@ -269,5 +269,6 @@ public class S3apiLambdaSteps {
     }
   }
 
-  // "every \"IN_PROGRESS\" invocation was triggered by an object in an \"ACTIVE\" bucket" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"IN_PROGRESS\" invocation was triggered by an object in an \"ACTIVE\" bucket" →
+  // CrossServiceSteps (catch-all @And("^every .*$"))
 }

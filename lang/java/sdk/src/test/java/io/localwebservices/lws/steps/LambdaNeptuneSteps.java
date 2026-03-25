@@ -232,5 +232,6 @@ public class LambdaNeptuneSteps {
     }
   }
 
-  // "every successful invocation recorded which cluster it queried" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every successful invocation recorded which cluster it queried" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

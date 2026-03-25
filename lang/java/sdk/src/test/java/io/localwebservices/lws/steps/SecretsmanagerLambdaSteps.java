@@ -244,6 +244,8 @@ public class SecretsmanagerLambdaSteps {
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────
 
-  // "every \"ROTATING\" secret has an \"IN_PROGRESS\" rotation invocation" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every successful rotation invocation recorded which secret it rotated" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"ROTATING\" secret has an \"IN_PROGRESS\" rotation invocation" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
+  // "every successful rotation invocation recorded which secret it rotated" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
 }

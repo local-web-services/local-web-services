@@ -309,5 +309,6 @@ public class NeptuneSteps {
     // No-op invariant: trivially satisfied in an isolated test context.
   }
 
-  // "every backing-up cluster has a corresponding in-progress snapshot" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every backing-up cluster has a corresponding in-progress snapshot" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
 }

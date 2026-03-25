@@ -71,5 +71,6 @@ public class LambdaS3apiSteps {
   // "the function is {string}" is already registered as a parameterized Given in LambdaSteps;
   // it matches Then the function is "ACTIVE" via Cucumber keyword aliasing.
 
-  // "every existing object belongs to an \"ACTIVE\" bucket" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every existing object belongs to an \"ACTIVE\" bucket" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

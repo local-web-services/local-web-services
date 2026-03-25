@@ -235,6 +235,8 @@ public class RdsLambdaSteps {
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────
 
-  // "every successful invocation references a \"DB\" instance that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every successful invocation recorded which function it invoked" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every successful invocation references a \"DB\" instance that exists" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
+  // "every successful invocation recorded which function it invoked" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

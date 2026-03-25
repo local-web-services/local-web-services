@@ -217,5 +217,6 @@ public class LambdaRdsSteps {
     // Only reached by @internal scenarios excluded by the tag filter.
   }
 
-  // "every successful invocation recorded which database it queried" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every successful invocation recorded which database it queried" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

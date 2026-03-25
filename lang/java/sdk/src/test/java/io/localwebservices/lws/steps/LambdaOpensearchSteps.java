@@ -135,6 +135,8 @@ public class LambdaOpensearchSteps {
     // Only reached by @internal scenarios excluded by the tag filter.
   }
 
-  // "every indexed document belongs to an existing index" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every existing index belongs to an \"ACTIVE\" domain" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every indexed document belongs to an existing index" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
+  // "every existing index belongs to an \"ACTIVE\" domain" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

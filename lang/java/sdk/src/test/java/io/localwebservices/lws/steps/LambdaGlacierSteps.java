@@ -154,5 +154,6 @@ public class LambdaGlacierSteps {
     // Only reached by @internal scenarios excluded by the tag filter.
   }
 
-  // "every existing archive references a vault that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every existing archive references a vault that exists" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }

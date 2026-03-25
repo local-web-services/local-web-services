@@ -177,6 +177,8 @@ public class LambdaDynamodbSteps {
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────
 
-  // "every \"IN_PROGRESS\" invocation references an \"ACTIVE\" Lambda function" → CrossServiceSteps (catch-all @And("^every .*$"))
-  // "every existing item belongs to an \"ACTIVE\" table" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"IN_PROGRESS\" invocation references an \"ACTIVE\" Lambda function" → CrossServiceSteps
+  // (catch-all @And("^every .*$"))
+  // "every existing item belongs to an \"ACTIVE\" table" → CrossServiceSteps (catch-all
+  // @And("^every .*$"))
 }
