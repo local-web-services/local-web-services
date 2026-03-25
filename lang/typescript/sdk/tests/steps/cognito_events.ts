@@ -51,26 +51,11 @@ async function ensureCognitoEventsPool(world: SdkWorld): Promise<void> {
 
 // ── Given: bus state setup ────────────────────────────────────────────────────
 
-Given("the bus does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no custom buses.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the bus does not already exist" is registered in cross_service_common.ts.
 
-Given("the bus already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await ensureCognitoEventsBus(this);
-  // Assert: bus created
-});
+// "the bus already exists" is registered in cross_service_common.ts.
 
-Given("the bus exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await ensureCognitoEventsBus(this);
-  // Assert: bus created
-});
+// "the bus exists" is registered in cross_service_common.ts.
 
 Given('the bus exists and is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange
@@ -166,49 +151,15 @@ Given("the pool already has an EventBridge configuration", async function (this:
 
 // ── Given: slots ──────────────────────────────────────────────────────────────
 
-Given("an event slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: always room for events.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "an event slot is available" is registered in cross_service_common.ts.
 
-Given("no event slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — skip: cannot exhaust event slot limit.
-  return "pending";
-});
+// "no event slot is available" is registered in cross_service_common.ts.
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When("an EventBridge event bus is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateEventBusCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  try {
-    const result = await cognitoEventsEbClient(this).send(
-      new CreateEventBusCommand({ Name: COGNITO_EVENTS_TEST_BUS }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "an EventBridge event bus is created" is registered in cross_service_common.ts.
 
-When("the EventBridge event bus is deleted", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteEventBusCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  try {
-    const result = await cognitoEventsEbClient(this).send(
-      new DeleteEventBusCommand({ Name: COGNITO_EVENTS_TEST_BUS }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "the EventBridge event bus is deleted" is registered in cross_service_common.ts.
 
 When("a Cognito user pool is created", async function (this: SdkWorld) {
   // Arrange

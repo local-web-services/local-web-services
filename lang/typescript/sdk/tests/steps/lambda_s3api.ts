@@ -63,15 +63,9 @@ Given('no invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
 
 // ── Given: object slot state ──────────────────────────────────────────────────
 
-Given("an object slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: always room for objects in fresh state.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "an object slot is available" is registered in cross_service_common.ts.
 
-Given("no object slot is available", async function (this: SdkWorld) {
-  // @internal: Cannot exhaust object slot limit via public API.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "no object slot is available" is registered in cross_service_common.ts.
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
@@ -97,21 +91,7 @@ When("a Lambda function is deployed", async function (this: SdkWorld) {
   }
 });
 
-When("an S3 bucket is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateBucketCommand } = require("@aws-sdk/client-s3");
-  // Act
-  try {
-    const result = await s3Client(this).send(
-      new CreateBucketCommand({ Bucket: LAMBDA_S3API_BUCKET }),
-    );
-    // Assert: captured in lastCallResult
-    this.lastCallResult = { success: true, output: result };
-  } catch (err) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-});
+// "an S3 bucket is created" is registered in cross_service_common.ts.
 
 When("the Lambda function is invoked", async function (this: SdkWorld) {
   // @internal: Cannot trigger Lambda function invocation via public API in lws.

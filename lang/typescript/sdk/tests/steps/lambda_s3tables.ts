@@ -348,45 +348,9 @@ Then("the function is {string}", async function (this: SdkWorld, state: string) 
   }
 });
 
-Then("the bucket is {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { GetTableBucketCommand } = require("@aws-sdk/client-s3tables");
-  // Act
-  const result = await lambdaS3TablesS3TablesClient(this).send(
-    new GetTableBucketCommand({ TableBucketARN: LAMBDA_S3TABLES_TEST_BUCKET }),
-  );
-  // Assert
-  const expectedName = LAMBDA_S3TABLES_TEST_BUCKET;
-  const actualName = result.Name ?? "";
-  assert.strictEqual(
-    actualName,
-    expectedName,
-    `Expected bucket name "${expectedName}" but got "${actualName}"; expected_name=${expectedName} actual_name=${actualName}`,
-  );
-});
+// "the bucket is {string}" is registered in cross_service_common.ts.
 
-Then("the table is {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { GetTableCommand } = require("@aws-sdk/client-s3tables");
-  // Act
-  const result = await lambdaS3TablesS3TablesClient(this).send(
-    new GetTableCommand({
-      TableBucketARN: LAMBDA_S3TABLES_TEST_BUCKET,
-      Namespace: LAMBDA_S3TABLES_TEST_NAMESPACE,
-      Name: LAMBDA_S3TABLES_TEST_TABLE,
-    }),
-  );
-  // Assert
-  const expectedName = LAMBDA_S3TABLES_TEST_TABLE;
-  const actualName = result.Name ?? "";
-  assert.strictEqual(
-    actualName,
-    expectedName,
-    `Expected table name "${expectedName}" but got "${actualName}"; expected_name=${expectedName} actual_name=${actualName}`,
-  );
-});
+// "the table is {string}" is registered in cross_service_common.ts.
 
 Then('the table is "DELETING" and write operations will fail', async function (this: SdkWorld) {
   // @internal: Cannot observe table DELETING state in lws.

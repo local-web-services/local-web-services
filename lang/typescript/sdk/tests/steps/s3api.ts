@@ -61,63 +61,17 @@ async function deleteObject(world: SdkWorld, bucketName: string, key: string): P
 
 // ── Given: bucket state setup ─────────────────────────────────────────────────
 
-Given("the bucket does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no buckets.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the bucket does not already exist" is registered in cross_service_common.ts.
 
-Given("the bucket already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createBucket(this, S3API_TEST_BUCKET);
-  // Assert: bucket exists
-});
+// "the bucket already exists" is registered in cross_service_common.ts.
 
-Given("the bucket exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createBucket(this, S3API_TEST_BUCKET);
-  // Assert: bucket created
-});
+// "the bucket exists" is registered in cross_service_common.ts.
 
-Given("the bucket is {string}", async function (this: SdkWorld, state: string) {
-  if (state === "ACTIVE") {
-    // No-op: buckets are ACTIVE by default after creation.
-    assert.ok(this.session, "Expected session to be initialized");
-    return;
-  }
-  // Arrange: use lifecycle API to simulate a non-ACTIVE bucket
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await deleteBucket(this, S3API_TEST_BUCKET);
-  await this.session!.lifecycle("s3").createDwellMs(5000).apply();
-  await createBucket(this, S3API_TEST_BUCKET);
-  // Assert: bucket is in non-ACTIVE state
-});
+// "the bucket is {string}" is registered in cross_service_common.ts.
 
-Given("the bucket is not {string}", async function (this: SdkWorld, state: string) {
-  if (state === "ACTIVE") {
-    // Arrange: create bucket in non-ACTIVE state via lifecycle dwell
-    assert.ok(this.session, "Expected session to be initialized");
-    // Act
-    await deleteBucket(this, S3API_TEST_BUCKET);
-    await this.session!.lifecycle("s3").createDwellMs(5000).apply();
-    await createBucket(this, S3API_TEST_BUCKET);
-    return;
-  }
-  // For other states, no-op.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the bucket is not {string}" is registered in cross_service_common.ts.
 
-Given("the bucket does not exist", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await deleteBucket(this, S3API_TEST_BUCKET);
-  // Assert: desired state is absence
-});
+// "the bucket does not exist" is registered in cross_service_common.ts.
 
 Given("the bucket is empty", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: freshly created bucket is empty.

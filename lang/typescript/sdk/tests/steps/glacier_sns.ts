@@ -17,11 +17,6 @@ function glacierSNSGlacierClient(world: SdkWorld) {
   return world.session!.client<typeof GlacierClient>("glacier");
 }
 
-function glacierSNSSnsClient(world: SdkWorld) {
-  const { SNSClient } = require("@aws-sdk/client-sns");
-  return world.session!.client<typeof SNSClient>("sns");
-}
-
 function glacierSNSTopicArn(): string {
   return `arn:aws:sns:${GLACIER_SNS_REGION}:${GLACIER_SNS_ACCOUNT}:${GLACIER_SNS_TEST_TOPIC}`;
 }
@@ -34,14 +29,6 @@ async function glacierSNSCreateVault(world: SdkWorld): Promise<void> {
       vaultName: GLACIER_SNS_TEST_VAULT,
     }),
   );
-}
-
-async function glacierSNSCreateTopic(world: SdkWorld): Promise<string> {
-  const { CreateTopicCommand } = require("@aws-sdk/client-sns");
-  const result = await glacierSNSSnsClient(world).send(
-    new CreateTopicCommand({ Name: GLACIER_SNS_TEST_TOPIC }),
-  );
-  return result.TopicArn ?? glacierSNSTopicArn();
 }
 
 // ── Background ────────────────────────────────────────────────────────────────
@@ -110,57 +97,14 @@ Given('the vault has an "SNS" notification configured', async function (this: Sd
 
 // ── Given: topic state setup ──────────────────────────────────────────────────
 
-Given("the topic does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no topics.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the topic already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const topicArn = await glacierSNSCreateTopic(this);
-  // Assert: topic created
-  (this as any)._glacierSNSTopicArn = topicArn;
-});
-
-Given("the topic exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const topicArn = await glacierSNSCreateTopic(this);
-  // Assert: topic created
-  (this as any)._glacierSNSTopicArn = topicArn;
-});
-
-Given('the topic exists and is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const topicArn = await glacierSNSCreateTopic(this);
-  // Assert: topic created and is ACTIVE
-  (this as any)._glacierSNSTopicArn = topicArn;
-});
-
-Given('the topic is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: topics are ACTIVE immediately after creation in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given('the topic is already "DELETED"', async function (this: SdkWorld) {
-  // @internal: topic lifecycle transitions require background processing.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the topic does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no topics.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given('the topic does not exist or is not "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no topics.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the topic does not already exist" is registered in cross_service_common.ts.
+// "the topic already exists" is registered in cross_service_common.ts.
+// "the topic exists" is registered in cross_service_common.ts.
+// "the topic exists and is {string}" is registered in s3_sns.ts.
+// "the topic is {string}" (Given) is registered in sns.ts.
+// "the topic is already {string}" is registered in cross_service_common.ts.
+// "the topic does not exist" is registered in cross_service_common.ts.
+// "the topic does not exist or is not {string}" is registered in s3_sns.ts.
 
 // ── Given: capacity steps ──────────────────────────────────────────────────────
 
@@ -177,18 +121,8 @@ Given("no job slot is available", async function (this: SdkWorld) {
   // Assert: capacity exhausted
 });
 
-Given("a message slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: message slots are available by default.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("no message slot is available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await this.session!.capacity("sns").exhaust().apply();
-  // Assert: capacity exhausted
-});
+// "a message slot is available" is registered in cross_service_common.ts.
+// "no message slot is available" is registered in cross_service_common.ts.
 
 // ── Given: internal state steps ───────────────────────────────────────────────
 
@@ -255,41 +189,9 @@ When("a Glacier vault is created", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When('an "SNS" topic is created', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateTopicCommand } = require("@aws-sdk/client-sns");
-  // Act
-  try {
-    const result = await glacierSNSSnsClient(this).send(
-      new CreateTopicCommand({ Name: GLACIER_SNS_TEST_TOPIC }),
-    );
-    if (result.TopicArn) {
-      (this as any)._glacierSNSTopicArn = result.TopicArn;
-    }
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "an {string} topic is created" (When) is registered in cross_service_common.ts.
 
-When('the "SNS" topic is deleted', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteTopicCommand } = require("@aws-sdk/client-sns");
-  const topicArn: string = (this as any)._glacierSNSTopicArn ?? glacierSNSTopicArn();
-  // Act
-  try {
-    const result = await glacierSNSSnsClient(this).send(
-      new DeleteTopicCommand({ TopicArn: topicArn }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "the {string} topic is deleted" (When) is registered in cross_service_common.ts.
 
 When('an "SNS" notification is configured on the vault', async function (this: SdkWorld) {
   // Arrange
@@ -404,22 +306,7 @@ Then(
   },
 );
 
-Then('the topic is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected create_topic to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  assert.ok(
-    this.lastCallResult.output !== null && this.lastCallResult.output !== undefined,
-    "Expected CreateTopicOutput but got null",
-  );
-});
+// "the topic is {string}" (Then) is registered in cross_service_common.ts.
 
 Then('the topic is "DELETED" and Glacier notifications will fail', async function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -475,18 +362,7 @@ Then('the job is "SUCCEEDED" but no notification is published', async function (
   // @internal: job_completed_notification_fails requires background processing. No assertion performed.
 });
 
-Then("the operation is rejected", async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedRejected = true;
-  const actualRejected = !this.lastCallResult.success;
-  assert.strictEqual(
-    actualRejected,
-    expectedRejected,
-    `Expected operation to be rejected but it succeeded; expected_rejected=${expectedRejected} actual_rejected=${actualRejected}`,
-  );
-});
+// "the operation is rejected" is registered in cross_service_common.ts.
 
 // ── Safety invariant Then steps ───────────────────────────────────────────────
 

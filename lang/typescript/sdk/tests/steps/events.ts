@@ -55,26 +55,11 @@ async function putTarget(world: SdkWorld): Promise<void> {
 
 // ── Given: event bus state setup ──────────────────────────────────────────────
 
-Given("the event bus does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no custom event buses.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the event bus does not already exist" is registered in cross_service_common.ts.
 
-Given("the event bus already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createBus(this);
-  // Assert: bus created
-});
+// "the event bus already exists" is registered in cross_service_common.ts.
 
-Given("the event bus exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createBus(this);
-  // Assert: bus created
-});
+// "the event bus exists" is registered in cross_service_common.ts.
 
 Given('the event bus is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: event buses are ACTIVE immediately after creation.
@@ -96,10 +81,7 @@ Given('the event bus is not "ACTIVE"', async function (this: SdkWorld) {
   // Assert: bus recreated in non-ACTIVE state
 });
 
-Given("the event bus does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no custom event buses.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the event bus does not exist" is registered in cross_service_common.ts.
 
 Given("the event bus is not the default bus", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: EVENTS_TEST_BUS is not the default bus.
@@ -126,28 +108,11 @@ Given("the event bus has rules", async function (this: SdkWorld) {
 
 // ── Given: rule state setup ───────────────────────────────────────────────────
 
-Given("the rule does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no rules.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the rule does not already exist" is registered in cross_service_common.ts.
 
-Given("the rule already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  await createBus(this);
-  // Act
-  await createRule(this);
-  // Assert: rule created
-});
+// "the rule already exists" is registered in cross_service_common.ts.
 
-Given("the rule exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  await createBus(this);
-  // Act
-  await createRule(this);
-  // Assert: rule created
-});
+// "the rule exists" is registered in cross_service_common.ts.
 
 Given('the rule is not already "DELETED"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: newly created rules are ENABLED, not DELETED.
@@ -209,10 +174,7 @@ Given('the rule is not "DISABLED"', async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("the rule does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no rules.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the rule does not exist" is registered in cross_service_common.ts.
 
 Given("a rule is associated with the event bus", async function (this: SdkWorld) {
   // Arrange

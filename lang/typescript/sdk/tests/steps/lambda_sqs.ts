@@ -217,15 +217,8 @@ Given('no "AVAILABLE" message exists in the mapped queue', async function (this:
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("a message slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: always room for messages in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("no message slot is available", async function (this: SdkWorld) {
-  // @internal: Cannot exhaust message slot limit in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "a message slot is available" is registered in cross_service_common.ts.
+// "no message slot is available" is registered in cross_service_common.ts.
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 

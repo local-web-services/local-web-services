@@ -59,55 +59,17 @@ async function receiveMessage(
 
 // ── Common assertion ──────────────────────────────────────────────────────────
 
-// "the operation is rejected" is registered below (not in cross_service_common.ts for SQS spec).
-Then("the operation is rejected", async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedRejected = true;
-  const actualRejected = !this.lastCallResult.success;
-  assert.strictEqual(
-    actualRejected,
-    expectedRejected,
-    `Expected operation to be rejected but it succeeded; actual_success=${this.lastCallResult.success}`,
-  );
-});
+// "the operation is rejected" is registered in cross_service_common.ts.
 
 // ── Given: queue existence ────────────────────────────────────────────────────
 
-Given("the queue does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no queues.
-  assert.ok(this.session, "Expected session to be initialized");
-  // Set active queue so shared Then steps know which queue to check.
-  (this as any)._sqsActiveQueue = SQS_TEST_QUEUE;
-});
+// "the queue does not already exist" is registered in cross_service_common.ts.
 
-Given("the queue already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  (this as any)._sqsActiveQueue = SQS_TEST_QUEUE;
-  // Act
-  await createQueue(this, SQS_TEST_QUEUE);
-  // Assert: creation succeeded; queue exists
-});
+// "the queue already exists" is registered in cross_service_common.ts.
 
-Given("the queue exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  (this as any)._sqsActiveQueue = SQS_TEST_QUEUE;
-  // Act
-  await createQueue(this, SQS_TEST_QUEUE);
-  // Assert: queue created
-});
+// "the queue exists" is registered in cross_service_common.ts.
 
-Given("the queue does not exist", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  (this as any)._sqsActiveQueue = SQS_TEST_QUEUE;
-  // Act: delete queue if it exists
-  await deleteQueue(this, SQS_TEST_QUEUE);
-  // Assert: desired state is absence
-});
+// "the queue does not exist" is registered in cross_service_common.ts.
 
 // ── Given: queue lifecycle state ──────────────────────────────────────────────
 
@@ -115,22 +77,7 @@ Given("the queue does not exist", async function (this: SdkWorld) {
 // "the queue is not {string}" (Given) — already registered in cross_service_common.ts.
 // Both use (this as any)._sqsActiveQueue to target the right queue.
 
-Given("the queue is {string}", async function (this: SdkWorld, state: string) {
-  if (state === "ACTIVE") {
-    // No-op: queues are ACTIVE by default after creation.
-    assert.ok(this.session, "Expected session to be initialized");
-    (this as any)._sqsActiveQueue = SQS_TEST_QUEUE;
-    return;
-  }
-  // Arrange: use lifecycle API to simulate a non-ACTIVE queue
-  assert.ok(this.session, "Expected session to be initialized");
-  (this as any)._sqsActiveQueue = SQS_TEST_QUEUE;
-  // Act
-  await this.session!.lifecycle("sqs").createDwellMs(5000).apply();
-  await deleteQueue(this, SQS_TEST_QUEUE);
-  await createQueue(this, SQS_TEST_QUEUE);
-  // Assert: queue is in CREATING state
-});
+// "the queue is {string}" is registered in cross_service_common.ts.
 
 // ── Given: message existence ──────────────────────────────────────────────────
 

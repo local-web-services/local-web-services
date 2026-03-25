@@ -822,18 +822,7 @@ Then("the vault inventory is marked as fresh", async function (this: SdkWorld) {
   // @internal: vault_inventory_refresh requires background processing. No assertion performed.
 });
 
-Then("the operation is rejected", async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedRejected = true;
-  const actualRejected = !this.lastCallResult.success;
-  assert.strictEqual(
-    actualRejected,
-    expectedRejected,
-    `Expected operation to be rejected but it succeeded; expected_rejected=${expectedRejected} actual_rejected=${actualRejected}`,
-  );
-});
+// "the operation is rejected" is registered in cross_service_common.ts.
 
 // ── Safety invariant Then steps ───────────────────────────────────────────────
 

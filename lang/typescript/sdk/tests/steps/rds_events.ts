@@ -100,26 +100,11 @@ Given('the "DB" instance is not "STOPPING"', async function (this: SdkWorld) {
 
 // ── Given: bus state setup ────────────────────────────────────────────────────
 
-Given("the bus does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no event buses.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the bus does not already exist" is registered in cross_service_common.ts.
 
-Given("the bus already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await rdsEventsCreateBus(this);
-  // Assert: bus created
-});
+// "the bus already exists" is registered in cross_service_common.ts.
 
-Given("the bus exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await rdsEventsCreateBus(this);
-  // Assert: bus created
-});
+// "the bus exists" is registered in cross_service_common.ts.
 
 Given('the bus is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: event buses in lws are ACTIVE immediately after creation.
@@ -162,15 +147,9 @@ Given('the bus is not "DELETED"', async function (this: SdkWorld) {
 
 // ── Given: event slot state ───────────────────────────────────────────────────
 
-Given("an event slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: always room for events in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "an event slot is available" is registered in cross_service_common.ts.
 
-Given("no event slot is available", async function (this: SdkWorld) {
-  // @internal: Cannot exhaust event slot limit in lws via public APIs.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "no event slot is available" is registered in cross_service_common.ts.
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
@@ -196,37 +175,9 @@ When('an "RDS" "DB" instance is created and becomes "AVAILABLE"', async function
   // Assert: captured in lastCallResult
 });
 
-When("an EventBridge event bus is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateEventBusCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  try {
-    const result = await rdsEventsEventBridgeClient(this).send(
-      new CreateEventBusCommand({ Name: RDS_EVENTS_TEST_BUS_NAME }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "an EventBridge event bus is created" is registered in cross_service_common.ts.
 
-When("the EventBridge event bus is deleted", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteEventBusCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  try {
-    const result = await rdsEventsEventBridgeClient(this).send(
-      new DeleteEventBusCommand({ Name: RDS_EVENTS_TEST_BUS_NAME }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "the EventBridge event bus is deleted" is registered in cross_service_common.ts.
 
 When('the "DB" instance finishes stopping', async function (this: SdkWorld) {
   // @internal: d_b_stop_complete cannot be triggered via public API.

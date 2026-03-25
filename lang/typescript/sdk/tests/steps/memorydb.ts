@@ -1381,18 +1381,7 @@ Then("the resource tag state is unchanged (no-op model)", async function (this: 
 
 // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
-Then("the operation is rejected", async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedRejected = true;
-  const actualRejected = !this.lastCallResult.success;
-  assert.strictEqual(
-    actualRejected,
-    expectedRejected,
-    `Expected operation to be rejected but it succeeded; expected_rejected=${expectedRejected} actual_rejected=${actualRejected}`,
-  );
-});
+// "the operation is rejected" is registered in cross_service_common.ts.
 
 Then("every active cluster has write durability enabled", async function (this: SdkWorld) {
   // No-op invariant: trivially satisfied in an isolated test context.

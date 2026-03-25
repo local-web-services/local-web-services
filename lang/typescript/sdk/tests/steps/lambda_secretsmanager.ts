@@ -126,37 +126,9 @@ When("a Lambda function is deployed", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When("a secret is created in Secrets Manager", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateSecretCommand } = require("@aws-sdk/client-secrets-manager");
-  // Act
-  try {
-    const result = await smClient(this).send(
-      new CreateSecretCommand({ Name: LS_TEST_SECRET, SecretString: LS_TEST_SECRET_VALUE }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a secret is created in Secrets Manager" is registered in cross_service_common.ts.
 
-When("a secret is scheduled for deletion", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteSecretCommand } = require("@aws-sdk/client-secrets-manager");
-  // Act
-  try {
-    const result = await smClient(this).send(
-      new DeleteSecretCommand({ SecretId: LS_TEST_SECRET, RecoveryWindowInDays: 7 }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a secret is scheduled for deletion" is registered in cross_service_common.ts.
 
 When("the Lambda function is invoked", async function (this: SdkWorld) {
   // @internal: Cannot trigger Lambda invocation in lws without Docker.

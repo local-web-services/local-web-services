@@ -62,33 +62,13 @@ async function startExecution(world: SdkWorld, smName: string): Promise<string> 
 
 // ── Given: state machine existence ───────────────────────────────────────────
 
-Given("the state machine does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no state machines.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the state machine does not already exist" is registered in cross_service_common.ts.
 
-Given("the state machine already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const arn = await createStateMachine(this, SFN_TEST_SM, "STANDARD");
-  (this as any)._sfnSmArn = arn;
-  // Assert: state machine exists (no error thrown)
-});
+// "the state machine already exists" is registered in cross_service_common.ts.
 
-Given("the state machine exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const arn = await createStateMachine(this, SFN_TEST_SM, "STANDARD");
-  (this as any)._sfnSmArn = arn;
-  // Assert: state machine exists (no error thrown)
-});
+// "the state machine exists" is registered in cross_service_common.ts.
 
-Given("the state machine does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no state machines.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the state machine does not exist" is registered in cross_service_common.ts.
 
 // ── Given: state machine status / type ───────────────────────────────────────
 
@@ -265,26 +245,7 @@ Given("the execution slot is not available", async function (this: SdkWorld) {
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When("a Step Functions state machine is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateStateMachineCommand } = require("@aws-sdk/client-sfn");
-  // Act
-  try {
-    const result = await sfnClient(this).send(
-      new CreateStateMachineCommand({
-        name: SFN_TEST_SM,
-        definition: SFN_PASS_DEFINITION,
-        roleArn: SFN_ROLE_ARN,
-      }),
-    );
-    (this as any)._sfnSmArn = result.stateMachineArn;
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: result captured in lastCallResult
-});
+// "a Step Functions state machine is created" is registered in cross_service_common.ts.
 
 When("a state machine is deleted", async function (this: SdkWorld) {
   // Arrange

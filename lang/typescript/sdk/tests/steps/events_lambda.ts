@@ -138,19 +138,7 @@ Given('no invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
 
 // ── When: cross-service actions ───────────────────────────────────────────────
 
-When("an EventBridge event bus is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateEventBusCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  try {
-    const actualOutput = await elEbClient(this).send(new CreateEventBusCommand({ Name: EL_BUS }));
-    this.lastCallResult = { success: true, output: actualOutput };
-  } catch (error) {
-    this.lastCallResult = { success: false, output: null, error };
-  }
-  // Assert: captured in lastCallResult
-});
+// "an EventBridge event bus is created" is registered in cross_service_common.ts.
 
 When("a Lambda function is deployed", async function (this: SdkWorld) {
   // Arrange

@@ -40,26 +40,11 @@ async function createBus(world: SdkWorld): Promise<void> {
 
 // ── Given: bus state ──────────────────────────────────────────────────────────
 
-Given("the bus does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after reset has no event buses.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the bus does not already exist" is registered in cross_service_common.ts.
 
-Given("the bus already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createBus(this);
-  // Assert: bus created
-});
+// "the bus already exists" is registered in cross_service_common.ts.
 
-Given("the bus exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createBus(this);
-  // Assert: bus created
-});
+// "the bus exists" is registered in cross_service_common.ts.
 
 Given('the bus is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: event buses are ACTIVE immediately after creation.
@@ -128,15 +113,9 @@ Given("no invocation slot is available", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("an event slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: always room for events in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "an event slot is available" is registered in cross_service_common.ts.
 
-Given("no event slot is available", async function (this: SdkWorld) {
-  // @internal: Cannot exhaust event slot limit in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "no event slot is available" is registered in cross_service_common.ts.
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
@@ -162,33 +141,9 @@ When("a Lambda function is deployed", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When("an EventBridge event bus is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateEventBusCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  try {
-    const result = await ebClient(this).send(new CreateEventBusCommand({ Name: LE_TEST_BUS }));
-    this.lastCallResult = { success: true, output: result };
-  } catch (err) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "an EventBridge event bus is created" is registered in cross_service_common.ts.
 
-When("the EventBridge event bus is deleted", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteEventBusCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  try {
-    const result = await ebClient(this).send(new DeleteEventBusCommand({ Name: LE_TEST_BUS }));
-    this.lastCallResult = { success: true, output: result };
-  } catch (err) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "the EventBridge event bus is deleted" is registered in cross_service_common.ts.
 
 When("the Lambda function is invoked", async function (this: SdkWorld) {
   // @internal: Cannot trigger Lambda invocation in lws without Docker.

@@ -430,18 +430,7 @@ Then(
   },
 );
 
-Then("the operation is rejected", async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedRejected = true;
-  const actualRejected = !this.lastCallResult.success;
-  assert.strictEqual(
-    actualRejected,
-    expectedRejected,
-    `Expected the operation to be rejected but it succeeded; expected_rejected=${expectedRejected} actual_rejected=${actualRejected}`,
-  );
-});
+// "the operation is rejected" is registered in cross_service_common.ts.
 
 Then(
   "every active index belongs to an existing non-deleted domain",

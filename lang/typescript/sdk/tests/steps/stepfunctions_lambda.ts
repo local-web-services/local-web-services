@@ -163,21 +163,9 @@ Given('no invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
 
 // ── Given: cross-service slot availability ────────────────────────────────────
 
-Given("an execution slot is available", async function (this: SdkWorld) {
-  // Arrange: set unlimited capacity for stepfunctions
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await this.session!.capacity("stepfunctions").unlimited().apply();
-  // Assert: capacity is unlimited
-});
+// "an execution slot is available" is registered in cross_service_common.ts.
 
-Given("no execution slot is available", async function (this: SdkWorld) {
-  // Arrange: exhaust the stepfunctions execution capacity
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await this.session!.capacity("stepfunctions").exhaust().apply();
-  // Assert: capacity is exhausted
-});
+// "no execution slot is available" is registered in cross_service_common.ts.
 
 Given("an invocation slot is available", async function (this: SdkWorld) {
   // No-op: always room for invocations in fresh state.
@@ -255,25 +243,7 @@ When("a Lambda task is configured on the state machine", async function (this: S
   // Assert: captured in lastCallResult
 });
 
-When("an execution of the state machine is started", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { StartExecutionCommand } = require("@aws-sdk/client-sfn");
-  // Act
-  try {
-    const result = await sfnClient(this).send(
-      new StartExecutionCommand({
-        stateMachineArn: smArn(SFN_LAMBDA_TEST_SM),
-        input: SFN_LAMBDA_TEST_INPUT,
-      }),
-    );
-    (this as any)._sfnExecArn = result.executionArn as string;
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "an execution of the state machine is started" is registered in cross_service_common.ts.
 
 When(
   "a running execution reaches the Lambda task state and invokes the function",

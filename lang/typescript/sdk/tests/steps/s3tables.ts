@@ -63,26 +63,11 @@ async function createTable(world: SdkWorld): Promise<void> {
 
 // ── Given: bucket state setup ─────────────────────────────────────────────────
 
-Given("the bucket does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no table buckets.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the bucket does not already exist" is registered in cross_service_common.ts.
 
-Given("the bucket already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createBucket(this);
-  // Assert: bucket created
-});
+// "the bucket already exists" is registered in cross_service_common.ts.
 
-Given("the bucket exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createBucket(this);
-  // Assert: bucket created
-});
+// "the bucket exists" is registered in cross_service_common.ts.
 
 Given('the bucket is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: table buckets are ACTIVE immediately in lws.
@@ -127,10 +112,7 @@ Given("the bucket has active namespaces", async function (this: SdkWorld) {
   // Assert: namespace created
 });
 
-Given("the bucket does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no table buckets.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the bucket does not exist" is registered in cross_service_common.ts.
 
 // ── Given: namespace state setup ──────────────────────────────────────────────
 
@@ -195,28 +177,11 @@ Given("the namespace does not exist", async function (this: SdkWorld) {
 
 // ── Given: table state setup ───────────────────────────────────────────────────
 
-Given("the table does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh namespace has no tables.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the table does not already exist" is registered in cross_service_common.ts.
 
-Given("the table already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createTable(this);
-  // Assert: table created
-});
+// "the table already exists" is registered in cross_service_common.ts.
 
-Given("the table exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: ensure bucket, namespace, and table exist
-  await createBucket(this);
-  await createNamespace(this);
-  await createTable(this);
-  // Assert: table created
-});
+// "the table exists" is registered in cross_service_common.ts.
 
 Given('the table is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: tables transition to ACTIVE immediately in lws.
@@ -258,10 +223,7 @@ Given('the table is not in "MAINTENANCE" state', async function (this: SdkWorld)
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("the table does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no tables.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the table does not exist" is registered in cross_service_common.ts.
 
 Given("the table has a policy", async function (this: SdkWorld) {
   // Arrange
@@ -925,18 +887,7 @@ Then("compaction is enabled for the table", async function (this: SdkWorld) {
   );
 });
 
-Then("the operation is rejected", async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedRejected = true;
-  const actualRejected = !this.lastCallResult.success;
-  assert.strictEqual(
-    actualRejected,
-    expectedRejected,
-    `Expected operation to be rejected but it succeeded; expected_rejected=${expectedRejected} actual_rejected=${actualRejected}`,
-  );
-});
+// "the operation is rejected" is registered in cross_service_common.ts.
 
 // ── Then: safety invariants (no-op) ───────────────────────────────────────────
 

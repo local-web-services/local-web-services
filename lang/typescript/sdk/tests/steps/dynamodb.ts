@@ -62,66 +62,19 @@ async function deleteItem(world: SdkWorld, tableName: string): Promise<void> {
 
 // ── Given: table existence ─────────────────────────────────────────────────────
 
-Given("the table does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no tables.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the table does not already exist" is registered in cross_service_common.ts.
 
-Given("the table already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createTable(this, DYNAMODB_TEST_TABLE);
-  // Assert: creation succeeded
-});
+// "the table already exists" is registered in cross_service_common.ts.
 
-Given("the table exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createTable(this, DYNAMODB_TEST_TABLE);
-  // Assert: table created
-});
+// "the table exists" is registered in cross_service_common.ts.
 
-Given("the table does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no tables.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the table does not exist" is registered in cross_service_common.ts.
 
 // ── Given: table lifecycle state ───────────────────────────────────────────────
 
-Given("the table is {string}", async function (this: SdkWorld, state: string) {
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "ACTIVE") {
-    // No-op: in lws, tables are ACTIVE immediately after creation.
-    return;
-  }
-  if (state === "CREATING") {
-    // Arrange: enable lifecycle dwell so the next CreateTable call returns CREATING
-    // Act
-    await this.session!.lifecycle("dynamodb").createDwellMs(5000).apply();
-    return;
-  }
-  // For DELETING and other states — no-op: @internal scenarios are excluded.
-});
+// "the table is {string}" is registered in cross_service_common.ts.
 
-Given("the table is not {string}", async function (this: SdkWorld, state: string) {
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "ACTIVE") {
-    // Arrange: enable lifecycle dwell, delete existing table, recreate it in CREATING state
-    // Act
-    await this.session!.lifecycle("dynamodb").createDwellMs(5000).apply();
-    const { DeleteTableCommand } = require("@aws-sdk/client-dynamodb");
-    try {
-      await dynamodbClient(this).send(new DeleteTableCommand({ TableName: DYNAMODB_TEST_TABLE }));
-    } catch {
-      // table may not exist
-    }
-    await createTable(this, DYNAMODB_TEST_TABLE);
-    return;
-  }
-  // For other states, no-op.
-});
+// "the table is not {string}" is registered in cross_service_common.ts.
 
 // ── Given: throttle state ──────────────────────────────────────────────────────
 

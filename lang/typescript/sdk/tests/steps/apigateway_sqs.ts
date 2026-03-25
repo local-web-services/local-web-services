@@ -208,24 +208,11 @@ Given('the "API" has no "SQS" integration configured', async function (this: Sdk
 
 // ── Given: queue state ────────────────────────────────────────────────────────
 
-Given("the queue does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no queues.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the queue does not already exist" is registered in cross_service_common.ts.
 
-Given("the queue already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await apigwSqsCreateQueue(this);
-});
+// "the queue already exists" is registered in cross_service_common.ts.
 
-Given("the queue exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await apigwSqsCreateQueue(this);
-});
+// "the queue exists" is registered in cross_service_common.ts.
 
 Given('the queue is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: SQS queues are ACTIVE immediately after creation.
@@ -248,10 +235,7 @@ Given('the queue is not "ACTIVE"', async function (this: SdkWorld) {
   await apigwSqsCreateQueue(this);
 });
 
-Given("the queue does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no queues.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the queue does not exist" is registered in cross_service_common.ts.
 
 Given('the target queue is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange
@@ -309,19 +293,8 @@ Given("no request slot is available", async function (this: SdkWorld) {
   await this.session!.capacity("apigateway").exhaust().apply();
 });
 
-Given("a message slot is available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await this.session!.capacity("sqs").unlimited().apply();
-});
-
-Given("no message slot is available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await this.session!.capacity("sqs").exhaust().apply();
-});
+// "a message slot is available" is registered in cross_service_common.ts.
+// "no message slot is available" is registered in cross_service_common.ts.
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
@@ -557,15 +530,4 @@ Then('every "AVAILABLE" message belongs to an "ACTIVE" queue', async function (t
 
 // ── Common rejection assertion ─────────────────────────────────────────────────
 
-Then("the operation is rejected", async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedRejected = true;
-  const actualRejected = !this.lastCallResult.success;
-  assert.strictEqual(
-    actualRejected,
-    expectedRejected,
-    `Expected operation to be rejected but it succeeded; actual_success=${this.lastCallResult.success}`,
-  );
-});
+// "the operation is rejected" is registered in cross_service_common.ts.

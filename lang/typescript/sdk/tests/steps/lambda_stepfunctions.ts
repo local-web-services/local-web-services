@@ -119,28 +119,11 @@ Given('the function is not "ACTIVE"', async function (this: SdkWorld) {
 
 // ── Given: state machine state ─────────────────────────────────────────────────
 
-Given("the state machine does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh session has no state machines.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the state machine does not already exist" is registered in cross_service_common.ts.
 
-Given("the state machine already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const arn = await createStateMachine(this);
-  (this as any)._lambdaSfnSmArn = arn;
-  // Assert: state machine exists (no error thrown)
-});
+// "the state machine already exists" is registered in cross_service_common.ts.
 
-Given("the state machine exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const arn = await createStateMachine(this);
-  (this as any)._lambdaSfnSmArn = arn;
-  // Assert: state machine exists (no error thrown)
-});
+// "the state machine exists" is registered in cross_service_common.ts.
 
 Given('the state machine is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: state machines are ACTIVE immediately after creation.
@@ -171,10 +154,7 @@ Given('the state machine is already "DELETED"', async function (this: SdkWorld) 
   // Assert: state machine is in DELETED/DELETING state
 });
 
-Given("the state machine does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh session has no state machines.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the state machine does not exist" is registered in cross_service_common.ts.
 
 Given('the state machine is "DELETED"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: fresh session has no state machines (simulates deleted).
@@ -221,16 +201,9 @@ Given('no execution is "RUNNING"', async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("an execution slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: execution slots are always available in lws fresh state.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "an execution slot is available" is registered in cross_service_common.ts.
 
-Given("no execution slot is available", async function (this: SdkWorld) {
-  // @internal: Cannot exhaust Step Functions execution slot limit via public API in lws.
-  // Scenarios using this step are tagged @capacity and excluded from standard runs.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "no execution slot is available" is registered in cross_service_common.ts.
 
 // ── Given: invocation state ────────────────────────────────────────────────────
 
@@ -284,27 +257,7 @@ When("a Lambda function is deployed", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When("a Step Functions state machine is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateStateMachineCommand } = require("@aws-sdk/client-sfn");
-  // Act
-  try {
-    const result = await sfnClient(this).send(
-      new CreateStateMachineCommand({
-        name: LAMBDA_SF_SM,
-        definition: LAMBDA_SF_PASS_DEFINITION,
-        roleArn: LAMBDA_SF_ROLE_ARN,
-        type: "STANDARD",
-      }),
-    );
-    (this as any)._lambdaSfnSmArn = result.stateMachineArn;
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a Step Functions state machine is created" is registered in cross_service_common.ts.
 
 When("a Step Functions state machine is deleted", async function (this: SdkWorld) {
   // Arrange
@@ -463,17 +416,7 @@ Then(
 
 // ── Then: operation rejection ─────────────────────────────────────────────────
 
-Then("the operation is rejected", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Assert
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    false,
-    `Expected operation to be rejected but it succeeded; actual_success=${actualSuccess}`,
-  );
-});
+// "the operation is rejected" is registered in cross_service_common.ts.
 
 // ── Then: invariants ──────────────────────────────────────────────────────────
 

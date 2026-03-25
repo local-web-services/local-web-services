@@ -198,17 +198,9 @@ Given('the "API" has a DynamoDB integration configured', async function (this: S
 
 // ── Given: table state ────────────────────────────────────────────────────────
 
-Given("the table does not already exist", async function (this: SdkWorld) {
-  // No-op: fresh session state has no tables.
-});
+// "the table does not already exist" is registered in cross_service_common.ts.
 
-Given("the table already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  // Act
-  await apigwDdbCreateTable(this);
-  // Assert: creation succeeded
-});
+// "the table already exists" is registered in cross_service_common.ts.
 
 Given('the table exists and is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange
@@ -222,17 +214,9 @@ Given('the table does not exist or is not "ACTIVE"', async function (this: SdkWo
   // No-op: cannot simulate non-ACTIVE DynamoDB table in lws; @internal excluded.
 });
 
-Given("the table exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  // Act
-  await apigwDdbCreateTable(this);
-  // Assert: table created
-});
+// "the table exists" is registered in cross_service_common.ts.
 
-Given("the table does not exist", async function (this: SdkWorld) {
-  // No-op: fresh session state has no tables.
-});
+// "the table does not exist" is registered in cross_service_common.ts.
 
 Given('the target table is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange
@@ -276,13 +260,7 @@ Given("no request slot is available", async function (this: SdkWorld) {
   // No-op: cannot simulate exhausted request slots via public API; @internal excluded.
 });
 
-Given("an item slot is available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  // Act: set dynamodb capacity to unlimited
-  await this.session!.capacity("dynamodb").unlimited().apply();
-  // Assert: capacity configured
-});
+// "an item slot is available" is registered in cross_service_common.ts.
 
 Given("no item slot is available", async function (this: SdkWorld) {
   // No-op: cannot simulate exhausted item slots via public API; @internal excluded.
@@ -303,18 +281,7 @@ When('an "API" Gateway "REST" "API" is created', async function (this: SdkWorld)
   // Assert: captured in lastCallResult
 });
 
-When("a DynamoDB table is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  // Act
-  try {
-    await apigwDdbCreateTable(this);
-    this.lastCallResult = { success: true, output: { TableName: APIGW_DYNAMODB_TABLE } };
-  } catch (err) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a DynamoDB table is created" is registered in cross_service_common.ts.
 
 When('a direct DynamoDB integration is configured on the "API"', async function (this: SdkWorld) {
   // Arrange
@@ -522,9 +489,7 @@ Then(
 
 // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
-Then("every existing item references a table that exists", async function (this: SdkWorld) {
-  // No-op: model-level invariant; trivially satisfied in isolated lws context.
-});
+// "every existing item references a table that exists" is registered in cross_service_common.ts.
 
 Then('every successful request references an "API" that exists', async function (this: SdkWorld) {
   // No-op: model-level invariant; trivially satisfied in isolated lws context.

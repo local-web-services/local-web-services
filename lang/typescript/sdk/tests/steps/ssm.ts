@@ -52,26 +52,11 @@ Given("the parameter does not already exist or has been deleted", async function
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("the parameter does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no parameters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the parameter does not already exist" is registered in cross_service_common.ts.
 
-Given("the parameter already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createParam(this);
-  // Assert: parameter created
-});
+// "the parameter already exists" is registered in cross_service_common.ts.
 
-Given("the parameter exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createParam(this);
-  // Assert: parameter created
-});
+// "the parameter exists" is registered in cross_service_common.ts.
 
 Given("the parameter is active", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: parameters are always active after creation in lws.
@@ -94,10 +79,7 @@ Given("the parameter is not active", async function (this: SdkWorld) {
   // Assert: parameter is in CREATING state (non-active)
 });
 
-Given("the parameter does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no parameters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the parameter does not exist" is registered in cross_service_common.ts.
 
 // ── Given: tag state setup ────────────────────────────────────────────────────
 

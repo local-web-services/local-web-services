@@ -228,21 +228,9 @@ Given("no request slot is available", async function (this: SdkWorld) {
   // Assert: capacity is exhausted
 });
 
-Given("an execution slot is available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: set unlimited capacity for stepfunctions
-  await this.session!.capacity("stepfunctions").unlimited().apply();
-  // Assert: capacity is unlimited
-});
+// "an execution slot is available" is registered in cross_service_common.ts.
 
-Given("no execution slot is available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: exhaust stepfunctions execution capacity
-  await this.session!.capacity("stepfunctions").exhaust().apply();
-  // Assert: capacity is exhausted
-});
+// "no execution slot is available" is registered in cross_service_common.ts.
 
 // ── When: actions — unique to cross-service suite ─────────────────────────────
 

@@ -56,16 +56,7 @@ async function createSubQueue(world: SdkWorld): Promise<void> {
 
 // ── Given: topic lifecycle (sns-specific) ────────────────────────────────────
 
-Given("the topic is {string}", async function (this: SdkWorld, state: string) {
-  if (state === "ACTIVE") {
-    // No-op: topics are ACTIVE immediately after creation.
-    assert.ok(this.session, "Expected session to be initialized");
-    return;
-  }
-  // For other lifecycle states, set flag for When step detection.
-  assert.ok(this.session, "Expected session to be initialized");
-  (this as any)._snsTopicNotActive = true;
-});
+// "the topic is {string}" is registered in cross_service_common.ts.
 
 // ── Given: subscription existence ────────────────────────────────────────────
 

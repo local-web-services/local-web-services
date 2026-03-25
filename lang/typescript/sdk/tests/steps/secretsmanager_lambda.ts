@@ -134,24 +134,7 @@ Given("the rotation function is not {string}", async function (this: SdkWorld, _
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When("a secret is created in Secrets Manager", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateSecretCommand } = require("@aws-sdk/client-secrets-manager");
-  // Act
-  try {
-    const result = await smLambdaSmClient(this).send(
-      new CreateSecretCommand({
-        Name: SM_LAMBDA_SECRET,
-        SecretString: SM_LAMBDA_SECRET_VALUE,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a secret is created in Secrets Manager" is registered in cross_service_common.ts.
 
 When("a Lambda rotation function is deployed", async function (this: SdkWorld) {
   // Arrange

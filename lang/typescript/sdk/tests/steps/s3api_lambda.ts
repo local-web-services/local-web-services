@@ -73,67 +73,17 @@ async function s3apiLambdaConfigureNotification(world: SdkWorld): Promise<void> 
 
 // ── Given: bucket state ───────────────────────────────────────────────────────
 
-Given("the bucket does not already exist", async function (this: SdkWorld) {
-  // No-op: fresh state after session reset has no buckets.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the bucket does not already exist" is registered in cross_service_common.ts.
 
-Given("the bucket already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await s3apiLambdaCreateBucket(this);
-  // Assert: bucket created
-});
+// "the bucket already exists" is registered in cross_service_common.ts.
 
-Given("the bucket exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await s3apiLambdaCreateBucket(this);
-  // Assert: bucket created
-});
+// "the bucket exists" is registered in cross_service_common.ts.
 
-Given("the bucket is {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "ACTIVE") {
-    // No-op: buckets are ACTIVE by default after creation.
-    return;
-  }
-  // Non-ACTIVE state requires lifecycle dwell which is handled by management session.
-});
+// "the bucket is {string}" is registered in cross_service_common.ts.
 
-Given("the bucket is not {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "ACTIVE") {
-    // Arrange: delete bucket, apply lifecycle dwell, re-create in non-ACTIVE state
-    const { DeleteBucketCommand } = require("@aws-sdk/client-s3");
-    try {
-      await s3Client(this).send(new DeleteBucketCommand({ Bucket: S3API_LAMBDA_BUCKET }));
-    } catch {
-      // bucket may not exist
-    }
-    // Act: apply lifecycle dwell so next create starts in a non-ACTIVE state
-    await this.session!.lifecycle("s3").createDwellMs(5000).apply();
-    await s3apiLambdaCreateBucket(this);
-  }
-  // Assert: bucket is in non-ACTIVE state
-});
+// "the bucket is not {string}" is registered in cross_service_common.ts.
 
-Given("the bucket does not exist", async function (this: SdkWorld) {
-  // Arrange: ensure bucket is absent
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteBucketCommand } = require("@aws-sdk/client-s3");
-  // Act: delete, ignore errors
-  try {
-    await s3Client(this).send(new DeleteBucketCommand({ Bucket: S3API_LAMBDA_BUCKET }));
-  } catch {
-    // bucket may not exist; desired state is absence
-  }
-  // Assert: desired state is absence
-});
+// "the bucket does not exist" is registered in cross_service_common.ts.
 
 // ── Given: notification configuration state ───────────────────────────────────
 
@@ -253,21 +203,9 @@ Given(
 
 // ── Given: capacity / slot state ──────────────────────────────────────────────
 
-Given("an object slot is available", async function (this: SdkWorld) {
-  // Arrange: set S3 capacity to unlimited
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await this.session!.capacity("s3").unlimited().apply();
-  // Assert: capacity set
-});
+// "an object slot is available" is registered in cross_service_common.ts.
 
-Given("no object slot is available", async function (this: SdkWorld) {
-  // Arrange: exhaust S3 object capacity
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await this.session!.capacity("s3").exhaust().apply();
-  // Assert: capacity exhausted
-});
+// "no object slot is available" is registered in cross_service_common.ts.
 
 Given("an invocation slot is available", async function (this: SdkWorld) {
   // Arrange: set Lambda capacity to unlimited
@@ -300,21 +238,7 @@ Given('no invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When("an S3 bucket is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateBucketCommand } = require("@aws-sdk/client-s3");
-  // Act
-  try {
-    const result = await s3Client(this).send(
-      new CreateBucketCommand({ Bucket: S3API_LAMBDA_BUCKET }),
-    );
-    // Assert: captured in lastCallResult
-    this.lastCallResult = { success: true, output: result };
-  } catch (err) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-});
+// "an S3 bucket is created" is registered in cross_service_common.ts.
 
 When("a Lambda function is deployed", async function (this: SdkWorld) {
   // Arrange

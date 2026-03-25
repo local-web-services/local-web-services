@@ -68,35 +68,13 @@ async function sfnS3TablesCreateTable(world: SdkWorld): Promise<string> {
 
 // ── Given: table existence ────────────────────────────────────────────────────
 
-Given("the table does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no S3 Tables tables.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the table does not already exist" is registered in cross_service_common.ts.
 
-Given("the table already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const expectedTableName = await sfnS3TablesCreateTable(this);
-  // Assert: table created
-  (this as any)._sfnS3TablesTableName = expectedTableName;
-  assert.ok(expectedTableName, "Expected table name to be defined");
-});
+// "the table already exists" is registered in cross_service_common.ts.
 
-Given("the table exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const expectedTableName = await sfnS3TablesCreateTable(this);
-  // Assert: table created
-  (this as any)._sfnS3TablesTableName = expectedTableName;
-  assert.ok(expectedTableName, "Expected table name to be defined");
-});
+// "the table exists" is registered in cross_service_common.ts.
 
-Given("the table does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no S3 Tables tables.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the table does not exist" is registered in cross_service_common.ts.
 
 Given("the table does not exist or is {string}", async function (this: SdkWorld, _state: string) {
   // Arrange / Act / Assert — no-op: fresh state after session reset has no S3 Tables tables.
@@ -162,21 +140,9 @@ Given(`no execution is "RUNNING"`, async function (this: SdkWorld) {
 
 // ── Given: capacity ───────────────────────────────────────────────────────────
 
-Given("an execution slot is available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: set unlimited capacity for stepfunctions
-  await this.session!.capacity("stepfunctions").unlimited().apply();
-  // Assert: capacity is unlimited
-});
+// "an execution slot is available" is registered in cross_service_common.ts.
 
-Given("no execution slot is available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: exhaust the stepfunctions execution capacity
-  await this.session!.capacity("stepfunctions").exhaust().apply();
-  // Assert: capacity is exhausted
-});
+// "no execution slot is available" is registered in cross_service_common.ts.
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 

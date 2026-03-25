@@ -942,16 +942,7 @@ Then("the resource tag state is unchanged (no-op model)", async function (this: 
   );
 });
 
-Then("the operation is rejected", async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const actualError = this.lastCallResult.error;
-  assert.ok(
-    actualError !== null && actualError !== undefined,
-    `Expected operation to be rejected but it succeeded; expected_error=non-nil actual_error=${String(actualError)}`,
-  );
-});
+// "the operation is rejected" is registered in cross_service_common.ts.
 
 // ── Invariant Then steps ──────────────────────────────────────────────────────
 
