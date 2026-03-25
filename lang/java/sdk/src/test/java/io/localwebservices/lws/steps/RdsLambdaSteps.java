@@ -106,10 +106,7 @@ public class RdsLambdaSteps {
     // Assert: function created and is ACTIVE (no error thrown)
   }
 
-  @Given("the function does not exist or is not \"ACTIVE\"")
-  public void theFunctionDoesNotExistOrIsNotActive() {
-    // Arrange / Act / Assert — no-op: fresh state has no functions.
-  }
+  // "the function does not exist or is not {string}" → SecretsmanagerLambdaSteps
 
   @Given("the Lambda function is \"ACTIVE\"")
   public void theLambdaFunctionIsActive() {
