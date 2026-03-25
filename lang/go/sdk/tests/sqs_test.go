@@ -397,6 +397,13 @@ func registerSQSSteps(sc *godog.ScenarioContext, world *World) {
 			WaitTimeSeconds:     0,
 		})
 		// Assert: store result and capture receipt handle
+		// When ReceiveMessage succeeds but returns 0 messages, treat it as a rejection
+		// because scenarios that expect "the operation is rejected" set up the message as
+		// not AVAILABLE (e.g. IN_FLIGHT), so no message being returned is the rejection signal.
+		if err == nil && (result == nil || len(result.Messages) == 0) {
+			setResult(world, nil, fmt.Errorf("no message available"))
+			return nil
+		}
 		setResult(world, result, err)
 		if err == nil && result != nil && len(result.Messages) > 0 && result.Messages[0].ReceiptHandle != nil {
 			st.receiptHandle = *result.Messages[0].ReceiptHandle

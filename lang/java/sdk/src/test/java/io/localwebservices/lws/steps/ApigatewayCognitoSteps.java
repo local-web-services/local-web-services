@@ -120,19 +120,9 @@ public class ApigatewayCognitoSteps {
     assertNotNull(poolId, "Expected user pool to be created but pool ID is null");
   }
 
-  @Given("the pool is {string}")
-  public void thePoolIs(String state) throws Exception {
-    // Arrange
-    if ("ACTIVE".equals(state)) {
-      // No-op: Cognito user pools are ACTIVE immediately after creation.
-      return;
-    }
-    // Act: use lifecycle API to simulate non-ACTIVE state
-    world.session.lifecycle("cognitoidp").createDwellMs(5000).apply();
-    apigwCognitoCreatePool();
-    // Assert: pool created in non-ACTIVE state
-    assertNotNull(poolId, "Expected user pool to be created but pool ID is null");
-  }
+  // "the pool is \"ACTIVE\"" is registered in StepfunctionsCognitoSteps — not re-registered here
+  // to avoid AmbiguousStepDefinitionsException. All apigateway_cognito scenarios use "ACTIVE" as
+  // a no-op state assertion, which is correctly handled by StepfunctionsCognitoSteps.
 
   @Given("the pool is not {string}")
   public void thePoolIsNot(String state) throws Exception {
