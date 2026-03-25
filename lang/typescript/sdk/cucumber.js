@@ -404,5 +404,6 @@ module.exports = {
     format: ["progress"],
     timeout: 60000,
     strict: false,
+    exit: true,
   },
 };
