@@ -220,12 +220,6 @@ public class ApigatewayDynamodbSteps {
 
   // "the table exists and is {string}" → EventsDynamodbSteps (parameterized, covers this literal)
 
-  @Given("the table does not exist or is not \"ACTIVE\"")
-  public void theTableDoesNotExistOrIsNotActive() {
-    // Arrange / Act / Assert — no-op: cannot simulate non-ACTIVE DynamoDB table in lws; @internal
-    // excluded.
-  }
-
   @Given("the target table is \"ACTIVE\"")
   public void theTargetTableIsActive() {
     // Arrange: ensure the table exists
@@ -253,11 +247,6 @@ public class ApigatewayDynamodbSteps {
   @Given("the target table is not \"DELETING\"")
   public void theTargetTableIsNotDeleting() {
     // Arrange / Act / Assert — no-op: tables are not DELETING by default.
-  }
-
-  @Given("the table is already \"DELETING\"")
-  public void theTableIsAlreadyDeleting() {
-    // Arrange / Act / Assert — no-op: cannot simulate DELETING state in lws; @internal excluded.
   }
 
   // ── When: actions ─────────────────────────────────────────────────────────────

@@ -29,8 +29,8 @@ public class LambdaSecretsmanagerSteps {
 
   private static final String TEST_FUNC = "e2e-test-func-1";
   private static final String TEST_ROLE_ARN = "arn:aws:iam::000000000000:role/test";
-  private static final String TEST_SECRET = "e2e-test-secret-1";
-  private static final String TEST_SECRET_VALUE = "e2e-test-secret-value-1";
+  private static final String TEST_SECRET = "test-secret-1";
+  private static final String TEST_SECRET_VALUE = "test-secret-value-1";
 
   private final WorldContext world;
 

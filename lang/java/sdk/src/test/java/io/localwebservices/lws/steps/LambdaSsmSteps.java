@@ -3,7 +3,6 @@ package io.localwebservices.lws.steps;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import software.amazon.awssdk.core.SdkBytes;
@@ -93,39 +92,6 @@ public class LambdaSsmSteps {
   }
 
   // ── Given: parameter state specific to lambda_ssm ────────────────────────────
-
-  @Given("the parameter \"EXISTS\"")
-  public void theParameterExists2() {
-    // Arrange / Act / Assert — no-op: parameter already created by "the parameter exists" step.
-  }
-
-  @Given("the parameter is already \"DELETED\"")
-  public void theParameterIsAlreadyDeleted() {
-    // Arrange: create then delete the parameter to reach DELETED state
-    ssmCreateParameter();
-    // Act
-    ssmDeleteParameter();
-    // Assert: parameter is now deleted; verified by subsequent steps
-    world.setSuccess("DELETED");
-  }
-
-  @Given("the parameter does not exist or is \"DELETED\"")
-  public void theParameterDoesNotExistOrIsDeleted() {
-    // Arrange / Act / Assert — no-op: fresh session has no SSM parameters.
-  }
-
-  @Given("the parameter is \"DELETED\"")
-  public void theParameterIsDeleted() {
-    // No-op: fresh state has no parameters (simulates deleted parameter).
-  }
-
-  @Given("the parameter is not \"DELETED\"")
-  public void theParameterIsNotDeleted() {
-    // Arrange: create the parameter so it exists and is not deleted
-    // Act
-    ssmCreateParameter();
-    // Assert: parameter exists; verified by subsequent steps
-  }
 
   // "a parameter is created in \"SSM\" Parameter Store" → StepfunctionsSsmSteps
   // @When("a parameter is created in {string} Parameter Store") — covers this literal.

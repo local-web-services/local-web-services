@@ -70,7 +70,9 @@ public class GlacierSnsSteps {
 
   @Given("the topic is already \"DELETED\"")
   public void theTopicIsAlreadyDeleted() {
-    // @internal: topic lifecycle transitions require background processing.
+    // Arrange / Act / Assert — DELETED topic state not reachable via public SDK API; skip.
+    org.junit.jupiter.api.Assumptions.assumeTrue(
+        false, "lws limitation: DELETED topic state not reachable via SDK API");
   }
 
   // ── Given: capacity steps ─────────────────────────────────────────────────────

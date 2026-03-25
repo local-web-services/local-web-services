@@ -29,8 +29,8 @@ import software.amazon.awssdk.services.eventbridge.model.Target;
  */
 public class EventsSteps {
 
-  private static final String TEST_BUS = "e2e-events-test-bus-1";
-  private static final String TEST_RULE = "e2e-events-test-rule-1";
+  private static final String TEST_BUS = "test-bus-1";
+  private static final String TEST_RULE = "test-rule-1";
   private static final String TEST_TARGET_ID = "e2e-events-test-target-1";
   private static final String TEST_TARGET_ARN =
       "arn:aws:lambda:us-east-1:000000000000:function:e2e-test-func-1";
@@ -133,34 +133,9 @@ public class EventsSteps {
     // Arrange / Act / Assert — no-op: newly created rules are ENABLED, not DELETED.
   }
 
-  @Given("the rule is already \"DELETED\"")
-  public void theRuleIsAlreadyDeleted() {
-    // Arrange: delete the rule so it is absent (DELETED state)
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      // Act
-      client.deleteRule(r -> r.name(TEST_RULE).eventBusName(TEST_BUS));
-    }
-    // Assert: rule deleted
-  }
-
   @Given("the rule is not \"DELETED\"")
   public void theRuleIsNotDeleted() {
     // Arrange / Act / Assert — no-op: newly created rules are ENABLED.
-  }
-
-  @Given("the rule is \"DELETED\"")
-  public void theRuleIsDeleted() {
-    // Arrange: delete the rule so it is in DELETED state (absent)
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      // Act
-      client.deleteRule(r -> r.name(TEST_RULE).eventBusName(TEST_BUS));
-    }
-    // Assert: rule deleted
-  }
-
-  @Given("the rule is \"ENABLED\"")
-  public void theRuleIsEnabled() {
-    // Arrange / Act / Assert — no-op: rules are ENABLED by default when created.
   }
 
   @Given("the rule is not \"ENABLED\"")
@@ -170,16 +145,6 @@ public class EventsSteps {
     org.junit.jupiter.api.Assumptions.abort(
         "put_events does not fail when the matching rule is not ENABLED; "
             + "disabled rules are silently skipped during event routing");
-  }
-
-  @Given("the rule is \"DISABLED\"")
-  public void theRuleIsDisabled() {
-    // Arrange: disable the rule
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      // Act
-      client.disableRule(r -> r.name(TEST_RULE).eventBusName(TEST_BUS));
-    }
-    // Assert: rule disabled
   }
 
   @Given("the rule is not \"DISABLED\"")
