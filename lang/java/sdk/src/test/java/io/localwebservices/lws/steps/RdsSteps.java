@@ -99,6 +99,7 @@ public class RdsSteps {
   @When("a database instance is created")
   public void aDatabaseInstanceIsCreated() {
     // Arrange: (instance may or may not exist — set up by Given steps)
+    world.lastClusterService = "rds";
     try (RdsClient client = world.session.rdsClient()) {
       // Act
       var result =
@@ -119,6 +120,7 @@ public class RdsSteps {
   @When("a database instance is deleted without a final snapshot")
   public void aDatabaseInstanceIsDeletedWithoutAFinalSnapshot() {
     // Arrange: (instance state set up by Given steps)
+    world.lastClusterService = "rds";
     try (RdsClient client = world.session.rdsClient()) {
       // Act
       var result =
@@ -182,6 +184,7 @@ public class RdsSteps {
   @When("multi-{string} is enabled on a database instance")
   public void multiAzIsEnabledOnADatabaseInstance(String az) {
     // Arrange: (instance state set up by Given steps)
+    world.lastClusterService = "rds";
     try (RdsClient client = world.session.rdsClient()) {
       // Act
       var result =

@@ -14,6 +14,7 @@ import software.amazon.awssdk.services.neptune.model.DBClusterSnapshot;
 import software.amazon.awssdk.services.neptune.model.DBInstance;
 import software.amazon.awssdk.services.neptune.model.DescribeDbClusterSnapshotsResponse;
 import software.amazon.awssdk.services.neptune.model.DescribeDbInstancesResponse;
+import software.amazon.awssdk.services.rds.RdsClient;
 
 /**
  * Step definitions for the Neptune informal specification feature files.
@@ -33,6 +34,9 @@ public class NeptuneSteps {
   // Must match DocdbSteps constants to enable cross-service dispatch.
   private static final String DOCDB_INSTANCE_ID = "test-docdb-instance-1";
   private static final String DOCDB_SNAPSHOT_ID = "test-docdb-snapshot-1";
+  // RDS constants — used in dispatch for shared step text with RDS scenarios.
+  // Must match RdsSteps constants to enable cross-service dispatch.
+  private static final String RDS_INSTANCE_ID = "test-rds-db-1";
 
   private final WorldContext world;
 
@@ -251,15 +255,17 @@ public class NeptuneSteps {
             + expectedSuccess);
     if ("neptune".equals(world.lastClusterService)) {
       assertNeptuneInstanceStatus(expectedStatus, TEST_INSTANCE_ID);
+    } else if ("rds".equals(world.lastClusterService)) {
+      assertRdsInstanceStatus(expectedStatus, RDS_INSTANCE_ID);
     } else {
       assertDocDbInstanceStatus(expectedStatus, DOCDB_INSTANCE_ID);
     }
   }
 
   /**
-   * Unified instance state assertion for Neptune and DocDB scenarios.
+   * Unified instance state assertion for Neptune, DocDB, and RDS scenarios.
    *
-   * <p>Both services share this step text. Dispatches to the correct client based on {@link
+   * <p>All three services share this step text. Dispatches to the correct client based on {@link
    * WorldContext#lastClusterService}.
    */
   @Then("the instance is in {string} state")
@@ -277,6 +283,8 @@ public class NeptuneSteps {
             + expectedSuccess);
     if ("neptune".equals(world.lastClusterService)) {
       assertNeptuneInstanceStatus(expectedStatus, TEST_INSTANCE_ID);
+    } else if ("rds".equals(world.lastClusterService)) {
+      assertRdsInstanceStatus(expectedStatus, RDS_INSTANCE_ID);
     } else {
       assertDocDbInstanceStatus(expectedStatus, DOCDB_INSTANCE_ID);
     }
@@ -342,6 +350,34 @@ public class NeptuneSteps {
       software.amazon.awssdk.services.docdb.model.DescribeDbInstancesResponse result =
           client.describeDBInstances(r -> r.dbInstanceIdentifier(instanceId));
       java.util.List<software.amazon.awssdk.services.docdb.model.DBInstance> actualInstances =
+          result.dbInstances();
+      // Assert
+      assertNotNull(actualInstances, "expected DBInstances list but got null");
+      assertTrue(
+          !actualInstances.isEmpty(),
+          "expected instance '" + instanceId + "' to exist but not found");
+      String actualStatus = actualInstances.get(0).dbInstanceStatus();
+      assertEquals(
+          expectedStatus,
+          actualStatus,
+          "expected instance status '"
+              + expectedStatus
+              + "' but got '"
+              + actualStatus
+              + "'; expected_status="
+              + expectedStatus
+              + " actual_status="
+              + actualStatus);
+    }
+  }
+
+  private void assertRdsInstanceStatus(String expectedStatus, String instanceId) {
+    // Arrange
+    try (RdsClient client = world.session.rdsClient()) {
+      // Act
+      software.amazon.awssdk.services.rds.model.DescribeDbInstancesResponse result =
+          client.describeDBInstances(r -> r.dbInstanceIdentifier(instanceId));
+      java.util.List<software.amazon.awssdk.services.rds.model.DBInstance> actualInstances =
           result.dbInstances();
       // Assert
       assertNotNull(actualInstances, "expected DBInstances list but got null");

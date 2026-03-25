@@ -130,6 +130,43 @@ public class DocDbHandler implements HttpHandler {
               buildListResponse("DescribeDBInstances", "DBInstances", "DBInstance", list));
           break;
         }
+      case "ModifyDBInstance":
+        {
+          // Arrange
+          String id = params.get("DBInstanceIdentifier");
+          Map<String, Object> inst = store.modifyInstance(id, params);
+          // Assert
+          if (inst == null) {
+            sendError(exchange, 400, "DBInstanceNotFound", "DBInstance not found: " + id);
+            return;
+          }
+          sendXml(exchange, 200, buildItemResponse("ModifyDBInstance", "DBInstance", inst));
+          break;
+        }
+      case "ModifyDBCluster":
+        {
+          // Arrange
+          String id = params.get("DBClusterIdentifier");
+          Map<String, Object> cluster = store.modifyCluster(id, params);
+          // Assert
+          if (cluster == null) {
+            sendError(exchange, 400, "DBClusterNotFoundFault", "DBCluster not found: " + id);
+            return;
+          }
+          sendXml(exchange, 200, buildClusterResponse("ModifyDBCluster", "DBCluster", cluster));
+          break;
+        }
+      case "RestoreDBClusterFromSnapshot":
+        {
+          // Arrange
+          Map<String, Object> cluster = store.restoreClusterFromSnapshot(params);
+          // Act + Assert
+          sendXml(
+              exchange,
+              200,
+              buildClusterResponse("RestoreDBClusterFromSnapshot", "DBCluster", cluster));
+          break;
+        }
       case "CreateDBClusterSnapshot":
         {
           // Arrange

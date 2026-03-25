@@ -62,6 +62,35 @@ public class DocDbStore {
     return instances.remove(id);
   }
 
+  public Map<String, Object> modifyInstance(String id, Map<String, String> params) {
+    Map<String, Object> inst = instances.get(id);
+    if (inst == null) return null;
+    if (params.containsKey("DBInstanceClass"))
+      inst.put("DBInstanceClass", params.get("DBInstanceClass"));
+    return inst;
+  }
+
+  public Map<String, Object> modifyCluster(String id, Map<String, String> params) {
+    Map<String, Object> cluster = clusters.get(id);
+    if (cluster == null) return null;
+    if (params.containsKey("BackupRetentionPeriod"))
+      cluster.put("BackupRetentionPeriod", params.get("BackupRetentionPeriod"));
+    return cluster;
+  }
+
+  public Map<String, Object> restoreClusterFromSnapshot(Map<String, String> params) {
+    String id = params.get("DBClusterIdentifier");
+    Map<String, Object> cluster = new LinkedHashMap<>();
+    cluster.put("DBClusterIdentifier", id);
+    cluster.put("Status", "available");
+    cluster.put("Engine", params.getOrDefault("Engine", "docdb"));
+    cluster.put("Endpoint", "localhost");
+    cluster.put("ReaderEndpoint", "localhost");
+    cluster.put("Port", 27017);
+    clusters.put(id, cluster);
+    return cluster;
+  }
+
   public List<Map<String, Object>> describeInstances(String id) {
     List<Map<String, Object>> list = new ArrayList<>();
     if (id != null) {

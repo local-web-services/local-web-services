@@ -98,13 +98,8 @@ public class RdsLambdaSteps {
     // @internal: Lambda integration state requires specific RDS configuration API calls.
   }
 
-  @Given("the function exists and is \"ACTIVE\"")
-  public void theFunctionExistsAndIsActive() {
-    // Arrange
-    // Act
-    rdsLambdaCreateFunction();
-    // Assert: function created and is ACTIVE (no error thrown)
-  }
+  // "the function exists and is {string}" → SecretsmanagerLambdaSteps
+  // (unified handler; RdsLambda creates function in SecretsmanagerLambdaSteps via shared step)
 
   // "the function does not exist or is not {string}" → SecretsmanagerLambdaSteps
 
