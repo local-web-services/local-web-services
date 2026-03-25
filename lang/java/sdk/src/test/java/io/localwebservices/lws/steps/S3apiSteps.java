@@ -96,6 +96,8 @@ public class S3apiSteps {
   public void theBucketExists() {
     // Arrange / Act: ensure the test bucket exists
     s3CreateBucket(TEST_BUCKET);
+    // Signal to shared steps (e.g. GlacierSteps) that an S3 bucket context is active
+    world.s3UploadBucket = TEST_BUCKET;
     // Assert: bucket created
   }
 
@@ -103,6 +105,8 @@ public class S3apiSteps {
   public void theBucketDoesNotExist() {
     // Arrange: ensure bucket is absent
     s3DeleteBucket(TEST_BUCKET);
+    // Signal to shared steps that S3 context is active (bucket is absent, abort will fail)
+    world.s3UploadBucket = TEST_BUCKET;
     // Assert: desired state is absence
   }
 
@@ -346,7 +350,11 @@ public class S3apiSteps {
 
   @Given("the upload is not {string}")
   public void theUploadIsNot(String state) {
-    // No-op: upload is not in-progress by default; scenarios using this are @internal.
+    if ("IN_PROGRESS".equals(state)) {
+      // Arrange: mark the S3 upload as non-existent so the abort operation will fail
+      world.s3UploadId = null;
+    }
+    // For other states, no-op.
   }
 
   @Given("the upload has at least one part")

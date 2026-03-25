@@ -20,8 +20,10 @@ import software.amazon.awssdk.services.lambda.model.Runtime;
  * <p>Steps already registered in {@link LambdaSteps} ("the function does not already exist", "the
  * function already exists", "the function exists", "the function does not exist", "the function is
  * {string}", "the function is not {string}", "an invocation slot is available", "no invocation slot
- * is available"), {@link CrossServiceSteps} ("the system is initialized", "the operation is
- * rejected", invariant catch-alls) are NOT re-registered here.
+ * is available"), {@link LambdaDynamodbSteps} ("an invocation is \"IN_PROGRESS\"", "no invocation
+ * is \"IN_PROGRESS\"", "the invocation is \"IN_PROGRESS\"" (Then), "the invocation is \"SUCCESS\""
+ * (Then), "the invocation is \"FAILED\"" (Then)), {@link CrossServiceSteps} ("the system is
+ * initialized", "the operation is rejected", invariant catch-alls) are NOT re-registered here.
  */
 public class LambdaCognitoSteps {
 
@@ -36,26 +38,6 @@ public class LambdaCognitoSteps {
   }
 
   // ── Private helpers ───────────────────────────────────────────────────────────
-
-  private void lambdaCognitoCreateFunction() {
-    // Arrange
-    try (LambdaClient client = world.session.lambdaClient()) {
-      // Act
-      client.createFunction(
-          r ->
-              r.functionName(TEST_FUNC)
-                  .runtime(Runtime.PYTHON3_12)
-                  .role(TEST_ROLE_ARN)
-                  .handler("index.handler")
-                  .code(c -> c.zipFile(SdkBytes.fromUtf8String("fake"))));
-      // Assert: creation succeeded (no exception thrown)
-    } catch (Exception e) {
-      String msg = e.getMessage() != null ? e.getMessage() : "";
-      if (!msg.contains("ResourceConflict") && !msg.contains("already")) {
-        throw e;
-      }
-    }
-  }
 
   private String lambdaCognitoCreatePool() {
     // Arrange
@@ -104,21 +86,8 @@ public class LambdaCognitoSteps {
   }
 
   // ── Given: invocation state ───────────────────────────────────────────────────
-
-  @Given("an invocation is {string}")
-  public void anInvocationIs(String state) {
-    // Arrange
-    if ("IN_PROGRESS".equals(state)) {
-      // Act: create the Lambda function so an invocation could be in progress
-      lambdaCognitoCreateFunction();
-      // Assert: function created
-    }
-  }
-
-  @Given("no invocation is {string}")
-  public void noInvocationIs(String state) {
-    // Arrange / Act / Assert — no-op: fresh state has no in-progress invocations.
-  }
+  // "an invocation is \"IN_PROGRESS\"" and "no invocation is \"IN_PROGRESS\"" are registered in
+  // LambdaDynamodbSteps — not re-registered here to avoid AmbiguousStepDefinitionsException.
 
   // ── When: actions ─────────────────────────────────────────────────────────────
 
@@ -193,13 +162,12 @@ public class LambdaCognitoSteps {
     }
   }
 
-  @Then("the invocation is {string}")
-  public void theInvocationIs(String state) {
-    // @internal: Cannot observe Lambda invocation state in lws.
-  }
+  // "the invocation is \"IN_PROGRESS\"", "the invocation is \"SUCCESS\"", and
+  // "the invocation is \"FAILED\"" are registered in LambdaDynamodbSteps — not re-registered here
+  // to avoid AmbiguousStepDefinitionsException.
 
-  @Then("the invocation is {string} with a ResourceNotFoundException")
-  public void theInvocationIsWithResourceNotFoundException(String state) {
+  @Then("the invocation is \"FAILED\" with a ResourceNotFoundException")
+  public void theInvocationIsFailedWithResourceNotFoundException() {
     // @internal: Cannot observe Lambda invocation failure in lws.
   }
 

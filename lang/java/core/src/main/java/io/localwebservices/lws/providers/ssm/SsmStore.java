@@ -24,7 +24,14 @@ public class SsmStore {
     param.put("Name", name);
     param.put("Value", value);
     param.put("Type", type != null ? type : "String");
-    param.put("Version", 1);
+    int version = 1;
+    if (overwrite && parameters.containsKey(name)) {
+      Object existingVersion = parameters.get(name).get("Version");
+      if (existingVersion instanceof Number) {
+        version = ((Number) existingVersion).intValue() + 1;
+      }
+    }
+    param.put("Version", version);
     param.put("LastModifiedDate", System.currentTimeMillis() / 1000.0);
     parameters.put(name, param);
     return param;

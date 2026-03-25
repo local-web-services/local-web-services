@@ -154,13 +154,7 @@ Then('the item "EXISTS" in the table', async function (this: SdkWorld) {
 
 // ── Invariant Then steps ──────────────────────────────────────────────────────
 
-Then(
-  'every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function',
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+// "every {string} invocation references an {string} Lambda function" is registered in cross_service_common.ts.
 
 Then('every existing item belongs to an "ACTIVE" table', async function (this: SdkWorld) {
   // No-op: model-level invariant; trivially satisfied in isolated lws context.

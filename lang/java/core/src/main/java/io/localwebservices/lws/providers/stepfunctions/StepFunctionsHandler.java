@@ -222,6 +222,17 @@ public class StepFunctionsHandler implements HttpHandler {
       case "UpdateStateMachine":
         {
           String arn = (String) body.get("stateMachineArn");
+          if (!store.stateMachineExists(arn)) {
+            sendJson(
+                exchange,
+                400,
+                Map.of(
+                    "__type",
+                    "StateMachineDoesNotExist",
+                    "message",
+                    "State machine does not exist: " + arn));
+            break;
+          }
           store.updateStateMachine(arn, body);
           sendJson(exchange, 200, Map.of("updateDate", Instant.now().getEpochSecond() * 1.0));
           break;
@@ -357,16 +368,15 @@ public class StepFunctionsHandler implements HttpHandler {
           String execArn = (String) body.get("executionArn");
           Map<String, Object> exec = store.getExecution(execArn);
           if (exec == null) {
-            exec =
+            sendJson(
+                exchange,
+                400,
                 Map.of(
-                    "executionArn",
-                    execArn,
-                    "status",
-                    "RUNNING",
-                    "startDate",
-                    Instant.now().getEpochSecond() * 1.0,
-                    "input",
-                    "{}");
+                    "__type",
+                    "ExecutionDoesNotExist",
+                    "message",
+                    "Execution does not exist: " + execArn));
+            break;
           }
           sendJson(exchange, 200, exec);
           break;

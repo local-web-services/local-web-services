@@ -420,13 +420,7 @@ Then(
 
 // ── Then: invariants ──────────────────────────────────────────────────────────
 
-Then(
-  'every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function',
-  async function (this: SdkWorld) {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+// "every {string} invocation references an {string} Lambda function" is registered in cross_service_common.ts.
 
 Then(
   'every "RUNNING" execution references a state machine that exists',

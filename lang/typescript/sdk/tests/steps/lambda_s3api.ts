@@ -163,13 +163,7 @@ Then('the invocation is "SUCCESS"', async function (this: SdkWorld) {
 
 // ── Then: invariant assertions (no-op) ───────────────────────────────────────
 
-Then(
-  'every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function',
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+// "every {string} invocation references an {string} Lambda function" is registered in cross_service_common.ts.
 
 Then('every existing object belongs to an "ACTIVE" bucket', async function (this: SdkWorld) {
   // No-op: model-level invariant; trivially satisfied in isolated lws context.

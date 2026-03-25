@@ -103,9 +103,10 @@ public class SsmHandler implements HttpHandler {
                     "__type", "ParameterNotFound", "message", "Parameter " + name + " not found"));
             break;
           }
-          store.putParameter(
-              name, (String) body.get("Value"), (String) body.get("Type"), overwrite);
-          sendJson(exchange, 200, Map.of("Version", 1, "Tier", "Standard"));
+          Map<String, Object> param =
+              store.putParameter(
+                  name, (String) body.get("Value"), (String) body.get("Type"), overwrite);
+          sendJson(exchange, 200, Map.of("Version", param.get("Version"), "Tier", "Standard"));
           break;
         }
       case "GetParameter":

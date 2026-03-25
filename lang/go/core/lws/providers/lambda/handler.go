@@ -120,25 +120,25 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.deleteFunction(w, name)
 	case r.Method == http.MethodPut && strings.HasSuffix(path, "/code"):
 		parts := strings.Split(path, "/")
-		if len(parts) >= 6 {
-			h.updateFunctionCode(w, parts[4])
+		if len(parts) >= 5 {
+			h.updateFunctionCode(w, parts[3])
 		}
 	case r.Method == http.MethodPut && strings.HasSuffix(path, "/configuration"):
 		parts := strings.Split(path, "/")
-		if len(parts) >= 6 {
-			h.updateFunctionConfiguration(w, r, parts[4])
+		if len(parts) >= 5 {
+			h.updateFunctionConfiguration(w, r, parts[3])
 		}
 	case r.Method == http.MethodGet && strings.HasSuffix(path, "/configuration"):
 		parts := strings.Split(path, "/")
-		if len(parts) >= 6 {
-			h.getFunctionConfiguration(w, parts[4])
+		if len(parts) >= 5 {
+			h.getFunctionConfiguration(w, parts[3])
 		}
 
 	// ── Invocations ───────────────────────────────────────────────────────────
 	case strings.HasSuffix(path, "/invocations"):
 		parts := strings.Split(path, "/")
-		if len(parts) >= 6 {
-			h.invokeFunction(w, r, parts[4])
+		if len(parts) >= 5 {
+			h.invokeFunction(w, r, parts[3])
 		}
 
 	// ── Event source mappings ─────────────────────────────────────────────────
@@ -159,13 +159,18 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// ── Permissions ───────────────────────────────────────────────────────────
 	case r.Method == http.MethodPost && strings.HasSuffix(path, "/policy"):
 		parts := strings.Split(path, "/")
-		if len(parts) >= 6 {
-			h.addPermission(w, r, parts[4])
+		if len(parts) >= 5 {
+			h.addPermission(w, r, parts[3])
 		}
 	case r.Method == http.MethodGet && strings.HasSuffix(path, "/policy"):
 		parts := strings.Split(path, "/")
+		if len(parts) >= 5 {
+			h.getPolicy(w, parts[3])
+		}
+	case r.Method == http.MethodDelete && strings.Contains(path, "/policy/"):
+		parts := strings.Split(path, "/")
 		if len(parts) >= 6 {
-			h.getPolicy(w, parts[4])
+			h.removePermission(w, parts[3], parts[5])
 		}
 
 	// ── Tags ──────────────────────────────────────────────────────────────────
@@ -395,6 +400,23 @@ func (h *Handler) addPermission(w http.ResponseWriter, r *http.Request, name str
 	h.store.permissions[name] = append(h.store.permissions[name], body)
 	statementBytes, _ := json.Marshal(body)
 	jsonOK(w, map[string]interface{}{"Statement": string(statementBytes)})
+}
+
+func (h *Handler) removePermission(w http.ResponseWriter, name, statementID string) {
+	if _, ok := h.store.functions[name]; !ok {
+		jsonErr(w, "ResourceNotFoundException", "Function "+name+" not found")
+		return
+	}
+	perms := h.store.permissions[name]
+	var updated []map[string]interface{}
+	for _, p := range perms {
+		sid, _ := p["StatementId"].(string)
+		if sid != statementID {
+			updated = append(updated, p)
+		}
+	}
+	h.store.permissions[name] = updated
+	w.WriteHeader(204)
 }
 
 func (h *Handler) getPolicy(w http.ResponseWriter, name string) {

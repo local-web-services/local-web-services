@@ -292,12 +292,38 @@ public class OrganizationsSteps {
 
   @Given("the policy is attached to the target")
   public void thePolicyIsAttachedToTheTarget() {
-    // Arrange / Act: create org, root, policy, and attach
-    doCreateOrg();
-    doCreatePolicy(TEST_POLICY_NAME);
-    targetId = rootId;
-    doAttachPolicy(policyId, rootId);
-    // Assert: policy attached to target
+    if (world.lastSuccess || policyId != null) {
+      // Used as Then: verify the attachment via listTargetsForPolicy
+      boolean expectedSuccess = true;
+      boolean actualSuccess = world.lastSuccess;
+      assertTrue(
+          actualSuccess,
+          "expected AttachPolicy to succeed but got: "
+              + world.lastError
+              + "; expected_success="
+              + expectedSuccess);
+      try (OrganizationsClient client = world.session.organizationsClient()) {
+        ListTargetsForPolicyResponse listResp =
+            client.listTargetsForPolicy(r -> r.policyId(policyId));
+        List<String> actualTargetIds =
+            listResp.targets().stream().map(PolicyTargetSummary::targetId).toList();
+        // Assert
+        assertTrue(
+            actualTargetIds.contains(targetId),
+            "expected target '"
+                + targetId
+                + "' to be attached to policy '"
+                + policyId
+                + "' but found: "
+                + actualTargetIds);
+      }
+    } else {
+      // Used as Given: create org, root, policy, and attach
+      doCreateOrg();
+      doCreatePolicy(TEST_POLICY_NAME);
+      targetId = rootId;
+      doAttachPolicy(policyId, rootId);
+    }
   }
 
   @Given("the policy is not attached to the target")

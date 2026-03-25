@@ -15,7 +15,6 @@ func registerAllSteps(sc *godog.ScenarioContext, world *World) {
 	registerDynamoDBHelperSteps(sc, world)
 	registerSQSHelperSteps(sc, world)
 	registerDiscoverySteps(sc, world)
-	registerSequenceSteps(sc, world)
 	// Cross-service suites — suite-specific steps
 	registerSnsSqsSteps(sc, world)
 	registerEventsSqsSteps(sc, world)
@@ -110,4 +109,9 @@ func registerAllSteps(sc *godog.ScenarioContext, world *World) {
 	registerStepFunctionsS3TablesSteps(sc, world)
 	// Group D — Misc
 	registerAWSFakeSteps(sc, world)
+	// Sequence steps registered last so service-specific steps take priority
+	// when both register the same pattern (service steps use sc.When which only
+	// matches the When keyword, but because godog uses first-registered semantics
+	// for sc.Step with keyword=None, registering sequences after avoids collisions).
+	registerSequenceSteps(sc, world)
 }

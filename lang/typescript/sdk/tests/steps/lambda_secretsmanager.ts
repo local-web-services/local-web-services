@@ -244,12 +244,7 @@ Then('the invocation is "SUCCESS"', async function (this: SdkWorld) {
 
 // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
-Then(
-  /^every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function$/,
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  },
-);
+// "every {string} invocation references an {string} Lambda function" is registered in cross_service_common.ts.
 
 Then(
   /^every successful invocation recorded which secret it read$/,

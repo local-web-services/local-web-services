@@ -61,10 +61,7 @@ async function putTarget(world: SdkWorld): Promise<void> {
 
 // "the event bus exists" is registered in cross_service_common.ts.
 
-Given('the event bus is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: event buses are ACTIVE immediately after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the event bus is {string}" is registered in cross_service_common.ts.
 
 Given('the event bus is not "ACTIVE"', async function (this: SdkWorld) {
   // Arrange

@@ -173,6 +173,19 @@ func (q *LocalQueue) approximateCount() int {
 	return count
 }
 
+func (q *LocalQueue) inFlightCount() int {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	count := 0
+	now := time.Now()
+	for _, m := range q.messages {
+		if now.Before(m.visibleAfter) {
+			count++
+		}
+	}
+	return count
+}
+
 // changeVisibility changes the visibility timeout for a message, returning true if found.
 func (q *LocalQueue) changeVisibility(receiptHandle string, timeoutSec int) bool {
 	q.mu.Lock()
@@ -488,6 +501,10 @@ func (h *Handler) handleJSON(w http.ResponseWriter, r *http.Request, action stri
 			writeErr("AWS.SimpleQueueService.NonExistentQueue", "Queue not found: "+queueURL)
 			return
 		}
+		if h.state.GetCapacityRule("sqs").IsExhausted() {
+			writeErr("AWS.SimpleQueueService.InternalError", "No message slot is available")
+			return
+		}
 		msgBody := getString(body, "MessageBody")
 		groupId := getString(body, "MessageGroupId")
 		dedupId := getString(body, "MessageDeduplicationId")
@@ -611,7 +628,7 @@ func (h *Handler) handleJSON(w http.ResponseWriter, r *http.Request, action stri
 		attrs := map[string]string{
 			"QueueArn":                              fmt.Sprintf("arn:aws:sqs:us-east-1:%s:%s", accountID, q.Name),
 			"ApproximateNumberOfMessages":           fmt.Sprintf("%d", q.approximateCount()),
-			"ApproximateNumberOfMessagesNotVisible": "0",
+			"ApproximateNumberOfMessagesNotVisible": fmt.Sprintf("%d", q.inFlightCount()),
 			"VisibilityTimeout":                     fmt.Sprintf("%d", q.VisibilityTimeout),
 			"FifoQueue":                             fmt.Sprintf("%v", q.IsFifo),
 		}
@@ -796,6 +813,10 @@ func (h *Handler) handleForm(w http.ResponseWriter, r *http.Request, action stri
 			xmlErr("AWS.SimpleQueueService.NonExistentQueue", "Queue not found: "+queueURL)
 			return
 		}
+		if h.state.GetCapacityRule("sqs").IsExhausted() {
+			xmlErr("AWS.SimpleQueueService.InternalError", "No message slot is available")
+			return
+		}
 		msgBody := form.Get("MessageBody")
 		groupId := form.Get("MessageGroupId")
 		dedupId := form.Get("MessageDeduplicationId")
@@ -855,10 +876,11 @@ func (h *Handler) handleForm(w http.ResponseWriter, r *http.Request, action stri
 			return
 		}
 		attrs := map[string]string{
-			"QueueArn":                    fmt.Sprintf("arn:aws:sqs:us-east-1:%s:%s", accountID, q.Name),
-			"ApproximateNumberOfMessages": fmt.Sprintf("%d", q.approximateCount()),
-			"VisibilityTimeout":           fmt.Sprintf("%d", q.VisibilityTimeout),
-			"FifoQueue":                   fmt.Sprintf("%v", q.IsFifo),
+			"QueueArn":                              fmt.Sprintf("arn:aws:sqs:us-east-1:%s:%s", accountID, q.Name),
+			"ApproximateNumberOfMessages":           fmt.Sprintf("%d", q.approximateCount()),
+			"ApproximateNumberOfMessagesNotVisible": fmt.Sprintf("%d", q.inFlightCount()),
+			"VisibilityTimeout":                     fmt.Sprintf("%d", q.VisibilityTimeout),
+			"FifoQueue":                             fmt.Sprintf("%v", q.IsFifo),
 		}
 		if q.RedrivePolicy != nil {
 			rpBytes, _ := json.Marshal(map[string]interface{}{

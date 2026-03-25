@@ -62,6 +62,15 @@ public class StepfunctionsSteps {
     return "arn:aws:states:" + TEST_REGION + ":" + TEST_ACCOUNT + ":stateMachine:" + name;
   }
 
+  /**
+   * Returns the active state machine ARN for use in When steps. Prefers {@code
+   * world.lastStateMachineArn} when set by a Given setup step (e.g. "the state machine exists"),
+   * falling back to the local test ARN.
+   */
+  private String activeSmArn() {
+    return world.lastStateMachineArn != null ? world.lastStateMachineArn : smArn(TEST_SM);
+  }
+
   private void sfnCreateStateMachine(String name, StateMachineType type) {
     try (SfnClient client = world.session.sfnClient()) {
       CreateStateMachineResponse result =
@@ -72,9 +81,10 @@ public class StepfunctionsSteps {
   }
 
   private void sfnStartExecution(String smName) {
+    String arn = world.lastStateMachineArn != null ? world.lastStateMachineArn : smArn(smName);
     try (SfnClient client = world.session.sfnClient()) {
       StartExecutionResponse result =
-          client.startExecution(r -> r.stateMachineArn(smArn(smName)).input(TEST_INPUT));
+          client.startExecution(r -> r.stateMachineArn(arn).input(TEST_INPUT));
       world.lastExecutionArn = result.executionArn();
     }
   }
@@ -99,7 +109,7 @@ public class StepfunctionsSteps {
     try (SfnClient client = world.session.sfnClient()) {
       // Act
       try {
-        client.deleteStateMachine(r -> r.stateMachineArn(smArn(TEST_SM)));
+        client.deleteStateMachine(r -> r.stateMachineArn(activeSmArn()));
       } catch (Exception ignored) {
         // ignore; desired state is DELETING
       }
@@ -118,7 +128,7 @@ public class StepfunctionsSteps {
     sfnCreateStateMachine(TEST_SM, StateMachineType.STANDARD);
     try (SfnClient client = world.session.sfnClient()) {
       // Act
-      client.deleteStateMachine(r -> r.stateMachineArn(smArn(TEST_SM)));
+      client.deleteStateMachine(r -> r.stateMachineArn(activeSmArn()));
     } catch (Exception ignored) {
       // ignore; desired state is DELETED
     }
@@ -201,7 +211,7 @@ public class StepfunctionsSteps {
       // Act
       client.tagResource(
           r ->
-              r.resourceArn(smArn(TEST_SM))
+              r.resourceArn(activeSmArn())
                   .tags(Tag.builder().key(TEST_TAG_KEY).value(TEST_TAG_VALUE).build()));
     }
     // Assert: tag added (no error thrown)
@@ -235,7 +245,7 @@ public class StepfunctionsSteps {
     // Arrange
     try (SfnClient client = world.session.sfnClient()) {
       // Act
-      client.deleteStateMachine(r -> r.stateMachineArn(smArn(TEST_SM)));
+      client.deleteStateMachine(r -> r.stateMachineArn(activeSmArn()));
       world.setSuccess(null);
     } catch (Exception e) {
       world.setFailure(e);
@@ -249,7 +259,7 @@ public class StepfunctionsSteps {
     try (SfnClient client = world.session.sfnClient()) {
       // Act
       DescribeStateMachineResponse result =
-          client.describeStateMachine(r -> r.stateMachineArn(smArn(TEST_SM)));
+          client.describeStateMachine(r -> r.stateMachineArn(activeSmArn()));
       world.setSuccess(result);
     } catch (Exception e) {
       world.setFailure(e);
@@ -275,7 +285,7 @@ public class StepfunctionsSteps {
     // Arrange
     try (SfnClient client = world.session.sfnClient()) {
       // Act
-      ListExecutionsResponse result = client.listExecutions(r -> r.stateMachineArn(smArn(TEST_SM)));
+      ListExecutionsResponse result = client.listExecutions(r -> r.stateMachineArn(activeSmArn()));
       world.setSuccess(result);
     } catch (Exception e) {
       world.setFailure(e);
@@ -289,7 +299,7 @@ public class StepfunctionsSteps {
     try (SfnClient client = world.session.sfnClient()) {
       // Act
       ListStateMachineVersionsResponse result =
-          client.listStateMachineVersions(r -> r.stateMachineArn(smArn(TEST_SM)));
+          client.listStateMachineVersions(r -> r.stateMachineArn(activeSmArn()));
       world.setSuccess(result);
     } catch (Exception e) {
       world.setFailure(e);
@@ -303,7 +313,7 @@ public class StepfunctionsSteps {
     try (SfnClient client = world.session.sfnClient()) {
       // Act
       ListTagsForResourceResponse result =
-          client.listTagsForResource(r -> r.resourceArn(smArn(TEST_SM)));
+          client.listTagsForResource(r -> r.resourceArn(activeSmArn()));
       world.setSuccess(result);
     } catch (Exception e) {
       world.setFailure(e);
@@ -317,7 +327,7 @@ public class StepfunctionsSteps {
     try (SfnClient client = world.session.sfnClient()) {
       // Act
       StartExecutionResponse result =
-          client.startExecution(r -> r.stateMachineArn(smArn(TEST_SM)).input(TEST_INPUT));
+          client.startExecution(r -> r.stateMachineArn(activeSmArn()).input(TEST_INPUT));
       world.setSuccess(result);
       world.lastExecutionArn = result.executionArn();
     } catch (Exception e) {
@@ -392,7 +402,7 @@ public class StepfunctionsSteps {
       // Act
       UpdateStateMachineResponse result =
           client.updateStateMachine(
-              r -> r.stateMachineArn(smArn(TEST_SM)).definition(TEST_UPDATED_DEFINITION));
+              r -> r.stateMachineArn(activeSmArn()).definition(TEST_UPDATED_DEFINITION));
       world.setSuccess(result);
     } catch (Exception e) {
       world.setFailure(e);
@@ -407,7 +417,7 @@ public class StepfunctionsSteps {
       // Act
       client.tagResource(
           r ->
-              r.resourceArn(smArn(TEST_SM))
+              r.resourceArn(activeSmArn())
                   .tags(Tag.builder().key(TEST_TAG_KEY).value(TEST_TAG_VALUE).build()));
       world.setSuccess(null);
     } catch (Exception e) {
@@ -421,7 +431,7 @@ public class StepfunctionsSteps {
     // Arrange
     try (SfnClient client = world.session.sfnClient()) {
       // Act
-      client.untagResource(r -> r.resourceArn(smArn(TEST_SM)).tagKeys(TEST_TAG_KEY));
+      client.untagResource(r -> r.resourceArn(activeSmArn()).tagKeys(TEST_TAG_KEY));
       world.setSuccess(null);
     } catch (Exception e) {
       world.setFailure(e);

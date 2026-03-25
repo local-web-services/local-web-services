@@ -14,6 +14,7 @@ import software.amazon.awssdk.services.glacier.model.DescribeVaultResponse;
 import software.amazon.awssdk.services.glacier.model.InitiateJobResponse;
 import software.amazon.awssdk.services.glacier.model.InitiateMultipartUploadResponse;
 import software.amazon.awssdk.services.glacier.model.UploadArchiveResponse;
+import software.amazon.awssdk.services.s3.S3Client;
 
 /**
  * Step definitions for the Glacier informal specification feature files.
@@ -268,6 +269,15 @@ public class GlacierSteps {
       // Assert: upload initiated
       uploadId = resp.uploadId();
     }
+    // Also create an S3 multipart upload if an S3 bucket context is active (s3api scenarios)
+    if (world.s3UploadBucket != null) {
+      try (S3Client s3Client = world.session.s3Client()) {
+        var createResp =
+            s3Client.createMultipartUpload(
+                r -> r.bucket(world.s3UploadBucket).key("e2e-test-object-1"));
+        world.s3UploadId = createResp.uploadId();
+      }
+    }
   }
 
   @Given("the upload is InProgress")
@@ -517,6 +527,22 @@ public class GlacierSteps {
 
   @When("a multipart upload is aborted")
   public void aMultipartUploadIsAborted() {
+    // If an S3 multipart upload context is active, abort using S3 (s3api scenarios)
+    if (world.s3UploadBucket != null) {
+      String activeS3UploadId =
+          world.s3UploadId != null ? world.s3UploadId : "non-existent-upload-id";
+      try (S3Client s3Client = world.session.s3Client()) {
+        // Act
+        s3Client.abortMultipartUpload(
+            r ->
+                r.bucket(world.s3UploadBucket).key("e2e-test-object-1").uploadId(activeS3UploadId));
+        // Assert: store result
+        world.setSuccess(null);
+      } catch (Exception e) {
+        world.setFailure(e);
+      }
+      return;
+    }
     // Arrange: (upload state set up by Given steps)
     String activeUploadId = uploadId != null ? uploadId : TEST_UPLOAD_ID_FALLBACK;
     try (GlacierClient client = world.session.glacierClient()) {

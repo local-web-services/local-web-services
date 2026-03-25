@@ -398,8 +398,14 @@ func registerLambdaSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.When(`^a failed function is deleted$`, func() error {
-		// @internal: Cannot delete a FAILED Lambda function in lws (cannot reach FAILED state).
-		setResult(world, nil, fmt.Errorf("cannot delete FAILED function: scenario is @internal"))
+		// lws does not distinguish FAILED vs ACTIVE for deletion — any existing function can be deleted.
+		// Arrange
+		// Act
+		result, err := world.LambdaClient().DeleteFunction(context.Background(), &lambda.DeleteFunctionInput{
+			FunctionName: aws.String(lambdaTestFunctionName),
+		})
+		// Assert: store result
+		setResult(world, result, err)
 		return nil
 	})
 

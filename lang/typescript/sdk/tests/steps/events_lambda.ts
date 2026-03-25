@@ -218,23 +218,7 @@ When("the Lambda invocation fails", async function (this: SdkWorld) {
 
 // "the event bus is {string}" is registered in cross_service_common.ts.
 
-Then('the function is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  const actualResult = await elLambdaClient(this).send(
-    new GetFunctionCommand({ FunctionName: EL_FUNC }),
-  );
-  // Assert
-  const expectedState = "Active";
-  const actualState = actualResult.Configuration?.State ?? "";
-  assert.strictEqual(
-    actualState,
-    expectedState,
-    `Expected function state '${expectedState}' but got '${actualState}'; expected_state=${expectedState} actual_state=${actualState}`,
-  );
-});
+// "the function is {string}" is registered in lambda.ts.
 
 Then(
   'the rule is "ENABLED" and will trigger the function when matching events are published',
@@ -282,15 +266,6 @@ Then(
   },
 );
 
-Then(
-  'every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function',
-  async function (this: SdkWorld) {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+// "every {string} invocation references an {string} Lambda function" is registered in cross_service_common.ts.
 
-Then('every "ENABLED" rule references an "ACTIVE" event bus', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "every {string} rule references an {string} event bus" is registered in cross_service_common.ts.

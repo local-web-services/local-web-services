@@ -36,6 +36,10 @@ public class WorldContext {
   // Active SQS queue name — set by SQS spec steps; null means use the default cross-service queue.
   public String sqsActiveQueueName;
 
+  // S3api multipart upload state — set when an S3 multipart upload is created for s3api scenarios.
+  public String s3UploadId;
+  public String s3UploadBucket;
+
   // Cognito IDP spec state
   public String cognitoPoolId;
   public String cognitoUsername;
