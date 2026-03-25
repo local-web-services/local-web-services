@@ -1,7 +1,6 @@
 package io.localwebservices.lws.steps;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.cucumber.java.en.Given;
@@ -201,7 +200,7 @@ public class LambdaSteps {
     // Arrange: tag the function
     try (LambdaClient client = world.session.lambdaClient()) {
       // Act
-      client.tagResource(r -> r.resource(funcArn()).tags(TEST_TAG_KEY, TEST_TAG_VALUE));
+      client.tagResource(r -> r.resource(funcArn()).tags(java.util.Map.of(TEST_TAG_KEY, TEST_TAG_VALUE)));
     }
     // Assert: tag applied (no error thrown)
   }
@@ -497,7 +496,7 @@ public class LambdaSteps {
     // Arrange
     try (LambdaClient client = world.session.lambdaClient()) {
       // Act
-      client.tagResource(r -> r.resource(funcArn()).tags(TEST_TAG_KEY, TEST_TAG_VALUE));
+      client.tagResource(r -> r.resource(funcArn()).tags(java.util.Map.of(TEST_TAG_KEY, TEST_TAG_VALUE)));
       // Assert: store result
       world.setSuccess(TEST_FUNC);
     } catch (Exception e) {
@@ -690,23 +689,6 @@ public class LambdaSteps {
   public void theFunctionIsState(String expectedState) {
     // @internal: Cannot observe Lambda DELETED state in lws.
     // This step only appears in @internal-tagged scenarios excluded by the tag filter.
-  }
-
-  @Then("the function has a resource policy")
-  public void theFunctionHasAResourcePolicy() {
-    // Arrange: no additional setup required
-    // Act: action performed in When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected add_permission to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess
-            + " actual_success="
-            + actualSuccess);
   }
 
   @Then("the function's resource policy is cleared")

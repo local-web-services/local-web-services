@@ -95,7 +95,7 @@ public class ApigatewaySnsSteps {
   private String apigwSnsGetApiId() {
     try (ApiGatewayClient client = world.session.apiGatewayClient()) {
       // Arrange / Act
-      GetRestApisResponse result = client.getRestApis(r -> r);
+      GetRestApisResponse result = client.getRestApis();
       List<RestApi> items = result.items();
       // Assert: find by name
       if (items != null) {

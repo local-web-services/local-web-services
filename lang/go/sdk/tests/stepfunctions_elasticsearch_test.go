@@ -24,7 +24,7 @@ func registerStepFunctionsElasticsearchServiceSteps(sc *godog.ScenarioContext, w
 	sc.Given(`^the domain already exists$`, func() error {
 		// Arrange: create the domain so it already exists
 		// Act
-		_, err := world.ElasticsearchServiceClient().CreateElasticsearchDomain(context.Background(), &elasticsearchservice.CreateElasticsearchDomainInput{
+		_, err := world.ElasticsearchClient().CreateElasticsearchDomain(context.Background(), &elasticsearchservice.CreateElasticsearchDomainInput{
 			DomainName: aws.String(sfnElasticsearchTestDomain),
 		})
 		// Assert: ignore error if already exists
@@ -35,7 +35,7 @@ func registerStepFunctionsElasticsearchServiceSteps(sc *godog.ScenarioContext, w
 	sc.Given(`^the domain exists$`, func() error {
 		// Arrange: create the domain
 		// Act
-		_, err := world.ElasticsearchServiceClient().CreateElasticsearchDomain(context.Background(), &elasticsearchservice.CreateElasticsearchDomainInput{
+		_, err := world.ElasticsearchClient().CreateElasticsearchDomain(context.Background(), &elasticsearchservice.CreateElasticsearchDomainInput{
 			DomainName: aws.String(sfnElasticsearchTestDomain),
 		})
 		// Assert: ignore error if already exists
@@ -53,7 +53,7 @@ func registerStepFunctionsElasticsearchServiceSteps(sc *godog.ScenarioContext, w
 	sc.Given(`^the domain is "AVAILABLE"$`, func() error {
 		// Arrange: ensure domain exists; fresh domains start AVAILABLE
 		// Act
-		_, err := world.ElasticsearchServiceClient().CreateElasticsearchDomain(context.Background(), &elasticsearchservice.CreateElasticsearchDomainInput{
+		_, err := world.ElasticsearchClient().CreateElasticsearchDomain(context.Background(), &elasticsearchservice.CreateElasticsearchDomainInput{
 			DomainName: aws.String(sfnElasticsearchTestDomain),
 		})
 		// Assert: ignore error if already exists
@@ -69,7 +69,7 @@ func registerStepFunctionsElasticsearchServiceSteps(sc *godog.ScenarioContext, w
 	sc.Given(`^the domain is not "PROCESSING"$`, func() error {
 		// Arrange: create the domain so it is AVAILABLE (not PROCESSING)
 		// Act
-		_, err := world.ElasticsearchServiceClient().CreateElasticsearchDomain(context.Background(), &elasticsearchservice.CreateElasticsearchDomainInput{
+		_, err := world.ElasticsearchClient().CreateElasticsearchDomain(context.Background(), &elasticsearchservice.CreateElasticsearchDomainInput{
 			DomainName: aws.String(sfnElasticsearchTestDomain),
 		})
 		// Assert: ignore error if already exists
@@ -133,7 +133,7 @@ func registerStepFunctionsElasticsearchServiceSteps(sc *godog.ScenarioContext, w
 	sc.When(`^an Elasticsearch domain is created and becomes "AVAILABLE"$`, func() error {
 		// Arrange: use the test domain name
 		// Act
-		_, err := world.ElasticsearchServiceClient().CreateElasticsearchDomain(context.Background(), &elasticsearchservice.CreateElasticsearchDomainInput{
+		_, err := world.ElasticsearchClient().CreateElasticsearchDomain(context.Background(), &elasticsearchservice.CreateElasticsearchDomainInput{
 			DomainName: aws.String(sfnElasticsearchTestDomain),
 		})
 		setResult(world, nil, err)
@@ -144,7 +144,7 @@ func registerStepFunctionsElasticsearchServiceSteps(sc *godog.ScenarioContext, w
 	sc.When(`^a domain configuration update begins$`, func() error {
 		// Arrange: use the test domain name
 		// Act
-		_, err := world.ElasticsearchServiceClient().UpdateElasticsearchDomainConfig(context.Background(), &elasticsearchservice.UpdateElasticsearchDomainConfigInput{
+		_, err := world.ElasticsearchClient().UpdateElasticsearchDomainConfig(context.Background(), &elasticsearchservice.UpdateElasticsearchDomainConfigInput{
 			DomainName: aws.String(sfnElasticsearchTestDomain),
 		})
 		setResult(world, nil, err)
@@ -176,7 +176,7 @@ func registerStepFunctionsElasticsearchServiceSteps(sc *godog.ScenarioContext, w
 		// Arrange
 		expectedDomainName := sfnElasticsearchTestDomain
 		// Act
-		result, err := world.ElasticsearchServiceClient().DescribeElasticsearchDomain(context.Background(), &elasticsearchservice.DescribeElasticsearchDomainInput{
+		result, err := world.ElasticsearchClient().DescribeElasticsearchDomain(context.Background(), &elasticsearchservice.DescribeElasticsearchDomainInput{
 			DomainName: aws.String(expectedDomainName),
 		})
 		if err != nil {

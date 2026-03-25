@@ -32,7 +32,7 @@ func registerStepFunctionsS3TablesSteps(sc *godog.ScenarioContext, world *World)
 	// ── helpers ───────────────────────────────────────────────────────────────────
 
 	createTable := func() (string, error) {
-		resp, err := world.S3TablesClient().CreateTable(context.Background(), &s3tables.CreateTableInput{
+		_, err := world.S3TablesClient().CreateTable(context.Background(), &s3tables.CreateTableInput{
 			TableBucketARN: aws.String(sfnS3TablesTestTableBucketARN),
 			Namespace:      aws.String(sfnS3TablesTestNamespace),
 			Name:           aws.String(sfnS3TablesTestTableName),
@@ -41,10 +41,7 @@ func registerStepFunctionsS3TablesSteps(sc *godog.ScenarioContext, world *World)
 		if err != nil {
 			return "", err
 		}
-		if resp.Name == nil {
-			return "", fmt.Errorf("CreateTable returned nil table name")
-		}
-		return *resp.Name, nil
+		return sfnS3TablesTestTableName, nil
 	}
 
 	// ── Background ─────────────────────────────────────────────────────────────────

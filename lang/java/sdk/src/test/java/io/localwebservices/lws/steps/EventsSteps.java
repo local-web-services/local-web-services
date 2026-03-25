@@ -387,7 +387,7 @@ public class EventsSteps {
     // Arrange
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
       // Act
-      ListEventBusesResponse result = client.listEventBuses(r -> r);
+      ListEventBusesResponse result = client.listEventBuses(software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder().build());
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -564,7 +564,7 @@ public class EventsSteps {
     String expectedBus = TEST_BUS;
     // Act
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse result = client.listEventBuses(r -> r);
+      ListEventBusesResponse result = client.listEventBuses(software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder().build());
       List<EventBus> buses = result.eventBuses();
       boolean actualFound = buses.stream().anyMatch(b -> expectedBus.equals(b.name()));
       // Assert
@@ -583,7 +583,7 @@ public class EventsSteps {
     String expectedBus = TEST_BUS;
     // Act
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse result = client.listEventBuses(r -> r);
+      ListEventBusesResponse result = client.listEventBuses(software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder().build());
       List<EventBus> buses = result.eventBuses();
       boolean actualFound = buses.stream().anyMatch(b -> expectedBus.equals(b.name()));
       // Assert

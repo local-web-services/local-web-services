@@ -777,7 +777,7 @@ func registerCognitoIDPSteps(sc *godog.ScenarioContext, world *World) {
 		expectedPoolName := cognitoTestPoolName
 		// Act
 		resp, err := world.CognitoIDPClient().ListUserPools(context.Background(), &cognitoidentityprovider.ListUserPoolsInput{
-			MaxResults: 10,
+			MaxResults: aws.Int32(10),
 		})
 		if err != nil {
 			return err
@@ -796,7 +796,7 @@ func registerCognitoIDPSteps(sc *godog.ScenarioContext, world *World) {
 		expectedPoolName := cognitoTestPoolName
 		// Act
 		resp, err := world.CognitoIDPClient().ListUserPools(context.Background(), &cognitoidentityprovider.ListUserPoolsInput{
-			MaxResults: 10,
+			MaxResults: aws.Int32(10),
 		})
 		if err != nil {
 			return err

@@ -296,7 +296,7 @@ public class ApigatewayCognitoSteps {
     // Arrange
     try (ApiGatewayClient client = world.session.apiGatewayClient()) {
       // Act
-      GetRestApisResponse result = client.getRestApis(r -> r);
+      GetRestApisResponse result = client.getRestApis();
       List<RestApi> items = result.items();
       // Assert: the API exists with the expected name
       String expectedApiName = TEST_API_NAME;

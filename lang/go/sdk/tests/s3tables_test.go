@@ -334,8 +334,8 @@ func registerS3TablesSteps(sc *godog.ScenarioContext, world *World) {
 			Type:           s3tablestypes.TableMaintenanceTypeIcebergCompaction,
 			Value: &s3tablestypes.TableMaintenanceConfigurationValue{
 				Status: s3tablestypes.MaintenanceStatusEnabled,
-				Settings: &s3tablestypes.TableMaintenanceSettings{
-					IcebergCompaction: &s3tablestypes.IcebergCompactionSettings{
+				Settings: &s3tablestypes.TableMaintenanceSettingsMemberIcebergCompaction{
+					Value: s3tablestypes.IcebergCompactionSettings{
 						TargetFileSizeMB: aws.Int32(512),
 					},
 				},
@@ -603,8 +603,8 @@ func registerS3TablesSteps(sc *godog.ScenarioContext, world *World) {
 			Type:           s3tablestypes.TableMaintenanceTypeIcebergCompaction,
 			Value: &s3tablestypes.TableMaintenanceConfigurationValue{
 				Status: s3tablestypes.MaintenanceStatusEnabled,
-				Settings: &s3tablestypes.TableMaintenanceSettings{
-					IcebergCompaction: &s3tablestypes.IcebergCompactionSettings{
+				Settings: &s3tablestypes.TableMaintenanceSettingsMemberIcebergCompaction{
+					Value: s3tablestypes.IcebergCompactionSettings{
 						TargetFileSizeMB: aws.Int32(512),
 					},
 				},

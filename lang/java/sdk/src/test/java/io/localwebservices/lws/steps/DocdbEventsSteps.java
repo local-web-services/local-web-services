@@ -184,7 +184,7 @@ public class DocdbEventsSteps {
     // Arrange: no additional setup required
     // Act: verify bus exists in the list
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse result = client.listEventBuses(r -> r);
+      ListEventBusesResponse result = client.listEventBuses(software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder().build());
       List<EventBus> buses = result.eventBuses();
       assertNotNull(buses, "expected EventBuses list but got null");
       boolean actualFound = buses.stream().anyMatch(b -> TEST_BUS_NAME.equals(b.name()));

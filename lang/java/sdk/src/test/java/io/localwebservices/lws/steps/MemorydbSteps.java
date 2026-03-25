@@ -11,15 +11,15 @@ import java.util.List;
 import software.amazon.awssdk.services.memorydb.MemoryDbClient;
 import software.amazon.awssdk.services.memorydb.model.ACL;
 import software.amazon.awssdk.services.memorydb.model.Cluster;
-import software.amazon.awssdk.services.memorydb.model.CreateACLResponse;
+import software.amazon.awssdk.services.memorydb.model.CreateAclResponse;
 import software.amazon.awssdk.services.memorydb.model.CreateClusterResponse;
 import software.amazon.awssdk.services.memorydb.model.CreateSnapshotResponse;
 import software.amazon.awssdk.services.memorydb.model.CreateUserResponse;
-import software.amazon.awssdk.services.memorydb.model.DeleteACLResponse;
+import software.amazon.awssdk.services.memorydb.model.DeleteAclResponse;
 import software.amazon.awssdk.services.memorydb.model.DeleteClusterResponse;
 import software.amazon.awssdk.services.memorydb.model.DeleteSnapshotResponse;
 import software.amazon.awssdk.services.memorydb.model.DeleteUserResponse;
-import software.amazon.awssdk.services.memorydb.model.DescribeACLsResponse;
+import software.amazon.awssdk.services.memorydb.model.DescribeAcLsResponse;
 import software.amazon.awssdk.services.memorydb.model.DescribeClustersResponse;
 import software.amazon.awssdk.services.memorydb.model.DescribeSnapshotsResponse;
 import software.amazon.awssdk.services.memorydb.model.DescribeUsersResponse;
@@ -27,7 +27,7 @@ import software.amazon.awssdk.services.memorydb.model.InputAuthenticationType;
 import software.amazon.awssdk.services.memorydb.model.ListTagsResponse;
 import software.amazon.awssdk.services.memorydb.model.Snapshot;
 import software.amazon.awssdk.services.memorydb.model.Tag;
-import software.amazon.awssdk.services.memorydb.model.UpdateACLResponse;
+import software.amazon.awssdk.services.memorydb.model.UpdateAclResponse;
 import software.amazon.awssdk.services.memorydb.model.UpdateClusterResponse;
 import software.amazon.awssdk.services.memorydb.model.UpdateUserResponse;
 import software.amazon.awssdk.services.memorydb.model.User;
@@ -388,7 +388,7 @@ public class MemorydbSteps {
                   r.userName(USER_NAME)
                       .accessString("on ~* &* +@all")
                       .authenticationMode(
-                          a -> a.type(InputAuthenticationType.NO_PASSWORD))
+                          a -> a.type(InputAuthenticationType.PASSWORD))
                       .tags(Tag.builder().key(TAG_KEY).value(TAG_VALUE).build()));
       // Assert: store result
       world.setSuccess(result);
@@ -429,7 +429,7 @@ public class MemorydbSteps {
     // Arrange: (ACL may or may not exist — set up by Given steps)
     try (MemoryDbClient client = world.session.memoryDbClient()) {
       // Act
-      CreateACLResponse result =
+      CreateAclResponse result =
           client.createACL(
               r ->
                   r.aclName(ACL_NAME)
@@ -446,7 +446,7 @@ public class MemorydbSteps {
     // Arrange: (ACL state set up by Given steps)
     try (MemoryDbClient client = world.session.memoryDbClient()) {
       // Act
-      DeleteACLResponse result = client.deleteACL(r -> r.aclName(ACL_NAME));
+      DeleteAclResponse result = client.deleteACL(r -> r.aclName(ACL_NAME));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -459,7 +459,7 @@ public class MemorydbSteps {
     // Arrange: (ACL state set up by Given steps)
     try (MemoryDbClient client = world.session.memoryDbClient()) {
       // Act
-      UpdateACLResponse result = client.updateACL(r -> r.aclName(ACL_NAME));
+      UpdateAclResponse result = client.updateACL(r -> r.aclName(ACL_NAME));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -486,7 +486,7 @@ public class MemorydbSteps {
     // Arrange: (ACL and user state set up by Given steps)
     try (MemoryDbClient client = world.session.memoryDbClient()) {
       // Act
-      UpdateACLResponse result =
+      UpdateAclResponse result =
           client.updateACL(r -> r.aclName(ACL_NAME).userNamesToAdd(USER_NAME));
       // Assert: store result
       world.setSuccess(result);
@@ -500,7 +500,7 @@ public class MemorydbSteps {
     // Arrange: (ACL and user state set up by Given steps)
     try (MemoryDbClient client = world.session.memoryDbClient()) {
       // Act
-      UpdateACLResponse result =
+      UpdateAclResponse result =
           client.updateACL(r -> r.aclName(ACL_NAME).userNamesToRemove(USER_NAME));
       // Assert: store result
       world.setSuccess(result);
@@ -721,22 +721,6 @@ public class MemorydbSteps {
     }
   }
 
-  @Then("the cluster is {string}")
-  public void theClusterIs(String expectedStatus) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected operation to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    assertNotNull(world.lastOutput, "expected output but got null");
-  }
-
   @Then("the cluster is \"DELETED\" and its tags are removed")
   public void theClusterIsDeletedAndItsTagsAreRemoved() {
     // Arrange
@@ -950,7 +934,7 @@ public class MemorydbSteps {
             + "; expected_success="
             + expectedSuccess);
     try (MemoryDbClient client = world.session.memoryDbClient()) {
-      DescribeACLsResponse result = client.describeACLs(r -> r.aclName(ACL_NAME));
+      DescribeAcLsResponse result = client.describeACLs(r -> r.aclName(ACL_NAME));
       List<ACL> acls = result.acLs();
       assertFalse(
           acls.isEmpty(),
@@ -984,7 +968,7 @@ public class MemorydbSteps {
             + "; expected_success="
             + expectedSuccess);
     try (MemoryDbClient client = world.session.memoryDbClient()) {
-      DescribeACLsResponse result = client.describeACLs(r -> r.aclName(ACL_NAME));
+      DescribeAcLsResponse result = client.describeACLs(r -> r.aclName(ACL_NAME));
       List<ACL> acls = result.acLs();
       assertFalse(
           acls.isEmpty(),
@@ -1020,7 +1004,7 @@ public class MemorydbSteps {
             + "; expected_success="
             + expectedSuccess);
     try (MemoryDbClient client = world.session.memoryDbClient()) {
-      DescribeACLsResponse result = client.describeACLs(r -> r.aclName(ACL_NAME));
+      DescribeAcLsResponse result = client.describeACLs(r -> r.aclName(ACL_NAME));
       List<ACL> acls = result.acLs();
       assertFalse(
           acls.isEmpty(),
@@ -1062,7 +1046,7 @@ public class MemorydbSteps {
     // Arrange
     // Act
     try (MemoryDbClient client = world.session.memoryDbClient()) {
-      DescribeACLsResponse result = client.describeACLs(r -> r.aclName(ACL_NAME));
+      DescribeAcLsResponse result = client.describeACLs(r -> r.aclName(ACL_NAME));
       List<ACL> acls = result.acLs();
       // Assert
       for (ACL a : acls) {
@@ -1350,7 +1334,7 @@ public class MemorydbSteps {
           r ->
               r.userName(USER_NAME)
                   .accessString("on ~* &* +@all")
-                  .authenticationMode(a -> a.type(InputAuthenticationType.NO_PASSWORD))
+                  .authenticationMode(a -> a.type(InputAuthenticationType.PASSWORD))
                   .tags(Tag.builder().key(TAG_KEY).value(TAG_VALUE).build()));
     } catch (Exception e) {
       String msg = e.getMessage() != null ? e.getMessage() : "";

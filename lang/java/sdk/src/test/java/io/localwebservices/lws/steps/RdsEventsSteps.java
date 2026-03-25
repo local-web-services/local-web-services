@@ -245,7 +245,7 @@ public class RdsEventsSteps {
     // Arrange
     // Act
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse result = client.listEventBuses(r -> r);
+      ListEventBusesResponse result = client.listEventBuses(software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder().build());
       List<EventBus> buses = result.eventBuses();
       // Assert
       String expectedBus = TEST_BUS_NAME;
@@ -266,7 +266,7 @@ public class RdsEventsSteps {
     // Arrange
     // Act
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse result = client.listEventBuses(r -> r);
+      ListEventBusesResponse result = client.listEventBuses(software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder().build());
       List<EventBus> buses = result.eventBuses();
       // Assert
       String expectedBus = TEST_BUS_NAME;

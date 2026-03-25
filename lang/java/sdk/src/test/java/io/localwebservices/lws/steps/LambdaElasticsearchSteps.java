@@ -1,7 +1,6 @@
 package io.localwebservices.lws.steps;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.cucumber.java.en.Given;
@@ -9,7 +8,6 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.elasticsearch.ElasticsearchClient;
-import software.amazon.awssdk.services.elasticsearch.model.DescribeElasticsearchDomainResponse;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.Runtime;
 
@@ -269,31 +267,6 @@ public class LambdaElasticsearchSteps {
   }
 
   // ── Then: assertions ───────────────────────────────────────────────────────────
-
-  @Then("the domain is \"AVAILABLE\"")
-  public void theDomainIsAvailable() {
-    // Arrange
-    String expectedDomain = TEST_DOMAIN;
-    // Act
-    try (ElasticsearchClient client = world.session.elasticsearchClient()) {
-      DescribeElasticsearchDomainResponse result =
-          client.describeElasticsearchDomain(r -> r.domainName(expectedDomain));
-      assertNotNull(result.domainStatus(), "expected domain status but got null");
-      String actualDomainName = result.domainStatus().domainName();
-      // Assert
-      assertEquals(
-          expectedDomain,
-          actualDomainName,
-          "expected domain '"
-              + expectedDomain
-              + "' but got '"
-              + actualDomainName
-              + "'; expected_domain="
-              + expectedDomain
-              + " actual_domain="
-              + actualDomainName);
-    }
-  }
 
   @Then("the function is \"ACTIVE\"")
   public void theFunctionIsActiveThen() {

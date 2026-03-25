@@ -341,7 +341,7 @@ func registerDynamodbLambdaSteps(sc *godog.ScenarioContext, world *World) {
 		}
 		expectedState := "Enabled"
 		for _, m := range resp.EventSourceMappings {
-			actualState := string(m.State)
+			actualState := aws.ToString(m.State)
 			if actualState == expectedState {
 				return nil
 			}

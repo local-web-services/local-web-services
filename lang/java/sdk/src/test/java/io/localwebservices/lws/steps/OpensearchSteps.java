@@ -6,14 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import java.util.List;
 import software.amazon.awssdk.services.opensearch.OpenSearchClient;
 import software.amazon.awssdk.services.opensearch.model.DescribeDomainResponse;
 import software.amazon.awssdk.services.opensearch.model.DomainInformationContainer;
 import software.amazon.awssdk.services.opensearch.model.AWSDomainInformation;
 import software.amazon.awssdk.services.opensearch.model.CreateOutboundConnectionResponse;
-import software.amazon.awssdk.services.opensearch.model.ListTagsResponse;
-import software.amazon.awssdk.services.opensearch.model.Tag;
 
 /**
  * Step definitions for the OpenSearch informal specification feature files.

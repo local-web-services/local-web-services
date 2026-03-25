@@ -880,31 +880,6 @@ public class DynamodbSteps {
     }
   }
 
-  @Then("the item does not exist in the table")
-  public void theItemDoesNotExistInTheTable() {
-    // Arrange
-    try (DynamoDbClient client = world.session.dynamoDbClient()) {
-      // Act
-      GetItemResponse result =
-          client.getItem(
-              r ->
-                  r.tableName(TEST_TABLE)
-                      .key(
-                          Map.of(
-                              TEST_PK, AttributeValue.builder().s(TEST_ITEM_KEY).build())));
-      Map<String, AttributeValue> actualItem = result.item();
-      // Assert
-      String expectedAbsent = TEST_ITEM_KEY;
-      assertTrue(
-          actualItem == null || actualItem.isEmpty(),
-          "Expected item \""
-              + expectedAbsent
-              + "\" to not exist in table but found it; expected_absent=\""
-              + expectedAbsent
-              + "\"");
-    }
-  }
-
   @Then("the item value is returned")
   public void theItemValueIsReturned() {
     // Arrange: no additional setup required
@@ -1071,16 +1046,6 @@ public class DynamodbSteps {
   @Then("the transaction slot is free")
   public void theTransactionSlotIsFree() {
     // No-op: @internal — cannot observe transaction slot state via public API.
-  }
-
-  @Then("reads are throttled")
-  public void readsAreThrottled() {
-    // No-op: @internal — cannot observe throttle state via public API.
-  }
-
-  @Then("writes are throttled")
-  public void writesAreThrottled() {
-    // No-op: @internal — cannot observe throttle state via public API.
   }
 
   @Then("reads are throttled or unthrottled")

@@ -52,7 +52,8 @@ func memorydbCreateUser(world *World) error {
 		UserName:     aws.String(memorydbTestUserName),
 		AccessString: aws.String("on ~* &* +@all"),
 		AuthenticationMode: &memorydbtypes.AuthenticationMode{
-			Type:     memorydbtypes.InputAuthenticationTypeNoPassword,
+			Type:      memorydbtypes.InputAuthenticationTypePassword,
+			Passwords: []string{"TestPassword123!"},
 		},
 		Tags: []memorydbtypes.Tag{{Key: aws.String(memorydbTestTagKey), Value: aws.String(memorydbTestTagValue)}},
 	})
@@ -499,7 +500,7 @@ func registerMemoryDBSteps(sc *godog.ScenarioContext, world *World) {
 			UserName:     aws.String(memorydbTestUserName),
 			AccessString: aws.String("on ~* &* +@all"),
 			AuthenticationMode: &memorydbtypes.AuthenticationMode{
-				Type: memorydbtypes.InputAuthenticationTypeNoPassword,
+				Type: memorydbtypes.InputAuthenticationTypePassword,
 			},
 			Tags: []memorydbtypes.Tag{{Key: aws.String(memorydbTestTagKey), Value: aws.String(memorydbTestTagValue)}},
 		})

@@ -322,7 +322,7 @@ public class StepfunctionsSteps {
     // Arrange: no setup required
     try (SfnClient client = world.session.sfnClient()) {
       // Act
-      ListStateMachinesResponse result = client.listStateMachines(r -> r);
+      ListStateMachinesResponse result = client.listStateMachines();
       world.setSuccess(result);
     } catch (Exception e) {
       world.setFailure(e);
@@ -885,7 +885,7 @@ public class StepfunctionsSteps {
     ValidateStateMachineDefinitionResponse result =
         (ValidateStateMachineDefinitionResponse) world.lastOutput;
     assertTrue(
-        result.result() != null || (result.validationErrors() != null),
+        result.result() != null || (result.diagnostics() != null),
         "Expected 'result' or 'validationErrors' in validate_state_machine_definition response");
   }
 
@@ -914,7 +914,7 @@ public class StepfunctionsSteps {
     // Arrange
     // Act
     try (SfnClient client = world.session.sfnClient()) {
-      ListStateMachinesResponse listResult = client.listStateMachines(r -> r);
+      ListStateMachinesResponse listResult = client.listStateMachines();
       // Assert
       for (software.amazon.awssdk.services.sfn.model.StateMachineListItem sm :
           listResult.stateMachines()) {

@@ -1,14 +1,11 @@
 package io.localwebservices.lws.steps;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.elasticache.ElastiCacheClient;
-import software.amazon.awssdk.services.elasticache.model.DescribeCacheClustersResponse;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.Runtime;
 
@@ -277,35 +274,6 @@ public class LambdaElasticacheSteps {
   }
 
   // ── Then: assertions ───────────────────────────────────────────────────────────
-
-  @Then("the cluster is \"AVAILABLE\"")
-  public void theClusterIsAvailable() {
-    // Arrange
-    String expectedCluster = TEST_CLUSTER;
-    // Act
-    try (ElastiCacheClient client = world.session.elastiCacheClient()) {
-      DescribeCacheClustersResponse response =
-          client.describeCacheClusters(r -> r.cacheClusterId(expectedCluster));
-      assertNotNull(response.cacheClusters(), "expected cluster list to be non-null");
-      String actualStatus =
-          response.cacheClusters().isEmpty()
-              ? ""
-              : response.cacheClusters().get(0).cacheClusterStatus();
-      String expectedStatus = "available";
-      // Assert
-      assertEquals(
-          expectedStatus,
-          actualStatus,
-          "expected cluster status '"
-              + expectedStatus
-              + "' but got '"
-              + actualStatus
-              + "'; expected_status="
-              + expectedStatus
-              + " actual_status="
-              + actualStatus);
-    }
-  }
 
   @Then("the function is \"ACTIVE\"")
   public void theFunctionIsActiveThen() {

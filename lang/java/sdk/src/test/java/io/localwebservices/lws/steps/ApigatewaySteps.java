@@ -114,7 +114,7 @@ public class ApigatewaySteps {
                   .resourceId(rootResourceId)
                   .httpMethod(TEST_HTTP_METHOD)
                   .type(IntegrationType.MOCK)
-                  .requestTemplatesWithStrings(
+                  .requestTemplates(
                       java.util.Map.of("application/json", "{\"statusCode\": 200}")));
     }
   }
@@ -160,7 +160,7 @@ public class ApigatewaySteps {
 
   private String firstRestApiId() throws Exception {
     try (ApiGatewayClient client = world.session.apiGatewayClient()) {
-      GetRestApisResponse result = client.getRestApis(r -> r);
+      GetRestApisResponse result = client.getRestApis();
       List<RestApi> items = result.items();
       if (items != null && !items.isEmpty()) {
         return items.get(0).id();
@@ -691,7 +691,7 @@ public class ApigatewaySteps {
     try (ApiGatewayClient client = world.session.apiGatewayClient()) {
       String apiId = restApiId;
       if (apiId == null || apiId.isEmpty()) {
-        GetRestApisResponse list = client.getRestApis(r -> r);
+        GetRestApisResponse list = client.getRestApis();
         if (list.items() != null && !list.items().isEmpty()) {
           apiId = list.items().get(0).id();
         }
@@ -856,7 +856,7 @@ public class ApigatewaySteps {
                       .resourceId(capturedRootResourceId)
                       .httpMethod(TEST_HTTP_METHOD)
                       .type(IntegrationType.MOCK)
-                      .requestTemplatesWithStrings(
+                      .requestTemplates(
                           java.util.Map.of("application/json", "{\"statusCode\": 200}")));
       // Assert: store result
       world.setSuccess(result);
@@ -1190,7 +1190,7 @@ public class ApigatewaySteps {
     String expectedResourceState = resourceState;
     // Act
     try (ApiGatewayClient client = world.session.apiGatewayClient()) {
-      GetRestApisResponse result = client.getRestApis(r -> r);
+      GetRestApisResponse result = client.getRestApis();
       List<RestApi> actualApis = result.items();
       // Assert
       assertFalse(
@@ -1219,7 +1219,7 @@ public class ApigatewaySteps {
     String expectedState = state;
     // Act
     try (ApiGatewayClient client = world.session.apiGatewayClient()) {
-      GetRestApisResponse result = client.getRestApis(r -> r);
+      GetRestApisResponse result = client.getRestApis();
       List<RestApi> actualApis = result.items();
       // Assert
       int expectedCount = 0;
@@ -1334,23 +1334,6 @@ public class ApigatewaySteps {
 
   // ── Then: integration assertions ──────────────────────────────────────────────
 
-  @Then("the integration {string}")
-  public void theIntegrationState(String expectedState) {
-    // Arrange
-    // Act
-    boolean actualSuccess = world.lastSuccess;
-    // Assert
-    assertTrue(
-        actualSuccess,
-        "expected integration to be "
-            + expectedState
-            + " but operation failed: "
-            + world.lastError
-            + "; expected_state="
-            + expectedState);
-    assertNotNull(world.lastOutput, "expected non-null result for integration state");
-  }
-
   @Then("the integration is no longer attached to the method")
   public void theIntegrationIsNoLongerAttachedToTheMethod() {
     // Arrange
@@ -1401,23 +1384,6 @@ public class ApigatewaySteps {
   }
 
   // ── Then: deployment assertions ───────────────────────────────────────────────
-
-  @Then("the deployment is {string}")
-  public void theDeploymentIs(String expectedState) {
-    // Arrange
-    // Act
-    boolean actualSuccess = world.lastSuccess;
-    // Assert
-    assertTrue(
-        actualSuccess,
-        "expected deployment to be "
-            + expectedState
-            + " but operation failed: "
-            + world.lastError
-            + "; expected_state="
-            + expectedState);
-    assertNotNull(world.lastOutput, "expected non-null result for deployment");
-  }
 
   @Then("the deployment is removed")
   public void theDeploymentIsRemoved() {

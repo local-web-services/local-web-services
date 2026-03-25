@@ -198,7 +198,7 @@ public class DynamodbLambdaSteps {
   // ── Given: record capacity slots ──────────────────────────────────────────
 
   @Given("a record slot is available")
-  public void aRecordSlotIsAvailable() {
+  public void aRecordSlotIsAvailable() throws Exception {
     // Arrange
     // Act: ensure dynamodb capacity is unlimited
     world.session.capacity("dynamodb").unlimited().apply();
@@ -206,7 +206,7 @@ public class DynamodbLambdaSteps {
   }
 
   @Given("no record slot is available")
-  public void noRecordSlotIsAvailable() {
+  public void noRecordSlotIsAvailable() throws Exception {
     // Arrange
     // Act: exhaust dynamodb capacity
     world.session.capacity("dynamodb").exhaust().apply();
@@ -334,7 +334,7 @@ public class DynamodbLambdaSteps {
     assertTrue(world.lastSuccess, "expected last call to succeed");
     // Act
     try (LambdaClient client = world.session.lambdaClient()) {
-      ListEventSourceMappingsResponse resp = client.listEventSourceMappings(r -> r);
+      ListEventSourceMappingsResponse resp = client.listEventSourceMappings();
       // Assert
       int expectedMinCount = 1;
       int actualCount = resp.eventSourceMappings().size();
@@ -346,13 +346,13 @@ public class DynamodbLambdaSteps {
               + actualCount);
       boolean actualHasExpectedState =
           resp.eventSourceMappings().stream()
-              .anyMatch(m -> expectedState.equals(m.stateAsString()));
+              .anyMatch(m -> expectedState.equals(m.state()));
       assertTrue(
           actualHasExpectedState,
           "expected at least one mapping with state '"
               + expectedState
               + "' but none found in "
-              + resp.eventSourceMappings().stream().map(m -> m.stateAsString()).toList());
+              + resp.eventSourceMappings().stream().map(m -> m.state()).toList());
     }
   }
 

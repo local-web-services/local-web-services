@@ -940,7 +940,7 @@ public class S3tablesSteps {
   private String getBucketArn() {
     try (S3TablesClient client = world.session.s3TablesClient()) {
       List<TableBucketSummary> buckets =
-          client.listTableBuckets(r -> r).tableBuckets();
+          client.listTableBuckets(software.amazon.awssdk.services.s3tables.model.ListTableBucketsRequest.builder().build()).tableBuckets();
       return buckets.stream()
           .filter(b -> TEST_BUCKET_NAME.equals(b.name()))
           .map(TableBucketSummary::arn)

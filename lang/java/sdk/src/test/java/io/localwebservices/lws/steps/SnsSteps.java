@@ -10,7 +10,6 @@ import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sns.model.CreateTopicResponse;
-import software.amazon.awssdk.services.sns.model.ListSubscriptionsByTopicResponse;
 import software.amazon.awssdk.services.sns.model.ListTopicsResponse;
 import software.amazon.awssdk.services.sns.model.SubscribeResponse;
 import software.amazon.awssdk.services.sqs.SqsClient;
@@ -399,7 +398,7 @@ public class SnsSteps {
     // Arrange
     try (SnsClient client = world.session.snsClient()) {
       // Act
-      ListTopicsResponse result = client.listTopics(r -> r);
+      ListTopicsResponse result = client.listTopics();
       // Assert
       String expectedTopic = TEST_TOPIC;
       boolean actualFound =
@@ -422,7 +421,7 @@ public class SnsSteps {
     // Arrange
     try (SnsClient client = world.session.snsClient()) {
       // Act
-      ListTopicsResponse result = client.listTopics(r -> r);
+      ListTopicsResponse result = client.listTopics();
       // Assert
       String expectedTopic = TEST_TOPIC;
       boolean actualFound =

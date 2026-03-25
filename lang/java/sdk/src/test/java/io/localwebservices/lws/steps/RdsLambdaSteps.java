@@ -281,19 +281,6 @@ public class RdsLambdaSteps {
             "invocation_fails_function_deleted: scenario is @internal in lws"));
   }
 
-  @When("the Lambda function is deleted")
-  public void theLambdaFunctionIsDeleted() {
-    // Arrange: (function state set up by Given steps)
-    try (LambdaClient client = world.session.lambdaClient()) {
-      // Act
-      client.deleteFunction(r -> r.functionName(TEST_FUNC));
-      // Assert: store result
-      world.setSuccess(TEST_FUNC);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
   // ── Then: assertions ───────────────────────────────────────────────────────────
 
   @Then("the \"DB\" instance is \"AVAILABLE\" with no Lambda integration configured")

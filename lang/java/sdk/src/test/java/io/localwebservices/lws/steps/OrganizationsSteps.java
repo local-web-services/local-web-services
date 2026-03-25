@@ -57,7 +57,7 @@ public class OrganizationsSteps {
     try (OrganizationsClient client = world.session.organizationsClient()) {
       var resp = client.createOrganization(r -> r.featureSet("ALL"));
       orgId = resp.organization().id();
-      ListRootsResponse rootsResp = client.listRoots(r -> r);
+      ListRootsResponse rootsResp = client.listRoots();
       rootId = rootsResp.roots().get(0).id();
     }
   }
@@ -491,13 +491,13 @@ public class OrganizationsSteps {
             + "; expected_success="
             + expectedSuccess);
     try (OrganizationsClient client = world.session.organizationsClient()) {
-      DescribeOrganizationResponse orgResp = client.describeOrganization(r -> r);
+      DescribeOrganizationResponse orgResp = client.describeOrganization();
       String actualOrgId = orgResp.organization().id();
       // Assert
       assertNotNull(
           actualOrgId,
           "expected organization Id to be set but got null; actual_org_id=" + actualOrgId);
-      ListRootsResponse rootsResp = client.listRoots(r -> r);
+      ListRootsResponse rootsResp = client.listRoots();
       int actualRootsCount = rootsResp.roots().size();
       assertTrue(
           actualRootsCount > 0,
@@ -533,7 +533,7 @@ public class OrganizationsSteps {
               + expectedStatus
               + " actual_status="
               + actualStatus);
-      ListRootsResponse rootsResp = client.listRoots(r -> r);
+      ListRootsResponse rootsResp = client.listRoots();
       String rootId = rootsResp.roots().get(0).id();
       ListAccountsForParentResponse listResp =
           client.listAccountsForParent(r -> r.parentId(rootId));
@@ -624,33 +624,6 @@ public class OrganizationsSteps {
     }
   }
 
-  @Then("the policy is attached to the target")
-  public void thePolicyIsAttachedToTheTarget() {
-    // Arrange: no additional setup required
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    // Act
-    assertTrue(
-        actualSuccess,
-        "expected AttachPolicy to succeed but got: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    try (OrganizationsClient client = world.session.organizationsClient()) {
-      ListTargetsForPolicyResponse listResp =
-          client.listTargetsForPolicy(r -> r.policyId(policyId));
-      List<String> actualTargetIds =
-          listResp.targets().stream().map(PolicyTargetSummary::targetId).toList();
-      // Assert
-      assertTrue(
-          actualTargetIds.contains(targetId),
-          "expected target '"
-              + targetId
-              + "' in policy targets but found: "
-              + actualTargetIds);
-    }
-  }
-
   @Then("the policy is no longer attached to the target")
   public void thePolicyIsNoLongerAttachedToTheTarget() {
     // Arrange: no additional setup required
@@ -714,7 +687,7 @@ public class OrganizationsSteps {
     // Arrange: no additional setup required
     try (OrganizationsClient client = world.session.organizationsClient()) {
       // Act
-      ListRootsResponse rootsResp = client.listRoots(r -> r);
+      ListRootsResponse rootsResp = client.listRoots();
       int actualRootsCount = rootsResp.roots().size();
       // Assert
       assertTrue(

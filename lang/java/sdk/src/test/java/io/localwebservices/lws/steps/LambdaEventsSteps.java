@@ -259,7 +259,7 @@ public class LambdaEventsSteps {
     String expectedBus = TEST_BUS;
     // Act
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse result = client.listEventBuses(r -> r);
+      ListEventBusesResponse result = client.listEventBuses(software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder().build());
       List<EventBus> buses = result.eventBuses();
       boolean actualFound = buses.stream().anyMatch(b -> expectedBus.equals(b.name()));
       // Assert
@@ -278,7 +278,7 @@ public class LambdaEventsSteps {
     String expectedBus = TEST_BUS;
     // Act
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse result = client.listEventBuses(r -> r);
+      ListEventBusesResponse result = client.listEventBuses(software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder().build());
       List<EventBus> buses = result.eventBuses();
       boolean actualFound = buses.stream().anyMatch(b -> expectedBus.equals(b.name()));
       // Assert

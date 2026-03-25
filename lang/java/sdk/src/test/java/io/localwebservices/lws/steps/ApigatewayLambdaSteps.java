@@ -74,7 +74,7 @@ public class ApigatewayLambdaSteps {
   // ── Given: capacity / slot state ──────────────────────────────────────────────
 
   @Given("a request slot is available")
-  public void aRequestSlotIsAvailable() {
+  public void aRequestSlotIsAvailable() throws Exception {
     // Arrange: set apigateway capacity to unlimited so request slots are available
     // Act
     world.session.capacity("apigateway").unlimited().apply();
@@ -144,7 +144,7 @@ public class ApigatewayLambdaSteps {
     // Arrange
     try (ApiGatewayClient client = world.session.apiGatewayClient()) {
       // Act
-      GetRestApisResponse result = client.getRestApis(r -> r);
+      GetRestApisResponse result = client.getRestApis();
       List<RestApi> items = result.items();
       // Assert
       String expectedName = TEST_API_NAME;

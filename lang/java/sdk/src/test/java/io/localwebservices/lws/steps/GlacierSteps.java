@@ -92,12 +92,9 @@ public class GlacierSteps {
     try (GlacierClient client = world.session.glacierClient()) {
       UploadArchiveResponse resp =
           client.uploadArchive(
-              r ->
-                  r.accountId(ACCOUNT_ID)
-                      .vaultName(TEST_VAULT)
-                      .body(
-                          RequestBody.fromBytes(
-                              "test-archive-content-1".getBytes(StandardCharsets.UTF_8))));
+              r -> r.accountId(ACCOUNT_ID).vaultName(TEST_VAULT),
+              RequestBody.fromBytes(
+                  "test-archive-content-1".getBytes(StandardCharsets.UTF_8)));
       // Assert: archive uploaded
       archiveId = resp.archiveId();
     }
@@ -138,12 +135,9 @@ public class GlacierSteps {
     try (GlacierClient client = world.session.glacierClient()) {
       UploadArchiveResponse resp =
           client.uploadArchive(
-              r ->
-                  r.accountId(ACCOUNT_ID)
-                      .vaultName(TEST_VAULT)
-                      .body(
-                          RequestBody.fromBytes(
-                              "test-archive-content-1".getBytes(StandardCharsets.UTF_8))));
+              r -> r.accountId(ACCOUNT_ID).vaultName(TEST_VAULT),
+              RequestBody.fromBytes(
+                  "test-archive-content-1".getBytes(StandardCharsets.UTF_8)));
       // Assert: archive uploaded
       archiveId = resp.archiveId();
     }
@@ -156,12 +150,9 @@ public class GlacierSteps {
     try (GlacierClient client = world.session.glacierClient()) {
       UploadArchiveResponse resp =
           client.uploadArchive(
-              r ->
-                  r.accountId(ACCOUNT_ID)
-                      .vaultName(TEST_VAULT)
-                      .body(
-                          RequestBody.fromBytes(
-                              "test-archive-content-1".getBytes(StandardCharsets.UTF_8))));
+              r -> r.accountId(ACCOUNT_ID).vaultName(TEST_VAULT),
+              RequestBody.fromBytes(
+                  "test-archive-content-1".getBytes(StandardCharsets.UTF_8)));
       // Assert: archive uploaded
       archiveId = resp.archiveId();
     }
@@ -319,10 +310,8 @@ public class GlacierSteps {
               r.accountId(ACCOUNT_ID)
                   .vaultName(TEST_VAULT)
                   .uploadId(activeUploadId)
-                  .range("bytes 0-1023/*")
-                  .body(
-                      RequestBody.fromBytes(
-                          "test-part-content-1".getBytes(StandardCharsets.UTF_8))));
+                  .range("bytes 0-1023/*"),
+          RequestBody.fromBytes("test-part-content-1".getBytes(StandardCharsets.UTF_8)));
       // Assert: part uploaded (no error thrown)
     }
   }
@@ -390,12 +379,9 @@ public class GlacierSteps {
       // Act
       UploadArchiveResponse resp =
           client.uploadArchive(
-              r ->
-                  r.accountId(ACCOUNT_ID)
-                      .vaultName(TEST_VAULT)
-                      .body(
-                          RequestBody.fromBytes(
-                              "test-archive-content-1".getBytes(StandardCharsets.UTF_8))));
+              r -> r.accountId(ACCOUNT_ID).vaultName(TEST_VAULT),
+              RequestBody.fromBytes(
+                  "test-archive-content-1".getBytes(StandardCharsets.UTF_8)));
       // Assert: store result
       archiveId = resp.archiveId();
       world.setSuccess(resp);
@@ -520,10 +506,8 @@ public class GlacierSteps {
                   r.accountId(ACCOUNT_ID)
                       .vaultName(TEST_VAULT)
                       .uploadId(activeUploadId)
-                      .range("bytes 0-1023/*")
-                      .body(
-                          RequestBody.fromBytes(
-                              "test-part-content-1".getBytes(StandardCharsets.UTF_8))));
+                      .range("bytes 0-1023/*"),
+              RequestBody.fromBytes("test-part-content-1".getBytes(StandardCharsets.UTF_8)));
       // Assert: store result
       world.setSuccess(resp);
     } catch (Exception e) {
@@ -725,22 +709,6 @@ public class GlacierSteps {
             + "; expected_success="
             + expectedSuccess);
     assertNotNull(world.lastOutput, "expected GetJobOutputResponse but got null");
-  }
-
-  @Then("the upload is InProgress")
-  public void theUploadIsInProgress() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected initiate_multipart_upload to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    assertNotNull(world.lastOutput, "expected InitiateMultipartUploadResponse but got null");
   }
 
   @Then("the part is recorded for the upload")

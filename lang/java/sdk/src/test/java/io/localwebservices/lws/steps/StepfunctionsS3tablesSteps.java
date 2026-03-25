@@ -60,7 +60,7 @@ public class StepfunctionsS3tablesSteps {
                       .name(TEST_TABLE_NAME)
                       .format(OpenTableFormat.ICEBERG));
       // Assert: creation succeeded (no exception thrown)
-      return result.name() != null ? result.name() : TEST_TABLE_NAME;
+      return result.tableARN() != null ? TEST_TABLE_NAME : TEST_TABLE_NAME;
     }
   }
 

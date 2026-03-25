@@ -213,7 +213,7 @@ public class SsmSteps {
     // Arrange: (no specific state required)
     try (SsmClient client = world.session.ssmClient()) {
       // Act
-      DescribeParametersResponse result = client.describeParameters(r -> r);
+      DescribeParametersResponse result = client.describeParameters();
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -416,7 +416,7 @@ public class SsmSteps {
     // Arrange
     // Act
     try (SsmClient client = world.session.ssmClient()) {
-      DescribeParametersResponse result = client.describeParameters(r -> r);
+      DescribeParametersResponse result = client.describeParameters();
       List<ParameterMetadata> actualParameters = result.parameters();
       boolean actualFound =
           actualParameters.stream().anyMatch(p -> TEST_PARAM.equals(p.name()));
@@ -435,7 +435,7 @@ public class SsmSteps {
     // Arrange
     // Act
     try (SsmClient client = world.session.ssmClient()) {
-      DescribeParametersResponse result = client.describeParameters(r -> r);
+      DescribeParametersResponse result = client.describeParameters();
       List<ParameterMetadata> actualParameters = result.parameters();
       boolean actualFound =
           actualParameters.stream().anyMatch(p -> TEST_PARAM.equals(p.name()));
