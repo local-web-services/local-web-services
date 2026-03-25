@@ -1,6 +1,5 @@
 package io.localwebservices.lws.steps;
 
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import software.amazon.awssdk.core.SdkBytes;
@@ -54,79 +53,6 @@ public class LambdaSnsSteps {
     }
   }
 
-  // ── Given: invocation state ────────────────────────────────────────────────────
-
-  @Given("an invocation is \"IN_PROGRESS\"")
-  public void anInvocationIsInProgress() {
-    // Arrange: create a Lambda function so an invocation can be considered in-progress
-    // Act
-    lambdaSnsCreateFunction();
-    // Assert: function created (no error thrown)
-  }
-
-  @Given("no invocation is \"IN_PROGRESS\"")
-  public void noInvocationIsInProgress() {
-    // No-op: fresh state after reset has no in-progress invocations.
-  }
-
-  @Given("an invocation slot is available")
-  public void anInvocationSlotIsAvailable() {
-    // No-op: always room for invocations in lws.
-  }
-
-  @Given("no invocation slot is available")
-  public void noInvocationSlotIsAvailable() throws Exception {
-    // Arrange: exhaust Lambda invocation capacity
-    // Act
-    world.session.capacity("lambda").exhaust().apply();
-    // Assert: capacity is exhausted
-  }
-
-  // ── When: actions ──────────────────────────────────────────────────────────────
-
-  @When("a Lambda function is deployed")
-  public void aLambdaFunctionIsDeployed() {
-    // Arrange
-    try (LambdaClient client = world.session.lambdaClient()) {
-      // Act
-      client.createFunction(
-          r ->
-              r.functionName(TEST_FUNC)
-                  .runtime(Runtime.PYTHON3_12)
-                  .role(TEST_ROLE_ARN)
-                  .handler("index.handler")
-                  .code(c -> c.zipFile(SdkBytes.fromUtf8String("fake"))));
-      // Assert: store result
-      world.setSuccess(TEST_FUNC);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("the Lambda function is invoked")
-  public void theLambdaFunctionIsInvoked() {
-    // @internal: Cannot trigger Lambda invocation in lws without Docker.
-    world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger Lambda invocation: scenario is @internal"));
-  }
-
-  @When("the Lambda invocation fails")
-  public void theLambdaInvocationFails() {
-    // @internal: Cannot trigger Lambda invocation failure in lws.
-    world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger Lambda invocation failure: scenario is @internal"));
-  }
-
-  @When("the Lambda invocation completes successfully")
-  public void theLambdaInvocationCompletesSuccessfully() {
-    // @internal: Cannot trigger Lambda invocation success in lws.
-    world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger Lambda invocation success: scenario is @internal"));
-  }
-
   @When("the Lambda function publishes a message to the \"SNS\" topic during invocation")
   public void theLambdaFunctionPublishesAMessageToTheSnsTopicDuringInvocation() {
     // @internal: Cannot trigger Lambda SNS publish in lws without Docker.
@@ -140,38 +66,10 @@ public class LambdaSnsSteps {
   // "the function is {string}" is already registered in LambdaSteps and covers
   // "Then the function is \"ACTIVE\"" — not re-registered here.
 
-  // "the topic is {string}" is already registered in CrossServiceSteps and SnsSteps
-  // and covers "Then the topic is \"ACTIVE\"" — not re-registered here.
-
-  @Then("the invocation is \"IN_PROGRESS\"")
-  public void theInvocationIsInProgress() {
-    // @internal: Cannot observe Lambda invocation IN_PROGRESS state in lws.
-    // Scenarios using this step are all tagged @internal and excluded by the tag filter.
-  }
-
-  @Then("the invocation is \"FAILED\"")
-  public void theInvocationIsFailed() {
-    // @internal: Cannot observe Lambda invocation FAILED state in lws.
-    // Scenarios using this step are all tagged @internal and excluded by the tag filter.
-  }
-
-  @Then("the invocation is \"SUCCESS\"")
-  public void theInvocationIsSuccess() {
-    // @internal: Cannot observe Lambda invocation SUCCESS state in lws.
-    // Scenarios using this step are all tagged @internal and excluded by the tag filter.
-  }
-
   @Then("the message is published to the topic")
   public void theMessageIsPublishedToTheTopic() {
     // @internal: Cannot observe Lambda SNS publish result in lws.
     // Scenarios requiring this step are @internal and will not run under the tag filter.
-  }
-
-  // ── Invariant Then steps ────────────────────────────────────────────────────────
-
-  @Then("every \"IN_PROGRESS\" invocation references an \"ACTIVE\" Lambda function")
-  public void everyInProgressInvocationReferencesAnActiveLambdaFunction() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
   }
 
   @Then("publishing requires an \"ACTIVE\" topic to be present")

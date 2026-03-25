@@ -451,13 +451,6 @@ public class SnsSteps {
         "Expected subscription ARN to be set but got empty; actual_arn=" + actualArn);
   }
 
-  @Then("the subscription is \"CONFIRMED\"")
-  public void theSubscriptionIsConfirmedThen() {
-    // Cannot verify CONFIRMED state without the confirmation flow.
-    // No-op: confirm_subscription @minimal scenario is not reachable via public API.
-    Assumptions.abort("Cannot verify CONFIRMED state without confirmation flow");
-  }
-
   @Then("the subscription is deleted")
   public void theSubscriptionIsDeleted() {
     // Arrange

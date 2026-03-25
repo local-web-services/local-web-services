@@ -1,6 +1,5 @@
 package io.localwebservices.lws.steps;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.cucumber.java.en.Given;
@@ -12,9 +11,7 @@ import java.util.List;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.lambda.LambdaClient;
-import software.amazon.awssdk.services.lambda.model.GetFunctionResponse;
 import software.amazon.awssdk.services.lambda.model.Runtime;
-import software.amazon.awssdk.services.lambda.model.State;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.Event;
 import software.amazon.awssdk.services.s3.model.GetBucketNotificationConfigurationResponse;
@@ -128,66 +125,6 @@ public class S3apiLambdaSteps {
     }
   }
 
-  // ── Given: bucket state ───────────────────────────────────────────────────────
-
-  @Given("the bucket does not already exist")
-  public void theBucketDoesNotAlreadyExist() {
-    // No-op: fresh state after reset has no buckets.
-  }
-
-  @Given("the bucket already exists")
-  public void theBucketAlreadyExists() {
-    // Arrange / Act: create the test bucket so it already exists
-    s3CreateBucket(TEST_BUCKET);
-    // Assert: bucket exists (no error thrown)
-  }
-
-  @Given("the bucket exists")
-  public void theBucketExists() {
-    // Arrange / Act: ensure the test bucket exists
-    s3CreateBucket(TEST_BUCKET);
-    // Assert: bucket created
-  }
-
-  @Given("the bucket is {string}")
-  public void theBucketIs(String state) {
-    if ("ACTIVE".equals(state)) {
-      // No-op: buckets are ACTIVE by default after creation.
-      return;
-    }
-    // Arrange: create bucket in non-ACTIVE state via lifecycle dwell
-    s3DeleteBucket(TEST_BUCKET);
-    try {
-      world.session.lifecycle("s3").createDwellMs(5000).apply();
-    } catch (Exception ignored) {
-      // lifecycle API may not be available
-    }
-    s3CreateBucket(TEST_BUCKET);
-  }
-
-  @Given("the bucket is not {string}")
-  public void theBucketIsNot(String state) {
-    if ("ACTIVE".equals(state)) {
-      // Arrange: create bucket in non-ACTIVE state via lifecycle dwell
-      s3DeleteBucket(TEST_BUCKET);
-      try {
-        world.session.lifecycle("s3").createDwellMs(5000).apply();
-      } catch (Exception ignored) {
-        // lifecycle API may not be available
-      }
-      s3CreateBucket(TEST_BUCKET);
-      return;
-    }
-    // For other states, no-op.
-  }
-
-  @Given("the bucket does not exist")
-  public void theBucketDoesNotExist() {
-    // Arrange: ensure bucket is absent
-    s3DeleteBucket(TEST_BUCKET);
-    // Assert: desired state is absence
-  }
-
   // ── Given: notification configuration state ───────────────────────────────────
 
   @Given("the bucket has no notification configured")
@@ -215,59 +152,6 @@ public class S3apiLambdaSteps {
     // Assert: notification configured (no error thrown)
   }
 
-  // ── Given: function state ─────────────────────────────────────────────────────
-
-  @Given("the function does not already exist")
-  public void theFunctionDoesNotAlreadyExist() {
-    // No-op: fresh state after reset has no Lambda functions.
-  }
-
-  @Given("the function already exists")
-  public void theFunctionAlreadyExists() {
-    // Arrange: create the function so it already exists
-    // Act
-    lambdaCreateFunction();
-    // Assert: function created (no error thrown)
-  }
-
-  @Given("the function exists")
-  public void theFunctionExists() {
-    // Arrange: create the function
-    // Act
-    lambdaCreateFunction();
-    // Assert: function created (no error thrown)
-  }
-
-  @Given("the function does not exist")
-  public void theFunctionDoesNotExist() {
-    // Arrange: delete the function if present so it does not exist
-    // Act
-    lambdaDeleteFunction();
-    // Assert: desired state is absence
-  }
-
-  @Given("the function is {string}")
-  public void theFunctionIs(String state) {
-    if ("ACTIVE".equals(state)) {
-      // No-op: lws resolves functions to ACTIVE immediately after creation.
-      return;
-    }
-    // For DELETING, DELETED, PENDING, FAILED: @internal — cannot observe in lws.
-  }
-
-  @Given("the function is not {string}")
-  public void theFunctionIsNot(String state) throws Exception {
-    if ("ACTIVE".equals(state)) {
-      // Arrange: delete function, apply a create dwell, then re-create in non-ACTIVE state
-      lambdaDeleteFunction();
-      // Act: set lifecycle dwell to prevent immediate ACTIVE transition
-      world.session.lifecycle("lambda").createDwellMs(5000).apply();
-      lambdaCreateFunction();
-      return;
-    }
-    // For other states, no-op.
-  }
-
   // ── Given: notification target function state ─────────────────────────────────
 
   @Given("the notification target function is {string}")
@@ -283,86 +167,6 @@ public class S3apiLambdaSteps {
   public void theNotificationTargetFunctionIsNot(String state) {
     // @internal: Cannot place Lambda notification target function in a non-ACTIVE state
     // while it is already configured as a bucket notification target in lws.
-  }
-
-  // ── Given: capacity / slot state ─────────────────────────────────────────────
-
-  @Given("an object slot is available")
-  public void anObjectSlotIsAvailable() throws Exception {
-    // Arrange: set S3 capacity to unlimited
-    // Act
-    world.session.capacity("s3").unlimited().apply();
-    // Assert: capacity set
-  }
-
-  @Given("no object slot is available")
-  public void noObjectSlotIsAvailable() throws Exception {
-    // Arrange: exhaust S3 object capacity
-    // Act
-    world.session.capacity("s3").exhaust().apply();
-    // Assert: capacity exhausted
-  }
-
-  @Given("an invocation slot is available")
-  public void anInvocationSlotIsAvailable() throws Exception {
-    // Arrange: set Lambda capacity to unlimited
-    // Act
-    world.session.capacity("lambda").unlimited().apply();
-    // Assert: capacity set
-  }
-
-  @Given("no invocation slot is available")
-  public void noInvocationSlotIsAvailable() {
-    // @internal: Cannot exhaust Lambda invocation slot limit via public API in lws.
-  }
-
-  // ── Given: invocation in-progress state ──────────────────────────────────────
-
-  @Given("an invocation is \"IN_PROGRESS\"")
-  public void anInvocationIsInProgress() {
-    // Arrange: create the function so an invocation could be in progress.
-    // Act: the lws fake does not expose invocation state; creating the function
-    // is the closest reachable precondition.
-    lambdaCreateFunction();
-    // Assert: function created
-  }
-
-  @Given("no invocation is \"IN_PROGRESS\"")
-  public void noInvocationIsInProgress() {
-    // No-op: fresh state has no invocations.
-  }
-
-  // ── When: actions ─────────────────────────────────────────────────────────────
-
-  @When("an S3 bucket is created")
-  public void anS3BucketIsCreated() {
-    // Arrange
-    try (S3Client client = world.session.s3Client()) {
-      // Act
-      world.setSuccess(client.createBucket(r -> r.bucket(TEST_BUCKET)));
-      // Assert: captured in world
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("a Lambda function is deployed")
-  public void aLambdaFunctionIsDeployed() {
-    // Arrange
-    try (LambdaClient client = world.session.lambdaClient()) {
-      // Act
-      world.setSuccess(
-          client.createFunction(
-              r ->
-                  r.functionName(TEST_FUNC)
-                      .runtime(Runtime.PYTHON3_12)
-                      .role(TEST_ROLE_ARN)
-                      .handler("index.handler")
-                      .code(c -> c.zipFile(SdkBytes.fromUtf8String("fake")))));
-      // Assert: captured in world
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
   }
 
   @When("an S3 event notification is configured to invoke a Lambda function on object \"PUT\"")
@@ -407,22 +211,6 @@ public class S3apiLambdaSteps {
     }
   }
 
-  @When("the Lambda invocation completes successfully")
-  public void theLambdaInvocationCompletesSuccessfully() {
-    // @internal: Cannot trigger Lambda invocation success via public API in lws.
-    world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger Lambda invocation success: scenario is @internal"));
-  }
-
-  @When("the Lambda invocation fails")
-  public void theLambdaInvocationFails() {
-    // @internal: Cannot trigger Lambda invocation failure via public API in lws.
-    world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger Lambda invocation failure: scenario is @internal"));
-  }
-
   // ── Then: assertions ──────────────────────────────────────────────────────────
 
   @Then("the bucket is \"ACTIVE\" with no event notification configured")
@@ -437,29 +225,6 @@ public class S3apiLambdaSteps {
           resp.buckets().stream().anyMatch(b -> expectedBucketName.equals(b.name()));
       assertTrue(
           actualExists, "Expected bucket '" + expectedBucketName + "' to be ACTIVE but not found");
-    }
-  }
-
-  @Then("the function is \"ACTIVE\"")
-  public void theFunctionIsActive() {
-    // Arrange
-    try (LambdaClient client = world.session.lambdaClient()) {
-      // Act
-      GetFunctionResponse resp = client.getFunction(r -> r.functionName(TEST_FUNC));
-      State actualState = resp.configuration().state();
-      // Assert
-      String expectedStateName = "Active";
-      assertEquals(
-          expectedStateName,
-          actualState.toString(),
-          "expected function state '"
-              + expectedStateName
-              + "' but got '"
-              + actualState
-              + "'; expected_state="
-              + expectedStateName
-              + " actual_state="
-              + actualState);
     }
   }
 
@@ -504,27 +269,8 @@ public class S3apiLambdaSteps {
     }
   }
 
-  // ── Then: invariant assertions (no-op) ───────────────────────────────────────
-
-  @Then("every \"IN_PROGRESS\" invocation references an \"ACTIVE\" Lambda function")
-  public void everyInProgressInvocationReferencesAnActiveLambdaFunction() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
-
   @Then("every \"IN_PROGRESS\" invocation was triggered by an object in an \"ACTIVE\" bucket")
   public void everyInProgressInvocationWasTriggeredByAnObjectInAnActiveBucket() {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
-
-  // ── Then: @internal scenario assertions (no-op) ───────────────────────────────
-
-  @Then("the invocation is \"SUCCESS\"")
-  public void theInvocationIsSuccess() {
-    // @internal: Cannot observe Lambda invocation SUCCESS state in lws.
-  }
-
-  @Then("the invocation is \"FAILED\"")
-  public void theInvocationIsFailed() {
-    // @internal: Cannot observe Lambda invocation FAILED state in lws.
   }
 }

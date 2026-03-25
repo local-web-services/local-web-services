@@ -206,32 +206,6 @@ public class LambdaLambdaSteps {
     // Assert: callee exists
   }
 
-  // ── Given: invocation state ────────────────────────────────────────────────────
-
-  @Given("an invocation is \"IN_PROGRESS\"")
-  public void anInvocationIsInProgress() {
-    // Arrange: create the caller function to represent an in-progress invocation context
-    // Act
-    lambdaCreateCaller();
-    // Assert: caller created
-  }
-
-  @Given("no invocation is \"IN_PROGRESS\"")
-  public void noInvocationIsInProgress() {
-    // No-op: fresh state has no invocations.
-  }
-
-  @Given("an invocation slot is available")
-  public void anInvocationSlotIsAvailable() {
-    // No-op: always room for invocations in lws.
-  }
-
-  @Given("no invocation slot is available")
-  public void noInvocationSlotIsAvailable() {
-    // @internal: Cannot exhaust invocation slot limit in lws via public APIs.
-    // Only reached by @internal/@capacity scenarios excluded by the tag filter.
-  }
-
   // ── When: actions ─────────────────────────────────────────────────────────────
 
   @When("a caller Lambda function is deployed")
@@ -381,24 +355,6 @@ public class LambdaLambdaSteps {
             + expectedDeleted
             + " actual_deleted="
             + actualDeleted);
-  }
-
-  @Then("the invocation is \"IN_PROGRESS\"")
-  public void theInvocationIsInProgress() {
-    // @internal: Cannot observe Lambda invocation state in lws.
-    // Only reached by @internal scenarios excluded by the tag filter.
-  }
-
-  @Then("the invocation is \"FAILED\" with a ResourceNotFoundException")
-  public void theInvocationIsFailedWithResourceNotFoundException() {
-    // @internal: Cannot observe Lambda invocation failure in lws.
-    // Only reached by @internal scenarios excluded by the tag filter.
-  }
-
-  @Then("the invocation is \"SUCCESS\"")
-  public void theInvocationIsSuccess() {
-    // @internal: Cannot observe Lambda invocation success in lws.
-    // Only reached by @internal scenarios excluded by the tag filter.
   }
 
   // ── Invariant catch-all steps ─────────────────────────────────────────────────

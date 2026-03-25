@@ -673,12 +673,6 @@ public class LambdaSteps {
             + actualSuccess);
   }
 
-  @Then("the function is {string}")
-  public void theFunctionIsState(String expectedState) {
-    // @internal: Cannot observe Lambda DELETED state in lws.
-    // This step only appears in @internal-tagged scenarios excluded by the tag filter.
-  }
-
   @Then("the function's resource policy is cleared")
   public void theFunctionSResourcePolicyIsCleared() {
     // Arrange: no additional setup required

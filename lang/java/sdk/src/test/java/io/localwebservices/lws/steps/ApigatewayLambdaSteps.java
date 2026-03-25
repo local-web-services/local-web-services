@@ -71,21 +71,6 @@ public class ApigatewayLambdaSteps {
     // @internal: Requires a Lambda integration and lifecycle manipulation.
   }
 
-  // ── Given: capacity / slot state ──────────────────────────────────────────────
-
-  @Given("a request slot is available")
-  public void aRequestSlotIsAvailable() throws Exception {
-    // Arrange: set apigateway capacity to unlimited so request slots are available
-    // Act
-    world.session.capacity("apigateway").unlimited().apply();
-    // Assert: capacity applied
-  }
-
-  @Given("no request slot is available")
-  public void noRequestSlotIsAvailable() {
-    // @internal: Cannot send requests through API Gateway Lambda integration in lws.
-  }
-
   // ── When: actions ──────────────────────────────────────────────────────────────
 
   @When("a \"REST\" \"API\" is created")

@@ -86,22 +86,6 @@ public class StepfunctionsS3apiSteps {
     }
   }
 
-  // -------------------------------------------------------------------------
-  // Given — bucket state
-  // -------------------------------------------------------------------------
-
-  @Given("the bucket exists")
-  public void theBucketExists() {
-    // Arrange
-    s3CreateBucket(TEST_S3_BUCKET);
-    // Assert — bucket now exists; verified by subsequent steps
-  }
-
-  @Given("the bucket does not exist")
-  public void theBucketDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh session has no buckets
-  }
-
   @Given("the target bucket is {string}")
   public void theTargetBucketIs(String state) {
     // Arrange

@@ -66,21 +66,6 @@ public class ElasticacheSnsSteps {
     }
   }
 
-  // ── Given: cluster state setup ────────────────────────────────────────────────
-
-  @Given("the cluster does not already exist")
-  public void theClusterDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no clusters.
-  }
-
-  @Given("the cluster already exists")
-  public void theClusterAlreadyExists() {
-    // Arrange
-    // Act
-    elasticacheSnsCreateCluster();
-    // Assert: cluster created (no error thrown)
-  }
-
   @Given("the cluster exists and is \"AVAILABLE\"")
   public void theClusterExistsAndIsAvailable() {
     // Arrange
@@ -130,29 +115,6 @@ public class ElasticacheSnsSteps {
     // No-op — this given is only used in @internal scenarios.
   }
 
-  // ── Given: topic state setup ──────────────────────────────────────────────────
-
-  @Given("the topic does not already exist")
-  public void theTopicDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no topics.
-  }
-
-  @Given("the topic already exists")
-  public void theTopicAlreadyExists() {
-    // Arrange
-    // Act
-    elasticacheSnsCreateTopic();
-    // Assert: topic created (no error thrown)
-  }
-
-  @Given("the topic exists")
-  public void theTopicExists() {
-    // Arrange
-    // Act
-    elasticacheSnsCreateTopic();
-    // Assert: topic created (no error thrown)
-  }
-
   @Given("the topic exists and is \"ACTIVE\"")
   public void theTopicExistsAndIsActive() {
     // Arrange
@@ -181,29 +143,9 @@ public class ElasticacheSnsSteps {
     // @internal: topic lifecycle transitions require background processing.
   }
 
-  @Given("the topic does not exist")
-  public void theTopicDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no topics.
-  }
-
   @Given("the topic does not exist or is not \"ACTIVE\"")
   public void theTopicDoesNotExistOrIsNotActive() {
     // Arrange / Act / Assert — no-op: fresh state after reset has no topics.
-  }
-
-  // ── Given: capacity steps ─────────────────────────────────────────────────────
-
-  @Given("a message slot is available")
-  public void aMessageSlotIsAvailable() {
-    // Arrange / Act / Assert — no-op: message slots are available by default.
-  }
-
-  @Given("no message slot is available")
-  public void noMessageSlotIsAvailable() throws Exception {
-    // Arrange: exhaust sns message capacity
-    // Act
-    world.session.capacity("sns").exhaust().apply();
-    // Assert: capacity exhausted
   }
 
   // ── When: actions ─────────────────────────────────────────────────────────────
@@ -216,20 +158,6 @@ public class ElasticacheSnsSteps {
       var result = client.createCacheCluster(r -> r.cacheClusterId(TEST_CLUSTER).engine("redis"));
       // Assert: store result
       world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("an \"SNS\" topic is created")
-  public void anSnsTopicIsCreated() {
-    // Arrange: (topic may or may not exist — set up by Given steps)
-    try (SnsClient client = world.session.snsClient()) {
-      // Act
-      CreateTopicResponse resp = client.createTopic(r -> r.name(TEST_TOPIC));
-      // Assert: store result
-      topicArn = resp.topicArn();
-      world.setSuccess(resp);
     } catch (Exception e) {
       world.setFailure(e);
     }
@@ -283,13 +211,6 @@ public class ElasticacheSnsSteps {
             "InvalidParameterValueException: cluster event notification failure requires internal processing"));
   }
 
-  @When("the cluster modification completes")
-  public void theClusterModificationCompletes() {
-    // @internal: no public API to advance cluster modification — no-op.
-    world.setFailure(
-        new UnsupportedOperationException("cluster_modification_complete: scenario is @internal"));
-  }
-
   // ── Then: assertions ──────────────────────────────────────────────────────────
 
   @Then("the cluster is \"AVAILABLE\" with no \"SNS\" notification configured")
@@ -306,22 +227,6 @@ public class ElasticacheSnsSteps {
             + "; expected_success="
             + expectedSuccess);
     assertNotNull(world.lastOutput, "expected CreateCacheClusterResponse but got null");
-  }
-
-  @Then("the topic is \"ACTIVE\"")
-  public void theTopicIsActiveAssertion() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected create_topic to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    assertNotNull(world.lastOutput, "expected CreateTopicResponse but got null");
   }
 
   @Then("the topic is \"DELETED\" and ElastiCache event notifications will fail")
@@ -364,27 +269,6 @@ public class ElasticacheSnsSteps {
   public void theClusterIsModifyingButNoNotificationIsPublished() {
     // @internal: cluster event notification failure requires background processing.
     // No assertion performed.
-  }
-
-  @Then("the cluster is \"AVAILABLE\" again")
-  public void theClusterIsAvailableAgain() {
-    // @internal: cluster modification completion not observable via public API.
-    // No assertion performed.
-  }
-
-  @Then("the operation is rejected")
-  public void theOperationIsRejected() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedRejected = true;
-    boolean actualRejected = !world.lastSuccess;
-    assertTrue(
-        actualRejected,
-        "expected operation to be rejected but it succeeded; expected_rejected="
-            + expectedRejected
-            + " actual_rejected="
-            + actualRejected);
   }
 
   // ── Safety invariant Then steps ───────────────────────────────────────────────

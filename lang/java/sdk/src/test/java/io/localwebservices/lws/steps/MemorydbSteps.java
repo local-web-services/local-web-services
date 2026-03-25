@@ -24,7 +24,6 @@ import software.amazon.awssdk.services.memorydb.model.DescribeClustersResponse;
 import software.amazon.awssdk.services.memorydb.model.DescribeSnapshotsResponse;
 import software.amazon.awssdk.services.memorydb.model.DescribeUsersResponse;
 import software.amazon.awssdk.services.memorydb.model.InputAuthenticationType;
-import software.amazon.awssdk.services.memorydb.model.ListTagsResponse;
 import software.amazon.awssdk.services.memorydb.model.Snapshot;
 import software.amazon.awssdk.services.memorydb.model.Tag;
 import software.amazon.awssdk.services.memorydb.model.UpdateAclResponse;
@@ -56,47 +55,6 @@ public class MemorydbSteps {
     this.world = world;
   }
 
-  // ── Given: cluster state setup ────────────────────────────────────────────────
-
-  @Given("the cluster does not already exist")
-  public void theClusterDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no clusters.
-  }
-
-  @Given("the cluster already exists")
-  public void theClusterAlreadyExists() {
-    // Arrange
-    // Act
-    createACL();
-    createCluster();
-    // Assert: cluster created (no error thrown)
-  }
-
-  @Given("the cluster does not exist")
-  public void theClusterDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no clusters.
-  }
-
-  @Given("the cluster exists")
-  public void theClusterExists() {
-    // Arrange
-    // Act
-    createACL();
-    createCluster();
-    // Assert: cluster created (no error thrown)
-  }
-
-  @Given("the cluster is {string}")
-  public void theClusterIs(String state) {
-    // Arrange / Act / Assert — no-op: clusters are AVAILABLE after creation in lws,
-    // or @internal: non-AVAILABLE/transient states cannot be forced via public API.
-  }
-
-  @Given("the cluster is not {string}")
-  public void theClusterIsNot(String state) {
-    // Arrange / Act / Assert — no-op: freshly created cluster is not in the named state.
-  }
-
   @Given("multi-{string} is enabled for the cluster")
   public void multiAzIsEnabledForTheCluster(String az) {
     // Arrange / Act / Assert — no-op: multi-AZ state managed internally.
@@ -105,45 +63,6 @@ public class MemorydbSteps {
   @Given("multi-{string} is not enabled for the cluster")
   public void multiAzIsNotEnabledForTheCluster(String az) {
     // Arrange / Act / Assert — no-op: multi-AZ not enabled by default in lws.
-  }
-
-  // ── Given: user state setup ───────────────────────────────────────────────────
-
-  @Given("the user does not already exist")
-  public void theUserDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no users.
-  }
-
-  @Given("the user already exists")
-  public void theUserAlreadyExists() {
-    // Arrange
-    // Act
-    createUser();
-    // Assert: user created (no error thrown)
-  }
-
-  @Given("the user does not exist")
-  public void theUserDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no users.
-  }
-
-  @Given("the user exists")
-  public void theUserExists() {
-    // Arrange
-    // Act
-    createUser();
-    // Assert: user created (no error thrown)
-  }
-
-  @Given("the user is {string}")
-  public void theUserIs(String state) {
-    // Arrange / Act / Assert — no-op: users are ACTIVE after creation in lws,
-    // or @internal: non-ACTIVE/transient states cannot be forced via public API.
-  }
-
-  @Given("the user is not {string}")
-  public void theUserIsNot(String state) {
-    // Arrange / Act / Assert — no-op: freshly created user is not in the named state.
   }
 
   @Given("the user is not already a member of the {string}")
@@ -176,83 +95,6 @@ public class MemorydbSteps {
     // Assert: user added to ACL (no error thrown)
   }
 
-  // ── Given: ACL state setup ────────────────────────────────────────────────────
-
-  @Given("the {string} does not already exist")
-  public void theAclDoesNotAlreadyExist(String acl) {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no ACLs.
-  }
-
-  @Given("the {string} already exists")
-  public void theAclAlreadyExists(String acl) {
-    // Arrange
-    // Act
-    createACL();
-    // Assert: ACL created (no error thrown)
-  }
-
-  @Given("the {string} does not exist")
-  public void theAclDoesNotExist(String acl) {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no ACLs.
-  }
-
-  @Given("the {string} exists")
-  public void theAclExists(String acl) {
-    // Arrange
-    // Act
-    createACL();
-    // Assert: ACL created (no error thrown)
-  }
-
-  @Given("the {string} is {string}")
-  public void theAclIs(String acl, String state) {
-    // Arrange / Act / Assert — no-op: ACLs are ACTIVE after creation in lws,
-    // or @internal: non-ACTIVE/transient states cannot be forced via public API.
-  }
-
-  @Given("the {string} is not {string}")
-  public void theAclIsNot(String acl, String state) {
-    // Arrange / Act / Assert — no-op: freshly created ACL is not in the named state.
-  }
-
-  // ── Given: snapshot state setup ───────────────────────────────────────────────
-
-  @Given("the snapshot does not exist")
-  public void theSnapshotDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no snapshots.
-  }
-
-  @Given("the snapshot exists")
-  public void theSnapshotExists() {
-    // Arrange
-    // Act
-    createACL();
-    createCluster();
-    createSnapshot();
-    // Assert: snapshot created (no error thrown)
-  }
-
-  @Given("the snapshot is {string}")
-  public void theSnapshotIs(String state) {
-    // Arrange / Act / Assert — no-op: snapshots are AVAILABLE after creation in lws,
-    // or @internal: non-AVAILABLE/transient states cannot be forced via public API.
-  }
-
-  @Given("the snapshot is not {string}")
-  public void theSnapshotIsNot(String state) {
-    // Arrange / Act / Assert — no-op: freshly created snapshot is not in the named state.
-  }
-
-  @Given("the snapshot slot is available")
-  public void theSnapshotSlotIsAvailable() {
-    // Arrange / Act / Assert — no-op: fresh state has snapshot slots available.
-  }
-
-  @Given("the snapshot slot is not available")
-  public void theSnapshotSlotIsNotAvailable() {
-    // @internal: exhausting snapshot slots requires internal state control.
-  }
-
   @Given("the snapshot belongs to this cluster")
   public void theSnapshotBelongsToThisCluster() {
     // Arrange / Act / Assert — no-op: snapshot was created from the test cluster.
@@ -261,16 +103,6 @@ public class MemorydbSteps {
   @Given("the snapshot does not belong to this cluster")
   public void theSnapshotDoesNotBelongToThisCluster() {
     // @internal: cross-cluster snapshot state cannot be set via public API.
-  }
-
-  @Given("the target cluster slot is available")
-  public void theTargetClusterSlotIsAvailable() {
-    // Arrange / Act / Assert — no-op: fresh state has cluster slots available.
-  }
-
-  @Given("the target cluster slot is not available")
-  public void theTargetClusterSlotIsNotAvailable() {
-    // @internal: exhausting cluster slots requires internal state control.
   }
 
   // ── Given: tag/resource state setup ──────────────────────────────────────────
@@ -303,11 +135,6 @@ public class MemorydbSteps {
 
   @Given("cid in cluster_status")
   public void cidInClusterStatus() {
-    // @internal: FizzBee sequence precondition; no public API equivalent.
-  }
-
-  @Given("cid not in cluster_status")
-  public void cidNotInClusterStatus() {
     // @internal: FizzBee sequence precondition; no public API equivalent.
   }
 
@@ -536,26 +363,6 @@ public class MemorydbSteps {
     }
   }
 
-  @When("a cluster is restored from a snapshot")
-  public void aClusterIsRestoredFromASnapshot() {
-    // Arrange: (snapshot state set up by Given steps)
-    try (MemoryDbClient client = world.session.memoryDbClient()) {
-      // Act
-      CreateClusterResponse result =
-          client.createCluster(
-              r ->
-                  r.clusterName(CLUSTER_NAME + "-restored")
-                      .nodeType("db.r6g.large")
-                      .aclName(ACL_NAME)
-                      .snapshotName(SNAPSHOT_NAME)
-                      .tags(Tag.builder().key(TAG_KEY).value(TAG_VALUE).build()));
-      // Assert: store result
-      world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
   @When("a MemoryDB cluster configuration is updated")
   public void aMemoryDbClusterConfigurationIsUpdated() {
     // Arrange: (cluster state set up by Given steps)
@@ -718,50 +525,6 @@ public class MemorydbSteps {
     }
   }
 
-  @Then("the cluster is \"DELETED\" and its tags are removed")
-  public void theClusterIsDeletedAndItsTagsAreRemoved() {
-    // Arrange
-    // Act
-    try (MemoryDbClient client = world.session.memoryDbClient()) {
-      DescribeClustersResponse result = client.describeClusters(r -> r.clusterName(CLUSTER_NAME));
-      List<Cluster> clusters = result.clusters();
-      // Assert
-      for (Cluster c : clusters) {
-        if (CLUSTER_NAME.equals(c.name())) {
-          String actualStatus = c.status();
-          assertTrue(
-              "deleting".equals(actualStatus) || "deleted".equals(actualStatus),
-              "expected cluster '"
-                  + CLUSTER_NAME
-                  + "' to be deleted but status is '"
-                  + actualStatus
-                  + "'; expected_deleted="
-                  + CLUSTER_NAME
-                  + " actual_status="
-                  + actualStatus);
-        }
-      }
-    } catch (Exception ignored) {
-      // Cluster not found — treat as deleted
-    }
-  }
-
-  @Then("the cluster returns to {string} state")
-  public void theClusterReturnsToState(String state) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected operation to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    assertNotNull(world.lastOutput, "expected output but got null");
-  }
-
   @Then("the cluster remains {string} after the shard failover")
   public void theClusterRemainsAfterTheShardFailover(String state) {
     // No-op invariant: shard failover is internal; trivially satisfied in lws context.
@@ -819,59 +582,6 @@ public class MemorydbSteps {
               + " actual_acl="
               + actualACLName);
     }
-  }
-
-  // ── User assertion steps ───────────────────────────────────────────────────────
-
-  @Then("the user is in {string} state")
-  public void theUserIsInState(String expectedStatus) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected user operation to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    try (MemoryDbClient client = world.session.memoryDbClient()) {
-      DescribeUsersResponse result = client.describeUsers(r -> r.userName(USER_NAME));
-      List<User> users = result.users();
-      assertFalse(
-          users.isEmpty(),
-          "expected user '" + USER_NAME + "' to exist but not found; expected_user=" + USER_NAME);
-      String actualStatus = users.get(0).status();
-      String expectedStatusLower = expectedStatus.toLowerCase();
-      org.junit.jupiter.api.Assertions.assertEquals(
-          expectedStatusLower,
-          actualStatus,
-          "expected user status '"
-              + expectedStatusLower
-              + "' but got '"
-              + actualStatus
-              + "'; expected_status="
-              + expectedStatusLower
-              + " actual_status="
-              + actualStatus);
-    }
-  }
-
-  @Then("the user is {string}")
-  public void theUserIsState(String state) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected operation to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    assertNotNull(world.lastOutput, "expected output but got null");
   }
 
   @Then("the user is \"DELETED\"")
@@ -1021,22 +731,6 @@ public class MemorydbSteps {
               + " actual_status="
               + actualStatus);
     }
-  }
-
-  @Then("the {string} is {string}")
-  public void theAclIsState(String acl, String state) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected operation to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    assertNotNull(world.lastOutput, "expected output but got null");
   }
 
   @Then("the {string} is \"DELETED\"")
@@ -1209,35 +903,6 @@ public class MemorydbSteps {
     }
   }
 
-  // ── Tag assertion steps ───────────────────────────────────────────────────────
-
-  @Then("the resource remains tagged")
-  public void theResourceRemainsTagged() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected tag_resource to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    try (MemoryDbClient client = world.session.memoryDbClient()) {
-      ListTagsResponse result = client.listTags(r -> r.resourceArn(CLUSTER_ARN));
-      List<Tag> tagList = result.tagList();
-      String expectedTagKey = TAG_KEY;
-      boolean found = tagList.stream().anyMatch(t -> expectedTagKey.equals(t.key()));
-      assertTrue(
-          found,
-          "expected tag '"
-              + expectedTagKey
-              + "' to exist on resource but not found; expected_tag_key="
-              + expectedTagKey);
-    }
-  }
-
   @Then("the resource tag state is unchanged (no-op model)")
   public void theResourceTagStateIsUnchangedNoOpModel() {
     // Arrange: no additional setup required
@@ -1253,30 +918,8 @@ public class MemorydbSteps {
             + expectedSuccess);
   }
 
-  // ── Invariant catch-all steps ─────────────────────────────────────────────────
-
-  @Then("the operation is rejected")
-  public void theOperationIsRejected() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedRejected = true;
-    boolean actualRejected = !world.lastSuccess;
-    assertTrue(
-        actualRejected,
-        "expected operation to be rejected but it succeeded; expected_rejected="
-            + expectedRejected
-            + " actual_rejected="
-            + actualRejected);
-  }
-
   @Then("every active cluster has write durability enabled")
   public void everyActiveClusterHasWriteDurabilityEnabled() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
-
-  @Then("every snapshotting cluster has a corresponding in-progress snapshot")
-  public void everySnapshottingClusterHasACorrespondingInProgressSnapshot() {
     // No-op invariant: trivially satisfied in an isolated test context.
   }
 

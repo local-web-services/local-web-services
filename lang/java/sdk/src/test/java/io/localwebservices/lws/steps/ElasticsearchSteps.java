@@ -411,21 +411,6 @@ public class ElasticsearchSteps {
     }
   }
 
-  @Then("the operation is rejected")
-  public void theOperationIsRejected() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedRejected = true;
-    boolean actualRejected = !world.lastSuccess;
-    assertTrue(
-        actualRejected,
-        "expected the operation to be rejected but it succeeded; expected_rejected="
-            + expectedRejected
-            + " actual_rejected="
-            + actualRejected);
-  }
-
   @Then("every active index belongs to an existing non-deleted domain")
   public void everyActiveIndexBelongsToAnExistingNonDeletedDomain() {
     // No-op invariant: trivially satisfied in an isolated test context.

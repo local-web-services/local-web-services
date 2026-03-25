@@ -138,36 +138,6 @@ public class StepfunctionsSsmSteps {
     }
   }
 
-  // -------------------------------------------------------------------------
-  // Parameter Given steps
-  // -------------------------------------------------------------------------
-
-  @Given("the parameter does not already exist")
-  public void theParameterDoesNotAlreadyExist() {
-    // Arrange — ensure parameter does not exist (delete if present from previous test)
-    ssmDeleteParameter(TEST_SSM_PARAM);
-    // Assert — parameter is gone; verified by subsequent steps
-  }
-
-  @Given("the parameter already exists")
-  public void theParameterAlreadyExists() {
-    // Arrange
-    ssmCreateParameter(TEST_SSM_PARAM, TEST_SSM_PARAM_VALUE);
-    // Assert — parameter now exists; verified by subsequent steps
-  }
-
-  @Given("the parameter exists")
-  public void theParameterExists() {
-    // Arrange
-    ssmCreateParameter(TEST_SSM_PARAM, TEST_SSM_PARAM_VALUE);
-    // Assert — parameter now exists; verified by subsequent steps
-  }
-
-  @Given("the parameter does not exist")
-  public void theParameterDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh session has no SSM parameters
-  }
-
   @Given("the parameter is already {string}")
   public void theParameterIsAlready(String state) {
     // Arrange — create then delete the parameter to reach DELETED state

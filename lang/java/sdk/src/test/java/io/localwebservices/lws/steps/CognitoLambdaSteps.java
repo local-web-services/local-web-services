@@ -121,22 +121,6 @@ public class CognitoLambdaSteps {
     // Assert: capacity exhausted
   }
 
-  // ── When: actions ─────────────────────────────────────────────────────────────
-
-  @When("a Cognito User Pool is created")
-  public void aCognitoUserPoolIsCreated() {
-    // Arrange
-    try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
-      // Act
-      var result = client.createUserPool(r -> r.poolName(TEST_POOL_NAME));
-      // Assert: store result
-      world.cognitoPoolId = result.userPool().id();
-      world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
   @When("a Lambda pre-signup trigger is configured on the Cognito User Pool")
   public void aLambdaPreSignupTriggerIsConfiguredOnTheCognitoUserPool() {
     // @internal: Cannot configure Lambda triggers for Cognito in lws.

@@ -1,16 +1,12 @@
 package io.localwebservices.lws.steps;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import java.util.List;
 import software.amazon.awssdk.services.docdb.DocDbClient;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
-import software.amazon.awssdk.services.eventbridge.model.EventBus;
-import software.amazon.awssdk.services.eventbridge.model.ListEventBusesResponse;
 
 /**
  * Step definitions for the docdb_events cross-service informal specification feature files.
@@ -33,41 +29,6 @@ public class DocdbEventsSteps {
     this.world = world;
   }
 
-  // ── Given: event bus state setup ───────────────────────────────────────────
-
-  @Given("the bus does not already exist")
-  public void theBusDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no event buses.
-  }
-
-  @Given("the bus already exists")
-  public void theBusAlreadyExists() {
-    // Arrange
-    // Act
-    docdbEventsCreateBus();
-    // Assert: bus created (no error thrown)
-  }
-
-  @Given("the bus exists")
-  public void theBusExists() {
-    // Arrange
-    // Act
-    docdbEventsCreateBus();
-    // Assert: bus exists (no error thrown)
-  }
-
-  @Given("the bus does not exist")
-  public void theBusDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no event buses.
-  }
-
-  @Given("the bus is \"ACTIVE\"")
-  public void theBusIsActive() {
-    // Arrange: ensure the bus exists (buses are ACTIVE immediately after creation).
-    docdbEventsCreateBus();
-    // Assert: bus is ACTIVE (no error thrown)
-  }
-
   @Given("the bus is \"DELETED\"")
   public void theBusIsDeleted() {
     // @internal: Cannot place bus into DELETED state without deleting it; after deletion
@@ -86,18 +47,6 @@ public class DocdbEventsSteps {
     // @internal: Cannot arrange bus in already-deleted state via public API.
   }
 
-  // ── Given: @internal state steps ───────────────────────────────────────────
-
-  @Given("an event slot is available")
-  public void anEventSlotIsAvailable() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no events.
-  }
-
-  @Given("no event slot is available")
-  public void noEventSlotIsAvailable() {
-    // @internal: Cannot exhaust event slots via public API.
-  }
-
   // "the cluster is not ..." steps are handled by the {string} Given in DocdbSteps;
   // specific literal variants for "AVAILABLE" and "MODIFYING" are NOT re-registered.
 
@@ -113,32 +62,6 @@ public class DocdbEventsSteps {
       // Act
       var result =
           client.createDBCluster(r -> r.dbClusterIdentifier(TEST_CLUSTER_ID).engine(TEST_ENGINE));
-      // Assert: store result
-      world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("an EventBridge event bus is created")
-  public void anEventBridgeEventBusIsCreated() {
-    // Arrange: (state set up by Given steps)
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      // Act
-      var result = client.createEventBus(r -> r.name(TEST_BUS_NAME));
-      // Assert: store result
-      world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("the EventBridge event bus is deleted")
-  public void theEventBridgeEventBusIsDeleted() {
-    // Arrange: (state set up by Given steps)
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      // Act
-      var result = client.deleteEventBus(r -> r.name(TEST_BUS_NAME));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -174,32 +97,6 @@ public class DocdbEventsSteps {
   }
 
   // ── Then: assertions ───────────────────────────────────────────────────────
-
-  // "the cluster is \"AVAILABLE\"" is handled by DocdbSteps.@Then("the cluster is {string}") no-op.
-  // It is intentionally absent here to avoid ambiguous step definition errors.
-
-  @Then("the bus is \"ACTIVE\"")
-  public void theBusIsActiveAssertion() {
-    // Arrange: no additional setup required
-    // Act: verify bus exists in the list
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse result =
-          client.listEventBuses(
-              software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder()
-                  .build());
-      List<EventBus> buses = result.eventBuses();
-      assertNotNull(buses, "expected EventBuses list but got null");
-      boolean actualFound = buses.stream().anyMatch(b -> TEST_BUS_NAME.equals(b.name()));
-      // Assert
-      String expectedBus = TEST_BUS_NAME;
-      assertTrue(
-          actualFound,
-          "expected event bus '"
-              + expectedBus
-              + "' to be ACTIVE but not found; expected_bus="
-              + expectedBus);
-    }
-  }
 
   @Then("the bus is \"DELETED\" and DocumentDB event delivery will fail")
   public void theBusIsDeletedAndDocumentDbEventDeliveryWillFail() {

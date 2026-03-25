@@ -1,15 +1,11 @@
 package io.localwebservices.lws.steps;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import java.util.List;
 import software.amazon.awssdk.services.elasticache.ElastiCacheClient;
-import software.amazon.awssdk.services.elasticache.model.CacheCluster;
-import software.amazon.awssdk.services.elasticache.model.DescribeCacheClustersResponse;
 
 /**
  * Step definitions for the Elasticache informal specification feature files.
@@ -72,34 +68,6 @@ public class ElasticacheSteps {
         throw e;
       }
     }
-  }
-
-  // ── Given: cluster state ───────────────────────────────────────────────────────
-
-  @Given("the cluster does not already exist")
-  public void theClusterDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no clusters.
-  }
-
-  @Given("the cluster already exists")
-  public void theClusterAlreadyExists() {
-    // Arrange
-    // Act
-    elasticacheCreateCluster();
-    // Assert: cluster created (no error thrown)
-  }
-
-  @Given("the cluster exists")
-  public void theClusterExists() {
-    // Arrange
-    // Act
-    elasticacheCreateCluster();
-    // Assert: cluster created (no error thrown)
-  }
-
-  @Given("the cluster does not exist")
-  public void theClusterDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no clusters.
   }
 
   @Given("the cluster is \"AVAILABLE\"")
@@ -233,16 +201,6 @@ public class ElasticacheSteps {
     // @internal: snapshot creation requires a cluster in AVAILABLE state with redis engine.
   }
 
-  @Given("the snapshot exists")
-  public void theSnapshotExists() {
-    // @internal: snapshot state requires background processing.
-  }
-
-  @Given("the snapshot does not exist")
-  public void theSnapshotDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no snapshots.
-  }
-
   @Given("the snapshot is \"CREATING\"")
   public void theSnapshotIsCreating() {
     // @internal: CREATING state is transient, not reachable via public API.
@@ -251,31 +209,6 @@ public class ElasticacheSteps {
   @Given("the snapshot is not \"CREATING\"")
   public void theSnapshotIsNotCreating() {
     // @internal: state transition controlled internally.
-  }
-
-  @Given("the snapshot slot is available")
-  public void theSnapshotSlotIsAvailable() {
-    // Arrange / Act / Assert — no-op: snapshot slots are available by default.
-  }
-
-  @Given("the snapshot slot is not available")
-  public void theSnapshotSlotIsNotAvailable() {
-    // @internal: Cannot exhaust snapshot slot limit via public APIs.
-  }
-
-  // ── Given: resource/tag state ──────────────────────────────────────────────────
-
-  @Given("the resource exists")
-  public void theResourceExists() {
-    // Arrange
-    // Act
-    elasticacheCreateCluster();
-    // Assert: resource (cluster) created (no error thrown)
-  }
-
-  @Given("the resource does not exist")
-  public void theResourceDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no resources.
   }
 
   @Given("the resource has tags")
@@ -649,94 +582,6 @@ public class ElasticacheSteps {
     }
   }
 
-  // ── Then: cluster assertions ───────────────────────────────────────────────────
-
-  @Then("the cluster is in \"CREATING\" state")
-  public void theClusterIsInCreatingState() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected create_cache_cluster to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    try (ElastiCacheClient client = world.session.elastiCacheClient()) {
-      DescribeCacheClustersResponse descResult =
-          client.describeCacheClusters(r -> r.cacheClusterId(TEST_CLUSTER));
-      List<CacheCluster> clusters = descResult.cacheClusters();
-      assertNotNull(clusters, "expected cluster list to be non-null");
-      String expectedCluster = TEST_CLUSTER;
-      boolean actualFound =
-          clusters.stream().anyMatch(c -> expectedCluster.equals(c.cacheClusterId()));
-      assertTrue(
-          actualFound,
-          "expected cluster '"
-              + expectedCluster
-              + "' to exist but was not found; expected_cluster="
-              + expectedCluster
-              + " actual_found="
-              + actualFound);
-    }
-  }
-
-  @Then("the cluster is in \"MODIFYING\" state")
-  public void theClusterIsInModifyingState() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected modify_cache_cluster to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-  }
-
-  @Then("the cluster is in \"DELETING\" state")
-  public void theClusterIsInDeletingState() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected delete_cache_cluster to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-  }
-
-  @Then("the cluster is \"AVAILABLE\"")
-  public void theClusterIsAvailableThen() {
-    // Arrange
-    String expectedCluster = TEST_CLUSTER;
-    // Act
-    try (ElastiCacheClient client = world.session.elastiCacheClient()) {
-      DescribeCacheClustersResponse descResult =
-          client.describeCacheClusters(r -> r.cacheClusterId(expectedCluster));
-      List<CacheCluster> clusters = descResult.cacheClusters();
-      assertNotNull(clusters, "expected cluster list to be non-null");
-      // Assert
-      boolean actualFound =
-          clusters.stream().anyMatch(c -> expectedCluster.equals(c.cacheClusterId()));
-      assertTrue(
-          actualFound,
-          "expected cluster '"
-              + expectedCluster
-              + "' to be AVAILABLE but was not found; expected_cluster="
-              + expectedCluster
-              + " actual_found="
-              + actualFound);
-    }
-  }
-
   @Then("the cluster is \"DELETED\" and its tags are removed")
   public void theClusterIsDeletedAndItsTagsAreRemoved() {
     // @internal: cluster deletion completion not observable via public API.
@@ -785,21 +630,6 @@ public class ElasticacheSteps {
             + world.lastError
             + "; expected_success="
             + expectedSuccess);
-  }
-
-  @Then("the operation is rejected")
-  public void theOperationIsRejected() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedRejected = true;
-    boolean actualRejected = !world.lastSuccess;
-    assertTrue(
-        actualRejected,
-        "expected operation to be rejected but it succeeded; expected_rejected="
-            + expectedRejected
-            + " actual_rejected="
-            + actualRejected);
   }
 
   // ── Then: invariants ───────────────────────────────────────────────────────────

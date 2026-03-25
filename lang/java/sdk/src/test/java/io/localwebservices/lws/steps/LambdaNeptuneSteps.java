@@ -72,32 +72,6 @@ public class LambdaNeptuneSteps {
     }
   }
 
-  // ── Given: invocation state ────────────────────────────────────────────────────
-
-  @Given("an invocation is \"IN_PROGRESS\"")
-  public void anInvocationIsInProgress() {
-    // Arrange: create the Lambda function so an invocation could be in progress
-    // Act
-    lambdaNeptuneCreateFunction();
-    // Assert: function created (no error thrown)
-  }
-
-  @Given("no invocation is \"IN_PROGRESS\"")
-  public void noInvocationIsInProgress() {
-    // No-op: fresh state has no invocations.
-  }
-
-  @Given("an invocation slot is available")
-  public void anInvocationSlotIsAvailable() {
-    // No-op: always room for invocations in lws.
-  }
-
-  @Given("no invocation slot is available")
-  public void noInvocationSlotIsAvailable() {
-    // @internal: Cannot exhaust invocation slot limit in lws via public APIs.
-    // Only reached by @internal/@capacity scenarios excluded by the tag filter.
-  }
-
   // ── Given: Neptune cluster state unique to cross-service scenarios ─────────────
 
   @Given("the Neptune cluster is \"STOPPED\"")
@@ -148,27 +122,6 @@ public class LambdaNeptuneSteps {
     }
   }
 
-  // ── When: actions ──────────────────────────────────────────────────────────────
-
-  @When("a Lambda function is deployed")
-  public void aLambdaFunctionIsDeployed() {
-    // Arrange
-    try (LambdaClient client = world.session.lambdaClient()) {
-      // Act
-      client.createFunction(
-          r ->
-              r.functionName(TEST_FUNC)
-                  .runtime(software.amazon.awssdk.services.lambda.model.Runtime.PYTHON3_12)
-                  .role(TEST_ROLE_ARN)
-                  .handler("index.handler")
-                  .code(c -> c.zipFile(SdkBytes.fromUtf8String("fake"))));
-      // Assert: store result
-      world.setSuccess(TEST_FUNC);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
   @When("a Neptune cluster is created")
   public void aNeptuneClusterIsCreated() {
     // Arrange
@@ -209,14 +162,6 @@ public class LambdaNeptuneSteps {
     }
   }
 
-  @When("the Lambda function is invoked")
-  public void theLambdaFunctionIsInvoked() {
-    // @internal: Cannot trigger Lambda invocation in lws without Docker.
-    world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger Lambda invocation: scenario is @internal"));
-  }
-
   @When("the Lambda function fails to connect because the Neptune cluster is stopped")
   public void theLambdaFunctionFailsToConnectBecauseTheNeptuneClusterIsStopped() {
     // @internal: Cannot trigger Lambda invocation failure in lws.
@@ -231,58 +176,6 @@ public class LambdaNeptuneSteps {
     world.setFailure(
         new UnsupportedOperationException(
             "cannot trigger Lambda invocation success: scenario is @internal"));
-  }
-
-  // ── Then: assertions ───────────────────────────────────────────────────────────
-
-  @Then("the function is \"ACTIVE\"")
-  public void theFunctionIsActive() {
-    // Arrange
-    String expectedState = "Active";
-    // Act
-    try (LambdaClient client = world.session.lambdaClient()) {
-      var result = client.getFunction(r -> r.functionName(TEST_FUNC));
-      String actualState = result.configuration().state().toString();
-      // Assert
-      assertEquals(
-          expectedState,
-          actualState,
-          "expected function state '"
-              + expectedState
-              + "' but got '"
-              + actualState
-              + "'; expected_state="
-              + expectedState
-              + " actual_state="
-              + actualState);
-    }
-  }
-
-  @Then("the cluster is \"AVAILABLE\"")
-  public void theClusterIsAvailable() {
-    // Arrange
-    String expectedStatus = "available";
-    // Act
-    try (NeptuneClient client = world.session.neptuneClient()) {
-      DescribeDbClustersResponse response =
-          client.describeDBClusters(r -> r.dbClusterIdentifier(TEST_CLUSTER));
-      String actualStatus =
-          response.dbClusters().get(0).status() != null
-              ? response.dbClusters().get(0).status()
-              : "";
-      // Assert
-      assertEquals(
-          expectedStatus,
-          actualStatus,
-          "expected cluster status '"
-              + expectedStatus
-              + "' but got '"
-              + actualStatus
-              + "'; expected_status="
-              + expectedStatus
-              + " actual_status="
-              + actualStatus);
-    }
   }
 
   @Then("the cluster is \"AVAILABLE\" and ready to accept graph queries")
@@ -337,31 +230,6 @@ public class LambdaNeptuneSteps {
               + " actual_status="
               + actualStatus);
     }
-  }
-
-  @Then("the invocation is \"IN_PROGRESS\"")
-  public void theInvocationIsInProgress() {
-    // @internal: Cannot observe Lambda invocation state in lws.
-    // Only reached by @internal scenarios excluded by the tag filter.
-  }
-
-  @Then("the invocation is \"FAILED\" with a connection error")
-  public void theInvocationIsFailedWithAConnectionError() {
-    // @internal: Cannot observe Lambda invocation failure in lws.
-    // Only reached by @internal scenarios excluded by the tag filter.
-  }
-
-  @Then("the invocation is \"SUCCESS\"")
-  public void theInvocationIsSuccess() {
-    // @internal: Cannot observe Lambda invocation success in lws.
-    // Only reached by @internal scenarios excluded by the tag filter.
-  }
-
-  // ── Invariant catch-all steps ──────────────────────────────────────────────────
-
-  @Then("every \"IN_PROGRESS\" invocation references an \"ACTIVE\" Lambda function")
-  public void everyInProgressInvocationReferencesAnActiveLambdaFunction() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
   }
 
   @Then("every successful invocation recorded which cluster it queried")

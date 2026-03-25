@@ -8,7 +8,6 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
-import software.amazon.awssdk.services.lambda.model.GetFunctionResponse;
 import software.amazon.awssdk.services.lambda.model.Runtime;
 import software.amazon.awssdk.services.ssm.SsmClient;
 import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
@@ -93,31 +92,6 @@ public class LambdaSsmSteps {
     }
   }
 
-  // ── Given: invocation state ───────────────────────────────────────────────────
-
-  @Given("an invocation is \"IN_PROGRESS\"")
-  public void anInvocationIsInProgress() {
-    // Arrange: create the Lambda function so an invocation can be considered in-progress
-    // Act
-    lambdaCreateFunction();
-    // Assert: function created (no error thrown)
-  }
-
-  @Given("no invocation is \"IN_PROGRESS\"")
-  public void noInvocationIsInProgress() {
-    // No-op: fresh state has no invocations.
-  }
-
-  @Given("an invocation slot is available")
-  public void anInvocationSlotIsAvailable() {
-    // No-op: always room for invocations in lws.
-  }
-
-  @Given("no invocation slot is available")
-  public void noInvocationSlotIsAvailable() {
-    // @internal: Cannot exhaust invocation slot limit in lws via public APIs.
-  }
-
   // ── Given: parameter state specific to lambda_ssm ────────────────────────────
 
   @Given("the parameter \"EXISTS\"")
@@ -153,27 +127,6 @@ public class LambdaSsmSteps {
     // Assert: parameter exists; verified by subsequent steps
   }
 
-  // ── When: actions ─────────────────────────────────────────────────────────────
-
-  @When("a Lambda function is deployed")
-  public void aLambdaFunctionIsDeployed() {
-    // Arrange
-    try (LambdaClient client = world.session.lambdaClient()) {
-      // Act
-      client.createFunction(
-          r ->
-              r.functionName(TEST_FUNC)
-                  .runtime(Runtime.PYTHON3_12)
-                  .role(TEST_ROLE_ARN)
-                  .handler("index.handler")
-                  .code(c -> c.zipFile(SdkBytes.fromUtf8String("fake"))));
-      // Assert: store result
-      world.setSuccess(TEST_FUNC);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
   @When("a parameter is created in \"SSM\" Parameter Store")
   public void aParameterIsCreatedInSsmParameterStore() {
     // Arrange
@@ -206,14 +159,6 @@ public class LambdaSsmSteps {
     }
   }
 
-  @When("the Lambda function is invoked")
-  public void theLambdaFunctionIsInvoked() {
-    // @internal: Cannot trigger Lambda invocation in lws without Docker.
-    world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger Lambda invocation: scenario is @internal"));
-  }
-
   @When("the Lambda function fails because the parameter has been deleted")
   public void theLambdaFunctionFailsBecauseTheParameterHasBeenDeleted() {
     // @internal: Cannot trigger Lambda invocation failure in lws without Docker.
@@ -228,31 +173,6 @@ public class LambdaSsmSteps {
     world.setFailure(
         new UnsupportedOperationException(
             "cannot trigger Lambda invocation success: scenario is @internal"));
-  }
-
-  // ── Then: assertions ──────────────────────────────────────────────────────────
-
-  @Then("the function is \"ACTIVE\"")
-  public void theFunctionIsActive() {
-    // Arrange
-    String expectedState = "Active";
-    // Act
-    try (LambdaClient client = world.session.lambdaClient()) {
-      GetFunctionResponse result = client.getFunction(r -> r.functionName(TEST_FUNC));
-      String actualState = result.configuration().state().toString();
-      // Assert
-      assertEquals(
-          expectedState,
-          actualState,
-          "expected function state '"
-              + expectedState
-              + "' but got '"
-              + actualState
-              + "'; expected_state="
-              + expectedState
-              + " actual_state="
-              + actualState);
-    }
   }
 
   @Then("the parameter \"EXISTS\" and can be read by Lambda")
@@ -295,26 +215,9 @@ public class LambdaSsmSteps {
             + " actual_exists=true");
   }
 
-  @Then("the invocation is \"IN_PROGRESS\"")
-  public void theInvocationIsInProgress() {
-    // @internal: Cannot observe Lambda invocation state in lws.
-  }
-
   @Then("the invocation is \"FAILED\" with a ParameterNotFound error")
   public void theInvocationIsFailedWithAParameterNotFoundError() {
     // @internal: Cannot observe Lambda invocation failure in lws.
-  }
-
-  @Then("the invocation is \"SUCCESS\"")
-  public void theInvocationIsSuccess() {
-    // @internal: Cannot observe Lambda invocation success in lws.
-  }
-
-  // ── Invariant catch-all steps ─────────────────────────────────────────────────
-
-  @Then("every \"IN_PROGRESS\" invocation references an \"ACTIVE\" Lambda function")
-  public void everyInProgressInvocationReferencesAnActiveLambdaFunction() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
   }
 
   @Then("every successful invocation recorded which parameter it read")

@@ -1,16 +1,8 @@
 package io.localwebservices.lws.steps;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import software.amazon.awssdk.services.elasticache.ElastiCacheClient;
-import software.amazon.awssdk.services.elasticache.model.CacheCluster;
-import software.amazon.awssdk.services.sfn.SfnClient;
-import software.amazon.awssdk.services.sfn.model.StartExecutionResponse;
-import software.amazon.awssdk.services.sfn.model.StateMachineType;
 
 /**
  * Step definitions for the stepfunctions_elasticache cross-service feature files.
@@ -58,109 +50,6 @@ public class StepfunctionsElasticacheSteps {
     }
   }
 
-  // ── Given: cluster existence ───────────────────────────────────────────────────
-
-  @Given("the cluster does not already exist")
-  public void theClusterDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after session reset has no clusters.
-  }
-
-  @Given("the cluster already exists")
-  public void theClusterAlreadyExists() {
-    // Arrange: create the cluster so it already exists
-    // Act
-    createCluster();
-    // Assert: cluster exists
-  }
-
-  @Given("the cluster exists")
-  public void theClusterExists() {
-    // Arrange: create the cluster
-    // Act
-    createCluster();
-    // Assert: cluster exists
-  }
-
-  @Given("the cluster does not exist")
-  public void theClusterDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after session reset has no clusters.
-  }
-
-  // ── Given: cluster status ──────────────────────────────────────────────────────
-
-  @Given("the cluster is \"AVAILABLE\"")
-  public void theClusterIsAvailable() {
-    // Arrange: ensure cluster exists; fresh clusters start AVAILABLE
-    // Act
-    createCluster();
-    // Assert: cluster is AVAILABLE
-  }
-
-  @Given("the cluster is \"MODIFYING\"")
-  public void theClusterIsModifying() {
-    // Arrange / Act / Assert — no-op: cannot drive a cluster into MODIFYING state via public API in
-    // lws.
-  }
-
-  @Given("the cluster is not \"MODIFYING\"")
-  public void theClusterIsNotModifying() {
-    // Arrange: create an AVAILABLE cluster (not MODIFYING)
-    // Act
-    createCluster();
-    // Assert: cluster is not MODIFYING
-  }
-
-  @Given("the cluster is not \"AVAILABLE\"")
-  public void theClusterIsNotAvailable() {
-    // Arrange / Act / Assert — no-op: cannot drive a cluster into a non-AVAILABLE state via public
-    // API in lws.
-  }
-
-  // ── Given: execution state ────────────────────────────────────────────────────
-
-  @Given("an execution is \"RUNNING\"")
-  public void anExecutionIsRunning() {
-    // Arrange: create state machine and start execution
-    try (SfnClient client = world.session.sfnClient()) {
-      var smResult =
-          client.createStateMachine(
-              r ->
-                  r.name(TEST_SM)
-                      .definition(TEST_PASS_DEFINITION)
-                      .roleArn(TEST_ROLE_ARN)
-                      .type(StateMachineType.STANDARD));
-      world.lastStateMachineArn = smResult.stateMachineArn();
-      // Act: start an execution
-      StartExecutionResponse execResult =
-          client.startExecution(r -> r.stateMachineArn(smArn(TEST_SM)).input(TEST_INPUT));
-      // Assert: execution started
-      world.lastExecutionArn = execResult.executionArn();
-    }
-  }
-
-  @Given("no execution is \"RUNNING\"")
-  public void noExecutionIsRunning() {
-    // Arrange / Act / Assert — no-op: fresh state after session reset has no executions.
-  }
-
-  // ── Given: capacity ───────────────────────────────────────────────────────────
-
-  @Given("an execution slot is available")
-  public void anExecutionSlotIsAvailable() throws Exception {
-    // Arrange: set unlimited capacity for stepfunctions
-    // Act
-    world.session.capacity("stepfunctions").unlimited().apply();
-    // Assert: capacity is unlimited
-  }
-
-  @Given("no execution slot is available")
-  public void noExecutionSlotIsAvailable() throws Exception {
-    // Arrange: exhaust the stepfunctions execution capacity
-    // Act
-    world.session.capacity("stepfunctions").exhaust().apply();
-    // Assert: capacity is exhausted
-  }
-
   // ── When: actions ─────────────────────────────────────────────────────────────
 
   // "a Step Functions state machine is created" is registered in StepfunctionsSteps.
@@ -192,14 +81,6 @@ public class StepfunctionsElasticacheSteps {
     }
   }
 
-  @When("the cluster modification completes")
-  public void theClusterModificationCompletes() {
-    // @internal: Cannot drive cluster modification to completion via public API in lws.
-    world.setFailure(
-        new UnsupportedOperationException(
-            "cannot drive cluster modification to completion via public API in lws"));
-  }
-
   @When("a running execution fails to connect because the cluster is being modified")
   public void aRunningExecutionFailsToConnectBecauseClusterIsBeingModified() {
     // @internal: Cannot trigger internal execution step that fails due to MODIFYING cluster in lws.
@@ -218,75 +99,10 @@ public class StepfunctionsElasticacheSteps {
 
   // ── Then: assertions ──────────────────────────────────────────────────────────
 
-  // "the state machine is "ACTIVE"" is registered in StepfunctionsSteps.
-  // "the execution is "RUNNING"" is registered in StepfunctionsSteps.
-  // "the operation is rejected" is registered in CrossServiceSteps.
-
-  @Then("the cluster is \"AVAILABLE\"")
-  public void theClusterIsAvailableThen() throws Exception {
-    // Arrange
-    String expectedClusterID = TEST_CLUSTER;
-    String expectedStatus = "available";
-    // Act
-    try (ElastiCacheClient client = world.session.elastiCacheClient()) {
-      var result = client.describeCacheClusters(r -> r.cacheClusterId(expectedClusterID));
-      java.util.List<CacheCluster> clusters = result.cacheClusters();
-      assertNotNull(
-          clusters,
-          "Expected cluster list to be non-null; expected_cluster_id=" + expectedClusterID);
-      assertEquals(
-          1,
-          clusters.size(),
-          "Expected exactly one cluster with id \""
-              + expectedClusterID
-              + "\"; expected_cluster_id="
-              + expectedClusterID);
-      String actualStatus = clusters.get(0).cacheClusterStatus();
-      // Assert
-      assertEquals(
-          expectedStatus,
-          actualStatus,
-          "Expected cluster status \""
-              + expectedStatus
-              + "\" but got \""
-              + actualStatus
-              + "\"; expected_status="
-              + expectedStatus
-              + " actual_status="
-              + actualStatus);
-    }
-  }
-
   @Then("the cluster is \"MODIFYING\" and connections may be refused")
   public void theClusterIsModifyingAndConnectionsMayBeRefused() {
     // @internal: Cannot observe MODIFYING cluster state via public API in lws.
     // No-op: treat as invariant satisfied.
-  }
-
-  @Then("the cluster is \"AVAILABLE\" again")
-  public void theClusterIsAvailableAgain() {
-    // @internal: Cannot observe cluster returning to AVAILABLE after modification via public API in
-    // lws.
-    // No-op: treat as invariant satisfied.
-  }
-
-  @Then("the execution is \"SUCCEEDED\"")
-  public void theExecutionIsSucceeded() {
-    // @internal: Cannot observe internal execution ElastiCache task success in lws.
-    // No-op: treat as invariant satisfied.
-  }
-
-  @Then("the execution is \"FAILED\" with a connection error")
-  public void theExecutionIsFailedWithAConnectionError() {
-    // @internal: Cannot observe internal execution ElastiCache task failure in lws.
-    // No-op: treat as invariant satisfied.
-  }
-
-  // ── Then: invariants ──────────────────────────────────────────────────────────
-
-  @Then("every \"RUNNING\" execution references an \"ACTIVE\" state machine")
-  public void everyRunningExecutionReferencesAnActiveStateMachine() {
-    // Invariant: trivially satisfied in isolated lws context.
   }
 
   @Then("every succeeded execution recorded which cluster it read")

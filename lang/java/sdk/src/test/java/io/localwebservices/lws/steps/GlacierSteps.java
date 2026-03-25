@@ -746,21 +746,6 @@ public class GlacierSteps {
     // @internal: vault_inventory_refresh requires background processing. No assertion performed.
   }
 
-  @Then("the operation is rejected")
-  public void theOperationIsRejected() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedRejected = true;
-    boolean actualRejected = !world.lastSuccess;
-    assertTrue(
-        actualRejected,
-        "expected operation to be rejected but it succeeded; expected_rejected="
-            + expectedRejected
-            + " actual_rejected="
-            + actualRejected);
-  }
-
   // ── Safety invariant Then steps ───────────────────────────────────────────────
 
   @Then("every in-progress job references an active vault")

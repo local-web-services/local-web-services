@@ -62,22 +62,6 @@ public class CognitoEventsSteps {
     }
   }
 
-  // -------------------------------------------------------------------------
-  // Given — pool state (unique to cognito_events; no overlap with CognitoIdpSteps)
-  // -------------------------------------------------------------------------
-
-  @Given("the pool does not already exist")
-  public void thePoolDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh session has no user pools
-  }
-
-  @Given("the pool already exists")
-  public void thePoolAlreadyExists() {
-    // Arrange
-    cognitoCreatePool();
-    // Assert — pool now exists; verified by subsequent steps
-  }
-
   @Given("the pool exists and is {string}")
   public void thePoolExistsAndIs(String state) {
     // Arrange
@@ -107,23 +91,6 @@ public class CognitoEventsSteps {
     // Arrange / Act / Assert — cannot configure EventBridge on a Cognito user pool in lws; skip
     Assumptions.assumeTrue(
         false, "lws limitation: EventBridge configuration on Cognito user pool not supported");
-  }
-
-  // -------------------------------------------------------------------------
-  // When — cognito_events cross-service actions
-  // -------------------------------------------------------------------------
-
-  @When("an EventBridge event bus is created")
-  public void anEventBridgeEventBusIsCreated() {
-    // Arrange
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      // Act
-      var response = client.createEventBus(r -> r.name(TEST_BUS_NAME));
-      // Assert
-      world.setSuccess(response);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
   }
 
   @When("a Cognito user pool is created")

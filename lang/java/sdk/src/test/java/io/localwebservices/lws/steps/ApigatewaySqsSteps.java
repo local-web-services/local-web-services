@@ -21,7 +21,6 @@ import software.amazon.awssdk.services.apigateway.model.IntegrationType;
 import software.amazon.awssdk.services.apigateway.model.Resource;
 import software.amazon.awssdk.services.apigateway.model.RestApi;
 import software.amazon.awssdk.services.sqs.SqsClient;
-import software.amazon.awssdk.services.sqs.model.ListQueuesResponse;
 import software.amazon.awssdk.services.sqs.model.Message;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
 
@@ -171,21 +170,6 @@ public class ApigatewaySqsSteps {
     return response.statusCode();
   }
 
-  // ── Given: API state ──────────────────────────────────────────────────────────
-
-  @Given("the \"API\" does not already exist")
-  public void theApiDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh session state has no REST APIs.
-  }
-
-  @Given("the \"API\" already exists")
-  public void theApiAlreadyExists() throws Exception {
-    // Arrange
-    // Act
-    apigwSqsCreateRestApi();
-    // Assert: creation succeeded
-  }
-
   @Given("the \"API\" does not exist")
   public void theApiDoesNotExist() {
     // Arrange / Act / Assert — no-op: fresh session state has no REST APIs.
@@ -197,31 +181,6 @@ public class ApigatewaySqsSteps {
     // Act
     apigwSqsCreateRestApi();
     // Assert: creation succeeded
-  }
-
-  @Given("the \"API\" is \"ACTIVE\"")
-  public void theApiIsActive() {
-    // Arrange / Act / Assert — no-op: REST APIs are ACTIVE immediately after creation in lws.
-  }
-
-  @Given("the \"API\" is not \"ACTIVE\"")
-  public void theApiIsNotActive() throws Exception {
-    // Arrange: use lifecycle API to keep the REST API in a non-ACTIVE state
-    world.session.lifecycle("apigateway").createDwellMs(5000).apply();
-    // Act: create the API in non-ACTIVE state
-    apigwSqsCreateRestApi();
-    // Assert: API is in non-ACTIVE state (CREATING dwell in progress)
-  }
-
-  @Given("the \"API\" has no integration configured")
-  public void theApiHasNoIntegrationConfigured() {
-    // Arrange / Act / Assert — no-op: APIs have no integration configured by default.
-  }
-
-  @Given("the \"API\" already has an integration configured")
-  public void theApiAlreadyHasIntegrationConfigured() {
-    // Arrange / Act / Assert — no-op: cannot simulate pre-configured integration conflict in lws;
-    // @internal excluded.
   }
 
   @Given("the \"API\" has an \"SQS\" integration configured")
@@ -243,13 +202,6 @@ public class ApigatewaySqsSteps {
     // Arrange / Act / Assert — no-op: APIs have no SQS integration configured by default.
   }
 
-  // ── Given: queue lifecycle state ──────────────────────────────────────────────
-
-  @Given("the queue is \"ACTIVE\"")
-  public void theQueueIsActive() {
-    // Arrange / Act / Assert — no-op: SQS queues are ACTIVE immediately after creation.
-  }
-
   @Given("the target queue is \"ACTIVE\"")
   public void theTargetQueueIsActive() {
     // Arrange / Act: ensure queue exists (idempotent)
@@ -259,40 +211,6 @@ public class ApigatewaySqsSteps {
       // queue may already exist from a prior Given step
     }
     // Assert: queue exists and is ACTIVE
-  }
-
-  // ── Given: capacity slots ─────────────────────────────────────────────────────
-
-  @Given("a request slot is available")
-  public void aRequestSlotIsAvailable() throws Exception {
-    // Arrange: set apigateway capacity to unlimited
-    // Act
-    world.session.capacity("apigateway").unlimited().apply();
-    // Assert: capacity configured
-  }
-
-  @Given("no request slot is available")
-  public void noRequestSlotIsAvailable() throws Exception {
-    // Arrange: exhaust apigateway request slots
-    // Act
-    world.session.capacity("apigateway").exhaust().apply();
-    // Assert: capacity exhausted
-  }
-
-  // ── When: actions ─────────────────────────────────────────────────────────────
-
-  @When("a \"REST\" \"API\" is created")
-  public void aRestApiIsCreated() {
-    // Arrange
-    // Act
-    try (ApiGatewayClient client = world.session.apiGatewayClient()) {
-      CreateRestApiResponse result = client.createRestApi(r -> r.name(TEST_API_NAME));
-      restApiId = result.id();
-      world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-    // Assert: captured in world
   }
 
   @When("an \"SQS\" direct integration is configured on the \"REST\" \"API\"")
@@ -442,45 +360,5 @@ public class ApigatewaySqsSteps {
               + " actual_count="
               + actualCount);
     }
-  }
-
-  @Then("the queue is \"ACTIVE\"")
-  public void theQueueIsActiveAssertion() throws Exception {
-    // Arrange
-    try (SqsClient client = world.session.sqsClient()) {
-      // Act
-      ListQueuesResponse result = client.listQueues(r -> r.queueNamePrefix(TEST_QUEUE));
-      List<String> urls = result.queueUrls();
-      // Assert
-      int expectedCount = 1;
-      long actualCount = urls.stream().filter(u -> u.contains(TEST_QUEUE)).count();
-      assertTrue(
-          actualCount >= expectedCount,
-          "Expected at least "
-              + expectedCount
-              + " queue but found "
-              + actualCount
-              + "; expected_count="
-              + expectedCount
-              + " actual_count="
-              + actualCount);
-    }
-  }
-
-  @Then("the message is \"DELETED\"")
-  public void theMessageIsDeleted() {
-    // Arrange: action already performed in the When step
-    // Act: (no-op)
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "Expected message to be DELETED but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess
-            + " actual_success="
-            + actualSuccess);
   }
 }

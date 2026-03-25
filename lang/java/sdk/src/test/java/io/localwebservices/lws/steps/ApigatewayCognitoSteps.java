@@ -11,8 +11,6 @@ import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
 import software.amazon.awssdk.services.apigateway.model.GetRestApisResponse;
 import software.amazon.awssdk.services.apigateway.model.RestApi;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUserPoolsResponse;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolDescriptionType;
 
 /**
  * Step definitions for the apigateway_cognito cross-service informal specification feature files.
@@ -310,31 +308,6 @@ public class ApigatewayCognitoSteps {
               + actualExists
               + ": expected REST API '"
               + expectedApiName
-              + "' to be "
-              + expectedState
-              + " but it was not found");
-    }
-  }
-
-  @Then("the pool is {string}")
-  public void thePoolIsState(String expectedState) throws Exception {
-    // Arrange
-    try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
-      // Act
-      ListUserPoolsResponse result = client.listUserPools(r -> r.maxResults(60));
-      List<UserPoolDescriptionType> pools = result.userPools();
-      // Assert: the pool exists with the expected name
-      String expectedPoolName = TEST_POOL_NAME;
-      boolean actualExists =
-          pools != null && pools.stream().anyMatch(p -> TEST_POOL_NAME.equals(p.name()));
-      assertTrue(
-          actualExists,
-          "expected_pool_name="
-              + expectedPoolName
-              + " actual_found="
-              + actualExists
-              + ": expected user pool '"
-              + expectedPoolName
               + "' to be "
               + expectedState
               + " but it was not found");

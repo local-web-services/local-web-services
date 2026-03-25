@@ -1,6 +1,5 @@
 package io.localwebservices.lws.steps;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.cucumber.java.en.Given;
@@ -62,17 +61,6 @@ public class RdsSteps {
     // Arrange / Act / Assert — no-op: DB instances in lws are available after creation.
   }
 
-  @Given("the instance is {string}")
-  public void theInstanceIs(String state) {
-    // Arrange / Act / Assert — no-op: DB instances in lws are available after creation.
-  }
-
-  @Given("the instance is not {string}")
-  public void theInstanceIsNot(String state) {
-    // @internal: Cannot force a DB instance into a non-AVAILABLE state via public API.
-    // Only reached by @lifecycle scenarios excluded by the tag filter.
-  }
-
   @Given("the instance is neither {string} nor {string}")
   public void theInstanceIsNeitherNor(String state1, String state2) {
     // @internal: Cannot force a DB instance into neither AVAILABLE nor FAILED via public API.
@@ -93,33 +81,6 @@ public class RdsSteps {
   public void noSnapshotSlotIsAvailable() {
     // @internal: Cannot exhaust snapshot slot limit in lws via public APIs.
     // Only reached by @internal/@capacity scenarios excluded by the tag filter.
-  }
-
-  // ── Given: snapshot state setup ───────────────────────────────────────────────
-
-  @Given("the snapshot exists")
-  public void theSnapshotExists() {
-    // Arrange
-    // Act: create DB instance then snapshot
-    rdsCreateDBInstance();
-    rdsCreateSnapshot();
-    // Assert: snapshot created (no error thrown)
-  }
-
-  @Given("the snapshot does not exist")
-  public void theSnapshotDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no snapshots.
-  }
-
-  @Given("the snapshot is {string}")
-  public void theSnapshotIs(String state) {
-    // Arrange / Act / Assert — no-op: snapshots in lws are available after creation.
-  }
-
-  @Given("the snapshot is not {string}")
-  public void theSnapshotIsNot(String state) {
-    // @internal: Cannot force a snapshot into a non-AVAILABLE state via public API.
-    // Only reached by @lifecycle scenarios excluded by the tag filter.
   }
 
   @Given("the target instance slot is available")
@@ -181,34 +142,6 @@ public class RdsSteps {
                   r.dbInstanceIdentifier(TEST_DB_INSTANCE_ID)
                       .skipFinalSnapshot(false)
                       .finalDBSnapshotIdentifier(TEST_SNAPSHOT_ID));
-      // Assert: store result
-      world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("a database instance configuration is modified")
-  public void aDatabaseInstanceConfigurationIsModified() {
-    // Arrange: (instance state set up by Given steps)
-    try (RdsClient client = world.session.rdsClient()) {
-      // Act
-      var result =
-          client.modifyDBInstance(
-              r -> r.dbInstanceIdentifier(TEST_DB_INSTANCE_ID).dbInstanceClass("db.t3.small"));
-      // Assert: store result
-      world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("a database instance is rebooted")
-  public void aDatabaseInstanceIsRebooted() {
-    // Arrange: (instance state set up by Given steps)
-    try (RdsClient client = world.session.rdsClient()) {
-      // Act
-      var result = client.rebootDBInstance(r -> r.dbInstanceIdentifier(TEST_DB_INSTANCE_ID));
       // Assert: store result
       world.setSuccess(result);
     } catch (Exception e) {
@@ -292,27 +225,6 @@ public class RdsSteps {
     }
   }
 
-  // ── Then: assertions ───────────────────────────────────────────────────────────
-
-  @Then("the instance is in {string} state")
-  public void theInstanceIsInState(String expectedState) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected RDS DB operation to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess
-            + " expected_state="
-            + expectedState);
-    assertNotNull(
-        world.lastOutput, "expected output for state '" + expectedState + "' but got null");
-  }
-
   @Then("the instance is in {string} state and a snapshot is {string}")
   public void theInstanceIsInStateAndASnapshotIs(String instanceState, String snapshotState) {
     // Arrange: no additional setup required
@@ -349,23 +261,6 @@ public class RdsSteps {
             + snapshotState
             + " expected_instance_state="
             + instanceState);
-  }
-
-  @Then("the snapshot is in {string} state")
-  public void theSnapshotIsInState(String expectedState) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected delete_db_snapshot to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess
-            + " expected_state="
-            + expectedState);
   }
 
   @Then("the instance is configured for multi-{string} deployment")
@@ -413,12 +308,6 @@ public class RdsSteps {
             + expectedSuccess
             + " expected_state="
             + expectedState);
-  }
-
-  @Then("the instance is {string} or {string}")
-  public void theInstanceIsOrStateThen(String state1, String state2) {
-    // @internal: activate_d_b_instance outcome not observable via public API.
-    // Only reached by @internal scenarios excluded by the tag filter.
   }
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────

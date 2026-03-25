@@ -527,31 +527,6 @@ public class SqsSteps {
     }
   }
 
-  @Then("the message is \"IN_FLIGHT\"")
-  public void theMessageIsInFlight() {
-    // Arrange
-    // Act
-    try (SqsClient client = world.session.sqsClient()) {
-      GetQueueAttributesResponse result =
-          client.getQueueAttributes(
-              r ->
-                  r.queueUrl(queueUrl(TEST_QUEUE))
-                      .attributeNames(
-                          QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES_NOT_VISIBLE));
-      String actualCountStr =
-          result
-              .attributes()
-              .getOrDefault(QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES_NOT_VISIBLE, "0");
-      int actualCount = Integer.parseInt(actualCountStr);
-      int expectedCount = 1;
-      // Assert
-      assertEquals(
-          expectedCount,
-          actualCount,
-          "expected " + expectedCount + " in-flight message(s) but got " + actualCount);
-    }
-  }
-
   @Then("the message is removed from the queue")
   public void theMessageIsRemovedFromTheQueue() {
     // Arrange

@@ -21,7 +21,6 @@ import software.amazon.awssdk.services.apigateway.model.Resource;
 import software.amazon.awssdk.services.apigateway.model.RestApi;
 import software.amazon.awssdk.services.sfn.SfnClient;
 import software.amazon.awssdk.services.sfn.model.CreateStateMachineResponse;
-import software.amazon.awssdk.services.sfn.model.DescribeStateMachineResponse;
 import software.amazon.awssdk.services.sfn.model.StateMachineType;
 
 /**
@@ -178,56 +177,6 @@ public class ApigatewayStepfunctionsSteps {
     return response.statusCode();
   }
 
-  // ── Given: API state ──────────────────────────────────────────────────────────
-
-  @Given("the \"API\" does not already exist")
-  public void theApiDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh session state has no REST APIs.
-  }
-
-  @Given("the \"API\" already exists")
-  public void theApiAlreadyExists() {
-    // Arrange + Act: create the REST API so it already exists
-    apigwSfnCreateRestApi();
-    // Assert: API exists (no error thrown)
-  }
-
-  @Given("the \"API\" exists")
-  public void theApiExists() {
-    // Arrange + Act: create the REST API
-    apigwSfnCreateRestApi();
-    // Assert: API exists (no error thrown)
-  }
-
-  @Given("the \"API\" is \"ACTIVE\"")
-  public void theApiIsActive() {
-    // Arrange / Act / Assert — no-op: REST APIs are ACTIVE immediately after creation.
-  }
-
-  @Given("the \"API\" is not \"ACTIVE\"")
-  public void theApiIsNotActive() {
-    // Arrange / Act / Assert — cannot simulate non-ACTIVE REST API via public API.
-    world.setFailure(
-        new UnsupportedOperationException("Cannot simulate non-ACTIVE REST API in lws"));
-  }
-
-  @Given("the \"API\" does not exist")
-  public void theApiDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh session state has no REST APIs.
-  }
-
-  @Given("the \"API\" has no integration configured")
-  public void theApiHasNoIntegrationConfigured() {
-    // Arrange / Act / Assert — no-op: APIs have no integration configured by default.
-  }
-
-  @Given("the \"API\" already has an integration configured")
-  public void theApiAlreadyHasAnIntegrationConfigured() {
-    // Arrange / Act / Assert — cannot simulate pre-configured integration conflict.
-    skipScenario = true;
-    skipReason = "Cannot simulate pre-configured StepFunctions integration conflict in lws";
-  }
-
   @Given("the \"API\" has a Step Functions integration configured")
   public void theApiHasAStepFunctionsIntegrationConfigured() throws Exception {
     // Arrange: ensure API exists
@@ -254,46 +203,6 @@ public class ApigatewayStepfunctionsSteps {
     // Arrange / Act / Assert — no-op: APIs have no StepFunctions integration by default.
   }
 
-  // ── Given: state machine state ────────────────────────────────────────────────
-
-  @Given("the state machine does not already exist")
-  public void theStateMachineDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh session state has no state machines.
-  }
-
-  @Given("the state machine already exists")
-  public void theStateMachineAlreadyExists() {
-    // Arrange + Act: create the state machine so it already exists
-    apigwSfnCreateStateMachine(TEST_SM_NAME, StateMachineType.EXPRESS);
-    // Assert: state machine exists (no error thrown)
-  }
-
-  @Given("the state machine exists")
-  public void theStateMachineExists() {
-    // Arrange + Act: create the state machine
-    apigwSfnCreateStateMachine(TEST_SM_NAME, StateMachineType.EXPRESS);
-    // Assert: state machine exists (no error thrown)
-  }
-
-  @Given("the state machine is \"ACTIVE\"")
-  public void theStateMachineIsActive() {
-    // Arrange / Act / Assert — no-op: state machines are ACTIVE immediately after creation.
-  }
-
-  @Given("the state machine is not \"ACTIVE\"")
-  public void theStateMachineIsNotActive() {
-    // Arrange / Act / Assert — cannot simulate non-ACTIVE state machine via public API.
-    world.setFailure(
-        new UnsupportedOperationException("Cannot simulate non-ACTIVE state machine in lws"));
-  }
-
-  @Given("the state machine does not exist")
-  public void theStateMachineDoesNotExist() {
-    // lws cannot validate state machine existence at put_integration time.
-    skipScenario = true;
-    skipReason = "Cannot validate state machine existence at put_integration time in lws.";
-  }
-
   @Given("the integrated state machine is \"ACTIVE\"")
   public void theIntegratedStateMachineIsActive() {
     // Arrange: ensure state machine exists (idempotent — ignore already-exists errors)
@@ -311,70 +220,6 @@ public class ApigatewayStepfunctionsSteps {
     world.setFailure(
         new UnsupportedOperationException(
             "Cannot simulate non-ACTIVE integrated state machine in lws"));
-  }
-
-  // ── Given: execution presence ─────────────────────────────────────────────────
-
-  @Given("an execution is \"RUNNING\"")
-  public void anExecutionIsRunning() {
-    // Arrange / Act / Assert — cannot simulate running execution state via public API.
-    world.setFailure(
-        new UnsupportedOperationException("Cannot simulate running execution state in lws"));
-  }
-
-  @Given("no execution is \"RUNNING\"")
-  public void noExecutionIsRunning() {
-    // Arrange / Act / Assert — no-op: fresh state has no running executions.
-  }
-
-  // ── Given: capacity ───────────────────────────────────────────────────────────
-
-  @Given("a request slot is available")
-  public void aRequestSlotIsAvailable() throws Exception {
-    // Arrange: set unlimited capacity for apigateway
-    // Act
-    world.session.capacity("apigateway").unlimited().apply();
-    // Assert: capacity is unlimited
-  }
-
-  @Given("no request slot is available")
-  public void noRequestSlotIsAvailable() throws Exception {
-    // Arrange: exhaust the apigateway request capacity
-    // Act
-    world.session.capacity("apigateway").exhaust().apply();
-    // Assert: capacity is exhausted
-  }
-
-  @Given("an execution slot is available")
-  public void anExecutionSlotIsAvailable() throws Exception {
-    // Arrange: set unlimited capacity for stepfunctions
-    // Act
-    world.session.capacity("stepfunctions").unlimited().apply();
-    // Assert: capacity is unlimited
-  }
-
-  @Given("no execution slot is available")
-  public void noExecutionSlotIsAvailable() throws Exception {
-    // Arrange: exhaust the stepfunctions execution capacity
-    // Act
-    world.session.capacity("stepfunctions").exhaust().apply();
-    // Assert: capacity is exhausted
-  }
-
-  // ── When: actions ─────────────────────────────────────────────────────────────
-
-  @When("a \"REST\" \"API\" is created")
-  public void aRestApiIsCreated() {
-    // Arrange: use the test API name
-    try (ApiGatewayClient client = world.session.apiGatewayClient()) {
-      // Act
-      CreateRestApiResponse result = client.createRestApi(r -> r.name(TEST_API_NAME));
-      restApiId = result.id();
-      // Assert: store result
-      world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
   }
 
   @When("a Step Functions Express Workflow state machine is created")
@@ -485,24 +330,6 @@ public class ApigatewayStepfunctionsSteps {
     }
   }
 
-  @Then("the state machine is \"ACTIVE\"")
-  public void theStateMachineIsActiveThen() {
-    // Arrange
-    String expectedStatus = "ACTIVE";
-    String smArn = smArn(TEST_SM_NAME);
-    // Act
-    try (SfnClient client = world.session.sfnClient()) {
-      DescribeStateMachineResponse result =
-          client.describeStateMachine(r -> r.stateMachineArn(smArn));
-      // Assert
-      String actualStatus = result.statusAsString();
-      assertEquals(
-          expectedStatus,
-          actualStatus,
-          "Expected state machine status '" + expectedStatus + "' but got '" + actualStatus + "'");
-    }
-  }
-
   @Then("the \"API\" will synchronously start and await an Express Workflow execution per request")
   public void theApiWillSynchronouslyStartAndAwaitExecution() throws Exception {
     // Arrange
@@ -547,13 +374,6 @@ public class ApigatewayStepfunctionsSteps {
   @Then("the execution is \"FAILED\" and the request is \"FAILED\"")
   public void theExecutionIsFailedAndRequestIsFailed() {
     // Arrange / Act / Assert — cannot simulate Step Functions execution failure via API Gateway.
-    // Invariant: trivially satisfied in isolated lws context.
-  }
-
-  // ── Then: invariants ──────────────────────────────────────────────────────────
-
-  @Then("every \"IN_PROGRESS\" request references an \"ACTIVE\" \"API\"")
-  public void everyInProgressRequestReferencesAnActiveApi() {
     // Invariant: trivially satisfied in isolated lws context.
   }
 

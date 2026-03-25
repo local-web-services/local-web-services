@@ -71,29 +71,6 @@ public class EventsSteps {
     }
   }
 
-  // ── Given: event bus state setup ──────────────────────────────────────────────
-
-  @Given("the event bus does not already exist")
-  public void theEventBusDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no custom event buses.
-  }
-
-  @Given("the event bus already exists")
-  public void theEventBusAlreadyExists() {
-    // Arrange: create the bus so it already exists
-    // Act
-    createBus();
-    // Assert: bus created
-  }
-
-  @Given("the event bus exists")
-  public void theEventBusExists() {
-    // Arrange: create the test event bus
-    // Act
-    createBus();
-    // Assert: bus created
-  }
-
   @Given("the event bus is \"ACTIVE\"")
   public void theEventBusIsActive() {
     // Arrange / Act / Assert — no-op: event buses are ACTIVE immediately after creation.
@@ -119,11 +96,6 @@ public class EventsSteps {
     // Assert: bus recreated in non-ACTIVE state
   }
 
-  @Given("the event bus does not exist")
-  public void theEventBusDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state has no custom event buses.
-  }
-
   @Given("the event bus is not the default bus")
   public void theEventBusIsNotTheDefaultBus() {
     // Arrange / Act / Assert — no-op: TEST_BUS is not the default bus.
@@ -142,22 +114,6 @@ public class EventsSteps {
   @Given("the event bus has rules")
   public void theEventBusHasRules() {
     // Arrange: create a rule on the bus
-    // Act
-    createRule();
-    // Assert: rule created
-  }
-
-  // ── Given: rule state setup ───────────────────────────────────────────────────
-
-  @Given("the rule does not already exist")
-  public void theRuleDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state has no rules.
-  }
-
-  @Given("the rule already exists")
-  public void theRuleAlreadyExists() {
-    // Arrange: create bus and rule so the rule already exists
-    createBus();
     // Act
     createRule();
     // Assert: rule created
@@ -554,31 +510,6 @@ public class EventsSteps {
 
   // ── Then: assertions ──────────────────────────────────────────────────────────
 
-  // "the operation is rejected" — registered in CrossServiceSteps; NOT re-registered.
-  // "every .*" invariant catch-alls — registered in CrossServiceSteps; NOT re-registered.
-
-  @Then("the event bus is \"ACTIVE\"")
-  public void theEventBusIsActiveThen() {
-    // Arrange
-    String expectedBus = TEST_BUS;
-    // Act
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse result =
-          client.listEventBuses(
-              software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder()
-                  .build());
-      List<EventBus> buses = result.eventBuses();
-      boolean actualFound = buses.stream().anyMatch(b -> expectedBus.equals(b.name()));
-      // Assert
-      assertTrue(
-          actualFound,
-          "Expected event bus '"
-              + expectedBus
-              + "' to be ACTIVE but not found; expected_bus="
-              + expectedBus);
-    }
-  }
-
   @Then("the event bus is \"DELETED\"")
   public void theEventBusIsDeletedThen() {
     // Arrange
@@ -626,69 +557,6 @@ public class EventsSteps {
     assertTrue(
         actualSuccess,
         "Expected list_event_buses to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-  }
-
-  @Then("the rule is \"ENABLED\"")
-  public void theRuleIsEnabledThen() {
-    // Arrange
-    String expectedState = RuleState.ENABLED.toString();
-    // Act
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      DescribeRuleResponse result =
-          client.describeRule(r -> r.name(TEST_RULE).eventBusName(TEST_BUS));
-      String actualState = result.stateAsString();
-      // Assert
-      assertEquals(
-          expectedState,
-          actualState,
-          "Expected rule state '"
-              + expectedState
-              + "' but got '"
-              + actualState
-              + "'; expected_state="
-              + expectedState
-              + " actual_state="
-              + actualState);
-    }
-  }
-
-  @Then("the rule is \"DISABLED\"")
-  public void theRuleIsDisabledThen() {
-    // Arrange
-    String expectedState = RuleState.DISABLED.toString();
-    // Act
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      DescribeRuleResponse result =
-          client.describeRule(r -> r.name(TEST_RULE).eventBusName(TEST_BUS));
-      String actualState = result.stateAsString();
-      // Assert
-      assertEquals(
-          expectedState,
-          actualState,
-          "Expected rule state '"
-              + expectedState
-              + "' but got '"
-              + actualState
-              + "'; expected_state="
-              + expectedState
-              + " actual_state="
-              + actualState);
-    }
-  }
-
-  @Then("the rule is \"DELETED\"")
-  public void theRuleIsDeletedThen() {
-    // Arrange: action performed in When step
-    // Act: (no-op)
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "Expected delete_rule to succeed but got error: "
             + world.lastError
             + "; expected_success="
             + expectedSuccess);

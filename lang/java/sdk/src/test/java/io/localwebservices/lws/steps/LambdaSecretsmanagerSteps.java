@@ -74,31 +74,6 @@ public class LambdaSecretsmanagerSteps {
     }
   }
 
-  // ── Given: invocation state ───────────────────────────────────────────────────
-
-  @Given("an invocation is \"IN_PROGRESS\"")
-  public void anInvocationIsInProgress() {
-    // Arrange: create the Lambda function so an invocation could be in progress
-    // Act
-    lambdaCreateFunction();
-    // Assert: function created (no error thrown)
-  }
-
-  @Given("no invocation is \"IN_PROGRESS\"")
-  public void noInvocationIsInProgress() {
-    // No-op: fresh state has no invocations.
-  }
-
-  @Given("an invocation slot is available")
-  public void anInvocationSlotIsAvailable() {
-    // No-op: always room for invocations in lws.
-  }
-
-  @Given("no invocation slot is available")
-  public void noInvocationSlotIsAvailable() {
-    // @internal: Cannot exhaust invocation slot limit in lws via public APIs.
-  }
-
   // ── Given: secret state unique to cross-service scenarios ─────────────────────
 
   @Given("the secret exists and is \"ACTIVE\"")
@@ -133,27 +108,6 @@ public class LambdaSecretsmanagerSteps {
     // Assert: secret created and ACTIVE
   }
 
-  // ── When: actions ─────────────────────────────────────────────────────────────
-
-  @When("a Lambda function is deployed")
-  public void aLambdaFunctionIsDeployed() {
-    // Arrange
-    try (LambdaClient client = world.session.lambdaClient()) {
-      // Act
-      client.createFunction(
-          r ->
-              r.functionName(TEST_FUNC)
-                  .runtime(Runtime.PYTHON3_12)
-                  .role(TEST_ROLE_ARN)
-                  .handler("index.handler")
-                  .code(c -> c.zipFile(SdkBytes.fromUtf8String("fake"))));
-      // Assert: store result
-      world.setSuccess(TEST_FUNC);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
   @When("a secret is created in Secrets Manager")
   public void aSecretIsCreatedInSecretsManager() {
     // Arrange
@@ -178,14 +132,6 @@ public class LambdaSecretsmanagerSteps {
     } catch (Exception e) {
       world.setFailure(e);
     }
-  }
-
-  @When("the Lambda function is invoked")
-  public void theLambdaFunctionIsInvoked() {
-    // @internal: Cannot trigger Lambda invocation in lws without Docker.
-    world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger Lambda invocation: scenario is @internal"));
   }
 
   @When("the Lambda function fails because the secret is pending deletion")
@@ -269,28 +215,6 @@ public class LambdaSecretsmanagerSteps {
               + "' to have a deletedDate (pending deletion) but got null;"
               + " actual_deleted_date=null");
     }
-  }
-
-  @Then("the invocation is \"IN_PROGRESS\"")
-  public void theInvocationIsInProgress() {
-    // @internal: Cannot observe Lambda invocation state in lws.
-  }
-
-  @Then("the invocation is \"FAILED\" with a ResourceNotFoundException")
-  public void theInvocationIsFailedWithAResourceNotFoundException() {
-    // @internal: Cannot observe Lambda invocation failure in lws.
-  }
-
-  @Then("the invocation is \"SUCCESS\"")
-  public void theInvocationIsSuccess() {
-    // @internal: Cannot observe Lambda invocation success in lws.
-  }
-
-  // ── Invariant catch-all steps ─────────────────────────────────────────────────
-
-  @Then("every \"IN_PROGRESS\" invocation references an \"ACTIVE\" Lambda function")
-  public void everyInProgressInvocationReferencesAnActiveLambdaFunction() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
   }
 
   @Then("every successful invocation recorded which secret it read")

@@ -1,7 +1,5 @@
 package io.localwebservices.lws.steps;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.cucumber.java.en.Given;
@@ -11,7 +9,6 @@ import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.Runtime;
 import software.amazon.awssdk.services.rds.RdsClient;
-import software.amazon.awssdk.services.rds.model.DescribeDbInstancesResponse;
 
 /**
  * Step definitions for the lambda_rds cross-service informal specification feature files.
@@ -72,44 +69,6 @@ public class LambdaRdsSteps {
     }
   }
 
-  // ── Given: function state ──────────────────────────────────────────────────────
-
-  @Given("the function does not already exist")
-  public void theFunctionDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no functions.
-  }
-
-  @Given("the function already exists")
-  public void theFunctionAlreadyExists() {
-    // Arrange
-    // Act
-    lambdaRdsCreateFunction();
-    // Assert: function created (no error thrown)
-  }
-
-  @Given("the function exists")
-  public void theFunctionExists() {
-    // Arrange
-    // Act
-    lambdaRdsCreateFunction();
-    // Assert: function created (no error thrown)
-  }
-
-  @Given("the function does not exist")
-  public void theFunctionDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no functions.
-  }
-
-  @Given("the function is \"ACTIVE\"")
-  public void theFunctionIsActive() {
-    // Arrange / Act / Assert — no-op: fresh functions are ACTIVE immediately after creation.
-  }
-
-  @Given("the function is not \"ACTIVE\"")
-  public void theFunctionIsNotActive() {
-    // @internal: Cannot force a function into a non-ACTIVE state via public API in lws.
-  }
-
   // ── Given: DB instance state ───────────────────────────────────────────────────
 
   @Given("the instance does not already exist")
@@ -123,19 +82,6 @@ public class LambdaRdsSteps {
     // Act
     lambdaRdsCreateDbInstance();
     // Assert: DB instance created (no error thrown)
-  }
-
-  @Given("the instance exists")
-  public void theInstanceExists() {
-    // Arrange
-    // Act
-    lambdaRdsCreateDbInstance();
-    // Assert: DB instance created (no error thrown)
-  }
-
-  @Given("the instance does not exist")
-  public void theInstanceDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no DB instances.
   }
 
   @Given("the instance is \"AVAILABLE\"")
@@ -164,21 +110,6 @@ public class LambdaRdsSteps {
     // Assert: DB instance is AVAILABLE (not FAILING_OVER)
   }
 
-  // ── Given: invocation state ────────────────────────────────────────────────────
-
-  @Given("an invocation is \"IN_PROGRESS\"")
-  public void anInvocationIsInProgress() {
-    // Arrange: create the Lambda function so an invocation could be in progress
-    // Act
-    lambdaRdsCreateFunction();
-    // Assert: function created (no error thrown)
-  }
-
-  @Given("no invocation is \"IN_PROGRESS\"")
-  public void noInvocationIsInProgress() {
-    // No-op: fresh state has no invocations.
-  }
-
   @Given("the database instance is \"AVAILABLE\"")
   public void theDatabaseInstanceIsAvailable() {
     // Arrange
@@ -205,18 +136,6 @@ public class LambdaRdsSteps {
     // Assert: DB instance is AVAILABLE (not FAILING_OVER)
   }
 
-  // ── Given: capacity ────────────────────────────────────────────────────────────
-
-  @Given("an invocation slot is available")
-  public void anInvocationSlotIsAvailable() {
-    // No-op: always room for invocations in lws.
-  }
-
-  @Given("no invocation slot is available")
-  public void noInvocationSlotIsAvailable() {
-    // @internal: Cannot exhaust invocation slot limit in lws via public APIs.
-  }
-
   // ── When: actions ──────────────────────────────────────────────────────────────
 
   @When("an \"RDS\" database instance is created")
@@ -237,33 +156,6 @@ public class LambdaRdsSteps {
     } catch (Exception e) {
       world.setFailure(e);
     }
-  }
-
-  @When("a Lambda function is deployed")
-  public void aLambdaFunctionIsDeployed() {
-    // Arrange: (function state set up by Given steps)
-    try (LambdaClient client = world.session.lambdaClient()) {
-      // Act
-      client.createFunction(
-          r ->
-              r.functionName(TEST_FUNC)
-                  .runtime(Runtime.PYTHON3_12)
-                  .role(TEST_ROLE_ARN)
-                  .handler("index.handler")
-                  .code(c -> c.zipFile(SdkBytes.fromUtf8String("fake"))));
-      // Assert: store result
-      world.setSuccess(TEST_FUNC);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("the Lambda function is invoked")
-  public void theLambdaFunctionIsInvoked() {
-    // @internal: Cannot trigger Lambda invocation in lws without Docker.
-    world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger Lambda invocation: scenario is @internal"));
   }
 
   @When("a Multi-\"AZ\" failover begins on the \"RDS\" instance")
@@ -304,55 +196,6 @@ public class LambdaRdsSteps {
         new UnsupportedOperationException("invocation_succeeds: scenario is @internal"));
   }
 
-  // ── Then: assertions ───────────────────────────────────────────────────────────
-
-  @Then("the instance is \"AVAILABLE\"")
-  public void theInstanceIsAvailableThen() {
-    // Arrange
-    String expectedInstanceId = TEST_DB_INSTANCE_ID;
-    // Act
-    try (RdsClient client = world.session.rdsClient()) {
-      DescribeDbInstancesResponse response =
-          client.describeDBInstances(r -> r.dbInstanceIdentifier(expectedInstanceId));
-      assertNotNull(response.dbInstances(), "expected DB instance list to be non-null");
-      // Assert
-      boolean actualFound =
-          response.dbInstances().stream()
-              .anyMatch(i -> expectedInstanceId.equals(i.dbInstanceIdentifier()));
-      assertTrue(
-          actualFound,
-          "expected DB instance '"
-              + expectedInstanceId
-              + "' to be AVAILABLE but was not found; expected_instance_id="
-              + expectedInstanceId
-              + " actual_found="
-              + actualFound);
-    }
-  }
-
-  @Then("the function is \"ACTIVE\"")
-  public void theFunctionIsActiveThen() {
-    // Arrange
-    String expectedState = "Active";
-    // Act
-    try (LambdaClient client = world.session.lambdaClient()) {
-      var result = client.getFunction(r -> r.functionName(TEST_FUNC));
-      String actualState = result.configuration().state().toString();
-      // Assert
-      assertEquals(
-          expectedState,
-          actualState,
-          "expected function state '"
-              + expectedState
-              + "' but got '"
-              + actualState
-              + "'; expected_state="
-              + expectedState
-              + " actual_state="
-              + actualState);
-    }
-  }
-
   @Then("the instance is \"FAILING_OVER\" and temporarily unavailable for connections")
   public void theInstanceIsFailingOverAndTemporarilyUnavailableForConnections() {
     // Arrange: no additional setup required
@@ -372,46 +215,6 @@ public class LambdaRdsSteps {
   public void theInstanceIsAvailableAgain() {
     // @internal: failover completion not observable via public API.
     // Only reached by @internal scenarios excluded by the tag filter.
-  }
-
-  @Then("the invocation is \"IN_PROGRESS\"")
-  public void theInvocationIsInProgress() {
-    // @internal: Cannot observe Lambda invocation state in lws.
-    // Only reached by @internal scenarios excluded by the tag filter.
-  }
-
-  @Then("the invocation is \"FAILED\" with a connection error")
-  public void theInvocationIsFailedWithAConnectionError() {
-    // @internal: Cannot observe Lambda invocation failure in lws.
-    // Only reached by @internal scenarios excluded by the tag filter.
-  }
-
-  @Then("the invocation is \"SUCCESS\"")
-  public void theInvocationIsSuccess() {
-    // @internal: Cannot observe Lambda invocation success in lws.
-    // Only reached by @internal scenarios excluded by the tag filter.
-  }
-
-  @Then("the operation is rejected")
-  public void theOperationIsRejected() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedRejected = true;
-    boolean actualRejected = !world.lastSuccess;
-    assertTrue(
-        actualRejected,
-        "expected operation to be rejected but it succeeded; expected_rejected="
-            + expectedRejected
-            + " actual_rejected="
-            + actualRejected);
-  }
-
-  // ── Invariant catch-all steps ──────────────────────────────────────────────────
-
-  @Then("every \"IN_PROGRESS\" invocation references an \"ACTIVE\" Lambda function")
-  public void everyInProgressInvocationReferencesAnActiveLambdaFunction() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
   }
 
   @Then("every successful invocation recorded which database it queried")

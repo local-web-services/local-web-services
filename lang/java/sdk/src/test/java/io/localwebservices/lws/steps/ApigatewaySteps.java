@@ -1018,30 +1018,6 @@ public class ApigatewaySteps {
     }
   }
 
-  @When("throttling is enabled for the dev stage")
-  public void throttlingIsEnabledForTheDevStageWhen() {
-    // Arrange
-    String capturedRestApiId = restApiId;
-    try (ApiGatewayClient client = world.session.apiGatewayClient()) {
-      // Act
-      var result =
-          client.updateStage(
-              r ->
-                  r.restApiId(capturedRestApiId)
-                      .stageName(TEST_DEV_STAGE)
-                      .patchOperations(
-                          PatchOperation.builder()
-                              .op(software.amazon.awssdk.services.apigateway.model.Op.REPLACE)
-                              .path("/*/*/throttling/burstLimit")
-                              .value("100")
-                              .build()));
-      // Assert: store result
-      world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
   @When("throttling is disabled for the dev stage")
   public void throttlingIsDisabledForTheDevStageWhen() {
     // Arrange
@@ -1119,30 +1095,6 @@ public class ApigatewaySteps {
                               .op(software.amazon.awssdk.services.apigateway.model.Op.REPLACE)
                               .path("/deploymentId")
                               .value(capturedDeploymentId)
-                              .build()));
-      // Assert: store result
-      world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("throttling is enabled for the prod stage")
-  public void throttlingIsEnabledForTheProdStageWhen() {
-    // Arrange
-    String capturedRestApiId = restApiId;
-    try (ApiGatewayClient client = world.session.apiGatewayClient()) {
-      // Act
-      var result =
-          client.updateStage(
-              r ->
-                  r.restApiId(capturedRestApiId)
-                      .stageName(TEST_PROD_STAGE)
-                      .patchOperations(
-                          PatchOperation.builder()
-                              .op(software.amazon.awssdk.services.apigateway.model.Op.REPLACE)
-                              .path("/*/*/throttling/burstLimit")
-                              .value("100")
                               .build()));
       // Assert: store result
       world.setSuccess(result);

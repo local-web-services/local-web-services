@@ -778,13 +778,6 @@ public class DocdbSteps {
     assertNotNull(world.lastOutput, "expected RestoreDbClusterFromSnapshotResponse but got null");
   }
 
-  // ── Then: @internal state assertions (no-ops) ─────────────────────────────
-
-  @Then("the cluster is {string}")
-  public void theClusterIsStatus(String status) {
-    // @internal: model-level invariant; trivially satisfied.
-  }
-
   @Then("the cluster returns to {string} state")
   public void theClusterReturnsToState(String status) {
     // @internal: model-level invariant; trivially satisfied.
@@ -807,11 +800,6 @@ public class DocdbSteps {
 
   @Then("the instance returns to {string} state")
   public void theInstanceReturnsToState(String status) {
-    // @internal: model-level invariant; trivially satisfied.
-  }
-
-  @Then("the snapshot is {string}")
-  public void theSnapshotIsStatus(String status) {
     // @internal: model-level invariant; trivially satisfied.
   }
 

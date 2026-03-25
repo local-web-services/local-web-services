@@ -116,29 +116,6 @@ public class LambdaDynamodbSteps {
     // Only reached by @internal/@capacity scenarios excluded by the tag filter.
   }
 
-  // ── When: actions ──────────────────────────────────────────────────────────────
-
-  @When("a Lambda function is deployed")
-  public void aLambdaFunctionIsDeployed() {
-    // Arrange
-    try {
-      // Act
-      lambdaDynamodbCreateFunction();
-      // Assert: store result
-      world.setSuccess(TEST_FUNC);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("the Lambda function is invoked")
-  public void theLambdaFunctionIsInvoked() {
-    // @internal: Cannot trigger Lambda invocation in lws without Docker.
-    world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger Lambda invocation: scenario is @internal"));
-  }
-
   @When("the Lambda invocation fails")
   public void theLambdaInvocationFails() {
     // @internal: Cannot trigger Lambda invocation failure in lws.

@@ -197,16 +197,6 @@ public class SecretsmanagerLambdaSteps {
 
   // ── Then: assertions ───────────────────────────────────────────────────────────
 
-  // "the secret is \"ACTIVE\"" — registered in StepfunctionsSecretsmanagerSteps; absent.
-  // "the function is \"ACTIVE\"" — registered in LambdaSecretsmanagerSteps; absent.
-
-  @Then("the secret has a rotation function configured")
-  public void theSecretHasARotationFunctionConfiguredThen() {
-    // Cannot verify rotation function configuration in lws.
-    // Scenarios requiring this assertion also require rotation configuration
-    // which is not available via public API; no-op for excluded scenarios.
-  }
-
   @Then("the secret is \"ROTATING\" and Secrets Manager invokes the Lambda rotation function")
   public void theSecretIsRotatingAndSecretsManagerInvokesTheLambdaRotationFunction() {
     // Cannot trigger SecretsManager->Lambda rotation in lws.

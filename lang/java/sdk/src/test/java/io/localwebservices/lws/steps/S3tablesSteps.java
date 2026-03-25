@@ -41,29 +41,6 @@ public class S3tablesSteps {
     this.world = world;
   }
 
-  // ── Given: bucket state setup ─────────────────────────────────────────────────
-
-  @Given("the bucket does not already exist")
-  public void theBucketDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no table buckets.
-  }
-
-  @Given("the bucket already exists")
-  public void theBucketAlreadyExists() {
-    // Arrange
-    // Act
-    createBucket();
-    // Assert: bucket created (no error thrown)
-  }
-
-  @Given("the bucket exists")
-  public void theBucketExists() {
-    // Arrange
-    // Act
-    createBucket();
-    // Assert: bucket created (no error thrown)
-  }
-
   @Given("the bucket is \"ACTIVE\"")
   public void theBucketIsActive() {
     // Arrange / Act / Assert — no-op: table buckets are ACTIVE immediately in lws.
@@ -105,11 +82,6 @@ public class S3tablesSteps {
     // Act
     createNamespace();
     // Assert: namespace created (no error thrown)
-  }
-
-  @Given("the bucket does not exist")
-  public void theBucketDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no table buckets.
   }
 
   // ── Given: namespace state setup ─────────────────────────────────────────────
@@ -173,31 +145,6 @@ public class S3tablesSteps {
     // Arrange / Act / Assert — no-op: fresh bucket has no namespaces.
   }
 
-  // ── Given: table state setup ──────────────────────────────────────────────────
-
-  @Given("the table does not already exist")
-  public void theTableDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh namespace has no tables.
-  }
-
-  @Given("the table already exists")
-  public void theTableAlreadyExists() {
-    // Arrange
-    // Act
-    createTable();
-    // Assert: table created (no error thrown)
-  }
-
-  @Given("the table exists")
-  public void theTableExists() {
-    // Arrange
-    // Act: ensure bucket, namespace, and table exist
-    createBucket();
-    createNamespace();
-    createTable();
-    // Assert: table created (no error thrown)
-  }
-
   @Given("the table is \"ACTIVE\"")
   public void theTableIsActive() {
     // Arrange / Act / Assert — no-op: tables transition to ACTIVE immediately in lws.
@@ -238,11 +185,6 @@ public class S3tablesSteps {
     // @internal: no public API can place a table in non-MAINTENANCE state selectively.
   }
 
-  @Given("the table does not exist")
-  public void theTableDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no tables.
-  }
-
   @Given("the table has a policy")
   public void theTableHasAPolicy() {
     // Arrange
@@ -262,23 +204,6 @@ public class S3tablesSteps {
   @Given("the table does not have a policy")
   public void theTableDoesNotHaveAPolicy() {
     // Arrange / Act / Assert — no-op: fresh table has no policy.
-  }
-
-  // ── Given: snapshot state setup ───────────────────────────────────────────────
-
-  @Given("the snapshot does not already exist")
-  public void theSnapshotDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh table has no snapshots.
-  }
-
-  @Given("the snapshot already exists")
-  public void theSnapshotAlreadyExists() {
-    // @internal: snapshot creation is managed internally; cannot duplicate via public API.
-  }
-
-  @Given("the snapshot exists")
-  public void theSnapshotExists() {
-    // @internal: snapshot existence is managed by lws internally.
   }
 
   @Given("the snapshot is \"ACTIVE\"")
@@ -441,27 +366,6 @@ public class S3tablesSteps {
                       .format(OpenTableFormat.ICEBERG));
       // Assert: store result
       world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("a table is deleted")
-  public void aTableIsDeleted() {
-    // Arrange: retrieve bucket ARN
-    String arn;
-    try {
-      arn = getBucketArn();
-    } catch (Exception e) {
-      world.setFailure(e);
-      return;
-    }
-    try (S3TablesClient client = world.session.s3TablesClient()) {
-      // Act
-      client.deleteTable(
-          r -> r.tableBucketARN(arn).namespace(TEST_NAMESPACE_NAME).name(TEST_TABLE_NAME));
-      // Assert: store result
-      world.setSuccess(null);
     } catch (Exception e) {
       world.setFailure(e);
     }
@@ -667,30 +571,9 @@ public class S3tablesSteps {
             + expectedSuccess);
   }
 
-  @Then("the bucket is \"ACTIVE\"")
-  public void theBucketIsActiveThen() {
-    // @internal: internal state assertion — no-op in public API test context.
-  }
-
   @Then("the bucket is \"DELETED\" and all its namespaces and tables are \"DELETED\"")
   public void theBucketIsDeletedAndAllItsNamespacesAndTablesAreDeleted() {
     // @internal: internal state assertion — no-op in public API test context.
-  }
-
-  @Then("the namespace is \"ACTIVE\"")
-  public void theNamespaceIsActiveThen() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected create_namespace to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    assertNotNull(world.lastOutput, "expected CreateNamespaceResponse but got null");
   }
 
   @Then("the namespace enters \"DELETING\" state")
@@ -713,22 +596,6 @@ public class S3tablesSteps {
     // @internal: internal state assertion — no-op in public API test context.
   }
 
-  @Then("the table is in \"CREATING\" state")
-  public void theTableIsInCreatingState() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected create_table to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    assertNotNull(world.lastOutput, "expected CreateTableResponse but got null");
-  }
-
   @Then("the table enters \"DELETING\" state")
   public void theTableEntersDeletingState() {
     // Arrange: no additional setup required
@@ -742,11 +609,6 @@ public class S3tablesSteps {
             + world.lastError
             + "; expected_success="
             + expectedSuccess);
-  }
-
-  @Then("the table is \"ACTIVE\"")
-  public void theTableIsActiveThen() {
-    // @internal: internal state assertion — no-op in public API test context.
   }
 
   @Then("the table is \"DELETED\" and all its snapshots are \"DELETED\"")
@@ -801,21 +663,6 @@ public class S3tablesSteps {
     assertNotNull(world.lastOutput, "expected GetTableResponse but got null");
   }
 
-  @Then("the table has a policy")
-  public void theTableHasAPolicyThen() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected put_table_policy to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-  }
-
   @Then("the table has no policy")
   public void theTableHasNoPolicy() {
     // Arrange: no additional setup required
@@ -829,36 +676,6 @@ public class S3tablesSteps {
             + world.lastError
             + "; expected_success="
             + expectedSuccess);
-  }
-
-  @Then("compaction is enabled for the table")
-  public void compactionIsEnabledForTheTableThen() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected put_table_maintenance_configuration to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-  }
-
-  @Then("the operation is rejected")
-  public void theOperationIsRejected() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedRejected = true;
-    boolean actualRejected = !world.lastSuccess;
-    assertTrue(
-        actualRejected,
-        "expected operation to be rejected but it succeeded; expected_rejected="
-            + expectedRejected
-            + " actual_rejected="
-            + actualRejected);
   }
 
   // ── Then: safety invariants (no-op) ───────────────────────────────────────────

@@ -79,34 +79,6 @@ public class StepfunctionsSteps {
     }
   }
 
-  // ── Given: state machine existence ───────────────────────────────────────────
-
-  @Given("the state machine does not already exist")
-  public void theStateMachineDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after session reset has no state machines.
-  }
-
-  @Given("the state machine already exists")
-  public void theStateMachineAlreadyExists() {
-    // Arrange: create the state machine so it already exists
-    // Act
-    sfnCreateStateMachine(TEST_SM, StateMachineType.STANDARD);
-    // Assert: state machine exists (no error thrown)
-  }
-
-  @Given("the state machine exists")
-  public void theStateMachineExists() {
-    // Arrange: create the state machine
-    // Act
-    sfnCreateStateMachine(TEST_SM, StateMachineType.STANDARD);
-    // Assert: state machine exists (no error thrown)
-  }
-
-  @Given("the state machine does not exist")
-  public void theStateMachineDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after session reset has no state machines.
-  }
-
   // ── Given: state machine status / type ───────────────────────────────────────
 
   @Given("the state machine is \"ACTIVE\"")
@@ -222,28 +194,9 @@ public class StepfunctionsSteps {
     // Assert: tag added (no error thrown)
   }
 
-  @Given("the tag association is active")
-  public void theTagAssociationIsActive() {
-    // Arrange / Act / Assert — no-op: tag associations are always active after creation.
-  }
-
   @Given("the tag is not associated with the state machine")
   public void theTagIsNotAssociatedWithTheStateMachine() {
     // Arrange / Act / Assert — no-op: a fresh state machine has no tags.
-  }
-
-  @Given("the tag association is not active")
-  public void theTagAssociationIsNotActive() {
-    // Arrange: remove the tag to simulate an inactive association
-    try (SfnClient client = world.session.sfnClient()) {
-      // Act
-      try {
-        client.untagResource(r -> r.resourceArn(smArn(TEST_SM)).tagKeys(TEST_TAG_KEY));
-      } catch (Exception ignored) {
-        // ignore; desired state is tag absent
-      }
-    }
-    // Assert: tag is absent
   }
 
   // ── Given: capacity ───────────────────────────────────────────────────────────
@@ -262,24 +215,6 @@ public class StepfunctionsSteps {
     // Act
     world.session.capacity("stepfunctions").exhaust().apply();
     // Assert: capacity is exhausted
-  }
-
-  // ── When: actions ─────────────────────────────────────────────────────────────
-
-  @When("a Step Functions state machine is created")
-  public void aStepFunctionsStateMachineIsCreated() {
-    // Arrange
-    try (SfnClient client = world.session.sfnClient()) {
-      // Act
-      CreateStateMachineResponse result =
-          client.createStateMachine(
-              r -> r.name(TEST_SM).definition(TEST_PASS_DEFINITION).roleArn(TEST_ROLE_ARN));
-      world.setSuccess(result);
-      world.lastStateMachineArn = result.stateMachineArn();
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-    // Assert: result captured in world
   }
 
   @When("a state machine is deleted")
@@ -521,32 +456,6 @@ public class StepfunctionsSteps {
     // Assert: result captured in world
   }
 
-  // ── Then: assertions ──────────────────────────────────────────────────────────
-
-  @Then("the state machine is \"ACTIVE\"")
-  public void theStateMachineIsActiveAssertion() {
-    // Arrange
-    String expectedStatus = "ACTIVE";
-    // Act
-    try (SfnClient client = world.session.sfnClient()) {
-      DescribeStateMachineResponse result =
-          client.describeStateMachine(r -> r.stateMachineArn(smArn(TEST_SM)));
-      // Assert
-      String actualStatus = result.statusAsString();
-      assertEquals(
-          expectedStatus,
-          actualStatus,
-          "Expected state machine status '"
-              + expectedStatus
-              + "' but got '"
-              + actualStatus
-              + "'; expected_status="
-              + expectedStatus
-              + " actual_status="
-              + actualStatus);
-    }
-  }
-
   @Then("the state machine is in \"DELETING\" state")
   public void theStateMachineIsInDeletingState() {
     // Arrange: no additional setup required
@@ -662,46 +571,6 @@ public class StepfunctionsSteps {
     assertNotNull(
         result.stateMachineVersions(),
         "Expected 'stateMachineVersions' in list_state_machine_versions response");
-  }
-
-  @Then("the list of tags is returned")
-  public void theListOfTagsIsReturned() {
-    // Arrange: no additional setup required
-    // Act: action already performed in When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "Expected list_tags_for_resource to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess
-            + " actual_success="
-            + actualSuccess);
-    assertNotNull(world.lastOutput, "Expected non-null list_tags_for_resource result");
-    ListTagsForResourceResponse result = (ListTagsForResourceResponse) world.lastOutput;
-    assertNotNull(result.tags(), "Expected 'tags' key in list_tags_for_resource response");
-  }
-
-  @Then("the execution is \"RUNNING\"")
-  public void theExecutionIsRunningAssertion() {
-    // Arrange: no additional setup required
-    // Act: action already performed in When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "Expected start_execution to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess
-            + " actual_success="
-            + actualSuccess);
-    assertNotNull(world.lastOutput, "Expected non-null start_execution result");
-    StartExecutionResponse result = (StartExecutionResponse) world.lastOutput;
-    assertNotNull(result.executionArn(), "Expected 'executionArn' in start_execution response");
   }
 
   @Then("the execution is \"ABORTED\"")

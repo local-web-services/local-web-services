@@ -29,7 +29,6 @@ import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement;
 import software.amazon.awssdk.services.dynamodb.model.KeyType;
 import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
-import software.amazon.awssdk.services.dynamodb.model.TableStatus;
 
 /**
  * Step definitions for the apigateway_dynamodb cross-service feature files.
@@ -257,21 +256,6 @@ public class ApigatewayDynamodbSteps {
     restApiId = apiId;
   }
 
-  // ── Given: table state ────────────────────────────────────────────────────────
-
-  @Given("the table does not already exist")
-  public void theTableDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh session state has no tables.
-  }
-
-  @Given("the table already exists")
-  public void theTableAlreadyExists() {
-    // Arrange
-    // Act
-    apigwDdbCreateTable();
-    // Assert: table created
-  }
-
   @Given("the table exists and is \"ACTIVE\"")
   public void theTableExistsAndIsActive() {
     // Arrange
@@ -284,19 +268,6 @@ public class ApigatewayDynamodbSteps {
   public void theTableDoesNotExistOrIsNotActive() {
     // Arrange / Act / Assert — no-op: cannot simulate non-ACTIVE DynamoDB table in lws; @internal
     // excluded.
-  }
-
-  @Given("the table exists")
-  public void theTableExists() {
-    // Arrange
-    // Act
-    apigwDdbCreateTable();
-    // Assert: table created
-  }
-
-  @Given("the table does not exist")
-  public void theTableDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh session state has no tables.
   }
 
   @Given("the target table is \"ACTIVE\"")
@@ -333,36 +304,6 @@ public class ApigatewayDynamodbSteps {
     // Arrange / Act / Assert — no-op: cannot simulate DELETING state in lws; @internal excluded.
   }
 
-  // ── Given: capacity / slot state ──────────────────────────────────────────────
-
-  @Given("a request slot is available")
-  public void aRequestSlotIsAvailable() throws Exception {
-    // Arrange: set apigateway capacity to unlimited
-    // Act
-    world.session.capacity("apigateway").unlimited().apply();
-    // Assert: capacity configured
-  }
-
-  @Given("no request slot is available")
-  public void noRequestSlotIsAvailable() {
-    // Arrange / Act / Assert — no-op: cannot simulate exhausted request slots via public API;
-    // @internal excluded.
-  }
-
-  @Given("an item slot is available")
-  public void anItemSlotIsAvailable() throws Exception {
-    // Arrange: set dynamodb capacity to unlimited
-    // Act
-    world.session.capacity("dynamodb").unlimited().apply();
-    // Assert: capacity configured
-  }
-
-  @Given("no item slot is available")
-  public void noItemSlotIsAvailable() {
-    // Arrange / Act / Assert — no-op: cannot simulate exhausted item slots via public API;
-    // @internal excluded.
-  }
-
   // ── When: actions ─────────────────────────────────────────────────────────────
 
   @When("an \"API\" Gateway \"REST\" \"API\" is created")
@@ -372,19 +313,6 @@ public class ApigatewayDynamodbSteps {
     try {
       apigwDdbCreateRestApi();
       world.setSuccess(restApiId);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-    // Assert: captured in world
-  }
-
-  @When("a DynamoDB table is created")
-  public void aDynamoDbTableIsCreated() {
-    // Arrange
-    // Act
-    try {
-      apigwDdbCreateTable();
-      world.setSuccess(TEST_TABLE);
     } catch (Exception e) {
       world.setFailure(e);
     }
@@ -471,23 +399,6 @@ public class ApigatewayDynamodbSteps {
       String expectedName = TEST_API_NAME;
       String actualName = resp.name();
       assertEquals(expectedName, actualName, "Expected API name to be \"" + expectedName + "\"");
-    }
-  }
-
-  @Then("the table is \"ACTIVE\"")
-  public void theTableIsActive() {
-    // Arrange
-    // Act
-    try (DynamoDbClient client = world.session.dynamoDbClient()) {
-      software.amazon.awssdk.services.dynamodb.model.DescribeTableResponse resp =
-          client.describeTable(r -> r.tableName(TEST_TABLE));
-      // Assert
-      TableStatus expectedStatus = TableStatus.ACTIVE;
-      TableStatus actualStatus = resp.table().tableStatus();
-      assertEquals(
-          expectedStatus,
-          actualStatus,
-          "Expected table status \"" + expectedStatus + "\" but got \"" + actualStatus + "\"");
     }
   }
 

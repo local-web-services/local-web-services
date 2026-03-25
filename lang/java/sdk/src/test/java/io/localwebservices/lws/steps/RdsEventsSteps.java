@@ -1,8 +1,6 @@
 package io.localwebservices.lws.steps;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -76,80 +74,6 @@ public class RdsEventsSteps {
     // Only reached by @internal scenarios excluded by the tag filter.
   }
 
-  // ── Given: bus state setup ────────────────────────────────────────────────────
-
-  @Given("the bus does not already exist")
-  public void theBusDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no event buses.
-  }
-
-  @Given("the bus already exists")
-  public void theBusAlreadyExists() {
-    // Arrange
-    // Act
-    rdsEventsCreateBus();
-    // Assert: bus created (no error thrown)
-  }
-
-  @Given("the bus exists")
-  public void theBusExists() {
-    // Arrange
-    // Act
-    rdsEventsCreateBus();
-    // Assert: bus created (no error thrown)
-  }
-
-  @Given("the bus is \"ACTIVE\"")
-  public void theBusIsActive() {
-    // Arrange / Act / Assert — no-op: event buses in lws are ACTIVE immediately after creation.
-  }
-
-  @Given("the bus is \"DELETED\"")
-  public void theBusIsDeleted() {
-    // Arrange / Act / Assert — no-op: fresh state has no event buses (simulates deleted bus).
-  }
-
-  @Given("the bus is already \"DELETED\"")
-  public void theBusIsAlreadyDeleted() {
-    // Arrange: delete the bus so it is in a DELETED state
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      // Act: delete, ignore errors (bus may not exist)
-      try {
-        client.deleteEventBus(r -> r.name(TEST_BUS_NAME));
-      } catch (Exception ignored) {
-        // bus may not exist; desired state is absence
-      }
-    }
-    world.setSuccess(null);
-    // Assert: bus is absent (DELETED state)
-  }
-
-  @Given("the bus does not exist")
-  public void theBusDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no event buses.
-  }
-
-  @Given("the bus is not \"DELETED\"")
-  public void theBusIsNotDeleted() {
-    // Arrange
-    // Act: ensure the bus exists so it is not in a DELETED state
-    rdsEventsCreateBus();
-    // Assert: bus created (no error thrown)
-  }
-
-  // ── Given: event slot state ───────────────────────────────────────────────────
-
-  @Given("an event slot is available")
-  public void anEventSlotIsAvailable() {
-    // Arrange / Act / Assert — no-op: always room for events in lws.
-  }
-
-  @Given("no event slot is available")
-  public void noEventSlotIsAvailable() {
-    // @internal: Cannot exhaust event slot limit in lws via public APIs.
-    // Only reached by @internal/@capacity scenarios excluded by the tag filter.
-  }
-
   // ── When: actions ─────────────────────────────────────────────────────────────
 
   @When("an \"RDS\" \"DB\" instance is created and becomes \"AVAILABLE\"")
@@ -167,32 +91,6 @@ public class RdsEventsSteps {
                       .masterUserPassword("password123"));
       // Assert: store result
       world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("an EventBridge event bus is created")
-  public void anEventBridgeEventBusIsCreated() {
-    // Arrange: (bus state set up by Given steps)
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      // Act
-      var result = client.createEventBus(r -> r.name(TEST_BUS_NAME));
-      // Assert: store result
-      world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("the EventBridge event bus is deleted")
-  public void theEventBridgeEventBusIsDeleted() {
-    // Arrange: (bus state set up by Given steps)
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      // Act
-      client.deleteEventBus(r -> r.name(TEST_BUS_NAME));
-      // Assert: store result
-      world.setSuccess(null);
     } catch (Exception e) {
       world.setFailure(e);
     }
@@ -217,48 +115,6 @@ public class RdsEventsSteps {
     // @internal: d_b_stop_event_fails cannot be triggered via public API.
     world.setFailure(
         new UnsupportedOperationException("d_b_stop_event_fails: scenario is @internal"));
-  }
-
-  // ── Then: assertions ───────────────────────────────────────────────────────────
-
-  @Then("the \"DB\" instance is \"AVAILABLE\"")
-  public void theDbInstanceIsAvailableThen() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected RDS DB instance creation to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    assertNotNull(world.lastOutput, "expected output from RDS DB instance creation but got null");
-  }
-
-  @Then("the bus is \"ACTIVE\"")
-  public void theBusIsActiveThen() {
-    // Arrange
-    // Act
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse result =
-          client.listEventBuses(
-              software.amazon.awssdk.services.eventbridge.model.ListEventBusesRequest.builder()
-                  .build());
-      List<EventBus> buses = result.eventBuses();
-      // Assert
-      String expectedBus = TEST_BUS_NAME;
-      boolean actualFound = buses.stream().anyMatch(b -> expectedBus.equals(b.name()));
-      assertTrue(
-          actualFound,
-          "expected event bus '"
-              + expectedBus
-              + "' to be ACTIVE but not found; expected_bus="
-              + expectedBus
-              + " actual_found="
-              + actualFound);
-    }
   }
 
   @Then("the bus is \"DELETED\" and \"RDS\" event delivery will fail")
@@ -307,11 +163,6 @@ public class RdsEventsSteps {
 
   @Then("every \"DELIVERED\" event references a \"DB\" instance that exists")
   public void everyDeliveredEventReferencesADbInstanceThatExists() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
-
-  @Then("every \"DELIVERED\" event references a bus that exists")
-  public void everyDeliveredEventReferencesABusThatExists() {
     // No-op invariant: trivially satisfied in an isolated test context.
   }
 

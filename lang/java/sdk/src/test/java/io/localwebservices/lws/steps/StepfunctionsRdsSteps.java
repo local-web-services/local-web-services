@@ -1,15 +1,10 @@
 package io.localwebservices.lws.steps;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import software.amazon.awssdk.services.rds.RdsClient;
 import software.amazon.awssdk.services.rds.model.DBInstance;
-import software.amazon.awssdk.services.sfn.SfnClient;
-import software.amazon.awssdk.services.sfn.model.StartExecutionResponse;
-import software.amazon.awssdk.services.sfn.model.StateMachineType;
 
 /**
  * Step definitions for the stepfunctions_rds cross-service feature files.
@@ -63,22 +58,6 @@ public class StepfunctionsRdsSteps {
     }
   }
 
-  // ── Given: DB instance existence ──────────────────────────────────────────────
-
-  @Given("the \"DB\" instance does not already exist")
-  public void theDbInstanceDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after session reset has no RDS DB instances.
-  }
-
-  @Given("the \"DB\" instance already exists")
-  public void theDbInstanceAlreadyExists() {
-    // Arrange: create the DB instance so it already exists
-    // Act
-    String expectedDBInstanceID = createDBInstance();
-    // Assert: DB instance created
-    localDbInstanceId = expectedDBInstanceID;
-  }
-
   @Given("the \"DB\" instance exists")
   public void theDbInstanceExists() {
     // Arrange: create the DB instance
@@ -91,23 +70,6 @@ public class StepfunctionsRdsSteps {
   @Given("the \"DB\" instance does not exist")
   public void theDbInstanceDoesNotExist() {
     // Arrange / Act / Assert — no-op: fresh state after session reset has no RDS DB instances.
-  }
-
-  // ── Given: DB instance status ─────────────────────────────────────────────────
-
-  @Given("the \"DB\" instance is \"AVAILABLE\"")
-  public void theDbInstanceIsAvailable() {
-    // Arrange: create DB instance so it is AVAILABLE
-    // Act
-    String expectedDBInstanceID = createDBInstance();
-    // Assert: DB instance created
-    localDbInstanceId = expectedDBInstanceID;
-  }
-
-  @Given("the \"DB\" instance is not \"AVAILABLE\"")
-  public void theDbInstanceIsNotAvailable() {
-    // Arrange / Act / Assert — no-op: fresh state has no DB instance (simulates unavailable
-    // instance).
   }
 
   @Given("the \"DB\" instance is \"FAILING_OVER\"")
@@ -125,75 +87,7 @@ public class StepfunctionsRdsSteps {
     localDbInstanceId = expectedDBInstanceID;
   }
 
-  // ── Given: execution state ────────────────────────────────────────────────────
-
-  @Given("an execution is \"RUNNING\"")
-  public void anExecutionIsRunning() {
-    // Arrange: create state machine and start execution
-    try (SfnClient client = world.session.sfnClient()) {
-      var smResult =
-          client.createStateMachine(
-              r ->
-                  r.name(TEST_SM)
-                      .definition(TEST_PASS_DEFINITION)
-                      .roleArn(TEST_ROLE_ARN)
-                      .type(StateMachineType.STANDARD));
-      world.lastStateMachineArn = smResult.stateMachineArn();
-      // Act: start an execution
-      StartExecutionResponse execResult =
-          client.startExecution(r -> r.stateMachineArn(smArn(TEST_SM)).input(TEST_INPUT));
-      // Assert: execution started
-      world.lastExecutionArn = execResult.executionArn();
-    }
-  }
-
-  @Given("no execution is \"RUNNING\"")
-  public void noExecutionIsRunning() {
-    // Arrange / Act / Assert — no-op: fresh state after session reset has no executions.
-  }
-
-  // ── Given: capacity ───────────────────────────────────────────────────────────
-
-  @Given("an execution slot is available")
-  public void anExecutionSlotIsAvailable() throws Exception {
-    // Arrange: set unlimited capacity for stepfunctions
-    // Act
-    world.session.capacity("stepfunctions").unlimited().apply();
-    // Assert: capacity is unlimited
-  }
-
-  @Given("no execution slot is available")
-  public void noExecutionSlotIsAvailable() throws Exception {
-    // Arrange: exhaust the stepfunctions execution capacity
-    // Act
-    world.session.capacity("stepfunctions").exhaust().apply();
-    // Assert: capacity is exhausted
-  }
-
   // ── When: actions ─────────────────────────────────────────────────────────────
-
-  // "a Step Functions state machine is created" is registered in StepfunctionsSteps.
-  // "an execution of the state machine is started" is registered in StepfunctionsSteps.
-
-  @When("an \"RDS\" \"DB\" instance is created")
-  public void anRdsDbInstanceIsCreated() {
-    // Arrange: use test DB instance identifier
-    try (RdsClient client = world.session.rdsClient()) {
-      // Act
-      var result =
-          client.createDBInstance(
-              r ->
-                  r.dbInstanceIdentifier(TEST_DB_INSTANCE_ID)
-                      .dbInstanceClass("db.t3.micro")
-                      .engine("mysql")
-                      .masterUsername("admin")
-                      .masterUserPassword("password"));
-      // Assert: result captured
-      world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
 
   @When("a Multi-\"AZ\" failover begins on the \"DB\" instance")
   public void aMultiAzFailoverBeginsOnTheDbInstance() {
@@ -236,30 +130,6 @@ public class StepfunctionsRdsSteps {
 
   // ── Then: assertions ──────────────────────────────────────────────────────────
 
-  // "the state machine is "ACTIVE"" is registered in StepfunctionsSteps.
-  // "the execution is "RUNNING"" is registered in StepfunctionsSteps.
-  // "the operation is rejected" is registered in CrossServiceSteps.
-
-  @Then("the \"DB\" instance is \"AVAILABLE\"")
-  public void theDbInstanceIsAvailableThen() {
-    // Arrange
-    String expectedDBInstanceID = TEST_DB_INSTANCE_ID;
-    try (RdsClient client = world.session.rdsClient()) {
-      // Act
-      var result = client.describeDBInstances(r -> r.dbInstanceIdentifier(expectedDBInstanceID));
-      // Assert
-      boolean actualExists =
-          result.dbInstances().stream()
-              .anyMatch(i -> expectedDBInstanceID.equals(i.dbInstanceIdentifier()));
-      assertFalse(
-          !actualExists,
-          "Expected DB instance \""
-              + expectedDBInstanceID
-              + "\" to be AVAILABLE but it was not found; expected_db_instance_id="
-              + expectedDBInstanceID);
-    }
-  }
-
   @Then("the \"DB\" instance is \"AVAILABLE\" again")
   public void theDbInstanceIsAvailableAgain() {
     // @internal: Cannot observe internal DB instance failover recovery in lws.
@@ -270,25 +140,6 @@ public class StepfunctionsRdsSteps {
   public void theDbInstanceIsFailingOverAndQueriesWillBeRejected() {
     // @internal: Cannot observe internal DB instance FAILING_OVER state in lws.
     // Arrange / Act / Assert — no-op: invariant trivially satisfied in isolated lws context.
-  }
-
-  @Then("the execution is \"SUCCEEDED\"")
-  public void theExecutionIsSucceeded() {
-    // @internal: Cannot observe internal execution RDS task success in lws.
-    // Arrange / Act / Assert — no-op: invariant trivially satisfied in isolated lws context.
-  }
-
-  @Then("the execution is \"FAILED\" with a connection error")
-  public void theExecutionIsFailedWithAConnectionError() {
-    // @internal: Cannot observe internal execution RDS task failure in lws.
-    // Arrange / Act / Assert — no-op: invariant trivially satisfied in isolated lws context.
-  }
-
-  // ── Then: invariants ──────────────────────────────────────────────────────────
-
-  @Then("every \"RUNNING\" execution references an \"ACTIVE\" state machine")
-  public void everyRunningExecutionReferencesAnActiveStateMachine() {
-    // Invariant: trivially satisfied in isolated lws context.
   }
 
   @Then("every succeeded execution recorded which \"DB\" instance it queried")

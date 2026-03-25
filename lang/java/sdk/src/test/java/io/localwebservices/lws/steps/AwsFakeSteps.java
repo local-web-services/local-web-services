@@ -249,39 +249,6 @@ public class AwsFakeSteps {
     }
   }
 
-  // ── Then: assertions ──────────────────────────────────────────────────────────
-
-  @Then("the {string} fake is {string}")
-  public void theAwsFakeIsActiveOrDeleted(String fakeType, String expectedStatus) {
-    // Arrange: no additional setup required
-    // Act
-    if ("ACTIVE".equals(expectedStatus)) {
-      boolean expectedSuccess = true;
-      boolean actualSuccess = world.lastSuccess;
-      // Assert
-      assertTrue(
-          actualSuccess,
-          "Expected AWS fake creation to succeed but got: "
-              + world.lastError
-              + "; expected_success="
-              + expectedSuccess
-              + " actual_success="
-              + actualSuccess);
-    } else if ("DELETED".equals(expectedStatus)) {
-      boolean expectedSuccess = true;
-      boolean actualSuccess = world.lastSuccess;
-      // Assert
-      assertTrue(
-          actualSuccess,
-          "Expected AWS fake deletion to succeed but got: "
-              + world.lastError
-              + "; expected_success="
-              + expectedSuccess
-              + " actual_success="
-              + actualSuccess);
-    }
-  }
-
   @Then("the {string} fake is {string} and its operations are removed")
   public void theAwsFakeIsDeletedAndItsOperationsAreRemoved(
       String fakeType, String expectedStatus) {
@@ -320,23 +287,6 @@ public class AwsFakeSteps {
         "Expected operation to be "
             + expectedStatus
             + " on AWS fake but got: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess
-            + " actual_success="
-            + actualSuccess);
-  }
-
-  @Then("the operation is {string}")
-  public void theOperationIsDeleted(String expectedStatus) {
-    // Arrange: no additional setup required
-    // Act
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    // Assert
-    assertTrue(
-        actualSuccess,
-        "Expected operation removal to succeed but got: "
             + world.lastError
             + "; expected_success="
             + expectedSuccess

@@ -9,7 +9,6 @@ import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.sfn.SfnClient;
 import software.amazon.awssdk.services.sfn.model.DescribeStateMachineResponse;
-import software.amazon.awssdk.services.sfn.model.StartExecutionResponse;
 import software.amazon.awssdk.services.sfn.model.StateMachineType;
 
 /**
@@ -128,70 +127,6 @@ public class StepfunctionsLambdaSteps {
     // Assert: state machine has Lambda task definition
   }
 
-  // ── Given: cross-service execution and invocation state ──────────────────────
-
-  @Given("an execution is \"RUNNING\"")
-  public void anExecutionIsRunning() {
-    // Arrange: ensure a state machine exists
-    if (world.lastStateMachineArn == null) {
-      sfnCreateStateMachineWithDefinition(TEST_SM, PASS_DEFINITION);
-    }
-    // Act: start an execution
-    try (SfnClient client = world.session.sfnClient()) {
-      StartExecutionResponse result =
-          client.startExecution(r -> r.stateMachineArn(smArn(TEST_SM)).input(TEST_INPUT));
-      world.lastExecutionArn = result.executionArn();
-    }
-    // Assert: execution is started
-  }
-
-  @Given("no execution is \"RUNNING\"")
-  public void noExecutionIsRunning() {
-    // Arrange / Act / Assert — no-op: fresh state after session reset has no executions.
-  }
-
-  @Given("an invocation is \"IN_PROGRESS\"")
-  public void anInvocationIsInProgress() {
-    // @internal: Cannot put a Lambda invocation into IN_PROGRESS state via public API.
-    // Scenarios with this step are tagged @internal and excluded by the tag filter.
-  }
-
-  @Given("no invocation is \"IN_PROGRESS\"")
-  public void noInvocationIsInProgress() {
-    // Arrange / Act / Assert — no-op: fresh state has no invocations.
-  }
-
-  // ── Given: cross-service slot availability ────────────────────────────────────
-
-  @Given("an execution slot is available")
-  public void anExecutionSlotIsAvailable() throws Exception {
-    // Arrange: ensure unlimited capacity for stepfunctions
-    // Act
-    world.session.capacity("stepfunctions").unlimited().apply();
-    // Assert: capacity is unlimited
-  }
-
-  @Given("no execution slot is available")
-  public void noExecutionSlotIsAvailable() throws Exception {
-    // Arrange: exhaust the stepfunctions execution capacity
-    // Act
-    world.session.capacity("stepfunctions").exhaust().apply();
-    // Assert: capacity is exhausted
-  }
-
-  @Given("an invocation slot is available")
-  public void anInvocationSlotIsAvailable() {
-    // Arrange / Act / Assert — no-op: always room for invocations in fresh state.
-  }
-
-  @Given("no invocation slot is available")
-  public void noInvocationSlotIsAvailable() throws Exception {
-    // Arrange: exhaust the lambda invocation capacity
-    // Act
-    world.session.capacity("lambda").exhaust().apply();
-    // Assert: capacity is exhausted
-  }
-
   // ── Given: configured function state ─────────────────────────────────────────
 
   @Given("the configured function is \"ACTIVE\"")
@@ -239,21 +174,6 @@ public class StepfunctionsLambdaSteps {
       client.updateStateMachine(
           r -> r.stateMachineArn(smArn(TEST_SM)).definition(LAMBDA_DEFINITION));
       world.setSuccess(null);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-    // Assert: result captured in world
-  }
-
-  @When("an execution of the state machine is started")
-  public void anExecutionOfTheStateMachineIsStarted() {
-    // Arrange
-    try (SfnClient client = world.session.sfnClient()) {
-      // Act
-      StartExecutionResponse result =
-          client.startExecution(r -> r.stateMachineArn(smArn(TEST_SM)).input(TEST_INPUT));
-      world.setSuccess(result);
-      world.lastExecutionArn = result.executionArn();
     } catch (Exception e) {
       world.setFailure(e);
     }
@@ -315,12 +235,6 @@ public class StepfunctionsLambdaSteps {
     // No-op: treat as invariant satisfied.
   }
 
-  @Then("the invocation is \"IN_PROGRESS\"")
-  public void theInvocationIsInProgress() {
-    // Cannot observe internal Lambda invocation IN_PROGRESS state in lws.
-    // No-op: treat as invariant satisfied.
-  }
-
   @Then("the invocation is \"FAILED\" and the execution is \"FAILED\"")
   public void theInvocationIsFailedAndTheExecutionIsFailed() {
     // @internal: Cannot observe internal Lambda invocation failure in lws.
@@ -331,28 +245,10 @@ public class StepfunctionsLambdaSteps {
     // @internal: Cannot observe internal Lambda invocation success in lws.
   }
 
-  @Then("the execution is \"SUCCEEDED\"")
-  public void theExecutionIsSucceeded() {
-    // Cannot observe internal execution Lambda task success in lws.
-    // No-op: treat as invariant satisfied.
-  }
-
   @Then("the execution is \"FAILED\" with a connection error")
   public void theExecutionIsFailedWithAConnectionError() {
     // Cannot observe internal execution Lambda task failure in lws.
     // No-op: treat as invariant satisfied.
-  }
-
-  // ── Then: invariants ─────────────────────────────────────────────────────────
-
-  @Then("every \"RUNNING\" execution references an \"ACTIVE\" state machine")
-  public void everyRunningExecutionReferencesAnActiveStateMachine() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
-
-  @Then("every \"IN_PROGRESS\" invocation references an \"ACTIVE\" Lambda function")
-  public void everyInProgressInvocationReferencesAnActiveLambdaFunction() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
   }
 
   @Then("every \"IN_PROGRESS\" invocation has a corresponding \"RUNNING\" execution")

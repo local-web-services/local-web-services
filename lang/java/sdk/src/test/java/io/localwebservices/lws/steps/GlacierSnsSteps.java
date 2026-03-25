@@ -39,34 +39,6 @@ public class GlacierSnsSteps {
     this.world = world;
   }
 
-  // ── Given: vault state setup ──────────────────────────────────────────────────
-
-  @Given("the vault does not already exist")
-  public void theVaultDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no vaults.
-  }
-
-  @Given("the vault already exists")
-  public void theVaultAlreadyExists() {
-    // Arrange
-    // Act
-    glacierSNSCreateVault();
-    // Assert: vault created (no error thrown)
-  }
-
-  @Given("the vault exists")
-  public void theVaultExists() {
-    // Arrange
-    // Act
-    glacierSNSCreateVault();
-    // Assert: vault created (no error thrown)
-  }
-
-  @Given("the vault does not exist")
-  public void theVaultDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no vaults.
-  }
-
   @Given("the vault has no \"SNS\" notification configured")
   public void theVaultHasNoSnsNotificationConfigured() {
     // Arrange / Act / Assert — no-op: fresh vault has no SNS notification configured.
@@ -96,55 +68,9 @@ public class GlacierSnsSteps {
     // No-op — this given is only used in @internal scenarios.
   }
 
-  // ── Given: topic state setup ──────────────────────────────────────────────────
-
-  @Given("the topic does not already exist")
-  public void theTopicDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no topics.
-  }
-
-  @Given("the topic already exists")
-  public void theTopicAlreadyExists() {
-    // Arrange
-    // Act
-    glacierSNSCreateTopic();
-    // Assert: topic created (no error thrown)
-  }
-
-  @Given("the topic exists")
-  public void theTopicExists() {
-    // Arrange
-    // Act
-    glacierSNSCreateTopic();
-    // Assert: topic created (no error thrown)
-  }
-
-  @Given("the topic exists and is \"ACTIVE\"")
-  public void theTopicExistsAndIsActive() {
-    // Arrange
-    // Act
-    glacierSNSCreateTopic();
-    // Assert: topic created and is ACTIVE (no error thrown)
-  }
-
-  @Given("the topic is \"ACTIVE\"")
-  public void theTopicIsActive() {
-    // Arrange / Act / Assert — no-op: topics are ACTIVE immediately after creation in lws.
-  }
-
   @Given("the topic is already \"DELETED\"")
   public void theTopicIsAlreadyDeleted() {
     // @internal: topic lifecycle transitions require background processing.
-  }
-
-  @Given("the topic does not exist")
-  public void theTopicDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no topics.
-  }
-
-  @Given("the topic does not exist or is not \"ACTIVE\"")
-  public void theTopicDoesNotExistOrIsNotActive() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no topics.
   }
 
   // ── Given: capacity steps ─────────────────────────────────────────────────────
@@ -159,19 +85,6 @@ public class GlacierSnsSteps {
     // Arrange: exhaust glacier job capacity
     // Act
     world.session.capacity("glacier").exhaust().apply();
-    // Assert: capacity exhausted
-  }
-
-  @Given("a message slot is available")
-  public void aMessageSlotIsAvailable() {
-    // Arrange / Act / Assert — no-op: message slots are available by default.
-  }
-
-  @Given("no message slot is available")
-  public void noMessageSlotIsAvailable() throws Exception {
-    // Arrange: exhaust sns message capacity
-    // Act
-    world.session.capacity("sns").exhaust().apply();
     // Assert: capacity exhausted
   }
 
@@ -229,34 +142,6 @@ public class GlacierSnsSteps {
       client.createVault(r -> r.accountId(ACCOUNT_ID).vaultName(TEST_VAULT));
       // Assert: store result
       world.setSuccess(TEST_VAULT);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("an \"SNS\" topic is created")
-  public void anSnsTopicIsCreated() {
-    // Arrange: (topic may or may not exist — set up by Given steps)
-    try (SnsClient client = world.session.snsClient()) {
-      // Act
-      CreateTopicResponse resp = client.createTopic(r -> r.name(TEST_TOPIC));
-      // Assert: store result
-      topicArn = resp.topicArn();
-      world.setSuccess(resp);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("the \"SNS\" topic is deleted")
-  public void theSnsTopicIsDeleted() {
-    // Arrange: (topic state set up by Given steps)
-    String activeTopicArn = topicArn != null ? topicArn : snsTopicArn(TEST_TOPIC);
-    try (SnsClient client = world.session.snsClient()) {
-      // Act
-      client.deleteTopic(r -> r.topicArn(activeTopicArn));
-      // Assert: store result
-      world.setSuccess(null);
     } catch (Exception e) {
       world.setFailure(e);
     }
@@ -354,22 +239,6 @@ public class GlacierSnsSteps {
     }
   }
 
-  @Then("the topic is \"ACTIVE\"")
-  public void theTopicIsActiveAssertion() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected create_topic to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
-    assertNotNull(world.lastOutput, "expected CreateTopicResponse but got null");
-  }
-
   @Then("the topic is \"DELETED\" and Glacier notifications will fail")
   public void theTopicIsDeletedAndGlacierNotificationsWillFail() {
     // Arrange: no additional setup required
@@ -428,30 +297,10 @@ public class GlacierSnsSteps {
     // No assertion performed.
   }
 
-  @Then("the operation is rejected")
-  public void theOperationIsRejected() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedRejected = true;
-    boolean actualRejected = !world.lastSuccess;
-    assertTrue(
-        actualRejected,
-        "expected operation to be rejected but it succeeded; expected_rejected="
-            + expectedRejected
-            + " actual_rejected="
-            + actualRejected);
-  }
-
   // ── Safety invariant Then steps ───────────────────────────────────────────────
 
   @Then("every \"PUBLISHED\" notification references a job that exists")
   public void everyPublishedNotificationReferencesAJobThatExists() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
-
-  @Then("every \"PUBLISHED\" notification references a topic that exists")
-  public void everyPublishedNotificationReferencesATopicThatExists() {
     // No-op invariant: trivially satisfied in an isolated test context.
   }
 

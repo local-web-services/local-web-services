@@ -1,13 +1,11 @@
 package io.localwebservices.lws.steps;
 
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.Runtime;
-import software.amazon.awssdk.services.s3.S3Client;
 
 /**
  * Step definitions for the lambda_s3api cross-service test suite.
@@ -59,105 +57,6 @@ public class LambdaS3apiSteps {
     }
   }
 
-  // ── Given: invocation slot state ─────────────────────────────────────────────
-
-  @Given("an invocation slot is available")
-  public void anInvocationSlotIsAvailable() {
-    // No-op: always room for invocations in fresh state.
-  }
-
-  @Given("no invocation slot is available")
-  public void noInvocationSlotIsAvailable() {
-    // @internal: Cannot exhaust Lambda invocation slot limit via public API.
-    Assumptions.assumeTrue(
-        false, "lws limitation: invocation slot limit not reachable via public SDK API");
-  }
-
-  // ── Given: invocation in-progress state ──────────────────────────────────────
-
-  @Given("an invocation is \"IN_PROGRESS\"")
-  public void anInvocationIsInProgress() {
-    // Arrange: create the function so an invocation could be in progress.
-    // Act: lws fake does not expose invocation state; creating the function
-    // is the closest reachable precondition.
-    lambdaS3apiCreateFunction();
-    // Assert: function created
-  }
-
-  @Given("no invocation is \"IN_PROGRESS\"")
-  public void noInvocationIsInProgress() {
-    // No-op: fresh state has no invocations.
-  }
-
-  // ── Given: object slot state ──────────────────────────────────────────────────
-
-  @Given("an object slot is available")
-  public void anObjectSlotIsAvailable() {
-    // No-op: always room for objects in fresh state.
-  }
-
-  @Given("no object slot is available")
-  public void noObjectSlotIsAvailable() {
-    // @internal: Cannot exhaust object slot limit via public API.
-    Assumptions.assumeTrue(
-        false, "lws limitation: object slot limit not reachable via public SDK API");
-  }
-
-  // ── When: actions ─────────────────────────────────────────────────────────────
-
-  @When("a Lambda function is deployed")
-  public void aLambdaFunctionIsDeployed() {
-    // Arrange
-    try (LambdaClient client = world.session.lambdaClient()) {
-      // Act
-      client.createFunction(
-          r ->
-              r.functionName(TEST_FUNC)
-                  .runtime(Runtime.PYTHON3_12)
-                  .role(TEST_ROLE_ARN)
-                  .handler("index.handler")
-                  .code(c -> c.zipFile(SdkBytes.fromUtf8String("fake"))));
-      // Assert: captured in world state
-      world.setSuccess(TEST_FUNC);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("an S3 bucket is created")
-  public void anS3BucketIsCreated() {
-    // Arrange
-    try (S3Client client = world.session.s3Client()) {
-      // Act
-      client.createBucket(r -> r.bucket(TEST_BUCKET));
-      // Assert: captured in world state
-      world.setSuccess(TEST_BUCKET);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("the Lambda function is invoked")
-  public void theLambdaFunctionIsInvoked() {
-    // @internal: Cannot trigger Lambda function invocation via public API in lws.
-    Assumptions.assumeTrue(
-        false, "lws limitation: Lambda function invocation not reachable via public SDK API");
-  }
-
-  @When("the Lambda invocation fails")
-  public void theLambdaInvocationFails() {
-    // @internal: Cannot trigger Lambda invocation failure via public API in lws.
-    Assumptions.assumeTrue(
-        false, "lws limitation: Lambda invocation failure not reachable via public SDK API");
-  }
-
-  @When("the Lambda invocation completes successfully")
-  public void theLambdaInvocationCompletesSuccessfully() {
-    // @internal: Cannot trigger Lambda invocation success via public API in lws.
-    Assumptions.assumeTrue(
-        false, "lws limitation: Lambda invocation success not reachable via public SDK API");
-  }
-
   @When("the Lambda function writes an object to the S3 bucket during invocation")
   public void theLambdaFunctionWritesAnObjectToTheS3BucketDuringInvocation() {
     // @internal: Cannot trigger Lambda object write during invocation via public API in lws.
@@ -172,36 +71,6 @@ public class LambdaS3apiSteps {
 
   // "the function is {string}" is already registered as a parameterized Given in LambdaSteps;
   // it matches Then the function is "ACTIVE" via Cucumber keyword aliasing.
-
-  // "the object \"EXISTS\" in the bucket" is already registered in S3apiSteps.
-
-  @Then("the invocation is \"IN_PROGRESS\"")
-  public void theInvocationIsInProgress() {
-    // @internal: Cannot observe Lambda invocation IN_PROGRESS state in lws.
-    Assumptions.assumeTrue(
-        false, "lws limitation: Lambda invocation IN_PROGRESS state not observable via SDK API");
-  }
-
-  @Then("the invocation is \"FAILED\"")
-  public void theInvocationIsFailed() {
-    // @internal: Cannot observe Lambda invocation FAILED state in lws.
-    Assumptions.assumeTrue(
-        false, "lws limitation: Lambda invocation FAILED state not observable via SDK API");
-  }
-
-  @Then("the invocation is \"SUCCESS\"")
-  public void theInvocationIsSuccess() {
-    // @internal: Cannot observe Lambda invocation SUCCESS state in lws.
-    Assumptions.assumeTrue(
-        false, "lws limitation: Lambda invocation SUCCESS state not observable via SDK API");
-  }
-
-  // ── Then: invariant assertions (no-op) ───────────────────────────────────────
-
-  @Then("every \"IN_PROGRESS\" invocation references an \"ACTIVE\" Lambda function")
-  public void everyInProgressInvocationReferencesAnActiveLambdaFunction() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
 
   @Then("every existing object belongs to an \"ACTIVE\" bucket")
   public void everyExistingObjectBelongsToAnActiveBucket() {

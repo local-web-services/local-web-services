@@ -379,31 +379,6 @@ public class OpensearchSteps {
     }
   }
 
-  @When("a domain configuration update is requested")
-  public void aDomainConfigurationUpdateIsRequested() {
-    // Arrange: (domain state set up by Given steps)
-    try (OpenSearchClient client = world.session.openSearchClient()) {
-      // Act
-      var result = client.updateDomainConfig(r -> r.domainName(DOMAIN_NAME));
-      // Assert: store result
-      world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("a search domain finishes creating")
-  public void aSearchDomainFinishesCreating() {
-    // @internal: no public API to advance the domain lifecycle — no-op.
-    world.setSuccess(null);
-  }
-
-  @When("a search domain finishes deleting")
-  public void aSearchDomainFinishesDeleting() {
-    // @internal: no public API to advance the domain lifecycle — no-op.
-    world.setSuccess(null);
-  }
-
   @When("an inbound connection finishes deleting")
   public void anInboundConnectionFinishesDeleting() {
     // @internal: no public API to advance connection lifecycle — no-op.

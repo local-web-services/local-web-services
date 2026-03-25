@@ -49,78 +49,6 @@ public class DynamodbSteps {
     this.world = world;
   }
 
-  // ── Given: table existence ─────────────────────────────────────────────────────
-
-  @Given("the table does not already exist")
-  public void theTableDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after session reset has no tables.
-  }
-
-  @Given("the table already exists")
-  public void theTableAlreadyExists() {
-    // Arrange
-    // Act
-    createTable(TEST_TABLE);
-    // Assert: creation succeeded (no exception)
-  }
-
-  @Given("the table exists")
-  public void theTableExists() {
-    // Arrange
-    // Act
-    createTable(TEST_TABLE);
-    // Assert: table created
-  }
-
-  @Given("the table does not exist")
-  public void theTableDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after session reset has no tables.
-  }
-
-  // ── Given: table lifecycle state ──────────────────────────────────────────────
-
-  @Given("the table is {string}")
-  public void theTableIs(String state) {
-    if ("ACTIVE".equals(state)) {
-      // No-op: in lws, tables are ACTIVE immediately after creation.
-      return;
-    }
-    if ("CREATING".equals(state)) {
-      // Arrange: enable lifecycle dwell so the next CreateTable call returns CREATING
-      try {
-        // Act
-        world.session.lifecycle("dynamodb").createDwellMs(5000).apply();
-      } catch (Exception ignored) {
-        // lifecycle API may not be available
-      }
-      return;
-    }
-    // For DELETING and other states — no-op: @internal scenarios are excluded.
-  }
-
-  @Given("the table is not {string}")
-  public void theTableIsNot(String state) {
-    if ("ACTIVE".equals(state)) {
-      // Arrange: enable lifecycle dwell, delete existing table, recreate it in CREATING state
-      try {
-        // Act
-        world.session.lifecycle("dynamodb").createDwellMs(5000).apply();
-      } catch (Exception ignored) {
-        // lifecycle API may not be available
-      }
-      try (DynamoDbClient client = world.session.dynamoDbClient()) {
-        try {
-          client.deleteTable(r -> r.tableName(TEST_TABLE));
-        } catch (Exception ignored) {
-          // table may not exist
-        }
-      }
-      createTable(TEST_TABLE);
-      return;
-    }
-    // For other states, no-op.
-  }
-
   // ── Given: throttle state ──────────────────────────────────────────────────────
 
   @Given("writes are not throttled")
@@ -809,23 +737,6 @@ public class DynamodbSteps {
     assertTrue(
         actualSuccess,
         "Expected table metadata to be returned but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess
-            + " actual_success="
-            + actualSuccess);
-  }
-
-  @Then("all tables are listed")
-  public void allTablesAreListed2() {
-    // Arrange: no additional setup required
-    // Act: action performed in When step
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "Expected all tables to be listed but got error: "
             + world.lastError
             + "; expected_success="
             + expectedSuccess

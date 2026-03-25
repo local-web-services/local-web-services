@@ -70,40 +70,12 @@ public class RdsLambdaSteps {
     }
   }
 
-  // ── Given: DB instance state ───────────────────────────────────────────────────
-
-  @Given("the \"DB\" instance does not already exist")
-  public void theDbInstanceDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no DB instances.
-  }
-
-  @Given("the \"DB\" instance already exists")
-  public void theDbInstanceAlreadyExists() {
-    // Arrange
-    // Act
-    rdsLambdaCreateDbInstance();
-    // Assert: DB instance created (no error thrown)
-  }
-
   @Given("the \"DB\" instance exists and is \"AVAILABLE\"")
   public void theDbInstanceExistsAndIsAvailable() {
     // Arrange
     // Act
     rdsLambdaCreateDbInstance();
     // Assert: DB instance created and is AVAILABLE (no error thrown)
-  }
-
-  @Given("the \"DB\" instance is \"AVAILABLE\"")
-  public void theDbInstanceIsAvailable() {
-    // Arrange
-    // Act
-    rdsLambdaCreateDbInstance();
-    // Assert: DB instance created (no error thrown)
-  }
-
-  @Given("the \"DB\" instance is not \"AVAILABLE\"")
-  public void theDbInstanceIsNotAvailable() {
-    // @internal: Cannot force a DB instance into a non-AVAILABLE state via public API.
   }
 
   @Given("the \"DB\" instance does not exist or is not \"AVAILABLE\"")
@@ -124,34 +96,6 @@ public class RdsLambdaSteps {
   @Given("the \"DB\" instance has a Lambda integration configured")
   public void theDbInstanceHasALambdaIntegrationConfigured() {
     // @internal: Lambda integration state requires specific RDS configuration API calls.
-  }
-
-  // ── Given: function state ──────────────────────────────────────────────────────
-
-  @Given("the function does not already exist")
-  public void theFunctionDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no functions.
-  }
-
-  @Given("the function already exists")
-  public void theFunctionAlreadyExists() {
-    // Arrange
-    // Act
-    rdsLambdaCreateFunction();
-    // Assert: function created (no error thrown)
-  }
-
-  @Given("the function exists")
-  public void theFunctionExists() {
-    // Arrange
-    // Act
-    rdsLambdaCreateFunction();
-    // Assert: function created (no error thrown)
-  }
-
-  @Given("the function does not exist")
-  public void theFunctionDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no functions.
   }
 
   @Given("the function exists and is \"ACTIVE\"")
@@ -193,26 +137,9 @@ public class RdsLambdaSteps {
     // Assert: function created (not DELETED)
   }
 
-  @Given("the function is \"ACTIVE\"")
-  public void theFunctionIsActive() {
-    // Arrange / Act / Assert — no-op: fresh functions are ACTIVE immediately after creation.
-  }
-
   @Given("the function is already \"DELETED\"")
   public void theFunctionIsAlreadyDeleted() {
     // @internal: DELETED state requires the function to have been deleted.
-  }
-
-  // ── Given: capacity ────────────────────────────────────────────────────────────
-
-  @Given("an invocation slot is available")
-  public void anInvocationSlotIsAvailable() {
-    // Arrange / Act / Assert — no-op: always room for invocations in lws.
-  }
-
-  @Given("no invocation slot is available")
-  public void noInvocationSlotIsAvailable() {
-    // @internal: Cannot exhaust invocation slot limit in lws via public APIs.
   }
 
   // ── When: actions ──────────────────────────────────────────────────────────────
@@ -232,25 +159,6 @@ public class RdsLambdaSteps {
                       .masterUserPassword("password123"));
       // Assert: store result
       world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("a Lambda function is deployed")
-  public void aLambdaFunctionIsDeployed() {
-    // Arrange: (function state set up by Given steps)
-    try (LambdaClient client = world.session.lambdaClient()) {
-      // Act
-      client.createFunction(
-          r ->
-              r.functionName(TEST_FUNC)
-                  .runtime(Runtime.PYTHON3_12)
-                  .role(TEST_ROLE_ARN)
-                  .handler("index.handler")
-                  .code(c -> c.zipFile(SdkBytes.fromUtf8String("fake"))));
-      // Assert: store result
-      world.setSuccess(TEST_FUNC);
     } catch (Exception e) {
       world.setFailure(e);
     }
@@ -298,38 +206,9 @@ public class RdsLambdaSteps {
     assertNotNull(world.lastOutput, "expected output from RDS DB instance creation but got null");
   }
 
-  @Then("the function is \"ACTIVE\"")
-  public void theFunctionIsActiveThen() {
-    // Arrange
-    String expectedState = "Active";
-    // Act
-    try (LambdaClient client = world.session.lambdaClient()) {
-      var result = client.getFunction(r -> r.functionName(TEST_FUNC));
-      String actualState = result.configuration().state().toString();
-      // Assert
-      org.junit.jupiter.api.Assertions.assertEquals(
-          expectedState,
-          actualState,
-          "expected function state '"
-              + expectedState
-              + "' but got '"
-              + actualState
-              + "'; expected_state="
-              + expectedState
-              + " actual_state="
-              + actualState);
-    }
-  }
-
   @Then("stored procedures on the \"DB\" can invoke the Lambda function")
   public void storedProceduresOnTheDbCanInvokeTheLambdaFunction() {
     // @internal: Lambda integration not observable via public API.
-    // Only reached by @internal scenarios excluded by the tag filter.
-  }
-
-  @Then("the invocation is \"SUCCESS\"")
-  public void theInvocationIsSuccess() {
-    // @internal: invocation success not observable via public API.
     // Only reached by @internal scenarios excluded by the tag filter.
   }
 
@@ -352,21 +231,6 @@ public class RdsLambdaSteps {
             + world.lastError
             + "; expected_success="
             + expectedSuccess);
-  }
-
-  @Then("the operation is rejected")
-  public void theOperationIsRejected() {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    boolean expectedRejected = true;
-    boolean actualRejected = !world.lastSuccess;
-    assertTrue(
-        actualRejected,
-        "expected operation to be rejected but it succeeded; expected_rejected="
-            + expectedRejected
-            + " actual_rejected="
-            + actualRejected);
   }
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────

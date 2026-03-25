@@ -1,6 +1,5 @@
 package io.localwebservices.lws.steps;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.cucumber.java.en.Given;
@@ -10,9 +9,7 @@ import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolDescriptionType;
 import software.amazon.awssdk.services.lambda.LambdaClient;
-import software.amazon.awssdk.services.lambda.model.GetFunctionResponse;
 import software.amazon.awssdk.services.lambda.model.Runtime;
-import software.amazon.awssdk.services.lambda.model.State;
 
 /**
  * Step definitions for the lambda_cognito cross-service informal specification feature files.
@@ -85,43 +82,6 @@ public class LambdaCognitoSteps {
     }
   }
 
-  // ── Given: pool state ─────────────────────────────────────────────────────────
-
-  @Given("the pool does not already exist")
-  public void thePoolDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no Cognito user pools.
-  }
-
-  @Given("the pool already exists")
-  public void thePoolAlreadyExists() {
-    // Arrange: create the pool so it already exists
-    // Act
-    String expectedPoolId = lambdaCognitoCreatePool();
-    // Assert: pool created
-    world.cognitoPoolId = expectedPoolId;
-  }
-
-  @Given("the pool exists")
-  public void thePoolExists() {
-    // Arrange: create the pool
-    // Act
-    String expectedPoolId = lambdaCognitoCreatePool();
-    // Assert: pool created
-    world.cognitoPoolId = expectedPoolId;
-  }
-
-  @Given("the pool is {string}")
-  public void thePoolIs(String state) {
-    // Arrange
-    if ("ACTIVE".equals(state)) {
-      // No-op: pools are ACTIVE immediately after creation.
-      return;
-    }
-    if ("DELETED".equals(state)) {
-      // No-op: fresh state has no pools (simulates deleted pool).
-    }
-  }
-
   @Given("the pool is already {string}")
   public void thePoolIsAlready(String state) {
     // Arrange
@@ -138,25 +98,9 @@ public class LambdaCognitoSteps {
     }
   }
 
-  @Given("the pool does not exist")
-  public void thePoolDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state after reset has no Cognito user pools.
-  }
-
   @Given("the pool does not exist or is {string}")
   public void thePoolDoesNotExistOrIs(String state) {
     // Arrange / Act / Assert — no-op: fresh state has no pools (simulates deleted or non-existent).
-  }
-
-  @Given("the pool is not {string}")
-  public void thePoolIsNot(String state) {
-    // Arrange
-    if ("DELETED".equals(state)) {
-      // Act: create the pool so it is not DELETED
-      String expectedPoolId = lambdaCognitoCreatePool();
-      // Assert: pool created
-      world.cognitoPoolId = expectedPoolId;
-    }
   }
 
   // ── Given: invocation state ───────────────────────────────────────────────────
@@ -192,20 +136,6 @@ public class LambdaCognitoSteps {
                       .handler("index.handler")
                       .code(c -> c.zipFile(SdkBytes.fromUtf8String("fake"))));
       // Assert: store result
-      world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("a Cognito user pool is created")
-  public void aCognitoUserPoolIsCreated() {
-    // Arrange
-    try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
-      // Act
-      var result = client.createUserPool(r -> r.poolName(TEST_POOL_NAME));
-      // Assert: store result
-      world.cognitoPoolId = result.userPool().id();
       world.setSuccess(result);
     } catch (Exception e) {
       world.setFailure(e);
@@ -249,46 +179,6 @@ public class LambdaCognitoSteps {
     world.setFailure(
         new UnsupportedOperationException(
             "cannot trigger Lambda-Cognito invocation success: scenario is @internal"));
-  }
-
-  // ── Then: assertions ──────────────────────────────────────────────────────────
-
-  @Then("the function is {string}")
-  public void theFunctionIs(String expectedStateLabel) {
-    // Arrange
-    if ("ACTIVE".equals(expectedStateLabel)) {
-      try (LambdaClient client = world.session.lambdaClient()) {
-        // Act
-        GetFunctionResponse result = client.getFunction(r -> r.functionName(TEST_FUNC));
-        // Assert
-        State expectedState = State.ACTIVE;
-        State actualState = result.configuration().state();
-        assertEquals(
-            expectedState,
-            actualState,
-            "Expected function state " + expectedState + " but got " + actualState);
-      }
-    }
-    // Other states are @internal or invariant — no-op.
-  }
-
-  @Then("the pool is {string}")
-  public void thePoolIsThen(String expectedStateLabel) {
-    // Arrange
-    if ("ACTIVE".equals(expectedStateLabel)) {
-      // Act
-      String actualPoolId = lambdaCognitoFindPoolId();
-      try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
-        var result = client.describeUserPool(r -> r.userPoolId(actualPoolId));
-        // Assert
-        String expectedStatus = "Active";
-        String actualStatus = result.userPool().statusAsString();
-        assertEquals(
-            expectedStatus,
-            actualStatus,
-            "Expected pool status " + expectedStatus + " but got " + actualStatus);
-      }
-    }
   }
 
   @Then("the pool is {string} and Lambda calls targeting it will fail")

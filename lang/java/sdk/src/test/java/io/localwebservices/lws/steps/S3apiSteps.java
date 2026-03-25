@@ -15,7 +15,6 @@ import java.util.Set;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.BucketVersioningStatus;
-import software.amazon.awssdk.services.s3.model.CompletedMultipartUpload;
 import software.amazon.awssdk.services.s3.model.CompletedPart;
 import software.amazon.awssdk.services.s3.model.GetBucketVersioningResponse;
 import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
@@ -93,57 +92,11 @@ public class S3apiSteps {
 
   // "the system is initialized" is already registered in CrossServiceSteps.
 
-  // ── Given: bucket state setup ─────────────────────────────────────────────────
-
-  @Given("the bucket does not already exist")
-  public void theBucketDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state after session reset has no buckets.
-  }
-
-  @Given("the bucket already exists")
-  public void theBucketAlreadyExists() {
-    // Arrange / Act: create the test bucket so it already exists
-    s3CreateBucket(TEST_BUCKET);
-    // Assert: bucket exists (no error thrown)
-  }
-
   @Given("the bucket exists")
   public void theBucketExists() {
     // Arrange / Act: ensure the test bucket exists
     s3CreateBucket(TEST_BUCKET);
     // Assert: bucket created
-  }
-
-  @Given("the bucket is {string}")
-  public void theBucketIs(String state) {
-    if ("ACTIVE".equals(state)) {
-      // No-op: buckets are ACTIVE by default after creation.
-      return;
-    }
-    // Arrange: create bucket in non-ACTIVE state via lifecycle dwell
-    s3DeleteBucket(TEST_BUCKET);
-    try {
-      world.session.lifecycle("s3").createDwellMs(5000).apply();
-    } catch (Exception ignored) {
-      // lifecycle API may not be available
-    }
-    s3CreateBucket(TEST_BUCKET);
-  }
-
-  @Given("the bucket is not {string}")
-  public void theBucketIsNot(String state) {
-    if ("ACTIVE".equals(state)) {
-      // Arrange: create bucket in non-ACTIVE state via lifecycle dwell
-      s3DeleteBucket(TEST_BUCKET);
-      try {
-        world.session.lifecycle("s3").createDwellMs(5000).apply();
-      } catch (Exception ignored) {
-        // lifecycle API may not be available
-      }
-      s3CreateBucket(TEST_BUCKET);
-      return;
-    }
-    // For other states, no-op.
   }
 
   @Given("the bucket does not exist")
@@ -382,34 +335,6 @@ public class S3apiSteps {
     // No-op: lifecycle expiry scenarios are tagged @internal; excluded from test run.
   }
 
-  // ── Given: multipart upload state setup ───────────────────────────────────────
-
-  @Given("the upload does not already exist")
-  public void theUploadDoesNotAlreadyExist() {
-    // No-op: no uploads in progress.
-  }
-
-  @Given("the upload does not exist")
-  public void theUploadDoesNotExist() {
-    // No-op: no uploads in progress by default.
-  }
-
-  @Given("the upload exists")
-  public void theUploadExists() {
-    // Arrange / Act: create a multipart upload
-    try (S3Client client = world.session.s3Client()) {
-      var resp = client.createMultipartUpload(r -> r.bucket(TEST_BUCKET).key(TEST_KEY));
-      uploadId = resp.uploadId();
-      etags = new ArrayList<>();
-    }
-    // Assert: upload created
-  }
-
-  @Given("the upload already exists")
-  public void theUploadAlreadyExists() {
-    // S3 allows multiple concurrent multipart uploads for the same key; no-op.
-  }
-
   @Given("the upload is {string}")
   public void theUploadIs(String state) {
     if ("IN_PROGRESS".equals(state)) {
@@ -617,66 +542,6 @@ public class S3apiSteps {
       etags = new ArrayList<>();
       // Assert: store result
       world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("a part is uploaded for a multipart upload")
-  public void aPartIsUploadedForAMultipartUpload() {
-    // Arrange
-    String effectiveUploadId = uploadId != null ? uploadId : "invalid";
-    try (S3Client client = world.session.s3Client()) {
-      byte[] bodyBytes = TEST_BODY.getBytes(StandardCharsets.UTF_8);
-      // Act
-      UploadPartResponse partResp =
-          client.uploadPart(
-              r -> r.bucket(TEST_BUCKET).key(TEST_KEY).uploadId(effectiveUploadId).partNumber(1),
-              RequestBody.fromInputStream(new ByteArrayInputStream(bodyBytes), bodyBytes.length));
-      if (etags == null) {
-        etags = new ArrayList<>();
-      }
-      etags.add(CompletedPart.builder().eTag(partResp.eTag()).partNumber(1).build());
-      // Assert: store result
-      world.setSuccess(partResp);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("a multipart upload is completed")
-  public void aMultipartUploadIsCompleted() {
-    // Arrange
-    String effectiveUploadId = uploadId != null ? uploadId : "invalid";
-    List<CompletedPart> parts =
-        (etags != null && !etags.isEmpty())
-            ? etags
-            : List.of(CompletedPart.builder().eTag("etag1").partNumber(1).build());
-    try (S3Client client = world.session.s3Client()) {
-      // Act
-      client.completeMultipartUpload(
-          r ->
-              r.bucket(TEST_BUCKET)
-                  .key(TEST_KEY)
-                  .uploadId(effectiveUploadId)
-                  .multipartUpload(CompletedMultipartUpload.builder().parts(parts).build()));
-      // Assert: store result
-      world.setSuccess(null);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("a multipart upload is aborted")
-  public void aMultipartUploadIsAborted() {
-    // Arrange
-    String effectiveUploadId = uploadId != null ? uploadId : "invalid";
-    try (S3Client client = world.session.s3Client()) {
-      // Act
-      client.abortMultipartUpload(
-          r -> r.bucket(TEST_BUCKET).key(TEST_KEY).uploadId(effectiveUploadId));
-      // Assert: store result
-      world.setSuccess(null);
     } catch (Exception e) {
       world.setFailure(e);
     }
@@ -908,21 +773,6 @@ public class S3apiSteps {
             + expectedSuccess);
     assertNotNull(
         uploadId, "expected UploadId to be present but got null; expected_upload_id_present=true");
-  }
-
-  @Then("the upload has at least one part")
-  public void theUploadHasAtLeastOnePartThen() {
-    // Arrange: action already performed in the When step
-    // Act: (no-op)
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected part upload to succeed but got error: "
-            + world.lastError
-            + "; expected_success="
-            + expectedSuccess);
   }
 
   @Then("the part is uploaded and the upload is still in progress")

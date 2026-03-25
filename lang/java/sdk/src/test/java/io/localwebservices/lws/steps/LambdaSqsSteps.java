@@ -188,31 +188,6 @@ public class LambdaSqsSteps {
     // @internal: Cannot set up event source mapping in lws.
   }
 
-  // ── Given: invocation state ───────────────────────────────────────────────────
-
-  @Given("an invocation is \"IN_PROGRESS\"")
-  public void anInvocationIsInProgress() {
-    // Arrange: create the function so an invocation state can be referenced
-    // Act
-    createFunction();
-    // Assert: function created (no error thrown)
-  }
-
-  @Given("no invocation is \"IN_PROGRESS\"")
-  public void noInvocationIsInProgress() {
-    // No-op: fresh state has no invocations.
-  }
-
-  @Given("an invocation slot is available")
-  public void anInvocationSlotIsAvailable() {
-    // No-op: always room for invocations in lws.
-  }
-
-  @Given("no invocation slot is available")
-  public void noInvocationSlotIsAvailable() {
-    // @internal: Cannot exhaust invocation slot limit in lws.
-  }
-
   @Given("an \"AVAILABLE\" message exists in the mapped queue")
   public void anAvailableMessageExistsInTheMappedQueue() {
     // @internal: Cannot set up event source mapping in lws.
@@ -221,40 +196,6 @@ public class LambdaSqsSteps {
   @Given("no \"AVAILABLE\" message exists in the mapped queue")
   public void noAvailableMessageExistsInTheMappedQueue() {
     // @internal: Cannot set up event source mapping in lws.
-  }
-
-  // ── When: actions ─────────────────────────────────────────────────────────────
-
-  @When("a Lambda function is deployed")
-  public void aLambdaFunctionIsDeployed() {
-    // Arrange
-    try (LambdaClient client = world.session.lambdaClient()) {
-      // Act
-      client.createFunction(
-          r ->
-              r.functionName(TEST_FUNC)
-                  .runtime(Runtime.PYTHON3_12)
-                  .role(TEST_ROLE_ARN)
-                  .handler("index.handler")
-                  .code(c -> c.zipFile(SdkBytes.fromUtf8String("fake"))));
-      // Assert: store result
-      world.setSuccess(TEST_FUNC);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("an \"SQS\" queue is created")
-  public void anSqsQueueIsCreated() {
-    // Arrange
-    try (SqsClient client = world.session.sqsClient()) {
-      // Act
-      client.createQueue(r -> r.queueName(TEST_QUEUE));
-      // Assert: store result
-      world.setSuccess(TEST_QUEUE);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
   }
 
   @When("the \"SQS\" queue is configured with a dead-letter queue")
@@ -290,30 +231,6 @@ public class LambdaSqsSteps {
     // @internal: Cannot trigger ESM polling in lws.
     world.setFailure(
         new UnsupportedOperationException("cannot trigger ESM polling: scenario is @internal"));
-  }
-
-  @When("the Lambda function is invoked")
-  public void theLambdaFunctionIsInvoked() {
-    // @internal: Cannot trigger Lambda invocation in lws.
-    world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger Lambda invocation: scenario is @internal"));
-  }
-
-  @When("the Lambda invocation fails")
-  public void theLambdaInvocationFails() {
-    // @internal: Cannot trigger Lambda invocation failure in lws.
-    world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger Lambda invocation failure: scenario is @internal"));
-  }
-
-  @When("the Lambda invocation completes successfully")
-  public void theLambdaInvocationCompletesSuccessfully() {
-    // @internal: Cannot trigger Lambda invocation success in lws.
-    world.setFailure(
-        new UnsupportedOperationException(
-            "cannot trigger Lambda invocation success: scenario is @internal"));
   }
 
   @When("a message arrives in the \"SQS\" queue")
@@ -391,16 +308,6 @@ public class LambdaSqsSteps {
   @Then("the event source mapping is \"ENABLED\" and will poll the queue for messages")
   public void theEventSourceMappingIsEnabledAndWillPollTheQueueForMessages() {
     // @internal: Cannot observe event source mapping state in lws.
-  }
-
-  @Then("the invocation is \"IN_PROGRESS\"")
-  public void theInvocationIsInProgress() {
-    // @internal: Cannot observe Lambda invocation state in lws.
-  }
-
-  @Then("the invocation is \"FAILED\"")
-  public void theInvocationIsFailed() {
-    // @internal: Cannot observe Lambda invocation failure in lws.
   }
 
   @Then("the invocation is \"SUCCESS\" and the \"SQS\" message is \"DELETED\"")

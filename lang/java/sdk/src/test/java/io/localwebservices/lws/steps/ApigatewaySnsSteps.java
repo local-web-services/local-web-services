@@ -245,50 +245,6 @@ public class ApigatewaySnsSteps {
     // Assert: integration configured
   }
 
-  // ── Given: capacity slots — unique to apigateway_sns ──────────────────────────
-  //
-  // "a message slot is available"  → CrossServiceSteps
-  // "no message slot is available" → CrossServiceSteps
-
-  @Given("a request slot is available")
-  public void aRequestSlotIsAvailable() throws Exception {
-    // Arrange: set apigateway capacity to unlimited
-    // Act
-    world.session.capacity("apigateway").unlimited().apply();
-    // Assert: capacity is unlimited
-  }
-
-  @Given("no request slot is available")
-  public void noRequestSlotIsAvailable() throws Exception {
-    // Arrange: exhaust apigateway request capacity
-    // Act
-    world.session.capacity("apigateway").exhaust().apply();
-    // Assert: capacity is exhausted
-  }
-
-  // ── When: actions — unique to apigateway_sns ──────────────────────────────────
-  //
-  // "an \"SNS\" topic is created"   → CrossServiceSteps
-  // "the {string} topic is deleted" → CrossServiceSteps
-
-  @When("an \"API\" Gateway \"REST\" \"API\" is created")
-  public void anApiGatewayRestApiIsCreated() {
-    // Arrange
-    if (!world.lastSuccess && world.lastError != null) {
-      // Pre-condition set a failure; skip actual creation
-      return;
-    }
-    try (ApiGatewayClient client = world.session.apiGatewayClient()) {
-      // Act
-      CreateRestApiResponse result = client.createRestApi(r -> r.name(TEST_API_NAME));
-      // Assert: store result
-      restApiId = result.id();
-      world.setSuccess(result);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
   @When("a direct \"SNS\" integration is configured on the \"API\"")
   public void aDirectSnsIntegrationIsConfiguredOnTheApi() {
     // Arrange
