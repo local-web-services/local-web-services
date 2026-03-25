@@ -43,7 +43,7 @@ import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
 public class CrossServiceSteps {
 
   private static final String TEST_SNS_TOPIC = "test-topic-1";
-  private static final String TEST_SQS_QUEUE = "test-q-1";
+  private static final String TEST_SQS_QUEUE = "e2e-sqs-test-q1";
   private static final String TEST_SQS_MSG = "test-message-1";
   private static final String TEST_EVENT_BUS = "test-bus-1";
   private static final String TEST_EVENT_RULE = "test-rule-1";

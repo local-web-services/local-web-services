@@ -2,11 +2,9 @@ package io.localwebservices.lws.steps;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import software.amazon.awssdk.services.docdb.DocDbClient;
-import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 
 /**
  * Step definitions for the docdb_events cross-service informal specification feature files.
@@ -20,7 +18,6 @@ import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 public class DocdbEventsSteps {
 
   private static final String TEST_CLUSTER_ID = "test-docdb-cluster-1";
-  private static final String TEST_BUS_NAME = "test-docdb-events-bus-1";
   private static final String TEST_ENGINE = "docdb";
 
   private final WorldContext world;
@@ -29,23 +26,8 @@ public class DocdbEventsSteps {
     this.world = world;
   }
 
-  @Given("the bus is \"DELETED\"")
-  public void theBusIsDeleted() {
-    // @internal: Cannot place bus into DELETED state without deleting it; after deletion
-    // the bus no longer exists. Treated as no-op; scenario is tagged @internal.
-  }
-
-  @Given("the bus is not \"DELETED\"")
-  public void theBusIsNotDeleted() {
-    // Arrange: ensure the bus exists and is therefore NOT deleted.
-    docdbEventsCreateBus();
-    // Assert: bus is not deleted (no error thrown)
-  }
-
-  @Given("the bus is already \"DELETED\"")
-  public void theBusIsAlreadyDeleted() {
-    // @internal: Cannot arrange bus in already-deleted state via public API.
-  }
+  // Bus Given steps delegated to CrossServiceEventBusSteps parameterized versions:
+  // "the bus is {string}", "the bus is already {string}", "the bus is not {string}"
 
   // "the cluster is not ..." steps are handled by the {string} Given in DocdbSteps;
   // specific literal variants for "AVAILABLE" and "MODIFYING" are NOT re-registered.
@@ -137,19 +119,4 @@ public class DocdbEventsSteps {
   // "every \"DELIVERED\" event references a bus that exists" → CrossServiceSteps (catch-all
   // @And("^every .*$"))
 
-  // ── Private helpers ────────────────────────────────────────────────────────
-
-  private void docdbEventsCreateBus() {
-    // Arrange
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      // Act
-      client.createEventBus(r -> r.name(TEST_BUS_NAME));
-      // Assert: bus created (no exception thrown)
-    } catch (Exception e) {
-      String msg = e.getMessage() != null ? e.getMessage() : "";
-      if (!msg.contains("already") && !msg.contains("conflict") && !msg.contains("Conflict")) {
-        throw e;
-      }
-    }
-  }
 }

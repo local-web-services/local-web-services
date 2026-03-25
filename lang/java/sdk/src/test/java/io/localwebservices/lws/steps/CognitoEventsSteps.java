@@ -134,21 +134,7 @@ public class CognitoEventsSteps {
   // Then — bus state assertions (unique to cognito_events)
   // -------------------------------------------------------------------------
 
-  @Then("the bus is \"ACTIVE\"")
-  public void theBusIsActive() {
-    // Arrange
-    String expectedBusName = TEST_BUS_NAME;
-    // Act
-    boolean actualFound;
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      var response = client.listEventBuses(r -> r.namePrefix(expectedBusName));
-      actualFound = response.eventBuses().stream().anyMatch(b -> b.name().equals(expectedBusName));
-    } catch (Exception e) {
-      actualFound = false;
-    }
-    // Assert
-    assertTrue(actualFound, "Expected event bus '" + expectedBusName + "' to be ACTIVE");
-  }
+  // "the bus is \"ACTIVE\"" — handled by CrossServiceEventBusSteps @Given("the bus is {string}")
 
   @Then("the bus is \"DELETED\" and Cognito event delivery will fail")
   public void theBusIsDeletedAndCognitoEventDeliveryWillFail() {
