@@ -6,7 +6,7 @@
  *  files unchanged.
  */
 
-import { Given, Then } from "@cucumber/cucumber";
+import { Given } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -74,24 +74,4 @@ Given("the cluster is not {string}", async function (this: SdkWorld, _state: str
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-// ── Then: cluster status assertion ───────────────────────────────────────────
-
-Then("the cluster is {string}", async function (this: SdkWorld, expectedState: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act + Assert: delegate to service-specific helper when available.
-  if (this.clusterHelpers?.assertClusterStatus) {
-    await this.clusterHelpers.assertClusterStatus(this, expectedState);
-    return;
-  }
-  // Fallback: check that the last call succeeded (used when Then is hit after a When step).
-  if (this.lastCallResult.output !== null || this.lastCallResult.error !== undefined) {
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected cluster operation to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-  }
-});
+// "the cluster is {string}" is registered above (Given) and works for Then steps too.

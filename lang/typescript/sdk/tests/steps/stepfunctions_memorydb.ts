@@ -1,6 +1,6 @@
 /** Step definitions: stepfunctions_memorydb cross-service scenarios — unique steps only */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -57,81 +57,53 @@ async function sfnMemoryDBCreateCluster(world: SdkWorld): Promise<void> {
   );
 }
 
+// ── Before hook: register cluster helpers for @stepfunctionsmemorydb scenarios ─
+
+Before({ tags: "@stepfunctionsmemorydb" }, function (this: SdkWorld) {
+  this.clusterHelpers = {
+    createCluster: async (world: SdkWorld) => {
+      try {
+        await sfnMemoryDBCreateCluster(world);
+      } catch {
+        // cluster may already exist
+      }
+    },
+    assertClusterStatus: async (world: SdkWorld, expectedState: string) => {
+      if (expectedState !== "AVAILABLE") {
+        // @internal: Cannot observe non-AVAILABLE cluster states in lws. No-op.
+        assert.ok(world.session, "Expected session to be initialized");
+        return;
+      }
+      const { DescribeClustersCommand } = require("@aws-sdk/client-memorydb");
+      const expectedClusterName = SFN_MEMORYDB_TEST_CLUSTER;
+      const expectedStatus = "available";
+      const result = await sfnMemoryDBClient(world).send(
+        new DescribeClustersCommand({ ClusterName: expectedClusterName }),
+      );
+      const clusters: Array<{ Name: string; Status: string }> = result.Clusters ?? [];
+      assert.ok(
+        clusters.length > 0,
+        `Expected cluster "${expectedClusterName}" to exist but it was not found; expected_cluster_name=${expectedClusterName}`,
+      );
+      const actualStatus = clusters[0].Status;
+      assert.strictEqual(
+        actualStatus,
+        expectedStatus,
+        `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+      );
+    },
+  };
+});
+
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
 // ── Given: cluster existence ──────────────────────────────────────────────────
 
-Given("the cluster does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the cluster already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create cluster (ignore if already exists)
-  try {
-    await sfnMemoryDBCreateCluster(this);
-  } catch {
-    // cluster may already exist; desired state is that it exists
-  }
-  // Assert: cluster exists
-});
-
-Given("the cluster exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  try {
-    await sfnMemoryDBCreateCluster(this);
-  } catch {
-    // cluster may already exist
-  }
-  // Assert: cluster exists
-});
-
-Given("the cluster does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-// ── Given: cluster status ──────────────────────────────────────────────────────
-
-Given('the cluster is "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: ensure cluster exists; fresh clusters start AVAILABLE
-  try {
-    await sfnMemoryDBCreateCluster(this);
-  } catch {
-    // cluster may already exist
-  }
-  // Assert: cluster is AVAILABLE
-});
-
-Given('the cluster is "UPDATING"', async function (this: SdkWorld) {
-  // No-op: cannot drive a cluster into UPDATING state via public API in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given('the cluster is not "UPDATING"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create an AVAILABLE cluster (not UPDATING)
-  try {
-    await sfnMemoryDBCreateCluster(this);
-  } catch {
-    // cluster may already exist
-  }
-  // Assert: cluster is not UPDATING
-});
-
-Given('the cluster is not "AVAILABLE"', async function (this: SdkWorld) {
-  // No-op: cannot drive a cluster into a non-AVAILABLE state via public API in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the cluster does not already exist", "the cluster already exists",
+// "the cluster exists", "the cluster does not exist", "the cluster is {string}",
+// "the cluster is not {string}" are registered in cluster_common.ts.
 
 // ── Given: execution state ────────────────────────────────────────────────────
 
@@ -254,29 +226,7 @@ When(
 // "the execution is "RUNNING"" is registered in stepfunctions.ts.
 // "the operation is rejected" is registered in cross_service_common.ts.
 
-Then('the cluster is "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeClustersCommand } = require("@aws-sdk/client-memorydb");
-  const expectedClusterName = SFN_MEMORYDB_TEST_CLUSTER;
-  const expectedStatus = "available";
-  // Act
-  const result = await sfnMemoryDBClient(this).send(
-    new DescribeClustersCommand({ ClusterName: expectedClusterName }),
-  );
-  const clusters: Array<{ Name: string; Status: string }> = result.Clusters ?? [];
-  assert.ok(
-    clusters.length > 0,
-    `Expected cluster "${expectedClusterName}" to exist but it was not found; expected_cluster_name=${expectedClusterName}`,
-  );
-  const actualStatus = clusters[0].Status;
-  // Assert
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
+// "the cluster is {string}" is registered in cluster_common.ts (dispatches to assertClusterStatus).
 
 Then('the cluster is "UPDATING" and connections may be refused', async function (this: SdkWorld) {
   // @internal: Cannot observe UPDATING cluster state via public API in lws.

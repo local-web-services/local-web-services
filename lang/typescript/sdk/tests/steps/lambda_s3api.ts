@@ -35,15 +35,7 @@ async function lambdaS3apiCreateFunction(world: SdkWorld): Promise<void> {
 
 // ── Given: invocation slot state ──────────────────────────────────────────────
 
-Given("an invocation slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: always room for invocations in fresh state.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
-Given("no invocation slot is available", async function (this: SdkWorld) {
-  // @internal: Cannot exhaust Lambda invocation slot limit via public API.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 // ── Given: invocation in-progress state ──────────────────────────────────────
 
@@ -56,10 +48,6 @@ Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   // Assert: function created
 });
 
-Given('no invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no invocations.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 // ── Given: object slot state ──────────────────────────────────────────────────
 

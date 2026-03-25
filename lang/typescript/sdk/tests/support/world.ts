@@ -51,6 +51,36 @@ export interface ApiStepHelpers {
   createApiWithRoot(world: SdkWorld): Promise<void>;
 }
 
+/** Callbacks for shared bus (EventBridge) step definitions. Each event-service
+ *  step file registers these helpers in a tagged Before hook so the canonical
+ *  consolidated step definitions can call them without knowing which service
+ *  they are operating on.
+ *
+ *  - createBus: creates the event bus for this service (used in Given steps)
+ *  - deleteBus: deletes the event bus for this service
+ *  - assertBusStatus (optional): queries the bus and asserts its status */
+export interface BusStepHelpers {
+  createBus(world: SdkWorld): Promise<void>;
+  deleteBus(world: SdkWorld): Promise<void>;
+  assertBusStatus?(world: SdkWorld, expectedStatus: string): Promise<void>;
+}
+
+/** Callbacks for shared Lambda function step definitions. Each cross-service
+ *  step file that exercises Lambda functions registers these helpers in a
+ *  tagged Before hook so the canonical consolidated step definitions can call
+ *  them without knowing which function name they are operating on.
+ *
+ *  - deployFunction: creates the Lambda function (When "a Lambda function is deployed")
+ *  - invokeFunction: invokes the Lambda function (When "the Lambda function is invoked")
+ *  - assertFunctionActive (optional): asserts the function is in ACTIVE state (Then step)
+ *  - functionName: the function name used by this service */
+export interface FunctionStepHelpers {
+  deployFunction(world: SdkWorld): Promise<void>;
+  invokeFunction?(world: SdkWorld): Promise<void>;
+  assertFunctionActive?(world: SdkWorld): Promise<void>;
+  functionName: string;
+}
+
 export class SdkWorld extends World {
   session: LwsSession | null = null;
   lastCallResult: LastCallResult = { success: false, output: null };
@@ -64,6 +94,10 @@ export class SdkWorld extends World {
   userHelpers: UserStepHelpers | null = null;
   /** API Gateway step helpers registered by the active cross-service Before hook. */
   apiHelpers: ApiStepHelpers | null = null;
+  /** Bus (EventBridge) step helpers registered by the active service's Before hook. */
+  busHelpers: BusStepHelpers | null = null;
+  /** Lambda function step helpers registered by the active cross-service Before hook. */
+  functionHelpers: FunctionStepHelpers | null = null;
 
   // Pending spec state for multi-step resource building
   _pendingSpec: {
@@ -111,10 +145,12 @@ Before(async function (this: SdkWorld, hookParam: ITestCaseHookParameter) {
   // Capture scenario tags for service dispatch in shared step definitions
   const tags = hookParam.pickle.tags.map((t) => t.name.replace(/^@/, ""));
   this.scenarioTags = tags;
-  // clusterHelpers, userHelpers, and apiHelpers will be populated by service-specific Before hooks
+  // clusterHelpers, userHelpers, apiHelpers, busHelpers, and functionHelpers will be populated by service-specific Before hooks
   this.clusterHelpers = null;
   this.userHelpers = null;
   this.apiHelpers = null;
+  this.busHelpers = null;
+  this.functionHelpers = null;
 });
 
 After(async function (this: SdkWorld) {

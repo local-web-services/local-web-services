@@ -433,15 +433,8 @@ public class ElasticsearchSteps {
     // @internal: index creation requires domain to be ACTIVE and accessible via REST API.
   }
 
-  @Given("the index exists")
-  public void theIndexExists() {
-    // @internal: index creation requires domain to be ACTIVE and accessible via REST API.
-  }
-
-  @Given("the index does not exist")
-  public void theIndexDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh state has no indices.
-  }
+  // "the index exists" → LambdaOpensearchSteps
+  // "the index does not exist" → LambdaOpensearchSteps
 
   @Given("the index is {string}")
   public void theIndexIs(String state) {

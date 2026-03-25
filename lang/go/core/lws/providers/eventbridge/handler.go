@@ -403,6 +403,7 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		}
 		h.store.eventBuses[name] = &EventBus{Name: name, Arn: arn}
 		h.store.mu.Unlock()
+		h.state.TrackResourceCreation("eventbridge", name)
 		writeOK(w, map[string]string{"EventBusArn": arn})
 
 	case "DeleteEventBus":

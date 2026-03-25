@@ -33,6 +33,7 @@ func registerAllSteps(sc *godog.ScenarioContext, world *World) {
 	registerS3apiEventsSteps(sc, world)
 	registerSecretsmanagerEventsSteps(sc, world)
 	registerSsmEventsSteps(sc, world)
+	registerStepFunctionsSteps(sc, world)
 	registerSSMSteps(sc, world)
 	registerSQSSteps(sc, world)
 	registerSNSSteps(sc, world)
@@ -42,7 +43,6 @@ func registerAllSteps(sc *godog.ScenarioContext, world *World) {
 	registerOrganizationsSteps(sc, world)
 	registerDynamoDBSteps(sc, world)
 	registerLambdaSteps(sc, world)
-	registerStepFunctionsSteps(sc, world)
 	registerAPIGatewaySteps(sc, world)
 	registerCognitoIDPSteps(sc, world)
 	// Group B — Cross-service with core dependencies

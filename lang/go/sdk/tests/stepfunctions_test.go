@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/sfn"
 	sfntypes "github.com/aws/aws-sdk-go-v2/service/sfn/types"
+	"github.com/aws/aws-sdk-go-v2/service/ssm"
 	"github.com/cucumber/godog"
 	core "github.com/local-web-services/local-web-services-go-core/lws"
 )
@@ -284,15 +285,32 @@ func registerStepFunctionsSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the tag association is not active$`, func() error {
-		// Arrange: remove the tag association to simulate it being inactive
+		// Arrange: remove the tag association to simulate it being inactive.
+		// This step is shared with the SSM "remove_tags_from_resource" scenario.
+		// Handle both services so that this step is registered first (before SSM)
+		// and works correctly for all scenarios that use it.
+
+		// SFN: remove the state machine tag so UntagResource will fail on second call.
+		// Only do this if a state machine actually exists (i.e. this is an SFN scenario).
 		smArn := sfnSmArn(sfnTestStateMachine)
-		_, err := world.SFNClient().UntagResource(context.Background(), &sfn.UntagResourceInput{
+		if _, sfnErr := world.SFNClient().UntagResource(context.Background(), &sfn.UntagResourceInput{
 			ResourceArn: aws.String(smArn),
 			TagKeys:     []string{sfnTestTagKey},
+		}); sfnErr != nil {
+			// Return the error so the scenario fails with a descriptive message
+			// instead of silently leaving the tag present.
+			return fmt.Errorf("SFN UntagResource in Given step failed: %w", sfnErr)
+		}
+
+		// SSM: delete parameter, enable lifecycle dwell, and recreate it so that
+		// RemoveTagsFromResource is rejected while the parameter is in dwell state.
+		_, _ = world.SSMClient().DeleteParameter(context.Background(), &ssm.DeleteParameterInput{
+			Name: aws.String(ssmTestParamName),
 		})
-		// Act: tag removed
-		// Assert: ignore error; desired state is tag absent
-		_ = err
+		mgmt := managementSession()
+		_ = mgmt.Lifecycle("ssm").CreateDwellMs(5000).Apply()
+		_ = ssmCreateParam(world)
+		// Assert: desired state is tag absent / resource in dwell
 		return nil
 	})
 

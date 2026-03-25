@@ -1,6 +1,6 @@
 /** Step definitions: stepfunctions_neptune cross-service scenarios — unique steps only */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -57,72 +57,48 @@ async function sfnNeptuneCreateCluster(world: SdkWorld): Promise<string> {
   return result.DBCluster.DBClusterIdentifier as string;
 }
 
+// ── Before hook: register cluster helpers for @stepfunctionsneptune scenarios ─
+
+Before({ tags: "@stepfunctionsneptune" }, function (this: SdkWorld) {
+  this.clusterHelpers = {
+    createCluster: async (world: SdkWorld) => {
+      try {
+        const clusterID = await sfnNeptuneCreateCluster(world);
+        (world as any)._sfnNeptuneClusterID = clusterID;
+      } catch {
+        // cluster may already exist
+      }
+    },
+    assertClusterStatus: async (world: SdkWorld, expectedState: string) => {
+      const expectedClusterID = SFN_NEPTUNE_TEST_CLUSTER_ID;
+      const { DescribeDBClustersCommand } = require("@aws-sdk/client-neptune");
+      const result = await sfnNeptuneNeptuneClient(world).send(
+        new DescribeDBClustersCommand({ DBClusterIdentifier: expectedClusterID }),
+      );
+      const clusters: Array<{ DBClusterIdentifier: string; Status?: string }> =
+        result.DBClusters ?? [];
+      const actualCluster = clusters.find((c) => c.DBClusterIdentifier === expectedClusterID);
+      assert.ok(
+        actualCluster,
+        `Expected cluster "${expectedClusterID}" to be "${expectedState}" but it was not found; expected_cluster_id=${expectedClusterID}`,
+      );
+      if (expectedState !== "AVAILABLE") {
+        // @internal: Cannot observe non-AVAILABLE cluster states in lws. No-op.
+        return;
+      }
+    },
+  };
+});
+
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
 // ── Given: cluster existence ──────────────────────────────────────────────────
 
-Given("the cluster does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no Neptune clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the cluster already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const expectedClusterID = await sfnNeptuneCreateCluster(this);
-  // Assert: cluster created
-  (this as any)._sfnNeptuneClusterID = expectedClusterID;
-  assert.ok(expectedClusterID, "Expected cluster ID to be defined");
-});
-
-Given("the cluster exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const expectedClusterID = await sfnNeptuneCreateCluster(this);
-  // Assert: cluster created
-  (this as any)._sfnNeptuneClusterID = expectedClusterID;
-  assert.ok(expectedClusterID, "Expected cluster ID to be defined");
-});
-
-Given("the cluster does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no Neptune clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-// ── Given: cluster status ─────────────────────────────────────────────────────
-
-Given('the cluster is "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create cluster so it is AVAILABLE
-  const expectedClusterID = await sfnNeptuneCreateCluster(this);
-  // Assert: cluster created
-  (this as any)._sfnNeptuneClusterID = expectedClusterID;
-});
-
-Given('the cluster is not "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no cluster (simulates unavailable cluster).
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given('the cluster is "STOPPED"', async function (this: SdkWorld) {
-  // @internal: Cannot force a Neptune cluster into STOPPED state via public API.
-  // No-op: treat as precondition satisfied.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given('the cluster is not "STOPPED"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create cluster (AVAILABLE means not STOPPED)
-  const expectedClusterID = await sfnNeptuneCreateCluster(this);
-  // Assert: cluster created
-  (this as any)._sfnNeptuneClusterID = expectedClusterID;
-});
+// "the cluster does not already exist", "the cluster already exists",
+// "the cluster exists", "the cluster does not exist", "the cluster is {string}",
+// "the cluster is not {string}" are registered in cluster_common.ts.
 
 // ── Given: execution state ────────────────────────────────────────────────────
 
@@ -241,23 +217,7 @@ When(
 
 // ── Then: cross-service assertions ────────────────────────────────────────────
 
-Then('the cluster is "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const expectedClusterID = SFN_NEPTUNE_TEST_CLUSTER_ID;
-  const { DescribeDBClustersCommand } = require("@aws-sdk/client-neptune");
-  // Act
-  const result = await sfnNeptuneNeptuneClient(this).send(
-    new DescribeDBClustersCommand({ DBClusterIdentifier: expectedClusterID }),
-  );
-  const clusters: Array<{ DBClusterIdentifier: string; Status?: string }> = result.DBClusters ?? [];
-  // Assert
-  const actualCluster = clusters.find((c) => c.DBClusterIdentifier === expectedClusterID);
-  assert.ok(
-    actualCluster,
-    `Expected cluster "${expectedClusterID}" to be AVAILABLE but it was not found; expected_cluster_id=${expectedClusterID}`,
-  );
-});
+// "the cluster is {string}" is registered in cluster_common.ts (dispatches to assertClusterStatus).
 
 Then(
   'the cluster is "STOPPED" and graph queries will be rejected',

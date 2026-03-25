@@ -81,6 +81,12 @@ public class AwsFakeSteps {
     }
   }
 
+  @Given("the {string} fake is not {string}")
+  public void theAwsFakeIsNotStatus(String fakeType, String status) {
+    // @internal: there is no public API to deactivate a fake without deleting it.
+    // Arrange / Act / Assert — no-op.
+  }
+
   // ── Given: operation state setup ─────────────────────────────────────────────
 
   @Given("an operation slot is available")
@@ -119,6 +125,12 @@ public class AwsFakeSteps {
     } else {
       // @internal: there is no public API to deactivate an operation without removing it.
     }
+  }
+
+  @Given("the operation is not {string}")
+  public void theOperationIsNot(String status) {
+    // @internal: there is no public API to deactivate an operation without removing it.
+    // Arrange / Act / Assert — no-op.
   }
 
   @Given("the operation has no header filter")

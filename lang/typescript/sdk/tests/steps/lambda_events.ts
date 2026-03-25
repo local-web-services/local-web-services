@@ -98,20 +98,8 @@ Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   // Assert: function created
 });
 
-Given('no invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after reset has no active invocations.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
-Given("an invocation slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: always room for invocations in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
-Given("no invocation slot is available", async function (this: SdkWorld) {
-  // @internal: Cannot exhaust invocation slot limit in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 // "an event slot is available" is registered in cross_service_common.ts.
 

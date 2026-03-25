@@ -66,6 +66,9 @@ func docdbCreateCluster(world *World) error {
 		DBClusterIdentifier: aws.String(docdbTestClusterID),
 		Engine:              aws.String(docdbTestEngine),
 	})
+	if err != nil && isAlreadyExists(err) {
+		return nil
+	}
 	return err
 }
 
@@ -77,6 +80,9 @@ func docdbCreateInstance(world *World) error {
 		DBInstanceClass:      aws.String(docdbTestClass),
 		Engine:               aws.String(docdbTestEngine),
 	})
+	if err != nil && isAlreadyExists(err) {
+		return nil
+	}
 	return err
 }
 
@@ -86,6 +92,9 @@ func docdbCreateSnapshot(world *World) error {
 		DBClusterSnapshotIdentifier: aws.String(docdbTestSnapshotID),
 		DBClusterIdentifier:         aws.String(docdbTestClusterID),
 	})
+	if err != nil && isAlreadyExists(err) {
+		return nil
+	}
 	return err
 }
 

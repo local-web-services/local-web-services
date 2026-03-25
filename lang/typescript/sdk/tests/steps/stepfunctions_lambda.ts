@@ -150,16 +150,7 @@ Given('no execution is "RUNNING"', async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // @internal: Cannot put a Lambda invocation into IN_PROGRESS state via public API.
-  // Scenarios with this step are tagged @internal and excluded by the tag filter.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
-Given('no invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // No-op: fresh state has no invocations.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 // ── Given: cross-service slot availability ────────────────────────────────────
 
@@ -167,10 +158,6 @@ Given('no invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
 
 // "no execution slot is available" is registered in cross_service_common.ts.
 
-Given("an invocation slot is available", async function (this: SdkWorld) {
-  // No-op: always room for invocations in fresh state.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 Given("no invocation slot is available", async function (this: SdkWorld) {
   // Arrange: exhaust the lambda invocation capacity

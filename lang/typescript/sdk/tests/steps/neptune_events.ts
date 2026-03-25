@@ -1,6 +1,6 @@
 /** Step definitions: neptune_events cross-service scenarios — unique When/Then steps only */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -44,24 +44,41 @@ async function ensureNeptuneEventsCluster(world: SdkWorld): Promise<void> {
   }
 }
 
+// ── Before hook: register cluster helpers for @neptuneevents scenarios ────────
+
+Before({ tags: "@neptuneevents" }, function (this: SdkWorld) {
+  this.clusterHelpers = {
+    createCluster: async (world: SdkWorld) => {
+      await ensureNeptuneEventsCluster(world);
+    },
+    assertClusterStatus: async (world: SdkWorld, expectedState: string) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DescribeDBClustersCommand } = require("@aws-sdk/client-neptune");
+      const result = await neptuneEventsNeptuneClient(world).send(
+        new DescribeDBClustersCommand({ DBClusterIdentifier: NEPTUNE_EVENTS_TEST_CLUSTER }),
+      );
+      const clusters: Array<{ Status?: string }> = result.DBClusters ?? [];
+      assert.ok(
+        clusters.length > 0,
+        `Expected cluster "${NEPTUNE_EVENTS_TEST_CLUSTER}" to exist but not found`,
+      );
+      const actualStatus = clusters[0].Status;
+      assert.strictEqual(
+        actualStatus,
+        expectedState,
+        `Expected cluster status "${expectedState}" but got "${actualStatus}"; expected_status=${expectedState} actual_status=${actualStatus}`,
+      );
+    },
+  };
+});
+
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
 // ── Given: cluster state setup ────────────────────────────────────────────────
 
-Given("the cluster does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the cluster already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await ensureNeptuneEventsCluster(this);
-  // Assert: cluster created
-});
+// "the cluster does not already exist" and "the cluster already exists" are registered in cluster_common.ts.
 
 Given("cid not in cluster_status", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: fresh state has no clusters.
@@ -76,15 +93,7 @@ Given("cid in cluster_status", async function (this: SdkWorld) {
   // Assert: cluster created
 });
 
-Given(/^the cluster is "([^"]*)"$/, async function (this: SdkWorld, _status: string) {
-  // Arrange / Act / Assert — no-op: lws sets clusters to AVAILABLE by default after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given(/^the cluster is not "([^"]*)"$/, async function (this: SdkWorld, _status: string) {
-  // Arrange / Act / Assert — skip: cannot force a cluster into a non-AVAILABLE state via public API.
-  return "pending";
-});
+// "the cluster is {string}" and "the cluster is not {string}" are registered in cluster_common.ts.
 
 // ── Given: bus state setup ────────────────────────────────────────────────────
 
@@ -176,34 +185,7 @@ When("the Neptune cluster finishes stopping", async function (this: SdkWorld) {
 
 // "the operation is rejected" is registered in sqs.ts.
 
-Then(/^the cluster is "([^"]*)"$/, async function (this: SdkWorld, expectedStatus: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeDBClustersCommand } = require("@aws-sdk/client-neptune");
-  // Act: verify operation succeeded
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected operation to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  const result = await neptuneEventsNeptuneClient(this).send(
-    new DescribeDBClustersCommand({ DBClusterIdentifier: NEPTUNE_EVENTS_TEST_CLUSTER }),
-  );
-  const clusters: Array<{ Status?: string }> = result.DBClusters ?? [];
-  // Assert
-  assert.ok(
-    clusters.length > 0,
-    `Expected cluster "${NEPTUNE_EVENTS_TEST_CLUSTER}" to exist but not found`,
-  );
-  const actualStatus = clusters[0].Status;
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
+// "the cluster is {string}" is registered in cluster_common.ts (dispatches to assertClusterStatus).
 
 Then('the bus is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange

@@ -4,7 +4,7 @@
 // conflict.  All other lambda-side invocation steps follow the same pattern as
 // lambda_secretsmanager.ts.
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -48,6 +48,38 @@ async function lambdaMemorydbCreateCluster(world: SdkWorld): Promise<void> {
   );
 }
 
+// ── Before hook: register cluster helpers for @lambdamemorydb scenarios ───────
+
+Before({ tags: "@lambdamemorydb" }, function (this: SdkWorld) {
+  this.clusterHelpers = {
+    createCluster: async (world: SdkWorld) => {
+      try {
+        await lambdaMemorydbCreateCluster(world);
+      } catch {
+        // cluster may already exist
+      }
+    },
+    assertClusterStatus: async (world: SdkWorld, expectedState: string) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      if (expectedState !== "AVAILABLE") {
+        // @internal: Cannot observe non-AVAILABLE cluster states in lws. No-op.
+        return;
+      }
+      const { DescribeClustersCommand } = require("@aws-sdk/client-memorydb");
+      const result = await lambdaMemorydbMemoryDbClient(world).send(
+        new DescribeClustersCommand({ ClusterName: LAMBDA_MEMORYDB_TEST_CLUSTER }),
+      );
+      const expectedStatus = "available";
+      const actualStatus = result.Clusters?.[0]?.Status ?? "";
+      assert.strictEqual(
+        actualStatus,
+        expectedStatus,
+        `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+      );
+    },
+  };
+});
+
 // ── Given: invocation state ───────────────────────────────────────────────────
 
 Given("an invocation is {string}", async function (this: SdkWorld, state: string) {
@@ -70,16 +102,7 @@ Given("no invocation is {string}", async function (this: SdkWorld, _state: strin
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("an invocation slot is available", async function (this: SdkWorld) {
-  // No-op: always room for invocations in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
-Given("no invocation slot is available", async function (this: SdkWorld) {
-  // @internal: Cannot exhaust invocation slot limit in lws via public APIs.
-  // Only reached by @internal/@capacity scenarios excluded by the tag filter.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 Given("a record slot is available", async function (this: SdkWorld) {
   // No-op: always room for records in lws.
@@ -213,25 +236,7 @@ Then("the function is {string}", async function (this: SdkWorld, state: string) 
   }
 });
 
-Then("the cluster is {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "AVAILABLE") {
-    const { DescribeClustersCommand } = require("@aws-sdk/client-memorydb");
-    // Act
-    const result = await lambdaMemorydbMemoryDbClient(this).send(
-      new DescribeClustersCommand({ ClusterName: LAMBDA_MEMORYDB_TEST_CLUSTER }),
-    );
-    // Assert
-    const expectedStatus = "available";
-    const actualStatus = result.Clusters?.[0]?.Status ?? "";
-    assert.strictEqual(
-      actualStatus,
-      expectedStatus,
-      `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-    );
-  }
-});
+// "the cluster is {string}" is registered in cluster_common.ts (dispatches to assertClusterStatus).
 
 Then('the cluster is "UPDATING" and write operations may fail', async function (this: SdkWorld) {
   // @internal: Cannot observe cluster UPDATING state in lws.

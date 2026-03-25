@@ -1,6 +1,6 @@
 /** Step definitions: lambda_sqs cross-service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Before, Given, When, Then } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -59,11 +59,54 @@ async function deleteQueue(world: SdkWorld, queueName: string): Promise<void> {
   }
 }
 
+// ── Before hook: register functionHelpers for @lambdasqs scenarios ────────────
+
+Before({ tags: "@lambdasqs" }, function (this: SdkWorld) {
+  this.functionHelpers = {
+    functionName: LAMBDA_SQS_TEST_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
+      try {
+        const result = await lambdaClient(world).send(
+          new CreateFunctionCommand({
+            FunctionName: LAMBDA_SQS_TEST_FUNC,
+            Runtime: "python3.12",
+            Role: LAMBDA_SQS_ROLE_ARN,
+            Handler: "index.handler",
+            Code: { ZipFile: Buffer.from("fake") },
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    assertFunctionActive: async (world: SdkWorld) => {
+      const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
+      const result = await lambdaClient(world).send(
+        new GetFunctionCommand({ FunctionName: LAMBDA_SQS_TEST_FUNC }),
+      );
+      const actualState: string = result.Configuration?.State ?? "";
+      const expectedState = "Active";
+      const assertModule = require("assert");
+      assertModule.strictEqual(
+        actualState,
+        expectedState,
+        `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
+      );
+    },
+  };
+});
+
 // ── Given: function state ─────────────────────────────────────────────────────
 // "the function does not already exist", "the function already exists",
 // "the function exists", "the function does not exist",
-// "the function is {string}", "the function is not {string}" are already
-// registered in lambda.ts — NOT re-registered here.
+// "the function is {string}", "the function is not {string}" are registered
+// in lambda.ts (dispatches via functionHelpers) — NOT re-registered here.
+// "a Lambda function is deployed" (When), "the Lambda function is invoked" (When),
+// "the function is ACTIVE" (Then), "the invocation is IN_PROGRESS" (Then),
+// "the invocation is SUCCESS" (Then), "every {string} invocation references ..." (Then)
+// are registered in lambda_common.ts — NOT re-registered here.
 
 // ── Given: queue state ────────────────────────────────────────────────────────
 // "the queue does not already exist", "the queue already exists",
@@ -192,20 +235,8 @@ Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   // Assert: function created
 });
 
-Given('no invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no invocations.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
-Given("an invocation slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: always room for invocations in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
-Given("no invocation slot is available", async function (this: SdkWorld) {
-  // @internal: Cannot exhaust invocation slot limit in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 Given('an "AVAILABLE" message exists in the mapped queue', async function (this: SdkWorld) {
   // @internal: Cannot set up event source mapping in lws.
@@ -222,27 +253,7 @@ Given('no "AVAILABLE" message exists in the mapped queue', async function (this:
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When("a Lambda function is deployed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  try {
-    const result = await lambdaClient(this).send(
-      new CreateFunctionCommand({
-        FunctionName: LAMBDA_SQS_TEST_FUNC,
-        Runtime: "python3.12",
-        Role: LAMBDA_SQS_ROLE_ARN,
-        Handler: "index.handler",
-        Code: { ZipFile: Buffer.from("fake") },
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a Lambda function is deployed" is registered in lambda_common.ts (dispatches via functionHelpers).
 
 // "an {string} queue is created" is registered in cross_service_common.ts.
 
@@ -298,16 +309,7 @@ When(
   },
 );
 
-When("the Lambda function is invoked", async function (this: SdkWorld) {
-  // @internal: Cannot trigger Lambda invocation in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot trigger Lambda invocation: scenario is @internal"),
-  };
-  // Assert: captured in lastCallResult
-});
+// "the Lambda function is invoked" is registered in lambda_common.ts.
 
 When("the Lambda invocation fails", async function (this: SdkWorld) {
   // @internal: Cannot trigger Lambda invocation failure in lws.
@@ -344,23 +346,10 @@ When('a message arrives in the "SQS" queue', async function (this: SdkWorld) {
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then('the function is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
-  // Act
-  const result = await lambdaClient(this).send(
-    new GetFunctionCommand({ FunctionName: LAMBDA_SQS_TEST_FUNC }),
-  );
-  const actualState: string = result.Configuration?.State ?? "";
-  // Assert
-  const expectedState = "Active";
-  assert.strictEqual(
-    actualState,
-    expectedState,
-    `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
-  );
-});
+// "the function is ACTIVE" is registered in lambda_common.ts (dispatches via functionHelpers).
+// "the invocation is IN_PROGRESS" is registered in lambda_common.ts.
+// "the invocation is SUCCESS" is registered in lambda_common.ts.
+// "every {string} invocation references an {string} Lambda function" is registered in lambda_common.ts.
 
 Then('the queue is "ACTIVE" with no dead-letter queue configured', async function (this: SdkWorld) {
   // Arrange
@@ -419,9 +408,7 @@ Then(
   },
 );
 
-Then('the invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // @internal: Cannot observe Lambda invocation state in lws.
-});
+// "the invocation is IN_PROGRESS" is registered in lambda_common.ts.
 
 Then('the invocation is "FAILED"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda invocation failure in lws.

@@ -70,18 +70,8 @@ public class ElasticacheSteps {
     }
   }
 
-  @Given("the cluster does not already exist")
-  public void theClusterDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh state has no clusters.
-  }
-
-  @Given("the cluster already exists")
-  public void theClusterAlreadyExists() {
-    // Arrange
-    // Act
-    elasticacheCreateCluster();
-    // Assert: cluster created (no error thrown)
-  }
+  // "the cluster does not already exist" → DocdbSteps
+  // "the cluster already exists" → DocdbSteps
 
   @Given("a cluster slot is available")
   public void aClusterSlotIsAvailable() {
@@ -93,10 +83,7 @@ public class ElasticacheSteps {
     // @internal: no public API exhausts cluster slots.
   }
 
-  @Given("the target cluster slot is available")
-  public void theTargetClusterSlotIsAvailable() {
-    // Arrange / Act / Assert — no-op: cluster slots are available in a fresh session.
-  }
+  // "the target cluster slot is available" → DocdbSteps
 
   @Given("the cluster is \"AVAILABLE\"")
   public void theClusterIsAvailable() {
@@ -711,26 +698,7 @@ public class ElasticacheSteps {
     }
   }
 
-  @Then("the cluster is in {string} state")
-  public void theClusterIsInState(String expectedState) {
-    // Arrange
-    // Act: (action performed in When step)
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected cluster to be in "
-            + expectedState
-            + " state but got error: "
-            + world.lastError
-            + "; expected_state="
-            + expectedState
-            + " expected_success="
-            + expectedSuccess
-            + " actual_success="
-            + actualSuccess);
-  }
+  // "the cluster is in {string} state" → DocdbSteps (shared with MemoryDB)
 
   @Then("the cluster is in {string} state with the memcached engine")
   public void theClusterIsInStateWithTheMemcachedEngine(String expectedState) {
@@ -808,26 +776,7 @@ public class ElasticacheSteps {
             + actualSuccess);
   }
 
-  @Then("the snapshot is in {string} state")
-  public void theSnapshotIsInState(String expectedState) {
-    // Arrange
-    // Act: (action performed in When step)
-    // Assert
-    boolean expectedSuccess = true;
-    boolean actualSuccess = world.lastSuccess;
-    assertTrue(
-        actualSuccess,
-        "expected snapshot to be in "
-            + expectedState
-            + " state but got error: "
-            + world.lastError
-            + "; expected_state="
-            + expectedState
-            + " expected_success="
-            + expectedSuccess
-            + " actual_success="
-            + actualSuccess);
-  }
+  // "the snapshot is in {string} state" → MemorydbSteps
 
   @Then("the parameter group no longer exists")
   public void theParameterGroupNoLongerExists() {

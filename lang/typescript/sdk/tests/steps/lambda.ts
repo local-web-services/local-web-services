@@ -2,7 +2,7 @@
 
 import { Given, When, Then } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, FunctionStepHelpers } from "../support/world";
 
 const LAMBDA_TEST_FUNC = "e2e-lambda-test-fn-1";
 const LAMBDA_ROLE_ARN = "arn:aws:iam::000000000000:role/test";
@@ -46,26 +46,42 @@ Given("the function does not already exist", async function (this: SdkWorld) {
 Given("the function already exists", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createFunction(this);
+  const helpers = this.functionHelpers as FunctionStepHelpers | null;
+  // Act: dispatch to service-specific helper when available, else use default function
+  if (helpers) {
+    await helpers.deployFunction(this);
+    // Clear lastCallResult set by deployFunction so Given step doesn't affect When/Then
+    this.lastCallResult = { success: false, output: null };
+  } else {
+    await createFunction(this);
+  }
   // Assert: function created
 });
 
 Given("the function exists", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createFunction(this);
+  const helpers = this.functionHelpers as FunctionStepHelpers | null;
+  // Act: dispatch to service-specific helper when available, else use default function
+  if (helpers) {
+    await helpers.deployFunction(this);
+    // Clear lastCallResult set by deployFunction so Given step doesn't affect When/Then
+    this.lastCallResult = { success: false, output: null };
+  } else {
+    await createFunction(this);
+  }
   // Assert: function created
 });
 
 Given("the function does not exist", async function (this: SdkWorld) {
   // Arrange: delete the function if present so it does not exist
   assert.ok(this.session, "Expected session to be initialized");
+  const helpers = this.functionHelpers as FunctionStepHelpers | null;
+  const funcName = helpers?.functionName ?? LAMBDA_TEST_FUNC;
   const { DeleteFunctionCommand } = require("@aws-sdk/client-lambda");
   // Act: delete, ignore errors (function may not exist)
   try {
-    await lambdaClient(this).send(new DeleteFunctionCommand({ FunctionName: LAMBDA_TEST_FUNC }));
+    await lambdaClient(this).send(new DeleteFunctionCommand({ FunctionName: funcName }));
   } catch {
     // function may not exist; desired state is absence
   }

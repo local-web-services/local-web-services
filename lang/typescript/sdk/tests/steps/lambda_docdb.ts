@@ -7,7 +7,7 @@
 // capacity.ts, cross_service_common.ts ("the system is initialized"), and
 // sqs.ts ("the operation is rejected") are NOT re-registered here.
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -58,63 +58,43 @@ async function lambdaDocdbCreateCluster(world: SdkWorld): Promise<void> {
   // Assert: caller checks result
 }
 
+// ── Before hook: register cluster helpers for @lambdadocdb scenarios ──────────
+
+Before({ tags: "@lambdadocdb" }, function (this: SdkWorld) {
+  this.clusterHelpers = {
+    createCluster: async (world: SdkWorld) => {
+      try {
+        await lambdaDocdbCreateCluster(world);
+      } catch {
+        // cluster may already exist
+      }
+    },
+    assertClusterStatus: async (world: SdkWorld, expectedState: string) => {
+      const { DescribeDBClustersCommand } = require("@aws-sdk/client-docdb");
+      const result = await lambdaDocdbDocdbClient(world).send(
+        new DescribeDBClustersCommand({ DBClusterIdentifier: LAMBDA_DOCDB_TEST_CLUSTER }),
+      );
+      const clusters: Array<{ Status?: string }> = result.DBClusters ?? [];
+      assert.ok(
+        clusters.length > 0,
+        `Expected cluster to be "${expectedState}" but cluster was not found`,
+      );
+      const expectedStatus = expectedState.toLowerCase();
+      const actualStatus = clusters[0].Status as string;
+      assert.strictEqual(
+        actualStatus,
+        expectedStatus,
+        `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+      );
+    },
+  };
+});
+
 // ── Given: cluster state ───────────────────────────────────────────────────────
 
-Given("the cluster does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after reset has no clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the cluster already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await lambdaDocdbCreateCluster(this);
-  // Assert: cluster created
-});
-
-Given("the cluster exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await lambdaDocdbCreateCluster(this);
-  // Assert: cluster created
-});
-
-Given("the cluster is {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "AVAILABLE") {
-    // Act: create the cluster so it is AVAILABLE
-    await lambdaDocdbCreateCluster(this);
-    return;
-  }
-  if (state === "STOPPED") {
-    // Act: create the cluster; lws does not expose STOPPED state via StopDBCluster
-    await lambdaDocdbCreateCluster(this);
-    return;
-  }
-});
-
-Given("the cluster is not {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "AVAILABLE") {
-    // Act: create the cluster; lws does not expose non-AVAILABLE state via public API
-    await lambdaDocdbCreateCluster(this);
-    return;
-  }
-  if (state === "STOPPED") {
-    // Act: create the cluster (AVAILABLE state is not STOPPED)
-    await lambdaDocdbCreateCluster(this);
-    return;
-  }
-});
-
-Given("the cluster does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the cluster does not already exist", "the cluster already exists",
+// "the cluster exists", "the cluster does not exist", "the cluster is {string}",
+// "the cluster is not {string}" are registered in cluster_common.ts.
 
 // ── Given: invocation state ───────────────────────────────────────────────────
 
@@ -126,10 +106,6 @@ Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   // Assert: function created
 });
 
-Given('no invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no in-progress invocations.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 // ── Given: slot state ─────────────────────────────────────────────────────────
 
@@ -264,25 +240,7 @@ Then('the function is "ACTIVE"', async function (this: SdkWorld) {
   );
 });
 
-Then('the cluster is "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeDBClustersCommand } = require("@aws-sdk/client-docdb");
-  // Act
-  const result = await lambdaDocdbDocdbClient(this).send(
-    new DescribeDBClustersCommand({ DBClusterIdentifier: LAMBDA_DOCDB_TEST_CLUSTER }),
-  );
-  const clusters: Array<{ Status?: string }> = result.DBClusters ?? [];
-  assert.ok(clusters.length > 0, "Expected cluster to be AVAILABLE but cluster was not found");
-  // Assert
-  const expectedStatus = "available";
-  const actualStatus = clusters[0].Status as string;
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected cluster status "${expectedStatus}" but got "${actualStatus}"`,
-  );
-});
+// "the cluster is {string}" is registered in cluster_common.ts (dispatches to assertClusterStatus).
 
 Then('the cluster is "AVAILABLE" and ready to accept connections', async function (this: SdkWorld) {
   // @internal: StartDBCluster is not yet implemented in lws.

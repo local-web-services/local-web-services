@@ -131,10 +131,6 @@ Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   return "pending";
 });
 
-Given('no invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no in-progress invocations.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 // ── When: cross-service actions ───────────────────────────────────────────────
 

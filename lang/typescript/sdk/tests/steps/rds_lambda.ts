@@ -203,15 +203,7 @@ Given('the function is already "DELETED"', async function (this: SdkWorld) {
 
 // ── Given: invocation slot state ──────────────────────────────────────────────
 
-Given("an invocation slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: always room for invocations in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
-Given("no invocation slot is available", async function (this: SdkWorld) {
-  // @internal: Cannot exhaust invocation slot limit in lws via public APIs.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 

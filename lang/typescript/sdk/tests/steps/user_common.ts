@@ -6,7 +6,7 @@
  *  files unchanged.
  */
 
-import { Given, Then } from "@cucumber/cucumber";
+import { Given } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -46,30 +46,19 @@ Given("the user exists", async function (this: SdkWorld) {
   // Assert: user created
 });
 
+// ── Shared: user status — used as both Given (state setup) and Then (assertion) ──
+// In Cucumber.js, a step registered with any keyword works for all keywords.
+
 Given("the user is {string}", async function (this: SdkWorld, expectedState: string) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  // Act + Assert: delegate to service-specific helper when available.
+  // Act + Assert: dispatch based on whether we have a setup or assert helper available.
+  // When used as a Given, prefer setupUserStatus (state setup).
   if (this.userHelpers?.setupUserStatus) {
     await this.userHelpers.setupUserStatus(this, expectedState);
     return;
   }
-  // Fallback: no-op for services that do not support state setup via public API.
-  void expectedState;
-});
-
-Given("the user is not {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange / Act / Assert — no-op: lifecycle states are managed internally;
-  // cannot force a user into a specific non-state via public API.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-// ── Then: user status assertion ───────────────────────────────────────────────
-
-Then("the user is {string}", async function (this: SdkWorld, expectedState: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act + Assert: delegate to service-specific helper when available.
+  // When used as a Then, prefer assertUserStatus.
   if (this.userHelpers?.assertUserStatus) {
     await this.userHelpers.assertUserStatus(this, expectedState);
     return;
@@ -84,4 +73,12 @@ Then("the user is {string}", async function (this: SdkWorld, expectedState: stri
       `Expected user operation to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
     );
   }
+  // Final fallback: no-op for services that do not support state setup via public API.
+  void expectedState;
+});
+
+Given("the user is not {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange / Act / Assert — no-op: lifecycle states are managed internally;
+  // cannot force a user into a specific non-state via public API.
+  assert.ok(this.session, "Expected session to be initialized");
 });

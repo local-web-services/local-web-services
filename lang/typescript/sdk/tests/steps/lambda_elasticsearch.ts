@@ -123,10 +123,6 @@ Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   // Assert: function created
 });
 
-Given('no invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no in-progress invocations.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 // ── Given: slot state ─────────────────────────────────────────────────────────
 

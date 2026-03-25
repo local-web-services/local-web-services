@@ -1,6 +1,6 @@
 /** Step definitions: stepfunctions_docdb cross-service scenarios — unique steps only */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -56,81 +56,48 @@ async function sfnDocDBCreateCluster(world: SdkWorld): Promise<void> {
   );
 }
 
+// ── Before hook: register cluster helpers for @stepfunctionsdocdb scenarios ───
+
+Before({ tags: "@stepfunctionsdocdb" }, function (this: SdkWorld) {
+  this.clusterHelpers = {
+    createCluster: async (world: SdkWorld) => {
+      try {
+        await sfnDocDBCreateCluster(world);
+      } catch {
+        // cluster may already exist
+      }
+    },
+    assertClusterStatus: async (world: SdkWorld, expectedState: string) => {
+      const { DescribeDBClustersCommand } = require("@aws-sdk/client-docdb");
+      const expectedClusterID = SFN_DOCDB_TEST_CLUSTER;
+      const result = await sfnDocDBDocDBClient(world).send(
+        new DescribeDBClustersCommand({ DBClusterIdentifier: expectedClusterID }),
+      );
+      const clusters: Array<{ Status: string }> = result.DBClusters ?? [];
+      assert.ok(
+        clusters.length > 0,
+        `Expected cluster "${expectedClusterID}" to be "${expectedState}" but it was not found; expected_cluster_id=${expectedClusterID}`,
+      );
+      const expectedStatus = expectedState.toLowerCase();
+      const actualStatus = clusters[0].Status;
+      assert.strictEqual(
+        actualStatus,
+        expectedStatus,
+        `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+      );
+    },
+  };
+});
+
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
 // ── Given: cluster existence ──────────────────────────────────────────────────
 
-Given("the cluster does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the cluster already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create cluster (ignore if already exists)
-  try {
-    await sfnDocDBCreateCluster(this);
-  } catch {
-    // cluster may already exist; desired state is that it exists
-  }
-  // Assert: cluster exists
-});
-
-Given("the cluster exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  try {
-    await sfnDocDBCreateCluster(this);
-  } catch {
-    // cluster may already exist
-  }
-  // Assert: cluster exists
-});
-
-Given("the cluster does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-// ── Given: cluster status ──────────────────────────────────────────────────────
-
-Given('the cluster is "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: ensure cluster exists; fresh clusters start AVAILABLE
-  try {
-    await sfnDocDBCreateCluster(this);
-  } catch {
-    // cluster may already exist
-  }
-  // Assert: cluster is AVAILABLE
-});
-
-Given('the cluster is "STOPPED"', async function (this: SdkWorld) {
-  // No-op: cannot drive a cluster into STOPPED state via public API in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given('the cluster is not "STOPPED"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create an AVAILABLE cluster (not STOPPED)
-  try {
-    await sfnDocDBCreateCluster(this);
-  } catch {
-    // cluster may already exist
-  }
-  // Assert: cluster is not STOPPED
-});
-
-Given('the cluster is not "AVAILABLE"', async function (this: SdkWorld) {
-  // No-op: cannot drive a cluster into a non-AVAILABLE state via public API in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the cluster does not already exist", "the cluster already exists",
+// "the cluster exists", "the cluster does not exist", "the cluster is {string}",
+// "the cluster is not {string}" are registered in cluster_common.ts.
 
 // ── Given: execution state ────────────────────────────────────────────────────
 
@@ -257,29 +224,7 @@ When(
 // "the execution is "RUNNING"" is registered in stepfunctions.ts.
 // "the operation is rejected" is registered in cross_service_common.ts.
 
-Then('the cluster is "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeDBClustersCommand } = require("@aws-sdk/client-docdb");
-  const expectedClusterID = SFN_DOCDB_TEST_CLUSTER;
-  const expectedStatus = "available";
-  // Act
-  const result = await sfnDocDBDocDBClient(this).send(
-    new DescribeDBClustersCommand({ DBClusterIdentifier: expectedClusterID }),
-  );
-  const clusters: Array<{ DBClusterIdentifier: string; Status: string }> = result.DBClusters ?? [];
-  assert.ok(
-    clusters.length > 0,
-    `Expected cluster "${expectedClusterID}" to exist but it was not found; expected_cluster_id=${expectedClusterID}`,
-  );
-  const actualStatus = clusters[0].Status;
-  // Assert
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
+// "the cluster is {string}" is registered in cluster_common.ts (dispatches to assertClusterStatus).
 
 Then('the cluster is "AVAILABLE" and ready to accept connections', async function (this: SdkWorld) {
   // Arrange

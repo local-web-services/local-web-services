@@ -215,10 +215,6 @@ Given("an invocation slot is available", async function (this: SdkWorld) {
   // Assert: capacity set
 });
 
-Given("no invocation slot is available", async function (this: SdkWorld) {
-  // @internal: Cannot exhaust Lambda invocation slot limit via public API in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 // ── Given: invocation in-progress state ──────────────────────────────────────
 
@@ -231,10 +227,6 @@ Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   // Assert: function created
 });
 
-Given('no invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // No-op: fresh state has no invocations.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 

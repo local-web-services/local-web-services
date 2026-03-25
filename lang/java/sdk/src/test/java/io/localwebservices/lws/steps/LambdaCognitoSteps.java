@@ -64,6 +64,22 @@ public class LambdaCognitoSteps {
     }
   }
 
+  @Given("the pool is \"DELETED\"")
+  public void thePoolIsDeleted() {
+    // Arrange
+    // Act: find and delete the pool so it is in DELETED state
+    String actualPoolId = lambdaCognitoFindPoolId();
+    if (actualPoolId != null) {
+      try (CognitoIdentityProviderClient client = world.session.cognitoIdpClient()) {
+        client.deleteUserPool(r -> r.userPoolId(actualPoolId));
+      }
+    }
+    // Assert: pool is now deleted
+    world.cognitoPoolId = null;
+  }
+
+  // "the pool is not {string}" → ApigatewayCognitoSteps
+
   @Given("the pool is already {string}")
   public void thePoolIsAlready(String state) {
     // Arrange

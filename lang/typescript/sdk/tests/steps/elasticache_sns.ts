@@ -1,6 +1,6 @@
 /** Step definitions: elasticache_sns cross-service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -44,6 +44,40 @@ async function elasticacheSnsClusterExists(world: SdkWorld): Promise<boolean> {
   }
 }
 
+// ── Before hook: register cluster helpers for @elasticachesns scenarios ───────
+
+Before({ tags: "@elasticachesns" }, function (this: SdkWorld) {
+  this.clusterHelpers = {
+    createCluster: async (world: SdkWorld) => {
+      try {
+        await elasticacheSnsCreateCluster(world);
+      } catch {
+        // cluster may already exist
+      }
+    },
+    assertClusterStatus: async (world: SdkWorld, expectedState: string) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      if (expectedState !== "AVAILABLE") {
+        // @internal: Cannot observe non-AVAILABLE cluster states in lws. No-op.
+        return;
+      }
+      const { DescribeCacheClustersCommand } = require("@aws-sdk/client-elasticache");
+      const result = await elasticacheSnsElastiCacheClient(world).send(
+        new DescribeCacheClustersCommand({ CacheClusterId: ELASTICACHE_SNS_CLUSTER_ID }),
+      );
+      const clusters: Array<{ CacheClusterStatus?: string }> = result.CacheClusters ?? [];
+      assert.ok(clusters.length > 0, `Expected cluster to be "${expectedState}" but not found`);
+      const expectedStatus = expectedState.toLowerCase();
+      const actualStatus = clusters[0].CacheClusterStatus ?? "";
+      assert.strictEqual(
+        actualStatus,
+        expectedStatus,
+        `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+      );
+    },
+  };
+});
+
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
@@ -62,15 +96,7 @@ Given("tid not in topic_status", async function (this: SdkWorld) {
 
 // ── Given: cluster state setup ────────────────────────────────────────────────
 
-Given("the cluster does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: already registered in elasticache.ts.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the cluster already exists", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: already registered in elasticache.ts.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the cluster does not already exist" and "the cluster already exists" are registered in cluster_common.ts.
 
 Given(/^the cluster exists and is "([^"]*)"$/, async function (this: SdkWorld, _state: string) {
   // Arrange
@@ -113,15 +139,7 @@ Given(
   },
 );
 
-Given(/^the cluster is "([^"]*)"$/, async function (this: SdkWorld, _state: string) {
-  // @internal: no-op — already registered in elasticache.ts.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given(/^the cluster is not "([^"]*)"$/, async function (this: SdkWorld, _state: string) {
-  // @internal: no-op — already registered in elasticache.ts.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the cluster is {string}" and "the cluster is not {string}" are registered in cluster_common.ts.
 
 // ── Given: topic state setup ──────────────────────────────────────────────────
 

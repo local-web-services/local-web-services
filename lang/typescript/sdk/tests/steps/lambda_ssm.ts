@@ -122,15 +122,7 @@ Given('an invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
   // Assert: function created
 });
 
-Given('no invocation is "IN_PROGRESS"', async function (this: SdkWorld) {
-  // No-op: fresh state after reset has no in-progress invocations.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
-Given("an invocation slot is available", async function (this: SdkWorld) {
-  // No-op: always room for invocations in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 Given("no invocation slot is available", async function (this: SdkWorld) {
   // Arrange: exhaust Lambda invocation capacity

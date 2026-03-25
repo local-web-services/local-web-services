@@ -72,16 +72,7 @@ Given("no invocation is {string}", async function (this: SdkWorld, _state: strin
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("an invocation slot is available", async function (this: SdkWorld) {
-  // No-op: always room for invocations in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
-Given("no invocation slot is available", async function (this: SdkWorld) {
-  // @internal: Cannot exhaust invocation slot limit in lws via public APIs.
-  // Only reached by @internal/@capacity scenarios excluded by the tag filter.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 // ── Given: RDS instance state unique to cross-service scenarios ───────────────
 

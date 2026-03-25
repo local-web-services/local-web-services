@@ -3,9 +3,9 @@ package elasticache
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
+	"io"
 	"sync"
 	"time"
 
@@ -169,6 +169,12 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		if engine == "" {
 			engine = "redis"
 		}
+		h.store.mu.Lock()
+		if _, exists := h.store.clusters[id]; exists {
+			h.store.mu.Unlock()
+			sendError(w, 400, "CacheClusterAlreadyExistsFault", "Cache cluster already exists: "+id)
+			return
+		}
 		cluster := &CacheCluster{
 			CacheClusterId:     id,
 			CacheClusterStatus: "available",
@@ -176,7 +182,6 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 			NumCacheNodes:      1,
 			CreatedAt:          time.Now(),
 		}
-		h.store.mu.Lock()
 		h.store.clusters[id] = cluster
 		h.store.mu.Unlock()
 		sendJSON(w, 200, map[string]interface{}{"CacheCluster": clusterDesc(cluster)})
@@ -208,8 +213,25 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		}
 		sendJSON(w, 200, map[string]interface{}{"CacheClusters": clusters})
 
+	case "ModifyCacheCluster":
+		id := params.Get("CacheClusterId")
+		h.store.mu.Lock()
+		cluster := h.store.clusters[id]
+		h.store.mu.Unlock()
+		if cluster == nil {
+			sendError(w, 404, "CacheClusterNotFound", "Cache cluster not found: "+id)
+			return
+		}
+		sendJSON(w, 200, map[string]interface{}{"CacheCluster": clusterDesc(cluster)})
+
 	case "CreateReplicationGroup":
 		id := params.Get("ReplicationGroupId")
+		h.store.mu.Lock()
+		if _, exists := h.store.replicationGroups[id]; exists {
+			h.store.mu.Unlock()
+			sendError(w, 400, "ReplicationGroupAlreadyExistsFault", "Replication group already exists: "+id)
+			return
+		}
 		rg := &ReplicationGroup{
 			ReplicationGroupId: id,
 			Description:        params.Get("ReplicationGroupDescription"),
@@ -217,7 +239,6 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 			AutomaticFailover:  "disabled",
 			CreatedAt:          time.Now(),
 		}
-		h.store.mu.Lock()
 		h.store.replicationGroups[id] = rg
 		h.store.mu.Unlock()
 		sendJSON(w, 200, map[string]interface{}{"ReplicationGroup": rgDesc(rg)})
@@ -249,15 +270,31 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		}
 		sendJSON(w, 200, map[string]interface{}{"ReplicationGroups": groups})
 
+	case "ModifyReplicationGroup":
+		id := params.Get("ReplicationGroupId")
+		h.store.mu.Lock()
+		rg := h.store.replicationGroups[id]
+		h.store.mu.Unlock()
+		if rg == nil {
+			sendError(w, 404, "ReplicationGroupNotFoundFault", "Replication group not found: "+id)
+			return
+		}
+		sendJSON(w, 200, map[string]interface{}{"ReplicationGroup": rgDesc(rg)})
+
 	case "CreateCacheSubnetGroup":
 		name := params.Get("CacheSubnetGroupName")
+		h.store.mu.Lock()
+		if _, exists := h.store.subnetGroups[name]; exists {
+			h.store.mu.Unlock()
+			sendError(w, 400, "CacheSubnetGroupAlreadyExistsFault", "Cache subnet group already exists: "+name)
+			return
+		}
 		sg := &CacheSubnetGroup{
 			CacheSubnetGroupName:        name,
 			CacheSubnetGroupDescription: params.Get("CacheSubnetGroupDescription"),
 			VpcId:                       "vpc-00000000",
 			CreatedAt:                   time.Now(),
 		}
-		h.store.mu.Lock()
 		h.store.subnetGroups[name] = sg
 		h.store.mu.Unlock()
 		sendJSON(w, 200, map[string]interface{}{"CacheSubnetGroup": subnetGroupDesc(sg)})
@@ -289,45 +326,33 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		}
 		sendJSON(w, 200, map[string]interface{}{"CacheSubnetGroups": groups})
 
-	case "ModifyCacheCluster":
-		id := params.Get("CacheClusterId")
-		h.store.mu.Lock()
-		cluster := h.store.clusters[id]
-		h.store.mu.Unlock()
-		if cluster == nil {
-			sendError(w, 404, "CacheClusterNotFound", "Cache cluster not found: "+id)
-			return
-		}
-		sendJSON(w, 200, map[string]interface{}{"CacheCluster": clusterDesc(cluster)})
-
-	case "ModifyReplicationGroup":
-		id := params.Get("ReplicationGroupId")
-		h.store.mu.Lock()
-		rg := h.store.replicationGroups[id]
-		h.store.mu.Unlock()
-		if rg == nil {
-			sendError(w, 404, "ReplicationGroupNotFoundFault", "Replication group not found: "+id)
-			return
-		}
-		sendJSON(w, 200, map[string]interface{}{"ReplicationGroup": rgDesc(rg)})
-
 	case "CreateSnapshot":
 		snapName := params.Get("SnapshotName")
-		clusterID := params.Get("CacheClusterId")
-		engine := "redis"
-		h.store.mu.RLock()
-		if c := h.store.clusters[clusterID]; c != nil {
-			engine = c.Engine
+		clusterId := params.Get("CacheClusterId")
+		h.store.mu.Lock()
+		cluster, clusterExists := h.store.clusters[clusterId]
+		if !clusterExists {
+			h.store.mu.Unlock()
+			sendError(w, 404, "CacheClusterNotFound", "Cache cluster not found: "+clusterId)
+			return
 		}
-		h.store.mu.RUnlock()
+		if cluster.Engine != "redis" {
+			h.store.mu.Unlock()
+			sendError(w, 400, "SnapshotFeatureNotSupportedFault", "Snapshots are only supported for Redis clusters")
+			return
+		}
+		if _, exists := h.store.snapshots[snapName]; exists {
+			h.store.mu.Unlock()
+			sendError(w, 400, "SnapshotAlreadyExistsFault", "Snapshot already exists: "+snapName)
+			return
+		}
 		snap := &CacheSnapshot{
 			SnapshotName:   snapName,
-			CacheClusterId: clusterID,
+			CacheClusterId: clusterId,
 			Status:         "available",
-			Engine:         engine,
+			Engine:         cluster.Engine,
 			CreatedAt:      time.Now(),
 		}
-		h.store.mu.Lock()
 		h.store.snapshots[snapName] = snap
 		h.store.mu.Unlock()
 		sendJSON(w, 200, map[string]interface{}{"Snapshot": snapshotDesc(snap)})
@@ -346,12 +371,12 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 
 	case "DescribeSnapshots":
 		filterName := params.Get("SnapshotName")
-		clusterFilter := params.Get("CacheClusterId")
+		filterCluster := params.Get("CacheClusterId")
 		h.store.mu.RLock()
 		var snaps []map[string]interface{}
 		for _, s := range h.store.snapshots {
 			if (filterName == "" || s.SnapshotName == filterName) &&
-				(clusterFilter == "" || s.CacheClusterId == clusterFilter) {
+				(filterCluster == "" || s.CacheClusterId == filterCluster) {
 				snaps = append(snaps, snapshotDesc(s))
 			}
 		}
@@ -361,8 +386,10 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		}
 		sendJSON(w, 200, map[string]interface{}{"Snapshots": snaps})
 
-	case "AddTagsToResource", "RemoveTagsFromResource", "ListTagsForResource":
-		// No-op: tags accepted but not stored in this simplified implementation.
+	case "AddTagsToResource", "RemoveTagsFromResource":
+		sendJSON(w, 200, map[string]interface{}{"TagList": []interface{}{}})
+
+	case "ListTagsForResource":
 		sendJSON(w, 200, map[string]interface{}{"TagList": []interface{}{}})
 
 	default:

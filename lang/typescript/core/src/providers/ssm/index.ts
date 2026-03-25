@@ -197,6 +197,14 @@ function handleSsmOp(
       const overwrite = body.Overwrite as boolean | undefined;
       const putParamName = body.Name as string;
       const existing = store.getParameter(putParamName);
+      if (!existing && overwrite === true) {
+        jsonReply(reply, { __type: "ParameterNotFound", message: "Parameter not found." }, 400);
+        return;
+      }
+      if (!existing && overwrite === false) {
+        jsonReply(reply, { __type: "ParameterNotFound", message: "Parameter not found." }, 400);
+        return;
+      }
       if (existing && overwrite !== true) {
         jsonReply(
           reply,

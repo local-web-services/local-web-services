@@ -59,10 +59,6 @@ Given("no invocation is {string}", async function (this: SdkWorld, _state: strin
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("an invocation slot is available", async function (this: SdkWorld) {
-  // No-op: always room for invocations in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
 
 Given("no invocation slot is available", async function (this: SdkWorld) {
   // Arrange: exhaust Lambda invocation capacity
