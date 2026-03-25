@@ -1,6 +1,6 @@
 /** Step definitions: apigateway_dynamodb cross-service scenarios — unique When/Then steps only */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Before, Given, When, Then } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -136,19 +136,22 @@ async function apigwDdbInvokeApi(
   return { status: response.status };
 }
 
+// ── Before hook: register API helpers for @apigatewaydynamodb scenarios ──────────
+
+Before({ tags: "@apigatewaydynamodb" }, function (this: SdkWorld) {
+  this.apiHelpers = {
+    createApi: apigwDdbCreateApi,
+    createApiWithRoot: async (world: SdkWorld) => {
+      await apigwDdbCreateApi(world);
+    },
+  };
+});
+
 // ── Given: API state ──────────────────────────────────────────────────────────
 
-Given('the "API" does not already exist', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh session state has no REST APIs.
-});
-
-Given('the "API" already exists', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  // Act
-  await apigwDdbCreateApi(this);
-  // Assert: creation succeeded
-});
+// "the \"API\" does not already exist", "the \"API\" already exists",
+// "the \"API\" is \"ACTIVE\"", "the \"API\" is not \"ACTIVE\"" are registered in
+// apigateway.ts (dispatches via apiHelpers).
 
 Given('the "API" exists and is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange
@@ -170,13 +173,7 @@ Given('the "API" already has a DynamoDB integration configured', async function 
   // No-op: cannot simulate pre-configured integration conflict in lws; @internal excluded.
 });
 
-Given('the "API" is "ACTIVE"', async function (this: SdkWorld) {
-  // No-op: REST APIs are ACTIVE immediately after creation in lws.
-});
-
-Given('the "API" is not "ACTIVE"', async function (this: SdkWorld) {
-  // No-op: cannot simulate non-ACTIVE REST API in lws; @internal scenarios excluded.
-});
+// "the \"API\" is \"ACTIVE\"" and "the \"API\" is not \"ACTIVE\"" are registered in apigateway.ts.
 
 Given('the "API" has a DynamoDB integration configured', async function (this: SdkWorld) {
   // Arrange

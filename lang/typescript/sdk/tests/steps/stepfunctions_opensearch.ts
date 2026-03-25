@@ -272,15 +272,5 @@ Then(`the execution is "FAILED" with a connection error`, async function (this: 
 
 // ── Then: invariants ─────────────────────────────────────────────────────────
 
-Then(
-  `every "RUNNING" execution references an "ACTIVE" state machine`,
-  async function (this: SdkWorld) {
-    // Invariant: trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
-
-Then("every succeeded execution recorded which domain it called", async function (this: SdkWorld) {
-  // Invariant: trivially satisfied in isolated lws context.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "every {string} execution references an {string} state machine" is in cross_service_common.ts.
+// "every succeeded execution recorded which domain it called" is in stepfunctions_elasticsearch.ts.

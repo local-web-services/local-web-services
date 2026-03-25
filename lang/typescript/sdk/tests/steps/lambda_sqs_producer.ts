@@ -57,9 +57,4 @@ When(
 
 // ── Then: assertions unique to lambda_sqs_producer ───────────────────────────
 
-Then('the message is "AVAILABLE" in the queue', async function (this: SdkWorld) {
-  // Cannot observe a message sent by a Lambda function in lws without Docker
-  // execution. No-op: scenarios that reach this step are excluded from the run
-  // or their When step has already stored a failure.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the message is {string} in the queue" is registered in sns_sqs.ts.

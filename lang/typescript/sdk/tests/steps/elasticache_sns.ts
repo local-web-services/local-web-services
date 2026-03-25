@@ -287,9 +287,4 @@ Then(
   },
 );
 
-Then(
-  /^every "([^"]*)" notification references a topic that exists$/,
-  async function (this: SdkWorld) {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  },
-);
+// "every {string} notification references a topic that exists" is registered in cross_service_common.ts.

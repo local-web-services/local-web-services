@@ -1,6 +1,6 @@
 /** Step definitions: apigateway_sqs cross-service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Before, Given, When, Then } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -137,45 +137,23 @@ async function apigwSqsCreateQueue(world: SdkWorld): Promise<void> {
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
+// ── Before hook: register API helpers for @apigatewaysqs scenarios ─────────────
+
+Before({ tags: "@apigatewaysqs" }, function (this: SdkWorld) {
+  this.apiHelpers = {
+    createApi: apigwSqsCreateRestApi,
+    createApiWithRoot: async (world: SdkWorld) => {
+      const restApiId = await apigwSqsCreateRestApi(world);
+      await apigwSqsFetchRootResourceId(world, restApiId);
+    },
+  };
+});
+
 // ── Given: API state ──────────────────────────────────────────────────────────
 
-Given('the "API" does not already exist', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no REST APIs.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given('the "API" already exists', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await apigwSqsCreateRestApi(this);
-});
-
-Given('the "API" does not exist', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no REST APIs.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given('the "API" exists', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const restApiId = await apigwSqsCreateRestApi(this);
-  await apigwSqsFetchRootResourceId(this, restApiId);
-});
-
-Given('the "API" is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: REST APIs are ACTIVE immediately after creation in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given('the "API" is not "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: enable lifecycle dwell so API stays in non-ACTIVE state
-  await this.session!.lifecycle("apigateway").createDwellMs(5000).apply();
-  await apigwSqsCreateRestApi(this);
-});
+// "the \"API\" does not already exist", "the \"API\" already exists",
+// "the \"API\" does not exist", "the \"API\" exists", "the \"API\" is \"ACTIVE\"",
+// "the \"API\" is not \"ACTIVE\"" are registered in apigateway.ts (dispatches via apiHelpers).
 
 Given('the "API" has no integration configured', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: APIs have no integration configured by default.

@@ -1,6 +1,6 @@
 /** Step definitions: elasticache service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -77,6 +77,20 @@ async function elasticacheSubnetGroupExists(world: SdkWorld): Promise<boolean> {
   }
 }
 
+// ── Before hook: register cluster helpers for @elasticache and @elasticachesns scenarios ──
+
+Before({ tags: "@elasticache or @elasticachesns" }, function (this: SdkWorld) {
+  this.clusterHelpers = {
+    createCluster: async (world: SdkWorld) => {
+      try {
+        await elasticacheCreateCluster(world);
+      } catch {
+        // cluster may already exist
+      }
+    },
+  };
+});
+
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
@@ -90,42 +104,9 @@ Given("cid not in cluster_status", async function (this: SdkWorld) {
 
 // ── Given: cluster state setup ────────────────────────────────────────────────
 
-Given("the cluster does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the cluster already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await elasticacheCreateCluster(this);
-  // Assert: cluster created
-});
-
-Given("the cluster exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await elasticacheCreateCluster(this);
-  // Assert: cluster exists
-});
-
-Given("the cluster does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given(/^the cluster is "([^"]*)"$/, async function (this: SdkWorld, _state: string) {
-  // @internal: lifecycle states (CREATING, AVAILABLE, etc.) are managed internally.
-  // No public API can force a cluster into an arbitrary state.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given(/^the cluster is not "([^"]*)"$/, async function (this: SdkWorld, _state: string) {
-  // @internal: lifecycle states are managed internally.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the cluster does not already exist", "the cluster already exists",
+// "the cluster exists", "the cluster does not exist", "the cluster is {string}",
+// "the cluster is not {string}" are registered in cluster_common.ts.
 
 Given(
   "the cluster is standalone (not part of a replication group)",
@@ -708,18 +689,7 @@ Then(
   },
 );
 
-Then(/^the cluster is "([^"]*)"$/, async function (this: SdkWorld, _expectedState: string) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected operation to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+// "the cluster is {string}" is registered in cluster_common.ts.
 
 Then(
   /^the cluster is "([^"]*)" and the notification is "([^"]*)" to the topic$/,

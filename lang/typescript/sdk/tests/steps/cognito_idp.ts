@@ -1,6 +1,6 @@
 /** Step definitions: cognito_idp service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -110,41 +110,81 @@ Given("the user pool does not exist", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
+// ── Before hook: register user helpers for @cognitoidp scenarios ──────────────
+
+Before({ tags: "@cognitoidp" }, function (this: SdkWorld) {
+  this.userHelpers = {
+    createUser: async (world: SdkWorld) => {
+      // Arrange: create pool if not already created
+      if (!(world as any)._cognitoPoolId) {
+        (world as any)._cognitoPoolId = await createPool(world);
+      }
+      // Act
+      try {
+        await createUser(world, (world as any)._cognitoPoolId as string);
+      } catch {
+        // user may already exist
+      }
+      // Assert: username set
+      (world as any)._cognitoUsername = COGNITO_TEST_USERNAME;
+    },
+    setupUserStatus: async (world: SdkWorld, state: string) => {
+      // Arrange
+      const poolId = (world as any)._cognitoPoolId as string;
+      const username = (world as any)._cognitoUsername as string;
+      if (state === "CONFIRMED") {
+        if (!poolId || !username) return;
+        // Act: set a permanent password to confirm the user
+        const {
+          AdminSetUserPasswordCommand,
+        } = require("@aws-sdk/client-cognito-identity-provider");
+        await cognitoClient(world).send(
+          new AdminSetUserPasswordCommand({
+            UserPoolId: poolId,
+            Username: username,
+            Password: COGNITO_TEST_PASSWORD,
+            Permanent: true,
+          }),
+        );
+        // Assert: user is now CONFIRMED
+        return;
+      }
+      if (state === "DELETED") {
+        // Set username so the When step can reference it
+        (world as any)._cognitoUsername = COGNITO_TEST_USERNAME;
+        return;
+      }
+      // For other states (UNCONFIRMED etc.) — no-op
+    },
+    assertUserStatus: async (world: SdkWorld, expectedStatus: string) => {
+      // Arrange
+      const poolId = (world as any)._cognitoPoolId as string;
+      const username = (world as any)._cognitoUsername as string;
+      if (!poolId || !username) {
+        // No pool/user set up — no-op for lifecycle states
+        return;
+      }
+      const { AdminGetUserCommand } = require("@aws-sdk/client-cognito-identity-provider");
+      // Act
+      const result = await cognitoClient(world).send(
+        new AdminGetUserCommand({ UserPoolId: poolId, Username: username }),
+      );
+      // Assert
+      const actualStatus = result.UserStatus;
+      assert.strictEqual(
+        actualStatus,
+        expectedStatus,
+        `expected user status '${expectedStatus}' but got '${actualStatus}'; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+      );
+    },
+  };
+});
+
 // ── Given: user existence ─────────────────────────────────────────────────────
 
-Given("the user does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no users.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the user already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (!(this as any)._cognitoPoolId) {
-    (this as any)._cognitoPoolId = await createPool(this);
-  }
-  // Act
-  await createUser(this, (this as any)._cognitoPoolId);
-  // Assert: user created
-  (this as any)._cognitoUsername = COGNITO_TEST_USERNAME;
-});
-
-Given("the user exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (!(this as any)._cognitoPoolId) {
-    (this as any)._cognitoPoolId = await createPool(this);
-  }
-  // Act
-  await createUser(this, (this as any)._cognitoPoolId);
-  // Assert: user created
-  (this as any)._cognitoUsername = COGNITO_TEST_USERNAME;
-});
-
-Given("the user does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no users.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the user does not already exist", "the user already exists",
+// "the user exists", "the user does not exist", "the user is {string}",
+// "the user is not {string}" are registered in user_common.ts.
 
 Given("the user is not already {string}", async function (this: SdkWorld, _state: string) {
   // Arrange / Act / Assert — no-op: newly created users are not in DELETED state.
@@ -160,54 +200,8 @@ Given("the user is already {string}", async function (this: SdkWorld, state: str
   }
 });
 
-Given("the user is {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  const poolId = (this as any)._cognitoPoolId as string;
-  const username = (this as any)._cognitoUsername as string;
-  if (state === "CONFIRMED") {
-    // Act: set a permanent password to confirm the user
-    const { AdminSetUserPasswordCommand } = require("@aws-sdk/client-cognito-identity-provider");
-    await cognitoClient(this).send(
-      new AdminSetUserPasswordCommand({
-        UserPoolId: poolId,
-        Username: username,
-        Password: COGNITO_TEST_PASSWORD,
-        Permanent: true,
-      }),
-    );
-    // Assert: user is now CONFIRMED
-    return;
-  }
-  if (state === "UNCONFIRMED" || state === "DELETED") {
-    // No-op: UNCONFIRMED is the default for externally registered users;
-    // DELETED is handled in other Given steps.
-    return;
-  }
-});
-
-Given("the user is not {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  const poolId = (this as any)._cognitoPoolId as string;
-  const username = (this as any)._cognitoUsername as string;
-  if (state === "CONFIRMED") {
-    // No-op: users created via AdminCreateUser start in FORCE_CHANGE_PASSWORD.
-    return;
-  }
-  if (state === "UNCONFIRMED" || state === "DELETED") {
-    // Act: confirm the user so they are no longer UNCONFIRMED
-    const { AdminSetUserPasswordCommand } = require("@aws-sdk/client-cognito-identity-provider");
-    await cognitoClient(this).send(
-      new AdminSetUserPasswordCommand({
-        UserPoolId: poolId,
-        Username: username,
-        Password: COGNITO_TEST_PASSWORD,
-        Permanent: true,
-      }),
-    );
-    // Assert: user is now CONFIRMED
-    return;
-  }
-});
+// "the user is {string}" (Given) is registered in user_common.ts and dispatches to setupUserStatus.
+// "the user is not {string}" (Given) is registered in user_common.ts.
 
 Given("the user is in {string} state", async function (this: SdkWorld, state: string) {
   // Arrange
@@ -931,23 +925,7 @@ Then("the user is in {string} state", async function (this: SdkWorld, expectedSt
   );
 });
 
-Then("the user is {string}", async function (this: SdkWorld, expectedStatus: string) {
-  // Arrange
-  const poolId = (this as any)._cognitoPoolId as string;
-  const username = (this as any)._cognitoUsername as string;
-  const { AdminGetUserCommand } = require("@aws-sdk/client-cognito-identity-provider");
-  // Act
-  const result = await cognitoClient(this).send(
-    new AdminGetUserCommand({ UserPoolId: poolId, Username: username }),
-  );
-  // Assert
-  const actualStatus = result.UserStatus;
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `expected user status '${expectedStatus}' but got '${actualStatus}'; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
+// "the user is {string}" (Then) is registered in user_common.ts and dispatches to assertUserStatus.
 
 Then("the user attributes are updated", async function (this: SdkWorld) {
   // Arrange: no additional setup

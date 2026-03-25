@@ -1,6 +1,6 @@
 /** Step definitions: neptune service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -61,42 +61,25 @@ async function ensureNeptuneSnapshot(world: SdkWorld): Promise<void> {
   }
 }
 
+// ── Before hook: register cluster helpers for @neptune scenarios ──────────────
+
+Before({ tags: "@neptune" }, function (this: SdkWorld) {
+  this.clusterHelpers = {
+    createCluster: async (world: SdkWorld) => {
+      await ensureNeptuneCluster(world);
+    },
+  };
+});
+
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
 // ── Given: cluster state setup ────────────────────────────────────────────────
 
-Given("the cluster does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the cluster already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await ensureNeptuneCluster(this);
-  // Assert: cluster created
-});
-
-Given("the cluster exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await ensureNeptuneCluster(this);
-  // Assert: cluster created
-});
-
-Given(/^the cluster is "([^"]*)"$/, async function (this: SdkWorld, _status: string) {
-  // Arrange / Act / Assert — no-op: lws sets clusters to AVAILABLE by default after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given(/^the cluster is not "([^"]*)"$/, async function (this: SdkWorld, _status: string) {
-  // Arrange / Act / Assert — skip: cannot force a cluster into a non-AVAILABLE state via public API.
-  return "pending";
-});
+// "the cluster does not already exist", "the cluster already exists",
+// "the cluster exists", "the cluster does not exist", "the cluster is {string}",
+// "the cluster is not {string}" are registered in cluster_common.ts.
 
 Given("the cluster has no non-deleted instances", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: fresh state after reset has no instances.
@@ -109,11 +92,6 @@ Given("the cluster has non-deleted instances", async function (this: SdkWorld) {
   // Act
   await ensureNeptuneInstance(this);
   // Assert: instance created
-});
-
-Given("the cluster does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after reset has no clusters.
-  assert.ok(this.session, "Expected session to be initialized");
 });
 
 // ── Given: instance state setup ────────────────────────────────────────────────

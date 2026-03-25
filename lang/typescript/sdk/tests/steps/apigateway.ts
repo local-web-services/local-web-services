@@ -2,7 +2,7 @@
 
 import { Given, When, Then } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, ApiStepHelpers } from "../support/world";
 
 const APIGW_TEST_API_NAME = "e2e-apigw-test-api-1";
 const APIGW_TEST_API_DESCRIPTION = "e2e test REST API";
@@ -118,8 +118,13 @@ Given('the "API" does not already exist', async function (this: SdkWorld) {
 Given('the "API" already exists', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createRestApi(this);
+  const helpers = this.apiHelpers as ApiStepHelpers | null;
+  // Act: dispatch to service-specific helper if registered, otherwise use default
+  if (helpers) {
+    await helpers.createApi(this);
+  } else {
+    await createRestApi(this);
+  }
   // Assert: API created
 });
 
@@ -131,8 +136,13 @@ Given('the "API" does not exist', async function (this: SdkWorld) {
 Given('the "API" exists', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createRestApiWithRoot(this);
+  const helpers = this.apiHelpers as ApiStepHelpers | null;
+  // Act: dispatch to service-specific helper if registered, otherwise use default
+  if (helpers) {
+    await helpers.createApiWithRoot(this);
+  } else {
+    await createRestApiWithRoot(this);
+  }
   // Assert: API and root resource created
 });
 
@@ -146,7 +156,12 @@ Given('the "API" is not "ACTIVE"', async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
   // Act
   await this.session!.lifecycle("apigateway").createDwellMs(5000).apply();
-  await createRestApiWithRoot(this);
+  const helpers = this.apiHelpers as ApiStepHelpers | null;
+  if (helpers) {
+    await helpers.createApiWithRoot(this);
+  } else {
+    await createRestApiWithRoot(this);
+  }
   // Assert: API is in CREATING state
 });
 

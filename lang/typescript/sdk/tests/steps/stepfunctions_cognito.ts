@@ -321,12 +321,7 @@ Then(`the execution is "FAILED" with a ResourceNotFoundException`, async functio
 
 // ── Then: invariants ──────────────────────────────────────────────────────────
 
-Then(
-  `every "RUNNING" execution references an "ACTIVE" state machine`,
-  async function (this: SdkWorld) {
-    // Invariant: trivially satisfied in isolated lws context.
-  },
-);
+// "every {string} execution references an {string} state machine" is in cross_service_common.ts.
 
 Then("every succeeded execution recorded which pool it called", async function (this: SdkWorld) {
   // Invariant: trivially satisfied in isolated lws context.

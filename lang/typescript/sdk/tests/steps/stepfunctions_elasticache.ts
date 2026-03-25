@@ -1,6 +1,6 @@
 /** Step definitions: stepfunctions_elasticache cross-service scenarios — unique steps only */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -56,106 +56,33 @@ async function sfnElastiCacheCreateCluster(world: SdkWorld): Promise<void> {
   );
 }
 
+// ── Before hook: register cluster helpers for @stepfunctionselasticache scenarios ──
+
+Before({ tags: "@stepfunctionselasticache" }, function (this: SdkWorld) {
+  this.clusterHelpers = {
+    createCluster: async (world: SdkWorld) => {
+      try {
+        await sfnElastiCacheCreateCluster(world);
+      } catch {
+        // cluster may already exist
+      }
+    },
+  };
+});
+
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
 // ── Given: cluster existence ──────────────────────────────────────────────────
 
-Given("the cluster does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the cluster already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create cluster (ignore if already exists)
-  try {
-    await sfnElastiCacheCreateCluster(this);
-  } catch {
-    // cluster may already exist; desired state is that it exists
-  }
-  // Assert: cluster exists
-});
-
-Given("the cluster exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  try {
-    await sfnElastiCacheCreateCluster(this);
-  } catch {
-    // cluster may already exist
-  }
-  // Assert: cluster exists
-});
-
-Given("the cluster does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-// ── Given: cluster status ──────────────────────────────────────────────────────
-
-Given('the cluster is "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: ensure cluster exists; fresh clusters start AVAILABLE
-  try {
-    await sfnElastiCacheCreateCluster(this);
-  } catch {
-    // cluster may already exist
-  }
-  // Assert: cluster is AVAILABLE
-});
-
-Given('the cluster is "MODIFYING"', async function (this: SdkWorld) {
-  // No-op: cannot drive a cluster into MODIFYING state via public API in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given('the cluster is not "MODIFYING"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create an AVAILABLE cluster (not MODIFYING)
-  try {
-    await sfnElastiCacheCreateCluster(this);
-  } catch {
-    // cluster may already exist
-  }
-  // Assert: cluster is not MODIFYING
-});
-
-Given('the cluster is not "AVAILABLE"', async function (this: SdkWorld) {
-  // No-op: cannot drive a cluster into a non-AVAILABLE state via public API in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the cluster does not already exist", "the cluster already exists",
+// "the cluster exists", "the cluster does not exist", "the cluster is {string}",
+// "the cluster is not {string}" are registered in cluster_common.ts.
 
 // ── Given: execution state ────────────────────────────────────────────────────
 
-Given('an execution is "RUNNING"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create state machine then start execution
-  const expectedSmArn = await sfnElastiCacheCreateSm(this);
-  (this as any)._sfnElastiCacheSmArn = expectedSmArn;
-  const { StartExecutionCommand } = require("@aws-sdk/client-sfn");
-  const execResult = await sfnElastiCacheSfnClient(this).send(
-    new StartExecutionCommand({
-      stateMachineArn: sfnElastiCacheSmArn(SFN_ELASTICACHE_TEST_SM),
-      input: SFN_ELASTICACHE_TEST_INPUT,
-    }),
-  );
-  // Assert: execution started
-  (this as any)._sfnElastiCacheExecArn = execResult.executionArn;
-  assert.ok(execResult.executionArn, "Expected executionArn in StartExecution response");
-});
-
-Given('no execution is "RUNNING"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no executions.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "an execution is {string}" and "no execution is {string}" are registered in cross_service_common.ts.
 
 // ── Given: capacity ───────────────────────────────────────────────────────────
 
@@ -303,13 +230,7 @@ Then('the execution is "FAILED" with a connection error', async function (this: 
 
 // ── Then: invariants ──────────────────────────────────────────────────────────
 
-Then(
-  'every "RUNNING" execution references an "ACTIVE" state machine',
-  async function (this: SdkWorld) {
-    // Invariant: trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+// "every {string} execution references an {string} state machine" is in cross_service_common.ts.
 
 Then("every succeeded execution recorded which cluster it read", async function (this: SdkWorld) {
   // Invariant: trivially satisfied in isolated lws context.

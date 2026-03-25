@@ -208,14 +208,6 @@ function handleSsmOp(
         );
         return;
       }
-      if (!existing && overwrite === true) {
-        jsonReply(reply, { __type: "ParameterNotFound", message: "Parameter not found." }, 400);
-        return;
-      }
-      if (!existing && overwrite === false) {
-        jsonReply(reply, { __type: "ParameterNotFound", message: "Parameter not found." }, 400);
-        return;
-      }
       const param = store.putParameter(
         putParamName,
         body.Value as string,

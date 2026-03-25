@@ -348,14 +348,7 @@ Then('the execution is "FAILED" with a connection error', async function (this: 
 
 // ── Then: invariants ─────────────────────────────────────────────────────────
 
-Then(
-  'every "RUNNING" execution references an "ACTIVE" state machine',
-  async function (this: SdkWorld) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
-
+// "every {string} execution references an {string} state machine" is in cross_service_common.ts.
 // "every {string} invocation references an {string} Lambda function" is registered in cross_service_common.ts.
 
 Then(

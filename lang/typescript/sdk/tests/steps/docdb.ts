@@ -1,6 +1,6 @@
 /** Step definitions: docdb service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -49,37 +49,29 @@ async function docdbCreateSnapshot(world: SdkWorld): Promise<void> {
   );
 }
 
+// ── Before hook: register cluster helpers for @docdb and @docdbevents scenarios ──
+
+Before({ tags: "@docdb or @docdbevents" }, function (this: SdkWorld) {
+  this.clusterHelpers = {
+    createCluster: async (world: SdkWorld) => {
+      try {
+        await docdbCreateCluster(world);
+      } catch {
+        // cluster may already exist
+      }
+    },
+  };
+});
+
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
 // ── Given: cluster state setup ────────────────────────────────────────────────
 
-Given("the cluster does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the cluster already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await docdbCreateCluster(this);
-  // Assert: cluster created
-});
-
-Given("the cluster exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await docdbCreateCluster(this);
-  // Assert: cluster created
-});
-
-Given("the cluster does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the cluster does not already exist", "the cluster already exists",
+// "the cluster exists", "the cluster does not exist", "the cluster is {string}",
+// "the cluster is not {string}" are registered in cluster_common.ts.
 
 Given("the cluster has no non-deleted instances", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: fresh cluster has no instances.
@@ -93,18 +85,6 @@ Given("the cluster has non-deleted instances", async function (this: SdkWorld) {
   // Act
   await docdbCreateInstance(this);
   // Assert: instance created in cluster
-});
-
-// ── Given: lifecycle states (@internal — no-op) ───────────────────────────────
-
-Given(/^the cluster is "([^"]*)"$/, async function (this: SdkWorld, _status: string) {
-  // @internal: Cannot place cluster into arbitrary lifecycle state via public API.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given(/^the cluster is not "([^"]*)"$/, async function (this: SdkWorld, _status: string) {
-  // @internal: Cannot enforce cluster is NOT in a given lifecycle state via public API.
-  assert.ok(this.session, "Expected session to be initialized");
 });
 
 // ── Given: instance state setup ───────────────────────────────────────────────
@@ -761,10 +741,7 @@ Then('the restored cluster is in "RESTORING" state', async function (this: SdkWo
 
 // ── Then: @internal state assertions (no-ops) ─────────────────────────────────
 
-Then(/^the cluster is "([^"]*)"$/, async function (this: SdkWorld, _status: string) {
-  // @internal: model-level invariant; trivially satisfied.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the cluster is {string}" is registered in cluster_common.ts.
 
 Then(/^the cluster returns to "([^"]*)" state$/, async function (this: SdkWorld, _status: string) {
   // @internal: model-level invariant; trivially satisfied.

@@ -458,13 +458,7 @@ Then('every "IN_PROGRESS" request references an "ACTIVE" "API"', async function 
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then(
-  'every "RUNNING" execution references an "ACTIVE" state machine',
-  async function (this: SdkWorld) {
-    // Invariant: trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+// "every {string} execution references an {string} state machine" is in cross_service_common.ts.
 
 Then(
   'every "RUNNING" execution has a corresponding "IN_PROGRESS" request',

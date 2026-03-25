@@ -1,6 +1,6 @@
 /** Step definitions: memorydb service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -69,49 +69,89 @@ async function createSnapshot(world: SdkWorld): Promise<void> {
   );
 }
 
+// ── Before hooks: register cluster and user helpers for @memorydb scenarios ──
+
+Before({ tags: "@memorydb" }, function (this: SdkWorld) {
+  this.clusterHelpers = {
+    createCluster: async (world: SdkWorld) => {
+      try {
+        await createCluster(world);
+      } catch {
+        // cluster may already exist
+      }
+    },
+    assertClusterStatus: async (world: SdkWorld, _expectedStatus: string) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: check that the last cluster operation succeeded
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      // Assert
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected cluster operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+    },
+  };
+  this.userHelpers = {
+    createUser: async (world: SdkWorld) => {
+      try {
+        await createUser(world);
+      } catch {
+        // user may already exist
+      }
+    },
+    assertUserStatus: async (world: SdkWorld, expectedStatus: string) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DescribeUsersCommand } = require("@aws-sdk/client-memorydb");
+      const expectedStatusLower = expectedStatus.toLowerCase();
+      if (expectedStatusLower === "deleted") {
+        // Act: verify user is deleted (not found or has deleting/deleted status)
+        try {
+          const result = await memorydbClient(world).send(
+            new DescribeUsersCommand({ UserName: MEMORYDB_USER_NAME }),
+          );
+          const users: Array<{ Name?: string; Status?: string }> = result.Users ?? [];
+          for (const u of users) {
+            if (u.Name === MEMORYDB_USER_NAME) {
+              const actualStatus = u.Status ?? "";
+              const expectedAbsent = MEMORYDB_USER_NAME;
+              // Assert
+              assert.ok(
+                actualStatus === "deleting" || actualStatus === "deleted",
+                `Expected user "${expectedAbsent}" to be deleted but status is "${actualStatus}"; expected_deleted=${expectedAbsent} actual_status=${actualStatus}`,
+              );
+            }
+          }
+        } catch {
+          // User not found — treat as deleted
+        }
+        return;
+      }
+      // For other statuses check lastCallResult
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      // Assert
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected user operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_status=${expectedStatus} expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+    },
+  };
+});
+
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
 // ── Given: cluster state setup ────────────────────────────────────────────────
 
-Given("the cluster does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the cluster already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createCluster(this);
-  // Assert: cluster created
-});
-
-Given("the cluster does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the cluster exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createCluster(this);
-  // Assert: cluster created
-});
-
-Given("the cluster is {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange / Act / Assert — no-op: clusters are available after creation in lws,
-  // or @internal: non-AVAILABLE/transient states cannot be forced via public API.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the cluster is not {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange / Act / Assert — no-op: freshly created cluster is not in the named state,
-  // or @internal: non-standard states require internal control.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the cluster does not already exist", "the cluster already exists",
+// "the cluster exists", "the cluster does not exist", "the cluster is {string}",
+// "the cluster is not {string}" are registered in cluster_common.ts.
 
 Given('multi-"AZ" is enabled for the cluster', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: multi-AZ state managed internally.
@@ -125,42 +165,9 @@ Given('multi-"AZ" is not enabled for the cluster', async function (this: SdkWorl
 
 // ── Given: user state setup ───────────────────────────────────────────────────
 
-Given("the user does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no users.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the user already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createUser(this);
-  // Assert: user created
-});
-
-Given("the user does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no users.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the user exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await createUser(this);
-  // Assert: user created
-});
-
-Given("the user is {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange / Act / Assert — no-op: users are ACTIVE after creation in lws,
-  // or @internal: non-ACTIVE/transient states cannot be forced via public API.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the user is not {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange / Act / Assert — no-op: freshly created user is not in the named state.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the user does not already exist", "the user already exists",
+// "the user exists", "the user does not exist", "the user is {string}",
+// "the user is not {string}" are registered in user_common.ts.
 
 Given('the user is not already a member of the "ACL"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: freshly created user is not a member of any ACL.
@@ -837,18 +844,8 @@ Then('the cluster is in "MODIFYING" state', async function (this: SdkWorld) {
   );
 });
 
-Then('the cluster is "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected operation to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+// "the cluster is {string}" is registered in cluster_common.ts and dispatches
+// to assertClusterStatus via the clusterHelpers registered in the Before hook above.
 
 Then('the cluster is "DELETED" and its tags are removed', async function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -1009,43 +1006,8 @@ Then('the user is in "MODIFYING" state', async function (this: SdkWorld) {
   );
 });
 
-Then('the user is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected operation to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
-
-Then('the user is "DELETED"', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act
-  const { DescribeUsersCommand } = require("@aws-sdk/client-memorydb");
-  try {
-    const result = await memorydbClient(this).send(
-      new DescribeUsersCommand({ UserName: MEMORYDB_USER_NAME }),
-    );
-    const users: Array<{ Name?: string; Status?: string }> = result.Users ?? [];
-    // Assert
-    for (const u of users) {
-      if (u.Name === MEMORYDB_USER_NAME) {
-        const actualStatus = u.Status ?? "";
-        const expectedAbsent = MEMORYDB_USER_NAME;
-        assert.ok(
-          actualStatus === "deleting" || actualStatus === "deleted",
-          `Expected user "${expectedAbsent}" to be deleted but status is "${actualStatus}"; expected_deleted=${expectedAbsent} actual_status=${actualStatus}`,
-        );
-      }
-    }
-  } catch {
-    // User not found — treat as deleted
-  }
-});
+// "the user is {string}" is registered in user_common.ts and dispatches
+// to assertUserStatus via the userHelpers registered in the Before hook above.
 
 Then('the user returns to "ACTIVE" state', async function (this: SdkWorld) {
   // Arrange: no additional setup required

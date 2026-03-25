@@ -2082,11 +2082,23 @@ Given("the parameter already exists", async function (this: SdkWorld) {
   assert.ok(this.session, "No session running");
   const { SSMClient, PutParameterCommand } = require("@aws-sdk/client-ssm");
   const client = this.session!.client<typeof SSMClient>("ssm");
-  // Act
+  // Act: create both the cross-service param and the SSM-specific param so that
+  // both cross-service and pure-SSM When steps find the parameter they expect.
   await client.send(
     new PutParameterCommand({ Name: SM_PARAM, Value: "initial-value", Type: "String" }),
   );
-  // Assert: no error means parameter was created
+  try {
+    await client.send(
+      new PutParameterCommand({
+        Name: "/e2e/ssm/test-param-1",
+        Value: "test-value-1",
+        Type: "String",
+      }),
+    );
+  } catch {
+    // May already exist
+  }
+  // Assert: no error means parameters were created
 });
 
 Given("the parameter exists", async function (this: SdkWorld) {
@@ -2094,15 +2106,21 @@ Given("the parameter exists", async function (this: SdkWorld) {
   assert.ok(this.session, "No session running");
   const { SSMClient, PutParameterCommand } = require("@aws-sdk/client-ssm");
   const client = this.session!.client<typeof SSMClient>("ssm");
-  // Act
-  try {
-    await client.send(
-      new PutParameterCommand({ Name: SM_PARAM, Value: "test-value", Type: "String" }),
-    );
-  } catch {
-    // May already exist
+  // Act: create both the cross-service param (SM_PARAM) and the SSM-specific param
+  // (/e2e/ssm/test-param-1) so that both cross-service and pure-SSM When steps find
+  // the parameter they expect.
+  const paramsToCreate = [
+    { Name: SM_PARAM, Value: "test-value", Type: "String" },
+    { Name: "/e2e/ssm/test-param-1", Value: "test-value-1", Type: "String" },
+  ];
+  for (const p of paramsToCreate) {
+    try {
+      await client.send(new PutParameterCommand(p));
+    } catch {
+      // May already exist
+    }
   }
-  // Assert: no error means parameter is available
+  // Assert: no error means parameters are available
 });
 
 Given("the parameter does not exist", function (this: SdkWorld) {
