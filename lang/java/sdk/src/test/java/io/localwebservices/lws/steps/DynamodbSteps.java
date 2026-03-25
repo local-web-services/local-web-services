@@ -167,15 +167,11 @@ public class DynamodbSteps {
     // No-op: fresh state has no pending transactions.
   }
 
-  @Given("the transaction is \"COMMITTED\"")
-  public void theTransactionIsCommittedGiven() {
-    // @internal: @internal scenarios are excluded from the test run.
-  }
+  // "the transaction is \"COMMITTED\"" — registered as @Then below; absent here to avoid
+  // DuplicateStepDefinitionException.
 
-  @Given("the transaction is \"ROLLED_BACK\"")
-  public void theTransactionIsRolledBackGiven() {
-    // @internal: @internal scenarios are excluded from the test run.
-  }
+  // "the transaction is \"ROLLED_BACK\"" — registered as @Then below; absent here to avoid
+  // DuplicateStepDefinitionException.
 
   @Given("the transaction is not \"COMMITTED\"")
   public void theTransactionIsNotCommitted() {
