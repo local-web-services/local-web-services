@@ -42,8 +42,8 @@ import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
 public class ApigatewayDynamodbSteps {
 
   private static final String TEST_API_NAME = "e2e-test-api-1";
-  private static final String TEST_TABLE = "e2e-test-table-1";
-  private static final String TEST_PK = "e2e-id";
+  private static final String TEST_TABLE = "test-table-1";
+  private static final String TEST_PK = "id";
   private static final String TEST_ITEM_KEY = "e2e-item-1";
   private static final String TEST_STAGE = "prod";
   private static final String TEST_REGION = "us-east-1";
@@ -218,13 +218,7 @@ public class ApigatewayDynamodbSteps {
     restApiId = apiId;
   }
 
-  @Given("the table exists and is \"ACTIVE\"")
-  public void theTableExistsAndIsActive() {
-    // Arrange
-    // Act
-    apigwDdbCreateTable();
-    // Assert: table is immediately ACTIVE in lws
-  }
+  // "the table exists and is {string}" → EventsDynamodbSteps (parameterized, covers this literal)
 
   @Given("the table does not exist or is not \"ACTIVE\"")
   public void theTableDoesNotExistOrIsNotActive() {

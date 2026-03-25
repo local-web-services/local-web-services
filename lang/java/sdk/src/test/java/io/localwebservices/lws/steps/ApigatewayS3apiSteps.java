@@ -227,19 +227,10 @@ public class ApigatewayS3apiSteps {
 
   // ── Given: object state ────────────────────────────────────────────────────
 
-  @Given("an object \"EXISTS\" in the target bucket")
-  public void anObjectExistsInTheTargetBucket() {
-    // Arrange / Act / Assert — @internal: Cannot pre-seed objects for S3 integration test.
-    Assumptions.assumeTrue(
-        false, "lws limitation: pre-seeded object for S3 integration test not reachable via SDK");
-  }
-
-  @Given("no object \"EXISTS\" in the target bucket")
-  public void noObjectExistsInTheTargetBucket() {
-    // Arrange / Act / Assert — @internal: Cannot verify absence of objects for S3 integration.
-    Assumptions.assumeTrue(
-        false, "lws limitation: object absence for S3 integration test not reachable via SDK");
-  }
+  // "an object {string} in the target bucket" → StepfunctionsS3apiSteps (parameterized, covers
+  // "an object \"EXISTS\" in the target bucket")
+  // "no object {string} in the target bucket" → StepfunctionsS3apiSteps (parameterized, covers
+  // "no object \"EXISTS\" in the target bucket")
 
   // ── Given: bucket lifecycle state ─────────────────────────────────────────
 

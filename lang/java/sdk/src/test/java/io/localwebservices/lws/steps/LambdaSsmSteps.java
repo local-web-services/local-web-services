@@ -29,8 +29,8 @@ public class LambdaSsmSteps {
 
   private static final String TEST_FUNC = "e2e-test-func-1";
   private static final String TEST_ROLE_ARN = "arn:aws:iam::000000000000:role/test";
-  private static final String TEST_PARAM = "/e2e/test/param/1";
-  private static final String TEST_PARAM_VALUE = "e2e-test-value-1";
+  private static final String TEST_PARAM = "/test/ssm/cs-1";
+  private static final String TEST_PARAM_VALUE = "test-value-1";
 
   private final WorldContext world;
 
@@ -127,37 +127,10 @@ public class LambdaSsmSteps {
     // Assert: parameter exists; verified by subsequent steps
   }
 
-  @When("a parameter is created in \"SSM\" Parameter Store")
-  public void aParameterIsCreatedInSsmParameterStore() {
-    // Arrange
-    try (SsmClient client = world.session.ssmClient()) {
-      // Act
-      var response =
-          client.putParameter(
-              r ->
-                  r.name(TEST_PARAM)
-                      .value(TEST_PARAM_VALUE)
-                      .type(ParameterType.STRING)
-                      .overwrite(false));
-      // Assert: store result
-      world.setSuccess(response);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("a parameter is deleted from \"SSM\" Parameter Store")
-  public void aParameterIsDeletedFromSsmParameterStore() {
-    // Arrange
-    try (SsmClient client = world.session.ssmClient()) {
-      // Act
-      var response = client.deleteParameter(r -> r.name(TEST_PARAM));
-      // Assert: store result
-      world.setSuccess(response);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
+  // "a parameter is created in \"SSM\" Parameter Store" → StepfunctionsSsmSteps
+  // @When("a parameter is created in {string} Parameter Store") — covers this literal.
+  // "a parameter is deleted from \"SSM\" Parameter Store" → StepfunctionsSsmSteps
+  // @When("a parameter is deleted from {string} Parameter Store") — covers this literal.
 
   @When("the Lambda function fails because the parameter has been deleted")
   public void theLambdaFunctionFailsBecauseTheParameterHasBeenDeleted() {
