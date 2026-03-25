@@ -483,9 +483,11 @@ public class CrossServiceSteps {
     Assumptions.assumeTrue(false, "queue non-ACTIVE state not reachable via SDK API");
   }
 
-  @Given("the target queue is {string}")
-  public void theTargetQueueIs(String state) {
-    // Arrange / Act / Assert — no-op: target queue is ACTIVE by default
+  // "the target queue is \"ACTIVE\"" is registered in ApigatewaySqsSteps.
+
+  @Given("the target queue is \"DELETED\"")
+  public void theTargetQueueIsDeleted() {
+    // Arrange / Act / Assert — no-op: a deleted queue is absent; fresh session has no queues.
   }
 
   @Given("the target queue is not {string}")
@@ -743,16 +745,10 @@ public class CrossServiceSteps {
     // Arrange / Act / Assert — no-op: fresh session has no tables
   }
 
-  @Given("the target table is {string}")
-  public void theTargetTableIs(String state) {
-    // Arrange / Act / Assert — no-op: target table is ACTIVE by default
-  }
-
-  @Given("the target table is not {string}")
-  public void theTargetTableIsNot(String state) {
-    // Arrange / Act / Assert — non-ACTIVE target table not reachable via public API
-    Assumptions.assumeTrue(false, "target table non-ACTIVE state not reachable via SDK API");
-  }
+  // "the target table is {string}" is registered in ApigatewayDynamodbSteps (literals
+  // "ACTIVE"/"DELETING").
+  // "the target table is not {string}" is registered in ApigatewayDynamodbSteps (literals
+  // "ACTIVE"/"DELETING").
 
   @Given("no item {string} in the target table")
   public void noItemInTheTargetTable(String state) {
