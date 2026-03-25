@@ -335,6 +335,48 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		}
 		writeOK(w, map[string]interface{}{"Snapshots": snaps})
 
+	case "UpdateCluster":
+		name := getString(body, "ClusterName")
+		h.store.mu.Lock()
+		cluster := h.store.clusters[name]
+		h.store.mu.Unlock()
+		if cluster == nil {
+			writeErr(w, "ClusterNotFoundFault", "Cluster not found: "+name)
+			return
+		}
+		if v := getString(body, "Description"); v != "" {
+			cluster.Description = v
+		}
+		if v := getString(body, "NodeType"); v != "" {
+			cluster.NodeType = v
+		}
+		writeOK(w, map[string]interface{}{"Cluster": clusterDesc(cluster)})
+
+	case "UpdateUser":
+		name := getString(body, "UserName")
+		h.store.mu.Lock()
+		user := h.store.users[name]
+		h.store.mu.Unlock()
+		if user == nil {
+			writeErr(w, "UserNotFoundFault", "User not found: "+name)
+			return
+		}
+		if v := getString(body, "AccessString"); v != "" {
+			user.AccessString = v
+		}
+		writeOK(w, map[string]interface{}{"User": userDesc(user)})
+
+	case "UpdateACL":
+		name := getString(body, "ACLName")
+		h.store.mu.Lock()
+		acl := h.store.acls[name]
+		h.store.mu.Unlock()
+		if acl == nil {
+			writeErr(w, "ACLNotFoundFault", "ACL not found: "+name)
+			return
+		}
+		writeOK(w, map[string]interface{}{"ACL": aclDesc(acl)})
+
 	case "ListTags", "TagResource", "UntagResource":
 		writeOK(w, map[string]interface{}{"TagList": []interface{}{}})
 

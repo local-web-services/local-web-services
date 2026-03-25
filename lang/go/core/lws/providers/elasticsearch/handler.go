@@ -52,17 +52,32 @@ func NewHandler(s *state.ServerState) *Handler {
 	return &Handler{state: s, store: store}
 }
 
-func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	target := r.Header.Get("X-Amz-Target")
-	operation := ""
-	if strings.HasPrefix(target, "Elasticsearch_20150101.") {
-		operation = strings.TrimPrefix(target, "Elasticsearch_20150101.")
-	} else {
-		parts := strings.SplitN(target, ".", 2)
-		if len(parts) == 2 {
-			operation = parts[1]
-		}
+func (h *Handler) routeOperation(method, path string) string {
+	// Elasticsearch Service uses REST API routing (no X-Amz-Target)
+	// Paths start with /2015-01-01/
+	path = strings.TrimPrefix(path, "/2015-01-01")
+	switch {
+	case path == "/es/domain" && method == http.MethodPost:
+		return "CreateElasticsearchDomain"
+	case path == "/es/domain" && method == http.MethodGet:
+		return "ListDomainNames"
+	case strings.HasPrefix(path, "/es/domain/") && method == http.MethodGet:
+		return "DescribeElasticsearchDomain"
+	case strings.HasPrefix(path, "/es/domain/") && method == http.MethodDelete:
+		return "DeleteElasticsearchDomain"
+	case path == "/tags" && method == http.MethodPost:
+		return "AddTags"
+	case path == "/tags" && method == http.MethodGet:
+		return "ListTags"
+	case path == "/tags-removal" && method == http.MethodPost:
+		return "RemoveTags"
+	default:
+		return ""
 	}
+}
+
+func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	operation := h.routeOperation(r.Method, r.URL.Path)
 
 	if state.ApplyIAMAuth(h.state, "es", operation, r, w, false) {
 		return
@@ -72,12 +87,14 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var body map[string]interface{}
-	json.NewDecoder(r.Body).Decode(&body) //nolint:errcheck
+	if r.Method == http.MethodPost || r.Method == http.MethodPut {
+		json.NewDecoder(r.Body).Decode(&body) //nolint:errcheck
+	}
 	if body == nil {
 		body = make(map[string]interface{})
 	}
 
-	h.handle(w, operation, body)
+	h.handle(w, r, operation, body)
 }
 
 func writeOK(w http.ResponseWriter, data interface{}) {
@@ -113,7 +130,13 @@ func domainDesc(d *Domain) map[string]interface{} {
 	}
 }
 
-func (h *Handler) handle(w http.ResponseWriter, operation string, body map[string]interface{}) {
+// domainNameFromPath extracts the domain name from a path like /2015-01-01/es/domain/{domain-name}
+func domainNameFromPath(path string) string {
+	path = strings.TrimPrefix(path, "/2015-01-01/es/domain/")
+	return strings.SplitN(path, "/", 2)[0]
+}
+
+func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation string, body map[string]interface{}) {
 	switch operation {
 	case "CreateElasticsearchDomain":
 		name := getString(body, "DomainName")
@@ -135,7 +158,7 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		writeOK(w, map[string]interface{}{"DomainStatus": domainDesc(domain)})
 
 	case "DeleteElasticsearchDomain":
-		name := getString(body, "DomainName")
+		name := domainNameFromPath(r.URL.Path)
 		h.store.mu.Lock()
 		domain := h.store.domains[name]
 		delete(h.store.domains, name)
@@ -147,7 +170,7 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		writeOK(w, map[string]interface{}{"DomainStatus": domainDesc(domain)})
 
 	case "DescribeElasticsearchDomain":
-		name := getString(body, "DomainName")
+		name := domainNameFromPath(r.URL.Path)
 		h.store.mu.RLock()
 		domain := h.store.domains[name]
 		h.store.mu.RUnlock()
@@ -188,7 +211,7 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		writeOK(w, map[string]interface{}{})
 
 	case "ListTags":
-		arn := getString(body, "ARN")
+		arn := r.URL.Query().Get("arn")
 		h.store.mu.RLock()
 		var tagList []map[string]string
 		for _, d := range h.store.domains {

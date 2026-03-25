@@ -253,6 +253,40 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		}
 		sendJSON(w, 200, map[string]interface{}{"DBSnapshots": snaps})
 
+	case "AddTagsToResource":
+		// No-op: tags are accepted but not stored in this simplified implementation.
+		sendJSON(w, 200, map[string]interface{}{})
+
+	case "RestoreDBInstanceFromDBSnapshot":
+		id := params.Get("DBInstanceIdentifier")
+		snapID := params.Get("DBSnapshotIdentifier")
+		h.store.mu.RLock()
+		snap := h.store.snapshots[snapID]
+		h.store.mu.RUnlock()
+		engine := "mysql"
+		if snap != nil {
+			engine = snap.Engine
+		}
+		inst := &DBInstance{
+			DBInstanceIdentifier: id,
+			DBInstanceClass:      params.Get("DBInstanceClass"),
+			Engine:               engine,
+			DBInstanceStatus:     "restoring",
+			DBName:               params.Get("DBName"),
+			AllocatedStorage:     20,
+			MultiAZ:              false,
+			EndpointAddress:      "localhost",
+			EndpointPort:         3306,
+			CreatedAt:            time.Now(),
+		}
+		if strings.Contains(strings.ToLower(inst.Engine), "postgres") {
+			inst.EndpointPort = 5432
+		}
+		h.store.mu.Lock()
+		h.store.instances[id] = inst
+		h.store.mu.Unlock()
+		sendJSON(w, 200, map[string]interface{}{"DBInstance": instanceDesc(inst)})
+
 	default:
 		sendError(w, 400, "InvalidAction", "Unknown action: "+action)
 	}

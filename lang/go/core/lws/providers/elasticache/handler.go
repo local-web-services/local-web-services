@@ -40,11 +40,20 @@ type CacheSubnetGroup struct {
 	CreatedAt                   time.Time
 }
 
+type CacheSnapshot struct {
+	SnapshotName   string
+	CacheClusterId string
+	Status         string
+	Engine         string
+	CreatedAt      time.Time
+}
+
 type Store struct {
 	mu                sync.RWMutex
 	clusters          map[string]*CacheCluster
 	replicationGroups map[string]*ReplicationGroup
 	subnetGroups      map[string]*CacheSubnetGroup
+	snapshots         map[string]*CacheSnapshot
 }
 
 func NewStore() *Store {
@@ -52,6 +61,7 @@ func NewStore() *Store {
 		clusters:          make(map[string]*CacheCluster),
 		replicationGroups: make(map[string]*ReplicationGroup),
 		subnetGroups:      make(map[string]*CacheSubnetGroup),
+		snapshots:         make(map[string]*CacheSnapshot),
 	}
 }
 
@@ -61,6 +71,7 @@ func (s *Store) Reset() {
 	s.clusters = make(map[string]*CacheCluster)
 	s.replicationGroups = make(map[string]*ReplicationGroup)
 	s.subnetGroups = make(map[string]*CacheSubnetGroup)
+	s.snapshots = make(map[string]*CacheSnapshot)
 }
 
 type Handler struct {
@@ -137,6 +148,16 @@ func subnetGroupDesc(sg *CacheSubnetGroup) map[string]interface{} {
 		"CacheSubnetGroupDescription": sg.CacheSubnetGroupDescription,
 		"VpcId":                       sg.VpcId,
 		"ARN":                         fmt.Sprintf("arn:aws:elasticache:%s:%s:subnetgroup:%s", region, accountID, sg.CacheSubnetGroupName),
+	}
+}
+
+func snapshotDesc(s *CacheSnapshot) map[string]interface{} {
+	return map[string]interface{}{
+		"SnapshotName":   s.SnapshotName,
+		"CacheClusterId": s.CacheClusterId,
+		"SnapshotStatus": s.Status,
+		"Engine":         s.Engine,
+		"ARN":            fmt.Sprintf("arn:aws:elasticache:%s:%s:snapshot:%s", region, accountID, s.SnapshotName),
 	}
 }
 
@@ -267,6 +288,82 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 			groups = []map[string]interface{}{}
 		}
 		sendJSON(w, 200, map[string]interface{}{"CacheSubnetGroups": groups})
+
+	case "ModifyCacheCluster":
+		id := params.Get("CacheClusterId")
+		h.store.mu.Lock()
+		cluster := h.store.clusters[id]
+		h.store.mu.Unlock()
+		if cluster == nil {
+			sendError(w, 404, "CacheClusterNotFound", "Cache cluster not found: "+id)
+			return
+		}
+		sendJSON(w, 200, map[string]interface{}{"CacheCluster": clusterDesc(cluster)})
+
+	case "ModifyReplicationGroup":
+		id := params.Get("ReplicationGroupId")
+		h.store.mu.Lock()
+		rg := h.store.replicationGroups[id]
+		h.store.mu.Unlock()
+		if rg == nil {
+			sendError(w, 404, "ReplicationGroupNotFoundFault", "Replication group not found: "+id)
+			return
+		}
+		sendJSON(w, 200, map[string]interface{}{"ReplicationGroup": rgDesc(rg)})
+
+	case "CreateSnapshot":
+		snapName := params.Get("SnapshotName")
+		clusterID := params.Get("CacheClusterId")
+		engine := "redis"
+		h.store.mu.RLock()
+		if c := h.store.clusters[clusterID]; c != nil {
+			engine = c.Engine
+		}
+		h.store.mu.RUnlock()
+		snap := &CacheSnapshot{
+			SnapshotName:   snapName,
+			CacheClusterId: clusterID,
+			Status:         "available",
+			Engine:         engine,
+			CreatedAt:      time.Now(),
+		}
+		h.store.mu.Lock()
+		h.store.snapshots[snapName] = snap
+		h.store.mu.Unlock()
+		sendJSON(w, 200, map[string]interface{}{"Snapshot": snapshotDesc(snap)})
+
+	case "DeleteSnapshot":
+		snapName := params.Get("SnapshotName")
+		h.store.mu.Lock()
+		snap := h.store.snapshots[snapName]
+		delete(h.store.snapshots, snapName)
+		h.store.mu.Unlock()
+		if snap == nil {
+			sendError(w, 404, "SnapshotNotFoundFault", "Snapshot not found: "+snapName)
+			return
+		}
+		sendJSON(w, 200, map[string]interface{}{"Snapshot": snapshotDesc(snap)})
+
+	case "DescribeSnapshots":
+		filterName := params.Get("SnapshotName")
+		clusterFilter := params.Get("CacheClusterId")
+		h.store.mu.RLock()
+		var snaps []map[string]interface{}
+		for _, s := range h.store.snapshots {
+			if (filterName == "" || s.SnapshotName == filterName) &&
+				(clusterFilter == "" || s.CacheClusterId == clusterFilter) {
+				snaps = append(snaps, snapshotDesc(s))
+			}
+		}
+		h.store.mu.RUnlock()
+		if snaps == nil {
+			snaps = []map[string]interface{}{}
+		}
+		sendJSON(w, 200, map[string]interface{}{"Snapshots": snaps})
+
+	case "AddTagsToResource", "RemoveTagsFromResource", "ListTagsForResource":
+		// No-op: tags accepted but not stored in this simplified implementation.
+		sendJSON(w, 200, map[string]interface{}{"TagList": []interface{}{}})
 
 	default:
 		sendError(w, 400, "InvalidAction", "Unknown action: "+action)

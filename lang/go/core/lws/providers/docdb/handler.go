@@ -276,6 +276,53 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		}
 		sendJSON(w, 200, map[string]interface{}{"DBClusterSnapshots": snaps})
 
+	case "ModifyDBCluster":
+		id := params.Get("DBClusterIdentifier")
+		h.store.mu.Lock()
+		cluster := h.store.clusters[id]
+		h.store.mu.Unlock()
+		if cluster == nil {
+			sendError(w, 404, "DBClusterNotFoundFault", "DB cluster not found: "+id)
+			return
+		}
+		cluster.Status = "modifying"
+		sendJSON(w, 200, map[string]interface{}{"DBCluster": clusterDesc(cluster)})
+
+	case "ModifyDBInstance":
+		id := params.Get("DBInstanceIdentifier")
+		h.store.mu.Lock()
+		inst := h.store.instances[id]
+		h.store.mu.Unlock()
+		if inst == nil {
+			sendError(w, 404, "DBInstanceNotFound", "DB instance not found: "+id)
+			return
+		}
+		inst.DBInstanceStatus = "modifying"
+		if v := params.Get("DBInstanceClass"); v != "" {
+			inst.DBInstanceClass = v
+		}
+		sendJSON(w, 200, map[string]interface{}{"DBInstance": instanceDesc(inst)})
+
+	case "RestoreDBClusterFromSnapshot":
+		id := params.Get("DBClusterIdentifier")
+		engine := params.Get("Engine")
+		if engine == "" {
+			engine = "docdb"
+		}
+		cluster := &DBCluster{
+			DBClusterIdentifier: id,
+			Status:              "restoring",
+			Engine:              engine,
+			Endpoint:            "localhost",
+			ReaderEndpoint:      "localhost",
+			Port:                27017,
+			CreatedAt:           time.Now(),
+		}
+		h.store.mu.Lock()
+		h.store.clusters[id] = cluster
+		h.store.mu.Unlock()
+		sendJSON(w, 200, map[string]interface{}{"DBCluster": clusterDesc(cluster)})
+
 	default:
 		sendError(w, 400, "InvalidAction", "Unknown action: "+action)
 	}

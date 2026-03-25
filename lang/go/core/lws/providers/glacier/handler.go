@@ -51,21 +51,28 @@ type MultipartUpload struct {
 	CreationDate       time.Time
 }
 
+type VaultNotification struct {
+	SNSTopic string
+	Events   []string
+}
+
 type Store struct {
-	mu               sync.RWMutex
-	vaults           map[string]*Vault           // key: vaultName
-	archives         map[string]*Archive         // key: archiveId
-	jobs             map[string]*Job             // key: vaultName/jobId
-	multipartUploads map[string]*MultipartUpload // key: uploadId
-	counter          int64
+	mu                 sync.RWMutex
+	vaults             map[string]*Vault             // key: vaultName
+	archives           map[string]*Archive           // key: archiveId
+	jobs               map[string]*Job               // key: vaultName/jobId
+	multipartUploads   map[string]*MultipartUpload   // key: uploadId
+	vaultNotifications map[string]*VaultNotification // key: vaultName
+	counter            int64
 }
 
 func NewStore() *Store {
 	return &Store{
-		vaults:           make(map[string]*Vault),
-		archives:         make(map[string]*Archive),
-		jobs:             make(map[string]*Job),
-		multipartUploads: make(map[string]*MultipartUpload),
+		vaults:             make(map[string]*Vault),
+		archives:           make(map[string]*Archive),
+		jobs:               make(map[string]*Job),
+		multipartUploads:   make(map[string]*MultipartUpload),
+		vaultNotifications: make(map[string]*VaultNotification),
 	}
 }
 
@@ -76,6 +83,7 @@ func (s *Store) Reset() {
 	s.archives = make(map[string]*Archive)
 	s.jobs = make(map[string]*Job)
 	s.multipartUploads = make(map[string]*MultipartUpload)
+	s.vaultNotifications = make(map[string]*VaultNotification)
 	s.counter = 0
 }
 
@@ -167,6 +175,12 @@ func (h *Handler) routeOperation(method string, parts []string) string {
 		return "AbortMultipartUpload"
 	case len(parts) == 4 && parts[3] == "multipart-uploads" && method == http.MethodGet:
 		return "ListMultipartUploads"
+	case len(parts) == 4 && parts[3] == "notification-configuration" && method == http.MethodPut:
+		return "SetVaultNotifications"
+	case len(parts) == 4 && parts[3] == "notification-configuration" && method == http.MethodGet:
+		return "GetVaultNotifications"
+	case len(parts) == 4 && parts[3] == "notification-configuration" && method == http.MethodDelete:
+		return "DeleteVaultNotifications"
 	default:
 		return "Unknown"
 	}
@@ -403,6 +417,61 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation strin
 			uploads = []map[string]interface{}{}
 		}
 		sendJSON(w, 200, map[string]interface{}{"UploadsList": uploads, "Marker": nil})
+
+	case "SetVaultNotifications":
+		h.store.mu.Lock()
+		vault := h.store.vaults[vaultName]
+		h.store.mu.Unlock()
+		if vault == nil {
+			sendError(w, 404, "ResourceNotFoundException", "Vault not found: "+vaultName)
+			return
+		}
+		var notifBody map[string]interface{}
+		json.NewDecoder(r.Body).Decode(&notifBody) //nolint:errcheck
+		if notifBody == nil {
+			notifBody = make(map[string]interface{})
+		}
+		snsTopic := ""
+		if v, ok := notifBody["SNSTopic"].(string); ok {
+			snsTopic = v
+		}
+		var events []string
+		if evts, ok := notifBody["Events"].([]interface{}); ok {
+			for _, e := range evts {
+				if s, ok := e.(string); ok {
+					events = append(events, s)
+				}
+			}
+		}
+		notif := &VaultNotification{
+			SNSTopic: snsTopic,
+			Events:   events,
+		}
+		h.store.mu.Lock()
+		h.store.vaultNotifications[vaultName] = notif
+		h.store.mu.Unlock()
+		w.WriteHeader(204)
+
+	case "GetVaultNotifications":
+		h.store.mu.RLock()
+		notif := h.store.vaultNotifications[vaultName]
+		h.store.mu.RUnlock()
+		if notif == nil {
+			sendError(w, 404, "ResourceNotFoundException", "No notification configuration for vault: "+vaultName)
+			return
+		}
+		sendJSON(w, 200, map[string]interface{}{
+			"VaultNotificationConfig": map[string]interface{}{
+				"SNSTopic": notif.SNSTopic,
+				"Events":   notif.Events,
+			},
+		})
+
+	case "DeleteVaultNotifications":
+		h.store.mu.Lock()
+		delete(h.store.vaultNotifications, vaultName)
+		h.store.mu.Unlock()
+		w.WriteHeader(204)
 
 	default:
 		sendError(w, 400, "InvalidParameterValue", "Unknown operation: "+operation)
