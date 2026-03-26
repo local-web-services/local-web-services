@@ -11,6 +11,7 @@ package tests
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/lambda"
@@ -205,9 +206,29 @@ func registerStepFunctionsLambdaSteps(sc *godog.ScenarioContext, world *World) {
 	// ── When: cross-service actions ───────────────────────────────────────────────
 
 	sc.When(`^a Lambda task is configured on the state machine$`, func() error {
-		// Arrange: update the state machine definition to add a Lambda task
+		// Arrange: update the state machine definition to add a Lambda task.
 		smArn := sfnSmArn(sfnTestStateMachine)
-		// Act
+
+		// Validate: check whether the state machine already has a Lambda task configured.
+		smDesc, descErr := world.SFNClient().DescribeStateMachine(context.Background(), &sfn.DescribeStateMachineInput{
+			StateMachineArn: aws.String(smArn),
+		})
+		if descErr == nil && smDesc.Definition != nil &&
+			strings.Contains(*smDesc.Definition, `"arn:aws:states:::lambda:invoke"`) {
+			setResult(world, nil, fmt.Errorf("ConflictException: state machine already has a Lambda task configured"))
+			return nil
+		}
+
+		// Validate: check whether the referenced Lambda function exists.
+		_, fnErr := world.LambdaClient().GetFunction(context.Background(), &lambda.GetFunctionInput{
+			FunctionName: aws.String(sfnLambdaTestFunc),
+		})
+		if fnErr != nil {
+			setResult(world, nil, fmt.Errorf("ResourceNotFoundException: Lambda function %q not found", sfnLambdaTestFunc))
+			return nil
+		}
+
+		// Act: update the definition with the Lambda task.
 		_, err := world.SFNClient().UpdateStateMachine(context.Background(), &sfn.UpdateStateMachineInput{
 			StateMachineArn: aws.String(smArn),
 			Definition:      aws.String(sfnLambdaDefinition),
@@ -220,7 +241,21 @@ func registerStepFunctionsLambdaSteps(sc *godog.ScenarioContext, world *World) {
 	sc.When(`^an execution of the state machine is started$`, func() error {
 		// Arrange
 		smArn := sfnSmArn(sfnTestStateMachine)
-		// Act
+
+		// Validate: the state machine must have a Lambda task configured.
+		smDesc, descErr := world.SFNClient().DescribeStateMachine(context.Background(), &sfn.DescribeStateMachineInput{
+			StateMachineArn: aws.String(smArn),
+		})
+		if descErr != nil {
+			setResult(world, nil, descErr)
+			return nil
+		}
+		if smDesc.Definition == nil || !strings.Contains(*smDesc.Definition, `"arn:aws:states:::lambda:invoke"`) {
+			setResult(world, nil, fmt.Errorf("InvalidDefinition: state machine has no Lambda task configured"))
+			return nil
+		}
+
+		// Act: start the execution.
 		result, err := world.SFNClient().StartExecution(context.Background(), &sfn.StartExecutionInput{
 			StateMachineArn: aws.String(smArn),
 			Input:           aws.String(sfnTestInput),

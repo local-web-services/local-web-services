@@ -384,8 +384,13 @@ func setResult(world *World, result interface{}, err error) {
 	}
 }
 
-// managementSession returns an lws.Session backed by the shared in-process server.
-// It does not start a new process; it simply creates a Session value pointing at basePort.
+// sharedManagementSession is a singleton used for capacity/chaos management calls.
+// Creating a new Session for each call opens a WebSocket connection that is never
+// closed, exhausting file descriptors over thousands of scenarios.
+var sharedManagementSession = lws.NewInProcessSession(basePort)
+
+// managementSession returns the shared lws.Session backed by the in-process server.
+// Uses a singleton to avoid opening a new WebSocket connection on every call.
 func managementSession() *lws.Session {
-	return lws.NewInProcessSession(basePort)
+	return sharedManagementSession
 }

@@ -228,7 +228,7 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		}
 		user := &User{
 			Name:         name,
-			Status:       "active",
+			Status:       "creating",
 			AccessString: getString(body, "AccessString"),
 			CreatedAt:    time.Now(),
 		}
@@ -274,7 +274,7 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		}
 		acl := &ACL{
 			Name:      name,
-			Status:    "active",
+			Status:    "creating",
 			UserNames: []string{},
 			CreatedAt: time.Now(),
 		}

@@ -211,11 +211,18 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 	case "RemoveTags":
 		arn := getString(body, "ARN")
 		h.store.mu.Lock()
+		var found bool
 		for _, d := range h.store.domains {
 			if d.ARN == arn {
+				found = true
 				if tagKeys, ok := body["TagKeys"].([]interface{}); ok {
 					for _, k := range tagKeys {
 						if ks, ok := k.(string); ok {
+							if _, exists := d.Tags[ks]; !exists {
+								h.store.mu.Unlock()
+								writeErr(w, 400, "ValidationException", "Tag key not found: "+ks)
+								return
+							}
 							delete(d.Tags, ks)
 						}
 					}
@@ -224,7 +231,24 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			}
 		}
 		h.store.mu.Unlock()
+		if !found {
+			writeErr(w, 404, "ResourceNotFoundException", "Domain not found")
+			return
+		}
 		writeOK(w, map[string]interface{}{})
+
+	case "UpdateDomainConfig":
+		name := getString(body, "DomainName")
+		h.store.mu.Lock()
+		domain := h.store.domains[name]
+		if domain == nil {
+			h.store.mu.Unlock()
+			writeErr(w, 404, "ResourceNotFoundException", "Domain not found: "+name)
+			return
+		}
+		domain.Processing = true
+		h.store.mu.Unlock()
+		writeOK(w, map[string]interface{}{"DomainConfig": map[string]interface{}{}})
 
 	default:
 		writeErr(w, 400, "ValidationException", "Unknown operation: "+operation)

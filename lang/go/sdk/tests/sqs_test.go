@@ -300,12 +300,24 @@ func registerSQSSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the dead-letter queue exists$`, func() error {
-		// Arrange: create the DLQ
+		// Arrange: create the primary DLQ and cross-service DLQ names
 		// Act
 		_, err := world.SQSClient().CreateQueue(context.Background(), &sqs.CreateQueueInput{
 			QueueName: aws.String(sqsTestDLQ),
 		})
-		return err
+		if err != nil {
+			return err
+		}
+		// Also create the cross-service DLQ names used by lambda_sqs tests
+		for _, xsDLQ := range []string{"e2e-test-dlq-1"} {
+			if xsDLQ == sqsTestDLQ {
+				continue
+			}
+			_, _ = world.SQSClient().CreateQueue(context.Background(), &sqs.CreateQueueInput{
+				QueueName: aws.String(xsDLQ),
+			})
+		}
+		return nil
 	})
 
 	sc.Given(`^the dead-letter queue is "([^"]*)"$`, func(state string) error {
@@ -493,28 +505,25 @@ func registerSQSSteps(sc *godog.ScenarioContext, world *World) {
 	// ── Then: assertions ─────────────────────────────────────────────────────────
 
 	sc.Then(`^the queue is "ACTIVE"$`, func() error {
-		// Arrange
+		// Arrange: list all queues and check for any known queue name.
+		// The first-registered "When an SQS queue is created" step may create
+		// different queue names (sqsTestQueue or lambdaSqsTestQueue) depending
+		// on which cross-service test registered it first.
 		// Act
-		result, err := world.SQSClient().ListQueues(context.Background(), &sqs.ListQueuesInput{
-			QueueNamePrefix: aws.String(sqsTestQueue),
-		})
+		result, err := world.SQSClient().ListQueues(context.Background(), &sqs.ListQueuesInput{})
 		if err != nil {
 			return fmt.Errorf("list queues: %w", err)
 		}
-		// Assert
-		expectedQueue := sqsTestQueue
-		actualFound := false
-		for _, u := range result.QueueUrls {
-			if strings.Contains(u, expectedQueue) {
-				actualFound = true
-				break
+		// Assert: accept either known queue name.
+		for _, candidate := range []string{sqsTestQueue, lambdaSqsTestQueue} {
+			for _, u := range result.QueueUrls {
+				if strings.Contains(u, candidate) {
+					return nil
+				}
 			}
 		}
-		if !actualFound {
-			return fmt.Errorf("expected queue %q to be ACTIVE but not found in: %v",
-				expectedQueue, result.QueueUrls)
-		}
-		return nil
+		return fmt.Errorf("expected queue %q to be ACTIVE but not found in: %v",
+			sqsTestQueue, result.QueueUrls)
 	})
 
 	sc.Then(`^the queue is "DELETED" and its messages are removed$`, func() error {

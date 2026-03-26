@@ -42,13 +42,30 @@ func registerAPIGatewaySteps(sc *godog.ScenarioContext, world *World) {
 	// ── Helpers ──────────────────────────────────────────────────────────────────
 
 	createAPI := func() error {
+		// Arrange
 		result, err := world.APIGatewayClient().CreateRestApi(context.Background(), &apigateway.CreateRestApiInput{
 			Name:        aws.String(apigwTestApiName),
 			Description: aws.String(apigwTestApiDescription),
 		})
 		if err != nil {
-			return fmt.Errorf("create REST API: %w", err)
+			if !isAlreadyExists(err) {
+				return fmt.Errorf("create REST API: %w", err)
+			}
+			// Act: look up the existing API by name
+			listResp, listErr := world.APIGatewayClient().GetRestApis(context.Background(), &apigateway.GetRestApisInput{})
+			if listErr != nil {
+				return fmt.Errorf("create REST API (lookup existing): %w", listErr)
+			}
+			for _, item := range listResp.Items {
+				if item.Name != nil && *item.Name == apigwTestApiName && item.Id != nil {
+					st.restApiID = *item.Id
+					return nil
+				}
+			}
+			// Assert: should have found it
+			return fmt.Errorf("create REST API: already exists but could not find it in list")
 		}
+		// Assert: ID is set
 		st.restApiID = aws.ToString(result.Id)
 		return nil
 	}
@@ -181,15 +198,32 @@ func registerAPIGatewaySteps(sc *godog.ScenarioContext, world *World) {
 				continue
 			}
 			seen[name] = true
-			_, err := world.APIGatewayClient().CreateRestApi(context.Background(), &apigateway.CreateRestApiInput{
+			resp, err := world.APIGatewayClient().CreateRestApi(context.Background(), &apigateway.CreateRestApiInput{
 				Name:        aws.String(name),
 				Description: aws.String("e2e test REST API"),
 			})
 			if err != nil && !isAlreadyExists(err) {
 				return fmt.Errorf("create REST API %s: %w", name, err)
 			}
+			// Set st.restApiID from the first successful creation of apigwTestApiName.
+			if err == nil && name == apigwTestApiName && resp != nil && resp.Id != nil {
+				st.restApiID = *resp.Id
+			}
 		}
-		return createAPI()
+		// If st.restApiID is still empty (e.g., apigwTestApiName was already created and
+		// returned a ConflictException), look it up via list to get the ID.
+		if st.restApiID == "" {
+			listResp, err := world.APIGatewayClient().GetRestApis(context.Background(), &apigateway.GetRestApisInput{})
+			if err == nil {
+				for _, item := range listResp.Items {
+					if item.Name != nil && *item.Name == apigwTestApiName && item.Id != nil {
+						st.restApiID = *item.Id
+						break
+					}
+				}
+			}
+		}
+		return fetchRootResource()
 	})
 
 	sc.Given(`^the "API" does not exist$`, func() error {
@@ -198,9 +232,33 @@ func registerAPIGatewaySteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the "API" exists$`, func() error {
-		// Arrange: create the test REST API
+		// Arrange: create the primary test REST API
 		// Act
-		return createAPIWithRoot()
+		if err := createAPIWithRoot(); err != nil {
+			return err
+		}
+		// Also create the cross-service API name used by SQS/SNS/DynamoDB/Lambda tests
+		// so their When steps can find it (they look up "e2e-test-api-1").
+		for _, xsName := range []string{
+			apigwLambdaTestApiName,
+			apigwSqsTestAPIName,
+			apigwSnsTestAPIName,
+			apigwDynamodbTestAPIName,
+			apigwCognitoTestAPIName,
+			apigwS3apiTestAPIName,
+		} {
+			if xsName == apigwTestApiName {
+				continue
+			}
+			_, xsErr := world.APIGatewayClient().CreateRestApi(context.Background(), &apigateway.CreateRestApiInput{
+				Name:        aws.String(xsName),
+				Description: aws.String("e2e test REST API"),
+			})
+			if xsErr != nil && !isAlreadyExists(xsErr) {
+				return fmt.Errorf("create cross-service REST API %s: %w", xsName, xsErr)
+			}
+		}
+		return nil
 	})
 
 	sc.Given(`^the "API" is "ACTIVE"$`, func() error {
@@ -336,7 +394,15 @@ func registerAPIGatewaySteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the method does not exist$`, func() error {
-		// No-op: fresh state has no methods.
+		// If an API and resource are set up, delete the method so it does not exist.
+		// This handles the scenario where "the method exists" was previously called.
+		if st.restApiID != "" && st.rootResourceID != "" && st.httpMethod != "" {
+			_, _ = world.APIGatewayClient().DeleteMethod(context.Background(), &apigateway.DeleteMethodInput{
+				RestApiId:  aws.String(st.restApiID),
+				ResourceId: aws.String(st.rootResourceID),
+				HttpMethod: aws.String(st.httpMethod),
+			})
+		}
 		return nil
 	})
 
@@ -380,7 +446,15 @@ func registerAPIGatewaySteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the integration does not exist$`, func() error {
-		// No-op: fresh state has no integrations.
+		// If an API, resource, and method are set up, delete the integration so it does not exist.
+		// This handles the scenario where "the integration exists" was previously called.
+		if st.restApiID != "" && st.rootResourceID != "" && st.httpMethod != "" {
+			_, _ = world.APIGatewayClient().DeleteIntegration(context.Background(), &apigateway.DeleteIntegrationInput{
+				RestApiId:  aws.String(st.restApiID),
+				ResourceId: aws.String(st.rootResourceID),
+				HttpMethod: aws.String(st.httpMethod),
+			})
+		}
 		return nil
 	})
 
@@ -650,6 +724,17 @@ func registerAPIGatewaySteps(sc *godog.ScenarioContext, world *World) {
 		// Arrange
 		if st.restApiID == "" || st.rootResourceID == "" {
 			setResult(world, nil, fmt.Errorf("no REST API or resource available"))
+			return nil
+		}
+		// Check if the method exists; if not, simulate a NotFoundException
+		// because this models an update-only operation.
+		existing, getErr := world.APIGatewayClient().GetMethod(context.Background(), &apigateway.GetMethodInput{
+			RestApiId:  aws.String(st.restApiID),
+			ResourceId: aws.String(st.rootResourceID),
+			HttpMethod: aws.String(st.httpMethod),
+		})
+		if getErr != nil || existing == nil {
+			setResult(world, nil, fmt.Errorf("NotFoundException: Method %s not found", st.httpMethod))
 			return nil
 		}
 		// Act: re-put the same method (idempotent update)

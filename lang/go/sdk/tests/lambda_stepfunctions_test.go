@@ -55,14 +55,13 @@ func registerLambdaStepFunctionsSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^an invocation slot is available$`, func() error {
-		// No-op: invocation slots are always available in lws fresh state.
-		return nil
+		// Restore unlimited capacity so subsequent invocations can proceed.
+		return managementSession().Capacity("lambda").Unlimited().Apply()
 	})
 
 	sc.Given(`^no invocation slot is available$`, func() error {
-		// @internal: Cannot exhaust Lambda invocation slot limit via public API in lws.
-		// Scenarios using this step are tagged @capacity; exclude them from standard runs.
-		return nil
+		// Exhaust the Lambda invocation capacity so the next invocation is rejected.
+		return managementSession().Capacity("lambda").Exhaust().Apply()
 	})
 
 	// ── Given: execution state ─────────────────────────────────────────────────
@@ -93,14 +92,13 @@ func registerLambdaStepFunctionsSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^an execution slot is available$`, func() error {
-		// No-op: execution slots are always available in lws fresh state.
-		return nil
+		// Restore unlimited capacity so subsequent executions can proceed.
+		return managementSession().Capacity("stepfunctions").Unlimited().Apply()
 	})
 
 	sc.Given(`^no execution slot is available$`, func() error {
-		// @internal: Cannot exhaust Step Functions execution slot limit via public API in lws.
-		// Scenarios using this step are tagged @capacity; exclude them from standard runs.
-		return nil
+		// Exhaust Step Functions execution capacity so the next StartExecution is rejected.
+		return managementSession().Capacity("stepfunctions").Exhaust().Apply()
 	})
 
 	// ── Given: cross-service state ─────────────────────────────────────────────

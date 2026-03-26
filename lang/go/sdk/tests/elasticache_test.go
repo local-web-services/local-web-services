@@ -216,9 +216,8 @@ func registerElastiCacheSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^no cluster slot is available$`, func() error {
-		// @internal: no public API exhausts cluster slots.
-		// @internal: no-op.
-		return nil
+		// Exhaust elasticache capacity so CreateCacheCluster is rejected.
+		return managementSession().Capacity("elasticache").Exhaust().Apply()
 	})
 
 	sc.Given(`^a cluster slot is available for the primary$`, func() error {
@@ -299,8 +298,10 @@ func registerElastiCacheSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the subnet group is not present$`, func() error {
-		// @internal: no public API places a subnet group in a non-present state.
-		// @internal: no-op.
+		// Delete the subnet group so that it does not exist, enabling "not found" rejection.
+		_, _ = world.ElastiCacheClient().DeleteCacheSubnetGroup(context.Background(), &elasticache.DeleteCacheSubnetGroupInput{
+			CacheSubnetGroupName: aws.String(elasticacheTestSubnetGroupID),
+		})
 		return nil
 	})
 

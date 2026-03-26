@@ -27,6 +27,7 @@ func registerStepfunctionsSsmSteps(sc *godog.ScenarioContext, world *World) {
 	// -------------------------------------------------------------------------
 
 	sc.Step(`^a parameter is created in "SSM" Parameter Store$`, func() error {
+		// Arrange: create the primary SSM parameter
 		_, err := world.SSMClient().PutParameter(context.Background(), &ssm.PutParameterInput{
 			Name:  aws.String(seqParamName),
 			Value: aws.String("test-param-value"),
@@ -35,6 +36,12 @@ func registerStepfunctionsSsmSteps(sc *godog.ScenarioContext, world *World) {
 		if err != nil && !isAlreadyExists(err) {
 			return err
 		}
+		// Also create the cross-service parameter name used by lambda_ssm tests
+		_, _ = world.SSMClient().PutParameter(context.Background(), &ssm.PutParameterInput{
+			Name:  aws.String("/e2e/test/param/1"),
+			Value: aws.String("test-param-value"),
+			Type:  "String",
+		})
 		return nil
 	})
 

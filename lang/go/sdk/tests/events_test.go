@@ -20,10 +20,15 @@ func registerEventsSteps(sc *godog.ScenarioContext, world *World) {
 	// ── Helpers ──────────────────────────────────────────────────────────────────
 
 	createBus := func() error {
+		// Arrange
 		_, err := world.EventBridgeClient().CreateEventBus(context.Background(), &eventbridge.CreateEventBusInput{
 			Name: aws.String(eventsTestBus),
 		})
-		return err
+		// Assert: ignore already-exists so idempotent
+		if err != nil && !isAlreadyExists(err) {
+			return err
+		}
+		return nil
 	}
 
 	createRule := func() error {
@@ -59,17 +64,33 @@ func registerEventsSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the event bus already exists$`, func() error {
-		// Arrange: create the bus so it already exists
+		// Arrange: create the bus so it already exists.
+		// Also pre-create the cross-service bus name (e2e-test-bus-1) used by
+		// lambda_events_test.go / cognito_events_test.go / events_lambda_test.go so
+		// that their "When … event bus is created" steps see a duplicate.
 		// Act
-		return createBus()
-		// Assert: creation succeeded
+		if err := createBus(); err != nil {
+			return err
+		}
+		_, _ = world.EventBridgeClient().CreateEventBus(context.Background(), &eventbridge.CreateEventBusInput{
+			Name: aws.String("e2e-test-bus-1"),
+		})
+		return nil
 	})
 
 	sc.Given(`^the event bus exists$`, func() error {
-		// Arrange: create the test event bus
+		// Arrange: create the primary test event bus
 		// Act
-		return createBus()
+		if err := createBus(); err != nil {
+			return err
+		}
+		// Also pre-create the cross-service bus names used by events_lambda_test.go
+		// and other cross-service tests (they use "e2e-test-bus-1").
+		_, _ = world.EventBridgeClient().CreateEventBus(context.Background(), &eventbridge.CreateEventBusInput{
+			Name: aws.String("e2e-test-bus-1"),
+		})
 		// Assert: creation succeeded
+		return nil
 	})
 
 	sc.Given(`^the event bus is "ACTIVE"$`, func() error {

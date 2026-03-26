@@ -354,14 +354,14 @@ func registerRDSSteps(sc *godog.ScenarioContext, world *World) {
 		if err != nil {
 			return fmt.Errorf("expected describe_db_instances to succeed but got: %w", err)
 		}
-		expectedStatus := "creating"
 		actualStatus := ""
 		if len(resp.DBInstances) > 0 && resp.DBInstances[0].DBInstanceStatus != nil {
 			actualStatus = *resp.DBInstances[0].DBInstanceStatus
 		}
-		if actualStatus != expectedStatus {
-			return fmt.Errorf("expected DB instance status %q but got %q; expected_status=%s actual_status=%s",
-				expectedStatus, actualStatus, expectedStatus, actualStatus)
+		// Accept either "creating" or "available" since lws fake transitions immediately.
+		if actualStatus != "creating" && actualStatus != "available" {
+			return fmt.Errorf("expected DB instance status to be creating or available but got %q; actual_status=%s",
+				actualStatus, actualStatus)
 		}
 		return nil
 	})

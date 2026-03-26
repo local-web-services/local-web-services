@@ -20,9 +20,10 @@ const cognitoTestAttributeValue = "admin"
 
 // cognitoState holds mutable state for Cognito IDP step definitions within one scenario.
 type cognitoState struct {
-	poolID    string
-	username  string
-	groupName string
+	poolID       string
+	username     string
+	groupName    string
+	sessionToken string
 }
 
 func registerCognitoIDPSteps(sc *godog.ScenarioContext, world *World) {
@@ -32,6 +33,7 @@ func registerCognitoIDPSteps(sc *godog.ScenarioContext, world *World) {
 		st.poolID = ""
 		st.username = ""
 		st.groupName = ""
+		st.sessionToken = ""
 		return ctx, nil
 	})
 
@@ -42,6 +44,19 @@ func registerCognitoIDPSteps(sc *godog.ScenarioContext, world *World) {
 			PoolName: aws.String(cognitoTestPoolName),
 		})
 		if err != nil {
+			if isAlreadyExists(err) {
+				// Pool already exists — look it up to retrieve its ID.
+				listResp, listErr := world.CognitoIDPClient().ListUserPools(context.Background(), &cognitoidentityprovider.ListUserPoolsInput{
+					MaxResults: aws.Int32(60),
+				})
+				if listErr == nil {
+					for _, p := range listResp.UserPools {
+						if p.Name != nil && *p.Name == cognitoTestPoolName && p.Id != nil {
+							return *p.Id, nil
+						}
+					}
+				}
+			}
 			return "", err
 		}
 		return *resp.UserPool.Id, nil
@@ -76,14 +91,21 @@ func registerCognitoIDPSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the user pool already exists$`, func() error {
-		// Arrange: create the test user pool so it already exists
+		// Arrange: create pools for all known pool names.
+		// The first-registered "When a Cognito user pool is created" step
+		// (from lambda_cognito_test.go and cognito_lambda_test.go) uses
+		// "e2e-test-pool-1". Without pre-creating that name, the duplicate
+		// check in the handler would not fire.
 		// Act
 		poolID, err := createPool()
 		if err != nil {
 			return err
 		}
-		// Assert: store pool ID
 		st.poolID = poolID
+		// Also create the cross-service pool name.
+		_, _ = world.CognitoIDPClient().CreateUserPool(context.Background(), &cognitoidentityprovider.CreateUserPoolInput{
+			PoolName: aws.String(lambdaCognitoTestPoolName),
+		})
 		return nil
 	})
 
@@ -181,9 +203,14 @@ func registerCognitoIDPSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the user is "DELETED"$`, func() error {
-		// Arrange: the user is expected to not be present for this negative path.
-		// Fresh state has no users, so this is effectively a no-op.
+		// Arrange: delete the user so they are in DELETED state (not present in the store).
 		st.username = cognitoTestUsername
+		if st.poolID != "" {
+			_, _ = world.CognitoIDPClient().AdminDeleteUser(context.Background(), &cognitoidentityprovider.AdminDeleteUserInput{
+				UserPoolId: aws.String(st.poolID),
+				Username:   aws.String(cognitoTestUsername),
+			})
+		}
 		return nil
 	})
 
@@ -193,15 +220,29 @@ func registerCognitoIDPSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the user is already "DELETED"$`, func() error {
-		// Arrange: the user is expected to not be present.
+		// Arrange: delete the user so they are in DELETED state (not present in the store).
 		st.username = cognitoTestUsername
+		if st.poolID != "" {
+			_, _ = world.CognitoIDPClient().AdminDeleteUser(context.Background(), &cognitoidentityprovider.AdminDeleteUserInput{
+				UserPoolId: aws.String(st.poolID),
+				Username:   aws.String(cognitoTestUsername),
+			})
+		}
 		return nil
 	})
 
 	sc.Given(`^the user is "CONFIRMED"$`, func() error {
-		// Arrange: set user password to PERMANENT to confirm the user
-		// Act
-		_, err := world.CognitoIDPClient().AdminSetUserPassword(context.Background(), &cognitoidentityprovider.AdminSetUserPasswordInput{
+		// Arrange: transition user from FORCE_CHANGE_PASSWORD → RESET_REQUIRED → CONFIRMED
+		// First reset the password to move to RESET_REQUIRED state
+		_, err := world.CognitoIDPClient().AdminResetUserPassword(context.Background(), &cognitoidentityprovider.AdminResetUserPasswordInput{
+			UserPoolId: aws.String(st.poolID),
+			Username:   aws.String(st.username),
+		})
+		if err != nil {
+			return err
+		}
+		// Then set a permanent password to confirm the user
+		_, err = world.CognitoIDPClient().AdminSetUserPassword(context.Background(), &cognitoidentityprovider.AdminSetUserPasswordInput{
 			UserPoolId: aws.String(st.poolID),
 			Username:   aws.String(st.username),
 			Password:   aws.String(cognitoTestPassword),
@@ -223,9 +264,16 @@ func registerCognitoIDPSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the user is not "UNCONFIRMED"$`, func() error {
-		// Arrange: confirm the user so they are no longer UNCONFIRMED
-		// Act
-		_, err := world.CognitoIDPClient().AdminSetUserPassword(context.Background(), &cognitoidentityprovider.AdminSetUserPasswordInput{
+		// Arrange: confirm the user so they are no longer UNCONFIRMED.
+		// First move user to RESET_REQUIRED, then set permanent password.
+		_, err := world.CognitoIDPClient().AdminResetUserPassword(context.Background(), &cognitoidentityprovider.AdminResetUserPasswordInput{
+			UserPoolId: aws.String(st.poolID),
+			Username:   aws.String(st.username),
+		})
+		if err != nil {
+			return err
+		}
+		_, err = world.CognitoIDPClient().AdminSetUserPassword(context.Background(), &cognitoidentityprovider.AdminSetUserPasswordInput{
 			UserPoolId: aws.String(st.poolID),
 			Username:   aws.String(st.username),
 			Password:   aws.String(cognitoTestPassword),
@@ -428,7 +476,38 @@ func registerCognitoIDPSteps(sc *godog.ScenarioContext, world *World) {
 	// ── Given: auth session state ────────────────────────────────────────────────
 
 	sc.Given(`^the session exists$`, func() error {
-		// No-op: @internal scenario; session state is managed internally by the lws fake.
+		// Create a pool and user in FORCE_CHANGE_PASSWORD state, then initiate
+		// auth to obtain a session token in CHALLENGE_REQUIRED state.
+		if st.poolID == "" {
+			poolID, err := createPool()
+			if err != nil {
+				return fmt.Errorf("create pool for session: %w", err)
+			}
+			st.poolID = poolID
+		}
+		if st.username == "" {
+			if err := createUser(st.poolID); err != nil {
+				return fmt.Errorf("create user for session: %w", err)
+			}
+			st.username = cognitoTestUsername
+		}
+		// Initiate auth: user is in FORCE_CHANGE_PASSWORD, so AdminInitiateAuth
+		// returns NEW_PASSWORD_REQUIRED challenge with a session token.
+		resp, err := world.CognitoIDPClient().AdminInitiateAuth(context.Background(), &cognitoidentityprovider.AdminInitiateAuthInput{
+			UserPoolId: aws.String(st.poolID),
+			ClientId:   aws.String("test-client-id"),
+			AuthFlow:   cidptypes.AuthFlowTypeAdminNoSrpAuth,
+			AuthParameters: map[string]string{
+				"USERNAME": st.username,
+				"PASSWORD": cognitoTestTempPassword,
+			},
+		})
+		if err != nil {
+			return fmt.Errorf("initiate auth for session: %w", err)
+		}
+		if resp.Session != nil {
+			st.sessionToken = *resp.Session
+		}
 		return nil
 	})
 
@@ -654,10 +733,13 @@ func registerCognitoIDPSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.When(`^a user responds to an auth challenge$`, func() error {
-		// Arrange: @internal scenario — no public API to set up CHALLENGE_REQUIRED state
+		// Arrange: use the session token obtained from a prior AdminInitiateAuth call
+		// If no session token, the operation will be rejected as expected for negative tests.
+		sessionToken := st.sessionToken
 		// Act
 		resp, err := world.CognitoIDPClient().RespondToAuthChallenge(context.Background(), &cognitoidentityprovider.RespondToAuthChallengeInput{
 			ClientId:      aws.String("test-client-id"),
+			Session:       aws.String(sessionToken),
 			ChallengeName: cidptypes.ChallengeNameTypeNewPasswordRequired,
 			ChallengeResponses: map[string]string{
 				"USERNAME":     st.username,

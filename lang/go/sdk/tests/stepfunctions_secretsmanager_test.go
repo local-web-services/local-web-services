@@ -27,6 +27,7 @@ func registerStepfunctionsSecretsmanagerSteps(sc *godog.ScenarioContext, world *
 	// -------------------------------------------------------------------------
 
 	sc.Step(`^a secret is created in Secrets Manager$`, func() error {
+		// Arrange: create the primary secret
 		_, err := world.SecretsManagerClient().CreateSecret(context.Background(), &secretsmanager.CreateSecretInput{
 			Name:         aws.String(seqSecretName),
 			SecretString: aws.String("test-secret-value"),
@@ -34,11 +35,16 @@ func registerStepfunctionsSecretsmanagerSteps(sc *godog.ScenarioContext, world *
 		if err != nil && !isAlreadyExists(err) {
 			return err
 		}
+		// Also create cross-service secret names used by lambda_secretsmanager tests
+		_, _ = world.SecretsManagerClient().CreateSecret(context.Background(), &secretsmanager.CreateSecretInput{
+			Name:         aws.String("e2e-test-secret-1"),
+			SecretString: aws.String("test-secret-value"),
+		})
 		return nil
 	})
 
 	sc.Step(`^a secret is scheduled for deletion$`, func() error {
-		// Ensure the secret exists before attempting deletion.
+		// Ensure the primary secret exists before attempting deletion.
 		_, _ = world.SecretsManagerClient().CreateSecret(context.Background(), &secretsmanager.CreateSecretInput{
 			Name:         aws.String(seqSecretName),
 			SecretString: aws.String("test-secret-value"),
@@ -50,6 +56,15 @@ func registerStepfunctionsSecretsmanagerSteps(sc *godog.ScenarioContext, world *
 		if err != nil && !isNotFound(err) {
 			return err
 		}
+		// Also ensure and delete the cross-service secret name used by lambda_secretsmanager tests.
+		_, _ = world.SecretsManagerClient().CreateSecret(context.Background(), &secretsmanager.CreateSecretInput{
+			Name:         aws.String("e2e-test-secret-1"),
+			SecretString: aws.String("test-secret-value"),
+		})
+		_, _ = world.SecretsManagerClient().DeleteSecret(context.Background(), &secretsmanager.DeleteSecretInput{
+			SecretId:                   aws.String("e2e-test-secret-1"),
+			ForceDeleteWithoutRecovery: aws.Bool(true),
+		})
 		return nil
 	})
 

@@ -223,6 +223,10 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		if engine == "" {
 			engine = "redis"
 		}
+		if h.state.GetCapacityRule("elasticache").IsExhausted() {
+			sendError(w, 400, "ServiceLinkedRoleNotFoundFault", "No cluster slot is available")
+			return
+		}
 		h.store.mu.Lock()
 		if existing, exists := h.store.clusters[id]; exists && existing.CacheClusterStatus != "deleting" {
 			h.store.mu.Unlock()
@@ -361,6 +365,10 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		h.store.mu.Unlock()
 		if rg == nil {
 			sendError(w, 404, "ReplicationGroupNotFoundFault", "Replication group not found: "+id)
+			return
+		}
+		if h.state.GetCapacityRule("elasticache").IsExhausted() {
+			sendError(w, 400, "ServiceLinkedRoleNotFoundFault", "No cluster slot is available")
 			return
 		}
 		type modifyRGResp struct {

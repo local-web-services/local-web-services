@@ -21,14 +21,15 @@ type TableItem = map[string]interface{}
 
 // Table represents a DynamoDB table.
 type Table struct {
-	Name         string
-	PartitionKey string
-	SortKey      string
-	Items        map[string]TableItem
-	Tags         []map[string]string
-	CreatedAt    time.Time
-	TTLAttr      string
-	TTLEnabled   bool
+	Name          string
+	PartitionKey  string
+	SortKey       string
+	Items         map[string]TableItem
+	Tags          []map[string]string
+	CreatedAt     time.Time
+	TTLAttr       string
+	TTLEnabled    bool
+	StreamEnabled bool
 }
 
 // Store holds all DynamoDB tables.
@@ -216,7 +217,7 @@ func tableDesc(t *Table) map[string]interface{} {
 		attrDefs = append(attrDefs, map[string]string{"AttributeName": t.SortKey, "AttributeType": "S"})
 	}
 	arn := fmt.Sprintf("arn:aws:dynamodb:%s:%s:table/%s", region, accountID, t.Name)
-	return map[string]interface{}{
+	desc := map[string]interface{}{
 		"TableName":             t.Name,
 		"TableArn":              arn,
 		"TableStatus":           "ACTIVE",
@@ -228,6 +229,14 @@ func tableDesc(t *Table) map[string]interface{} {
 		"BillingModeSummary":    map[string]string{"BillingMode": "PAY_PER_REQUEST"},
 		"ProvisionedThroughput": map[string]interface{}{"ReadCapacityUnits": 0, "WriteCapacityUnits": 0},
 	}
+	if t.StreamEnabled {
+		desc["StreamSpecification"] = map[string]interface{}{
+			"StreamEnabled":  true,
+			"StreamViewType": "NEW_AND_OLD_IMAGES",
+		}
+		desc["LatestStreamArn"] = fmt.Sprintf("arn:aws:dynamodb:%s:%s:table/%s/stream/2024-01-01T00:00:00.000", region, accountID, t.Name)
+	}
+	return desc
 }
 
 // ── FilterExpression evaluation ──────────────────────────────────────────────
@@ -680,6 +689,12 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		if !created {
 			writeErr(w, "ResourceInUseException", "Table already exists: "+name, 400)
 			return
+		}
+		// Parse StreamSpecification if provided
+		if ss, ok := body["StreamSpecification"].(map[string]interface{}); ok {
+			if enabled, ok := ss["StreamEnabled"].(bool); ok && enabled {
+				t.StreamEnabled = true
+			}
 		}
 		h.state.TrackResourceCreation("dynamodb", name)
 		writeOK(w, map[string]interface{}{"TableDescription": tableDesc(t)})

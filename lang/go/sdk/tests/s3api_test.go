@@ -90,8 +90,13 @@ func registerS3APISteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the bucket exists$`, func() error {
-		// Arrange / Act: ensure the test bucket exists
-		return createBucket(s3apiTestBucket)
+		// Arrange / Act: ensure the primary test bucket exists
+		if err := createBucket(s3apiTestBucket); err != nil {
+			return err
+		}
+		// Also create the cross-service bucket name used by s3api_lambda, lambda_s3api tests
+		_ = createBucket("e2e-test-bucket-1")
+		return nil
 	})
 
 	sc.Given(`^the bucket is "ACTIVE"$`, func() error {

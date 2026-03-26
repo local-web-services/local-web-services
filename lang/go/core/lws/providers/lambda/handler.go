@@ -83,14 +83,22 @@ func (s *Store) Reset() {
 // ── Handler ──────────────────────────────────────────────────────────────────
 
 type Handler struct {
-	state *state.ServerState
-	store *Store
+	state        *state.ServerState
+	store        *Store
+	dynamodbPort int
 }
 
 func NewHandler(st *state.ServerState) *Handler {
 	store := NewStore()
 	st.AddResetCallback(store.Reset)
 	return &Handler{state: st, store: store}
+}
+
+// NewHandlerWithPorts creates a Lambda handler with cross-service port references.
+func NewHandlerWithPorts(st *state.ServerState, dynamodbPort int) *Handler {
+	h := NewHandler(st)
+	h.dynamodbPort = dynamodbPort
+	return h
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -341,13 +349,55 @@ func (h *Handler) invokeFunction(w http.ResponseWriter, r *http.Request, name st
 func (h *Handler) createEventSourceMapping(w http.ResponseWriter, r *http.Request) {
 	var body map[string]interface{}
 	json.NewDecoder(r.Body).Decode(&body) //nolint:errcheck
+	eventSourceArn := str(body, "EventSourceArn")
+	functionName := str(body, "FunctionName")
+	if functionName == "" {
+		functionName = h.arnToFunctionName(str(body, "FunctionArn"))
+	}
+
+	// Validate the referenced Lambda function exists.
+	if functionName != "" {
+		if _, ok := h.store.functions[functionName]; !ok {
+			jsonErr(w, "ResourceNotFoundException", "Function not found: "+functionName)
+			return
+		}
+	}
+
+	// Check for duplicate event source mapping (same source ARN + function).
+	functionArn := ""
+	if fn, ok := h.store.functions[functionName]; ok {
+		functionArn = fn.ARN
+	}
+	for _, m := range h.store.eventSourceMappings {
+		if m.EventSourceArn == eventSourceArn && m.FunctionArn == functionArn {
+			jsonErr(w, "ResourceConflictException", "Event source mapping already exists for "+eventSourceArn)
+			return
+		}
+	}
+
+	// Validate the DynamoDB stream table exists and has streaming enabled.
+	if h.dynamodbPort != 0 && strings.Contains(eventSourceArn, ":dynamodb:") && strings.Contains(eventSourceArn, "/stream/") {
+		tableName := dynamodbTableNameFromStreamArn(eventSourceArn)
+		if tableName != "" {
+			status, streamEnabled := h.describeDynamoDBTable(tableName)
+			if status == "" {
+				jsonErr(w, "ResourceNotFoundException", "DynamoDB table not found: "+tableName)
+				return
+			}
+			if !streamEnabled {
+				jsonErr(w, "InvalidParameterValueException", "DynamoDB table "+tableName+" does not have streaming enabled")
+				return
+			}
+		}
+	}
+
 	uuid := genID()
 	now := nowSeconds()
 	batchSize := intOrDefault(body, "BatchSize", 10)
 	mapping := &EventSourceMapping{
 		UUID:             uuid,
-		EventSourceArn:   str(body, "EventSourceArn"),
-		FunctionArn:      str(body, "FunctionArn"),
+		EventSourceArn:   eventSourceArn,
+		FunctionArn:      functionArn,
 		State:            "Enabled",
 		BatchSize:        batchSize,
 		StartingPosition: strOrDefault(body, "StartingPosition", "TRIM_HORIZON"),
@@ -355,6 +405,64 @@ func (h *Handler) createEventSourceMapping(w http.ResponseWriter, r *http.Reques
 	}
 	h.store.eventSourceMappings[uuid] = mapping
 	jsonCreated(w, mappingToMap(mapping))
+}
+
+// dynamodbTableNameFromStreamArn extracts the table name from a DynamoDB stream ARN.
+// Stream ARN format: arn:aws:dynamodb:region:accountid:table/tableName/stream/timestamp
+func dynamodbTableNameFromStreamArn(arn string) string {
+	// Find the "table/" prefix
+	idx := strings.Index(arn, "table/")
+	if idx < 0 {
+		return ""
+	}
+	rest := arn[idx+len("table/"):]
+	// Remove stream suffix
+	if slashIdx := strings.Index(rest, "/stream/"); slashIdx >= 0 {
+		return rest[:slashIdx]
+	}
+	return rest
+}
+
+// describeDynamoDBTable makes an HTTP call to the DynamoDB handler to check
+// whether a table exists and has streaming enabled.
+// Returns (tableStatus, streamEnabled). tableStatus is "" if table not found.
+func (h *Handler) describeDynamoDBTable(tableName string) (string, bool) {
+	reqBody, err := json.Marshal(map[string]string{"TableName": tableName})
+	if err != nil {
+		return "", false
+	}
+	url := fmt.Sprintf("http://127.0.0.1:%d/", h.dynamodbPort)
+	req, err := http.NewRequest(http.MethodPost, url, strings.NewReader(string(reqBody)))
+	if err != nil {
+		return "", false
+	}
+	req.Header.Set("Content-Type", "application/x-amz-json-1.0")
+	req.Header.Set("X-Amz-Target", "DynamoDB_20120810.DescribeTable")
+	resp, err := http.DefaultClient.Do(req) //nolint:noctx
+	if err != nil {
+		return "", false
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return "", false
+	}
+	var result map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return "", false
+	}
+	table, ok := result["Table"].(map[string]interface{})
+	if !ok {
+		return "", false
+	}
+	status, _ := table["TableStatus"].(string)
+	streamSpec, _ := table["StreamSpecification"].(map[string]interface{})
+	streamEnabled := false
+	if streamSpec != nil {
+		if enabled, ok := streamSpec["StreamEnabled"].(bool); ok {
+			streamEnabled = enabled
+		}
+	}
+	return status, streamEnabled
 }
 
 func (h *Handler) listEventSourceMappings(w http.ResponseWriter, r *http.Request) {

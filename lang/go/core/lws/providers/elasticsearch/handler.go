@@ -61,6 +61,8 @@ func (h *Handler) routeOperation(method, path string) string {
 		return "CreateElasticsearchDomain"
 	case path == "/es/domain" && method == http.MethodGet:
 		return "ListDomainNames"
+	case strings.HasPrefix(path, "/es/domain/") && strings.HasSuffix(path, "/config") && method == http.MethodPost:
+		return "UpdateElasticsearchDomainConfig"
 	case strings.HasPrefix(path, "/es/domain/") && method == http.MethodGet:
 		return "DescribeElasticsearchDomain"
 	case strings.HasPrefix(path, "/es/domain/") && method == http.MethodDelete:
@@ -231,11 +233,18 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation strin
 	case "RemoveTags":
 		arn := getString(body, "ARN")
 		h.store.mu.Lock()
+		var found bool
 		for _, d := range h.store.domains {
 			if d.ARN == arn {
+				found = true
 				if tagKeys, ok := body["TagKeys"].([]interface{}); ok {
 					for _, k := range tagKeys {
 						if ks, ok := k.(string); ok {
+							if _, exists := d.Tags[ks]; !exists {
+								h.store.mu.Unlock()
+								writeErr(w, 400, "ValidationException", "Tag key not found: "+ks)
+								return
+							}
 							delete(d.Tags, ks)
 						}
 					}
@@ -244,7 +253,24 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation strin
 			}
 		}
 		h.store.mu.Unlock()
+		if !found {
+			writeErr(w, 404, "ResourceNotFoundException", "Domain not found")
+			return
+		}
 		writeOK(w, map[string]interface{}{})
+
+	case "UpdateElasticsearchDomainConfig":
+		domainName := domainNameFromPath(r.URL.Path)
+		h.store.mu.Lock()
+		domain := h.store.domains[domainName]
+		if domain == nil {
+			h.store.mu.Unlock()
+			writeErr(w, 404, "ResourceNotFoundException", "Domain not found: "+domainName)
+			return
+		}
+		domain.Processing = true
+		h.store.mu.Unlock()
+		writeOK(w, map[string]interface{}{"DomainConfig": map[string]interface{}{}})
 
 	default:
 		writeErr(w, 400, "ValidationException", "Unknown operation: "+operation)

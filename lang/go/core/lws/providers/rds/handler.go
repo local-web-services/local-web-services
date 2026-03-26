@@ -172,7 +172,7 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 			DBInstanceIdentifier: id,
 			DBInstanceClass:      params.Get("DBInstanceClass"),
 			Engine:               params.Get("Engine"),
-			DBInstanceStatus:     "creating",
+			DBInstanceStatus:     "available",
 			DBName:               params.Get("DBName"),
 			MasterUsername:       params.Get("MasterUsername"),
 			AllocatedStorage:     20,

@@ -182,8 +182,45 @@ func registerDocDBSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the cluster exists$`, func() error {
-		// Arrange / Act: ensure the cluster exists.
-		return docdbCreateCluster(world)
+		// Arrange / Act: create all known cluster names across DocDB, Neptune,
+		// ElastiCache, and MemoryDB so that whichever service's "When" step runs
+		// (first-registered semantics) will find its cluster present.
+		if err := docdbCreateCluster(world); err != nil && !isAlreadyExists(err) {
+			return err
+		}
+		for _, name := range []string{neptuneTestClusterID, neptuneEventsTestCluster, lambdaNeptuneTestCluster, sfnNeptuneTestClusterID} {
+			_, err := world.NeptuneClient().CreateDBCluster(context.Background(), &neptune.CreateDBClusterInput{
+				DBClusterIdentifier: aws.String(name),
+				Engine:              aws.String("neptune"),
+			})
+			if err != nil && !isAlreadyExists(err) {
+				return fmt.Errorf("neptune cluster %s: %w", name, err)
+			}
+		}
+		for _, name := range []string{elasticacheTestClusterID, lambdaElastiCacheTestCluster, sfnElastiCacheTestCluster} {
+			_, err := world.ElastiCacheClient().CreateCacheCluster(context.Background(), &elasticache.CreateCacheClusterInput{
+				CacheClusterId: aws.String(name),
+				Engine:         aws.String("redis"),
+				CacheNodeType:  aws.String("cache.t3.micro"),
+				NumCacheNodes:  aws.Int32(1),
+			})
+			if err != nil && !isAlreadyExists(err) {
+				return fmt.Errorf("elasticache cluster %s: %w", name, err)
+			}
+		}
+		for _, name := range []string{memorydbTestClusterName, lambdaMemoryDBTestCluster, sfnMemoryDBTestCluster} {
+			_, err := world.MemoryDBClient().CreateCluster(context.Background(), &memorydb.CreateClusterInput{
+				ClusterName:         aws.String(name),
+				NodeType:            aws.String("db.t4g.small"),
+				ACLName:             aws.String("open-access"),
+				NumShards:           aws.Int32(1),
+				NumReplicasPerShard: aws.Int32(0),
+			})
+			if err != nil && !isAlreadyExists(err) {
+				return fmt.Errorf("memorydb cluster %s: %w", name, err)
+			}
+		}
+		return nil
 	})
 
 	sc.Given(`^the cluster does not exist$`, func() error {

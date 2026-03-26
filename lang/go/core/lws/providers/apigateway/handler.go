@@ -262,14 +262,22 @@ func (s *Store) getMethod(apiID, resourceID, httpMethod string) *ResourceMethod 
 	return nil
 }
 
-func (s *Store) deleteMethod(apiID, resourceID, httpMethod string) {
+func (s *Store) deleteMethod(apiID, resourceID, httpMethod string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if rm, ok := s.resources[apiID]; ok {
-		if resource, ok := rm[resourceID]; ok {
-			delete(resource.ResourceMethods, httpMethod)
-		}
+	rm, ok := s.resources[apiID]
+	if !ok {
+		return fmt.Errorf("NotFoundException: Rest API %s not found", apiID)
 	}
+	resource, ok := rm[resourceID]
+	if !ok {
+		return fmt.Errorf("NotFoundException: Resource %s not found", resourceID)
+	}
+	if _, ok := resource.ResourceMethods[httpMethod]; !ok {
+		return fmt.Errorf("NotFoundException: Method %s not found", httpMethod)
+	}
+	delete(resource.ResourceMethods, httpMethod)
+	return nil
 }
 
 func (s *Store) putMethodResponse(apiID, resourceID, httpMethod, statusCode string) (*MethodResponse, error) {
@@ -316,13 +324,18 @@ func (s *Store) getIntegration(apiID, resourceID, httpMethod string) *MethodInte
 	return nil
 }
 
-func (s *Store) deleteIntegration(apiID, resourceID, httpMethod string) {
+func (s *Store) deleteIntegration(apiID, resourceID, httpMethod string) error {
 	method := s.getMethod(apiID, resourceID, httpMethod)
-	if method != nil {
-		s.mu.Lock()
-		method.MethodIntegration = nil
-		s.mu.Unlock()
+	if method == nil {
+		return fmt.Errorf("NotFoundException: Method %s not found", httpMethod)
 	}
+	if method.MethodIntegration == nil {
+		return fmt.Errorf("NotFoundException: Integration not found for method %s", httpMethod)
+	}
+	s.mu.Lock()
+	method.MethodIntegration = nil
+	s.mu.Unlock()
+	return nil
 }
 
 func (s *Store) putIntegrationResponse(apiID, resourceID, httpMethod, statusCode string) (*IntegrationResponse, error) {
@@ -404,10 +417,14 @@ func (s *Store) createStage(apiID, stageName, deploymentID, description string) 
 	if !ok {
 		return nil, fmt.Errorf("NotFoundException: Rest API %s not found", apiID)
 	}
-	if existing, ok := sm[stageName]; ok {
-		existing.DeploymentID = deploymentID
-		existing.LastUpdatedDate = time.Now().Unix()
-		return existing, nil
+	// Validate that the deployment exists.
+	dm, ok := s.deployments[apiID]
+	if !ok || dm[deploymentID] == nil {
+		return nil, fmt.Errorf("NotFoundException: Deployment %s not found", deploymentID)
+	}
+	// Reject if stage already exists.
+	if _, ok := sm[stageName]; ok {
+		return nil, fmt.Errorf("ConflictException: Stage %s already exists", stageName)
 	}
 	stage := &Stage{
 		StageName: stageName, DeploymentID: deploymentID, Description: description,
@@ -601,8 +618,11 @@ func (h *Handler) handleMethodRoute(w http.ResponseWriter, method string, parts 
 			sendError(w, 404, "NotFoundException", "Method not found")
 		}
 	case method == http.MethodDelete && len(parts) == 6:
-		h.store.deleteMethod(apiID, resourceID, httpMethod)
-		w.WriteHeader(204)
+		if err := h.store.deleteMethod(apiID, resourceID, httpMethod); err != nil {
+			sendError(w, 404, "NotFoundException", err.Error())
+		} else {
+			w.WriteHeader(204)
+		}
 
 	// PUT /…/methods/:m/responses/:statusCode
 	case method == http.MethodPut && len(parts) == 8 && parts[6] == "responses":
@@ -628,8 +648,11 @@ func (h *Handler) handleMethodRoute(w http.ResponseWriter, method string, parts 
 			sendError(w, 404, "NotFoundException", "Integration not found")
 		}
 	case method == http.MethodDelete && len(parts) == 7 && parts[6] == "integration":
-		h.store.deleteIntegration(apiID, resourceID, httpMethod)
-		w.WriteHeader(204)
+		if err := h.store.deleteIntegration(apiID, resourceID, httpMethod); err != nil {
+			sendError(w, 404, "NotFoundException", err.Error())
+		} else {
+			w.WriteHeader(204)
+		}
 
 	// PUT /…/methods/:m/integration/responses/:statusCode
 	case method == http.MethodPut && len(parts) == 9 && parts[6] == "integration" && parts[7] == "responses":
@@ -684,7 +707,11 @@ func (h *Handler) handleStageRoute(w http.ResponseWriter, r *http.Request, metho
 	case method == http.MethodPost && len(parts) == 3:
 		stage, err := h.store.createStage(apiID, strVal(body, "stageName"), strVal(body, "deploymentId"), strVal(body, "description"))
 		if err != nil {
-			sendError(w, 404, "NotFoundException", err.Error())
+			if strings.HasPrefix(err.Error(), "ConflictException:") {
+				sendError(w, 409, "ConflictException", err.Error())
+			} else {
+				sendError(w, 404, "NotFoundException", err.Error())
+			}
 		} else {
 			sendJSON(w, 201, stage)
 		}
