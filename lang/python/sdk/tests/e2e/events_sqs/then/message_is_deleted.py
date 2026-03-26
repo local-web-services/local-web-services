@@ -1,0 +1,10 @@
+"""Then: the message is "DELETED" """
+
+from __future__ import annotations
+
+from pytest_bdd import then
+
+
+@then('the message is "DELETED"')
+def message_is_deleted(world):
+    assert world["error"] is None, f"Expected consume message to succeed but got: {world['error']}"

@@ -1,0 +1,21 @@
+"""When: a table deletion is initiated"""
+
+from __future__ import annotations
+
+from botocore.exceptions import ClientError
+from pytest_bdd import when
+
+from ..client import EventsDynamodbTestClient
+from ..constants import TEST_TABLE
+
+
+@when("a table deletion is initiated")
+def delete_dynamo_table(lws_session, world):
+    try:
+        world["result"] = EventsDynamodbTestClient(lws_session)._dynamo.delete_table(
+            TableName=TEST_TABLE
+        )
+        world["error"] = None
+    except (ClientError, Exception) as exc:
+        world["result"] = None
+        world["error"] = exc

@@ -1,0 +1,26 @@
+"""When: a cluster is restored from a snapshot"""
+
+from __future__ import annotations
+
+import pytest
+from botocore.exceptions import ClientError
+from pytest_bdd import when
+
+from ..client import MemorydbTestClient
+from ..constants import TEST_SNAPSHOT
+
+
+@when("a cluster is restored from a snapshot")
+def restore_cluster(lws_session, world):
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+    try:
+        world["result"] = MemorydbTestClient(lws_session).restore_cluster(
+            ClusterName="e2e-test-cluster-2",
+            SnapshotName=TEST_SNAPSHOT,
+            NodeType="db.t4g.small",
+            ACLName="open-access",
+        )
+        world["error"] = None
+    except (ClientError, Exception) as exc:
+        world["result"] = None
+        world["error"] = exc

@@ -1,0 +1,24 @@
+"""When: a replication group configuration is modified"""
+
+from __future__ import annotations
+
+import pytest
+from botocore.exceptions import ClientError
+from pytest_bdd import when
+
+from ..client import ElasticacheTestClient
+from ..constants import TEST_REPLICATION_GROUP
+
+
+@when("a replication group configuration is modified")
+def modify_replication_group(lws_session, world):
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+    try:
+        world["result"] = ElasticacheTestClient(lws_session).modify_replication_group(
+            ReplicationGroupId=TEST_REPLICATION_GROUP,
+            ReplicationGroupDescription="e2e test rg updated",
+        )
+        world["error"] = None
+    except (ClientError, Exception) as exc:
+        world["result"] = None
+        world["error"] = exc

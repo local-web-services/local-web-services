@@ -1,0 +1,15 @@
+"""Given: the bucket is not "ACTIVE" """
+
+from __future__ import annotations
+
+from pytest_bdd import given
+
+from ..client import S3apiSnsTestClient
+
+
+@given('the bucket is not "ACTIVE"')
+def bucket_is_not_active_given(lws_session, world):
+    lws_session.lifecycle("s3").create_dwell_ms(5000).apply()
+    S3apiSnsTestClient(lws_session).create_bucket()
+    world["result"] = None
+    world["error"] = None
