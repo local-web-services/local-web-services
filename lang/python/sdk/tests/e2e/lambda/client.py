@@ -17,7 +17,7 @@ class LambdaTestClient:
 
     def create_function(self, name=TEST_FUNC):
         try:
-            self._client.create_function(
+            return self._client.create_function(
                 FunctionName=name,
                 Runtime="python3.12",
                 Role=ROLE_ARN,
