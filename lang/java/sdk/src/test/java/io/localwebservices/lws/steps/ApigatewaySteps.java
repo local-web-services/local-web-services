@@ -20,6 +20,7 @@ import software.amazon.awssdk.services.apigateway.model.PatchOperation;
 import software.amazon.awssdk.services.apigateway.model.Resource;
 import software.amazon.awssdk.services.apigateway.model.RestApi;
 import software.amazon.awssdk.services.elasticache.ElastiCacheClient;
+import software.amazon.awssdk.services.memorydb.MemoryDbClient;
 
 /**
  * Step definitions for the API Gateway informal specification feature files.
@@ -190,8 +191,21 @@ public class ApigatewaySteps {
 
   @Given("the {string} exists")
   public void theResourceExists(String resourceType) throws Exception {
-    // Arrange: create a REST API with its root resource
-    // Act
+    // Arrange: dispatch based on resource type
+    if ("ACL".equals(resourceType)) {
+      // Act: create a MemoryDB ACL
+      try (MemoryDbClient client = world.session.memoryDbClient()) {
+        client.createACL(r -> r.aclName("test-memorydb-acl-1"));
+      } catch (Exception e) {
+        String msg = e.getMessage() != null ? e.getMessage() : "";
+        if (!msg.contains("already exists") && !msg.contains("AlreadyExists")) {
+          throw e;
+        }
+      }
+      // Assert: ACL created (no exception thrown)
+      return;
+    }
+    // Act: create a REST API with its root resource (default ApiGateway behaviour)
     apigwCreateRestApiWithRoot();
     // Assert: IDs are stored
   }
@@ -876,6 +890,34 @@ public class ApigatewaySteps {
               r.restApiId(capturedRestApiId)
                   .resourceId(capturedRootResourceId)
                   .httpMethod(httpMethod));
+      // Assert: store result
+      world.setSuccess(null);
+    } catch (Exception e) {
+      world.setFailure(e);
+    }
+  }
+
+  @When("a method is deleted along with its integration")
+  public void aMethodIsDeletedAlongWithItsIntegration() {
+    // Arrange
+    String capturedRestApiId = restApiId;
+    String capturedRootResourceId = rootResourceId;
+    try (ApiGatewayClient client = world.session.apiGatewayClient()) {
+      // Act: delete the integration first, then the method
+      try {
+        client.deleteIntegration(
+            r ->
+                r.restApiId(capturedRestApiId)
+                    .resourceId(capturedRootResourceId)
+                    .httpMethod(TEST_HTTP_METHOD));
+      } catch (Exception ignored) {
+        // Integration may not exist
+      }
+      client.deleteMethod(
+          r ->
+              r.restApiId(capturedRestApiId)
+                  .resourceId(capturedRootResourceId)
+                  .httpMethod(TEST_HTTP_METHOD));
       // Assert: store result
       world.setSuccess(null);
     } catch (Exception e) {

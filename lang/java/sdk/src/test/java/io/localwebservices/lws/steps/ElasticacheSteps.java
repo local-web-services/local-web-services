@@ -128,7 +128,7 @@ public class ElasticacheSteps {
     // @internal: state transition controlled internally.
   }
 
-  @Given("the cluster is standalone (not part of a replication group)")
+  @Given("the cluster is standalone \\(not part of a replication group\\)")
   public void theClusterIsStandaloneNotPartOfAReplicationGroup() {
     // Arrange / Act / Assert — no-op: standalone clusters have no replication group by default.
   }

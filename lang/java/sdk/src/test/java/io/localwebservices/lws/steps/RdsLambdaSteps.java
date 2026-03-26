@@ -136,6 +136,19 @@ public class RdsLambdaSteps {
 
   // ── When: actions ──────────────────────────────────────────────────────────────
 
+  @When("the Lambda function is deleted")
+  public void whenTheLambdaFunctionIsDeleted() {
+    // Arrange: (function state set up by Given steps)
+    try (LambdaClient client = world.session.lambdaClient()) {
+      // Act
+      client.deleteFunction(r -> r.functionName(TEST_FUNC));
+      // Assert: store result
+      world.setSuccess(null);
+    } catch (Exception e) {
+      world.setFailure(e);
+    }
+  }
+
   @When("an \"RDS\" \"DB\" instance is created")
   public void anRdsDbInstanceIsCreated() {
     // Arrange: (DB instance state set up by Given steps)

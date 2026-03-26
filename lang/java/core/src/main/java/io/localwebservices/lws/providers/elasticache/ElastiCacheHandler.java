@@ -134,6 +134,66 @@ public class ElastiCacheHandler implements HttpHandler {
                   "DescribeReplicationGroups", "ReplicationGroups", "ReplicationGroup", list));
           break;
         }
+      case "ModifyCacheCluster":
+        {
+          // Arrange
+          String id = params.get("CacheClusterId");
+          Map<String, Object> cluster = store.modifyCacheCluster(id);
+          // Act + Assert
+          sendXml(exchange, 200, buildItemResponse("ModifyCacheCluster", "CacheCluster", cluster));
+          break;
+        }
+      case "ModifyReplicationGroup":
+        {
+          // Arrange
+          String id = params.get("ReplicationGroupId");
+          Map<String, Object> rg = store.modifyReplicationGroup(id);
+          // Act + Assert
+          sendXml(
+              exchange, 200, buildItemResponse("ModifyReplicationGroup", "ReplicationGroup", rg));
+          break;
+        }
+      case "CreateCacheParameterGroup":
+        {
+          // Arrange
+          Map<String, Object> pg = store.createCacheParameterGroup(params);
+          // Act + Assert
+          sendXml(
+              exchange,
+              200,
+              buildItemResponse("CreateCacheParameterGroup", "CacheParameterGroup", pg));
+          break;
+        }
+      case "DeleteCacheParameterGroup":
+        {
+          // Arrange
+          String name = params.get("CacheParameterGroupName");
+          store.deleteCacheParameterGroup(name);
+          // Act + Assert
+          sendXml(exchange, 200, buildEmptyResponse("DeleteCacheParameterGroup"));
+          break;
+        }
+      case "CreateSnapshot":
+        {
+          // Arrange
+          Map<String, Object> snap = store.createSnapshot(params);
+          // Act + Assert
+          sendXml(exchange, 200, buildItemResponse("CreateSnapshot", "Snapshot", snap));
+          break;
+        }
+      case "DeleteSnapshot":
+        {
+          // Arrange
+          String name = params.get("SnapshotName");
+          Map<String, Object> snap = store.deleteSnapshot(name);
+          // Act + Assert
+          if (snap == null) {
+            sendError(exchange, 400, "SnapshotNotFoundFault", "Snapshot not found: " + name);
+            return;
+          }
+          sendXml(exchange, 200, buildItemResponse("DeleteSnapshot", "Snapshot", snap));
+          break;
+        }
       case "CreateCacheSubnetGroup":
         {
           // Arrange
@@ -165,9 +225,98 @@ public class ElastiCacheHandler implements HttpHandler {
                   "DescribeCacheSubnetGroups", "CacheSubnetGroups", "CacheSubnetGroup", list));
           break;
         }
+      case "AddTagsToResource":
+        {
+          // Arrange
+          String resourceName = params.get("ResourceName");
+          List<Map<String, String>> tags = extractTags(params);
+          List<Map<String, String>> allTags = store.addTagsToResource(resourceName, tags);
+          // Act + Assert
+          sendXml(exchange, 200, buildTagListResponse("AddTagsToResource", allTags));
+          break;
+        }
+      case "RemoveTagsFromResource":
+        {
+          // Arrange
+          String resourceName = params.get("ResourceName");
+          List<String> tagKeys = extractTagKeys(params);
+          List<Map<String, String>> remaining = store.removeTagsFromResource(resourceName, tagKeys);
+          // Act + Assert
+          sendXml(exchange, 200, buildTagListResponse("RemoveTagsFromResource", remaining));
+          break;
+        }
+      case "ListTagsForResource":
+        {
+          // Arrange
+          String resourceName = params.get("ResourceName");
+          List<Map<String, String>> tags = store.listTagsForResource(resourceName);
+          // Act + Assert
+          sendXml(exchange, 200, buildTagListResponse("ListTagsForResource", tags));
+          break;
+        }
       default:
         sendError(exchange, 400, "UnknownOperationException", "Not implemented: " + action);
     }
+  }
+
+  // ── Tag param helpers ─────────────────────────────────────────────────────────
+
+  private List<Map<String, String>> extractTags(Map<String, String> params) {
+    // Arrange
+    List<Map<String, String>> tags = new ArrayList<>();
+    // Act: scan for Tags.member.N.Key / Tags.member.N.Value
+    int i = 1;
+    while (true) {
+      String key = params.get("Tags.member." + i + ".Key");
+      if (key == null) break;
+      String value = params.getOrDefault("Tags.member." + i + ".Value", "");
+      Map<String, String> tag = new LinkedHashMap<>();
+      tag.put("Key", key);
+      tag.put("Value", value);
+      tags.add(tag);
+      i++;
+    }
+    // Assert: return extracted tags
+    return tags;
+  }
+
+  private List<String> extractTagKeys(Map<String, String> params) {
+    // Arrange
+    List<String> keys = new ArrayList<>();
+    // Act: scan for TagKeys.member.N
+    int i = 1;
+    while (true) {
+      String key = params.get("TagKeys.member." + i);
+      if (key == null) break;
+      keys.add(key);
+      i++;
+    }
+    // Assert: return extracted keys
+    return keys;
+  }
+
+  private String buildTagListResponse(String action, List<Map<String, String>> tags) {
+    // Arrange
+    StringBuilder sb = new StringBuilder();
+    // Act
+    sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+    sb.append("<").append(action).append("Response xmlns=\"").append(XMLNS).append("\">\n");
+    sb.append("  <").append(action).append("Result>\n");
+    sb.append("    <TagList>\n");
+    for (Map<String, String> tag : tags) {
+      sb.append("      <member>\n");
+      sb.append("        <Key>").append(escapeXml(tag.get("Key"))).append("</Key>\n");
+      sb.append("        <Value>").append(escapeXml(tag.get("Value"))).append("</Value>\n");
+      sb.append("      </member>\n");
+    }
+    sb.append("    </TagList>\n");
+    sb.append("  </").append(action).append("Result>\n");
+    sb.append("  <ResponseMetadata><RequestId>")
+        .append(REQUEST_ID)
+        .append("</RequestId></ResponseMetadata>\n");
+    sb.append("</").append(action).append("Response>\n");
+    // Assert: return built XML
+    return sb.toString();
   }
 
   // ── XML response helpers ──────────────────────────────────────────────────────

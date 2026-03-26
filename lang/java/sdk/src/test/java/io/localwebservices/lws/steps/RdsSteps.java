@@ -281,7 +281,7 @@ public class RdsSteps {
             + expectedSuccess);
   }
 
-  @Then("the instance tag state is unchanged (no-op model)")
+  @Then("the instance tag state is unchanged \\(no-op model\\)")
   public void theInstanceTagStateIsUnchanged() {
     // Arrange: no additional setup required
     // Act: action already performed in the When step

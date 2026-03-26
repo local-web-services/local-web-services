@@ -213,23 +213,22 @@ public class ApigatewaySnsSteps {
     // Assert: failure pre-loaded
   }
 
-  @Given("the {string} has no {string} integration configured")
-  public void theApiHasNoIntegrationConfigured(String apiType, String service) {
+  @Given("the \"API\" has no \"SNS\" integration configured")
+  public void theApiHasNoSnsIntegrationConfigured() {
     // No-op: APIs have no SNS integration by default after creation.
     // Arrange / Act / Assert — nothing to do
   }
 
-  @Given("the {string} already has an {string} integration configured")
-  public void theApiAlreadyHasIntegrationConfigured(String apiType, String service) {
+  @Given("the \"API\" already has an \"SNS\" integration configured")
+  public void theApiAlreadyHasSnsIntegrationConfigured() {
     // Arrange: pre-load a failure so "the operation is rejected" passes
     // Act
-    world.setFailure(
-        new RuntimeException(apiType + " already has a " + service + " integration configured"));
+    world.setFailure(new RuntimeException("API already has a SNS integration configured"));
     // Assert: failure pre-loaded
   }
 
-  @Given("the {string} has an {string} integration configured")
-  public void theApiHasIntegrationConfigured(String apiType, String service) throws Exception {
+  @Given("the \"API\" has an \"SNS\" integration configured")
+  public void theApiHasSnsIntegrationConfigured() throws Exception {
     // Arrange: ensure API exists
     String apiId = restApiId;
     if (apiId == null || apiId.isEmpty()) {

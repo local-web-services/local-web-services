@@ -902,7 +902,7 @@ public class MemorydbSteps {
     }
   }
 
-  @Then("the resource tag state is unchanged (no-op model)")
+  @Then("the resource tag state is unchanged \\(no-op model\\)")
   public void theResourceTagStateIsUnchangedNoOpModel() {
     // Arrange: no additional setup required
     // Act: action already performed in the When step
