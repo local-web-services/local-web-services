@@ -65,7 +65,7 @@ public class LambdaGlacierSteps {
   // "the vault exists" → GlacierSteps
   // "the vault does not exist" → GlacierSteps
 
-  @Given("the vault \"EXISTS\" (not already \"DELETED\")")
+  @Given("the vault \"EXISTS\" \\(not already \"DELETED\"\\)")
   public void theVaultExistsNotAlreadyDeleted() {
     // Arrange
     // Act

@@ -19,6 +19,7 @@ import software.amazon.awssdk.services.apigateway.model.IntegrationType;
 import software.amazon.awssdk.services.apigateway.model.PatchOperation;
 import software.amazon.awssdk.services.apigateway.model.Resource;
 import software.amazon.awssdk.services.apigateway.model.RestApi;
+import software.amazon.awssdk.services.elasticache.ElastiCacheClient;
 
 /**
  * Step definitions for the API Gateway informal specification feature files.
@@ -292,8 +293,22 @@ public class ApigatewaySteps {
 
   @Given("the resource exists")
   public void theResourceExistsGiven() throws Exception {
-    // Arrange: create a REST API with its root resource
-    // Act
+    // Arrange: dispatch based on resource service context
+    if ("elasticache".equals(world.lastResourceService)) {
+      // Act: create an ElastiCache cluster as the resource
+      try (ElastiCacheClient client = world.session.elastiCacheClient()) {
+        client.createCacheCluster(
+            r -> r.cacheClusterId("test-elasticache-cluster-1").engine("redis"));
+      } catch (Exception e) {
+        String msg = e.getMessage() != null ? e.getMessage() : "";
+        if (!msg.contains("already") && !msg.contains("CacheClusterAlreadyExists")) {
+          throw e;
+        }
+      }
+      // Assert: cluster created (no exception thrown)
+      return;
+    }
+    // Act: create a REST API with its root resource (default apigateway behaviour)
     apigwCreateRestApiWithRoot();
     // Assert: IDs are stored
   }

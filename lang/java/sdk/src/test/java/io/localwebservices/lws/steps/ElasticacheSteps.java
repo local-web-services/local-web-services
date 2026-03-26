@@ -2,6 +2,7 @@ package io.localwebservices.lws.steps;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -37,6 +38,15 @@ public class ElasticacheSteps {
 
   public ElasticacheSteps(WorldContext world) {
     this.world = world;
+  }
+
+  // ── @Before hook ──────────────────────────────────────────────────────────────
+
+  @Before("@elasticache")
+  public void setElasticacheResourceContext() {
+    // Arrange: mark this scenario as elasticache so shared step "the resource exists"
+    // dispatches to ElastiCache cluster creation rather than ApiGateway REST API setup.
+    world.lastResourceService = "elasticache";
   }
 
   // ── Private helpers ────────────────────────────────────────────────────────────

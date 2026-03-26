@@ -10,11 +10,25 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Elasticsearch wire-protocol HTTP handler (JSON, X-Amz-Target). */
+/**
+ * Elasticsearch wire-protocol HTTP handler (REST-JSON, AWS SDK v2 Elasticsearch REST protocol).
+ *
+ * <p>The AWS SDK v2 Elasticsearch client uses REST API paths like:
+ *
+ * <ul>
+ *   <li>POST /2015-01-01/es/domain → CreateElasticsearchDomain
+ *   <li>DELETE /2015-01-01/es/domain/{name} → DeleteElasticsearchDomain
+ *   <li>GET /2015-01-01/es/domain/{name} → DescribeElasticsearchDomain
+ *   <li>GET /2015-01-01/es/domain → ListDomainNames
+ *   <li>POST /2015-01-01/tags → AddTags
+ *   <li>GET /2015-01-01/tags → ListTags
+ *   <li>DELETE /2015-01-01/tags → RemoveTags
+ *   <li>POST /2015-01-01/es/domain/{name}/config → UpdateElasticsearchDomainConfig
+ * </ul>
+ */
 public class ElasticsearchHandler implements HttpHandler {
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
-  private static final String TARGET_PREFIX = "Elasticsearch_20150101.";
   private static final String ACCOUNT = "000000000000";
   private static final String REGION = "us-east-1";
 
@@ -34,10 +48,8 @@ public class ElasticsearchHandler implements HttpHandler {
 
   @Override
   public void handle(HttpExchange exchange) throws IOException {
-    String target = exchange.getRequestHeaders().getFirst("X-Amz-Target");
-    if (target == null) target = "";
-    String operation =
-        target.startsWith(TARGET_PREFIX) ? target.substring(TARGET_PREFIX.length()) : target;
+    String method = exchange.getRequestMethod();
+    String path = exchange.getRequestURI().getPath();
 
     byte[] bodyBytes;
     try (InputStream is = exchange.getRequestBody()) {
@@ -47,11 +59,14 @@ public class ElasticsearchHandler implements HttpHandler {
     Map<String, Object> body =
         bodyBytes.length > 0 ? MAPPER.readValue(bodyBytes, Map.class) : new LinkedHashMap<>();
 
+    // Derive a logical operation name for IAM/chaos middleware
+    String operation = deriveOperation(method, path);
+
     try {
       if (IamMiddleware.applyIamAuth(state, "elasticsearch", operation, exchange, false)) return;
       if (ChaosMiddleware.applyChaos(state, "elasticsearch", operation, exchange, false)) return;
 
-      handleOperation(operation, body, exchange);
+      handleOperation(method, path, body, exchange);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       sendJson(exchange, 500, Map.of("__type", "InternalFailure", "message", "Interrupted"));
@@ -67,103 +82,142 @@ public class ElasticsearchHandler implements HttpHandler {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  private void handleOperation(String operation, Map<String, Object> body, HttpExchange exchange)
-      throws IOException {
-    switch (operation) {
-      case "CreateElasticsearchDomain":
-        {
-          String name = (String) body.get("DomainName");
-          Map<String, Object> domain = buildDomain(name);
-          domains.put(name, domain);
-          sendJson(exchange, 200, Map.of("DomainStatus", domain));
-          break;
-        }
-      case "DeleteElasticsearchDomain":
-        {
-          String name = (String) body.get("DomainName");
-          Map<String, Object> domain = domains.remove(name);
-          if (domain == null) {
-            sendJson(
-                exchange,
-                400,
-                Map.of(
-                    "__type", "ResourceNotFoundException", "message", "Domain not found: " + name));
-            return;
-          }
-          sendJson(exchange, 200, Map.of("DomainStatus", domain));
-          break;
-        }
-      case "DescribeElasticsearchDomain":
-        {
-          String name = (String) body.get("DomainName");
-          Map<String, Object> domain = domains.get(name);
-          if (domain == null) {
-            sendJson(
-                exchange,
-                400,
-                Map.of(
-                    "__type", "ResourceNotFoundException", "message", "Domain not found: " + name));
-            return;
-          }
-          sendJson(exchange, 200, Map.of("DomainStatus", domain));
-          break;
-        }
-      case "ListDomainNames":
-        {
-          List<Map<String, Object>> list = new ArrayList<>();
-          for (String name : domains.keySet()) {
-            list.add(Map.of("DomainName", name));
-          }
-          sendJson(exchange, 200, Map.of("DomainNames", list));
-          break;
-        }
-      case "AddTags":
-        {
-          String arn = (String) body.get("ARN");
-          String domainName = arnToDomainName(arn);
-          List<Map<String, Object>> newTags =
-              (List<Map<String, Object>>) body.getOrDefault("TagList", List.of());
-          List<Map<String, String>> existing =
-              domainTags.computeIfAbsent(domainName, k -> new ArrayList<>());
-          for (Map<String, Object> tag : newTags) {
-            existing.add(
-                Map.of("Key", (String) tag.get("Key"), "Value", (String) tag.get("Value")));
-          }
-          sendJson(exchange, 200, Map.of());
-          break;
-        }
-      case "ListTags":
-        {
-          String arn = (String) body.get("ARN");
-          String domainName = arnToDomainName(arn);
-          List<Map<String, String>> tags = domainTags.getOrDefault(domainName, List.of());
-          sendJson(exchange, 200, Map.of("TagList", tags));
-          break;
-        }
-      case "RemoveTags":
-        {
-          String arn = (String) body.get("ARN");
-          String domainName = arnToDomainName(arn);
-          List<String> tagKeys = (List<String>) body.getOrDefault("TagKeys", List.of());
-          List<Map<String, String>> existing =
-              domainTags.getOrDefault(domainName, new ArrayList<>());
-          existing.removeIf(t -> tagKeys.contains(t.get("Key")));
-          sendJson(exchange, 200, Map.of());
-          break;
-        }
-      default:
-        {
-          sendJson(
-              exchange,
-              400,
-              Map.of(
-                  "__type",
-                  "UnknownOperationException",
-                  "message",
-                  "Not implemented: " + operation));
-        }
+  private String deriveOperation(String method, String path) {
+    // Arrange: map method + path pattern to a logical operation name
+    if ("POST".equals(method) && path.equals("/2015-01-01/es/domain")) {
+      return "CreateElasticsearchDomain";
     }
+    if ("DELETE".equals(method) && path.startsWith("/2015-01-01/es/domain/")) {
+      return "DeleteElasticsearchDomain";
+    }
+    if ("GET".equals(method)
+        && path.startsWith("/2015-01-01/es/domain/")
+        && !path.endsWith("/config")) {
+      return "DescribeElasticsearchDomain";
+    }
+    if ("GET".equals(method) && path.equals("/2015-01-01/es/domain")) {
+      return "ListDomainNames";
+    }
+    if ("POST".equals(method) && path.equals("/2015-01-01/tags")) {
+      return "AddTags";
+    }
+    if ("GET".equals(method) && path.equals("/2015-01-01/tags")) {
+      return "ListTags";
+    }
+    if ("DELETE".equals(method) && path.equals("/2015-01-01/tags")) {
+      return "RemoveTags";
+    }
+    if ("POST".equals(method) && path.endsWith("/config")) {
+      return "UpdateElasticsearchDomainConfig";
+    }
+    return method + " " + path;
+  }
+
+  @SuppressWarnings("unchecked")
+  private void handleOperation(
+      String method, String path, Map<String, Object> body, HttpExchange exchange)
+      throws IOException {
+    // Arrange: route by HTTP method and path
+    // POST /2015-01-01/es/domain → CreateElasticsearchDomain
+    if ("POST".equals(method) && path.equals("/2015-01-01/es/domain")) {
+      String name = (String) body.get("DomainName");
+      Map<String, Object> domain = buildDomain(name);
+      domains.put(name, domain);
+      sendJson(exchange, 200, Map.of("DomainStatus", domain));
+      return;
+    }
+    // DELETE /2015-01-01/es/domain/{name} → DeleteElasticsearchDomain
+    if ("DELETE".equals(method) && path.startsWith("/2015-01-01/es/domain/")) {
+      String name = extractDomainName(path);
+      Map<String, Object> domain = domains.remove(name);
+      if (domain == null) {
+        sendJson(
+            exchange,
+            400,
+            Map.of("__type", "ResourceNotFoundException", "message", "Domain not found: " + name));
+        return;
+      }
+      sendJson(exchange, 200, Map.of("DomainStatus", domain));
+      return;
+    }
+    // GET /2015-01-01/es/domain/{name} → DescribeElasticsearchDomain
+    if ("GET".equals(method)
+        && path.startsWith("/2015-01-01/es/domain/")
+        && !path.endsWith("/config")) {
+      String name = extractDomainName(path);
+      Map<String, Object> domain = domains.get(name);
+      if (domain == null) {
+        sendJson(
+            exchange,
+            400,
+            Map.of("__type", "ResourceNotFoundException", "message", "Domain not found: " + name));
+        return;
+      }
+      sendJson(exchange, 200, Map.of("DomainStatus", domain));
+      return;
+    }
+    // GET /2015-01-01/es/domain → ListDomainNames
+    if ("GET".equals(method) && path.equals("/2015-01-01/es/domain")) {
+      List<Map<String, Object>> list = new ArrayList<>();
+      for (String name : domains.keySet()) {
+        list.add(Map.of("DomainName", name));
+      }
+      sendJson(exchange, 200, Map.of("DomainNames", list));
+      return;
+    }
+    // POST /2015-01-01/tags → AddTags
+    if ("POST".equals(method) && path.equals("/2015-01-01/tags")) {
+      String arn = (String) body.get("ARN");
+      String domainName = arnToDomainName(arn);
+      List<Map<String, Object>> newTags =
+          (List<Map<String, Object>>) body.getOrDefault("TagList", List.of());
+      List<Map<String, String>> existing =
+          domainTags.computeIfAbsent(domainName, k -> new ArrayList<>());
+      for (Map<String, Object> tag : newTags) {
+        existing.add(Map.of("Key", (String) tag.get("Key"), "Value", (String) tag.get("Value")));
+      }
+      sendJson(exchange, 200, Map.of());
+      return;
+    }
+    // GET /2015-01-01/tags?ARN=... → ListTags
+    if ("GET".equals(method) && path.equals("/2015-01-01/tags")) {
+      String query = exchange.getRequestURI().getQuery();
+      String arn = extractQueryParam(query, "ARN");
+      String domainName = arnToDomainName(arn);
+      List<Map<String, String>> tags = domainTags.getOrDefault(domainName, List.of());
+      sendJson(exchange, 200, Map.of("TagList", tags));
+      return;
+    }
+    // DELETE /2015-01-01/tags?ARN=...&tagKeys[]=... → RemoveTags
+    if ("DELETE".equals(method) && path.equals("/2015-01-01/tags")) {
+      String query = exchange.getRequestURI().getQuery();
+      String arn = extractQueryParam(query, "ARN");
+      String domainName = arnToDomainName(arn);
+      List<String> tagKeys = (List<String>) body.getOrDefault("TagKeys", List.of());
+      List<Map<String, String>> existing = domainTags.getOrDefault(domainName, new ArrayList<>());
+      existing.removeIf(t -> tagKeys.contains(t.get("Key")));
+      sendJson(exchange, 200, Map.of());
+      return;
+    }
+    // POST /2015-01-01/es/domain/{name}/config → UpdateElasticsearchDomainConfig
+    if ("POST".equals(method) && path.endsWith("/config")) {
+      String name = extractDomainName(path.replace("/config", ""));
+      Map<String, Object> domain = domains.get(name);
+      if (domain == null) {
+        sendJson(
+            exchange,
+            400,
+            Map.of("__type", "ResourceNotFoundException", "message", "Domain not found: " + name));
+        return;
+      }
+      sendJson(exchange, 200, Map.of("DomainConfig", buildDomainConfig(domain)));
+      return;
+    }
+    // Unknown operation
+    sendJson(
+        exchange,
+        400,
+        Map.of("__type", "UnknownOperationException", "message", "Not implemented: " + path));
   }
 
   private Map<String, Object> buildDomain(String name) {
@@ -180,6 +234,47 @@ public class ElasticsearchHandler implements HttpHandler {
         Map.of("InstanceType", "m4.large.elasticsearch", "InstanceCount", 1));
     domain.put("EBSOptions", Map.of("EBSEnabled", false));
     return domain;
+  }
+
+  private String extractDomainName(String path) {
+    // path is like /2015-01-01/es/domain/{name}
+    String prefix = "/2015-01-01/es/domain/";
+    if (path.startsWith(prefix)) {
+      String rest = path.substring(prefix.length());
+      int slash = rest.indexOf('/');
+      return slash >= 0 ? rest.substring(0, slash) : rest;
+    }
+    return path;
+  }
+
+  private String extractQueryParam(String query, String key) {
+    if (query == null) return null;
+    for (String pair : query.split("&")) {
+      String[] kv = pair.split("=", 2);
+      if (kv.length == 2 && kv[0].equals(key)) {
+        try {
+          return java.net.URLDecoder.decode(kv[1], java.nio.charset.StandardCharsets.UTF_8);
+        } catch (Exception e) {
+          return kv[1];
+        }
+      }
+    }
+    return null;
+  }
+
+  private Map<String, Object> buildDomainConfig(Map<String, Object> domain) {
+    Map<String, Object> config = new LinkedHashMap<>();
+    config.put(
+        "ElasticsearchClusterConfig",
+        Map.of(
+            "Options",
+            domain.getOrDefault(
+                "ElasticsearchClusterConfig",
+                Map.of("InstanceType", "m4.large.elasticsearch", "InstanceCount", 1))));
+    config.put(
+        "EBSOptions",
+        Map.of("Options", domain.getOrDefault("EBSOptions", Map.of("EBSEnabled", false))));
+    return config;
   }
 
   private String arnToDomainName(String arn) {

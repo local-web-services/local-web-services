@@ -70,6 +70,15 @@ public class GlacierHandler implements HttpHandler {
       if (len >= 6) return "GET".equals(method) ? "DescribeJob" : "InitiateJob";
       return "POST".equals(method) ? "InitiateJob" : "ListJobs";
     }
+    if (len >= 5 && "multipart-uploads".equals(segments[4])) {
+      if (len >= 6) {
+        if ("PUT".equals(method)) return "UploadMultipartPart";
+        if ("POST".equals(method)) return "CompleteMultipartUpload";
+        if ("DELETE".equals(method)) return "AbortMultipartUpload";
+        return "GetMultipartUpload";
+      }
+      return "POST".equals(method) ? "InitiateMultipartUpload" : "ListMultipartUploads";
+    }
     if (len >= 4) {
       if ("PUT".equals(method)) return "CreateVault";
       if ("DELETE".equals(method)) return "DeleteVault";
@@ -147,6 +156,50 @@ public class GlacierHandler implements HttpHandler {
         // ListJobs
         List<Map<String, Object>> jobList = store.listJobs(vaultName);
         sendJson(exchange, 200, Map.of("JobList", jobList));
+        return;
+      }
+    }
+
+    // /multipart-uploads path
+    if (len >= 5 && "multipart-uploads".equals(segments[4])) {
+      String uploadId = len >= 6 ? segments[5] : null;
+
+      if ("POST".equals(method) && uploadId == null) {
+        // InitiateMultipartUpload
+        String partSize = exchange.getRequestHeaders().getFirst("x-amz-part-size");
+        String description = exchange.getRequestHeaders().getFirst("x-amz-archive-description");
+        String newUploadId = store.initiateMultipartUpload(vaultName, partSize, description);
+        exchange.getResponseHeaders().set("x-amz-multipart-upload-id", newUploadId);
+        sendJson(exchange, 201, Map.of("uploadId", newUploadId));
+        return;
+      }
+
+      if ("PUT".equals(method) && uploadId != null) {
+        // UploadMultipartPart
+        exchange.getResponseHeaders().set("x-amz-sha256-tree-hash", "dummy-tree-hash");
+        sendJson(exchange, 204, Map.of());
+        return;
+      }
+
+      if ("POST".equals(method) && uploadId != null) {
+        // CompleteMultipartUpload
+        String newArchiveId = store.completeMultipartUpload(vaultName, uploadId);
+        exchange.getResponseHeaders().set("x-amz-archive-id", newArchiveId);
+        sendJson(exchange, 201, Map.of("archiveId", newArchiveId));
+        return;
+      }
+
+      if ("DELETE".equals(method) && uploadId != null) {
+        // AbortMultipartUpload
+        store.abortMultipartUpload(vaultName, uploadId);
+        exchange.sendResponseHeaders(204, -1);
+        return;
+      }
+
+      if ("GET".equals(method) && uploadId == null) {
+        // ListMultipartUploads
+        List<Map<String, Object>> uploadList = store.listMultipartUploads(vaultName);
+        sendJson(exchange, 200, Map.of("UploadsList", uploadList));
         return;
       }
     }

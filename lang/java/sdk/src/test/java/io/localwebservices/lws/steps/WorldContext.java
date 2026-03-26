@@ -34,6 +34,10 @@ public class WorldContext {
   // assertions between DocDB and MemoryDB (both share identical step text).
   public String lastClusterService;
 
+  // Resource service context — set by @Before hooks on service-tagged scenarios, used to dispatch
+  // shared "the resource exists" step between ApiGateway and ElastiCache.
+  public String lastResourceService;
+
   // SQS spec state — receipt handle for in-flight message operations
   public String sqsReceiptHandle;
 

@@ -108,13 +108,13 @@ public class ApiGatewayHandler implements HttpHandler {
     String section = parts[2];
 
     switch (section) {
-      case "store.resources":
+      case "resources":
         handleResourceRoute(method, parts, apiId, body, exchange);
         break;
-      case "store.deployments":
+      case "deployments":
         handleDeploymentRoute(method, parts, apiId, body, exchange);
         break;
-      case "store.stages":
+      case "stages":
         handleStageRoute(method, parts, apiId, body, exchange);
         break;
       default:

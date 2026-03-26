@@ -51,6 +51,8 @@ public class StepfunctionsGlacierSteps {
     }
   }
 
+  // "the vault \"EXISTS\" (not already \"DELETED\")" → LambdaGlacierSteps
+
   // ── When: actions ─────────────────────────────────────────────────────────────
 
   @When("a running execution calls a Glacier vault that \"EXISTS\" and the task succeeds")

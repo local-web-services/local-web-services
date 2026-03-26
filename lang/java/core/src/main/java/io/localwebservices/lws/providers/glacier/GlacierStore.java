@@ -9,11 +9,14 @@ public class GlacierStore {
   private final Map<String, Map<String, Object>> vaults = new ConcurrentHashMap<>();
   private final Map<String, Map<String, Map<String, Object>>> archives = new ConcurrentHashMap<>();
   private final Map<String, Map<String, Map<String, Object>>> jobs = new ConcurrentHashMap<>();
+  private final Map<String, Map<String, Map<String, Object>>> multipartUploads =
+      new ConcurrentHashMap<>();
 
   public void reset() {
     vaults.clear();
     archives.clear();
     jobs.clear();
+    multipartUploads.clear();
   }
 
   public Map<String, Object> createVault(String vaultName) {
@@ -78,5 +81,39 @@ public class GlacierStore {
 
   public List<Map<String, Object>> listJobs(String vaultName) {
     return new ArrayList<>(jobs.getOrDefault(vaultName, new ConcurrentHashMap<>()).values());
+  }
+
+  public String initiateMultipartUpload(String vaultName, String partSize, String description) {
+    String uploadId = UUID.randomUUID().toString();
+    Map<String, Object> upload = new LinkedHashMap<>();
+    upload.put("MultipartUploadId", uploadId);
+    upload.put("VaultName", vaultName);
+    upload.put("PartSizeInBytes", partSize);
+    upload.put("ArchiveDescription", description != null ? description : "");
+    upload.put("CreationDate", new java.util.Date().toString());
+    multipartUploads
+        .computeIfAbsent(vaultName, k -> new ConcurrentHashMap<>())
+        .put(uploadId, upload);
+    return uploadId;
+  }
+
+  public boolean multipartUploadExists(String vaultName, String uploadId) {
+    return multipartUploads
+        .getOrDefault(vaultName, new ConcurrentHashMap<>())
+        .containsKey(uploadId);
+  }
+
+  public String completeMultipartUpload(String vaultName, String uploadId) {
+    multipartUploads.getOrDefault(vaultName, new ConcurrentHashMap<>()).remove(uploadId);
+    return uploadArchive(vaultName, "assembled-multipart", 0);
+  }
+
+  public void abortMultipartUpload(String vaultName, String uploadId) {
+    multipartUploads.getOrDefault(vaultName, new ConcurrentHashMap<>()).remove(uploadId);
+  }
+
+  public List<Map<String, Object>> listMultipartUploads(String vaultName) {
+    return new ArrayList<>(
+        multipartUploads.getOrDefault(vaultName, new ConcurrentHashMap<>()).values());
   }
 }
