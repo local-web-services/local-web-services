@@ -5,7 +5,6 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import StepfunctionsTestClient
 from ..constants import TEST_INPUT, TEST_SM, _sm_arn
 
 
@@ -13,7 +12,7 @@ from ..constants import TEST_INPUT, TEST_SM, _sm_arn
 def start_execution(lws_session, world):
     try:
         sm_name = world.get("state_machine_name", TEST_SM)
-        resp = StepfunctionsTestClient(lws_session).start_execution(
+        resp = lws_session.client("stepfunctions").start_execution(
             stateMachineArn=_sm_arn(sm_name), input=TEST_INPUT
         )
         world["result"] = resp

@@ -12,7 +12,7 @@ from ..constants import TEST_MESSAGE
 @when("a message is sent to the queue")
 def send_message(lws_session, world):
     try:
-        world["result"] = SqsTestClient(lws_session).send_message(
+        world["result"] = lws_session.client("sqs").send_message(
             QueueUrl=SqsTestClient(lws_session).queue_url(), MessageBody=TEST_MESSAGE
         )
         world["error"] = None

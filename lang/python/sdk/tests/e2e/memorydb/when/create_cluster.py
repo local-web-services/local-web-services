@@ -6,7 +6,6 @@ import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import MemorydbTestClient
 from ..constants import TEST_CLUSTER
 
 
@@ -14,7 +13,7 @@ from ..constants import TEST_CLUSTER
 def create_cluster(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:
-        world["result"] = MemorydbTestClient(lws_session).create_cluster(
+        world["result"] = lws_session.client("memorydb").create_cluster(
             ClusterName=TEST_CLUSTER, NodeType="db.t4g.small", ACLName="open-access"
         )
         world["error"] = None

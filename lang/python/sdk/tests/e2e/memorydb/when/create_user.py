@@ -6,7 +6,6 @@ import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import MemorydbTestClient
 from ..constants import TEST_USER
 
 
@@ -14,7 +13,7 @@ from ..constants import TEST_USER
 def create_user(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:
-        world["result"] = MemorydbTestClient(lws_session).create_user(
+        world["result"] = lws_session.client("memorydb").create_user(
             UserName=TEST_USER,
             AuthenticationMode={"Type": "no-password"},
             AccessString="on ~* &* +@all",

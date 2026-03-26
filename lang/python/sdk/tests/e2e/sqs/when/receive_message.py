@@ -11,7 +11,7 @@ from ..client import SqsTestClient
 @when("a message is received from the queue")
 def receive_message(lws_session, world):
     try:
-        resp = SqsTestClient(lws_session).receive_message(
+        resp = lws_session.client("sqs").receive_message(
             QueueUrl=SqsTestClient(lws_session).queue_url(),
             MaxNumberOfMessages=1,
             VisibilityTimeout=30,

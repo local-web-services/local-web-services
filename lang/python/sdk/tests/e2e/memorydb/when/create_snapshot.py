@@ -6,7 +6,6 @@ import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import MemorydbTestClient
 from ..constants import TEST_CLUSTER, TEST_SNAPSHOT
 
 
@@ -14,7 +13,7 @@ from ..constants import TEST_CLUSTER, TEST_SNAPSHOT
 def create_snapshot(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:
-        world["result"] = MemorydbTestClient(lws_session).create_snapshot(
+        world["result"] = lws_session.client("memorydb").create_snapshot(
             ClusterName=TEST_CLUSTER, SnapshotName=TEST_SNAPSHOT
         )
         world["error"] = None
