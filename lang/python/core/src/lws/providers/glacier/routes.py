@@ -14,6 +14,7 @@ from fastapi import FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_capacity import AwsCapacityConfig, check_capacity
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.response_helpers import (
     iso_now as _iso_now,
@@ -105,8 +106,13 @@ async def _upload_archive(
     state: _GlacierState,
     vault_name: str,
     request: Request,
+    capacity: AwsCapacityConfig | None = None,
 ) -> Response:
     """Handle UploadArchive (POST /-/vaults/{vaultName}/archives)."""
+    if capacity is not None:
+        cap_err = check_capacity(capacity, "ServiceUnavailableException", 503)
+        if cap_err is not None:
+            return cap_err
     if vault_name not in state.vaults:
         return _error_response(
             "ResourceNotFoundException",
@@ -170,8 +176,13 @@ async def _initiate_job(
     state: _GlacierState,
     vault_name: str,
     request: Request,
+    capacity: AwsCapacityConfig | None = None,
 ) -> Response:
     """Handle InitiateJob (POST /-/vaults/{vaultName}/jobs)."""
+    if capacity is not None:
+        cap_err = check_capacity(capacity, "ServiceUnavailableException", 503)
+        if cap_err is not None:
+            return cap_err
     if vault_name not in state.vaults:
         return _error_response(
             "ResourceNotFoundException",
@@ -320,7 +331,7 @@ async def _lifecycle_create_vault(
     tracker: ResourceStateTracker,
 ) -> Response:
     resp = await _create_vault(state, vault_name)
-    if lc.enabled and resp.status_code == 201 and lc.create_dwell_ms > 0:
+    if lc.enabled and resp.status_code == 201:
         tracker.set_state(vault_name, "CREATING")
         tracker.schedule_transition(vault_name, "ACTIVE", lc.create_dwell_ms)
     return resp
@@ -367,10 +378,12 @@ async def _lifecycle_describe_vault(
 
 def create_glacier_app(
     lifecycle: ResourceLifecycleConfig | None = None,
+    capacity: AwsCapacityConfig | None = None,
 ) -> tuple[FastAPI, _GlacierState]:
     """Create a FastAPI application that speaks the Glacier REST wire protocol."""
     _lc = lifecycle or ResourceLifecycleConfig()
     _tracker = ResourceStateTracker(_lc)
+    _capacity = capacity or AwsCapacityConfig()
 
     app = FastAPI(title="LDK Glacier")
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="glacier")
@@ -394,7 +407,7 @@ def create_glacier_app(
 
     @app.post("/-/vaults/{vault_name}/archives")
     async def upload_archive(vault_name: str, request: Request) -> Response:
-        return await _upload_archive(state, vault_name, request)
+        return await _upload_archive(state, vault_name, request, _capacity)
 
     @app.delete("/-/vaults/{vault_name}/archives/{archive_id}")
     async def delete_archive(vault_name: str, archive_id: str) -> Response:
@@ -402,7 +415,7 @@ def create_glacier_app(
 
     @app.post("/-/vaults/{vault_name}/jobs")
     async def initiate_job(vault_name: str, request: Request) -> Response:
-        return await _initiate_job(state, vault_name, request)
+        return await _initiate_job(state, vault_name, request, _capacity)
 
     @app.get("/-/vaults/{vault_name}/jobs")
     async def list_jobs(vault_name: str) -> Response:

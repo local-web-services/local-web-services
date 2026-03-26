@@ -178,10 +178,11 @@ async def _handle_create_domain(
     state.domains[domain_name] = domain
 
     lc = tracker.config
-    if lc.enabled and lc.create_dwell_ms > 0:
+    if lc.enabled:
         tracker.set_state(domain_name, "CREATING")
         tracker.schedule_transition(domain_name, "ACTIVE", lc.create_dwell_ms)
-        domain.processing = True
+        if lc.create_dwell_ms > 0:
+            domain.processing = True
 
     return _json_response({"DomainStatus": _format_domain_status(domain, config)})
 

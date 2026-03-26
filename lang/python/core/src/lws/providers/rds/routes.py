@@ -366,7 +366,7 @@ async def _rds_lifecycle_instance(
     tracker: ResourceStateTracker,
 ) -> Response | None:
     """Handle lifecycle-aware instance create/delete. Returns None to fall through."""
-    if action == "CreateDBInstance" and lc.enabled and lc.create_dwell_ms > 0:
+    if action == "CreateDBInstance" and lc.enabled:
         resp = await handler(state, body)
         if resp.status_code == 200:
             iid = body.get("DBInstanceIdentifier", "")
@@ -394,7 +394,7 @@ async def _rds_lifecycle_cluster(
     tracker: ResourceStateTracker,
 ) -> Response | None:
     """Handle lifecycle-aware cluster create/delete. Returns None to fall through."""
-    if action == "CreateDBCluster" and lc.enabled and lc.create_dwell_ms > 0:
+    if action == "CreateDBCluster" and lc.enabled:
         resp = await handler(state, body)
         if resp.status_code == 200:
             cid = body.get("DBClusterIdentifier", "")

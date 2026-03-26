@@ -14,7 +14,7 @@ def user_is_confirmed(lws_session, world):
     """Ensure the user is in CONFIRMED state by using AdminSetUserPassword."""
     if not world.get("pool_id"):
         world["pool_id"] = CognitoIdpTestClient(lws_session).create_pool()
-    client = CognitoIdpTestClient(lws_session).cognito()
+    client = CognitoIdpTestClient(lws_session)
     try:
         client.admin_create_user(
             UserPoolId=world["pool_id"],

@@ -229,21 +229,24 @@ class StepFunctionsRouter:
                 f"State Machine Already Exists: {name}",
             )
         creation_date = __import__("time").time()
-        # Lifecycle: set CREATING status if dwell time configured
+        # Lifecycle: track state; mutate response/provider only if dwell > 0
         status = "ACTIVE"
-        if self._lifecycle.enabled and self._lifecycle.create_dwell_ms > 0:
+        if self._lifecycle.enabled:
             self._tracker.set_state(name, "CREATING")
-            self.provider.set_state_machine_status(name, "CREATING")
-            _prov = self.provider
-            _sm = name
+            if self._lifecycle.create_dwell_ms > 0:
+                self.provider.set_state_machine_status(name, "CREATING")
+                _prov = self.provider
+                _sm = name
 
-            async def _activate_sm() -> None:
-                _prov.set_state_machine_status(_sm, "ACTIVE")
+                async def _activate_sm() -> None:
+                    _prov.set_state_machine_status(_sm, "ACTIVE")
 
-            self._tracker.schedule_transition(
-                name, "ACTIVE", self._lifecycle.create_dwell_ms, on_complete=_activate_sm
-            )
-            status = "CREATING"
+                self._tracker.schedule_transition(
+                    name, "ACTIVE", self._lifecycle.create_dwell_ms, on_complete=_activate_sm
+                )
+                status = "CREATING"
+            else:
+                self._tracker.schedule_transition(name, "ACTIVE", 0)
         return _json_response(
             {
                 "stateMachineArn": arn,
@@ -272,15 +275,16 @@ class StepFunctionsRouter:
                 "StateMachineDoesNotExist",
                 f"State machine not found: {sm_arn}",
             )
-        # Lifecycle: set DELETING status if dwell time configured
-        if self._lifecycle.enabled and self._lifecycle.delete_dwell_ms > 0:
+        # Lifecycle: track DELETING state; return status in response only if dwell > 0
+        if self._lifecycle.enabled:
             self._tracker.set_state(sm_name, "DELETING")
             self._tracker.schedule_transition(
                 sm_name,
                 None,  # remove from tracker after dwell (SM is already gone from store)
                 self._lifecycle.delete_dwell_ms,
             )
-            return _json_response({"stateMachineStatus": "DELETING"})
+            if self._lifecycle.delete_dwell_ms > 0:
+                return _json_response({"stateMachineStatus": "DELETING"})
         return _json_response({})
 
     async def _describe_state_machine(self, body: dict) -> Response:

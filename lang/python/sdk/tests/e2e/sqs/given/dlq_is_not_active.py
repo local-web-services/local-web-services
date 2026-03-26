@@ -17,4 +17,4 @@ def dlq_is_not_active(lws_session):
     except Exception:
         pass
     lws_session.lifecycle("sqs").create_dwell_ms(5000).apply()
-    SqsTestClient(lws_session).create_queue(QueueName=TEST_DLQ)
+    lws_session.client("sqs").create_queue(QueueName=TEST_DLQ)

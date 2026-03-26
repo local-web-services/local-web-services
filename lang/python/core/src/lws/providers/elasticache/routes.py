@@ -145,10 +145,11 @@ async def _handle_create_cache_cluster(
     state.clusters[cluster_id] = cluster
 
     lc = tracker.config
-    if lc.enabled and lc.create_dwell_ms > 0:
+    if lc.enabled:
         tracker.set_state(cluster_id, "CREATING")
         tracker.schedule_transition(cluster_id, "ACTIVE", lc.create_dwell_ms)
-        cluster.status = "creating"
+        if lc.create_dwell_ms > 0:
+            cluster.status = "creating"
 
     return _json_response({"CacheCluster": _format_cache_cluster(cluster)})
 
@@ -266,10 +267,11 @@ async def _handle_create_replication_group(
 
     lc = tracker.config
     rg_tracker_key = f"rg:{rg_id}"
-    if lc.enabled and lc.create_dwell_ms > 0:
+    if lc.enabled:
         tracker.set_state(rg_tracker_key, "CREATING")
         tracker.schedule_transition(rg_tracker_key, "ACTIVE", lc.create_dwell_ms)
-        rg.status = "creating"
+        if lc.create_dwell_ms > 0:
+            rg.status = "creating"
 
     return _json_response({"ReplicationGroup": _format_replication_group(rg)})
 

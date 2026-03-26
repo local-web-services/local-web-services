@@ -189,6 +189,18 @@ class FakeServiceBridge:
         return {"service": resource_arn}
 
 
+class FakeExhaustedCapacity:
+    """Capacity object that is always exhausted (slots == 0)."""
+
+    is_exhausted = True
+
+
+class FakeUnlimitedCapacity:
+    """Capacity object that is never exhausted (slots == None)."""
+
+    is_exhausted = False
+
+
 class FakeLambdaBridge:
     """Records which ARNs it handled, for composite invoker tests."""
 

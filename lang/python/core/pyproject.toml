@@ -51,7 +51,7 @@ packages = ["src/lws"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
-addopts = "-m 'not internal'"
+addopts = "-m 'not internal' -qq --no-header --disable-warnings"
 markers = [
     "internal: scenarios tagged @internal in Gherkin (excluded from standard test runs)",
     "capacity: scenarios tagged @capacity in Gherkin",

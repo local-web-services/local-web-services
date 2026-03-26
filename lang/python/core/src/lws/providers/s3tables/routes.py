@@ -48,14 +48,14 @@ async def _s3tables_create_table_bucket(
 ) -> Response:
     """Handle lifecycle-aware CreateTableBucket."""
     bucket_name = ""
-    if lc.enabled and lc.create_dwell_ms > 0:
+    if lc.enabled:
         try:
             raw = await request.body()
             bucket_name = json.loads(raw).get("name", "")
         except Exception:
             bucket_name = ""
     resp = await _create_table_bucket(request, state)
-    if lc.enabled and resp.status_code == 200 and lc.create_dwell_ms > 0 and bucket_name:
+    if lc.enabled and resp.status_code == 200 and bucket_name:
         tracker.set_state(bucket_name, "CREATING")
         tracker.schedule_transition(bucket_name, "ACTIVE", lc.create_dwell_ms)
     return resp

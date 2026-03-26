@@ -9,7 +9,7 @@ from fastapi import APIRouter, FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
-from lws.providers._shared.aws_capacity import AwsCapacityConfig
+from lws.providers._shared.aws_capacity import AwsCapacityConfig, check_capacity
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
@@ -94,6 +94,9 @@ class CognitoRouter:
 
     async def _sign_up(self, body: dict) -> Response:
         """Handle SignUp operation."""
+        cap_err = check_capacity(self._capacity, "TooManyRequestsException", 400)
+        if cap_err is not None:
+            return cap_err
         username = body.get("Username", "")
         password = body.get("Password", "")
         user_attributes = _parse_user_attributes(body.get("UserAttributes", []))
@@ -109,6 +112,9 @@ class CognitoRouter:
 
     async def _initiate_auth(self, body: dict) -> Response:
         """Handle InitiateAuth operation."""
+        cap_err = check_capacity(self._capacity, "TooManyRequestsException", 400)
+        if cap_err is not None:
+            return cap_err
         auth_flow = body.get("AuthFlow", "")
         auth_params = body.get("AuthParameters", {})
         username = auth_params.get("USERNAME", "")

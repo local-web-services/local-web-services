@@ -114,10 +114,11 @@ async def _handle_create_cluster(
     state.clusters[cluster_name] = cluster
 
     lc = tracker.config
-    if lc.enabled and lc.create_dwell_ms > 0:
+    if lc.enabled:
         tracker.set_state(cluster_name, "CREATING")
         tracker.schedule_transition(cluster_name, "ACTIVE", lc.create_dwell_ms)
-        cluster.status = "creating"
+        if lc.create_dwell_ms > 0:
+            cluster.status = "creating"
 
     return _json_response({"Cluster": _format_cluster(cluster)})
 

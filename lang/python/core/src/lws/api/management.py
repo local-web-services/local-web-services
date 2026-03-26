@@ -67,13 +67,14 @@ def _reset_chaos_configs(chaos_configs: dict[str, AwsChaosConfig] | None) -> Non
 
 
 def _reset_lifecycle_configs(lifecycle_configs: dict[str, ResourceLifecycleConfig] | None) -> None:
-    """Reset all lifecycle configs to their default (disabled) state."""
+    """Reset all lifecycle configs to their default (enabled, zero-dwell) state."""
     if lifecycle_configs is None:
         return
     for cfg in lifecycle_configs.values():
-        cfg.enabled = False
+        cfg.enabled = True
         cfg.create_dwell_ms = 0
         cfg.delete_dwell_ms = 0
+        cfg.modify_dwell_ms = 0
         cfg.reset_all_trackers()
 
 

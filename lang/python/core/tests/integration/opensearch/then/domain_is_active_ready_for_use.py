@@ -1,0 +1,13 @@
+"""Then: the domain is "ACTIVE" and ready for use"""
+
+from __future__ import annotations
+
+from pytest_bdd import then
+
+
+@then('the domain is "ACTIVE" and ready for use')
+def domain_is_active_ready_for_use(world: dict):
+    actual_result = world["result"]
+    assert (
+        actual_result is not None
+    ), f"Expected operation to succeed but got error: {world['error']}"

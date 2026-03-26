@@ -1,0 +1,10 @@
+"""Given: the table is not "DELETING" """
+
+from __future__ import annotations
+
+from pytest_bdd import given
+
+
+@given('the table is not "DELETING"')
+def table_is_not_deleting():
+    """No-op: in lws, tables are not in DELETING state by default."""

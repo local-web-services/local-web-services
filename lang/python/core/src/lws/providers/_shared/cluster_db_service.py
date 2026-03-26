@@ -389,7 +389,7 @@ def create_cluster_db_app(config: ClusterDBConfig) -> FastAPI:
                 f"lws: {config.display_name} operation '{action}' is not yet implemented",
             )
 
-        if action == "CreateDBCluster" and _lc.enabled and _lc.create_dwell_ms > 0:
+        if action == "CreateDBCluster" and _lc.enabled:
             return await _lifecycle_create_cluster(
                 handler, state, body, config, _lc, _cluster_tracker
             )
@@ -399,7 +399,7 @@ def create_cluster_db_app(config: ClusterDBConfig) -> FastAPI:
                 handler, state, body, config, _lc, _cluster_tracker
             )
 
-        if action == "CreateDBInstance" and _lc.enabled and _lc.create_dwell_ms > 0:
+        if action == "CreateDBInstance" and _lc.enabled:
             return await _lifecycle_create_instance(
                 handler, state, body, config, _lc, _instance_tracker
             )

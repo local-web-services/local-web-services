@@ -109,7 +109,7 @@ async def handle_create_function(
     _logger.info("Created Lambda function: %s (runtime=%s)", function_name, runtime)
 
     resp = _json_response(_format_function_config(func_config), 201)
-    if lifecycle.enabled and lifecycle.create_dwell_ms > 0:
+    if lifecycle.enabled:
         tracker.set_state(function_name, "CREATING")
         tracker.schedule_transition(function_name, "ACTIVE", lifecycle.create_dwell_ms)
     return resp
