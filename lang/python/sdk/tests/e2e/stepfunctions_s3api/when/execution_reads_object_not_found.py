@@ -22,14 +22,14 @@ def execution_reads_object_not_found(lws_session, world):
     except Exception:
         pass
     try:
-        StepfunctionsS3apiTestClient(lws_session)._sfn.update_state_machine(
+        lws_session.client("stepfunctions").update_state_machine(
             stateMachineArn=_sm_arn(),
             definition=_s3_get_object_definition(TEST_BUCKET, "nonexistent-key-1"),
         )
     except Exception:
         pass
     try:
-        resp = StepfunctionsS3apiTestClient(lws_session)._sfn.start_execution(
+        resp = lws_session.client("stepfunctions").start_execution(
             stateMachineArn=_sm_arn(), input=TEST_INPUT
         )
         world["result"] = resp

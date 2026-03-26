@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import StepfunctionsS3apiTestClient
 from ..constants import TEST_BODY, TEST_BUCKET, TEST_KEY
 
 
@@ -15,9 +14,7 @@ def object_exists_and_execution_succeeded(lws_session, world):
     assert (
         actual_error is expected_error
     ), f"Expected start_execution to succeed but got: {actual_error}"
-    actual_resp = StepfunctionsS3apiTestClient(lws_session)._s3.get_object(
-        Bucket=TEST_BUCKET, Key=TEST_KEY
-    )
+    actual_resp = lws_session.client("s3").get_object(Bucket=TEST_BUCKET, Key=TEST_KEY)
     actual_body = actual_resp["Body"].read()
     expected_body = TEST_BODY
     assert (

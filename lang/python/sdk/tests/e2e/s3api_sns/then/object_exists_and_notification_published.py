@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import S3apiSnsTestClient
 from ..constants import TEST_BUCKET, TEST_KEY
 
 
@@ -15,7 +14,7 @@ def object_exists_and_notification_published(lws_session, world):
     actual_error = world["error"]
     assert actual_error is expected_error, f"Expected put_object to succeed but got: {actual_error}"
     actual_objects = (
-        S3apiSnsTestClient(lws_session)._s3.list_objects_v2(Bucket=TEST_BUCKET).get("Contents", [])
+        lws_session.client("s3").list_objects_v2(Bucket=TEST_BUCKET).get("Contents", [])
     )
     actual_keys = [obj["Key"] for obj in actual_objects]
     assert (

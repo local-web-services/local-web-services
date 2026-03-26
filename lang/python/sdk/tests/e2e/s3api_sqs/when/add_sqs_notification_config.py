@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pytest_bdd import when
 
-from ..client import S3apiSqsTestClient
 from ..constants import TEST_BUCKET, TEST_QUEUE
 
 
@@ -12,7 +11,7 @@ from ..constants import TEST_BUCKET, TEST_QUEUE
 def add_sqs_notification_config(lws_session, world):
     queue_arn = f"arn:aws:sqs:us-east-1:000000000000:{TEST_QUEUE}"
     try:
-        world["result"] = S3apiSqsTestClient(lws_session)._s3.put_bucket_notification_configuration(
+        world["result"] = lws_session.client("s3").put_bucket_notification_configuration(
             Bucket=TEST_BUCKET,
             NotificationConfiguration={
                 "QueueConfigurations": [

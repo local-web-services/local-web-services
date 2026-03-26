@@ -10,7 +10,7 @@ from ..client import LambdaCognitoTestClient
 @then('the pool is "ACTIVE"')
 def pool_is_active_then(lws_session):
     pool_id = LambdaCognitoTestClient(lws_session).pool_id()
-    resp = LambdaCognitoTestClient(lws_session)._cognito.describe_user_pool(UserPoolId=pool_id)
+    resp = lws_session.client("cognito-idp").describe_user_pool(UserPoolId=pool_id)
     expected_statuses = ("Active", "Enabled")
     actual_status = resp["UserPool"]["Status"]
     assert (

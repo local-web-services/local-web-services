@@ -5,14 +5,13 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import EventsSnsTestClient
 from ..constants import TEST_TOPIC
 
 
 @when('an "SNS" topic is created')
 def create_topic(lws_session, world):
     try:
-        resp = EventsSnsTestClient(lws_session)._sns.create_topic(Name=TEST_TOPIC)
+        resp = lws_session.client("sns").create_topic(Name=TEST_TOPIC)
         world["result"] = resp
         world["error"] = None
     except (ClientError, Exception) as exc:

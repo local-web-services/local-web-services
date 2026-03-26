@@ -5,16 +5,13 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import CognitoEventsTestClient
 from ..constants import TEST_POOL
 
 
 @when("a Cognito user pool is created")
 def create_user_pool(lws_session, world):
     try:
-        world["result"] = CognitoEventsTestClient(lws_session)._cognito.create_user_pool(
-            PoolName=TEST_POOL
-        )
+        world["result"] = lws_session.client("cognito-idp").create_user_pool(PoolName=TEST_POOL)
         world["error"] = None
     except (ClientError, Exception) as exc:
         world["result"] = None

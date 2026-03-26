@@ -8,7 +8,6 @@ import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import S3apiLambdaTestClient
 from ..constants import TEST_BODY, TEST_BUCKET, TEST_KEY
 
 
@@ -17,9 +16,7 @@ def put_object_and_invoke_lambda(lws_session, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])
     try:
-        resp = S3apiLambdaTestClient(lws_session)._s3.put_object(
-            Bucket=TEST_BUCKET, Key=TEST_KEY, Body=TEST_BODY
-        )
+        resp = lws_session.client("s3").put_object(Bucket=TEST_BUCKET, Key=TEST_KEY, Body=TEST_BODY)
         world["result"] = resp
         world["error"] = None
     except (ClientError, Exception) as exc:

@@ -5,14 +5,13 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import SsmTestClient
 from ..constants import TEST_PARAM
 
 
 @when('multiple parameters are deleted from "SSM"')
 def delete_parameters(lws_session, world):
     try:
-        resp = SsmTestClient(lws_session).delete_parameters(Names=[TEST_PARAM])
+        resp = lws_session.client("ssm").delete_parameters(Names=[TEST_PARAM])
         if resp.get("InvalidParameters"):
             raise ClientError(
                 {

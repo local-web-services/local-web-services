@@ -16,9 +16,7 @@ def request_accepted_message_available(lws_session, world):
         actual_status == expected_status
     ), f"Expected request status {expected_status!r} but got {actual_status!r}"
     q_url = ApigatewaySqsTestClient(lws_session).queue_url(TEST_QUEUE)
-    recv_resp = ApigatewaySqsTestClient(lws_session)._sqs.receive_message(
-        QueueUrl=q_url, MaxNumberOfMessages=1
-    )
+    recv_resp = lws_session.client("sqs").receive_message(QueueUrl=q_url, MaxNumberOfMessages=1)
     actual_messages = recv_resp.get("Messages", [])
     expected_count = 1
     actual_count = len(actual_messages)

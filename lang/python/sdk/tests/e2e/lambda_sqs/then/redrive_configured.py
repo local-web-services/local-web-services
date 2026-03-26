@@ -11,7 +11,7 @@ from ..client import LambdaSqsTestClient
 def redrive_configured(lws_session):
     import json
 
-    resp = LambdaSqsTestClient(lws_session)._sqs.get_queue_attributes(
+    resp = lws_session.client("sqs").get_queue_attributes(
         QueueUrl=LambdaSqsTestClient(lws_session).queue_url(), AttributeNames=["RedrivePolicy"]
     )
     actual_policy = resp["Attributes"].get("RedrivePolicy", "")

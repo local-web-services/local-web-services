@@ -16,13 +16,13 @@ def execution_publishes_to_topic(lws_session, world):
     except Exception:
         pass
     try:
-        StepfunctionsSnsTestClient(lws_session)._sfn.update_state_machine(
+        lws_session.client("stepfunctions").update_state_machine(
             stateMachineArn=_sm_arn(), definition=_sns_task_definition(TEST_TOPIC)
         )
     except Exception:
         pass
     try:
-        resp = StepfunctionsSnsTestClient(lws_session)._sfn.start_execution(
+        resp = lws_session.client("stepfunctions").start_execution(
             stateMachineArn=_sm_arn(), input=TEST_INPUT
         )
         world["result"] = resp

@@ -4,14 +4,13 @@ from __future__ import annotations
 
 from pytest_bdd import when
 
-from ..client import S3apiSnsTestClient
 from ..constants import TEST_BUCKET, _topic_arn
 
 
 @when('an "SNS" notification configuration is added to the bucket')
 def add_sns_notification_config(lws_session, world):
     try:
-        world["result"] = S3apiSnsTestClient(lws_session)._s3.put_bucket_notification_configuration(
+        world["result"] = lws_session.client("s3").put_bucket_notification_configuration(
             Bucket=TEST_BUCKET,
             NotificationConfiguration={
                 "TopicConfigurations": [

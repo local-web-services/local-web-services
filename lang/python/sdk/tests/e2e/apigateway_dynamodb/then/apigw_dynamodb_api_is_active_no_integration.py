@@ -12,7 +12,7 @@ from ..constants import TEST_API
 def apigw_dynamodb_api_is_active_no_integration(lws_session):
     api_id = ApigatewayDynamodbTestClient(lws_session).get_api_id()
     assert api_id is not None, f"Expected REST API '{TEST_API}' to exist but it was not found"
-    resp = ApigatewayDynamodbTestClient(lws_session)._apigateway.get_rest_api(restApiId=api_id)
+    resp = lws_session.client("apigateway").get_rest_api(restApiId=api_id)
     actual_name = resp.get("name", "")
     expected_name = TEST_API
     assert (

@@ -16,14 +16,14 @@ def execution_gets_item_not_found(lws_session, world):
     except Exception:
         pass
     try:
-        StepfunctionsDynamodbTestClient(lws_session)._sfn.update_state_machine(
+        lws_session.client("stepfunctions").update_state_machine(
             stateMachineArn=_sm_arn(),
             definition=_dynamodb_get_item_definition(TEST_TABLE, TEST_PK, "nonexistent-key-1"),
         )
     except Exception:
         pass
     try:
-        resp = StepfunctionsDynamodbTestClient(lws_session)._sfn.start_execution(
+        resp = lws_session.client("stepfunctions").start_execution(
             stateMachineArn=_sm_arn(), input=TEST_INPUT
         )
         world["result"] = resp

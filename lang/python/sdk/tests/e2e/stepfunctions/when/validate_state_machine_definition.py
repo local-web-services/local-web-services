@@ -6,7 +6,6 @@ import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import StepfunctionsTestClient
 from ..constants import PASS_DEFINITION, TEST_SM, _sm_arn
 
 
@@ -19,7 +18,7 @@ def validate_state_machine_definition(lws_session, world):
     sm_name = world.get("state_machine_name", TEST_SM)
     try:
         status = (
-            StepfunctionsTestClient(lws_session)
+            lws_session.client("stepfunctions")
             .describe_state_machine(stateMachineArn=_sm_arn(sm_name))
             .get("status", "ACTIVE")
         )
@@ -30,7 +29,7 @@ def validate_state_machine_definition(lws_session, world):
             "ValidateStateMachineDefinition does not accept stateMachineArn; cannot test lifecycle check via this SDK call"  # noqa: E501
         )
     try:
-        resp = StepfunctionsTestClient(lws_session).validate_state_machine_definition(
+        resp = lws_session.client("stepfunctions").validate_state_machine_definition(
             definition=PASS_DEFINITION
         )
         world["result"] = resp

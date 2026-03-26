@@ -11,14 +11,14 @@ from ..client import EventsSqsTestClient
 @when('a message is consumed from the "SQS" queue')
 def consume_message_from_sqs(lws_session, world):
     try:
-        resp = EventsSqsTestClient(lws_session)._sqs.receive_message(
+        resp = lws_session.client("sqs").receive_message(
             QueueUrl=EventsSqsTestClient(lws_session).queue_url(),
             MaxNumberOfMessages=1,
             WaitTimeSeconds=0,
         )
         msgs = resp.get("Messages", [])
         if msgs:
-            EventsSqsTestClient(lws_session)._sqs.delete_message(
+            lws_session.client("sqs").delete_message(
                 QueueUrl=EventsSqsTestClient(lws_session).queue_url(),
                 ReceiptHandle=msgs[0]["ReceiptHandle"],
             )

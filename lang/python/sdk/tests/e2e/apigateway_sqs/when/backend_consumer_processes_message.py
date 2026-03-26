@@ -13,13 +13,11 @@ from ..constants import TEST_QUEUE
 def backend_consumer_processes_message(lws_session, world):
     try:
         q_url = ApigatewaySqsTestClient(lws_session).queue_url(TEST_QUEUE)
-        recv_resp = ApigatewaySqsTestClient(lws_session)._sqs.receive_message(
-            QueueUrl=q_url, MaxNumberOfMessages=1
-        )
+        recv_resp = lws_session.client("sqs").receive_message(QueueUrl=q_url, MaxNumberOfMessages=1)
         messages = recv_resp.get("Messages", [])
         if messages:
             msg = messages[0]
-            ApigatewaySqsTestClient(lws_session)._sqs.delete_message(
+            lws_session.client("sqs").delete_message(
                 QueueUrl=q_url, ReceiptHandle=msg["ReceiptHandle"]
             )
             world["result"] = {"deleted": True}

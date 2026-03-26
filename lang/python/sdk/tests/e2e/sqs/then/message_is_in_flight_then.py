@@ -9,7 +9,7 @@ from ..client import SqsTestClient
 
 @then('the message is "IN_FLIGHT"')
 def message_is_in_flight_then(lws_session):
-    client = SqsTestClient(lws_session).sqs()
+    client = SqsTestClient(lws_session)
     resp = client.get_queue_attributes(
         QueueUrl=SqsTestClient(lws_session).queue_url(),
         AttributeNames=["ApproximateNumberOfMessagesNotVisible"],

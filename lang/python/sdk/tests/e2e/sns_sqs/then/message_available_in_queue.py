@@ -12,7 +12,7 @@ from ..constants import TEST_MESSAGE, TEST_QUEUE
 def message_available_in_queue(lws_session):
     url = SnsSqsTestClient(lws_session).queue_url()
     expected_message = TEST_MESSAGE
-    resp = SnsSqsTestClient(lws_session)._sqs.receive_message(
+    resp = lws_session.client("sqs").receive_message(
         QueueUrl=url, MaxNumberOfMessages=1, WaitTimeSeconds=1
     )
     actual_messages = resp.get("Messages", [])

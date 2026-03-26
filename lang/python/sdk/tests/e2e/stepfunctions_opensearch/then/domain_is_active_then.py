@@ -4,15 +4,12 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import StepfunctionsOpensearchTestClient
 from ..constants import TEST_DOMAIN
 
 
 @then('the domain is "ACTIVE"')
 def domain_is_active_then(lws_session):
-    resp = StepfunctionsOpensearchTestClient(lws_session)._opensearch.describe_domain(
-        DomainName=TEST_DOMAIN
-    )
+    resp = lws_session.client("opensearch").describe_domain(DomainName=TEST_DOMAIN)
     expected_processing = False
     actual_processing = resp["DomainStatus"]["Processing"]
     assert (

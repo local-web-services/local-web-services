@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import EventsTestClient
-
 
 @then('every event bus has a valid status ("ACTIVE" or "DELETED")')
 def every_event_bus_has_valid_status(lws_session):
@@ -15,7 +13,7 @@ def every_event_bus_has_valid_status(lws_session):
     returned; deleted buses are simply absent from the list).  The invariant is
     trivially satisfied.
     """
-    resp = EventsTestClient(lws_session).list_event_buses()
+    resp = lws_session.client("events").list_event_buses()
     expected_statuses = {"ACTIVE", "DELETED"}
     for bus in resp.get("EventBuses", []):
         actual_status = bus.get("State", "ACTIVE")

@@ -6,7 +6,6 @@ import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import ElasticacheTestClient
 from ..constants import TEST_SNAPSHOT
 
 
@@ -14,7 +13,7 @@ from ..constants import TEST_SNAPSHOT
 def create_cluster_from_snapshot(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:
-        world["result"] = ElasticacheTestClient(lws_session).create_cache_cluster(
+        world["result"] = lws_session.client("elasticache").create_cache_cluster(
             CacheClusterId="e2e-test-cluster-2",
             CacheNodeType="cache.t3.micro",
             Engine="redis",

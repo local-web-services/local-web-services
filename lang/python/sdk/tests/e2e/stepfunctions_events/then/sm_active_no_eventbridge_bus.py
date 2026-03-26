@@ -4,15 +4,12 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import StepfunctionsEventsTestClient
 from ..constants import _sm_arn
 
 
 @then('the state machine is "ACTIVE" with no EventBridge bus configured')
 def sm_active_no_eventbridge_bus(lws_session):
-    resp = StepfunctionsEventsTestClient(lws_session)._sfn.describe_state_machine(
-        stateMachineArn=_sm_arn()
-    )
+    resp = lws_session.client("stepfunctions").describe_state_machine(stateMachineArn=_sm_arn())
     expected_status = "ACTIVE"
     actual_status = resp.get("status", "")
     assert (

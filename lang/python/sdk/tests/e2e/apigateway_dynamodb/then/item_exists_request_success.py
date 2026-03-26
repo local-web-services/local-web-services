@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import ApigatewayDynamodbTestClient
 from ..constants import _ITEM_KEY, TEST_TABLE
 
 
@@ -15,7 +14,7 @@ def item_exists_request_success(lws_session, world):
     assert (
         actual_status == expected_status
     ), f"Expected request status {expected_status!r} but got {actual_status!r}"
-    resp = ApigatewayDynamodbTestClient(lws_session)._dynamodb.get_item(
+    resp = lws_session.client("dynamodb").get_item(
         TableName=TEST_TABLE, Key={_ITEM_KEY: {"S": "e2e-item-1"}}
     )
     actual_item = resp.get("Item")

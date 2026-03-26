@@ -6,7 +6,6 @@ import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import MemorydbTestClient
 from ..constants import TEST_CLUSTER
 
 
@@ -14,7 +13,7 @@ from ..constants import TEST_CLUSTER
 def delete_cluster(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:
-        world["result"] = MemorydbTestClient(lws_session).delete_cluster(ClusterName=TEST_CLUSTER)
+        world["result"] = lws_session.client("memorydb").delete_cluster(ClusterName=TEST_CLUSTER)
         world["error"] = None
     except (ClientError, Exception) as exc:
         world["result"] = None

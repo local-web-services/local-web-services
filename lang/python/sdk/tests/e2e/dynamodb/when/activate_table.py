@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pytest_bdd import when
 
-from ..client import DynamodbTestClient
 from ..constants import TEST_TABLE
 
 
@@ -15,7 +14,7 @@ def activate_table(lws_session, world):
     """
     import time
 
-    client = DynamodbTestClient(lws_session).dynamo()
+    client = lws_session.client("dynamodb")
     all_tables = client.list_tables()["TableNames"]
     if TEST_TABLE not in all_tables:
         world["error"] = Exception(

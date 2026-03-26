@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import GlacierSnsTestClient
 from ..constants import _topic_arn
 
 
 @then('the topic is "ACTIVE"')
 def glacier_sns_topic_is_active_then(lws_session):
-    resp = GlacierSnsTestClient(lws_session)._sns.list_topics()
+    resp = lws_session.client("sns").list_topics()
     actual_arns = [t["TopicArn"] for t in resp.get("Topics", [])]
     expected_arn = _topic_arn()
     assert (

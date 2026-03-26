@@ -5,14 +5,13 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import EventsTestClient
 from ..constants import TEST_BUS
 
 
 @when("an event bus is described")
 def describe_event_bus(lws_session, world):
     try:
-        resp = EventsTestClient(lws_session).describe_event_bus(Name=TEST_BUS)
+        resp = lws_session.client("events").describe_event_bus(Name=TEST_BUS)
         world["result"] = resp
         world["error"] = None
     except (ClientError, Exception) as exc:

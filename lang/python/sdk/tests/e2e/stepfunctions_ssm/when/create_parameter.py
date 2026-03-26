@@ -5,14 +5,13 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import StepfunctionsSsmTestClient
 from ..constants import TEST_PARAM, TEST_VALUE
 
 
 @when('a parameter is created in "SSM" Parameter Store')
 def create_parameter(lws_session, world):
     try:
-        world["result"] = StepfunctionsSsmTestClient(lws_session)._ssm.put_parameter(
+        world["result"] = lws_session.client("ssm").put_parameter(
             Name=TEST_PARAM, Value=TEST_VALUE, Type="String"
         )
         world["error"] = None

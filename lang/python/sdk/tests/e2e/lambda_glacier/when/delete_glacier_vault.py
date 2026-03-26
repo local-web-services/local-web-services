@@ -5,16 +5,13 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import LambdaGlacierTestClient
 from ..constants import TEST_VAULT
 
 
 @when("a Glacier vault is deleted")
 def delete_glacier_vault(lws_session, world):
     try:
-        LambdaGlacierTestClient(lws_session)._glacier.delete_vault(
-            accountId="-", vaultName=TEST_VAULT
-        )
+        lws_session.client("glacier").delete_vault(accountId="-", vaultName=TEST_VAULT)
         world["result"] = {"vaultName": TEST_VAULT}
         world["error"] = None
     except (ClientError, Exception) as exc:

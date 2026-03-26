@@ -9,7 +9,7 @@ from ..client import LambdaSqsProducerTestClient
 
 @then('the queue is "ACTIVE"')
 def queue_is_active_then(lws_session):
-    resp = LambdaSqsProducerTestClient(lws_session)._sqs.get_queue_attributes(
+    resp = lws_session.client("sqs").get_queue_attributes(
         QueueUrl=LambdaSqsProducerTestClient(lws_session).queue_url(), AttributeNames=["QueueArn"]
     )
     actual_arn = resp["Attributes"].get("QueueArn", "")

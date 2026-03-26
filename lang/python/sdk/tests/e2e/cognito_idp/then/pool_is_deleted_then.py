@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import CognitoIdpTestClient
 from ..constants import TEST_POOL_NAME
 
 
 @then('the user pool is "DELETED"')
 def pool_is_deleted_then(lws_session):
-    client = CognitoIdpTestClient(lws_session).cognito()
+    client = lws_session.client("cognito-idp")
     resp = client.list_user_pools(MaxResults=10)
     actual_pools = [p["Name"] for p in resp.get("UserPools", [])]
     assert (

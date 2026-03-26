@@ -15,7 +15,7 @@ def lambda_s3tables_create_table(lws_session, world):
         if not LambdaS3tablesTestClient(lws_session).table_bucket_exists():
             LambdaS3tablesTestClient(lws_session).create_table_bucket()
         LambdaS3tablesTestClient(lws_session).create_namespace()
-        resp = LambdaS3tablesTestClient(lws_session)._s3tables.create_table(
+        resp = lws_session.client("s3tables").create_table(
             tableBucketARN=_table_bucket_arn(),
             namespace=TEST_NAMESPACE,
             name=TEST_TABLE,

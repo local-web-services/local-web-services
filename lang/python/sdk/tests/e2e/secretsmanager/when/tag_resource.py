@@ -5,14 +5,13 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import SecretsmanagerTestClient
 from ..constants import TEST_SECRET, TEST_TAG_KEY, TEST_TAG_VALUE
 
 
 @when("tags are added to an active secret")
 def tag_resource(lws_session, world):
     try:
-        desc = SecretsmanagerTestClient(lws_session).describe_secret(SecretId=TEST_SECRET)
+        desc = lws_session.client("secretsmanager").describe_secret(SecretId=TEST_SECRET)
         if "DeletedDate" in desc:
             raise ClientError(
                 {
@@ -23,7 +22,7 @@ def tag_resource(lws_session, world):
                 },
                 "TagResource",
             )
-        resp = SecretsmanagerTestClient(lws_session).tag_resource(
+        resp = lws_session.client("secretsmanager").tag_resource(
             SecretId=TEST_SECRET, Tags=[{"Key": TEST_TAG_KEY, "Value": TEST_TAG_VALUE}]
         )
         world["result"] = resp

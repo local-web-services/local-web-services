@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import SnsTestClient
 from ..constants import TEST_TOPIC
 
 
 @then('the topic is "DELETED" and its subscriptions are removed')
 def topic_is_deleted_and_subscriptions_removed_then(lws_session):
-    client = SnsTestClient(lws_session).sns()
+    client = lws_session.client("sns")
     resp = client.list_topics()
     actual_arns = [t["TopicArn"] for t in resp.get("Topics", [])]
     assert not any(

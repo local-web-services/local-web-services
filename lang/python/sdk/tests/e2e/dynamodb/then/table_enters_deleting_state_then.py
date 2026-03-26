@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import DynamodbTestClient
 from ..constants import TEST_TABLE
 
 
@@ -15,7 +14,7 @@ def table_enters_deleting_state_then(lws_session, world):
     assert (
         actual_error is expected_error
     ), f"Expected delete operation to succeed but got: {actual_error}"
-    client = DynamodbTestClient(lws_session).dynamo()
+    client = lws_session.client("dynamodb")
     resp = client.list_tables()
     actual_tables = resp.get("TableNames", [])
     assert (

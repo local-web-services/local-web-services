@@ -4,15 +4,12 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import LambdaGlacierTestClient
 from ..constants import TEST_VAULT
 
 
 @then('the vault "EXISTS"')
 def vault_exists_then(lws_session):
-    resp = LambdaGlacierTestClient(lws_session)._glacier.describe_vault(
-        accountId="-", vaultName=TEST_VAULT
-    )
+    resp = lws_session.client("glacier").describe_vault(accountId="-", vaultName=TEST_VAULT)
     actual_name = resp.get("VaultName", "")
     expected_name = TEST_VAULT
     assert (

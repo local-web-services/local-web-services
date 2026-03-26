@@ -5,14 +5,13 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import LambdaTestClient
 from ..constants import TEST_FUNC
 
 
 @when("reserved concurrency is set for a function")
 def set_reserved_concurrency(lws_session, world):
     try:
-        resp = LambdaTestClient(lws_session).put_function_concurrency(
+        resp = lws_session.client("lambda").put_function_concurrency(
             FunctionName=TEST_FUNC, ReservedConcurrentExecutions=5
         )
         world["result"] = resp

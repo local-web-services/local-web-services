@@ -6,7 +6,6 @@ import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import ElasticacheTestClient
 from ..constants import TEST_PARAMETER_GROUP
 
 
@@ -14,7 +13,7 @@ from ..constants import TEST_PARAMETER_GROUP
 def delete_parameter_group(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:
-        world["result"] = ElasticacheTestClient(lws_session).delete_cache_parameter_group(
+        world["result"] = lws_session.client("elasticache").delete_cache_parameter_group(
             CacheParameterGroupName=TEST_PARAMETER_GROUP
         )
         world["error"] = None

@@ -11,9 +11,7 @@ from ..constants import TEST_QUEUE
 @then('the queue is "ACTIVE"')
 def queue_is_active_then(lws_session):
     url = S3apiSqsTestClient(lws_session).queue_url()
-    resp = S3apiSqsTestClient(lws_session)._sqs.get_queue_attributes(
-        QueueUrl=url, AttributeNames=["All"]
-    )
+    resp = lws_session.client("sqs").get_queue_attributes(QueueUrl=url, AttributeNames=["All"])
     assert (
         resp.get("Attributes") is not None
     ), f"Expected queue '{TEST_QUEUE}' to be ACTIVE but got no attributes"

@@ -8,7 +8,6 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import EventsLambdaTestClient
 from ..constants import EVENT_PATTERN, TEST_BUS, TEST_FUNC, TEST_RULE
 
 
@@ -17,10 +16,10 @@ from ..constants import EVENT_PATTERN, TEST_BUS, TEST_FUNC, TEST_RULE
 )
 def create_eventbridge_rule(lws_session, world):
     try:
-        EventsLambdaTestClient(lws_session)._events.put_rule(
+        lws_session.client("events").put_rule(
             Name=TEST_RULE, EventBusName=TEST_BUS, EventPattern=EVENT_PATTERN, State="ENABLED"
         )
-        resp = EventsLambdaTestClient(lws_session)._events.put_targets(
+        resp = lws_session.client("events").put_targets(
             Rule=TEST_RULE,
             EventBusName=TEST_BUS,
             Targets=[

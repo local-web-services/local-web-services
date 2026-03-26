@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import DynamodbLambdaTestClient
-
 
 @then('the event source mapping is "ENABLED" and will poll the stream for change records')
 def esm_is_enabled(lws_session, world):
@@ -13,7 +11,7 @@ def esm_is_enabled(lws_session, world):
     assert (
         actual_error is None
     ), f"Expected event source mapping creation to succeed but got: {actual_error}"
-    resp = DynamodbLambdaTestClient(lws_session)._lambda.list_event_source_mappings()
+    resp = lws_session.client("lambda").list_event_source_mappings()
     actual_mappings = resp.get("EventSourceMappings", [])
     expected_min_count = 1
     assert (

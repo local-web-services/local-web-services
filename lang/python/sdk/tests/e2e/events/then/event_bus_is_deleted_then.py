@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import EventsTestClient
 from ..constants import TEST_BUS
 
 
 @then('the event bus is "DELETED"')
 def event_bus_is_deleted_then(lws_session):
-    resp = EventsTestClient(lws_session).list_event_buses()
+    resp = lws_session.client("events").list_event_buses()
     actual_names = [b["Name"] for b in resp.get("EventBuses", [])]
     assert (
         TEST_BUS not in actual_names

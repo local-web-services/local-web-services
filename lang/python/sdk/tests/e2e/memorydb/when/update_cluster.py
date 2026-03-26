@@ -6,7 +6,6 @@ import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import MemorydbTestClient
 from ..constants import TEST_CLUSTER
 
 
@@ -14,7 +13,7 @@ from ..constants import TEST_CLUSTER
 def update_cluster(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:
-        world["result"] = MemorydbTestClient(lws_session).update_cluster(
+        world["result"] = lws_session.client("memorydb").update_cluster(
             ClusterName=TEST_CLUSTER, Description="e2e test update"
         )
         world["error"] = None

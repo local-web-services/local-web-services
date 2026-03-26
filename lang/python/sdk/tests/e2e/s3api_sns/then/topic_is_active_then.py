@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import S3apiSnsTestClient
 from ..constants import _topic_arn
 
 
 @then('the topic is "ACTIVE"')
 def topic_is_active_then(lws_session):
-    resp = S3apiSnsTestClient(lws_session)._sns.list_topics()
+    resp = lws_session.client("sns").list_topics()
     actual_arns = [t["TopicArn"] for t in resp.get("Topics", [])]
     expected_arn = _topic_arn()
     assert (

@@ -4,16 +4,13 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import EventsStepfunctionsTestClient
 from ..constants import _sm_arn
 
 
 @then('the state machine is "ACTIVE"')
 def sm_is_active_then(lws_session, world):
     sm_arn = world.get("state_machine_arn", _sm_arn())
-    resp = EventsStepfunctionsTestClient(lws_session)._sfn.describe_state_machine(
-        stateMachineArn=sm_arn
-    )
+    resp = lws_session.client("stepfunctions").describe_state_machine(stateMachineArn=sm_arn)
     expected_status = "ACTIVE"
     actual_status = resp.get("status", "")
     assert (

@@ -5,7 +5,6 @@ from __future__ import annotations
 import pytest
 from pytest_bdd import when
 
-from ..client import S3apiSnsTestClient
 from ..constants import TEST_BODY, TEST_BUCKET, TEST_KEY
 
 
@@ -16,7 +15,7 @@ def put_object_with_sns_notification(lws_session, world):
             "lws uses fire-and-forget notification delivery: put_object always succeeds even when the notification target topic has been deleted"  # noqa: E501
         )
     try:
-        world["result"] = S3apiSnsTestClient(lws_session)._s3.put_object(
+        world["result"] = lws_session.client("s3").put_object(
             Bucket=TEST_BUCKET, Key=TEST_KEY, Body=TEST_BODY
         )
         world["error"] = None

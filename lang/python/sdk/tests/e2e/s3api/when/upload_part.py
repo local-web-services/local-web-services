@@ -5,14 +5,13 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import S3apiTestClient
 from ..constants import TEST_BODY, TEST_BUCKET, TEST_KEY
 
 
 @when("a part is uploaded for a multipart upload")
 def upload_part(lws_session, world):
     try:
-        part_resp = S3apiTestClient(lws_session).upload_part(
+        part_resp = lws_session.client("s3").upload_part(
             Bucket=TEST_BUCKET,
             Key=TEST_KEY,
             UploadId=world.get("upload_id", "invalid"),

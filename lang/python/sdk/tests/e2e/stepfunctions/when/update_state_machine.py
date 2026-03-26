@@ -5,7 +5,6 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import StepfunctionsTestClient
 from ..constants import TEST_SM, UPDATED_DEFINITION, _sm_arn
 
 
@@ -13,7 +12,7 @@ from ..constants import TEST_SM, UPDATED_DEFINITION, _sm_arn
 def update_state_machine(lws_session, world):
     try:
         sm_name = world.get("state_machine_name", TEST_SM)
-        resp = StepfunctionsTestClient(lws_session).update_state_machine(
+        resp = lws_session.client("stepfunctions").update_state_machine(
             stateMachineArn=_sm_arn(sm_name), definition=UPDATED_DEFINITION
         )
         world["result"] = resp

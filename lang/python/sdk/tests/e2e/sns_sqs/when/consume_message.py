@@ -13,16 +13,12 @@ from ..constants import TEST_QUEUE
 def consume_message(lws_session, world):
     try:
         url = SnsSqsTestClient(lws_session).queue_url()
-        resp = SnsSqsTestClient(lws_session)._sqs.receive_message(
-            QueueUrl=url, MaxNumberOfMessages=1
-        )
+        resp = lws_session.client("sqs").receive_message(QueueUrl=url, MaxNumberOfMessages=1)
         messages = resp.get("Messages", [])
         if not messages:
             raise ValueError(f"No messages available in queue '{TEST_QUEUE}'")
         receipt_handle = messages[0]["ReceiptHandle"]
-        SnsSqsTestClient(lws_session)._sqs.delete_message(
-            QueueUrl=url, ReceiptHandle=receipt_handle
-        )
+        lws_session.client("sqs").delete_message(QueueUrl=url, ReceiptHandle=receipt_handle)
         world["result"] = resp
         world["error"] = None
     except (ClientError, Exception) as exc:

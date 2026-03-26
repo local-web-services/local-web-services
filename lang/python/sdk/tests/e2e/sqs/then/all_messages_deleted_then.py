@@ -9,7 +9,7 @@ from ..client import SqsTestClient
 
 @then('all messages in the queue are "DELETED"')
 def all_messages_deleted_then(lws_session):
-    client = SqsTestClient(lws_session).sqs()
+    client = SqsTestClient(lws_session)
     resp = client.get_queue_attributes(
         QueueUrl=SqsTestClient(lws_session).queue_url(),
         AttributeNames=["ApproximateNumberOfMessages"],

@@ -17,7 +17,7 @@ def message_available_and_execution_succeeded(lws_session, world):
         actual_error is expected_error
     ), f"Expected start_execution to succeed but got: {actual_error}"
     url = StepfunctionsSqsTestClient(lws_session).queue_url()
-    resp = StepfunctionsSqsTestClient(lws_session)._sqs.receive_message(
+    resp = lws_session.client("sqs").receive_message(
         QueueUrl=url, MaxNumberOfMessages=1, WaitTimeSeconds=1
     )
     actual_messages = resp.get("Messages", [])

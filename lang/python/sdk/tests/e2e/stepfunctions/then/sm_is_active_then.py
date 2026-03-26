@@ -4,14 +4,13 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import StepfunctionsTestClient
 from ..constants import TEST_SM, _sm_arn
 
 
 @then('the state machine is "ACTIVE"')
 def sm_is_active_then(lws_session, world):
     sm_name = world.get("state_machine_name", TEST_SM)
-    resp = StepfunctionsTestClient(lws_session).describe_state_machine(
+    resp = lws_session.client("stepfunctions").describe_state_machine(
         stateMachineArn=_sm_arn(sm_name)
     )
     expected_status = "ACTIVE"

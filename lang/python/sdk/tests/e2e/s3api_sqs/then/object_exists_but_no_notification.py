@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import S3apiSqsTestClient
 from ..constants import TEST_BUCKET, TEST_KEY
 
 
@@ -16,7 +15,7 @@ def object_exists_but_no_notification(lws_session, world):
         actual_error is expected_error
     ), f"Expected put_object to succeed (even without notification delivery) but got: {actual_error}"  # noqa: E501
     actual_objects = (
-        S3apiSqsTestClient(lws_session)._s3.list_objects_v2(Bucket=TEST_BUCKET).get("Contents", [])
+        lws_session.client("s3").list_objects_v2(Bucket=TEST_BUCKET).get("Contents", [])
     )
     expected_key = TEST_KEY
     actual_keys = [obj["Key"] for obj in actual_objects]

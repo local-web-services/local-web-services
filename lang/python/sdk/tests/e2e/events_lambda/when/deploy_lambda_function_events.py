@@ -5,14 +5,13 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import EventsLambdaTestClient
 from ..constants import ROLE_ARN, TEST_FUNC
 
 
 @when("a Lambda function is deployed")
 def deploy_lambda_function_events(lws_session, world):
     try:
-        resp = EventsLambdaTestClient(lws_session)._lambda.create_function(
+        resp = lws_session.client("lambda").create_function(
             FunctionName=TEST_FUNC,
             Runtime="python3.12",
             Role=ROLE_ARN,

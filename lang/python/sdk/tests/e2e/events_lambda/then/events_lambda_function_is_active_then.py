@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import EventsLambdaTestClient
 from ..constants import TEST_FUNC
 
 
 @then('the function is "ACTIVE"')
 def events_lambda_function_is_active_then(lws_session):
-    resp = EventsLambdaTestClient(lws_session)._lambda.get_function(FunctionName=TEST_FUNC)
+    resp = lws_session.client("lambda").get_function(FunctionName=TEST_FUNC)
     expected_state = "Active"
     actual_state = resp["Configuration"].get("State", "")
     assert (

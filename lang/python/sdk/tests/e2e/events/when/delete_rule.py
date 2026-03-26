@@ -5,14 +5,13 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import EventsTestClient
 from ..constants import TEST_BUS, TEST_RULE
 
 
 @when("an EventBridge rule is deleted")
 def delete_rule(lws_session, world):
     try:
-        resp = EventsTestClient(lws_session).delete_rule(Name=TEST_RULE, EventBusName=TEST_BUS)
+        resp = lws_session.client("events").delete_rule(Name=TEST_RULE, EventBusName=TEST_BUS)
         world["result"] = resp
         world["error"] = None
     except (ClientError, Exception) as exc:

@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import EventsSnsTestClient
 from ..constants import TEST_TOPIC
 
 
 @then('the topic is "ACTIVE"')
 def topic_is_active_then(lws_session):
-    resp = EventsSnsTestClient(lws_session)._sns.list_topics()
+    resp = lws_session.client("sns").list_topics()
     actual_arns = [t["TopicArn"] for t in resp.get("Topics", [])]
     assert any(
         TEST_TOPIC in arn for arn in actual_arns

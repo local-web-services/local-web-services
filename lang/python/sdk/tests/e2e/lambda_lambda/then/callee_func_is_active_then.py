@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import LambdaLambdaTestClient
 from ..constants import TEST_CALLEE
 
 
 @then('the callee function is "ACTIVE"')
 def callee_func_is_active_then(lws_session):
-    resp = LambdaLambdaTestClient(lws_session).get_function(FunctionName=TEST_CALLEE)
+    resp = lws_session.client("lambda").get_function(FunctionName=TEST_CALLEE)
     expected_state = "Active"
     actual_state = resp["Configuration"]["State"]
     assert (

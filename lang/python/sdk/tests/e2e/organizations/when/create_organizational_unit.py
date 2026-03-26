@@ -5,7 +5,6 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import OrganizationsTestClient
 from ..constants import TEST_OU_NAME
 
 
@@ -13,7 +12,7 @@ from ..constants import TEST_OU_NAME
 def create_organizational_unit(lws_session, world):
     try:
         parent_id = world.get("parent_id") or world.get("root_id")
-        resp = OrganizationsTestClient(lws_session).create_organizational_unit(
+        resp = lws_session.client("organizations").create_organizational_unit(
             ParentId=parent_id, Name=TEST_OU_NAME
         )
         world["result"] = resp

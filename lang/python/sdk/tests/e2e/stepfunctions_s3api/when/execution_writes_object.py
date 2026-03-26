@@ -23,14 +23,14 @@ def execution_writes_object(lws_session, world):
     except Exception:
         pass
     try:
-        StepfunctionsS3apiTestClient(lws_session)._sfn.update_state_machine(
+        lws_session.client("stepfunctions").update_state_machine(
             stateMachineArn=_sm_arn(),
             definition=_s3_put_object_definition(TEST_BUCKET, TEST_KEY, TEST_BODY.decode()),
         )
     except Exception:
         pass
     try:
-        resp = StepfunctionsS3apiTestClient(lws_session)._sfn.start_execution(
+        resp = lws_session.client("stepfunctions").start_execution(
             stateMachineArn=_sm_arn(), input=TEST_INPUT
         )
         world["result"] = resp

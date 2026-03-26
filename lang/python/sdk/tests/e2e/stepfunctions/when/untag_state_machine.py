@@ -5,7 +5,6 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import StepfunctionsTestClient
 from ..constants import TEST_SM, TEST_TAG_KEY, _sm_arn
 
 
@@ -13,7 +12,7 @@ from ..constants import TEST_SM, TEST_TAG_KEY, _sm_arn
 def untag_state_machine(lws_session, world):
     try:
         sm_name = world.get("state_machine_name", TEST_SM)
-        resp = StepfunctionsTestClient(lws_session).untag_resource(
+        resp = lws_session.client("stepfunctions").untag_resource(
             resourceArn=_sm_arn(sm_name), tagKeys=[TEST_TAG_KEY]
         )
         world["result"] = resp

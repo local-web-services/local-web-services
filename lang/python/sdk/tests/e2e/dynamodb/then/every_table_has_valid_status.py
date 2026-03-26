@@ -4,12 +4,10 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import DynamodbTestClient
-
 
 @then('every table has a valid status ("CREATING", "ACTIVE", or "DELETED")')
 def every_table_has_valid_status(lws_session):
-    client = DynamodbTestClient(lws_session).dynamo()
+    client = lws_session.client("dynamodb")
     resp = client.list_tables()
     actual_table_names = resp.get("TableNames", [])
     expected_valid_statuses = ("CREATING", "ACTIVE")

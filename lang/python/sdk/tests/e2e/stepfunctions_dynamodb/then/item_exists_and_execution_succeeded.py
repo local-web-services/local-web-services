@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import StepfunctionsDynamodbTestClient
 from ..constants import TEST_ITEM_KEY, TEST_PK, TEST_TABLE
 
 
@@ -16,7 +15,7 @@ def item_exists_and_execution_succeeded(lws_session, world):
     assert (
         actual_error is expected_error
     ), f"Expected start_execution to succeed but got: {actual_error}"
-    actual_resp = StepfunctionsDynamodbTestClient(lws_session)._ddb.get_item(
+    actual_resp = lws_session.client("dynamodb").get_item(
         TableName=TEST_TABLE, Key={TEST_PK: {"S": expected_item_key}}
     )
     actual_item = actual_resp.get("Item", {})

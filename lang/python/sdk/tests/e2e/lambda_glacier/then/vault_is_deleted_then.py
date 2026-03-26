@@ -5,16 +5,13 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import then
 
-from ..client import LambdaGlacierTestClient
 from ..constants import TEST_VAULT
 
 
 @then('the vault is "DELETED" and archive uploads will fail')
 def vault_is_deleted_then(lws_session):
     try:
-        LambdaGlacierTestClient(lws_session)._glacier.describe_vault(
-            accountId="-", vaultName=TEST_VAULT
-        )
+        lws_session.client("glacier").describe_vault(accountId="-", vaultName=TEST_VAULT)
         raise AssertionError(f"Expected vault '{TEST_VAULT}' to be deleted but it still exists")
     except ClientError as exc:
         error_code = exc.response["Error"]["Code"]

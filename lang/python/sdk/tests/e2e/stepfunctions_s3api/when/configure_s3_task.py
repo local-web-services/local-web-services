@@ -6,7 +6,6 @@ import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import StepfunctionsS3apiTestClient
 from ..constants import TEST_BODY, TEST_BUCKET, TEST_KEY, _s3_put_object_definition, _sm_arn
 
 
@@ -15,7 +14,7 @@ def configure_s3_task(lws_session, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])
     try:
-        world["result"] = StepfunctionsS3apiTestClient(lws_session)._sfn.update_state_machine(
+        world["result"] = lws_session.client("stepfunctions").update_state_machine(
             stateMachineArn=_sm_arn(),
             definition=_s3_put_object_definition(TEST_BUCKET, TEST_KEY, TEST_BODY.decode()),
         )

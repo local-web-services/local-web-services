@@ -6,7 +6,6 @@ import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import DynamodbLambdaTestClient
 from ..constants import TEST_TABLE
 
 
@@ -15,7 +14,7 @@ def table_change_produces_record(lws_session, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])
     try:
-        resp = DynamodbLambdaTestClient(lws_session)._dynamodb.put_item(
+        resp = lws_session.client("dynamodb").put_item(
             TableName=TEST_TABLE, Item={"id": {"S": "stream-record-1"}, "data": {"S": "test-value"}}
         )
         world["result"] = resp

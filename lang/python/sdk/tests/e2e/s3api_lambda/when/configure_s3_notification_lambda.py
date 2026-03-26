@@ -6,7 +6,6 @@ import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import S3apiLambdaTestClient
 from ..constants import FUNC_ARN, TEST_BUCKET
 
 
@@ -15,7 +14,7 @@ def configure_s3_notification_lambda(lws_session, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])
     try:
-        resp = S3apiLambdaTestClient(lws_session)._s3.put_bucket_notification_configuration(
+        resp = lws_session.client("s3").put_bucket_notification_configuration(
             Bucket=TEST_BUCKET,
             NotificationConfiguration={
                 "LambdaFunctionConfigurations": [

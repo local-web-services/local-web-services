@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import SsmTestClient
 from ..constants import TEST_PARAM
 
 
 @then("the parameters no longer exist")
 def parameters_no_longer_exist(lws_session):
-    resp = SsmTestClient(lws_session).describe_parameters()
+    resp = lws_session.client("ssm").describe_parameters()
     actual_names = [p["Name"] for p in resp.get("Parameters", [])]
     assert (
         TEST_PARAM not in actual_names

@@ -6,7 +6,6 @@ import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import ElasticacheTestClient
 from ..constants import TEST_REPLICATION_GROUP
 
 
@@ -14,7 +13,7 @@ from ..constants import TEST_REPLICATION_GROUP
 def modify_replication_group(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:
-        world["result"] = ElasticacheTestClient(lws_session).modify_replication_group(
+        world["result"] = lws_session.client("elasticache").modify_replication_group(
             ReplicationGroupId=TEST_REPLICATION_GROUP,
             ReplicationGroupDescription="e2e test rg updated",
         )

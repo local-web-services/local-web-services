@@ -5,14 +5,13 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import then
 
-from ..client import SsmEventsTestClient
 from ..constants import TEST_PARAM
 
 
 @then('the parameter is "DELETED" and the "DELETED" event is "DELIVERED"')
 def param_is_deleted_and_event_delivered(lws_session):
     try:
-        SsmEventsTestClient(lws_session)._ssm.get_parameter(Name=TEST_PARAM)
+        lws_session.client("ssm").get_parameter(Name=TEST_PARAM)
         raise AssertionError(f"Expected parameter '{TEST_PARAM}' to be deleted but it still exists")
     except ClientError as exc:
         error_code = exc.response["Error"]["Code"]

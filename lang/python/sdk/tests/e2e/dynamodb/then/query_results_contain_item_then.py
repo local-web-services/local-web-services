@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import DynamodbTestClient
 from ..constants import TEST_ITEM_KEY, TEST_PK, TEST_TABLE
 
 
 @then("the query results contain the item")
 def query_results_contain_item_then(lws_session):
-    client = DynamodbTestClient(lws_session).dynamo()
+    client = lws_session.client("dynamodb")
     resp = client.query(
         TableName=TEST_TABLE,
         KeyConditionExpression="#pk = :pk",

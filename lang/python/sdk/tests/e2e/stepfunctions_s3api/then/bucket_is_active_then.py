@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import StepfunctionsS3apiTestClient
 from ..constants import TEST_BUCKET
 
 
 @then('the bucket is "ACTIVE"')
 def bucket_is_active_then(lws_session):
-    resp = StepfunctionsS3apiTestClient(lws_session)._s3.list_buckets()
+    resp = lws_session.client("s3").list_buckets()
     actual_buckets = [b["Name"] for b in resp.get("Buckets", [])]
     assert (
         TEST_BUCKET in actual_buckets

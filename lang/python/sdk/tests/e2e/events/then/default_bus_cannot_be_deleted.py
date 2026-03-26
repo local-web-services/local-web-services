@@ -4,14 +4,12 @@ from __future__ import annotations
 
 from pytest_bdd import then
 
-from ..client import EventsTestClient
-
 
 @then("the default event bus cannot be deleted")
 def default_bus_cannot_be_deleted(lws_session):
     """Invariant: attempting to delete the default bus always raises an error."""
     try:
-        EventsTestClient(lws_session).delete_event_bus(Name="default")
+        lws_session.client("events").delete_event_bus(Name="default")
         actual_deleted = True
     except Exception:
         actual_deleted = False

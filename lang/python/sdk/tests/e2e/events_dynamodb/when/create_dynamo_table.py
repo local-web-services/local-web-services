@@ -5,14 +5,13 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import EventsDynamodbTestClient
 from ..constants import TEST_PK, TEST_TABLE
 
 
 @when("a DynamoDB table is created")
 def create_dynamo_table(lws_session, world):
     try:
-        world["result"] = EventsDynamodbTestClient(lws_session)._dynamo.create_table(
+        world["result"] = lws_session.client("dynamodb").create_table(
             TableName=TEST_TABLE,
             KeySchema=[{"AttributeName": TEST_PK, "KeyType": "HASH"}],
             AttributeDefinitions=[{"AttributeName": TEST_PK, "AttributeType": "S"}],

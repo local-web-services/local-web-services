@@ -12,7 +12,7 @@ from ..client import S3apiSqsTestClient
 def delete_sqs_queue(lws_session, world):
     try:
         url = S3apiSqsTestClient(lws_session).queue_url()
-        world["result"] = S3apiSqsTestClient(lws_session)._sqs.delete_queue(QueueUrl=url)
+        world["result"] = lws_session.client("sqs").delete_queue(QueueUrl=url)
         world["error"] = None
     except (ClientError, Exception) as exc:
         world["result"] = None

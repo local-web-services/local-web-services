@@ -5,14 +5,13 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..client import DynamodbLambdaTestClient
 from ..constants import TEST_TABLE
 
 
 @when("a DynamoDB table is created with streaming enabled")
 def create_dynamodb_table_with_stream(lws_session, world):
     try:
-        resp = DynamodbLambdaTestClient(lws_session)._dynamodb.create_table(
+        resp = lws_session.client("dynamodb").create_table(
             TableName=TEST_TABLE,
             KeySchema=[{"AttributeName": "id", "KeyType": "HASH"}],
             AttributeDefinitions=[{"AttributeName": "id", "AttributeType": "S"}],
