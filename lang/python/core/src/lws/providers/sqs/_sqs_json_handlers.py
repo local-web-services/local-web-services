@@ -35,8 +35,9 @@ class _SqsJsonHandlersMixin:
     async def _json_send_message(self, body: dict) -> Response:
         if self._capacity.is_exhausted:  # type: ignore[attr-defined]
             return _json_error(
-                "ServiceUnavailableException",
+                "OverLimit",
                 "lws: no message slots available",
+                400,
             )
         queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
         err = self._get_lifecycle_error_json(queue_name)  # type: ignore[attr-defined]
@@ -249,6 +250,12 @@ class _SqsJsonHandlersMixin:
         return _json_response({})
 
     async def _json_send_message_batch(self, body: dict) -> Response:
+        if self._capacity.is_exhausted:  # type: ignore[attr-defined]
+            return _json_error(
+                "OverLimit",
+                "lws: no message slots available",
+                400,
+            )
         queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
         entries = body.get("Entries", [])
         successful: list[dict] = []

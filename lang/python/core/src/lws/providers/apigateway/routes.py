@@ -18,6 +18,7 @@ from fastapi import FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_capacity import AwsCapacityConfig
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig
 from lws.providers.apigateway._apigateway_proxy_helpers import (
     _build_apigw_v2_event,
@@ -107,6 +108,7 @@ def create_apigateway_management_app(
     lambda_registry: LambdaRegistry | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
     service_providers: dict | None = None,
+    capacity: AwsCapacityConfig | None = None,
 ) -> tuple[FastAPI, ApiGatewayRouterBundle]:
     """Create a FastAPI app that speaks the API Gateway management protocol.
 
@@ -119,11 +121,14 @@ def create_apigateway_management_app(
         service_providers: Optional map of service-name → provider instance.
             When provided, V1 REST API direct service integrations (DynamoDB,
             SQS, SNS, S3, StepFunctions) will be dispatched to these providers.
+        capacity: Optional capacity configuration. When exhausted, all REST API
+            invocation paths return HTTP 429.
 
     Returns:
         A tuple of (app, router_bundle). Call ``router_bundle.reset()`` to
         clear all API Gateway state between tests.
     """
+    capacity_config = capacity or AwsCapacityConfig()
     app = FastAPI(title="LDK API Gateway Management")
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="apigateway-mgmt")
 
@@ -142,6 +147,8 @@ def create_apigateway_management_app(
     # Wire V2 proxy into the catch-all: override the V1 stub to also try V2 proxy
     @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"])
     async def _catch_all_with_proxy(request: Request, path: str) -> Response:
+        if capacity_config.is_exhausted:
+            return Response(status_code=429)
         # Try V1 REST API direct integration proxy first
         v1_resp = await v1_router.proxy_v1_request(request, path)
         if v1_resp is not None:

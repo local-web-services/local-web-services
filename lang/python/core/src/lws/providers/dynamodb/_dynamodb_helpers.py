@@ -3,15 +3,18 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 
 from fastapi import Response
 
 from lws.interfaces.key_value_store import (
     GsiDefinition,
+    IKeyValueStore,
     KeyAttribute,
     KeySchema,
     TableConfig,
 )
+from lws.providers.dynamodb.expressions import evaluate_filter_expression
 
 _DYNAMO_TYPE_KEYS = {"S", "N", "B", "BOOL", "NULL", "L", "M", "SS", "NS", "BS"}
 
@@ -138,3 +141,64 @@ def _extract_condition_params(
         values = op.get("ExpressionAttributeValues")
         return condition, names, values, table, key
     return None, None, None, "", {}
+
+
+async def check_transact_lifecycle(
+    get_lifecycle_error: Callable[[str], Response | None],
+    transact_items: list,
+) -> Response | None:
+    """Reject if any referenced table is not ACTIVE."""
+    for transact_item in transact_items:
+        for op_key in ("Put", "Delete", "Update", "ConditionCheck"):
+            if op_key in transact_item:
+                table_name = transact_item[op_key]["TableName"]
+                err = get_lifecycle_error(table_name)
+                if err is not None:
+                    return err
+    return None
+
+
+async def check_transact_conditions(
+    store: IKeyValueStore,
+    transact_items: list,
+) -> Response | None:
+    """Evaluate ConditionExpressions across all transact items.
+
+    Returns an error Response if any condition fails, or None if all pass.
+    """
+    reasons: list[dict] = []
+    any_failed = False
+
+    for transact_item in transact_items:
+        condition_expr, names, values, table_name, key = _extract_condition_params(transact_item)
+
+        if condition_expr is None:
+            reasons.append({"Code": "None"})
+            continue
+
+        item = await store.get_item(table_name, key)
+        target = _unwrap_item(item) if item is not None else {}
+        passed = evaluate_filter_expression(target, condition_expr, names, values)
+        if passed:
+            reasons.append({"Code": "None"})
+        else:
+            reasons.append(
+                {
+                    "Code": "ConditionalCheckFailed",
+                    "Message": "The conditional request failed",
+                }
+            )
+            any_failed = True
+
+    if any_failed:
+        return _json_response(
+            {
+                "__type": "com.amazonaws.dynamodb.v20120810" "#TransactionCanceledException",
+                "Message": "Transaction cancelled, please refer "
+                "cancellation reasons for specific reasons "
+                "[ConditionalCheckFailed]",
+                "CancellationReasons": reasons,
+            },
+            status_code=400,
+        )
+    return None

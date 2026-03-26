@@ -19,7 +19,7 @@ from fastapi import APIRouter, FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
-from lws.providers._shared.aws_capacity import AwsCapacityConfig
+from lws.providers._shared.aws_capacity import AwsCapacityConfig, check_capacity
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.lambda_helpers import build_default_lambda_context
 from lws.providers._shared.request_helpers import parse_json_body
@@ -81,6 +81,7 @@ class LambdaManagementRouter:
         sdk_env: dict[str, str] | None = None,
         lifecycle: ResourceLifecycleConfig | None = None,
         capacity: AwsCapacityConfig | None = None,
+        async_capacity: AwsCapacityConfig | None = None,
         event_source_manager: EventSourceManager | None = None,
         dynamodb_provider: Any = None,
         dynamodb_tracker_ref: list | None = None,
@@ -93,6 +94,7 @@ class LambdaManagementRouter:
         self._lifecycle = _lc
         self._tracker = ResourceStateTracker(_lc)
         self._capacity = capacity or AwsCapacityConfig()
+        self._async_capacity = async_capacity or AwsCapacityConfig()
         self._event_source_manager = event_source_manager
         self._dynamodb_provider = dynamodb_provider
         self._dynamodb_tracker_ref = dynamodb_tracker_ref or []
@@ -256,14 +258,9 @@ class LambdaManagementRouter:
     # -- Invocations ---------------------------------------------------------
 
     async def _invoke_function(self, function_name: str, request: Request) -> Response:
-        if self._capacity.is_exhausted:
-            return _json_response(
-                {
-                    "Message": "lws: no invocation slots available",
-                    "Type": "ServiceUnavailableException",
-                },
-                503,
-            )
+        capacity_err = check_capacity(self._capacity, "TooManyRequestsException", 429)
+        if capacity_err is not None:
+            return capacity_err
         compute = self._registry.get_compute(function_name)
         if compute is None:
             return _json_response(
@@ -289,6 +286,11 @@ class LambdaManagementRouter:
 
         invocation_type = request.headers.get("X-Amz-Invocation-Type", "RequestResponse")
         if invocation_type == "Event":
+            async_capacity_err = check_capacity(
+                self._async_capacity, "TooManyRequestsException", 429
+            )
+            if async_capacity_err is not None:
+                return async_capacity_err
             invocation_id = str(uuid.uuid4())
             self._state.record_invocation(invocation_id)
             asyncio.create_task(
@@ -463,6 +465,7 @@ def create_lambda_management_app(
     sdk_env: dict[str, str] | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
     capacity: AwsCapacityConfig | None = None,
+    async_capacity: AwsCapacityConfig | None = None,
     event_source_manager: EventSourceManager | None = None,
     dynamodb_provider: Any = None,
     dynamodb_tracker_ref: list | None = None,
@@ -478,6 +481,7 @@ def create_lambda_management_app(
         sdk_env=sdk_env,
         lifecycle=lifecycle,
         capacity=capacity,
+        async_capacity=async_capacity,
         event_source_manager=event_source_manager,
         dynamodb_provider=dynamodb_provider,
         dynamodb_tracker_ref=dynamodb_tracker_ref,

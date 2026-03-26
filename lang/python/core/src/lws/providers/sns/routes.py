@@ -198,6 +198,43 @@ def _check_sqs_subscribe_target(
     return None
 
 
+def _check_sns_capacity(
+    action: str,
+    sqs_capacity: AwsCapacityConfig | None,
+    sns_capacity: AwsCapacityConfig | None,
+) -> Response | None:
+    """Return an error response if any capacity limit is exhausted."""
+    if (
+        action in ("Publish", "Subscribe")
+        and sns_capacity is not None
+        and sns_capacity.is_exhausted
+    ):
+        return _sns_xml_error("KMSThrottlingException", "lws: SNS capacity exhausted", 400)
+    if action == "Publish" and sqs_capacity is not None and sqs_capacity.is_exhausted:
+        xml = (
+            "<ErrorResponse><Error>"
+            "<Code>ServiceUnavailableException</Code>"
+            "<Message>lws: no message slots available</Message>"
+            "</Error>"
+            f"<RequestId>{uuid.uuid4()}</RequestId>"
+            "</ErrorResponse>"
+        )
+        return Response(content=xml, status_code=503, media_type="text/xml")
+    return None
+
+
+def _sns_xml_error(code: str, message: str, status_code: int = 400) -> Response:
+    xml = (
+        "<ErrorResponse><Error>"
+        f"<Code>{code}</Code>"
+        f"<Message>{message}</Message>"
+        "</Error>"
+        f"<RequestId>{uuid.uuid4()}</RequestId>"
+        "</ErrorResponse>"
+    )
+    return Response(content=xml, status_code=status_code, media_type="text/xml")
+
+
 async def _sns_dispatch(
     request: Request,
     provider: SnsProvider,
@@ -206,6 +243,7 @@ async def _sns_dispatch(
     sqs_capacity: AwsCapacityConfig | None = None,
     sqs_provider: SqsProvider | None = None,
     sqs_tracker: ResourceStateTracker | None = None,
+    sns_capacity: AwsCapacityConfig | None = None,
 ) -> Response:
     """Route a single SNS request."""
     params = await _parse_form(request)
@@ -219,16 +257,9 @@ async def _sns_dispatch(
     if err is not None:
         return err
 
-    if action == "Publish" and sqs_capacity is not None and sqs_capacity.is_exhausted:
-        xml = (
-            "<ErrorResponse><Error>"
-            "<Code>ServiceUnavailableException</Code>"
-            "<Message>lws: no message slots available</Message>"
-            "</Error>"
-            f"<RequestId>{uuid.uuid4()}</RequestId>"
-            "</ErrorResponse>"
-        )
-        return Response(content=xml, status_code=503, media_type="text/xml")
+    cap_err = _check_sns_capacity(action, sqs_capacity, sns_capacity)
+    if cap_err is not None:
+        return cap_err
 
     handler = _ACTION_HANDLERS.get(action)
     if handler is None:
@@ -263,6 +294,7 @@ def create_sns_app(
     sqs_provider: SqsProvider | None = None,
     sqs_tracker: ResourceStateTracker | None = None,
     tracker_ref: list[ResourceStateTracker] | None = None,
+    sns_capacity: AwsCapacityConfig | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the SNS wire protocol.
 
@@ -291,7 +323,7 @@ def create_sns_app(
     @app.post("/")
     async def dispatch(request: Request) -> Response:
         return await _sns_dispatch(
-            request, provider, _lc, _tracker, sqs_capacity, sqs_provider, sqs_tracker
+            request, provider, _lc, _tracker, sqs_capacity, sqs_provider, sqs_tracker, sns_capacity
         )
 
     return app
