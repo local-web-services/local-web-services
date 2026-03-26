@@ -152,6 +152,68 @@ def no_invocation_slot_available():
     pytest.skip("Cannot exhaust invocation slot limit")
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("fid not in func_status")
+def fid_not_in_func_status():
+    """No-op: fresh state has no functions."""
+
+
+@given("pid not in param_status")
+def pid_not_in_param_status():
+    """No-op: fresh state has no parameters."""
+
+
+@given("pid in param_status")
+def pid_in_param_status(lws_session):
+    _create_param(lws_session)
+
+
+@given("fid in func_status")
+def fid_in_func_status(lws_session):
+    _create_function(lws_session)
+
+
+@given("iid in inv_status")
+def iid_in_inv_status():
+    pytest.skip("Cannot create an in-progress invocation in lws")
+
+
+@given("a Lambda function has been deployed")
+def lambda_function_has_been_deployed_seq(lws_session):
+    _create_function(lws_session)
+
+
+@given('a parameter has been created in "SSM" Parameter Store')
+def ssm_parameter_has_been_created_seq(lws_session):
+    _create_param(lws_session)
+
+
+@given('a parameter has been deleted from "SSM" Parameter Store')
+def ssm_parameter_has_been_deleted_seq(lws_session):
+    try:
+        _create_param(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _ssm(lws_session).delete_parameter(Name=TEST_PARAM)
+
+
+@given("the Lambda function has been invoked")
+def lambda_function_has_been_invoked_seq():
+    pytest.skip("Cannot create a completed Lambda invocation in lws")
+
+
+@given("the Lambda function has read an existing parameter and completed successfully")
+def lambda_read_parameter_succeeded_seq():
+    pytest.skip("Cannot trigger Lambda SSM read in lws")
+
+
+@given("the Lambda function has failed because the parameter has been deleted")
+def lambda_failed_parameter_deleted_seq():
+    pytest.skip("Cannot trigger Lambda invocation failure in lws")
+
+
 # ── When: actions ───────────────────────────────────────────────────────
 
 

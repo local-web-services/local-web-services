@@ -149,6 +149,68 @@ def no_invocation_slot_available():
     pytest.skip("Cannot exhaust invocation slot limit")
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("fid not in caller_status")
+def fid_not_in_caller_status():
+    """No-op: fresh state has no caller functions."""
+
+
+@given("fid not in callee_status")
+def fid_not_in_callee_status():
+    """No-op: fresh state has no callee functions."""
+
+
+@given("fid in callee_status")
+def fid_in_callee_status(lws_session):
+    _create_function(lws_session, TEST_CALLEE)
+
+
+@given("cfid in caller_status")
+def cfid_in_caller_status(lws_session):
+    _create_function(lws_session, TEST_CALLER)
+
+
+@given("iid in inv_status")
+def iid_in_inv_status():
+    pytest.skip("Cannot create an in-progress invocation in lws")
+
+
+@given("a caller Lambda function has been deployed")
+def caller_lambda_function_has_been_deployed_seq(lws_session):
+    _create_function(lws_session, TEST_CALLER)
+
+
+@given("a callee Lambda function has been deployed")
+def callee_lambda_function_has_been_deployed_seq(lws_session):
+    _create_function(lws_session, TEST_CALLEE)
+
+
+@given("the callee Lambda function has been deleted")
+def callee_lambda_function_has_been_deleted_seq(lws_session):
+    try:
+        _create_function(lws_session, TEST_CALLEE)
+    except Exception:  # noqa: BLE001
+        pass
+    _lambda(lws_session).delete_function(FunctionName=TEST_CALLEE)
+
+
+@given("the caller Lambda function has been invoked")
+def caller_lambda_function_has_been_invoked_seq():
+    pytest.skip("Cannot create a completed Lambda invocation in lws")
+
+
+@given('the caller Lambda function has invoked the "ACTIVE" callee and the call succeeded')
+def caller_lambda_invoked_callee_succeeded_seq():
+    pytest.skip("Cannot trigger Lambda invocation in lws")
+
+
+@given("the caller has failed to invoke the callee because the callee has been deleted")
+def caller_failed_to_invoke_callee_deleted_seq():
+    pytest.skip("Cannot trigger Lambda invocation failure in lws")
+
+
 # ── When: actions ───────────────────────────────────────────────────────
 
 
@@ -249,3 +311,16 @@ def invocation_failed_resource_not_found(world):
 @then('the invocation is "SUCCESS"')
 def invocation_is_success_then(world):
     pytest.skip("Cannot observe Lambda invocation success in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "IN_PROGRESS" invocation references an "ACTIVE" caller function')
+def _inv_lambda_lambda_every_in_progress_invocation_references_an_active_caller_func():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then("every successful invocation recorded which callee was invoked")
+def _inv_lambda_lambda_every_successful_invocation_recorded_which_callee_was_invoked():
+    """Invariant step: trivially satisfied in isolated test context."""

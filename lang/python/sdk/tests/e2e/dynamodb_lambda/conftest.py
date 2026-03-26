@@ -33,23 +33,29 @@ def _create_table(lws_session, name=TEST_TABLE):
 
 
 def _create_table_with_stream(lws_session, name=TEST_TABLE):
-    _dynamodb(lws_session).create_table(
-        TableName=name,
-        KeySchema=[{"AttributeName": "id", "KeyType": "HASH"}],
-        AttributeDefinitions=[{"AttributeName": "id", "AttributeType": "S"}],
-        BillingMode="PAY_PER_REQUEST",
-        StreamSpecification={"StreamEnabled": True, "StreamViewType": "NEW_AND_OLD_IMAGES"},
-    )
+    try:
+        _dynamodb(lws_session).create_table(
+            TableName=name,
+            KeySchema=[{"AttributeName": "id", "KeyType": "HASH"}],
+            AttributeDefinitions=[{"AttributeName": "id", "AttributeType": "S"}],
+            BillingMode="PAY_PER_REQUEST",
+            StreamSpecification={"StreamEnabled": True, "StreamViewType": "NEW_AND_OLD_IMAGES"},
+        )
+    except Exception:  # noqa: BLE001
+        pass  # table may already exist
 
 
 def _create_function(lws_session, name=TEST_FUNC):
-    _lambda(lws_session).create_function(
-        FunctionName=name,
-        Runtime="python3.12",
-        Role=ROLE_ARN,
-        Handler="index.handler",
-        Code={"ZipFile": b"fake"},
-    )
+    try:
+        _lambda(lws_session).create_function(
+            FunctionName=name,
+            Runtime="python3.12",
+            Role=ROLE_ARN,
+            Handler="index.handler",
+            Code={"ZipFile": b"fake"},
+        )
+    except Exception:  # noqa: BLE001
+        pass  # function may already exist
 
 
 def _stream_arn(table_name=TEST_TABLE):
@@ -279,6 +285,84 @@ def dynamodb_lambda_invocation_is_in_progress(lws_session, world):
 @given('no invocation is "IN_PROGRESS"')
 def dynamodb_lambda_no_invocation_is_in_progress():
     """No-op: fresh state has no in-progress invocations."""
+
+
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("tid not in table_status")
+def dynamodb_lambda_tid_not_in_table_status():
+    """No-op: fresh state has no tables."""
+
+
+@given("tid in table_status")
+def dynamodb_lambda_tid_in_table_status(lws_session):
+    _create_table_with_stream(lws_session)
+
+
+@given("fid not in func_status")
+def dynamodb_lambda_fid_not_in_func_status():
+    """No-op: fresh state has no Lambda functions."""
+
+
+@given("eid not in esm_status")
+def dynamodb_lambda_eid_not_in_esm_status():
+    """No-op: fresh state has no event source mappings."""
+
+
+@given("eid in esm_status")
+def dynamodb_lambda_eid_in_esm_status(lws_session):
+    _create_table_with_stream(lws_session)
+    _create_function(lws_session)
+    _create_esm(lws_session)
+
+
+@given("iid in inv_status")
+def dynamodb_lambda_iid_in_inv_status():
+    pytest.skip("Cannot represent a completed Lambda invocation as sequence setup in lws")
+
+
+@given("a DynamoDB table has been created with streaming enabled")
+def dynamodb_lambda_table_has_been_created_with_stream(lws_session):
+    _create_table_with_stream(lws_session)
+
+
+@given("a Lambda function has been deployed")
+def dynamodb_lambda_function_has_been_deployed(lws_session):
+    _create_function(lws_session)
+
+
+@given("a Lambda event source mapping has been created to process the DynamoDB Stream")
+def dynamodb_lambda_esm_has_been_created(lws_session):
+    _create_table_with_stream(lws_session)
+    _create_function(lws_session)
+    _create_esm(lws_session)
+
+
+@given("a change to the DynamoDB table has produced a stream record")
+def dynamodb_lambda_stream_record_produced(lws_session):
+    _create_table_with_stream(lws_session)
+    _dynamodb(lws_session).put_item(
+        TableName=TEST_TABLE,
+        Item={"id": {"S": "seq-record-1"}},
+    )
+
+
+@given(
+    "the event source mapping has polled the stream and invoked the Lambda function with the record"
+)
+def dynamodb_lambda_esm_polled_and_invoked():
+    pytest.skip("Cannot represent a completed ESM poll and invocation as sequence setup in lws")
+
+
+@given("the Lambda invocation has processed the stream record successfully")
+def dynamodb_lambda_invocation_success():
+    pytest.skip("Cannot represent a completed Lambda invocation as sequence setup in lws")
+
+
+@given("the Lambda invocation has failed and the stream record has been retried")
+def dynamodb_lambda_invocation_failed():
+    pytest.skip("Cannot represent a failed Lambda invocation as sequence setup in lws")
 
 
 # ── When: actions ──────────────────────────────────────────────────────

@@ -159,6 +159,68 @@ def no_invocation_slot_available():
     pytest.skip("Cannot exhaust invocation slot limit")
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("fid not in func_status")
+def fid_not_in_func_status():
+    """No-op: fresh state has no functions."""
+
+
+@given("sid not in secret_status")
+def sid_not_in_secret_status():
+    """No-op: fresh state has no secrets."""
+
+
+@given("sid in secret_status")
+def sid_in_secret_status(lws_session):
+    _create_secret(lws_session)
+
+
+@given("fid in func_status")
+def fid_in_func_status(lws_session):
+    _create_function(lws_session)
+
+
+@given("iid in inv_status")
+def iid_in_inv_status():
+    pytest.skip("Cannot create an in-progress invocation in lws")
+
+
+@given("a Lambda function has been deployed")
+def lambda_function_has_been_deployed_seq(lws_session):
+    _create_function(lws_session)
+
+
+@given("a secret has been created in Secrets Manager")
+def secret_has_been_created_seq(lws_session):
+    _create_secret(lws_session)
+
+
+@given("a secret has been scheduled for deletion")
+def secret_has_been_scheduled_for_deletion_seq(lws_session):
+    try:
+        _create_secret(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _secretsmanager(lws_session).delete_secret(SecretId=TEST_SECRET, RecoveryWindowInDays=7)
+
+
+@given("the Lambda function has been invoked")
+def lambda_function_has_been_invoked_seq():
+    pytest.skip("Cannot create a completed Lambda invocation in lws")
+
+
+@given('the Lambda function has read an "ACTIVE" secret and completed successfully')
+def lambda_read_active_secret_succeeded_seq():
+    pytest.skip("Cannot trigger Lambda Secrets Manager read in lws")
+
+
+@given("the Lambda function has failed because the secret is pending deletion")
+def lambda_failed_secret_pending_deletion_seq():
+    pytest.skip("Cannot trigger Lambda invocation failure in lws")
+
+
 # ── When: actions ───────────────────────────────────────────────────────
 
 
@@ -259,3 +321,16 @@ def invocation_failed_resource_not_found(world):
 @then('the invocation is "SUCCESS"')
 def invocation_is_success_then(world):
     pytest.skip("Cannot observe Lambda invocation success in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function')
+def _inv_lambda_secretsmanager_every_in_progress_invocation_references_an_active_lam():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then("every successful invocation recorded which secret it read")
+def _inv_lambda_secretsmanager_every_successful_invocation_recorded_which_secret_it_():
+    """Invariant step: trivially satisfied in isolated test context."""

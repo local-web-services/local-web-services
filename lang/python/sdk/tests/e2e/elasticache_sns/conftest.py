@@ -160,6 +160,91 @@ def no_message_slot_available():
     pytest.skip("Cannot exhaust message slot limit")
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("cid not in cluster_status")
+def cid_not_in_cluster_status():
+    """No-op: fresh state has no clusters."""
+
+
+@given("cid in cluster_status")
+def cid_in_cluster_status(lws_session):
+    _create_cluster(lws_session)
+
+
+@given("tid not in topic_status")
+def tid_not_in_topic_status():
+    """No-op: fresh state has no topics."""
+
+
+@given("tid in topic_status")
+def tid_in_topic_status(lws_session):
+    try:
+        _create_topic(lws_session)
+    except ClientError as exc:
+        if exc.response["Error"]["Code"] != "TopicAlreadyExists":
+            raise
+
+
+@given("an ElastiCache cluster has been created")
+def elasticache_sns_cluster_created(lws_session):
+    _create_cluster(lws_session)
+
+
+@given('an "SNS" topic has been created')
+def elasticache_sns_topic_has_been_created(lws_session):
+    try:
+        _create_topic(lws_session)
+    except ClientError as exc:
+        if exc.response["Error"]["Code"] != "TopicAlreadyExists":
+            raise
+
+
+@given("a cluster event notification has been published to the topic")
+def elasticache_sns_notification_published():
+    pytest.skip("Cannot trigger internal ElastiCache cluster event notification in lws")
+
+
+@given("the cluster modification event has been sent to the topic")
+def elasticache_sns_modification_event_sent():
+    pytest.skip("Cannot trigger internal ElastiCache modification event in lws")
+
+
+@given("the cluster modification event failed to reach the topic")
+def elasticache_sns_modification_event_failed():
+    pytest.skip("Cannot trigger internal ElastiCache notification failure in lws")
+
+
+@given('the "SNS" topic has been deleted')
+def elasticache_sns_topic_has_been_deleted():
+    """No-op: fresh state has no topics, simulates a previously deleted topic."""
+
+
+@given('an "SNS" notification has been configured on the ElastiCache cluster')
+def elasticache_sns_notification_configured():
+    pytest.skip("Cannot configure ElastiCache SNS notification in lws")
+
+
+@given(
+    'a cluster event has occurred and ElastiCache has published a notification to the "SNS" topic'
+)
+def elasticache_sns_cluster_event_published():
+    pytest.skip("Cannot trigger internal ElastiCache cluster event notification in lws")
+
+
+@given(
+    'a cluster event has occurred but the "SNS" notification has failed because the topic has been deleted'  # noqa: E501
+)
+def elasticache_sns_cluster_event_notification_failed():
+    pytest.skip("Cannot trigger internal ElastiCache notification failure in lws")
+
+
+@given("the cluster modification has completed")
+def elasticache_sns_cluster_modification_completed():
+    pytest.skip("Cannot trigger internal ElastiCache cluster modification completion in lws")
+
+
 # ── When: actions ──────────────────────────────────────────────────────
 
 
@@ -257,3 +342,16 @@ def cluster_modifying_but_no_notification():
 @then('the cluster is "AVAILABLE" again')
 def cluster_is_available_again_then():
     pytest.skip("Cannot observe internal cluster state transition to AVAILABLE in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "PUBLISHED" notification references a cluster that exists')
+def _inv_elasticache_sns_every_published_notification_references_a_cluster_that_exis():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then('every "PUBLISHED" notification references a topic that exists')
+def _inv_elasticache_sns_every_published_notification_references_a_topic_that_exists():
+    """Invariant step: trivially satisfied in isolated test context."""

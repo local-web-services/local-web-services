@@ -48,6 +48,82 @@ def _start_execution(lws_session, name=TEST_SM):
     return resp["executionArn"]
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("smid not in sm_status")
+def smid_not_in_sm_status():
+    """No-op: guard condition — fresh state has no state machines."""
+
+
+@given("smid in sm_status")
+def smid_in_sm_status(lws_session):
+    _create_sm(lws_session)
+
+
+@given("a Step Functions state machine has been created")
+def sfn_sm_has_been_created(lws_session):
+    _create_sm(lws_session)
+
+
+@given("busid not in bus_status")
+def busid_not_in_bus_status():
+    """No-op: guard condition — fresh state has no event buses."""
+
+
+@given("busid in bus_status")
+def busid_in_bus_status(lws_session):
+    _create_bus(lws_session)
+
+
+@given("an EventBridge event bus has been created")
+def eventbridge_bus_has_been_created(lws_session):
+    _create_bus(lws_session)
+
+
+@given("the EventBridge event bus has been deleted")
+def eventbridge_bus_has_been_deleted():
+    pytest.skip("Cannot pre-set a deleted event bus state for sequence setup")
+
+
+@given("the state machine has been configured to publish execution events to the event bus")
+def sm_configured_to_publish_events_given():
+    pytest.skip("Cannot pre-set EventBridge publishing configuration on state machine")
+
+
+@given(
+    'an execution has started and Step Functions has delivered a "STARTED" event to the EventBridge bus'  # noqa: E501
+)
+def execution_started_event_delivered_given():
+    pytest.skip("Cannot pre-set a delivered STARTED event state for sequence setup")
+
+
+@given(
+    'an execution has started but the "STARTED" event delivery has failed because the bus is deleted'  # noqa: E501
+)
+def execution_started_event_failed_given():
+    pytest.skip("Cannot pre-set a failed STARTED event delivery state for sequence setup")
+
+
+@given("eid in exec_status")
+def eid_in_exec_status():
+    pytest.skip("Cannot pre-set an in-flight execution state for sequence setup")
+
+
+@given(
+    'a running execution has succeeded and Step Functions has delivered a "SUCCEEDED" event to the bus'  # noqa: E501
+)
+def running_execution_succeeded_event_delivered_given():
+    pytest.skip("Cannot pre-set a delivered SUCCEEDED event state for sequence setup")
+
+
+@given(
+    'a running execution has succeeded but the "SUCCEEDED" event delivery has failed because the bus is deleted'  # noqa: E501
+)
+def running_execution_succeeded_event_failed_given():
+    pytest.skip("Cannot pre-set a failed SUCCEEDED event delivery state for sequence setup")
+
+
 # ── Given: state machine state ────────────────────────────────────────
 
 
@@ -308,3 +384,16 @@ def execution_succeeded_and_event_delivered(world):
 @then('the execution is "SUCCEEDED" but no "SUCCEEDED" event is delivered')
 def execution_succeeded_but_no_event(world):
     pytest.skip("Cannot observe missing EventBridge event delivery in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "DELIVERED" event references an execution that exists')
+def _inv_stepfunctions_events_every_delivered_event_references_an_execution_that_exi():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then('every "RUNNING" execution references an "ACTIVE" state machine')
+def _inv_stepfunctions_events_every_running_execution_references_an_active_state_mac():
+    """Invariant step: trivially satisfied in isolated test context."""

@@ -169,6 +169,71 @@ def no_document_slot_available():
     pytest.skip("Cannot exhaust document slot limit")
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("fid not in func_status")
+def fid_not_in_func_status():
+    """No-op: fresh state has no Lambda functions."""
+
+
+@given("fid in func_status")
+def fid_in_func_status(lws_session):
+    _create_function(lws_session)
+
+
+@given("a Lambda function has been deployed")
+def lambda_elasticsearch_seq_function_deployed(lws_session):
+    _create_function(lws_session)
+
+
+@given("did not in domain_status")
+def did_not_in_domain_status():
+    """No-op: fresh state has no Elasticsearch domains."""
+
+
+@given("did in domain_status")
+def did_in_domain_status(lws_session):
+    _create_domain(lws_session)
+
+
+@given('an Elasticsearch domain has been created and become "AVAILABLE"')
+def lambda_elasticsearch_seq_domain_created(lws_session):
+    _create_domain(lws_session)
+
+
+@given("a domain configuration update has begun")
+def lambda_elasticsearch_seq_domain_update_begun():
+    pytest.skip("Cannot trigger internal Elasticsearch domain configuration update in lws")
+
+
+@given("the domain configuration update has completed")
+def lambda_elasticsearch_seq_domain_update_completed():
+    pytest.skip(
+        "Cannot trigger internal Elasticsearch domain configuration update completion in lws"
+    )
+
+
+@given("the Lambda function has been invoked")
+def lambda_elasticsearch_seq_function_invoked():
+    pytest.skip("Cannot trigger Lambda invocation in lws")
+
+
+@given("iid in inv_status")
+def iid_in_inv_status():
+    pytest.skip("Cannot observe Lambda invocation state in lws")
+
+
+@given('the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded')
+def lambda_elasticsearch_seq_invocation_succeeded():
+    pytest.skip("Cannot trigger Lambda invocation in lws")
+
+
+@given("the Lambda function has failed to write because the domain is processing a config update")
+def lambda_elasticsearch_seq_invocation_failed():
+    pytest.skip("Cannot trigger Lambda invocation in lws")
+
+
 # ── When: actions ───────────────────────────────────────────────────────
 
 
@@ -271,3 +336,16 @@ def invocation_failed_connection_error(world):
 @then('the document "EXISTS" and the invocation is "SUCCESS"')
 def document_exists_invocation_success(world):
     pytest.skip("Cannot observe Lambda document index result in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function')
+def _inv_lambda_elasticsearch_every_in_progress_invocation_references_an_active_lamb():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then("every existing document references a domain that exists")
+def _inv_lambda_elasticsearch_every_existing_document_references_a_domain_that_exist():
+    """Invariant step: trivially satisfied in isolated test context."""

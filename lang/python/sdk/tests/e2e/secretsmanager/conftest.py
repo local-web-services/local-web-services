@@ -19,7 +19,12 @@ def _sm(lws_session):
 
 
 def _create_secret(lws_session, name=TEST_SECRET):
-    _sm(lws_session).create_secret(Name=name, SecretString=TEST_VALUE)
+    try:
+        _sm(lws_session).create_secret(Name=name, SecretString=TEST_VALUE)
+    except ClientError as exc:
+        if exc.response["Error"]["Code"] == "ResourceExistsException":
+            return  # secret already exists
+        raise
 
 
 # ── Given: secret state setup ──────────────────────────────────────────
@@ -378,3 +383,116 @@ def all_secret_names_unique():
 @then("all version identifiers are unique across secrets")
 def all_version_ids_unique():
     """No-op invariant: trivially satisfied in an isolated test context."""
+
+
+# ── Given: sequence setup ─────────────────────────────────────────
+
+
+@given("sname not in secret_status")
+def secretsmanager_sname_not_in_secret_status():
+    """No-op: fresh state has no secrets."""
+
+
+@given("a secret has been created")
+def secretsmanager_a_secret_has_been_created(lws_session):
+    _create_secret(lws_session)
+
+
+@given("sname in secret_status")
+def secretsmanager_sname_in_secret_status(lws_session):
+    _create_secret(lws_session)
+
+
+@given("a secret has been deleted")
+def secretsmanager_a_secret_has_been_deleted(lws_session):
+    try:
+        _create_secret(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _sm(lws_session).delete_secret(SecretId=TEST_SECRET)
+
+
+@given("a deleted secret has been restored within the recovery window")
+def secretsmanager_a_deleted_secret_has_been_restored(lws_session):
+    try:
+        _create_secret(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _sm(lws_session).delete_secret(SecretId=TEST_SECRET)
+    _sm(lws_session).restore_secret(SecretId=TEST_SECRET)
+
+
+@given("a secret has been described")
+def secretsmanager_a_secret_has_been_described(lws_session):
+    _sm(lws_session).describe_secret(SecretId=TEST_SECRET)
+
+
+@given("the current value of an active secret has been retrieved")
+def secretsmanager_current_value_has_been_retrieved(lws_session):
+    try:
+        _create_secret(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _sm(lws_session).get_secret_value(SecretId=TEST_SECRET)
+
+
+@given("a new value has been stored for an active secret")
+def secretsmanager_new_value_has_been_stored(lws_session):
+    try:
+        _create_secret(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _sm(lws_session).put_secret_value(SecretId=TEST_SECRET, SecretString=TEST_VALUE2)
+
+
+@given("all secrets have been listed")
+def secretsmanager_all_secrets_have_been_listed(lws_session):
+    try:
+        _create_secret(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _sm(lws_session).list_secrets()
+
+
+@given("metadata or description for an active secret has been updated")
+def secretsmanager_metadata_has_been_updated(lws_session):
+    try:
+        _create_secret(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _sm(lws_session).update_secret(SecretId=TEST_SECRET, Description=TEST_DESCRIPTION)
+
+
+@given("tags have been added to an active secret")
+def secretsmanager_tags_have_been_added(lws_session):
+    try:
+        _create_secret(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _sm(lws_session).tag_resource(
+        SecretId=TEST_SECRET,
+        Tags=[{"Key": TEST_TAG_KEY, "Value": TEST_TAG_VALUE}],
+    )
+
+
+@given("tags have been removed from an active secret")
+def secretsmanager_tags_have_been_removed(lws_session):
+    try:
+        _create_secret(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _sm(lws_session).tag_resource(
+        SecretId=TEST_SECRET,
+        Tags=[{"Key": TEST_TAG_KEY, "Value": TEST_TAG_VALUE}],
+    )
+    _sm(lws_session).untag_resource(SecretId=TEST_SECRET, TagKeys=[TEST_TAG_KEY])
+
+
+@given("an automatic rotation event has occurred for an active secret")
+def secretsmanager_automatic_rotation_event_has_occurred():
+    pytest.skip("Cannot simulate automatic rotation event in lws")
+
+
+@given("the recovery window for a deleted secret has expired")
+def secretsmanager_recovery_window_has_expired():
+    pytest.skip("Cannot simulate recovery window expiry in lws")

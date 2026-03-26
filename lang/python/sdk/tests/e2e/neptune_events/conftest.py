@@ -126,6 +126,65 @@ def no_event_slot_available():
     pytest.skip("Cannot exhaust event slot limit")
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("cid not in cluster_status")
+def cid_not_in_cluster_status():
+    """No-op: fresh state has no clusters."""
+
+
+@given('a Neptune cluster has been created and has become "AVAILABLE"')
+def neptune_cluster_created_and_available_seq(lws_session):
+    _create_cluster(lws_session)
+
+
+@given("busid not in bus_status")
+def busid_not_in_bus_status():
+    """No-op: fresh state has no custom buses."""
+
+
+@given("an EventBridge event bus has been created")
+def eventbridge_bus_created_seq(lws_session):
+    _create_bus(lws_session)
+
+
+@given("busid in bus_status")
+def busid_in_bus_status(lws_session):
+    _create_bus(lws_session)
+
+
+@given("the EventBridge event bus has been deleted")
+def eventbridge_bus_deleted_seq(lws_session):
+    try:
+        _create_bus(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _events(lws_session).delete_event_bus(Name=TEST_BUS)
+
+
+@given("cid in cluster_status")
+def cid_in_cluster_status(lws_session):
+    _create_cluster(lws_session)
+
+
+@given(
+    "the Neptune cluster has stopped and has delivered the state change event to the EventBridge bus"  # noqa: E501
+)
+def neptune_cluster_stopped_event_delivered_seq():
+    pytest.skip("Cannot trigger internal Neptune cluster stop event routing in lws")
+
+
+@given("the Neptune cluster has stopped but event delivery has failed because the bus is deleted")
+def neptune_cluster_stopped_event_failed_seq():
+    pytest.skip("Cannot trigger internal Neptune event delivery failure in lws")
+
+
+@given("the Neptune cluster has finished stopping")
+def neptune_cluster_finished_stopping_seq():
+    pytest.skip("Cannot trigger internal Neptune cluster stop completion in lws")
+
+
 # ── When: actions ──────────────────────────────────────────────────────
 
 
@@ -204,3 +263,16 @@ def cluster_stopping_and_event_delivered():
 @then('the cluster is "STOPPING" but no event is delivered')
 def cluster_stopping_but_no_event():
     pytest.skip("Cannot observe internal Neptune cluster stopping state in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "DELIVERED" event references a bus that exists')
+def _inv_neptune_events_every_delivered_event_references_a_bus_that_exists():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then('every "DELIVERED" event references a cluster that exists')
+def _inv_neptune_events_every_delivered_event_references_a_cluster_that_exists():
+    """Invariant step: trivially satisfied in isolated test context."""

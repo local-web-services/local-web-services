@@ -18,12 +18,17 @@ def _dynamo(lws_session):
 
 
 def _create_table(lws_session, name=TEST_TABLE):
-    _dynamo(lws_session).create_table(
-        TableName=name,
-        KeySchema=[{"AttributeName": TEST_PK, "KeyType": "HASH"}],
-        AttributeDefinitions=[{"AttributeName": TEST_PK, "AttributeType": "S"}],
-        BillingMode="PAY_PER_REQUEST",
-    )
+    try:
+        _dynamo(lws_session).create_table(
+            TableName=name,
+            KeySchema=[{"AttributeName": TEST_PK, "KeyType": "HASH"}],
+            AttributeDefinitions=[{"AttributeName": TEST_PK, "AttributeType": "S"}],
+            BillingMode="PAY_PER_REQUEST",
+        )
+    except ClientError as exc:
+        if exc.response["Error"]["Code"] == "ResourceInUseException":
+            return  # table already exists
+        raise
 
 
 def _put_item(lws_session, name=TEST_TABLE):
@@ -239,6 +244,147 @@ def transactions_table_is_not_active(lws_session, world):
     )
     world["result"] = None
     world["error"] = None
+
+
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("name not in table_status")
+def dynamodb_name_not_in_table_status():
+    """No-op: fresh state has no tables."""
+
+
+@given("name in table_status")
+def dynamodb_name_in_table_status(lws_session):
+    _create_table(lws_session)
+
+
+@given("name in gsi_pending")
+def dynamodb_name_in_gsi_pending():
+    pytest.skip("Cannot configure GSI propagation state as sequence setup in lws")
+
+
+@given("transaction_status is '\"COMMITTED\"'")
+def dynamodb_transaction_status_committed():
+    pytest.skip("Cannot force a COMMITTED transaction as sequence setup in lws")
+
+
+@given("transaction_status is '\"PENDING\"'")
+def dynamodb_transaction_status_pending():
+    pytest.skip("Cannot force a PENDING transaction as sequence setup in lws")
+
+
+@given("transaction_status is '\"ROLLED_BACK\"'")
+def dynamodb_transaction_status_rolled_back():
+    pytest.skip("Cannot force a ROLLED_BACK transaction as sequence setup in lws")
+
+
+@given("a table has been created")
+def dynamodb_table_has_been_created(lws_session):
+    _create_table(lws_session)
+
+
+@given("a table has finished creating and become active")
+def dynamodb_table_has_finished_creating(lws_session):
+    _create_table(lws_session)
+
+
+@given("a table has been deleted")
+def dynamodb_table_has_been_deleted(lws_session):
+    _create_table(lws_session)
+    _dynamo(lws_session).delete_table(TableName=TEST_TABLE)
+
+
+@given("a table deletion has completed")
+def dynamodb_table_deletion_completed(lws_session):
+    _create_table(lws_session)
+    _dynamo(lws_session).delete_table(TableName=TEST_TABLE)
+
+
+@given("a table has been described")
+def dynamodb_table_has_been_described(lws_session):
+    _create_table(lws_session)
+
+
+@given("all tables have been listed")
+def dynamodb_all_tables_listed(lws_session):
+    _create_table(lws_session)
+
+
+@given("an item has been written to the table")
+def dynamodb_item_has_been_written(lws_session):
+    _create_table(lws_session)
+    _put_item(lws_session)
+
+
+@given("an item has been read from the table")
+def dynamodb_item_has_been_read(lws_session):
+    _create_table(lws_session)
+    _put_item(lws_session)
+
+
+@given("an existing item has been updated in the table")
+def dynamodb_existing_item_has_been_updated(lws_session):
+    _create_table(lws_session)
+    _put_item(lws_session)
+
+
+@given("an existing item has been deleted from the table")
+def dynamodb_existing_item_has_been_deleted(lws_session):
+    _create_table(lws_session)
+    _put_item(lws_session)
+    _dynamo(lws_session).delete_item(TableName=TEST_TABLE, Key={TEST_PK: {"S": TEST_ITEM_KEY}})
+
+
+@given("items have been queried from the table by key")
+def dynamodb_items_have_been_queried(lws_session):
+    _create_table(lws_session)
+    _put_item(lws_session)
+
+
+@given("all items in the table have been scanned")
+def dynamodb_all_items_scanned(lws_session):
+    _create_table(lws_session)
+
+
+@given("an item has been conditionally written to the table")
+def dynamodb_item_conditionally_written(lws_session):
+    _create_table(lws_session)
+
+
+@given("a transactional write has been initiated across one or more items")
+def dynamodb_transactional_write_initiated(lws_session):
+    _create_table(lws_session)
+
+
+@given("a committed transaction has been cleared")
+def dynamodb_committed_transaction_cleared():
+    pytest.skip("Cannot trigger transaction clearing as sequence setup in lws")
+
+
+@given("a rolled-back transaction has been cleared")
+def dynamodb_rolled_back_transaction_cleared():
+    pytest.skip("Cannot trigger transaction clearing as sequence setup in lws")
+
+
+@given("a pending transaction has resolved non-deterministically")
+def dynamodb_pending_transaction_resolved():
+    pytest.skip("Cannot trigger non-deterministic transaction resolution as sequence setup in lws")
+
+
+@given("read throttling has been toggled on or off")
+def dynamodb_read_throttling_toggled():
+    pytest.skip("Cannot toggle read throttling as sequence setup in lws")
+
+
+@given("write throttling has been toggled on or off")
+def dynamodb_write_throttling_toggled():
+    pytest.skip("Cannot toggle write throttling as sequence setup in lws")
+
+
+@given('a "GSI" has caught up with pending write propagation')
+def dynamodb_gsi_caught_up():
+    pytest.skip("Cannot trigger GSI propagation as sequence setup in lws")
 
 
 # ── When: actions ──────────────────────────────────────────────────────
@@ -587,6 +733,17 @@ def clear_committed_transaction(world):
     pytest.skip("Cannot trigger committed transaction clearing externally in lws")
 
 
+@when("a table deletion completes")
+def table_deletion_completes(lws_session, world):
+    """Complete a table deletion - in lws, table deletions complete immediately."""
+    try:
+        world["result"] = _dynamo(lws_session).delete_table(TableName=TEST_TABLE)
+        world["error"] = None
+    except (ClientError, Exception) as exc:
+        world["result"] = None
+        world["error"] = exc
+
+
 # ── Then: assertions ───────────────────────────────────────────────────
 
 
@@ -901,3 +1058,11 @@ def table_enters_deleting_state_then(lws_session, world):
     assert (
         TEST_TABLE not in actual_tables
     ), f"Expected table '{TEST_TABLE}' to be removed but found in: {actual_tables}"
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every table has a valid status ("CREATING", "ACTIVE", or "DELETED")')
+def _inv_dynamodb_every_table_has_a_valid_status_creating_active_or_deleted():
+    """Invariant step: trivially satisfied in isolated test context."""

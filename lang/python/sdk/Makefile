@@ -9,13 +9,13 @@ install: ## Install dependencies
 	uv sync --all-groups
 
 lint: ## Run linter
-	uvx ruff check src tests
+	uvx ruff check --quiet src tests
 
 format: ## Auto-format code
 	uvx black src tests
 
 format-check: ## Check formatting without changing files
-	uvx black --check src tests
+	uvx black --check --quiet src tests
 
 complexity: ## Check cyclomatic complexity (all functions must be grade B or better)
 	@output=$$(uvx radon cc src -a -nc); \
@@ -31,10 +31,10 @@ pylint: ## Run pylint checks
 	uvx --from pylint pylint src/lws_testing --recursive=y
 
 unit-test: ## Run unit tests
-	uv run pytest tests/unit
+	uv run pytest -q tests/unit
 
 architecture-test: ## Run architecture constraint tests
-	uv run pytest tests/architecture
+	uv run pytest -q tests/architecture
 
 e2e-test: ## Run e2e tests (requires Docker)
 	uv run pytest tests/e2e -v -m "not internal"

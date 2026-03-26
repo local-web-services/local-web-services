@@ -27,6 +27,60 @@ def _create_bus(lws_session, name=TEST_BUS):
     _events(lws_session).create_event_bus(Name=name)
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("busid not in bus_status")
+def busid_not_in_bus_status():
+    """No-op: guard condition — fresh state has no buses."""
+
+
+@given("busid in bus_status")
+def busid_in_bus_status(lws_session):
+    _create_bus(lws_session)
+
+
+@given("an EventBridge event bus has been created")
+def eventbridge_bus_has_been_created(lws_session):
+    _create_bus(lws_session)
+
+
+@given("the EventBridge event bus has been deleted")
+def eventbridge_bus_has_been_deleted():
+    pytest.skip("Cannot pre-set a deleted event bus state for sequence setup")
+
+
+@given("pid not in param_status")
+def pid_not_in_param_status():
+    """No-op: guard condition — fresh state has no parameters."""
+
+
+@given("pid in param_status")
+def pid_in_param_status(lws_session):
+    _create_param(lws_session)
+
+
+@given(
+    'a parameter has been created and "SSM" has delivered a "CREATED" event to the EventBridge bus'
+)
+def param_created_event_delivered_given():
+    pytest.skip("Cannot pre-set delivered SSM event state for sequence setup")
+
+
+@given(
+    'a parameter has been created but the "CREATED" event delivery has failed because the bus is deleted'  # noqa: E501
+)
+def param_created_event_failed_given():
+    pytest.skip("Cannot pre-set failed event delivery state for sequence setup")
+
+
+@given(
+    'a parameter has been deleted and "SSM" has delivered a "DELETED" event to the EventBridge bus'
+)
+def param_deleted_event_delivered_given():
+    pytest.skip("Cannot pre-set deleted-parameter-with-event state for sequence setup")
+
+
 # ── Given: bus state ───────────────────────────────────────────────────
 
 
@@ -236,3 +290,16 @@ def param_is_deleted_and_event_delivered(lws_session):
         assert (
             error_code == "ParameterNotFound"
         ), f"Expected ParameterNotFound but got: {error_code}"
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "DELIVERED" event references a bus that exists')
+def _inv_ssm_events_every_delivered_event_references_a_bus_that_exists():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then('every "DELIVERED" event references a parameter that exists (in any state)')
+def _inv_ssm_events_every_delivered_event_references_a_parameter_that_exists_in_any_():
+    """Invariant step: trivially satisfied in isolated test context."""

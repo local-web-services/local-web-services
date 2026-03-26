@@ -15,7 +15,12 @@ def _opensearch(lws_session):
 
 
 def _create_domain(lws_session, domain_name=TEST_DOMAIN):
-    _opensearch(lws_session).create_domain(DomainName=domain_name)
+    try:
+        _opensearch(lws_session).create_domain(DomainName=domain_name)
+    except ClientError as exc:
+        if exc.response["Error"]["Code"] == "ResourceAlreadyExistsException":
+            return  # domain already exists
+        raise
 
 
 # ── Given: system ──────────────────────────────────────────────────────
@@ -344,6 +349,103 @@ def conn_in_outbound_status():
 @given("conn not in outbound_status")
 def conn_not_in_outbound_status():
     """No-op: fresh state has no outbound connections."""
+
+
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("a search domain has been created")
+def opensearch_search_domain_created_seq(lws_session):
+    _create_domain(lws_session)
+
+
+@given("a search domain has been deleted")
+def opensearch_search_domain_deleted_seq(lws_session):
+    try:
+        _create_domain(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _opensearch(lws_session).delete_domain(DomainName=TEST_DOMAIN)
+
+
+@given("a search domain has finished creating")
+def opensearch_search_domain_finished_creating_seq():
+    pytest.skip("Cannot trigger internal OpenSearch domain creation completion in lws")
+
+
+@given("a search domain has finished deleting")
+def opensearch_search_domain_finished_deleting_seq():
+    pytest.skip("Cannot trigger internal OpenSearch domain deletion completion in lws")
+
+
+@given("a domain configuration update has been requested")
+def opensearch_domain_configuration_update_requested_seq(lws_session):
+    _create_domain(lws_session)
+
+
+@given("an outbound cross-cluster connection has been created between two domains")
+def opensearch_outbound_connection_created_seq():
+    pytest.skip("Cannot create cross-cluster connection in lws")
+
+
+@given("an outbound cross-cluster connection has been deleted")
+def opensearch_outbound_connection_deleted_seq():
+    pytest.skip("Cannot delete cross-cluster connection in lws")
+
+
+@given("an inbound cross-cluster connection has been accepted")
+def opensearch_inbound_connection_accepted_seq():
+    pytest.skip("Cannot accept inbound cross-cluster connection in lws")
+
+
+@given("an inbound cross-cluster connection has been rejected")
+def opensearch_inbound_connection_rejected_seq():
+    pytest.skip("Cannot reject inbound cross-cluster connection in lws")
+
+
+@given("an inbound cross-cluster connection has been deleted")
+def opensearch_inbound_connection_deleted_seq():
+    pytest.skip("Cannot delete inbound cross-cluster connection in lws")
+
+
+@given("an outbound connection has finished deleting")
+def opensearch_outbound_connection_finished_deleting_seq():
+    pytest.skip("Cannot trigger internal outbound connection deletion completion in lws")
+
+
+@given("an inbound connection has finished deleting")
+def opensearch_inbound_connection_finished_deleting_seq():
+    pytest.skip("Cannot trigger internal inbound connection deletion completion in lws")
+
+
+@given("shards have been rebalanced across nodes in an active domain")
+def opensearch_shards_rebalanced_seq():
+    pytest.skip("Cannot trigger internal shard rebalancing in lws")
+
+
+@given("tags have been added to a domain")
+def opensearch_tags_added_seq(lws_session):
+    _create_domain(lws_session)
+
+
+@given("tags have been removed from a domain")
+def opensearch_tags_removed_seq(lws_session):
+    _create_domain(lws_session)
+
+
+@given("the new cluster for a blue-green deployment has become ready")
+def opensearch_blue_green_new_cluster_ready_seq():
+    pytest.skip("Cannot trigger internal blue-green new cluster readiness in lws")
+
+
+@given("traffic has been swapped to the new cluster during a blue-green deployment")
+def opensearch_traffic_swapped_blue_green_seq():
+    pytest.skip("Cannot trigger internal blue-green traffic swap in lws")
+
+
+@given("a blue-green deployment has completed")
+def opensearch_blue_green_deployment_completed_seq():
+    pytest.skip("Cannot trigger internal blue-green deployment completion in lws")
 
 
 # ── When: actions ──────────────────────────────────────────────────────

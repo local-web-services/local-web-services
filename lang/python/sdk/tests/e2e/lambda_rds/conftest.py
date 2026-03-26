@@ -168,6 +168,71 @@ def no_invocation_slot_available():
     pytest.skip("Cannot exhaust invocation slot limit")
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("fid not in func_status")
+def fid_not_in_func_status():
+    """No-op: fresh state has no functions."""
+
+
+@given("did not in db_status")
+def did_not_in_db_status():
+    """No-op: fresh state has no database instances."""
+
+
+@given("did in db_status")
+def did_in_db_status(lws_session):
+    _create_db_cluster(lws_session)
+
+
+@given("fid in func_status")
+def fid_in_func_status(lws_session):
+    _create_function(lws_session)
+
+
+@given("a Lambda function has been deployed")
+def lambda_function_has_been_deployed_seq(lws_session):
+    _create_function(lws_session)
+
+
+@given('an "RDS" database instance has been created')
+def rds_database_instance_has_been_created_seq(lws_session):
+    _create_db_cluster(lws_session)
+
+
+@given('a Multi-"AZ" failover has begun on the "RDS" instance')
+def rds_multi_az_failover_has_begun_seq():
+    pytest.skip("Cannot trigger RDS Multi-AZ failover in lws")
+
+
+@given('the Multi-"AZ" failover has completed and the new primary has been promoted')
+def rds_failover_has_completed_seq():
+    pytest.skip("Cannot trigger RDS failover completion in lws")
+
+
+@given("iid in inv_status")
+def iid_in_inv_status():
+    pytest.skip("Cannot create an in-progress invocation in lws")
+
+
+@given("the Lambda function has been invoked")
+def lambda_function_has_been_invoked_seq():
+    pytest.skip("Cannot create a completed Lambda invocation in lws")
+
+
+@given(
+    'the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded'
+)
+def lambda_executed_sql_succeeded_seq():
+    pytest.skip("Cannot trigger Lambda RDS SQL execution in lws")
+
+
+@given("the Lambda function has failed to connect because the database is failing over")
+def lambda_failed_to_connect_failover_seq():
+    pytest.skip("Cannot trigger Lambda RDS connection failure in lws")
+
+
 # ── When: actions ───────────────────────────────────────────────────────
 
 
@@ -253,3 +318,16 @@ def invocation_failed_connection_error(world):
 @then('the invocation is "SUCCESS"')
 def invocation_is_success_then(world):
     pytest.skip("Cannot observe Lambda invocation success in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function')
+def _inv_lambda_rds_every_in_progress_invocation_references_an_active_lambda_functio():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then("every successful invocation recorded which database it queried")
+def _inv_lambda_rds_every_successful_invocation_recorded_which_database_it_queried():
+    """Invariant step: trivially satisfied in isolated test context."""

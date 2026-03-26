@@ -141,6 +141,59 @@ def no_invocation_slot_available():
     pytest.skip("Cannot exhaust invocation slot limit")
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("fid not in func_status")
+def fid_not_in_func_status():
+    """No-op: fresh state has no functions."""
+
+
+@given("tid not in topic_status")
+def tid_not_in_topic_status():
+    """No-op: fresh state has no topics."""
+
+
+@given("fid in func_status")
+def fid_in_func_status(lws_session):
+    _create_function(lws_session)
+
+
+@given("iid in inv_status")
+def iid_in_inv_status():
+    pytest.skip("Cannot create an in-progress invocation in lws")
+
+
+@given("a Lambda function has been deployed")
+def lambda_function_has_been_deployed_seq(lws_session):
+    _create_function(lws_session)
+
+
+@given('an "SNS" topic has been created')
+def sns_topic_has_been_created_seq(lws_session):
+    _create_topic(lws_session)
+
+
+@given("the Lambda function has been invoked")
+def lambda_function_has_been_invoked_seq():
+    pytest.skip("Cannot create a completed Lambda invocation in lws")
+
+
+@given('the Lambda function has published a message to the "SNS" topic during invocation')
+def lambda_published_message_to_topic_seq():
+    pytest.skip("Cannot trigger Lambda SNS publish in lws")
+
+
+@given("the Lambda invocation has completed successfully")
+def lambda_invocation_completed_successfully_seq():
+    pytest.skip("Cannot create a completed Lambda invocation in lws")
+
+
+@given("the Lambda invocation has failed")
+def lambda_invocation_has_failed_seq():
+    pytest.skip("Cannot trigger Lambda invocation failure in lws")
+
+
 # ── When: actions ───────────────────────────────────────────────────────
 
 

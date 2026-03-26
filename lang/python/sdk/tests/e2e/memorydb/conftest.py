@@ -439,6 +439,180 @@ def sid_in_snapshot_status(lws_session):
     _create_snapshot(lws_session)
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("a MemoryDB cluster has been created")
+def memorydb_cluster_has_been_created_seq(lws_session):
+    _create_cluster(lws_session)
+
+
+@given("a MemoryDB cluster has been deleted")
+def memorydb_cluster_has_been_deleted_seq(lws_session):
+    try:
+        _create_cluster(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _memorydb(lws_session).delete_cluster(ClusterName=TEST_CLUSTER)
+
+
+@given("a MemoryDB cluster has finished creating")
+def memorydb_cluster_has_finished_creating_seq():
+    pytest.skip("Cannot trigger internal MemoryDB cluster creation completion in lws")
+
+
+@given("a MemoryDB cluster update has completed")
+def memorydb_cluster_update_completed_seq():
+    pytest.skip("Cannot trigger internal MemoryDB cluster update completion in lws")
+
+
+@given("a MemoryDB cluster deletion has completed")
+def memorydb_cluster_deletion_completed_seq():
+    pytest.skip("Cannot trigger internal MemoryDB cluster deletion completion in lws")
+
+
+@given("a MemoryDB cluster configuration has been updated")
+def memorydb_cluster_configuration_updated_seq(lws_session):
+    _create_cluster(lws_session)
+
+
+@given("a cluster has been restored from a snapshot")
+def memorydb_cluster_restored_from_snapshot_seq():
+    pytest.skip("Cannot trigger internal MemoryDB cluster restore in lws")
+
+
+@given("a cluster restore from snapshot has completed")
+def memorydb_cluster_restore_completed_seq():
+    pytest.skip("Cannot trigger internal MemoryDB cluster restore completion in lws")
+
+
+@given('a shard failover has been triggered on a multi-"AZ" cluster')
+def memorydb_shard_failover_triggered_seq():
+    pytest.skip("Cannot trigger internal MemoryDB shard failover in lws")
+
+
+@given("a snapshot has been created from an available cluster")
+def memorydb_snapshot_created_seq(lws_session):
+    _create_cluster(lws_session)
+    _create_snapshot(lws_session)
+
+
+@given("a snapshot has been deleted")
+def memorydb_snapshot_deleted_seq(lws_session):
+    try:
+        _create_cluster(lws_session)
+        _create_snapshot(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _memorydb(lws_session).delete_snapshot(SnapshotName=TEST_SNAPSHOT)
+
+
+@given("a snapshot has finished creating")
+def memorydb_snapshot_finished_creating_seq():
+    pytest.skip("Cannot trigger internal MemoryDB snapshot creation completion in lws")
+
+
+@given("a snapshot deletion has completed")
+def memorydb_snapshot_deletion_completed_seq():
+    pytest.skip("Cannot trigger internal MemoryDB snapshot deletion completion in lws")
+
+
+@given("a user has been created")
+def memorydb_user_created_seq(lws_session):
+    _create_user(lws_session)
+
+
+@given("a user has been deleted")
+def memorydb_user_deleted_seq(lws_session):
+    try:
+        _create_user(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _memorydb(lws_session).delete_user(UserName=TEST_USER)
+
+
+@given("a user has been updated")
+def memorydb_user_updated_seq(lws_session):
+    _create_user(lws_session)
+
+
+@given("a user has finished creating")
+def memorydb_user_finished_creating_seq():
+    pytest.skip("Cannot trigger internal MemoryDB user creation completion in lws")
+
+
+@given("a user update has completed")
+def memorydb_user_update_completed_seq():
+    pytest.skip("Cannot trigger internal MemoryDB user update completion in lws")
+
+
+@given("a user deletion has completed")
+def memorydb_user_deletion_completed_seq():
+    pytest.skip("Cannot trigger internal MemoryDB user deletion completion in lws")
+
+
+@given('a user has been added to an "ACL"')
+def memorydb_user_added_to_acl_seq(lws_session):
+    _create_user(lws_session)
+    _create_acl(lws_session)
+
+
+@given('a user has been removed from an "ACL"')
+def memorydb_user_removed_from_acl_seq(lws_session):
+    _create_user(lws_session)
+    _create_acl(lws_session)
+
+
+@given('an "ACL" has been created')
+def memorydb_acl_created_seq(lws_session):
+    _create_acl(lws_session)
+
+
+@given('an "ACL" has been deleted')
+def memorydb_acl_deleted_seq(lws_session):
+    try:
+        _create_acl(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _memorydb(lws_session).delete_acl(ACLName=TEST_ACL)
+
+
+@given('an "ACL" has been updated')
+def memorydb_acl_updated_seq(lws_session):
+    _create_acl(lws_session)
+
+
+@given('an "ACL" has finished creating')
+def memorydb_acl_finished_creating_seq():
+    pytest.skip("Cannot trigger internal MemoryDB ACL creation completion in lws")
+
+
+@given('an "ACL" update has completed')
+def memorydb_acl_update_completed_seq():
+    pytest.skip("Cannot trigger internal MemoryDB ACL update completion in lws")
+
+
+@given('an "ACL" deletion has completed')
+def memorydb_acl_deletion_completed_seq():
+    pytest.skip("Cannot trigger internal MemoryDB ACL deletion completion in lws")
+
+
+@given('an "ACL" has been associated with a cluster')
+def memorydb_acl_associated_with_cluster_seq(lws_session):
+    _create_cluster(lws_session)
+    _create_acl(lws_session)
+
+
+@given("tags have been added to a MemoryDB resource")
+def memorydb_tags_added_seq():
+    pytest.skip("Cannot construct MemoryDB ARN for tag operations in this context")
+
+
+@given("tags have been removed from a MemoryDB resource")
+def memorydb_tags_removed_seq():
+    pytest.skip("Cannot construct MemoryDB ARN for tag operations in this context")
+
+
 # ── When: actions ──────────────────────────────────────────────────────
 
 

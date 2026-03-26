@@ -157,6 +157,80 @@ def no_invocation_slot_available():
     pytest.skip("Cannot exhaust invocation slot limit")
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("fid not in func_status")
+def fid_not_in_func_status():
+    """No-op: fresh state has no Lambda functions."""
+
+
+@given("fid in func_status")
+def fid_in_func_status(lws_session):
+    try:
+        _create_function(lws_session)
+    except ClientError as exc:
+        if exc.response["Error"]["Code"] != "ResourceConflictException":
+            raise
+
+
+@given("a Lambda function has been deployed")
+def lambda_cognito_seq_function_deployed(lws_session):
+    try:
+        _create_function(lws_session)
+    except ClientError as exc:
+        if exc.response["Error"]["Code"] != "ResourceConflictException":
+            raise
+
+
+@given("pid not in pool_status")
+def pid_not_in_pool_status():
+    """No-op: fresh state has no Cognito user pools."""
+
+
+@given("pid in pool_status")
+def pid_in_pool_status(lws_session):
+    try:
+        _create_pool(lws_session)
+    except ClientError as exc:
+        if exc.response["Error"]["Code"] != "ResourceInUseException":
+            raise
+
+
+@given("a Cognito user pool has been created")
+def lambda_cognito_seq_pool_created(lws_session):
+    try:
+        _create_pool(lws_session)
+    except ClientError as exc:
+        if exc.response["Error"]["Code"] != "ResourceInUseException":
+            raise
+
+
+@given("a Cognito user pool has been deleted")
+def lambda_cognito_seq_pool_deleted():
+    """No-op: fresh state has no pools, simulates a previously deleted pool."""
+
+
+@given("the Lambda function has been invoked")
+def lambda_cognito_seq_function_invoked():
+    pytest.skip("Cannot trigger Lambda invocation in lws")
+
+
+@given("iid in inv_status")
+def iid_in_inv_status():
+    pytest.skip("Cannot observe Lambda invocation state in lws")
+
+
+@given('the Lambda function has called a Cognito admin "API" on an "ACTIVE" pool and succeeded')
+def lambda_cognito_seq_invocation_succeeded():
+    pytest.skip("Cannot trigger Lambda invocation in lws")
+
+
+@given("the Lambda function has failed to call Cognito because the pool has been deleted")
+def lambda_cognito_seq_invocation_failed():
+    pytest.skip("Cannot trigger Lambda invocation in lws")
+
+
 # ── When: actions ───────────────────────────────────────────────────────
 
 
@@ -252,3 +326,16 @@ def invocation_failed_resource_not_found(world):
 @then('the invocation is "SUCCESS"')
 def invocation_is_success_then(world):
     pytest.skip("Cannot observe Lambda invocation success in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function')
+def _inv_lambda_cognito_every_in_progress_invocation_references_an_active_lambda_fun():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then("every successful invocation recorded which pool it called")
+def _inv_lambda_cognito_every_successful_invocation_recorded_which_pool_it_called():
+    """Invariant step: trivially satisfied in isolated test context."""

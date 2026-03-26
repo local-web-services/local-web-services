@@ -503,6 +503,163 @@ def sid_in_snapshot_status(lws_session):
     _create_snapshot(lws_session)
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("a redis cache cluster has been created")
+def elasticache_redis_cluster_has_been_created(lws_session):
+    _create_cluster(lws_session)
+
+
+@given("a memcached cache cluster has been created")
+def elasticache_memcached_cluster_has_been_created(lws_session):
+    _create_cluster(lws_session, engine="memcached")
+
+
+@given("a standalone cache cluster has finished creating")
+def elasticache_standalone_cluster_finished_creating(lws_session):
+    _create_cluster(lws_session)
+
+
+@given("a standalone cache cluster has been deleted")
+def elasticache_standalone_cluster_has_been_deleted():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a cache cluster deletion has completed")
+def elasticache_cluster_deletion_completed():
+    pytest.skip(
+        "Cannot represent a completed ElastiCache cluster deletion as sequence setup in lws"
+    )
+
+
+@given("a cache cluster configuration has been modified")
+def elasticache_cluster_config_modified():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a cache cluster modification has completed")
+def elasticache_cluster_modification_completed():
+    pytest.skip(
+        "Cannot represent a completed ElastiCache cluster modification as sequence setup in lws"
+    )
+
+
+@given("a cache cluster has been created from a snapshot")
+def elasticache_cluster_created_from_snapshot():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a cache cluster restore from snapshot has completed")
+def elasticache_cluster_restore_completed():
+    pytest.skip("Cannot represent a completed ElastiCache restore as sequence setup in lws")
+
+
+@given("a replication group has been created")
+def elasticache_rg_has_been_created(lws_session):
+    _create_replication_group(lws_session)
+
+
+@given("a replication group has finished creating")
+def elasticache_rg_finished_creating(lws_session):
+    _create_replication_group(lws_session)
+
+
+@given("a replication group has been deleted")
+def elasticache_rg_has_been_deleted():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a replication group deletion has completed")
+def elasticache_rg_deletion_completed():
+    pytest.skip(
+        "Cannot represent a completed ElastiCache replication group deletion as sequence setup in lws"  # noqa: E501
+    )
+
+
+@given("a replication group configuration has been modified")
+def elasticache_rg_config_modified():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a replication group modification has completed")
+def elasticache_rg_modification_completed():
+    pytest.skip(
+        "Cannot represent a completed ElastiCache replication group modification as sequence setup in lws"  # noqa: E501
+    )
+
+
+@given("a replica has been added to a replication group")
+def elasticache_replica_added():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a replica creation in a replication group has completed")
+def elasticache_replica_creation_completed():
+    pytest.skip(
+        "Cannot represent a completed ElastiCache replica creation as sequence setup in lws"
+    )
+
+
+@given("an automatic failover has promoted a new primary in a replication group")
+def elasticache_automatic_failover_promoted():
+    pytest.skip("Cannot trigger ElastiCache automatic failover as sequence setup in lws")
+
+
+@given("a snapshot has been created from an available redis cache cluster")
+def elasticache_snapshot_created():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a cache snapshot has finished creating")
+def elasticache_snapshot_finished_creating():
+    pytest.skip(
+        "Cannot represent a completed ElastiCache snapshot creation as sequence setup in lws"
+    )
+
+
+@given("a cache snapshot has been deleted")
+def elasticache_snapshot_has_been_deleted():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a cache snapshot deletion has completed")
+def elasticache_snapshot_deletion_completed():
+    pytest.skip(
+        "Cannot represent a completed ElastiCache snapshot deletion as sequence setup in lws"
+    )
+
+
+@given("a cache parameter group has been created")
+def elasticache_pg_has_been_created(lws_session):
+    _create_parameter_group(lws_session)
+
+
+@given("a cache parameter group has been deleted")
+def elasticache_pg_has_been_deleted():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a cache subnet group has been created")
+def elasticache_sg_has_been_created(lws_session):
+    _create_subnet_group(lws_session)
+
+
+@given("a cache subnet group has been deleted")
+def elasticache_sg_has_been_deleted():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("tags have been added to a cache resource")
+def elasticache_tags_added():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("tags have been removed from a cache resource")
+def elasticache_tags_removed():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
 # ── When: actions ──────────────────────────────────────────────────────
 
 

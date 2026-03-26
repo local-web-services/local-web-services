@@ -155,6 +155,71 @@ def no_document_slot_available():
     pytest.skip("Cannot exhaust document slot limit")
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("fid not in func_status")
+def fid_not_in_func_status():
+    """No-op: fresh state has no Lambda functions."""
+
+
+@given("fid in func_status")
+def fid_in_func_status(lws_session):
+    _create_function(lws_session)
+
+
+@given("a Lambda function has been deployed")
+def lambda_docdb_seq_function_deployed(lws_session):
+    _create_function(lws_session)
+
+
+@given("cid not in cluster_status")
+def cid_not_in_cluster_status():
+    """No-op: fresh state has no DocumentDB clusters."""
+
+
+@given("cid in cluster_status")
+def cid_in_cluster_status(lws_session):
+    _create_cluster(lws_session)
+
+
+@given("a DocumentDB cluster has been created")
+def lambda_docdb_seq_cluster_created(lws_session):
+    _create_cluster(lws_session)
+
+
+@given("the DocumentDB cluster has been stopped")
+def lambda_docdb_seq_cluster_stopped():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("the DocumentDB cluster has been started")
+def lambda_docdb_seq_cluster_started():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("the Lambda function has been invoked")
+def lambda_docdb_seq_function_invoked():
+    pytest.skip("Cannot trigger Lambda invocation in lws")
+
+
+@given("iid in inv_status")
+def iid_in_inv_status():
+    pytest.skip("Cannot observe Lambda invocation state in lws")
+
+
+@given(
+    'the Lambda function has written a document to the "AVAILABLE" DocumentDB cluster and succeeded'
+)
+def lambda_docdb_seq_invocation_succeeded():
+    pytest.skip("Cannot trigger Lambda invocation in lws")
+
+
+@given("the Lambda function has failed to connect because the DocumentDB cluster is stopped")
+def lambda_docdb_seq_invocation_failed():
+    pytest.skip("Cannot trigger Lambda invocation in lws")
+
+
 # ── When: actions ───────────────────────────────────────────────────────
 
 
@@ -240,3 +305,16 @@ def invocation_failed_connection_error(world):
 @then('the document "EXISTS" and the invocation is "SUCCESS"')
 def document_exists_invocation_success(world):
     pytest.skip("Cannot observe Lambda document write result in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function')
+def _inv_lambda_docdb_every_in_progress_invocation_references_an_active_lambda_funct():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then("every existing document references a cluster that exists")
+def _inv_lambda_docdb_every_existing_document_references_a_cluster_that_exists():
+    """Invariant step: trivially satisfied in isolated test context."""

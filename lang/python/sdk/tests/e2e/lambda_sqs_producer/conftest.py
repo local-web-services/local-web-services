@@ -150,6 +150,59 @@ def no_message_slot_available():
     pytest.skip("Cannot exhaust message slot limit")
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("fid not in func_status")
+def fid_not_in_func_status():
+    """No-op: fresh state has no functions."""
+
+
+@given("qid not in queue_status")
+def qid_not_in_queue_status():
+    """No-op: fresh state has no queues."""
+
+
+@given("fid in func_status")
+def fid_in_func_status(lws_session):
+    _create_function(lws_session)
+
+
+@given("iid in inv_status")
+def iid_in_inv_status():
+    pytest.skip("Cannot create an in-progress invocation in lws")
+
+
+@given("a Lambda function has been deployed")
+def lambda_function_has_been_deployed_seq(lws_session):
+    _create_function(lws_session)
+
+
+@given('an "SQS" queue has been created')
+def sqs_queue_has_been_created_seq(lws_session):
+    _create_queue(lws_session)
+
+
+@given("the Lambda function has been invoked")
+def lambda_function_has_been_invoked_seq():
+    pytest.skip("Cannot create a completed Lambda invocation in lws")
+
+
+@given('the Lambda function has sent a message to the "SQS" queue during invocation')
+def lambda_sent_message_to_sqs_seq():
+    pytest.skip("Cannot trigger Lambda SQS send in lws")
+
+
+@given("the Lambda invocation has completed successfully")
+def lambda_invocation_completed_successfully_seq():
+    pytest.skip("Cannot create a completed Lambda invocation in lws")
+
+
+@given("the Lambda invocation has failed")
+def lambda_invocation_has_failed_seq():
+    pytest.skip("Cannot trigger Lambda invocation failure in lws")
+
+
 # ── When: actions ───────────────────────────────────────────────────────
 
 

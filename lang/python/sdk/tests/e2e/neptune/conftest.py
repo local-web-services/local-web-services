@@ -389,6 +389,166 @@ def sid_in_snapshot_status(lws_session):
     _create_snapshot(lws_session)
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("a database cluster has been created")
+def neptune_database_cluster_created_seq(lws_session):
+    _create_cluster(lws_session)
+
+
+@given("a database cluster has been deleted")
+def neptune_database_cluster_deleted_seq(lws_session):
+    try:
+        _create_cluster(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _neptune(lws_session).delete_db_cluster(DBClusterIdentifier=TEST_CLUSTER)
+
+
+@given("a database cluster has been stopped")
+def neptune_database_cluster_stopped_seq():
+    pytest.skip("Cannot trigger internal Neptune cluster stop in lws")
+
+
+@given("a database cluster has finished creating")
+def neptune_database_cluster_finished_creating_seq():
+    pytest.skip("Cannot trigger internal Neptune cluster creation completion in lws")
+
+
+@given("a database cluster configuration has been modified")
+def neptune_database_cluster_configuration_modified_seq(lws_session):
+    _create_cluster(lws_session)
+
+
+@given("a database cluster modification has completed")
+def neptune_database_cluster_modification_completed_seq():
+    pytest.skip("Cannot trigger internal Neptune cluster modification completion in lws")
+
+
+@given("a database cluster deletion has completed")
+def neptune_database_cluster_deletion_completed_seq():
+    pytest.skip("Cannot trigger internal Neptune cluster deletion completion in lws")
+
+
+@given("a database cluster creation has failed")
+def neptune_database_cluster_creation_failed_seq():
+    pytest.skip("Cannot trigger internal Neptune cluster creation failure in lws")
+
+
+@given("a stopped database cluster has been started")
+def neptune_stopped_cluster_started_seq():
+    pytest.skip("Cannot trigger internal Neptune cluster start in lws")
+
+
+@given("a database cluster stop has completed")
+def neptune_database_cluster_stop_completed_seq():
+    pytest.skip("Cannot trigger internal Neptune cluster stop completion in lws")
+
+
+@given("a database cluster start has completed")
+def neptune_database_cluster_start_completed_seq():
+    pytest.skip("Cannot trigger internal Neptune cluster start completion in lws")
+
+
+@given("a database cluster restore from snapshot has completed")
+def neptune_cluster_restore_completed_seq():
+    pytest.skip("Cannot trigger internal Neptune cluster restore completion in lws")
+
+
+@given("a cluster has been restored from a snapshot")
+def neptune_cluster_restored_from_snapshot_seq():
+    pytest.skip("Cannot trigger internal Neptune cluster restore in lws")
+
+
+@given("a database instance has been created in an available cluster")
+def neptune_database_instance_created_seq(lws_session):
+    _create_cluster(lws_session)
+    _create_instance(lws_session)
+
+
+@given("a database instance has been deleted")
+def neptune_database_instance_deleted_seq(lws_session):
+    try:
+        _create_cluster(lws_session)
+        _create_instance(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _neptune(lws_session).delete_db_instance(DBInstanceIdentifier=TEST_INSTANCE)
+
+
+@given("a database instance has finished creating")
+def neptune_database_instance_finished_creating_seq():
+    pytest.skip("Cannot trigger internal Neptune instance creation completion in lws")
+
+
+@given("a database instance configuration has been modified")
+def neptune_database_instance_configuration_modified_seq(lws_session):
+    _create_cluster(lws_session)
+    _create_instance(lws_session)
+
+
+@given("a database instance modification has completed")
+def neptune_database_instance_modification_completed_seq():
+    pytest.skip("Cannot trigger internal Neptune instance modification completion in lws")
+
+
+@given("a database instance deletion has completed")
+def neptune_database_instance_deletion_completed_seq():
+    pytest.skip("Cannot trigger internal Neptune instance deletion completion in lws")
+
+
+@given("a database instance has been rebooted")
+def neptune_database_instance_rebooted_seq():
+    pytest.skip("Cannot trigger internal Neptune instance reboot in lws")
+
+
+@given("a database instance reboot has completed")
+def neptune_database_instance_reboot_completed_seq():
+    pytest.skip("Cannot trigger internal Neptune instance reboot completion in lws")
+
+
+@given("a database cluster snapshot has been created")
+def neptune_snapshot_created_seq(lws_session):
+    _create_cluster(lws_session)
+    _create_snapshot(lws_session)
+
+
+@given("a database cluster snapshot has been deleted")
+def neptune_snapshot_deleted_seq(lws_session):
+    try:
+        _create_cluster(lws_session)
+        _create_snapshot(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _neptune(lws_session).delete_db_cluster_snapshot(DBClusterSnapshotIdentifier=TEST_SNAPSHOT)
+
+
+@given("a database cluster snapshot has finished creating")
+def neptune_snapshot_finished_creating_seq():
+    pytest.skip("Cannot trigger internal Neptune snapshot creation completion in lws")
+
+
+@given("a database cluster snapshot deletion has completed")
+def neptune_snapshot_deletion_completed_seq():
+    pytest.skip("Cannot trigger internal Neptune snapshot deletion completion in lws")
+
+
+@given('a multi-"AZ" failover has been triggered on a cluster')
+def neptune_multi_az_failover_triggered_seq():
+    pytest.skip("Cannot trigger internal Neptune multi-AZ failover in lws")
+
+
+@given("a replica instance has been promoted to primary during failover")
+def neptune_replica_promoted_to_primary_seq():
+    pytest.skip("Cannot trigger internal Neptune replica promotion in lws")
+
+
+@given("an automated backup window has run on an available cluster")
+def neptune_automated_backup_window_ran_seq():
+    pytest.skip("Cannot trigger internal Neptune automated backup window in lws")
+
+
 # ── When: actions ──────────────────────────────────────────────────────
 
 

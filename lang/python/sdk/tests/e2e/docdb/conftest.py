@@ -331,6 +331,121 @@ def sid_in_snapshot_status(lws_session):
     _create_snapshot(lws_session)
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("a database cluster has been created")
+def docdb_cluster_has_been_created(lws_session):
+    _create_cluster(lws_session)
+
+
+@given("a database cluster has finished creating")
+def docdb_cluster_has_finished_creating(lws_session):
+    _create_cluster(lws_session)
+
+
+@given("a database cluster has been deleted")
+def docdb_cluster_has_been_deleted():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a database cluster creation has failed")
+def docdb_cluster_creation_failed():
+    pytest.skip("Cannot represent a failed DocumentDB cluster creation as sequence setup in lws")
+
+
+@given("a database cluster deletion has completed")
+def docdb_cluster_deletion_completed():
+    pytest.skip("Cannot represent a completed DocumentDB cluster deletion as sequence setup in lws")
+
+
+@given("a database cluster configuration has been modified")
+def docdb_cluster_config_modified():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a database cluster modification has completed")
+def docdb_cluster_modification_completed():
+    pytest.skip(
+        "Cannot represent a completed DocumentDB cluster modification as sequence setup in lws"
+    )
+
+
+@given("a database cluster restore from snapshot has completed")
+def docdb_cluster_restore_completed():
+    pytest.skip("Cannot represent a completed DocumentDB cluster restore as sequence setup in lws")
+
+
+@given("a cluster has been restored from a snapshot")
+def docdb_cluster_restored_from_snapshot():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a database instance has been created in an available cluster")
+def docdb_instance_has_been_created():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a database instance has been deleted")
+def docdb_instance_has_been_deleted():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a database instance has finished creating")
+def docdb_instance_has_finished_creating():
+    pytest.skip(
+        "Cannot represent a completed DocumentDB instance creation as sequence setup in lws"
+    )
+
+
+@given("a database instance deletion has completed")
+def docdb_instance_deletion_completed():
+    pytest.skip(
+        "Cannot represent a completed DocumentDB instance deletion as sequence setup in lws"
+    )
+
+
+@given("a database instance configuration has been modified")
+def docdb_instance_config_modified():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a database instance modification has completed")
+def docdb_instance_modification_completed():
+    pytest.skip(
+        "Cannot represent a completed DocumentDB instance modification as sequence setup in lws"
+    )
+
+
+@given("a database cluster snapshot has been created")
+def docdb_snapshot_has_been_created():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a database cluster snapshot has been deleted")
+def docdb_snapshot_has_been_deleted():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a database cluster snapshot has finished creating")
+def docdb_snapshot_has_finished_creating():
+    pytest.skip(
+        "Cannot represent a completed DocumentDB snapshot creation as sequence setup in lws"
+    )
+
+
+@given("a database cluster snapshot deletion has completed")
+def docdb_snapshot_deletion_completed():
+    pytest.skip(
+        "Cannot represent a completed DocumentDB snapshot deletion as sequence setup in lws"
+    )
+
+
+@given("a failover has been triggered and a replica has been promoted to primary")
+def docdb_failover_triggered():
+    pytest.skip("Cannot trigger internal DocumentDB failover as sequence setup in lws")
+
+
 # ── When: actions ──────────────────────────────────────────────────────
 
 

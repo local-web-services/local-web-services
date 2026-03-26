@@ -15,7 +15,12 @@ def _es(lws_session):
 
 
 def _create_domain(lws_session, domain_name=TEST_DOMAIN):
-    _es(lws_session).create_elasticsearch_domain(DomainName=domain_name)
+    try:
+        _es(lws_session).create_elasticsearch_domain(DomainName=domain_name)
+    except ClientError as exc:
+        if exc.response["Error"]["Code"] == "ResourceAlreadyExistsException":
+            return  # domain already exists
+        raise
 
 
 def _create_index(lws_session, domain_name=TEST_DOMAIN, index_name=TEST_INDEX):
@@ -190,6 +195,137 @@ def domain_in_domain_status(lws_session):
 @given("domain not in domain_status")
 def domain_not_in_domain_status():
     """No-op: fresh state has no domains."""
+
+
+@given("did not in domain_status")
+def did_not_in_domain_status():
+    """No-op: fresh state has no domains."""
+
+
+@given("did in domain_status")
+def did_in_domain_status(lws_session):
+    _create_domain(lws_session)
+
+
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given('an Elasticsearch domain has been created and become "AVAILABLE"')
+def elasticsearch_domain_created_and_available(lws_session):
+    _create_domain(lws_session)
+
+
+@given("a search domain has finished creating")
+def elasticsearch_domain_finished_creating(lws_session):
+    _create_domain(lws_session)
+
+
+@given("a domain configuration update has begun")
+def elasticsearch_domain_config_update_begun():
+    pytest.skip("Cannot trigger internal Elasticsearch domain configuration update in lws")
+
+
+@given("the domain configuration update has completed")
+def elasticsearch_domain_config_update_completed():
+    pytest.skip(
+        "Cannot trigger internal Elasticsearch domain configuration update completion in lws"
+    )
+
+
+@given("the Lambda function has been invoked")
+def elasticsearch_lambda_invoked():
+    pytest.skip("Cannot trigger Lambda invocation in lws")
+
+
+@given('the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded')
+def elasticsearch_lambda_indexed_document():
+    pytest.skip("Cannot trigger Lambda invocation in lws")
+
+
+@given("the Lambda function has failed to write because the domain is processing a config update")
+def elasticsearch_lambda_failed_to_write():
+    pytest.skip("Cannot trigger Lambda invocation in lws")
+
+
+@given("a search domain has been created")
+def elasticsearch_seq_domain_created(lws_session):
+    _create_domain(lws_session)
+
+
+@given("a search domain has been deleted")
+def elasticsearch_seq_domain_deleted():
+    """No-op: fresh state has no domains, simulates a previously deleted domain."""
+
+
+@given("a search domain has finished deleting")
+def elasticsearch_seq_domain_finished_deleting():
+    pytest.skip("Cannot simulate domain deletion completion in lws")
+
+
+@given("a domain configuration update has been requested")
+def elasticsearch_seq_domain_config_update_requested(lws_session):
+    _create_domain(lws_session)
+    _es(lws_session).update_elasticsearch_domain_config(
+        DomainName=TEST_DOMAIN,
+        ElasticsearchClusterConfig={"InstanceType": "t2.small.elasticsearch", "InstanceCount": 1},
+    )
+
+
+@given("a domain has finished processing its configuration update")
+def elasticsearch_seq_domain_finished_processing_config_update():
+    pytest.skip("Cannot simulate config update completion in lws")
+
+
+@given("an index has been created in an active domain")
+def elasticsearch_seq_index_created_in_active_domain():
+    pytest.skip("Cannot create index without connecting to Elasticsearch endpoint in lws")
+
+
+@given("an index has been deleted from an active domain")
+def elasticsearch_seq_index_deleted_from_active_domain():
+    pytest.skip("Cannot delete index without connecting to Elasticsearch endpoint in lws")
+
+
+@given("a document has been indexed in an active index")
+def elasticsearch_seq_document_indexed_in_active_index():
+    pytest.skip("Cannot index document without connecting to Elasticsearch endpoint in lws")
+
+
+@given("tags have been added to a domain")
+def elasticsearch_seq_tags_added_to_domain(lws_session):
+    _create_domain(lws_session)
+    _es(lws_session).add_tags(
+        ARN=f"arn:aws:es:us-east-1:000000000000:domain/{TEST_DOMAIN}",
+        TagList=[{"Key": "e2e-test-tag-key-1", "Value": "test-tag-value-1"}],
+    )
+
+
+@given("tags have been removed from a domain")
+def elasticsearch_seq_tags_removed_from_domain(lws_session):
+    _create_domain(lws_session)
+    _es(lws_session).add_tags(
+        ARN=f"arn:aws:es:us-east-1:000000000000:domain/{TEST_DOMAIN}",
+        TagList=[{"Key": "e2e-test-tag-key-1", "Value": "test-tag-value-1"}],
+    )
+    _es(lws_session).remove_tags(
+        ARN=f"arn:aws:es:us-east-1:000000000000:domain/{TEST_DOMAIN}",
+        TagKeys=["e2e-test-tag-key-1"],
+    )
+
+
+@given("shards have been reallocated across nodes in an active domain")
+def elasticsearch_seq_shards_reallocated():
+    pytest.skip("Cannot simulate shard reallocation in lws")
+
+
+@given("a replica sync lag event has occurred on an active domain")
+def elasticsearch_seq_replica_sync_lag():
+    pytest.skip("Cannot simulate replica sync lag in lws")
+
+
+@given("a node failure has occurred in an active domain")
+def elasticsearch_seq_node_failure():
+    pytest.skip("Cannot simulate node failure in lws")
 
 
 # ── When: actions ──────────────────────────────────────────────────────

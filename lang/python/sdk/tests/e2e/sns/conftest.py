@@ -17,8 +17,13 @@ def _sns(lws_session):
 
 
 def _create_topic(lws_session, name=TEST_TOPIC):
-    resp = _sns(lws_session).create_topic(Name=name)
-    return resp["TopicArn"]
+    try:
+        resp = _sns(lws_session).create_topic(Name=name)
+        return resp["TopicArn"]
+    except ClientError as exc:
+        if exc.response["Error"]["Code"] == "TopicAlreadyExists":
+            return _get_topic_arn(lws_session, name)
+        raise
 
 
 def _get_topic_arn(lws_session, name=TEST_TOPIC):
@@ -488,3 +493,102 @@ def no_delivery_to_unconfirmed_subscription():
 @then('every active subscription references an "ACTIVE" topic')
 def every_active_subscription_references_active_topic():
     """Invariant: trivially satisfied in isolated lws context."""
+
+
+# ── Given: sequence setup ─────────────────────────────────────────
+
+
+@given("tarn not in topic_status")
+def sns_tarn_not_in_topic_status():
+    """No-op: fresh state has no topics."""
+
+
+@given('an "SNS" topic has been created')
+def sns_an_sns_topic_has_been_created(lws_session, world):
+    world["topic_arn"] = _create_topic(lws_session)
+
+
+@given("tarn in topic_status")
+def sns_tarn_in_topic_status(lws_session, world):
+    world["topic_arn"] = _create_topic(lws_session)
+
+
+@given('an "SNS" topic has been deleted')
+def sns_an_sns_topic_has_been_deleted(lws_session, world):
+    try:
+        world["topic_arn"] = _create_topic(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _sns(lws_session).delete_topic(TopicArn=world.get("topic_arn", _get_topic_arn(lws_session)))
+
+
+@given("an endpoint has subscribed to a topic")
+def sns_an_endpoint_has_subscribed_to_a_topic(lws_session, world):
+    world["topic_arn"] = _create_topic(lws_session)
+    resp = _sns(lws_session).subscribe(
+        TopicArn=world["topic_arn"],
+        Protocol="email",
+        Endpoint=TEST_EMAIL_ENDPOINT,
+    )
+    world["subscription_arn"] = resp.get("SubscriptionArn", "PendingConfirmation")
+
+
+@given("sid in sub_status")
+def sns_sid_in_sub_status(lws_session, world):
+    if not world.get("topic_arn"):
+        world["topic_arn"] = _create_topic(lws_session)
+    resp = _sns(lws_session).subscribe(
+        TopicArn=world["topic_arn"],
+        Protocol="email",
+        Endpoint=TEST_EMAIL_ENDPOINT,
+    )
+    world["subscription_arn"] = resp.get("SubscriptionArn", "PendingConfirmation")
+
+
+@given("a pending subscription has been confirmed")
+def sns_a_pending_subscription_has_been_confirmed():
+    pytest.skip("Cannot confirm subscription without token in this context")
+
+
+@given("a subscription has been removed")
+def sns_a_subscription_has_been_removed(lws_session, world):
+    sub_arn = world.get("subscription_arn", "")
+    if sub_arn:
+        try:
+            _sns(lws_session).unsubscribe(SubscriptionArn=sub_arn)
+        except Exception:  # noqa: BLE001
+            pass
+
+
+@given("a message has been published to a topic")
+def sns_a_message_has_been_published_to_a_topic(lws_session, world):
+    world["topic_arn"] = _create_topic(lws_session)
+    _sns(lws_session).publish(
+        TopicArn=world["topic_arn"],
+        Message="test-message-1",
+    )
+
+
+@given("a delivery attempt has succeeded")
+def sns_a_delivery_attempt_has_succeeded():
+    pytest.skip("Cannot pre-set delivery success state in lws")
+
+
+@given("a delivery attempt has failed and been retried")
+def sns_a_delivery_attempt_has_failed_and_been_retried():
+    pytest.skip("Cannot pre-set delivery retry state in lws")
+
+
+@given("a subscription confirmation token has expired")
+def sns_a_subscription_confirmation_token_has_expired():
+    pytest.skip("Cannot simulate token expiry in lws")
+
+
+@given("all delivery retries have been exhausted")
+def sns_all_delivery_retries_have_been_exhausted():
+    pytest.skip("Cannot simulate exhausted delivery retries in lws")
+
+
+@given("did in delivery_status")
+def sns_did_in_delivery_status():
+    pytest.skip("Cannot pre-set SNS delivery status in sequence setup")

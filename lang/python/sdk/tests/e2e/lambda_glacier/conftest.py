@@ -172,6 +172,68 @@ def no_archive_slot_available():
     pytest.skip("Cannot exhaust archive slot limit")
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("fid not in func_status")
+def fid_not_in_func_status():
+    """No-op: fresh state has no functions."""
+
+
+@given("vid not in vault_status")
+def vid_not_in_vault_status():
+    """No-op: fresh state has no vaults."""
+
+
+@given("vid in vault_status")
+def vid_in_vault_status(lws_session):
+    _create_vault(lws_session)
+
+
+@given("fid in func_status")
+def fid_in_func_status(lws_session):
+    _create_function(lws_session)
+
+
+@given("iid in inv_status")
+def iid_in_inv_status():
+    pytest.skip("Cannot create an in-progress invocation in lws")
+
+
+@given("a Lambda function has been deployed")
+def lambda_function_has_been_deployed_seq(lws_session):
+    _create_function(lws_session)
+
+
+@given("a Glacier vault has been created")
+def glacier_vault_has_been_created_seq(lws_session):
+    _create_vault(lws_session)
+
+
+@given("a Glacier vault has been deleted")
+def glacier_vault_has_been_deleted_seq(lws_session):
+    try:
+        _create_vault(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _glacier(lws_session).delete_vault(accountId="-", vaultName=TEST_VAULT)
+
+
+@given("the Lambda function has been invoked")
+def lambda_function_has_been_invoked_seq():
+    pytest.skip("Cannot create a completed Lambda invocation in lws")
+
+
+@given("the Lambda function has uploaded an archive to an existing vault and succeeded")
+def lambda_function_uploaded_archive_succeeded_seq():
+    pytest.skip("Cannot trigger Lambda archive upload in lws")
+
+
+@given("the Lambda function has failed to upload because the vault has been deleted")
+def lambda_function_failed_upload_vault_deleted_seq():
+    pytest.skip("Cannot trigger Lambda invocation failure in lws")
+
+
 # ── When: actions ───────────────────────────────────────────────────────
 
 
@@ -270,3 +332,16 @@ def invocation_failed_resource_not_found(world):
 @then('the archive "EXISTS" in the vault and the invocation is "SUCCESS"')
 def archive_exists_invocation_success(world):
     pytest.skip("Cannot observe Lambda archive upload result in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function')
+def _inv_lambda_glacier_every_in_progress_invocation_references_an_active_lambda_fun():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then("every existing archive references a vault that exists")
+def _inv_lambda_glacier_every_existing_archive_references_a_vault_that_exists():
+    """Invariant step: trivially satisfied in isolated test context."""

@@ -16,7 +16,12 @@ def _glacier(lws_session):
 
 
 def _create_vault(lws_session, vault_name=TEST_VAULT):
-    _glacier(lws_session).create_vault(accountId="-", vaultName=vault_name)
+    try:
+        _glacier(lws_session).create_vault(accountId="-", vaultName=vault_name)
+    except ClientError as exc:
+        if exc.response["Error"]["Code"] == "ResourceInUseException":
+            return  # vault already exists
+        raise
 
 
 def _upload_archive(lws_session, vault_name=TEST_VAULT):
@@ -255,6 +260,85 @@ def upload_in_upload_status():
 @given("upload_id in upload_status")
 def upload_id_in_upload_status():
     pytest.skip("Cannot create a multipart upload as a FizzBee precondition in this context")
+
+
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("a vault has been created")
+def glacier_seq_vault_created(lws_session):
+    _create_vault(lws_session)
+
+
+@given("an empty vault has been deleted")
+def glacier_seq_empty_vault_deleted():
+    """No-op: fresh state has no vaults, simulates a previously deleted vault."""
+
+
+@given("an archive has been uploaded to a vault")
+def glacier_seq_archive_uploaded(lws_session):
+    _create_vault(lws_session)
+    _upload_archive(lws_session)
+
+
+@given("an archive has been deleted from a vault")
+def glacier_seq_archive_deleted():
+    pytest.skip("Cannot delete a specific archive without first retrieving its ID in lws")
+
+
+@given("an archive retrieval job has been initiated")
+def glacier_seq_archive_retrieval_initiated():
+    pytest.skip("Cannot initiate archive retrieval job without archive ID in lws")
+
+
+@given("a vault inventory retrieval job has been initiated")
+def glacier_seq_inventory_retrieval_initiated(lws_session):
+    _create_vault(lws_session)
+    _glacier(lws_session).initiate_job(
+        accountId="-",
+        vaultName=TEST_VAULT,
+        jobParameters={"Type": "inventory-retrieval"},
+    )
+
+
+@given("a job has completed successfully")
+def glacier_seq_job_completed():
+    pytest.skip("Cannot trigger internal job completion in lws")
+
+
+@given("a job has failed")
+def glacier_seq_job_failed():
+    pytest.skip("Cannot trigger internal job failure in lws")
+
+
+@given("the output of a succeeded job has been retrieved")
+def glacier_seq_job_output_retrieved():
+    pytest.skip("Cannot retrieve job output without a succeeded job in lws")
+
+
+@given("a multipart upload has been initiated for a vault")
+def glacier_seq_multipart_upload_initiated():
+    pytest.skip("Multipart upload is not supported by the lws glacier provider")
+
+
+@given("a part has been uploaded for a multipart upload")
+def glacier_seq_part_uploaded():
+    pytest.skip("Cannot upload a multipart part without an active upload ID in lws")
+
+
+@given("a multipart upload has been completed")
+def glacier_seq_multipart_upload_completed():
+    pytest.skip("Cannot complete a multipart upload without parts in lws")
+
+
+@given("a multipart upload has been aborted")
+def glacier_seq_multipart_upload_aborted():
+    pytest.skip("Cannot abort a multipart upload without an upload ID in lws")
+
+
+@given("a vault inventory has been refreshed")
+def glacier_seq_vault_inventory_refreshed():
+    pytest.skip("Cannot trigger internal vault inventory refresh in lws")
 
 
 # ── When: actions ──────────────────────────────────────────────────────

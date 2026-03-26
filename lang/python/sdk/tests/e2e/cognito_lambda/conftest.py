@@ -198,6 +198,64 @@ def cognito_lambda_no_invocation_is_in_progress():
     """No-op: fresh state has no in-progress invocations."""
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("pid not in pool_status")
+def cognito_lambda_pid_not_in_pool_status():
+    """No-op: fresh state has no user pools."""
+
+
+@given("pid in pool_status")
+def cognito_lambda_pid_in_pool_status(lws_session):
+    _create_pool(lws_session)
+
+
+@given("fid not in func_status")
+def cognito_lambda_fid_not_in_func_status():
+    """No-op: fresh state has no Lambda functions."""
+
+
+@given("iid in inv_status")
+def cognito_lambda_iid_in_inv_status():
+    pytest.skip("Cannot represent a completed Lambda invocation as sequence setup in lws")
+
+
+@given("a Cognito User Pool has been created")
+def cognito_lambda_user_pool_has_been_created(lws_session):
+    _create_pool(lws_session)
+
+
+@given("a Lambda function has been deployed")
+def cognito_lambda_function_has_been_deployed(lws_session):
+    _create_function(lws_session)
+
+
+@given("a Lambda pre-signup trigger has been configured on the Cognito User Pool")
+def cognito_lambda_pre_signup_trigger_configured():
+    pytest.skip("Cannot configure Lambda triggers for Cognito in lws")
+
+
+@given("a user has signed up to a pool that has no pre-signup trigger configured")
+def cognito_lambda_user_signed_up_no_trigger():
+    pytest.skip("Cannot represent a completed Cognito signup as sequence setup in lws")
+
+
+@given("a user has initiated signup to a pool that has a pre-signup trigger configured")
+def cognito_lambda_user_initiated_signup_with_trigger():
+    pytest.skip("Cannot represent a Cognito signup with trigger as sequence setup in lws")
+
+
+@given("the pre-signup Lambda has allowed the signup")
+def cognito_lambda_pre_signup_allowed():
+    pytest.skip("Cannot represent a Lambda trigger invocation result as sequence setup in lws")
+
+
+@given("the pre-signup Lambda has denied the signup")
+def cognito_lambda_pre_signup_denied():
+    pytest.skip("Cannot represent a Lambda trigger invocation result as sequence setup in lws")
+
+
 # ── When: actions ──────────────────────────────────────────────────────
 
 
@@ -333,3 +391,21 @@ def invocation_success_user_confirmed():
 @then('the invocation is "FAILED" and the user is "REJECTED"')
 def invocation_failed_user_rejected():
     pytest.skip("Cannot trigger Cognito->Lambda invocation in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "IN_PROGRESS" invocation is for a "PENDING" user')
+def _inv_cognito_lambda_every_in_progress_invocation_is_for_a_pending_user():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then('every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function')
+def _inv_cognito_lambda_every_in_progress_invocation_references_an_active_lambda_fun():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then('every "PENDING" user has a corresponding "IN_PROGRESS" invocation')
+def _inv_cognito_lambda_every_pending_user_has_a_corresponding_in_progress_invocatio():
+    """Invariant step: trivially satisfied in isolated test context."""

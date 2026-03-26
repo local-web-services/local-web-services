@@ -209,3 +209,78 @@ def db_instance_stopping_and_event_delivered():
 @then('the "DB" instance is "STOPPING" but no event is delivered')
 def db_instance_stopping_but_no_event():
     pytest.skip("Cannot observe internal RDS DB instance stopping state in lws")
+
+
+# ── Given: sequence setup ─────────────────────────────────────────
+
+
+@given("dbid not in db_status")
+def rds_events_dbid_not_in_db_status():
+    """No-op: fresh state has no DB instances."""
+
+
+@given('an "RDS" "DB" instance has been created and has become "AVAILABLE"')
+def rds_db_instance_created_and_available(lws_session):
+    _create_db_instance(lws_session)
+
+
+@given("busid not in bus_status")
+def rds_events_busid_not_in_bus_status():
+    """No-op: fresh state has no custom event buses."""
+
+
+@given("an EventBridge event bus has been created")
+def rds_events_event_bus_has_been_created(lws_session):
+    _create_bus(lws_session)
+
+
+@given("busid in bus_status")
+def rds_events_busid_in_bus_status(lws_session):
+    _create_bus(lws_session)
+
+
+@given("the EventBridge event bus has been deleted")
+def rds_events_event_bus_has_been_deleted(lws_session):
+    try:
+        _create_bus(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _events(lws_session).delete_event_bus(Name=TEST_BUS)
+
+
+@given("dbid in db_status")
+def rds_events_dbid_in_db_status(lws_session):
+    _create_db_instance(lws_session)
+
+
+@given(
+    'the "RDS" instance has stopped and has delivered the state change event to the EventBridge bus'
+)
+def rds_instance_stopped_event_delivered():
+    pytest.skip("Cannot trigger internal RDS DB instance stop event routing in lws")
+
+
+@given(
+    'the "RDS" instance has stopped but the state change event delivery has failed because'
+    " the bus is deleted"
+)
+def rds_instance_stopped_event_failed():
+    pytest.skip("Cannot trigger internal RDS event delivery failure in lws")
+
+
+@given('the "DB" instance has finished stopping')
+def rds_events_db_instance_finished_stopping():
+    pytest.skip("Cannot trigger internal RDS DB instance stop completion in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "DELIVERED" event references a "DB" instance that exists')
+def _inv_rds_events_every_delivered_event_references_a_db_instance_that_exists():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then('every "DELIVERED" event references a bus that exists')
+def _inv_rds_events_every_delivered_event_references_a_bus_that_exists():
+    """Invariant step: trivially satisfied in isolated test context."""

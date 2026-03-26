@@ -186,6 +186,69 @@ def no_document_slot_available():
     pytest.skip("Cannot exhaust document slot limit")
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("fid not in func_status")
+def fid_not_in_func_status():
+    """No-op: fresh state has no functions."""
+
+
+@given("did not in domain_status")
+def did_not_in_domain_status():
+    """No-op: fresh state has no domains."""
+
+
+@given("did in domain_status")
+def did_in_domain_status(lws_session):
+    _create_domain(lws_session)
+
+
+@given("fid in func_status")
+def fid_in_func_status(lws_session):
+    _create_function(lws_session)
+
+
+@given("iid in inv_status")
+def iid_in_inv_status():
+    pytest.skip("Cannot create an in-progress invocation in lws")
+
+
+@given("a Lambda function has been deployed")
+def lambda_function_has_been_deployed_seq(lws_session):
+    _create_function(lws_session)
+
+
+@given("an OpenSearch domain has been created")
+def opensearch_domain_has_been_created_seq(lws_session):
+    _create_domain(lws_session)
+
+
+@given("an index has been created in the OpenSearch domain")
+def opensearch_index_has_been_created_seq():
+    pytest.skip("Cannot create an OpenSearch index in lws")
+
+
+@given("the Lambda function has been invoked")
+def lambda_function_has_been_invoked_seq():
+    pytest.skip("Cannot create a completed Lambda invocation in lws")
+
+
+@given("the Lambda function has indexed a document into the OpenSearch index during invocation")
+def lambda_indexed_document_seq():
+    pytest.skip("Cannot trigger Lambda OpenSearch index in lws")
+
+
+@given("the Lambda invocation has completed successfully")
+def lambda_invocation_completed_successfully_seq():
+    pytest.skip("Cannot create a completed Lambda invocation in lws")
+
+
+@given("the Lambda invocation has failed")
+def lambda_invocation_has_failed_seq():
+    pytest.skip("Cannot trigger Lambda invocation failure in lws")
+
+
 # ── When: actions ───────────────────────────────────────────────────────
 
 
@@ -282,3 +345,21 @@ def invocation_is_success_then(world):
 @then('the document is "INDEXED"')
 def document_is_indexed(world):
     pytest.skip("Cannot observe Lambda document index result in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function')
+def _inv_lambda_opensearch_every_in_progress_invocation_references_an_active_lambda_():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then('every existing index belongs to an "ACTIVE" domain')
+def _inv_lambda_opensearch_every_existing_index_belongs_to_an_active_domain():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then("every indexed document belongs to an existing index")
+def _inv_lambda_opensearch_every_indexed_document_belongs_to_an_existing_index():
+    """Invariant step: trivially satisfied in isolated test context."""

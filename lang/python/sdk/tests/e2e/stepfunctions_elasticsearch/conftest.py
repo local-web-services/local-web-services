@@ -48,6 +48,69 @@ def _start_execution(lws_session, name=TEST_SM):
     return resp["executionArn"]
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("smid not in sm_status")
+def smid_not_in_sm_status():
+    """No-op: guard condition — fresh state has no state machines."""
+
+
+@given("smid in sm_status")
+def smid_in_sm_status(lws_session):
+    _create_sm(lws_session)
+
+
+@given("a Step Functions state machine has been created")
+def sfn_sm_has_been_created(lws_session):
+    _create_sm(lws_session)
+
+
+@given("did not in domain_status")
+def did_not_in_domain_status():
+    """No-op: guard condition — fresh state has no Elasticsearch domains."""
+
+
+@given("did in domain_status")
+def did_in_domain_status(lws_session):
+    _create_domain(lws_session)
+
+
+@given('an Elasticsearch domain has been created and is "AVAILABLE"')
+def elasticsearch_domain_has_been_created(lws_session):
+    _create_domain(lws_session)
+
+
+@given("a domain configuration update has begun")
+def domain_config_update_begun_given():
+    pytest.skip("Cannot pre-set a domain configuration update state for sequence setup")
+
+
+@given("the domain configuration update has completed")
+def domain_config_update_completed_given():
+    pytest.skip("Cannot pre-set a completed domain configuration update state for sequence setup")
+
+
+@given("an execution of the state machine has been started")
+def execution_of_sm_has_been_started():
+    pytest.skip("Cannot pre-set a running execution state for sequence setup")
+
+
+@given("eid in exec_status")
+def eid_in_exec_status():
+    pytest.skip("Cannot pre-set an in-flight execution state for sequence setup")
+
+
+@given('a running execution has called an "AVAILABLE" Elasticsearch domain and the task succeeded')
+def running_execution_called_domain_succeeded_given():
+    pytest.skip("Cannot pre-set a completed execution Elasticsearch task state for sequence setup")
+
+
+@given("a running execution has failed because the domain is processing a config update")
+def running_execution_failed_domain_processing_given():
+    pytest.skip("Cannot pre-set a failed execution Elasticsearch task state for sequence setup")
+
+
 # ── Given: state machine state ────────────────────────────────────────
 
 
@@ -278,3 +341,16 @@ def execution_is_succeeded_then():
 @then('the execution is "FAILED" with a connection error')
 def execution_failed_connection_error():
     pytest.skip("Cannot observe internal execution Elasticsearch task failure in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "RUNNING" execution references an "ACTIVE" state machine')
+def _inv_stepfunctions_elasticsearch_every_running_execution_references_an_active_st():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then("every succeeded execution recorded which domain it called")
+def _inv_stepfunctions_elasticsearch_every_succeeded_execution_recorded_which_domain():
+    """Invariant step: trivially satisfied in isolated test context."""

@@ -33,21 +33,30 @@ def _queue_arn(name=TEST_QUEUE):
 
 
 def _create_function(lws_session, name=TEST_FUNC):
-    _lambda(lws_session).create_function(
-        FunctionName=name,
-        Runtime="python3.12",
-        Role=ROLE_ARN,
-        Handler="index.handler",
-        Code={"ZipFile": b"fake"},
-    )
+    try:
+        _lambda(lws_session).create_function(
+            FunctionName=name,
+            Runtime="python3.12",
+            Role=ROLE_ARN,
+            Handler="index.handler",
+            Code={"ZipFile": b"fake"},
+        )
+    except Exception:  # noqa: BLE001
+        pass  # function may already exist
 
 
 def _create_queue(lws_session, name=TEST_QUEUE):
-    _sqs(lws_session).create_queue(QueueName=name)
+    try:
+        _sqs(lws_session).create_queue(QueueName=name)
+    except Exception:  # noqa: BLE001
+        pass  # queue may already exist
 
 
 def _create_dlq(lws_session, name=TEST_DLQ):
-    _sqs(lws_session).create_queue(QueueName=name)
+    try:
+        _sqs(lws_session).create_queue(QueueName=name)
+    except Exception:  # noqa: BLE001
+        pass  # DLQ may already exist
 
 
 # ── Given: function state ─────────────────────────────────────────────
@@ -298,13 +307,112 @@ def no_message_slot_available():
     pytest.skip("Cannot exhaust message slot limit")
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("qid not in queue_status")
+def qid_not_in_queue_status():
+    """No-op: fresh state has no queues."""
+
+
+@given("qid in queue_status")
+def qid_in_queue_status(lws_session):
+    _create_queue(lws_session)
+
+
+@given("eid not in esm_status")
+def eid_not_in_esm_status():
+    """No-op: fresh state has no event source mappings."""
+
+
+@given("eid in esm_status")
+def eid_in_esm_status():
+    pytest.skip("Cannot create an event source mapping in lws")
+
+
+@given("fid not in func_status")
+def fid_not_in_func_status():
+    """No-op: fresh state has no functions."""
+
+
+@given("fid in func_status")
+def fid_in_func_status(lws_session):
+    _create_function(lws_session)
+
+
+@given("iid in inv_status")
+def iid_in_inv_status():
+    pytest.skip("Cannot create an in-progress invocation in lws")
+
+
+@given('an "SQS" queue has been created')
+def sqs_queue_has_been_created_seq(lws_session):
+    _create_queue(lws_session)
+
+
+@given('the "SQS" queue has been configured with a dead-letter queue')
+def sqs_queue_configured_with_dlq_seq(lws_session):
+    import json
+
+    try:
+        _create_queue(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    try:
+        _create_dlq(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    dlq_arn = _queue_arn(TEST_DLQ)
+    redrive = json.dumps({"deadLetterTargetArn": dlq_arn, "maxReceiveCount": 2})
+    _sqs(lws_session).set_queue_attributes(
+        QueueUrl=_queue_url(lws_session),
+        Attributes={"RedrivePolicy": redrive},
+    )
+
+
+@given('a message has arrived in the "SQS" queue')
+def message_has_arrived_in_sqs_queue_seq():
+    pytest.skip("Cannot trigger internal SQS message arrival in lws")
+
+
+@given("a Lambda function has been deployed")
+def lambda_function_has_been_deployed_seq(lws_session):
+    _create_function(lws_session)
+
+
+@given("a Lambda event source mapping has been created linking a queue to a function")
+def lambda_esm_has_been_created_seq():
+    pytest.skip("Cannot create an event source mapping in lws")
+
+
+@given("the event source mapping has polled the queue and invoked the Lambda function")
+def esm_has_polled_queue_and_invoked_seq():
+    pytest.skip("Cannot trigger ESM polling in lws")
+
+
+@given("the Lambda invocation has completed successfully")
+def lambda_invocation_completed_successfully_seq():
+    pytest.skip("Cannot create a completed Lambda invocation in lws")
+
+
+@given("the Lambda invocation has failed")
+def lambda_invocation_has_failed_seq():
+    pytest.skip("Cannot trigger Lambda invocation failure in lws")
+
+
 # ── When: actions ───────────────────────────────────────────────────────
 
 
 @when("a Lambda function is deployed")
 def deploy_lambda_function(lws_session, world):
     try:
-        _create_function(lws_session)
+        _lambda(lws_session).create_function(
+            FunctionName=TEST_FUNC,
+            Runtime="python3.12",
+            Role=ROLE_ARN,
+            Handler="index.handler",
+            Code={"ZipFile": b"fake"},
+        )
         world["result"] = {"FunctionName": TEST_FUNC}
         world["error"] = None
     except (ClientError, Exception) as exc:  # noqa: BLE001
@@ -315,7 +423,7 @@ def deploy_lambda_function(lws_session, world):
 @when('an "SQS" queue is created')
 def create_sqs_queue(lws_session, world):
     try:
-        _create_queue(lws_session)
+        _sqs(lws_session).create_queue(QueueName=TEST_QUEUE)
         world["result"] = {"QueueName": TEST_QUEUE}
         world["error"] = None
     except (ClientError, Exception) as exc:  # noqa: BLE001

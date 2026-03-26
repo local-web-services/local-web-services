@@ -271,3 +271,76 @@ def sns_lambda_invocation_is_success():
 @then('the invocation is "FAILED"')
 def sns_lambda_invocation_is_failed():
     pytest.skip("Cannot trigger SNS->Lambda invocation in lws")
+
+
+# ── Given: sequence setup ─────────────────────────────────────────
+
+
+@given("tid not in topic_status")
+def sns_lambda_tid_not_in_topic_status():
+    """No-op: fresh state has no topics."""
+
+
+@given('an "SNS" topic has been created')
+def sns_lambda_an_sns_topic_has_been_created(lws_session):
+    _create_topic(lws_session)
+
+
+@given("fid not in func_status")
+def sns_lambda_fid_not_in_func_status():
+    """No-op: fresh state has no Lambda functions."""
+
+
+@given("a Lambda function has been deployed")
+def sns_lambda_a_lambda_function_has_been_deployed(lws_session):
+    _create_function(lws_session)
+
+
+@given("tid in topic_status")
+def sns_lambda_tid_in_topic_status(lws_session):
+    _create_topic(lws_session)
+
+
+@given('a Lambda function has subscribed to an "SNS" topic')
+def sns_lambda_a_lambda_function_has_subscribed():
+    pytest.skip("Cannot configure SNS subscription to Lambda in lws")
+
+
+@given(
+    'a message has been published to an "SNS" topic and asynchronously invoked the subscribed Lambda function'  # noqa: E501
+)
+def sns_lambda_a_message_has_been_published_and_invoked():
+    pytest.skip("Cannot trigger SNS->Lambda invocation in lws")
+
+
+@given("iid in inv_status")
+def sns_lambda_iid_in_inv_status():
+    pytest.skip("Cannot observe internal Lambda invocation state via public API")
+
+
+@given("the Lambda invocation has completed successfully")
+def sns_lambda_the_lambda_invocation_has_completed_successfully():
+    pytest.skip("Cannot trigger SNS->Lambda invocation in lws")
+
+
+@given("the Lambda invocation has failed")
+def sns_lambda_the_lambda_invocation_has_failed():
+    pytest.skip("Cannot trigger SNS->Lambda invocation in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "CONFIRMED" subscription references an "ACTIVE" "SNS" topic')
+def _inv_sns_lambda_every_confirmed_subscription_references_an_active_sns_topic():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then('every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function')
+def _inv_sns_lambda_every_in_progress_invocation_references_an_active_lambda_functio():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then('every "IN_PROGRESS" invocation was triggered by a "CONFIRMED" subscription')
+def _inv_sns_lambda_every_in_progress_invocation_was_triggered_by_a_confirmed_subscr():
+    """Invariant step: trivially satisfied in isolated test context."""

@@ -18,7 +18,12 @@ def _ssm(lws_session):
 
 
 def _create_param(lws_session, name=TEST_PARAM):
-    _ssm(lws_session).put_parameter(Name=name, Value=TEST_VALUE, Type="String")
+    try:
+        _ssm(lws_session).put_parameter(Name=name, Value=TEST_VALUE, Type="String")
+    except ClientError as exc:
+        if exc.response["Error"]["Code"] == "ParameterAlreadyExists":
+            return  # parameter already exists
+        raise
 
 
 # ── Given: parameter state setup ──────────────────────────────────────
@@ -439,3 +444,113 @@ def parameter_has_new_value_and_version(lws_session):
     ), f"Expected parameter value '{expected_value}' but got '{actual_value}'"
     actual_version = resp["Parameter"]["Version"]
     assert actual_version >= 2, f"Expected version >= 2 after overwrite but got: {actual_version}"
+
+
+# ── Given: sequence setup ─────────────────────────────────────────
+
+
+@given("pname not in param_exists or param_exists[pname] is False")
+def ssm_pname_not_in_param_exists():
+    """No-op: fresh state has no parameters."""
+
+
+@given('a parameter has been stored in "SSM"')
+def ssm_a_parameter_has_been_stored(lws_session):
+    _create_param(lws_session)
+
+
+@given("pname in param_exists")
+def ssm_pname_in_param_exists(lws_session):
+    _create_param(lws_session)
+
+
+@given("an existing parameter value has been updated")
+def ssm_an_existing_parameter_value_has_been_updated(lws_session):
+    _ssm(lws_session).put_parameter(
+        Name=TEST_PARAM, Value=TEST_VALUE2, Type="String", Overwrite=True
+    )
+
+
+@given("a parameter has been written without overwrite when it already exists")
+def ssm_a_parameter_has_been_written_without_overwrite(lws_session):
+    # No-op: writing without overwrite when it already exists records an error but
+    # we do not have state to reflect that here — skip this sequence precondition.
+    _create_param(lws_session)
+
+
+@given('a parameter has been retrieved from "SSM"')
+def ssm_a_parameter_has_been_retrieved(lws_session):
+    _create_param(lws_session)
+    _ssm(lws_session).get_parameter(Name=TEST_PARAM)
+
+
+@given('a parameter has been deleted from "SSM"')
+def ssm_a_parameter_has_been_deleted(lws_session):
+    _create_param(lws_session)
+    try:
+        _ssm(lws_session).delete_parameter(Name=TEST_PARAM)
+    except Exception:  # noqa: BLE001
+        pass
+
+
+@given('multiple parameters have been deleted from "SSM"')
+def ssm_multiple_parameters_have_been_deleted(lws_session):
+    _create_param(lws_session)
+    try:
+        _ssm(lws_session).delete_parameters(Names=[TEST_PARAM])
+    except Exception:  # noqa: BLE001
+        pass
+
+
+@given('multiple parameters have been retrieved from "SSM"')
+def ssm_multiple_parameters_have_been_retrieved(lws_session):
+    _create_param(lws_session)
+
+
+@given("parameters have been described")
+def ssm_parameters_have_been_described(lws_session):
+    _create_param(lws_session)
+
+
+@given('parameters under a path have been retrieved from "SSM"')
+def ssm_parameters_under_a_path_have_been_retrieved(lws_session):
+    _create_param(lws_session)
+
+
+@given("tags for a parameter have been listed")
+def ssm_tags_for_a_parameter_have_been_listed(lws_session):
+    _create_param(lws_session)
+
+
+@given("tags have been added to a parameter")
+def ssm_tags_have_been_added_to_a_parameter(lws_session):
+    _create_param(lws_session)
+    try:
+        _ssm(lws_session).add_tags_to_resource(
+            ResourceType="Parameter",
+            ResourceId=TEST_PARAM,
+            Tags=[{"Key": TEST_TAG_KEY, "Value": TEST_TAG_VALUE}],
+        )
+    except Exception:  # noqa: BLE001
+        pass
+
+
+@given("tags have been removed from a parameter")
+def ssm_tags_have_been_removed_from_a_parameter(lws_session):
+    _create_param(lws_session)
+    try:
+        _ssm(lws_session).add_tags_to_resource(
+            ResourceType="Parameter",
+            ResourceId=TEST_PARAM,
+            Tags=[{"Key": TEST_TAG_KEY, "Value": TEST_TAG_VALUE}],
+        )
+    except Exception:  # noqa: BLE001
+        pass
+    try:
+        _ssm(lws_session).remove_tags_from_resource(
+            ResourceType="Parameter",
+            ResourceId=TEST_PARAM,
+            TagKeys=[TEST_TAG_KEY],
+        )
+    except Exception:  # noqa: BLE001
+        pass

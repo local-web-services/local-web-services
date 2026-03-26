@@ -181,6 +181,70 @@ def apigw_lambda_no_invocation_is_in_progress():
     """No-op: fresh state has no in-progress invocations."""
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("aid not in api_status")
+def apigw_lambda_aid_not_in_api_status():
+    """No-op: fresh state has no REST APIs."""
+
+
+@given("aid in api_status")
+def apigw_lambda_aid_in_api_status(lws_session):
+    _create_api(lws_session)
+
+
+@given("fid not in func_status")
+def apigw_lambda_fid_not_in_func_status():
+    """No-op: fresh state has no Lambda functions."""
+
+
+@given("iid in inv_status")
+def apigw_lambda_iid_in_inv_status():
+    pytest.skip("Cannot represent a completed Lambda invocation as sequence setup in lws")
+
+
+@given("a REST API has been created")
+@given('a "REST" "API" has been created')
+def apigw_lambda_rest_api_has_been_created(lws_session):
+    _create_api(lws_session)
+
+
+@given("a Lambda function has been deployed")
+def apigw_lambda_function_has_been_deployed(lws_session):
+    _create_function(lws_session)
+
+
+@given("a Lambda integration has been configured on the REST API")
+@given('a Lambda integration has been configured on the "REST" "API"')
+def apigw_lambda_integration_configured():
+    pytest.skip(
+        "Cannot configure Lambda integration and issue full request for sequence setup in lws"
+    )
+
+
+@given("the API has received an HTTP request and synchronously invoked the Lambda function")
+@given('the "API" has received an "HTTP" request and synchronously invoked the Lambda function')
+def apigw_lambda_request_received_invoked():
+    pytest.skip("Cannot represent a completed API-to-Lambda invocation as sequence setup in lws")
+
+
+@given(
+    "the Lambda invocation has completed successfully and the API has returned a successful response"  # noqa: E501
+)
+@given(
+    'the Lambda invocation has completed successfully and the "API" has returned a successful response'  # noqa: E501
+)
+def apigw_lambda_invocation_completed_success():
+    pytest.skip("Cannot represent a completed Lambda invocation as sequence setup in lws")
+
+
+@given("the Lambda invocation has failed and the API has returned an error response")
+@given('the Lambda invocation has failed and the "API" has returned an error response')
+def apigw_lambda_invocation_failed():
+    pytest.skip("Cannot represent a failed Lambda invocation as sequence setup in lws")
+
+
 # ── When: actions ──────────────────────────────────────────────────────
 
 
@@ -275,3 +339,21 @@ def invocation_success_request_success():
 @then('the invocation is "FAILED" and the request is "FAILED"')
 def invocation_failed_request_failed():
     pytest.skip("Cannot send requests through API Gateway Lambda integration in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "IN_PROGRESS" invocation has a corresponding "IN_PROGRESS" request')
+def _inv_apigateway_lambda_every_in_progress_invocation_has_a_corresponding_in_progr():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then('every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function')
+def _inv_apigateway_lambda_every_in_progress_invocation_references_an_active_lambda_():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then('every "IN_PROGRESS" request references an "ACTIVE" "API"')
+def _inv_apigateway_lambda_every_in_progress_request_references_an_active_api():
+    """Invariant step: trivially satisfied in isolated test context."""

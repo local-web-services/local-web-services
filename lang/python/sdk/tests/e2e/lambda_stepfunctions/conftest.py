@@ -193,6 +193,84 @@ def no_invocation_slot_available():
     pytest.skip("Cannot exhaust invocation slot limit")
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("fid not in func_status")
+def fid_not_in_func_status():
+    """No-op: fresh state has no functions."""
+
+
+@given("smid not in sm_status")
+def smid_not_in_sm_status():
+    """No-op: fresh state has no state machines."""
+
+
+@given("smid in sm_status")
+def smid_in_sm_status(lws_session):
+    _create_sm(lws_session)
+
+
+@given("fid in func_status")
+def fid_in_func_status(lws_session):
+    _create_function(lws_session)
+
+
+@given("iid in inv_status")
+def iid_in_inv_status():
+    pytest.skip("Cannot create an in-progress invocation in lws")
+
+
+@given("eid in exec_status")
+def eid_in_exec_status(lws_session):
+    _create_sm(lws_session)
+    _sfn(lws_session).start_execution(
+        stateMachineArn=_sm_arn(),
+        input='{"key": "value"}',
+    )
+
+
+@given("a Lambda function has been deployed")
+def lambda_function_has_been_deployed_seq(lws_session):
+    _create_function(lws_session)
+
+
+@given("a Step Functions state machine has been created")
+def sfn_state_machine_has_been_created_seq(lws_session):
+    _create_sm(lws_session)
+
+
+@given("a Step Functions state machine has been deleted")
+def sfn_state_machine_has_been_deleted_seq(lws_session):
+    try:
+        _create_sm(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _sfn(lws_session).delete_state_machine(stateMachineArn=_sm_arn())
+
+
+@given("the Lambda function has been invoked")
+def lambda_function_has_been_invoked_seq():
+    pytest.skip("Cannot create a completed Lambda invocation in lws")
+
+
+@given('the Lambda function has started an execution of an "ACTIVE" state machine and succeeded')
+def lambda_started_execution_succeeded_seq():
+    pytest.skip("Cannot trigger Lambda Step Functions execution in lws")
+
+
+@given(
+    "the Lambda function has failed to start an execution because the state machine has been deleted"  # noqa: E501
+)
+def lambda_failed_to_start_execution_seq():
+    pytest.skip("Cannot trigger Lambda Step Functions execution failure in lws")
+
+
+@given("a running execution has completed successfully")
+def running_execution_completed_seq():
+    pytest.skip("Cannot observe internal Step Functions execution completion in lws")
+
+
 # ── When: actions ───────────────────────────────────────────────────────
 
 

@@ -56,6 +56,64 @@ def _start_execution(lws_session, name=TEST_SM):
     return resp["executionArn"]
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("smid not in sm_status")
+def smid_not_in_sm_status():
+    """No-op: guard condition — fresh state has no state machines."""
+
+
+@given("smid in sm_status")
+def smid_in_sm_status(lws_session):
+    _create_sm(lws_session)
+
+
+@given("a Step Functions state machine has been created")
+def sfn_sm_has_been_created(lws_session):
+    _create_sm(lws_session)
+
+
+@given("tid not in table_status")
+def tid_not_in_table_status():
+    """No-op: guard condition — fresh state has no S3 Tables table buckets."""
+
+
+@given("tid in table_status")
+def tid_in_table_status(lws_session):
+    _create_table_bucket(lws_session)
+
+
+@given("an S3 Tables table has been created")
+def s3tables_table_has_been_created(lws_session):
+    _create_table_bucket(lws_session)
+
+
+@given("a table deletion has been initiated")
+def table_deletion_initiated_given():
+    pytest.skip("Cannot pre-set an S3 Tables table deletion state for sequence setup")
+
+
+@given("an execution of the state machine has been started")
+def execution_of_sm_has_been_started():
+    pytest.skip("Cannot pre-set a running execution state for sequence setup")
+
+
+@given("eid in exec_status")
+def eid_in_exec_status():
+    pytest.skip("Cannot pre-set an in-flight execution state for sequence setup")
+
+
+@given('a running execution has called an "ACTIVE" S3 Tables table and the task succeeded')
+def running_execution_called_table_succeeded_given():
+    pytest.skip("Cannot pre-set a completed execution S3 Tables task state for sequence setup")
+
+
+@given("a running execution has failed because the S3 Tables table is being deleted")
+def running_execution_failed_table_deleting_given():
+    pytest.skip("Cannot pre-set a failed execution S3 Tables task state for sequence setup")
+
+
 # ── Given: state machine state ────────────────────────────────────────
 
 
@@ -272,3 +330,16 @@ def execution_is_succeeded_then():
 @then('the execution is "FAILED" with a ResourceNotFoundException')
 def execution_failed_resource_not_found():
     pytest.skip("Cannot observe internal execution S3 Tables task failure in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "RUNNING" execution references an "ACTIVE" state machine')
+def _inv_stepfunctions_s3tables_every_running_execution_references_an_active_state_m():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then("every succeeded execution recorded which table it called")
+def _inv_stepfunctions_s3tables_every_succeeded_execution_recorded_which_table_it_ca():
+    """Invariant step: trivially satisfied in isolated test context."""

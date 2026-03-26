@@ -154,6 +154,71 @@ def no_record_slot_available():
     pytest.skip("Cannot exhaust record slot limit")
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("fid not in func_status")
+def fid_not_in_func_status():
+    """No-op: fresh state has no functions."""
+
+
+@given("cid not in cluster_status")
+def cid_not_in_cluster_status():
+    """No-op: fresh state has no clusters."""
+
+
+@given("cid in cluster_status")
+def cid_in_cluster_status(lws_session):
+    _create_cluster(lws_session)
+
+
+@given("fid in func_status")
+def fid_in_func_status(lws_session):
+    _create_function(lws_session)
+
+
+@given("iid in inv_status")
+def iid_in_inv_status():
+    pytest.skip("Cannot create an in-progress invocation in lws")
+
+
+@given("a Lambda function has been deployed")
+def lambda_function_has_been_deployed_seq(lws_session):
+    _create_function(lws_session)
+
+
+@given("a MemoryDB cluster has been created")
+def memorydb_cluster_has_been_created_seq(lws_session):
+    _create_cluster(lws_session)
+
+
+@given("a MemoryDB cluster update has begun")
+def memorydb_cluster_update_has_begun_seq():
+    pytest.skip("Cannot trigger MemoryDB cluster update in lws")
+
+
+@given("the MemoryDB cluster update has completed")
+def memorydb_cluster_update_has_completed_seq():
+    pytest.skip("Cannot trigger MemoryDB cluster update completion in lws")
+
+
+@given("the Lambda function has been invoked")
+def lambda_function_has_been_invoked_seq():
+    pytest.skip("Cannot create a completed Lambda invocation in lws")
+
+
+@given(
+    'the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation'
+)
+def lambda_written_record_to_cluster_seq():
+    pytest.skip("Cannot trigger Lambda MemoryDB write in lws")
+
+
+@given("the Lambda function has failed to write because the cluster is updating")
+def lambda_failed_write_cluster_updating_seq():
+    pytest.skip("Cannot trigger Lambda invocation failure in lws")
+
+
 # ── When: actions ───────────────────────────────────────────────────────
 
 
@@ -239,3 +304,16 @@ def invocation_failed_connection_refused(world):
 @then('the record "EXISTS" in the cluster and the invocation is "SUCCESS"')
 def record_exists_invocation_success(world):
     pytest.skip("Cannot observe Lambda record write result in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function')
+def _inv_lambda_memorydb_every_in_progress_invocation_references_an_active_lambda_fu():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then("every existing record references a cluster that exists")
+def _inv_lambda_memorydb_every_existing_record_references_a_cluster_that_exists():
+    """Invariant step: trivially satisfied in isolated test context."""

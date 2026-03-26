@@ -237,6 +237,104 @@ def sid_in_snapshot_status(lws_session):
     _create_snapshot(lws_session)
 
 
+# ── Given: sequence setup ─────────────────────────────────────────
+
+
+@given("a database instance has been created")
+def a_database_instance_has_been_created(lws_session):
+    _create_db_instance(lws_session)
+
+
+@given("a database instance has finished creating")
+def a_database_instance_has_finished_creating():
+    pytest.skip("Cannot trigger internal RDS instance creation completion in lws")
+
+
+@given("a database instance configuration has been modified")
+def a_database_instance_configuration_has_been_modified():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a database instance deletion has completed")
+def a_database_instance_deletion_has_completed():
+    pytest.skip("Cannot trigger internal RDS instance deletion completion in lws")
+
+
+@given("a database instance modification has completed")
+def a_database_instance_modification_has_completed():
+    pytest.skip("Cannot trigger internal RDS instance modification completion in lws")
+
+
+@given("a database instance reboot has completed")
+def a_database_instance_reboot_has_completed():
+    pytest.skip("Cannot trigger internal RDS instance reboot completion in lws")
+
+
+@given("a database instance restore from snapshot has completed")
+def a_database_instance_restore_from_snapshot_has_completed():
+    pytest.skip("Cannot trigger internal RDS instance restore completion in lws")
+
+
+@given("a database instance has been deleted with a final snapshot")
+def a_database_instance_has_been_deleted_with_final_snapshot():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a database instance has been deleted without a final snapshot")
+def a_database_instance_has_been_deleted_without_final_snapshot():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a database instance has been rebooted")
+def a_database_instance_has_been_rebooted():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a database instance has been restored from a snapshot")
+def a_database_instance_has_been_restored_from_a_snapshot():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a database snapshot deletion has completed")
+def a_database_snapshot_deletion_has_completed():
+    pytest.skip("Cannot trigger internal RDS snapshot deletion completion in lws")
+
+
+@given("a database snapshot has been created from an instance")
+def a_database_snapshot_has_been_created_from_an_instance():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a database snapshot has been deleted")
+def a_database_snapshot_has_been_deleted():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("a database snapshot has finished creating")
+def a_database_snapshot_has_finished_creating():
+    pytest.skip("Cannot trigger internal RDS snapshot creation completion in lws")
+
+
+@given('a multi-"AZ" failover has been triggered on an instance')
+def a_multi_az_failover_has_been_triggered():
+    pytest.skip("Cannot trigger internal RDS multi-AZ failover in lws")
+
+
+@given("a tag has been applied to a database instance")
+def a_tag_has_been_applied_to_a_database_instance():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
+@given("an automated backup has run on an available instance")
+def an_automated_backup_has_run():
+    pytest.skip("Cannot trigger internal RDS automated backup in lws")
+
+
+@given('multi-"AZ" has been enabled on a database instance')
+def multi_az_has_been_enabled():
+    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+
+
 # ── When: actions ──────────────────────────────────────────────────────
 
 

@@ -1,4 +1,4 @@
-"""Load all S3 (s3api) informal spec scenarios (excluding invariant-only and sequences files)."""
+"""Load all S3 (s3api) informal spec scenarios (excluding invariant-only files)."""
 
 from __future__ import annotations
 
@@ -21,3 +21,7 @@ def _has_runnable_scenarios(filepath: str) -> bool:
 for _f in glob.glob(os.path.join(_INFORMAL, "s3api", "*.feature")):
     if "sequences" not in os.path.basename(_f) and _has_runnable_scenarios(_f):
         scenarios(_f)
+
+_sequences_file = os.path.join(_INFORMAL, "s3api", "sequences.feature")
+if os.path.exists(_sequences_file):
+    scenarios(_sequences_file)

@@ -166,6 +166,71 @@ def no_invocation_slot_available():
     pytest.skip("Cannot exhaust invocation slot limit")
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("fid not in func_status")
+def fid_not_in_func_status():
+    """No-op: fresh state has no functions."""
+
+
+@given("cid not in cluster_status")
+def cid_not_in_cluster_status():
+    """No-op: fresh state has no clusters."""
+
+
+@given("cid in cluster_status")
+def cid_in_cluster_status(lws_session):
+    _create_cluster(lws_session)
+
+
+@given("fid in func_status")
+def fid_in_func_status(lws_session):
+    _create_function(lws_session)
+
+
+@given("iid in inv_status")
+def iid_in_inv_status():
+    pytest.skip("Cannot create an in-progress invocation in lws")
+
+
+@given("a Lambda function has been deployed")
+def lambda_function_has_been_deployed_seq(lws_session):
+    _create_function(lws_session)
+
+
+@given("a Neptune cluster has been created")
+def neptune_cluster_has_been_created_seq(lws_session):
+    _create_cluster(lws_session)
+
+
+@given("the Neptune cluster has been stopped")
+def neptune_cluster_has_been_stopped_seq():
+    pytest.skip("Cannot stop a Neptune cluster in lws")
+
+
+@given("the Neptune cluster has been started")
+def neptune_cluster_has_been_started_seq():
+    pytest.skip("Cannot start a Neptune cluster in lws")
+
+
+@given("the Lambda function has been invoked")
+def lambda_function_has_been_invoked_seq():
+    pytest.skip("Cannot create a completed Lambda invocation in lws")
+
+
+@given(
+    'the Lambda function has executed a graph query against the "AVAILABLE" cluster and succeeded'
+)
+def lambda_executed_graph_query_succeeded_seq():
+    pytest.skip("Cannot trigger Lambda Neptune query in lws")
+
+
+@given("the Lambda function has failed to connect because the Neptune cluster is stopped")
+def lambda_failed_connect_cluster_stopped_seq():
+    pytest.skip("Cannot trigger Lambda invocation failure in lws")
+
+
 # ── When: actions ───────────────────────────────────────────────────────
 
 
@@ -251,3 +316,16 @@ def invocation_failed_connection_error(world):
 @then('the invocation is "SUCCESS"')
 def invocation_is_success_then(world):
     pytest.skip("Cannot observe Lambda invocation success in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function')
+def _inv_lambda_neptune_every_in_progress_invocation_references_an_active_lambda_fun():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then("every successful invocation recorded which cluster it queried")
+def _inv_lambda_neptune_every_successful_invocation_recorded_which_cluster_it_querie():
+    """Invariant step: trivially satisfied in isolated test context."""

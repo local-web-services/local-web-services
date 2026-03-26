@@ -360,6 +360,144 @@ def tkey_in_table_status(lws_session):
     _setup_bucket_namespace_table(lws_session)
 
 
+# ── Given: sequence setup ─────────────────────────────────────────
+
+
+@given("a table bucket has been created")
+def s3tables_a_table_bucket_has_been_created(lws_session):
+    try:
+        _create_bucket(lws_session)
+    except Exception:  # noqa: BLE001
+        pass  # bucket already exists
+
+
+@given("a table bucket has finished creating")
+def s3tables_a_table_bucket_has_finished_creating():
+    pytest.skip("Cannot trigger internal table bucket creation completion in lws")
+
+
+@given("a table bucket has been deleted")
+def s3tables_a_table_bucket_has_been_deleted(lws_session):
+    try:
+        resp = _create_bucket(lws_session)
+        bucket_arn = resp.get("arn", TEST_BUCKET)
+    except Exception:  # noqa: BLE001
+        bucket_arn = _get_bucket_arn(lws_session)
+    try:
+        _s3tables(lws_session).delete_table_bucket(tableBucketARN=bucket_arn)
+    except Exception:  # noqa: BLE001
+        pass  # bucket may have active namespaces or already be deleted
+
+
+@given("a table bucket has finished being deleted")
+def s3tables_a_table_bucket_has_finished_being_deleted():
+    pytest.skip("Cannot trigger internal table bucket deletion completion in lws")
+
+
+@given("a namespace has been created in a table bucket")
+def s3tables_a_namespace_has_been_created(lws_session):
+    _setup_bucket_and_namespace(lws_session)
+
+
+@given("a namespace has been deleted from a table bucket")
+def s3tables_a_namespace_has_been_deleted(lws_session):
+    bucket_arn = _setup_bucket_and_namespace(lws_session)
+    try:
+        _s3tables(lws_session).delete_namespace(
+            tableBucketARN=bucket_arn,
+            namespace=TEST_NAMESPACE,
+        )
+    except Exception:  # noqa: BLE001
+        pass  # namespace may have active tables or already be deleted
+
+
+@given("a namespace has finished being deleted")
+def s3tables_a_namespace_has_finished_being_deleted():
+    pytest.skip("Cannot trigger internal namespace deletion completion in lws")
+
+
+@given("a table has been created in a namespace")
+def s3tables_a_table_has_been_created(lws_session):
+    _setup_bucket_namespace_table(lws_session)
+
+
+@given("a table has been deleted")
+def s3tables_a_table_has_been_deleted(lws_session):
+    bucket_arn = _setup_bucket_namespace_table(lws_session)
+    _s3tables(lws_session).delete_table(
+        tableBucketARN=bucket_arn,
+        namespace=TEST_NAMESPACE,
+        name=TEST_TABLE,
+    )
+
+
+@given("a table has finished creating")
+def s3tables_a_table_has_finished_creating():
+    pytest.skip("Cannot trigger internal table creation completion in lws")
+
+
+@given("a table has finished being deleted")
+def s3tables_a_table_has_finished_being_deleted():
+    pytest.skip("Cannot trigger internal table deletion completion in lws")
+
+
+@given("a policy has been attached to a table")
+def s3tables_a_policy_has_been_attached(lws_session):
+    bucket_arn = _setup_bucket_namespace_table(lws_session)
+    _s3tables(lws_session).put_table_policy(
+        tableBucketARN=bucket_arn,
+        namespace=TEST_NAMESPACE,
+        name=TEST_TABLE,
+        resourcePolicy='{"Version":"2012-10-17","Statement":[]}',
+    )
+
+
+@given("a table's policy has been deleted")
+def s3tables_a_tables_policy_has_been_deleted(lws_session):
+    bucket_arn = _setup_bucket_namespace_table(lws_session)
+    _s3tables(lws_session).put_table_policy(
+        tableBucketARN=bucket_arn,
+        namespace=TEST_NAMESPACE,
+        name=TEST_TABLE,
+        resourcePolicy='{"Version":"2012-10-17","Statement":[]}',
+    )
+    _s3tables(lws_session).delete_table_policy(
+        tableBucketARN=bucket_arn,
+        namespace=TEST_NAMESPACE,
+        name=TEST_TABLE,
+    )
+
+
+@given("a table's schema has been evolved")
+def s3tables_a_tables_schema_has_been_evolved():
+    pytest.skip("Cannot evolve table schema without Iceberg client in lws")
+
+
+@given("a snapshot has been created for a table")
+def s3tables_a_snapshot_has_been_created():
+    pytest.skip("Cannot create a table snapshot without Iceberg client in lws")
+
+
+@given("an expired snapshot has been removed from a table")
+def s3tables_an_expired_snapshot_has_been_removed():
+    pytest.skip("Cannot expire a table snapshot without Iceberg client in lws")
+
+
+@given("compaction has been started on a table")
+def s3tables_compaction_has_been_started():
+    pytest.skip("start_table_bucket_maintenance API not available in this botocore version")
+
+
+@given("compaction has finished on a table")
+def s3tables_compaction_has_finished():
+    pytest.skip("Cannot trigger internal table compaction completion in lws")
+
+
+@given("maintenance configuration has been applied to a table")
+def s3tables_maintenance_configuration_has_been_applied():
+    pytest.skip("put_table_maintenance_configuration is not supported in lws")
+
+
 # ── When: actions ──────────────────────────────────────────────────────
 
 

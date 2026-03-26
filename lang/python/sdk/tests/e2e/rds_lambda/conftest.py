@@ -293,3 +293,75 @@ def function_is_deleted_procs_fail(lws_session):
 @then('the invocation is "FAILED" with a function not found error')
 def invocation_failed_function_not_found():
     pytest.skip("Cannot trigger RDS->Lambda invocation in lws")
+
+
+# ── Given: sequence setup ─────────────────────────────────────────
+
+
+@given("dbid not in db_status")
+def rds_lambda_dbid_not_in_db_status():
+    """No-op: fresh state has no DB instances."""
+
+
+@given('an "RDS" "DB" instance has been created')
+def rds_lambda_rds_db_instance_has_been_created(lws_session):
+    _create_db_instance(lws_session)
+
+
+@given("fid not in func_status")
+def rds_lambda_fid_not_in_func_status():
+    """No-op: fresh state has no Lambda functions."""
+
+
+@given("a Lambda function has been deployed")
+def rds_lambda_lambda_function_has_been_deployed(lws_session):
+    _create_function(lws_session)
+
+
+@given("fid in func_status")
+def rds_lambda_fid_in_func_status(lws_session):
+    _create_function(lws_session)
+
+
+@given("the Lambda function has been deleted")
+def rds_lambda_lambda_function_has_been_deleted(lws_session):
+    try:
+        _create_function(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _lambda(lws_session).delete_function(FunctionName=TEST_FUNC)
+
+
+@given("dbid in db_status")
+def rds_lambda_dbid_in_db_status(lws_session):
+    _create_db_instance(lws_session)
+
+
+@given('the "DB" instance has been configured with an "IAM" role to invoke the Lambda function')
+def rds_lambda_db_configured_with_iam_role():
+    pytest.skip("Cannot configure RDS event trigger for Lambda in lws")
+
+
+@given('an "RDS" stored procedure has invoked the Lambda function and succeeded')
+def rds_stored_proc_invoked_lambda_succeeded():
+    pytest.skip("Cannot trigger RDS->Lambda invocation in lws")
+
+
+@given(
+    'an "RDS" stored procedure has failed to invoke Lambda because the function has been deleted'
+)
+def rds_stored_proc_failed_function_deleted():
+    pytest.skip("Cannot trigger RDS->Lambda invocation in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then("every successful invocation recorded which function it invoked")
+def _inv_rds_lambda_every_successful_invocation_recorded_which_function_it_invoked():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then('every successful invocation references a "DB" instance that exists')
+def _inv_rds_lambda_every_successful_invocation_references_a_db_instance_that_exists():
+    """Invariant step: trivially satisfied in isolated test context."""

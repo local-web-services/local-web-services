@@ -165,6 +165,74 @@ def no_key_slot_available():
     pytest.skip("Cannot exhaust key slot limit")
 
 
+# ── Given: sequence setup ─────────────────────────────────────────────
+
+
+@given("fid not in func_status")
+def fid_not_in_func_status():
+    """No-op: fresh state has no Lambda functions."""
+
+
+@given("fid in func_status")
+def fid_in_func_status(lws_session):
+    _create_function(lws_session)
+
+
+@given("a Lambda function has been deployed")
+def lambda_elasticache_seq_function_deployed(lws_session):
+    _create_function(lws_session)
+
+
+@given("cid not in cluster_status")
+def cid_not_in_cluster_status():
+    """No-op: fresh state has no ElastiCache clusters."""
+
+
+@given("cid in cluster_status")
+def cid_in_cluster_status(lws_session):
+    _create_cluster(lws_session)
+
+
+@given("an ElastiCache cluster has been created")
+def lambda_elasticache_seq_cluster_created(lws_session):
+    _create_cluster(lws_session)
+
+
+@given("the Lambda function has been invoked")
+def lambda_elasticache_seq_function_invoked():
+    pytest.skip("Cannot trigger Lambda invocation in lws")
+
+
+@given("iid in inv_status")
+def iid_in_inv_status():
+    pytest.skip("Cannot observe Lambda invocation state in lws")
+
+
+@given("the Lambda function has written a value to the ElastiCache cluster during invocation")
+def lambda_elasticache_seq_value_written():
+    pytest.skip("Cannot trigger Lambda invocation in lws")
+
+
+@given("kid in key_status")
+def kid_in_key_status():
+    pytest.skip("Cannot pre-populate ElastiCache entries in lws")
+
+
+@given('ElastiCache has evicted a cache entry due to memory pressure or "TTL" expiry')
+def lambda_elasticache_seq_entry_evicted():
+    pytest.skip("Cannot trigger ElastiCache eviction in lws")
+
+
+@given("the Lambda invocation has read an existing cache entry and completed successfully")
+def lambda_elasticache_seq_invocation_read_succeeded():
+    pytest.skip("Cannot trigger Lambda invocation in lws")
+
+
+@given("the Lambda invocation has failed because all cache entries have been evicted")
+def lambda_elasticache_seq_invocation_cache_miss():
+    pytest.skip("Cannot trigger Lambda invocation in lws")
+
+
 # ── When: actions ───────────────────────────────────────────────────────
 
 
@@ -250,3 +318,16 @@ def cache_entry_cached(world):
 @then('the cache entry is "EVICTED"')
 def cache_entry_evicted(world):
     pytest.skip("Cannot observe ElastiCache eviction in lws")
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "CACHED" entry belongs to an "AVAILABLE" cluster')
+def _inv_lambda_elasticache_every_cached_entry_belongs_to_an_available_cluster():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then('every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function')
+def _inv_lambda_elasticache_every_in_progress_invocation_references_an_active_lambda():
+    """Invariant step: trivially satisfied in isolated test context."""

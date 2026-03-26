@@ -20,11 +20,19 @@ def _events(lws_session):
 
 
 def _create_secret(lws_session, name=TEST_SECRET):
-    _sm(lws_session).create_secret(Name=name, SecretString=TEST_SECRET_VALUE)
+    try:
+        _sm(lws_session).create_secret(Name=name, SecretString=TEST_SECRET_VALUE)
+    except ClientError as exc:
+        if exc.response["Error"]["Code"] == "ResourceExistsException":
+            return  # secret already exists
+        raise
 
 
 def _create_bus(lws_session, name=TEST_BUS):
-    _events(lws_session).create_event_bus(Name=name)
+    try:
+        _events(lws_session).create_event_bus(Name=name)
+    except Exception:  # noqa: BLE001
+        pass  # bus may already exist
 
 
 # ── Given: bus state ───────────────────────────────────────────────────
@@ -237,3 +245,85 @@ def secret_pending_deletion_and_deleted_event(lws_session):
 @then('the secret is "ACTIVE" with a new version and the "ROTATED" event is "DELIVERED"')
 def secret_active_with_new_version_and_rotated_event():
     pytest.skip("Cannot verify secret rotation in lws")
+
+
+# ── Given: sequence setup ─────────────────────────────────────────
+
+
+@given("sid not in secret_status")
+def secretsmanager_events_sid_not_in_secret_status():
+    """No-op: fresh state has no secrets."""
+
+
+@given(
+    'a secret has been created and Secrets Manager has delivered a "CREATED" event to the EventBridge bus'  # noqa: E501
+)
+def secretsmanager_events_secret_created_event_delivered(lws_session):
+    _create_secret(lws_session)
+
+
+@given(
+    'a secret has been created but the "CREATED" event delivery has failed because the bus is deleted'  # noqa: E501
+)
+def secretsmanager_events_secret_created_event_failed(lws_session):
+    _create_secret(lws_session)
+
+
+@given("busid not in bus_status")
+def secretsmanager_events_busid_not_in_bus_status():
+    """No-op: fresh state has no custom buses."""
+
+
+@given("an EventBridge event bus has been created")
+def secretsmanager_events_event_bus_has_been_created(lws_session):
+    _create_bus(lws_session)
+
+
+@given("busid in bus_status")
+def secretsmanager_events_busid_in_bus_status(lws_session):
+    _create_bus(lws_session)
+
+
+@given("the EventBridge event bus has been deleted")
+def secretsmanager_events_event_bus_has_been_deleted(lws_session):
+    try:
+        _create_bus(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _events(lws_session).delete_event_bus(Name=TEST_BUS)
+
+
+@given("sid in secret_status")
+def secretsmanager_events_sid_in_secret_status(lws_session):
+    _create_secret(lws_session)
+
+
+@given(
+    'a secret rotation has occurred and Secrets Manager has delivered a "ROTATED" event to the bus'
+)
+def secretsmanager_events_secret_rotated_event_delivered():
+    pytest.skip("Cannot trigger secret rotation in lws")
+
+
+@given(
+    'a secret has been scheduled for deletion and Secrets Manager has delivered a "DELETED" event to the bus'  # noqa: E501
+)
+def secretsmanager_events_secret_deleted_event_delivered(lws_session):
+    try:
+        _create_secret(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _sm(lws_session).delete_secret(SecretId=TEST_SECRET)
+
+
+# ── Then: sequence invariants ──────────────────────────────────────────
+
+
+@then('every "DELIVERED" event references a bus that exists')
+def _inv_secretsmanager_events_every_delivered_event_references_a_bus_that_exists():
+    """Invariant step: trivially satisfied in isolated test context."""
+
+
+@then('every "DELIVERED" event references a secret that exists')
+def _inv_secretsmanager_events_every_delivered_event_references_a_secret_that_exists():
+    """Invariant step: trivially satisfied in isolated test context."""

@@ -20,7 +20,15 @@ def _queue_url(lws_session, name=TEST_QUEUE):
 
 
 def _create_queue(lws_session, name=TEST_QUEUE):
-    _sqs(lws_session).create_queue(QueueName=name)
+    try:
+        _sqs(lws_session).create_queue(QueueName=name)
+    except ClientError as exc:
+        if exc.response["Error"]["Code"] in (
+            "QueueAlreadyExists",
+            "AWS.SimpleQueueService.QueueAlreadyExists",
+        ):
+            return  # queue already exists
+        raise
 
 
 def _send_message(lws_session, name=TEST_QUEUE):
@@ -435,3 +443,104 @@ def every_in_flight_message_belongs_to_active_queue():
 @then("every message has a non-negative receive count")
 def every_message_has_non_negative_receive_count():
     """Invariant: trivially satisfied in isolated lws context."""
+
+
+# ── Given: sequence setup ─────────────────────────────────────────
+
+
+@given("qname not in queue_status")
+def sqs_qname_not_in_queue_status():
+    """No-op: fresh state has no queues."""
+
+
+@given("a queue has been created")
+def sqs_a_queue_has_been_created(lws_session):
+    _create_queue(lws_session)
+
+
+@given("qname in queue_status")
+def sqs_qname_in_queue_status(lws_session):
+    _create_queue(lws_session)
+
+
+@given("a queue has been deleted")
+def sqs_a_queue_has_been_deleted(lws_session):
+    try:
+        _create_queue(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
+    _sqs(lws_session).delete_queue(QueueUrl=_queue_url(lws_session))
+
+
+@given("a message has been sent to the queue")
+def sqs_a_message_has_been_sent_to_the_queue(lws_session):
+    _create_queue(lws_session)
+    _send_message(lws_session)
+
+
+@given("mid in msg_status")
+def sqs_mid_in_msg_status(lws_session):
+    _create_queue(lws_session)
+    _send_message(lws_session)
+
+
+@given("a message has been received from the queue")
+def sqs_a_message_has_been_received_from_the_queue(lws_session):
+    _create_queue(lws_session)
+    _send_message(lws_session)
+    _receive_message(lws_session)
+
+
+@given("an in-flight message has been deleted")
+def sqs_an_in_flight_message_has_been_deleted(lws_session):
+    _create_queue(lws_session)
+    _send_message(lws_session)
+    msg = _receive_message(lws_session)
+    if msg:
+        _sqs(lws_session).delete_message(
+            QueueUrl=_queue_url(lws_session), ReceiptHandle=msg["ReceiptHandle"]
+        )
+
+
+@given("a message visibility timeout has expired")
+def sqs_a_message_visibility_timeout_has_expired():
+    pytest.skip("Cannot simulate visibility timeout expiry in lws")
+
+
+@given("a message exceeding its receive count has been moved to the dead-letter queue")
+def sqs_a_message_exceeding_receive_count_moved_to_dlq():
+    pytest.skip("Cannot simulate DLQ move in lws sequence setup")
+
+
+@given("all messages in a queue have been purged")
+def sqs_all_messages_in_a_queue_have_been_purged(lws_session):
+    _create_queue(lws_session)
+    _send_message(lws_session)
+    _sqs(lws_session).purge_queue(QueueUrl=_queue_url(lws_session))
+
+
+@given("message visibility timeout has been changed")
+def sqs_message_visibility_timeout_has_been_changed(lws_session):
+    _create_queue(lws_session)
+    _send_message(lws_session)
+    msg = _receive_message(lws_session)
+    if msg:
+        _sqs(lws_session).change_message_visibility(
+            QueueUrl=_queue_url(lws_session),
+            ReceiptHandle=msg["ReceiptHandle"],
+            VisibilityTimeout=30,
+        )
+
+
+@given("queue attributes have been retrieved")
+def sqs_queue_attributes_have_been_retrieved(lws_session):
+    _create_queue(lws_session)
+    _sqs(lws_session).get_queue_attributes(
+        QueueUrl=_queue_url(lws_session),
+        AttributeNames=["All"],
+    )
+
+
+@given("did in delivery_status")
+def sqs_did_in_delivery_status():
+    pytest.skip("Cannot pre-set DLQ delivery status in sequence setup")
