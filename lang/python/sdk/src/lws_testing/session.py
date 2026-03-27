@@ -335,6 +335,44 @@ class LwsSession:
 
         httpx.post(f"http://127.0.0.1:{self._mgmt_port}/_ldk/reset")
 
+    def inject_state(self, service: str, resource_type: str, resource_id: str, state: str) -> None:
+        """Inject a resource state for test setup.
+
+        Calls ``PUT /_ldk/state/{service}/{resource_type}/{resource_id}``
+        on the management API to directly set the in-memory state of a
+        named resource without running the operation that would normally
+        transition it there.
+
+        Args:
+            service: AWS service name (e.g. ``"stepfunctions"``, ``"lambda"``).
+            resource_type: Resource type (e.g. ``"execution"``, ``"invocation"``).
+            resource_id: Resource identifier (e.g. execution ARN, invocation ID).
+            state: Target state to inject (e.g. ``"RUNNING"``, ``"IN_PROGRESS"``).
+        """
+        import httpx  # pylint: disable=import-outside-toplevel
+
+        httpx.put(
+            f"http://127.0.0.1:{self._mgmt_port}/_ldk/state/{service}/{resource_type}/{resource_id}",
+            json={"state": state},
+        )
+
+    def clear_injected_state(self, service: str, resource_type: str, resource_id: str) -> None:
+        """Clear an injected resource state.
+
+        Calls ``DELETE /_ldk/state/{service}/{resource_type}/{resource_id}``
+        on the management API to remove a previously injected state.
+
+        Args:
+            service: AWS service name (e.g. ``"stepfunctions"``, ``"lambda"``).
+            resource_type: Resource type (e.g. ``"execution"``, ``"invocation"``).
+            resource_id: Resource identifier.
+        """
+        import httpx  # pylint: disable=import-outside-toplevel
+
+        httpx.delete(
+            f"http://127.0.0.1:{self._mgmt_port}/_ldk/state/{service}/{resource_type}/{resource_id}"
+        )
+
     # ── Resource helpers ──────────────────────────────────────────────────────
 
     def dynamodb(self, table_name: str) -> Any:

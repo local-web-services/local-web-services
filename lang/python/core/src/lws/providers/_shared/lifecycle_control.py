@@ -10,6 +10,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
+from lws.providers._shared.async_state_store import resource_state_body
 from lws.providers._shared.aws_lifecycle import ResourceStateTracker
 
 
@@ -47,15 +48,9 @@ def create_lifecycle_control_router(
                 status_code=400,
             )
         tracker.set_state(resource_id, state, frozen=True)
-        return JSONResponse(
-            content={
-                "service": service,
-                "resource_type": resource_type,
-                "resource_id": resource_id,
-                "state": state,
-                "frozen": True,
-            }
-        )
+        body = resource_state_body(service, resource_type, resource_id, state)
+        body["frozen"] = True
+        return JSONResponse(content=body)
 
     @router.delete("/_lws/control/{service}/{resource_type}/{resource_id}/lifecycle")
     async def unfreeze_lifecycle_state(
