@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, parity-check]
   pull_request:
-    branches: [main]
+    branches: [main, parity-check]
 
 permissions:
   pull-requests: write
