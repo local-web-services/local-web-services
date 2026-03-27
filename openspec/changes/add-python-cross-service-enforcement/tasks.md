@@ -2,26 +2,26 @@
 
 ## 1. EventBridge put_events validation
 
-- [ ] 1.1 Reject `put_events` when no enabled rule targets the destination queue/topic/state machine
-- [ ] 1.2 Reject `put_events` when the target queue/topic/state machine is not ACTIVE
-- [ ] 1.3 Unit tests for each rejection case
+- [x] 1.1 Reject `put_events` when no enabled rule targets the destination queue/topic/state machine
+- [x] 1.2 Reject `put_events` when the target queue/topic/state machine is not ACTIVE
+- [x] 1.3 Unit tests for each rejection case
 
 ## 2. EventBridge put_rule / put_targets validation
 
-- [ ] 2.1 Validate Lambda function existence in `put_targets`
-- [ ] 2.2 Validate Lambda function ACTIVE state in `put_targets`
-- [ ] 2.3 Validate DynamoDB table existence when creating a rule with DynamoDB target
-- [ ] 2.4 Validate SQS queue existence when configuring a StepFunctions SQS task
+- [x] 2.1 Validate Lambda function existence in `put_targets`
+- [x] 2.2 Validate Lambda function ACTIVE state in `put_targets`
+- [x] 2.3 Validate DynamoDB table existence when creating a rule with DynamoDB target
+- [x] 2.4 Validate SQS queue existence when configuring a StepFunctions SQS task
 - [ ] 2.5 Validate SNS topic existence on `delete_topic` (should it fail or be idempotent?)
-- [ ] 2.6 Validate state machine target existence when creating a rule
-- [ ] 2.7 Unit tests
+- [x] 2.6 Validate state machine target existence when creating a rule
+- [x] 2.7 Unit tests
 
 ## 3. SNS enforcement
 
-- [ ] 3.1 Reject `publish` when no confirmed subscription exists for the topic
-- [ ] 3.2 Reject `subscribe` (SQS protocol) against a queue that is CREATING or DELETING
-- [ ] 3.3 Enforce queue lifecycle state during SNS publish → SQS deliver
-- [ ] 3.4 Unit tests
+- [x] 3.1 Reject `publish` when no confirmed subscription exists for the topic
+- [x] 3.2 Reject `subscribe` (SQS protocol) against a queue that is CREATING or DELETING
+- [x] 3.3 Enforce queue lifecycle state during SNS publish → SQS deliver
+- [x] 3.4 Unit tests
 
 ## 4. ElastiCache SNS notification enforcement
 
@@ -41,12 +41,12 @@
 
 ## 6. SecretsManager / Cognito state checks
 
-- [ ] 6.1 Reject `delete_secret` when secret is already in PENDING_DELETION state
-- [ ] 6.2 Reject `admin_delete_user` on an already-deleted user
+- [x] 6.1 Reject `delete_secret` when secret is already in PENDING_DELETION state
+- [x] 6.2 Reject `admin_delete_user` on an already-deleted user
 - [ ] 6.3 Enforce UNCONFIRMED state checks on Cognito verification operations
-- [ ] 6.4 Unit tests
+- [x] 6.4 Unit tests (secretsmanager PENDING_DELETION, cognito admin_delete_user)
 
 ## 7. Quality checks
 
-- [ ] 7.1 `make check` passes for `lang/python/core`
-- [ ] 7.2 All formerly-skipped cross-service enforcement steps now pass
+- [x] 7.1 `make check` passes for `lang/python/core` and `lang/python/sdk`
+- [ ] 7.2 All formerly-skipped cross-service enforcement steps now pass (tasks 4.x, 5.x, 6.3 still pending)
