@@ -305,7 +305,9 @@ class LwsSession:
                 f"Service {service!r} is not available in this session. "
                 f"Available: {sorted(self._ports)}"
             )
-        return boto3.client(
+        import re  # pylint: disable=import-outside-toplevel
+
+        boto_client = boto3.client(
             service,
             endpoint_url=f"http://127.0.0.1:{port}",
             region_name="us-east-1",
@@ -313,6 +315,17 @@ class LwsSession:
             aws_secret_access_key="test",
             config=config,
         )
+        if service == "stepfunctions":
+            # boto3/botocore prepends "sync-" to the hostname for StartSyncExecution
+            # (e.g. http://127.0.0.1:PORT → http://sync-127.0.0.1:PORT).
+            # Strip that prefix so requests reach the local service.
+            def _fix_sync_url(request, **kwargs):  # type: ignore[no-untyped-def]
+                request.url = re.sub(r"(https?://)sync-", r"\1", request.url)
+
+            boto_client.meta.events.register(
+                "before-send.stepfunctions.StartSyncExecution", _fix_sync_url
+            )
+        return boto_client
 
     # ── State management ──────────────────────────────────────────────────────
 
