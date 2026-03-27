@@ -2,10 +2,16 @@
 
 from __future__ import annotations
 
-import pytest
+import uuid
+
 from pytest_bdd import given
 
 
 @given("the Lambda function has been invoked")
-def lambda_elasticsearch_seq_function_invoked():
-    pytest.skip("Cannot trigger Lambda invocation in lws")
+def lambda_elasticsearch_seq_function_invoked(lws_session, world):
+    # Arrange
+    invocation_id = str(uuid.uuid4())
+    # Act
+    lws_session.inject_state("lambda", "invocation", invocation_id, "IN_PROGRESS")
+    # Assert
+    world["invocation_id"] = invocation_id

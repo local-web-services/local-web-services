@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
 
 
 @when("the Lambda invocation completes successfully")
-def lambda_invocation_succeeds(world):
-    pytest.skip("Cannot trigger Lambda invocation success in lws")
+def lambda_invocation_succeeds(lws_session, world):
+    # Arrange
+    invocation_id = world["invocation_id"]
+    # Act
+    lws_session.inject_state("lambda", "invocation", invocation_id, "SUCCESS")

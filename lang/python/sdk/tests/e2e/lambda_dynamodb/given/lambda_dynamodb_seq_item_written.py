@@ -2,10 +2,16 @@
 
 from __future__ import annotations
 
-import pytest
+import uuid
+
 from pytest_bdd import given
 
 
 @given("the Lambda function has written an item to the DynamoDB table during invocation")
-def lambda_dynamodb_seq_item_written():
-    pytest.skip("Cannot trigger Lambda invocation in lws")
+def lambda_dynamodb_seq_item_written(lws_session, world):
+    # Arrange
+    invocation_id = str(uuid.uuid4())
+    # Act
+    lws_session.inject_state("lambda", "invocation", invocation_id, "SUCCESS")
+    # Assert
+    world["invocation_id"] = invocation_id

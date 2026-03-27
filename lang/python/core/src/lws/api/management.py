@@ -45,9 +45,13 @@ from lws.api._management_iam_auth import (
 from lws.api._management_lifecycle import (
     _register_lifecycle_routes,
 )
+from lws.api._management_state_injection import (
+    _register_state_routes,
+)
 from lws.api.gui import get_dashboard_html
 from lws.interfaces.provider import Provider
 from lws.logging.logger import get_logger, get_ws_handler
+from lws.providers._shared.async_state_store import AsyncStateStore
 from lws.providers._shared.aws_capacity import AwsCapacityConfig
 from lws.providers._shared.aws_chaos import AwsChaosConfig
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig
@@ -90,6 +94,7 @@ async def _handle_reset(
     aws_fake_configs: dict[str, AwsFakeConfig] | None = None,
     lifecycle_configs: dict[str, ResourceLifecycleConfig] | None = None,
     capacity_configs: dict[str, AwsCapacityConfig] | None = None,
+    state_store: AsyncStateStore | None = None,
 ) -> JSONResponse:
     """Reset all provider data and state, including chaos, fake, lifecycle, and capacity configs."""
     _logger.info("Reset requested via management API")
@@ -114,6 +119,9 @@ async def _handle_reset(
     if capacity_configs is not None:
         for cfg in capacity_configs.values():
             cfg.reset()
+
+    if state_store is not None:
+        state_store.reset()
 
     return JSONResponse(content={"status": "ok", "providers_reset": reset_count})
 
@@ -197,6 +205,7 @@ def create_management_router(
     lifecycle_configs: dict[str, ResourceLifecycleConfig] | None = None,
     capacity_configs: dict[str, AwsCapacityConfig] | None = None,
     fake_provider: Any | None = None,
+    state_store: AsyncStateStore | None = None,
 ) -> APIRouter:
     """Create a management API router.
 
@@ -222,6 +231,7 @@ def create_management_router(
     _aws_fake_configs = aws_fake_configs or {}
     _lifecycle_configs = lifecycle_configs or {}
     _capacity_configs = capacity_configs or {}
+    _state_store = state_store or AsyncStateStore()
 
     _register_core_routes(
         router,
@@ -232,6 +242,7 @@ def create_management_router(
         _aws_fake_configs,
         _lifecycle_configs,
         _capacity_configs,
+        _state_store,
     )
     _register_chaos_routes(router, _chaos_configs)
     _register_iam_auth_routes(router, iam_auth_bundle)
@@ -240,6 +251,7 @@ def create_management_router(
     _register_fake_server_routes(router, fake_provider)
     _register_lifecycle_routes(router, _lifecycle_configs)
     _register_capacity_routes(router, _capacity_configs)
+    _register_state_routes(router, _state_store, all_providers)
 
     return router
 
@@ -253,13 +265,19 @@ def _register_core_routes(
     aws_fake_configs: dict[str, AwsFakeConfig] | None = None,
     lifecycle_configs: dict[str, ResourceLifecycleConfig] | None = None,
     capacity_configs: dict[str, AwsCapacityConfig] | None = None,
+    state_store: AsyncStateStore | None = None,
 ) -> None:
     """Register core management routes (reset, status, resources, gui, ws, shutdown, proxy)."""
 
     @router.post("/reset")
     async def reset_state() -> JSONResponse:
         return await _handle_reset(
-            all_providers, chaos_configs, aws_fake_configs, lifecycle_configs, capacity_configs
+            all_providers,
+            chaos_configs,
+            aws_fake_configs,
+            lifecycle_configs,
+            capacity_configs,
+            state_store,
         )
 
     @router.get("/status")

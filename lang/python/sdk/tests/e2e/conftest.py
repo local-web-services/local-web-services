@@ -22,7 +22,9 @@ def lws_session():
 
 @pytest.fixture(autouse=True)
 def reset_lws_between_scenarios(lws_session):
-    """Reset all service state before each scenario."""
+    """Reset all service state before and after each scenario."""
+    lws_session.reset()
+    yield
     lws_session.reset()
 
 
