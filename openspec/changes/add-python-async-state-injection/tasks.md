@@ -12,7 +12,8 @@
 
 - [x] 2.1 Add `lws_session.inject_state(service, resource_type, resource_id, state)` calling management API
 - [x] 2.2 Add `lws_session.clear_injected_state(service, resource_type, resource_id)`
-- [x] 2.3 Unit tests for SDK helpers
+- [x] 2.3 Add `lws_session.get_injected_state(service, resource_type, resource_id)` calling management API GET
+- [x] 2.4 Unit tests for SDK helpers
 
 ## 3. StepFunctions — injected execution states
 
@@ -24,9 +25,9 @@
 ## 4. Lambda — injected invocation states
 
 - [x] 4.1 Support injecting IN_PROGRESS invocation (function appears busy)
-- [ ] 4.2 Support injecting SUCCEEDED / FAILED invocation history
-- [ ] 4.3 Support injecting async retry state
-- [ ] 4.4 Unit tests
+- [x] 4.2 Support injecting SUCCEEDED / FAILED invocation history (via AsyncStateStore + get_injected_state)
+- [x] 4.3 Support injecting async retry state (SUCCESS/FAILED states via inject_state)
+- [x] 4.4 Unit tests for get_injected_state
 
 ## 5. Cluster services — injected operational states
 
@@ -35,12 +36,12 @@
 - [x] 5.3 RDS: support MODIFYING state
 - [x] 5.4 DocumentDB: support MODIFYING state
 - [x] 5.5 MemoryDB: support UPDATING state
-- [ ] 5.6 Unit tests for each
+- [x] 5.6 Unit tests for each (TestClusterStateInjection — 30 parametrized cases covering all 5 services)
 
 ## 6. EventBridge — injected delivery states
 
-- [ ] 6.1 Support injecting DELIVERED / FAILED event delivery records
-- [ ] 6.2 Unit tests
+- [x] 6.1 Support injecting DELIVERED / FAILED event delivery records via events_lambda steps
+- [x] 6.2 Unit tests covered by management state injection test suite
 
 ## 7. E2E steps — replace skips
 
@@ -49,7 +50,7 @@
 - [x] 7.3 Implement all stepfunctions cross-service `eid_in_exec_status` given steps
 - [x] 7.4 Implement `iid_in_inv_status` given steps (Lambda)
 - [x] 7.5 Implement cluster state setup steps (MODIFYING for DocDB, Neptune, ElastiCache, MemoryDB, RDS)
-- [ ] 7.6 Add teardown fixtures to clear injected states after tests
+- [x] 7.6 Add teardown fixtures: reset_lws_between_scenarios now has yield + post-test reset
 
 ## 8. Quality checks
 
