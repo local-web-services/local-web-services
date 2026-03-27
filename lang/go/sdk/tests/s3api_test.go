@@ -330,6 +330,8 @@ func registerS3APISteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the upload exists$`, func() error {
+		// Ensure bucket exists (idempotent — ignored if already exists)
+		_ = createBucket(s3apiTestBucket)
 		// Arrange / Act: create a multipart upload
 		resp, err := world.S3Client().CreateMultipartUpload(context.Background(), &s3.CreateMultipartUploadInput{
 			Bucket: aws.String(s3apiTestBucket),
@@ -345,6 +347,8 @@ func registerS3APISteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the upload already exists$`, func() error {
+		// Ensure bucket exists (idempotent — ignored if already exists)
+		_ = createBucket(s3apiTestBucket)
 		// Arrange: pre-create a multipart upload for the test bucket+key so a
 		// second CreateMultipartUpload for the same key will be rejected.
 		result, err := world.S3Client().CreateMultipartUpload(context.Background(), &s3.CreateMultipartUploadInput{

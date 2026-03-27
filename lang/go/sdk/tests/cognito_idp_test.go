@@ -232,21 +232,11 @@ func registerCognitoIDPSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the user is "CONFIRMED"$`, func() error {
-		// Arrange: transition user from FORCE_CHANGE_PASSWORD → RESET_REQUIRED → CONFIRMED
-		// First reset the password to move to RESET_REQUIRED state
-		_, err := world.CognitoIDPClient().AdminResetUserPassword(context.Background(), &cognitoidentityprovider.AdminResetUserPasswordInput{
+		// Arrange: transition user from FORCE_CHANGE_PASSWORD → CONFIRMED via AdminConfirmSignUp
+		// AdminConfirmSignUp works from FORCE_CHANGE_PASSWORD state directly.
+		_, err := world.CognitoIDPClient().AdminConfirmSignUp(context.Background(), &cognitoidentityprovider.AdminConfirmSignUpInput{
 			UserPoolId: aws.String(st.poolID),
 			Username:   aws.String(st.username),
-		})
-		if err != nil {
-			return err
-		}
-		// Then set a permanent password to confirm the user
-		_, err = world.CognitoIDPClient().AdminSetUserPassword(context.Background(), &cognitoidentityprovider.AdminSetUserPasswordInput{
-			UserPoolId: aws.String(st.poolID),
-			Username:   aws.String(st.username),
-			Password:   aws.String(cognitoTestPassword),
-			Permanent:  true,
 		})
 		// Assert: user is now CONFIRMED
 		return err
@@ -264,29 +254,27 @@ func registerCognitoIDPSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the user is not "UNCONFIRMED"$`, func() error {
-		// Arrange: confirm the user so they are no longer UNCONFIRMED.
-		// First move user to RESET_REQUIRED, then set permanent password.
-		_, err := world.CognitoIDPClient().AdminResetUserPassword(context.Background(), &cognitoidentityprovider.AdminResetUserPasswordInput{
+		// Arrange: confirm the user via AdminConfirmSignUp (FORCE_CHANGE_PASSWORD → CONFIRMED).
+		_, err := world.CognitoIDPClient().AdminConfirmSignUp(context.Background(), &cognitoidentityprovider.AdminConfirmSignUpInput{
 			UserPoolId: aws.String(st.poolID),
 			Username:   aws.String(st.username),
-		})
-		if err != nil {
-			return err
-		}
-		_, err = world.CognitoIDPClient().AdminSetUserPassword(context.Background(), &cognitoidentityprovider.AdminSetUserPasswordInput{
-			UserPoolId: aws.String(st.poolID),
-			Username:   aws.String(st.username),
-			Password:   aws.String(cognitoTestPassword),
-			Permanent:  true,
 		})
 		// Assert: user is now CONFIRMED (not UNCONFIRMED)
 		return err
 	})
 
 	sc.Given(`^the user is in "RESET_REQUIRED" state$`, func() error {
-		// Arrange: reset the user password so they are in RESET_REQUIRED
-		// Act
-		_, err := world.CognitoIDPClient().AdminResetUserPassword(context.Background(), &cognitoidentityprovider.AdminResetUserPasswordInput{
+		// Arrange: confirm user first (FORCE_CHANGE_PASSWORD → CONFIRMED), then reset password (CONFIRMED → RESET_REQUIRED)
+		// Step 1: confirm the user
+		_, err := world.CognitoIDPClient().AdminConfirmSignUp(context.Background(), &cognitoidentityprovider.AdminConfirmSignUpInput{
+			UserPoolId: aws.String(st.poolID),
+			Username:   aws.String(st.username),
+		})
+		if err != nil {
+			return err
+		}
+		// Step 2: reset their password to put them in RESET_REQUIRED state
+		_, err = world.CognitoIDPClient().AdminResetUserPassword(context.Background(), &cognitoidentityprovider.AdminResetUserPasswordInput{
 			UserPoolId: aws.String(st.poolID),
 			Username:   aws.String(st.username),
 		})

@@ -66,7 +66,12 @@ func registerDynamoDBSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the table exists$`, func() error {
-		// Arrange: create the test table
+		// Also ensure S3Tables bucket/namespace/table exist (idempotent) so that
+		// S3Tables scenarios that share this step name get the correct S3Tables setup.
+		_ = s3tablesCreateBucket(world)
+		_ = s3tablesCreateNamespace(world)
+		_ = s3tablesCreateTable(world)
+		// Arrange: create the DynamoDB test table
 		// Act
 		_, err := world.DynamoDBClient().CreateTable(context.Background(), &dynamodb.CreateTableInput{
 			TableName: aws.String(dynamodbTestTable),
