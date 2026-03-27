@@ -137,24 +137,14 @@ class CognitoProvider(Provider, CognitoGroupOpsMixin, _CognitoTriggersMixin):
         username: str,
         password: str,
     ) -> dict[str, Any]:
-        """Authenticate a user and return tokens.
-
-        Supports USER_PASSWORD_AUTH flow.
-        Raises CognitoError on failure.
-        """
+        """Authenticate a user and return tokens."""
         if auth_flow != "USER_PASSWORD_AUTH":
             raise CognitoError(
                 "InvalidParameterException",
                 f"Unsupported auth flow: {auth_flow}",
             )
-
-        # Pre-authentication trigger
         await self._invoke_pre_authentication(username)
-
-        # Authenticate
         user_info = await self._store.authenticate(username, password)
-
-        # Generate tokens
         return await self._generate_auth_result(user_info)
 
     async def refresh_tokens(self, refresh_token: str) -> dict[str, Any]:
@@ -299,10 +289,7 @@ class CognitoProvider(Provider, CognitoGroupOpsMixin, _CognitoTriggersMixin):
         _session: str,
         challenge_responses: dict[str, str],
     ) -> dict[str, Any]:
-        """Respond to an authentication challenge.
-
-        Supports NEW_PASSWORD_REQUIRED challenge by setting the user's password.
-        """
+        """Respond to an authentication challenge."""
         username = challenge_responses.get("USERNAME", "")
         if challenge_name == "NEW_PASSWORD_REQUIRED":
             new_password = challenge_responses.get("NEW_PASSWORD", "")
@@ -391,7 +378,6 @@ class CognitoProvider(Provider, CognitoGroupOpsMixin, _CognitoTriggersMixin):
     ) -> dict[str, Any]:
         """Initiate a password reset. Returns CodeDeliveryDetails."""
         code = await self._store.create_password_reset_code(username)
-        # In a local environment, we log the code so the developer can use it.
         _logger.info("Password reset code for %s: %s", username, code)
         return {
             "CodeDeliveryDetails": {
@@ -433,8 +419,6 @@ class CognitoProvider(Provider, CognitoGroupOpsMixin, _CognitoTriggersMixin):
         if not username:
             raise NotAuthorizedException("Invalid access token.")
         await self._store.revoke_refresh_tokens(username)
-
-    # -- Validation helpers ---------------------------------------------------
 
     def _validate_user_pool_id(self, user_pool_id: str) -> None:
         """Validate that the user pool ID matches the configured pool."""
