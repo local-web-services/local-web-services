@@ -356,6 +356,60 @@ class UserStore:
         await self._conn.execute("DELETE FROM password_reset_codes WHERE username = ?", (username,))
         await self._conn.commit()
 
+    async def admin_confirm_user(self, username: str) -> None:
+        """Confirm a user's account (admin operation).
+
+        Raises UserNotFoundException if the user does not exist.
+        """
+        assert self._conn is not None
+        user = await self._get_user_row(username)
+        if user is None:
+            raise UserNotFoundException(username)
+        await self._conn.execute(
+            "UPDATE users SET confirmed = 1 WHERE username = ?",
+            (username,),
+        )
+        await self._conn.commit()
+
+    async def admin_set_user_password(
+        self, username: str, password: str, permanent: bool = True
+    ) -> None:
+        """Set a user's password as an admin.
+
+        Raises UserNotFoundException if the user does not exist,
+        or InvalidPasswordException if the password fails policy.
+        """
+        assert self._conn is not None
+        user = await self._get_user_row(username)
+        if user is None:
+            raise UserNotFoundException(username)
+        validate_password(password, self._config.password_policy)
+        pw_hash, pw_salt = _hash_password(password)
+        confirmed = 1 if permanent else user["confirmed"]
+        await self._conn.execute(
+            "UPDATE users SET password_hash = ?, password_salt = ?, confirmed = ?"
+            " WHERE username = ?",
+            (pw_hash, pw_salt, confirmed, username),
+        )
+        await self._conn.commit()
+
+    async def admin_update_user_attributes(self, username: str, attributes: dict[str, str]) -> None:
+        """Update user attributes as an admin.
+
+        Raises UserNotFoundException if the user does not exist.
+        """
+        assert self._conn is not None
+        user = await self._get_user_row(username)
+        if user is None:
+            raise UserNotFoundException(username)
+        existing = json.loads(user["attributes"])
+        existing.update(attributes)
+        await self._conn.execute(
+            "UPDATE users SET attributes = ? WHERE username = ?",
+            (json.dumps(existing), username),
+        )
+        await self._conn.commit()
+
     async def change_password(self, username: str, old_password: str, new_password: str) -> None:
         """Change a user's password after verifying the old password.
 

@@ -19,6 +19,7 @@ class _Table:
         self.arn = f"{table_bucket_arn}/table/{namespace}/{name}"
         self.created_date = datetime.now(UTC).isoformat()
         self.policy: str | None = None
+        self.maintenance_configs: dict = {}
 
 
 class _Namespace:
@@ -39,6 +40,7 @@ class _TableBucket:
         self.arn = f"arn:aws:s3tables:{_REGION}:{_ACCOUNT_ID}:bucket/{name}"
         self.created_date = datetime.now(UTC).isoformat()
         self.namespaces: dict[str, _Namespace] = {}
+        self.maintenance_configs: dict = {}
 
 
 class _S3TablesState:

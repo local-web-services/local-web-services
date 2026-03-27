@@ -2,10 +2,22 @@
 
 from __future__ import annotations
 
-import pytest
+from botocore.exceptions import ClientError
 from pytest_bdd import when
+
+from ..constants import TEST_INSTANCE
 
 
 @when("a database instance configuration is modified")
 def modify_db_instance(lws_session, world):
-    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
+    try:
+        instance_id = world.get("instance_id", TEST_INSTANCE)
+        result = lws_session.client("neptune").modify_db_instance(
+            DBInstanceIdentifier=instance_id,
+            ApplyImmediately=True,
+        )
+        world["result"] = result
+        world["error"] = None
+    except ClientError as exc:
+        world["result"] = None
+        world["error"] = exc

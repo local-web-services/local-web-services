@@ -29,12 +29,92 @@ def _error_response(code: str, message: str, status_code: int = 400) -> Response
     return _json_response(error_body, status_code=status_code)
 
 
-async def _create_table_bucket(request: Request, state: _S3TablesState) -> Response:
-    """Handle CreateTableBucket (PUT /table-buckets)."""
+def _lookup_bucket(table_bucket_arn: str, state: _S3TablesState):  # type: ignore[return]
+    """Return (bucket, None) or (None, error_response) for the given ARN."""
+    bucket = state.get_bucket(table_bucket_arn)
+    if bucket is None:
+        return None, _error_response(
+            "NotFoundException",
+            f"Table bucket '{table_bucket_arn}' not found",
+            status_code=404,
+        )
+    return bucket, None
+
+
+def _lookup_namespace(bucket, namespace: str):  # type: ignore[return]
+    """Return (namespace, None) or (None, error_response) for the given namespace name."""
+    ns = bucket.namespaces.get(namespace)
+    if ns is None:
+        return None, _error_response(
+            "NotFoundException",
+            f"Namespace '{namespace}' not found",
+            status_code=404,
+        )
+    return ns, None
+
+
+def _lookup_bucket_ns(  # type: ignore[return]
+    table_bucket_arn: str, namespace: str, state: _S3TablesState
+):
+    """Return (bucket, ns, None) or (None, None, error_response)."""
+    bucket, err = _lookup_bucket(table_bucket_arn, state)
+    if err is not None:
+        return None, None, err
+    ns, err = _lookup_namespace(bucket, namespace)
+    if err is not None:
+        return None, None, err
+    return bucket, ns, None
+
+
+def _lookup_bucket_ns_table(  # type: ignore[return]
+    table_bucket_arn: str, namespace: str, name: str, state: _S3TablesState
+):
+    """Return (bucket, ns, table, None) or (None, None, None, error_response)."""
+    bucket, ns, err = _lookup_bucket_ns(table_bucket_arn, namespace, state)
+    if err is not None:
+        return None, None, None, err
+    table = ns.tables.get(name)
+    if table is None:
+        return (
+            None,
+            None,
+            None,
+            _error_response(
+                "NotFoundException",
+                f"Table '{name}' not found",
+                status_code=404,
+            ),
+        )
+    return bucket, ns, table, None
+
+
+async def _parse_json_body_or_error(request: Request):  # type: ignore[return]
+    """Parse JSON body; return (body_dict, None) or (None, error_response)."""
     try:
         body = await request.json()
+        return body, None
     except Exception:
-        return _error_response("BadRequestException", "Invalid JSON body")
+        return None, _error_response("BadRequestException", "Invalid JSON body")
+
+
+async def _lookup_bucket_parse_body(  # type: ignore[return]
+    table_bucket_arn: str, request: Request, state: _S3TablesState
+):
+    """Return (bucket, body, None) or (None, None, error_response)."""
+    bucket, err = _lookup_bucket(table_bucket_arn, state)
+    if err is not None:
+        return None, None, err
+    body, err = await _parse_json_body_or_error(request)
+    if err is not None:
+        return None, None, err
+    return bucket, body, None
+
+
+async def _create_table_bucket(request: Request, state: _S3TablesState) -> Response:
+    """Handle CreateTableBucket (PUT /table-buckets)."""
+    body, err = await _parse_json_body_or_error(request)
+    if err is not None:
+        return err
 
     name = body.get("name", "")
     if not name:
@@ -75,13 +155,9 @@ async def _list_table_buckets(state: _S3TablesState) -> Response:
 
 async def _get_table_bucket(table_bucket_arn: str, state: _S3TablesState) -> Response:
     """Handle GetTableBucket (GET /table-buckets/{tableBucketARN})."""
-    bucket = state.get_bucket(table_bucket_arn)
-    if bucket is None:
-        return _error_response(
-            "NotFoundException",
-            f"Table bucket '{table_bucket_arn}' not found",
-            status_code=404,
-        )
+    bucket, err = _lookup_bucket(table_bucket_arn, state)
+    if err is not None:
+        return err
 
     return _json_response(
         {
@@ -94,13 +170,9 @@ async def _get_table_bucket(table_bucket_arn: str, state: _S3TablesState) -> Res
 
 async def _delete_table_bucket(table_bucket_arn: str, state: _S3TablesState) -> Response:
     """Handle DeleteTableBucket (DELETE /table-buckets/{tableBucketARN})."""
-    bucket = state.get_bucket(table_bucket_arn)
-    if bucket is None:
-        return _error_response(
-            "NotFoundException",
-            f"Table bucket '{table_bucket_arn}' not found",
-            status_code=404,
-        )
+    bucket, err = _lookup_bucket(table_bucket_arn, state)
+    if err is not None:
+        return err
     if bucket.namespaces:
         return _error_response(
             "ConflictException",
@@ -115,18 +187,9 @@ async def _create_namespace(
     table_bucket_arn: str, request: Request, state: _S3TablesState
 ) -> Response:
     """Handle CreateNamespace (PUT /table-buckets/{tableBucketARN}/namespaces)."""
-    bucket = state.get_bucket(table_bucket_arn)
-    if bucket is None:
-        return _error_response(
-            "NotFoundException",
-            f"Table bucket '{table_bucket_arn}' not found",
-            status_code=404,
-        )
-
-    try:
-        body = await request.json()
-    except Exception:
-        return _error_response("BadRequestException", "Invalid JSON body")
+    bucket, body, err = await _lookup_bucket_parse_body(table_bucket_arn, request, state)
+    if err is not None:
+        return err
 
     namespace_list = body.get("namespace", [])
     if not namespace_list or not isinstance(namespace_list, list) or len(namespace_list) == 0:
@@ -154,13 +217,9 @@ async def _create_namespace(
 
 async def _list_namespaces(table_bucket_arn: str, state: _S3TablesState) -> Response:
     """Handle ListNamespaces (GET /table-buckets/{tableBucketARN}/namespaces)."""
-    bucket = state.get_bucket(table_bucket_arn)
-    if bucket is None:
-        return _error_response(
-            "NotFoundException",
-            f"Table bucket '{table_bucket_arn}' not found",
-            status_code=404,
-        )
+    bucket, err = _lookup_bucket(table_bucket_arn, state)
+    if err is not None:
+        return err
 
     namespaces = []
     for ns in bucket.namespaces.values():
@@ -176,21 +235,9 @@ async def _list_namespaces(table_bucket_arn: str, state: _S3TablesState) -> Resp
 
 async def _get_namespace(table_bucket_arn: str, namespace: str, state: _S3TablesState) -> Response:
     """Handle GetNamespace (GET /table-buckets/{tableBucketARN}/namespaces/{namespace})."""
-    bucket = state.get_bucket(table_bucket_arn)
-    if bucket is None:
-        return _error_response(
-            "NotFoundException",
-            f"Table bucket '{table_bucket_arn}' not found",
-            status_code=404,
-        )
-
-    ns = bucket.namespaces.get(namespace)
-    if ns is None:
-        return _error_response(
-            "NotFoundException",
-            f"Namespace '{namespace}' not found in table bucket '{table_bucket_arn}'",
-            status_code=404,
-        )
+    bucket, ns, err = _lookup_bucket_ns(table_bucket_arn, namespace, state)
+    if err is not None:
+        return err
 
     return _json_response(
         {
@@ -205,21 +252,9 @@ async def _delete_namespace(
     table_bucket_arn: str, namespace: str, state: _S3TablesState
 ) -> Response:
     """Handle DeleteNamespace (DELETE /table-buckets/{tableBucketARN}/namespaces/{namespace})."""
-    bucket = state.get_bucket(table_bucket_arn)
-    if bucket is None:
-        return _error_response(
-            "NotFoundException",
-            f"Table bucket '{table_bucket_arn}' not found",
-            status_code=404,
-        )
-
-    ns = bucket.namespaces.get(namespace)
-    if ns is None:
-        return _error_response(
-            "NotFoundException",
-            f"Namespace '{namespace}' not found in table bucket '{table_bucket_arn}'",
-            status_code=404,
-        )
+    bucket, ns, err = _lookup_bucket_ns(table_bucket_arn, namespace, state)
+    if err is not None:
+        return err
 
     if ns.tables:
         return _error_response(
@@ -236,31 +271,12 @@ async def _put_table_policy(
     table_bucket_arn: str, namespace: str, table_name: str, request: Request, state: _S3TablesState
 ) -> Response:
     """Handle PutTablePolicy."""
-    bucket = state.get_bucket(table_bucket_arn)
-    if bucket is None:
-        return _error_response(
-            "NotFoundException",
-            f"Table bucket '{table_bucket_arn}' not found",
-            status_code=404,
-        )
-    ns = bucket.namespaces.get(namespace)
-    if ns is None:
-        return _error_response(
-            "NotFoundException",
-            f"Namespace '{namespace}' not found",
-            status_code=404,
-        )
-    table = ns.tables.get(table_name)
-    if table is None:
-        return _error_response(
-            "NotFoundException",
-            f"Table '{table_name}' not found",
-            status_code=404,
-        )
-    try:
-        body = await request.json()
-    except Exception:
-        return _error_response("BadRequestException", "Invalid JSON body")
+    _, _, table, err = _lookup_bucket_ns_table(table_bucket_arn, namespace, table_name, state)
+    if err is not None:
+        return err
+    body, err = await _parse_json_body_or_error(request)
+    if err is not None:
+        return err
     table.policy = body.get("resourcePolicy", "")
     return _json_response({"resourcePolicy": table.policy})
 
@@ -269,27 +285,9 @@ async def _delete_table_policy(
     table_bucket_arn: str, namespace: str, table_name: str, state: _S3TablesState
 ) -> Response:
     """Handle DeleteTablePolicy."""
-    bucket = state.get_bucket(table_bucket_arn)
-    if bucket is None:
-        return _error_response(
-            "NotFoundException",
-            f"Table bucket '{table_bucket_arn}' not found",
-            status_code=404,
-        )
-    ns = bucket.namespaces.get(namespace)
-    if ns is None:
-        return _error_response(
-            "NotFoundException",
-            f"Namespace '{namespace}' not found",
-            status_code=404,
-        )
-    table = ns.tables.get(table_name)
-    if table is None:
-        return _error_response(
-            "NotFoundException",
-            f"Table '{table_name}' not found",
-            status_code=404,
-        )
+    _, _, table, err = _lookup_bucket_ns_table(table_bucket_arn, namespace, table_name, state)
+    if err is not None:
+        return err
     if table.policy is None:
         return _error_response(
             "NotFoundException",
@@ -304,26 +302,12 @@ async def _create_table(
     table_bucket_arn: str, namespace: str, request: Request, state: _S3TablesState
 ) -> Response:
     """Handle CreateTable (PUT /table-buckets/{tableBucketARN}/namespaces/{namespace}/tables)."""
-    bucket = state.get_bucket(table_bucket_arn)
-    if bucket is None:
-        return _error_response(
-            "NotFoundException",
-            f"Table bucket '{table_bucket_arn}' not found",
-            status_code=404,
-        )
-
-    ns = bucket.namespaces.get(namespace)
-    if ns is None:
-        return _error_response(
-            "NotFoundException",
-            f"Namespace '{namespace}' not found in table bucket '{table_bucket_arn}'",
-            status_code=404,
-        )
-
-    try:
-        body = await request.json()
-    except Exception:
-        return _error_response("BadRequestException", "Invalid JSON body")
+    bucket, ns, err = _lookup_bucket_ns(table_bucket_arn, namespace, state)
+    if err is not None:
+        return err
+    body, err = await _parse_json_body_or_error(request)
+    if err is not None:
+        return err
 
     name = body.get("name", "")
     fmt = body.get("format", "ICEBERG")
@@ -353,13 +337,9 @@ async def _list_tables(
     table_bucket_arn: str, namespace: str | None, state: _S3TablesState
 ) -> Response:
     """Handle ListTables (GET /tables/{tableBucketARN})."""
-    bucket = state.get_bucket(table_bucket_arn)
-    if bucket is None:
-        return _error_response(
-            "NotFoundException",
-            f"Table bucket '{table_bucket_arn}' not found",
-            status_code=404,
-        )
+    bucket, err = _lookup_bucket(table_bucket_arn, state)
+    if err is not None:
+        return err
 
     if namespace is not None and namespace not in bucket.namespaces:
         return _error_response(
@@ -389,29 +369,9 @@ async def _get_table(
     table_bucket_arn: str, namespace: str, table_name: str, state: _S3TablesState
 ) -> Response:
     """Handle GetTable."""
-    bucket = state.get_bucket(table_bucket_arn)
-    if bucket is None:
-        return _error_response(
-            "NotFoundException",
-            f"Table bucket '{table_bucket_arn}' not found",
-            status_code=404,
-        )
-
-    ns = bucket.namespaces.get(namespace)
-    if ns is None:
-        return _error_response(
-            "NotFoundException",
-            f"Namespace '{namespace}' not found in table bucket '{table_bucket_arn}'",
-            status_code=404,
-        )
-
-    table = ns.tables.get(table_name)
-    if table is None:
-        return _error_response(
-            "NotFoundException",
-            f"Table '{table_name}' not found in namespace '{namespace}'",
-            status_code=404,
-        )
+    _, _, table, err = _lookup_bucket_ns_table(table_bucket_arn, namespace, table_name, state)
+    if err is not None:
+        return err
 
     return _json_response(
         {
@@ -429,28 +389,8 @@ async def _delete_table(
     table_bucket_arn: str, namespace: str, table_name: str, state: _S3TablesState
 ) -> Response:
     """Handle DeleteTable."""
-    bucket = state.get_bucket(table_bucket_arn)
-    if bucket is None:
-        return _error_response(
-            "NotFoundException",
-            f"Table bucket '{table_bucket_arn}' not found",
-            status_code=404,
-        )
-
-    ns = bucket.namespaces.get(namespace)
-    if ns is None:
-        return _error_response(
-            "NotFoundException",
-            f"Namespace '{namespace}' not found in table bucket '{table_bucket_arn}'",
-            status_code=404,
-        )
-
-    table = ns.tables.pop(table_name, None)
-    if table is None:
-        return _error_response(
-            "NotFoundException",
-            f"Table '{table_name}' not found in namespace '{namespace}'",
-            status_code=404,
-        )
-
+    _, ns, _, err = _lookup_bucket_ns_table(table_bucket_arn, namespace, table_name, state)
+    if err is not None:
+        return err
+    ns.tables.pop(table_name, None)
     return Response(status_code=204)

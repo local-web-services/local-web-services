@@ -14,6 +14,36 @@ from fastapi import FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_create_db_cluster_snapshot as _handle_create_db_cluster_snapshot,
+)
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_delete_db_cluster_snapshot as _handle_delete_db_cluster_snapshot,
+)
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_describe_db_cluster_snapshots as _handle_describe_db_cluster_snapshots,
+)
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_failover_db_cluster as _handle_failover_db_cluster,
+)
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_modify_db_cluster as _handle_modify_db_cluster,
+)
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_modify_db_instance as _handle_modify_db_instance,
+)
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_reboot_db_instance as _handle_reboot_db_instance,
+)
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_restore_db_cluster_from_snapshot as _handle_restore_db_cluster_from_snapshot,
+)
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_start_db_cluster as _handle_start_db_cluster,
+)
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_stop_db_cluster as _handle_stop_db_cluster,
+)
 from lws.providers._shared._cluster_db_state import (
     _apply_tags,
     _ClusterDBState,
@@ -358,9 +388,19 @@ def create_cluster_db_app(config: ClusterDBConfig) -> FastAPI:
         "CreateDBCluster": _handle_create_db_cluster,
         "DescribeDBClusters": _handle_describe_db_clusters,
         "DeleteDBCluster": _handle_delete_db_cluster,
+        "StopDBCluster": _handle_stop_db_cluster,
+        "StartDBCluster": _handle_start_db_cluster,
+        "FailoverDBCluster": _handle_failover_db_cluster,
+        "ModifyDBCluster": _handle_modify_db_cluster,
         "CreateDBInstance": _handle_create_db_instance,
         "DescribeDBInstances": _handle_describe_db_instances,
         "DeleteDBInstance": _handle_delete_db_instance,
+        "RebootDBInstance": _handle_reboot_db_instance,
+        "ModifyDBInstance": _handle_modify_db_instance,
+        "CreateDBClusterSnapshot": _handle_create_db_cluster_snapshot,
+        "DescribeDBClusterSnapshots": _handle_describe_db_cluster_snapshots,
+        "DeleteDBClusterSnapshot": _handle_delete_db_cluster_snapshot,
+        "RestoreDBClusterFromSnapshot": _handle_restore_db_cluster_from_snapshot,
         "ListTagsForResource": _handle_list_tags,
         "AddTagsToResource": _handle_add_tags,
     }

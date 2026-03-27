@@ -10,6 +10,12 @@ from typing import Any
 
 from lws.interfaces.provider import Provider
 from lws.logging.logger import get_logger
+from lws.providers.cognito._cognito_trigger_events import (
+    build_post_confirmation_event as _build_post_confirmation_event,
+)
+from lws.providers.cognito._cognito_trigger_events import (
+    build_pre_auth_event as _build_pre_auth_event,
+)
 from lws.providers.cognito.tokens import TokenIssuer
 from lws.providers.cognito.user_store import (
     CognitoError,
@@ -55,7 +61,6 @@ class CognitoProvider(Provider):
             client_id=config.client_id or "local-client-id",
         )
         self._triggers = trigger_functions or {}
-        # In-memory store for user pool clients (client_id -> client_info)
         self._clients: dict[str, dict[str, Any]] = {}
 
     # -- Provider lifecycle ---------------------------------------------------
@@ -242,6 +247,72 @@ class CognitoProvider(Provider):
             }
         }
 
+    async def admin_confirm_sign_up(
+        self,
+        user_pool_id: str,
+        username: str,
+    ) -> None:
+        """Confirm a user's registration as an admin."""
+        self._validate_user_pool_id(user_pool_id)
+        await self._store.admin_confirm_user(username)
+
+    async def admin_set_user_password(
+        self,
+        user_pool_id: str,
+        username: str,
+        password: str,
+        permanent: bool = True,
+    ) -> None:
+        """Set a user's password as an admin."""
+        self._validate_user_pool_id(user_pool_id)
+        await self._store.admin_set_user_password(username, password, permanent)
+
+    async def admin_update_user_attributes(
+        self,
+        user_pool_id: str,
+        username: str,
+        user_attributes: dict[str, str],
+    ) -> None:
+        """Update user attributes as an admin."""
+        self._validate_user_pool_id(user_pool_id)
+        await self._store.admin_update_user_attributes(username, user_attributes)
+
+    async def admin_initiate_auth(
+        self,
+        user_pool_id: str,
+        _auth_flow: str,
+        username: str,
+        password: str,
+    ) -> dict[str, Any]:
+        """Admin-initiated authentication. Supports ADMIN_NO_SRP_AUTH flow."""
+        self._validate_user_pool_id(user_pool_id)
+        user_info = await self._store.authenticate(username, password)
+        return await self._generate_auth_result(user_info)
+
+    async def respond_to_auth_challenge(
+        self,
+        _client_id: str,
+        challenge_name: str,
+        _session: str,
+        challenge_responses: dict[str, str],
+    ) -> dict[str, Any]:
+        """Respond to an authentication challenge.
+
+        Supports NEW_PASSWORD_REQUIRED challenge by setting the user's password.
+        """
+        username = challenge_responses.get("USERNAME", "")
+        if challenge_name == "NEW_PASSWORD_REQUIRED":
+            new_password = challenge_responses.get("NEW_PASSWORD", "")
+            await self._store.admin_set_user_password(username, new_password, permanent=True)
+            user = await self._store.get_user(username)
+            if user is None:
+                raise NotAuthorizedException("User not found.")
+            return await self._generate_auth_result(user)
+        raise CognitoError(
+            "NotAuthorizedException",
+            f"Unsupported challenge: {challenge_name}",
+        )
+
     async def admin_delete_user(
         self,
         user_pool_id: str,
@@ -405,8 +476,6 @@ class CognitoProvider(Provider):
         trigger_fn = self._triggers[trigger_name]
         await trigger_fn(event)
 
-    # -- Private helpers -------------------------------------------------------
-
     async def _generate_auth_result(self, user_info: dict) -> dict[str, Any]:
         """Generate authentication result with tokens."""
         sub = user_info["sub"]
@@ -428,58 +497,3 @@ class CognitoProvider(Provider):
                 "TokenType": "Bearer",
             }
         }
-
-
-# ---------------------------------------------------------------------------
-# Trigger event builders
-# ---------------------------------------------------------------------------
-
-
-def _build_pre_auth_event(
-    username: str,
-    user_pool_id: str,
-    client_id: str,
-) -> dict[str, Any]:
-    """Build a Cognito pre-authentication trigger event."""
-    return {
-        "version": "1",
-        "triggerSource": "PreAuthentication_Authentication",
-        "region": "us-east-1",
-        "userPoolId": user_pool_id,
-        "callerContext": {
-            "awsSdkVersion": "ldk-local",
-            "clientId": client_id,
-        },
-        "userName": username,
-        "request": {
-            "userAttributes": {},
-        },
-        "response": {},
-    }
-
-
-def _build_post_confirmation_event(
-    username: str,
-    sub: str,
-    attributes: dict[str, str],
-    user_pool_id: str,
-    client_id: str,
-) -> dict[str, Any]:
-    """Build a Cognito post-confirmation trigger event."""
-    user_attributes = dict(attributes)
-    user_attributes["sub"] = sub
-    return {
-        "version": "1",
-        "triggerSource": "PostConfirmation_ConfirmSignUp",
-        "region": "us-east-1",
-        "userPoolId": user_pool_id,
-        "callerContext": {
-            "awsSdkVersion": "ldk-local",
-            "clientId": client_id,
-        },
-        "userName": username,
-        "request": {
-            "userAttributes": user_attributes,
-        },
-        "response": {},
-    }
