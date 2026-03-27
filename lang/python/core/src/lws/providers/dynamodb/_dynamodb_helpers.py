@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 from collections.abc import Callable
 
@@ -202,3 +203,75 @@ async def check_transact_conditions(
             status_code=400,
         )
     return None
+
+
+def transact_item_lock_key(table_name: str, key: dict) -> str:
+    """Return a string key identifying a DynamoDB item for lock tracking."""
+    sorted_key = sorted(key.items())
+    return f"{table_name}:{sorted_key}"
+
+
+def collect_transact_lock_keys(transact_items: list) -> list[str]:
+    """Collect lock keys for all write operations in a transaction."""
+    lock_keys: list[str] = []
+    for transact_item in transact_items:
+        if "Put" in transact_item:
+            item_key = transact_item["Put"].get("Item", {})
+            lock_keys.append(transact_item_lock_key(transact_item["Put"]["TableName"], item_key))
+        elif "Delete" in transact_item:
+            lock_keys.append(
+                transact_item_lock_key(
+                    transact_item["Delete"]["TableName"],
+                    transact_item["Delete"].get("Key", {}),
+                )
+            )
+        elif "Update" in transact_item:
+            lock_keys.append(
+                transact_item_lock_key(
+                    transact_item["Update"]["TableName"],
+                    transact_item["Update"].get("Key", {}),
+                )
+            )
+    return lock_keys
+
+
+async def try_acquire_transact_locks(
+    transaction_locks: dict[str, asyncio.Lock], lock_keys: list[str]
+) -> tuple[list[str], Response | None]:
+    """Try to acquire item locks; return (acquired, conflict_error) or (keys, None)."""
+    acquired: list[str] = []
+    for lock_key in lock_keys:
+        if lock_key not in transaction_locks:
+            transaction_locks[lock_key] = asyncio.Lock()
+        lock = transaction_locks[lock_key]
+        if not lock.locked():
+            await lock.acquire()
+            acquired.append(lock_key)
+        else:
+            for held_key in acquired:
+                transaction_locks[held_key].release()
+            return [], _error_response(
+                "TransactionCanceledException",
+                "Transaction cancelled due to conflict with a concurrent transaction",
+            )
+    return acquired, None
+
+
+async def execute_transact_writes(store: IKeyValueStore, transact_items: list) -> None:
+    """Execute the write operations in a transaction."""
+    for transact_item in transact_items:
+        if "Put" in transact_item:
+            put = transact_item["Put"]
+            await store.put_item(put["TableName"], put["Item"])
+        elif "Delete" in transact_item:
+            delete = transact_item["Delete"]
+            await store.delete_item(delete["TableName"], delete["Key"])
+        elif "Update" in transact_item:
+            update = transact_item["Update"]
+            await store.update_item(
+                update["TableName"],
+                update["Key"],
+                update.get("UpdateExpression", ""),
+                expression_values=update.get("ExpressionAttributeValues"),
+                expression_names=update.get("ExpressionAttributeNames"),
+            )

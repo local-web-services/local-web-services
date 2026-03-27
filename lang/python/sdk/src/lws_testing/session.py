@@ -280,8 +280,6 @@ class LwsSession:
             )
         return boto_client
 
-    # ── State management ──────────────────────────────────────────────────────
-
     def reset(self) -> None:
         """Clear all service state. Call between tests to ensure isolation."""
         import httpx  # pylint: disable=import-outside-toplevel
@@ -289,64 +287,28 @@ class LwsSession:
         httpx.post(f"http://127.0.0.1:{self._mgmt_port}/_ldk/reset")
 
     def inject_state(self, service: str, resource_type: str, resource_id: str, state: str) -> None:
-        """Inject a resource state for test setup.
-
-        Calls ``PUT /_ldk/state/{service}/{resource_type}/{resource_id}``
-        on the management API to directly set the in-memory state of a
-        named resource without running the operation that would normally
-        transition it there.
-
-        Args:
-            service: AWS service name (e.g. ``"stepfunctions"``, ``"lambda"``).
-            resource_type: Resource type (e.g. ``"execution"``, ``"invocation"``).
-            resource_id: Resource identifier (e.g. execution ARN, invocation ID).
-            state: Target state to inject (e.g. ``"RUNNING"``, ``"IN_PROGRESS"``).
-        """
-        import httpx  # pylint: disable=import-outside-toplevel
-
-        httpx.put(
-            f"http://127.0.0.1:{self._mgmt_port}/_ldk/state/{service}/{resource_type}/{resource_id}",
-            json={"state": state},
+        """Inject a resource state via PUT /_ldk/state/{service}/{resource_type}/{resource_id}."""
+        from lws_testing._management.state import (
+            inject_state as _inject_state,  # pylint: disable=import-outside-toplevel
         )
+
+        _inject_state(self._mgmt_port, service, resource_type, resource_id, state)
 
     def clear_injected_state(self, service: str, resource_type: str, resource_id: str) -> None:
-        """Clear an injected resource state.
-
-        Calls ``DELETE /_ldk/state/{service}/{resource_type}/{resource_id}``
-        on the management API to remove a previously injected state.
-
-        Args:
-            service: AWS service name (e.g. ``"stepfunctions"``, ``"lambda"``).
-            resource_type: Resource type (e.g. ``"execution"``, ``"invocation"``).
-            resource_id: Resource identifier.
-        """
-        import httpx  # pylint: disable=import-outside-toplevel
-
-        httpx.delete(
-            f"http://127.0.0.1:{self._mgmt_port}/_ldk/state/{service}/{resource_type}/{resource_id}"
+        """Clear an injected resource state via DELETE /_ldk/state."""
+        from lws_testing._management.state import (
+            clear_injected_state as _clear,  # pylint: disable=import-outside-toplevel
         )
+
+        _clear(self._mgmt_port, service, resource_type, resource_id)
 
     def get_injected_state(self, service: str, resource_type: str, resource_id: str) -> str | None:
-        """Return the current injected state for a resource, or None if not set.
-
-        Calls ``GET /_ldk/state/{service}/{resource_type}/{resource_id}``
-        on the management API to read back the previously injected state.
-
-        Args:
-            service: AWS service name (e.g. ``"stepfunctions"``, ``"lambda"``).
-            resource_type: Resource type (e.g. ``"execution"``, ``"invocation"``).
-            resource_id: Resource identifier.
-        """
-        import httpx  # pylint: disable=import-outside-toplevel
-
-        resp = httpx.get(
-            f"http://127.0.0.1:{self._mgmt_port}/_ldk/state/{service}/{resource_type}/{resource_id}"
+        """Return the injected state for a resource, or None if not set."""
+        from lws_testing._management.state import (
+            get_injected_state as _get,  # pylint: disable=import-outside-toplevel
         )
-        if resp.status_code == 404:
-            return None
-        return resp.json().get("state")
 
-    # ── Resource helpers ──────────────────────────────────────────────────────
+        return _get(self._mgmt_port, service, resource_type, resource_id)
 
     def dynamodb(self, table_name: str) -> Any:
         """Return a DynamoDB table helper for seeding and asserting."""
@@ -388,8 +350,6 @@ class LwsSession:
             os.environ["ORDER_QUEUE_URL"] = session.queue_url("OrderQueue")
         """
         return f"http://127.0.0.1:{self._ports['sqs']}/000000000000/{queue_name}"
-
-    # ── Fake / chaos / IAM builders ───────────────────────────────────────────
 
     def fake(self, service: str) -> Any:
         """Return a fluent fake builder for the given service."""
@@ -445,8 +405,6 @@ class LwsSession:
         from lws_testing._builders.iam import IamBuilder
 
         return IamBuilder(self._mgmt_port)
-
-    # ── Log capture ───────────────────────────────────────────────────────────
 
     @contextmanager
     def capture_logs(self) -> Generator[Any, None, None]:

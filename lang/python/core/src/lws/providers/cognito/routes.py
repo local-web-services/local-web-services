@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import json
-
 import jwt
 from fastapi import APIRouter, FastAPI, Request, Response
 
@@ -14,6 +12,9 @@ from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, 
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
+from lws.providers.cognito._cognito_routes_groups import _CognitoGroupRoutesMixin
+from lws.providers.cognito._cognito_routes_helpers import error_response as _error_response
+from lws.providers.cognito._cognito_routes_helpers import json_response as _json_response
 from lws.providers.cognito.provider import CognitoProvider
 from lws.providers.cognito.user_store import CognitoError
 
@@ -23,7 +24,7 @@ _logger = get_logger("ldk.cognito")
 _TARGET_PREFIX = "AWSCognitoIdentityProviderService."
 
 
-class CognitoRouter:
+class CognitoRouter(_CognitoGroupRoutesMixin):
     """Route Cognito wire-protocol requests to the CognitoProvider."""
 
     def __init__(
@@ -68,6 +69,8 @@ class CognitoRouter:
             "SignUp": self._sign_up,
             "ConfirmSignUp": self._confirm_sign_up,
             "InitiateAuth": self._initiate_auth,
+            "AdminInitiateAuth": self._admin_initiate_auth,
+            "RespondToAuthChallenge": self._respond_to_auth_challenge,
             "CreateUserPool": self._create_user_pool,
             "DeleteUserPool": self._delete_user_pool,
             "ListUserPools": self._list_user_pools,
@@ -79,6 +82,9 @@ class CognitoRouter:
             "AdminCreateUser": self._admin_create_user,
             "AdminDeleteUser": self._admin_delete_user,
             "AdminGetUser": self._admin_get_user,
+            "AdminConfirmSignUp": self._admin_confirm_sign_up,
+            "AdminSetUserPassword": self._admin_set_user_password,
+            "AdminUpdateUserAttributes": self._admin_update_user_attributes,
             "UpdateUserPool": self._update_user_pool,
             "ListUsers": self._list_users,
             "ForgotPassword": self._forgot_password,
@@ -312,71 +318,7 @@ class CognitoRouter:
         result = await self._provider.update_user_pool(user_pool_id, lambda_config=lambda_config)
         return _json_response(result)
 
-    async def _create_group(self, body: dict) -> Response:
-        """Handle CreateGroup operation."""
-        user_pool_id = body.get("UserPoolId", "")
-        err = self._check_pool_state(user_pool_id)
-        if err is not None:
-            return err
-        group_name = body.get("GroupName", "")
-        description = body.get("Description", "")
-        precedence = body.get("Precedence")
-        role_arn = body.get("RoleArn")
-        result = await self._provider.create_group(
-            user_pool_id, group_name, description, precedence, role_arn
-        )
-        return _json_response(result)
-
-    async def _delete_group(self, body: dict) -> Response:
-        """Handle DeleteGroup operation."""
-        user_pool_id = body.get("UserPoolId", "")
-        err = self._check_pool_state(user_pool_id)
-        if err is not None:
-            return err
-        group_name = body.get("GroupName", "")
-        await self._provider.delete_group(user_pool_id, group_name)
-        return _json_response({})
-
-    async def _admin_add_user_to_group(self, body: dict) -> Response:
-        """Handle AdminAddUserToGroup operation."""
-        user_pool_id = body.get("UserPoolId", "")
-        err = self._check_pool_state(user_pool_id)
-        if err is not None:
-            return err
-        username = body.get("Username", "")
-        group_name = body.get("GroupName", "")
-        await self._provider.admin_add_user_to_group(user_pool_id, username, group_name)
-        return _json_response({})
-
-    async def _admin_remove_user_from_group(self, body: dict) -> Response:
-        """Handle AdminRemoveUserFromGroup operation."""
-        user_pool_id = body.get("UserPoolId", "")
-        err = self._check_pool_state(user_pool_id)
-        if err is not None:
-            return err
-        username = body.get("Username", "")
-        group_name = body.get("GroupName", "")
-        await self._provider.admin_remove_user_from_group(user_pool_id, username, group_name)
-        return _json_response({})
-
-    async def _list_groups(self, body: dict) -> Response:
-        """Handle ListGroups operation."""
-        user_pool_id = body.get("UserPoolId", "")
-        err = self._check_pool_state(user_pool_id)
-        if err is not None:
-            return err
-        result = await self._provider.list_groups(user_pool_id)
-        return _json_response(result)
-
-    async def _list_users_in_group(self, body: dict) -> Response:
-        """Handle ListUsersInGroup operation."""
-        user_pool_id = body.get("UserPoolId", "")
-        err = self._check_pool_state(user_pool_id)
-        if err is not None:
-            return err
-        group_name = body.get("GroupName", "")
-        result = await self._provider.list_users_in_group(user_pool_id, group_name)
-        return _json_response(result)
+    # Group operation handlers are inherited from _CognitoGroupRoutesMixin.
 
     async def _list_users(self, body: dict) -> Response:
         """Handle ListUsers operation."""
@@ -425,6 +367,65 @@ class CognitoRouter:
             return _error_response("NotAuthorizedException", "Invalid access token.")
         return _json_response({})
 
+    async def _admin_initiate_auth(self, body: dict) -> Response:
+        """Handle AdminInitiateAuth operation."""
+        cap_err = check_capacity(self._capacity, "TooManyRequestsException", 400)
+        if cap_err is not None:
+            return cap_err
+        user_pool_id = body.get("UserPoolId", "")
+        auth_flow = body.get("AuthFlow", "")
+        auth_params = body.get("AuthParameters", {})
+        username = auth_params.get("USERNAME", "")
+        password = auth_params.get("PASSWORD", "")
+        result = await self._provider.admin_initiate_auth(
+            user_pool_id, auth_flow, username, password
+        )
+        return _json_response(result)
+
+    async def _respond_to_auth_challenge(self, body: dict) -> Response:
+        """Handle RespondToAuthChallenge operation."""
+        client_id = body.get("ClientId", "")
+        challenge_name = body.get("ChallengeName", "")
+        session = body.get("Session", "")
+        challenge_responses = body.get("ChallengeResponses", {})
+        result = await self._provider.respond_to_auth_challenge(
+            client_id, challenge_name, session, challenge_responses
+        )
+        return _json_response(result)
+
+    async def _admin_confirm_sign_up(self, body: dict) -> Response:
+        """Handle AdminConfirmSignUp operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        err = self._check_pool_state(user_pool_id)
+        if err is not None:
+            return err
+        username = body.get("Username", "")
+        await self._provider.admin_confirm_sign_up(user_pool_id, username)
+        return _json_response({})
+
+    async def _admin_set_user_password(self, body: dict) -> Response:
+        """Handle AdminSetUserPassword operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        err = self._check_pool_state(user_pool_id)
+        if err is not None:
+            return err
+        username = body.get("Username", "")
+        password = body.get("Password", "")
+        permanent = body.get("Permanent", True)
+        await self._provider.admin_set_user_password(user_pool_id, username, password, permanent)
+        return _json_response({})
+
+    async def _admin_update_user_attributes(self, body: dict) -> Response:
+        """Handle AdminUpdateUserAttributes operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        err = self._check_pool_state(user_pool_id)
+        if err is not None:
+            return err
+        username = body.get("Username", "")
+        user_attributes = _parse_user_attributes(body.get("UserAttributes", []))
+        await self._provider.admin_update_user_attributes(user_pool_id, username, user_attributes)
+        return _json_response({})
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -434,23 +435,6 @@ class CognitoRouter:
 def _parse_user_attributes(attrs: list[dict]) -> dict[str, str]:
     """Convert Cognito UserAttributes list format to a flat dict."""
     return {attr["Name"]: attr["Value"] for attr in attrs if "Name" in attr and "Value" in attr}
-
-
-def _json_response(data: dict, status_code: int = 200) -> Response:
-    """Create a JSON response with the Cognito content type."""
-    return Response(
-        content=json.dumps(data),
-        status_code=status_code,
-        media_type="application/x-amz-json-1.1",
-    )
-
-
-def _error_response(error_type: str, message: str) -> Response:
-    """Create an error response."""
-    return _json_response(
-        {"__type": error_type, "message": message},
-        status_code=400,
-    )
 
 
 # ---------------------------------------------------------------------------

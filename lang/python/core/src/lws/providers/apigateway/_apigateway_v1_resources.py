@@ -13,6 +13,7 @@ from lws.providers.apigateway._apigateway_state import (
     _ApiGatewayState,
     _json_response,
     _not_found,
+    apply_stage_patch_op,
 )
 from lws.providers.apigateway._apigateway_v1_authorizers import _ApiGatewayAuthorizerMixin
 from lws.providers.apigateway._apigateway_v1_dispatch import validate_integration_target
@@ -192,7 +193,6 @@ class ApiGatewayResourceRouter(_ApiGatewayAuthorizerMixin):
             methods=["PATCH"],
         )
 
-    # -- Resources -----------------------------------------------------------
     async def _get_resources(self, rest_api_id: str) -> Response:
         api = self._res_state.get_rest_api(rest_api_id)
         if api is None:
@@ -238,8 +238,6 @@ class ApiGatewayResourceRouter(_ApiGatewayAuthorizerMixin):
             api.resources.pop(resource_id, None)
         return Response(status_code=202)
 
-    # -- Methods -------------------------------------------------------------
-
     async def _put_method(
         self,
         rest_api_id: str,
@@ -280,8 +278,6 @@ class ApiGatewayResourceRouter(_ApiGatewayAuthorizerMixin):
             if resource is not None:
                 resource["resourceMethods"].pop(http_method, None)
         return Response(status_code=204)
-
-    # -- Integrations --------------------------------------------------------
 
     async def _put_integration(
         self,
@@ -335,8 +331,6 @@ class ApiGatewayResourceRouter(_ApiGatewayAuthorizerMixin):
                 method.pop("methodIntegration", None)
         return Response(status_code=204)
 
-    # -- Integration responses -----------------------------------------------
-
     async def _put_integration_response(  # pylint: disable=unused-argument
         self,
         rest_api_id: str,
@@ -362,8 +356,6 @@ class ApiGatewayResourceRouter(_ApiGatewayAuthorizerMixin):
     ) -> Response:
         return _json_response({"statusCode": status_code})
 
-    # -- Method responses ----------------------------------------------------
-
     async def _put_method_response(  # pylint: disable=unused-argument
         self,
         rest_api_id: str,
@@ -388,8 +380,6 @@ class ApiGatewayResourceRouter(_ApiGatewayAuthorizerMixin):
         status_code: str,
     ) -> Response:
         return _json_response({"statusCode": status_code})
-
-    # -- Deployments ---------------------------------------------------------
 
     async def _create_deployment(self, rest_api_id: str, request: Request) -> Response:
         api = self._res_state.get_rest_api(rest_api_id)
@@ -421,24 +411,25 @@ class ApiGatewayResourceRouter(_ApiGatewayAuthorizerMixin):
             return _not_found("Deployment", deployment_id)
         return _json_response(deployment)
 
-    # -- Stages --------------------------------------------------------------
-
     async def _create_stage(self, rest_api_id: str, request: Request) -> Response:
         api = self._res_state.get_rest_api(rest_api_id)
         if api is None:
             return _not_found("RestApi", rest_api_id)
-
         body = await parse_json_body(request)
-        stage_name = body.get("stageName", "")
-        deployment_id = body.get("deploymentId", "")
+        drs = body.get("defaultRouteSettings", {})
         stage = {
-            "stageName": stage_name,
-            "deploymentId": deployment_id,
+            "stageName": body.get("stageName", ""),
+            "deploymentId": body.get("deploymentId", ""),
             "createdDate": time.time(),
             "lastUpdatedDate": time.time(),
             "methodSettings": {},
+            "defaultRouteSettings": {
+                "throttlingBurstLimit": drs.get("throttlingBurstLimit"),
+                "throttlingRateLimit": drs.get("throttlingRateLimit"),
+            },
+            "_request_count": 0,
         }
-        api.stages[stage_name] = stage
+        api.stages[stage["stageName"]] = stage
         return _json_response(stage, 201)
 
     async def _get_stage(self, rest_api_id: str, stage_name: str) -> Response:
@@ -450,13 +441,16 @@ class ApiGatewayResourceRouter(_ApiGatewayAuthorizerMixin):
             return _not_found("Stage", stage_name)
         return _json_response(stage)
 
-    async def _update_stage(self, rest_api_id: str, stage_name: str, _request: Request) -> Response:
+    async def _update_stage(self, rest_api_id: str, stage_name: str, request: Request) -> Response:
         api = self._res_state.get_rest_api(rest_api_id)
         if api is None:
             return _not_found("RestApi", rest_api_id)
         stage = api.stages.get(stage_name)
         if stage is None:
             return _not_found("Stage", stage_name)
+        body = await parse_json_body(request)
+        for op in body.get("patchOperations", []):
+            apply_stage_patch_op(stage, op)
         stage["lastUpdatedDate"] = time.time()
         return _json_response(stage)
 

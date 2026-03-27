@@ -300,6 +300,19 @@ class ApiGatewayManagementRouter:
 
         return _build_proxy_response(result.payload)
 
+    def _check_stage_throttle(self, api, stage_name: str) -> Response | None:
+        """Return a 429 response if the stage throttle burst limit is exceeded."""
+        stage = (api.stages or {}).get(stage_name, {})
+        default_route_settings = stage.get("defaultRouteSettings", {})
+        burst_limit = default_route_settings.get("throttlingBurstLimit")
+        if burst_limit is None:
+            return None
+        current_count = stage.get("_request_count", 0)
+        if current_count >= burst_limit:
+            return Response(status_code=429)
+        stage["_request_count"] = current_count + 1
+        return None
+
     async def proxy_v1_request(self, request: Request, path: str) -> Response | None:
         """Try to dispatch an incoming request as a V1 REST API invocation.
 
@@ -323,6 +336,12 @@ class ApiGatewayManagementRouter:
             return err
         if method_config is None:
             return None
+
+        # Check stage-level throttle before dispatching
+        api = self._state.get_rest_api(rest_api_id)
+        throttle_err = self._check_stage_throttle(api, stage_name)
+        if throttle_err is not None:
+            return throttle_err
 
         # Validate Cognito token if required
         claims, auth_err = self._check_cognito_auth(request, method_config)

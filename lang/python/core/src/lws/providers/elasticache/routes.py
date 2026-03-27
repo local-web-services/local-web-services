@@ -83,6 +83,7 @@ class _ReplicationGroup:
             f":replicationgroup:{replication_group_id}"
         )
         self.tags: dict[str, str] = tags or {}
+        self.notification_topic_arn: str | None = None
 
 
 class _ElastiCacheState:
@@ -231,11 +232,6 @@ async def _handle_modify_cache_cluster(
     return _json_response({"CacheCluster": _format_cache_cluster(cluster)})
 
 
-# ------------------------------------------------------------------
-# Action handlers — Replication Groups
-# ------------------------------------------------------------------
-
-
 async def _handle_create_replication_group(
     state: _ElastiCacheState, body: dict, tracker: ResourceStateTracker
 ) -> Response:
@@ -298,6 +294,25 @@ async def _handle_describe_replication_groups(
 
     groups = [_format_replication_group(rg) for rg in state.replication_groups.values()]
     return _json_response({"ReplicationGroups": groups})
+
+
+async def _handle_modify_replication_group(
+    state: _ElastiCacheState, body: dict, _tracker: ResourceStateTracker
+) -> Response:
+    rg_id = body.get("ReplicationGroupId", "")
+    rg = state.replication_groups.get(rg_id)
+    if rg is None:
+        return _error_response(
+            "ReplicationGroupNotFoundFault",
+            f"Replication group {rg_id} not found.",
+        )
+
+    if "ReplicationGroupDescription" in body:
+        rg.description = body["ReplicationGroupDescription"]
+    if "NotificationTopicArn" in body:
+        rg.notification_topic_arn = body["NotificationTopicArn"]
+
+    return _json_response({"ReplicationGroup": _format_replication_group(rg)})
 
 
 async def _handle_delete_replication_group(
@@ -448,6 +463,7 @@ _ACTION_HANDLERS: dict[str, Any] = {
     "ModifyCacheCluster": _handle_modify_cache_cluster,
     "CreateReplicationGroup": _handle_create_replication_group,
     "DescribeReplicationGroups": _handle_describe_replication_groups,
+    "ModifyReplicationGroup": _handle_modify_replication_group,
     "DeleteReplicationGroup": _handle_delete_replication_group,
     "ListTagsForResource": _handle_list_tags_for_resource,
     "AddTagsToResource": _handle_add_tags_to_resource,

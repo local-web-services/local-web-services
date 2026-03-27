@@ -7,6 +7,8 @@ Each operation is dispatched based on the ``X-Amz-Target`` header value
 
 from __future__ import annotations
 
+import asyncio  # needed for Lock type in _transaction_locks
+
 from fastapi import APIRouter, FastAPI, Request, Response
 
 from lws.interfaces.key_value_store import (
@@ -26,6 +28,10 @@ from lws.providers.dynamodb._dynamodb_helpers import (
     _table_not_found_response,
     check_transact_conditions,
     check_transact_lifecycle,
+    collect_transact_lock_keys,
+    execute_transact_writes,
+    transact_item_lock_key,
+    try_acquire_transact_locks,
 )
 
 _logger = get_logger("ldk.dynamodb")
@@ -47,6 +53,7 @@ class DynamoDbRouter:
         self._lifecycle = lifecycle or ResourceLifecycleConfig()
         self._tracker = ResourceStateTracker(self._lifecycle)
         self._capacity = capacity or AwsCapacityConfig()
+        self._transaction_locks: dict[str, asyncio.Lock] = {}
         self.router = APIRouter()
         self.router.add_api_route("/", self._dispatch, methods=["POST"])
 
@@ -371,6 +378,10 @@ class DynamoDbRouter:
             )
         return _json_response({"TableDescription": description})
 
+    def _item_lock_key(self, table_name: str, key: dict) -> str:
+        """Return a string key identifying the item for lock tracking."""
+        return transact_item_lock_key(table_name, key)
+
     async def _transact_write_items(self, body: dict) -> Response:
         cap_err = check_capacity(self._capacity, "ProvisionedThroughputExceededException", 400)
         if cap_err is not None:
@@ -382,29 +393,23 @@ class DynamoDbRouter:
         if lifecycle_err is not None:
             return lifecycle_err
 
-        # Pass 1: evaluate all condition expressions
-        failure = await check_transact_conditions(self.store, transact_items)
-        if failure is not None:
-            return failure
+        lock_keys = collect_transact_lock_keys(transact_items)
+        acquired, conflict_err = await try_acquire_transact_locks(
+            self._transaction_locks, lock_keys
+        )
+        if conflict_err is not None:
+            return conflict_err
 
-        # Pass 2: execute writes
-        for transact_item in transact_items:
-            if "Put" in transact_item:
-                put = transact_item["Put"]
-                await self.store.put_item(put["TableName"], put["Item"])
-            elif "Delete" in transact_item:
-                delete = transact_item["Delete"]
-                await self.store.delete_item(delete["TableName"], delete["Key"])
-            elif "Update" in transact_item:
-                update = transact_item["Update"]
-                await self.store.update_item(
-                    update["TableName"],
-                    update["Key"],
-                    update.get("UpdateExpression", ""),
-                    expression_values=update.get("ExpressionAttributeValues"),
-                    expression_names=update.get("ExpressionAttributeNames"),
-                )
-        return _json_response({})
+        try:
+            failure = await check_transact_conditions(self.store, transact_items)
+            if failure is not None:
+                return failure
+            await execute_transact_writes(self.store, transact_items)
+            return _json_response({})
+        finally:
+            for held_key in acquired:
+                if self._transaction_locks[held_key].locked():
+                    self._transaction_locks[held_key].release()
 
     async def _transact_get_items(self, body: dict) -> Response:
         transact_items = body.get("TransactItems", [])

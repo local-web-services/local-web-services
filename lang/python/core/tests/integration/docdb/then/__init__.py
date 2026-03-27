@@ -20,6 +20,7 @@ from .instance_is_in_deleting_state import *  # noqa: F401,F403
 from .instance_is_in_modifying_state import *  # noqa: F401,F403
 from .instance_returns_to_available import *  # noqa: F401,F403
 from .restored_cluster_is_creating import *  # noqa: F401,F403
+from .restored_cluster_is_restoring import *  # noqa: F401,F403
 from .snapshot_is_available_then import *  # noqa: F401,F403
 from .snapshot_is_deleted import *  # noqa: F401,F403
 from .snapshot_is_in_creating_state import *  # noqa: F401,F403

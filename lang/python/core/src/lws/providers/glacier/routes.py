@@ -7,7 +7,6 @@ using path-based routing with JSON request/response format.
 from __future__ import annotations
 
 import hashlib
-import json
 import uuid
 
 from fastapi import FastAPI, Request, Response
@@ -17,18 +16,54 @@ from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_capacity import AwsCapacityConfig, check_capacity
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.response_helpers import (
-    iso_now as _iso_now,
-)
-from lws.providers._shared.response_helpers import (
     json_response as _json_response,
+)
+from lws.providers.glacier._glacier_handlers import (
+    handle_abort_multipart_upload as _abort_multipart_upload,
+)
+from lws.providers.glacier._glacier_handlers import (
+    handle_complete_multipart_upload as _complete_multipart_upload,
+)
+from lws.providers.glacier._glacier_handlers import (
+    handle_delete_vault_notifications as _delete_vault_notifications,
+)
+from lws.providers.glacier._glacier_handlers import (
+    handle_describe_job as _describe_job,
+)
+from lws.providers.glacier._glacier_handlers import (
+    handle_get_job_output as _get_job_output,
+)
+from lws.providers.glacier._glacier_handlers import (
+    handle_get_vault_notifications as _get_vault_notifications,
+)
+from lws.providers.glacier._glacier_handlers import (
+    handle_initiate_job as _initiate_job,
+)
+from lws.providers.glacier._glacier_handlers import (
+    handle_initiate_multipart_upload as _initiate_multipart_upload,
+)
+from lws.providers.glacier._glacier_handlers import (
+    handle_list_jobs as _list_jobs,
+)
+from lws.providers.glacier._glacier_handlers import (
+    handle_list_multipart_uploads as _list_multipart_uploads,
+)
+from lws.providers.glacier._glacier_handlers import (
+    handle_list_parts as _list_parts,
+)
+from lws.providers.glacier._glacier_handlers import (
+    handle_set_vault_notifications as _set_vault_notifications,
+)
+from lws.providers.glacier._glacier_handlers import (
+    handle_upload_multipart_part as _upload_multipart_part,
 )
 from lws.providers.glacier._glacier_state import (
     _Archive,
+    _archive_created_response,
+    _archive_not_found_guard,
     _error_response,
-    _format_job,
     _format_vault,
     _GlacierState,
-    _Job,
     _Vault,
 )
 
@@ -135,16 +170,7 @@ async def _upload_archive(
         body=body,
     )
     vault.archives[archive_id] = archive
-
-    return Response(
-        status_code=201,
-        headers={
-            "Location": f"/{_ACCOUNT_ID}/vaults/{vault_name}/archives/{archive_id}",
-            "x-amz-archive-id": archive_id,
-            "x-amz-sha256-tree-hash": sha256_hash,
-        },
-        media_type="application/x-amz-json-1.1",
-    )
+    return _archive_created_response(vault_name, archive_id, sha256_hash)
 
 
 async def _delete_archive(
@@ -161,162 +187,11 @@ async def _delete_archive(
         )
 
     vault = state.vaults[vault_name]
-    if archive_id not in vault.archives:
-        return _error_response(
-            "ResourceNotFoundException",
-            f"Archive not found: {archive_id}",
-            status_code=404,
-        )
-
+    guard = _archive_not_found_guard(vault, archive_id)
+    if guard is not None:
+        return guard
     del vault.archives[archive_id]
     return Response(status_code=204)
-
-
-async def _initiate_job(
-    state: _GlacierState,
-    vault_name: str,
-    request: Request,
-    capacity: AwsCapacityConfig | None = None,
-) -> Response:
-    """Handle InitiateJob (POST /-/vaults/{vaultName}/jobs)."""
-    if capacity is not None:
-        cap_err = check_capacity(capacity, "ServiceUnavailableException", 503)
-        if cap_err is not None:
-            return cap_err
-    if vault_name not in state.vaults:
-        return _error_response(
-            "ResourceNotFoundException",
-            f"Vault not found for ARN: arn:aws:glacier:{_REGION}:{_ACCOUNT_ID}:vaults/{vault_name}",
-            status_code=404,
-        )
-
-    body = await request.body()
-    try:
-        job_params = json.loads(body) if body else {}
-    except json.JSONDecodeError:
-        job_params = {}
-
-    action = job_params.get("Type", "inventory-retrieval")
-    archive_id = job_params.get("ArchiveId")
-
-    if action == "archive-retrieval" and archive_id:
-        vault = state.vaults[vault_name]
-        if archive_id not in vault.archives:
-            return _error_response(
-                "ResourceNotFoundException",
-                f"Archive not found: {archive_id}",
-                status_code=404,
-            )
-
-    job_id = str(uuid.uuid4())
-    job = _Job(
-        job_id=job_id,
-        vault_name=vault_name,
-        action=action,
-        archive_id=archive_id,
-    )
-    state.vaults[vault_name].jobs[job_id] = job
-
-    return Response(
-        status_code=202,
-        headers={
-            "Location": f"/{_ACCOUNT_ID}/vaults/{vault_name}/jobs/{job_id}",
-            "x-amz-job-id": job_id,
-        },
-        media_type="application/x-amz-json-1.1",
-    )
-
-
-async def _list_jobs(state: _GlacierState, vault_name: str) -> Response:
-    """Handle ListJobs (GET /-/vaults/{vaultName}/jobs)."""
-    if vault_name not in state.vaults:
-        return _error_response(
-            "ResourceNotFoundException",
-            f"Vault not found for ARN: arn:aws:glacier:{_REGION}:{_ACCOUNT_ID}:vaults/{vault_name}",
-            status_code=404,
-        )
-
-    vault = state.vaults[vault_name]
-    job_list = [_format_job(j) for j in vault.jobs.values()]
-    return _json_response({"JobList": job_list})
-
-
-async def _get_job_output(
-    state: _GlacierState,
-    vault_name: str,
-    job_id: str,
-) -> Response:
-    """Handle GetJobOutput (GET /-/vaults/{vaultName}/jobs/{jobId}/output)."""
-    if vault_name not in state.vaults:
-        return _error_response(
-            "ResourceNotFoundException",
-            f"Vault not found for ARN: arn:aws:glacier:{_REGION}:{_ACCOUNT_ID}:vaults/{vault_name}",
-            status_code=404,
-        )
-
-    vault = state.vaults[vault_name]
-    if job_id not in vault.jobs:
-        return _error_response(
-            "ResourceNotFoundException",
-            f"Job not found: {job_id}",
-            status_code=404,
-        )
-
-    job = vault.jobs[job_id]
-
-    if job.status != "Succeeded":
-        return _error_response(
-            "InvalidParameterValueException",
-            "The job is not yet completed.",
-        )
-
-    if job.action == "inventory-retrieval":
-        archive_list = [
-            {
-                "ArchiveId": a.archive_id,
-                "ArchiveDescription": a.description,
-                "CreationDate": a.created_date,
-                "Size": a.size,
-                "SHA256TreeHash": a.sha256_hash,
-            }
-            for a in vault.archives.values()
-        ]
-        inventory = {
-            "VaultARN": vault.arn,
-            "InventoryDate": _iso_now(),
-            "ArchiveList": archive_list,
-        }
-        return _json_response(inventory)
-
-    if job.action == "archive-retrieval":
-        if job.archive_id is None:
-            return _error_response(
-                "InvalidParameterValueException",
-                "No archive ID associated with this job.",
-            )
-
-        archive = vault.archives.get(job.archive_id)
-        if archive is None:
-            return _error_response(
-                "ResourceNotFoundException",
-                f"Archive not found: {job.archive_id}",
-                status_code=404,
-            )
-
-        return Response(
-            content=archive.body,
-            status_code=200,
-            media_type="application/octet-stream",
-            headers={
-                "x-amz-sha256-tree-hash": archive.sha256_hash,
-                "Content-Length": str(archive.size),
-            },
-        )
-
-    return _error_response(
-        "InvalidParameterValueException",
-        f"Unsupported job action: {job.action}",
-    )
 
 
 # ------------------------------------------------------------------
@@ -376,6 +251,109 @@ async def _lifecycle_describe_vault(
     return await _describe_vault(state, vault_name)
 
 
+def _register_vault_crud_routes(
+    app: FastAPI,
+    state: _GlacierState,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+    capacity: AwsCapacityConfig,
+) -> None:
+    """Register vault CRUD and archive routes on *app*."""
+
+    @app.put("/-/vaults/{vault_name}")
+    async def create_vault(vault_name: str) -> Response:
+        return await _lifecycle_create_vault(state, vault_name, lc, tracker)
+
+    @app.delete("/-/vaults/{vault_name}")
+    async def delete_vault(vault_name: str) -> Response:
+        return await _lifecycle_delete_vault(state, vault_name, lc, tracker)
+
+    @app.get("/-/vaults/{vault_name}")
+    async def describe_vault(vault_name: str) -> Response:
+        return await _lifecycle_describe_vault(state, vault_name, lc, tracker)
+
+    @app.get("/-/vaults")
+    async def list_vaults() -> Response:
+        return await _list_vaults(state)
+
+    @app.post("/-/vaults/{vault_name}/archives")
+    async def upload_archive(vault_name: str, request: Request) -> Response:
+        return await _upload_archive(state, vault_name, request, capacity)
+
+    @app.delete("/-/vaults/{vault_name}/archives/{archive_id}")
+    async def delete_archive(vault_name: str, archive_id: str) -> Response:
+        return await _delete_archive(state, vault_name, archive_id)
+
+
+def _register_job_routes(
+    app: FastAPI,
+    state: _GlacierState,
+    capacity: AwsCapacityConfig,
+) -> None:
+    """Register vault job routes on *app*."""
+
+    @app.post("/-/vaults/{vault_name}/jobs")
+    async def initiate_job(vault_name: str, request: Request) -> Response:
+        return await _initiate_job(state, vault_name, request, capacity)
+
+    @app.get("/-/vaults/{vault_name}/jobs")
+    async def list_jobs(vault_name: str) -> Response:
+        return await _list_jobs(state, vault_name)
+
+    @app.get("/-/vaults/{vault_name}/jobs/{job_id}/output")
+    async def get_job_output(vault_name: str, job_id: str) -> Response:
+        return await _get_job_output(state, vault_name, job_id)
+
+    @app.get("/-/vaults/{vault_name}/jobs/{job_id}")
+    async def describe_job(vault_name: str, job_id: str) -> Response:
+        return await _describe_job(state, vault_name, job_id)
+
+
+def _register_multipart_and_notification_routes(
+    app: FastAPI,
+    state: _GlacierState,
+) -> None:
+    """Register multipart-upload and vault-notification routes on *app*."""
+
+    @app.post("/-/vaults/{vault_name}/multipart-uploads")
+    async def initiate_multipart_upload(vault_name: str, request: Request) -> Response:
+        return await _initiate_multipart_upload(state, vault_name, request)
+
+    @app.put("/-/vaults/{vault_name}/multipart-uploads/{upload_id}")
+    async def upload_multipart_part(vault_name: str, upload_id: str, request: Request) -> Response:
+        return await _upload_multipart_part(state, vault_name, upload_id, request)
+
+    @app.post("/-/vaults/{vault_name}/multipart-uploads/{upload_id}")
+    async def complete_multipart_upload(
+        vault_name: str, upload_id: str, request: Request
+    ) -> Response:
+        return await _complete_multipart_upload(state, vault_name, upload_id, request)
+
+    @app.delete("/-/vaults/{vault_name}/multipart-uploads/{upload_id}")
+    async def abort_multipart_upload(vault_name: str, upload_id: str) -> Response:
+        return await _abort_multipart_upload(state, vault_name, upload_id)
+
+    @app.get("/-/vaults/{vault_name}/multipart-uploads")
+    async def list_multipart_uploads(vault_name: str) -> Response:
+        return await _list_multipart_uploads(state, vault_name)
+
+    @app.get("/-/vaults/{vault_name}/multipart-uploads/{upload_id}")
+    async def list_parts(vault_name: str, upload_id: str) -> Response:
+        return await _list_parts(state, vault_name, upload_id)
+
+    @app.put("/-/vaults/{vault_name}/notification-configuration")
+    async def set_vault_notifications(vault_name: str, request: Request) -> Response:
+        return await _set_vault_notifications(state, vault_name, request)
+
+    @app.get("/-/vaults/{vault_name}/notification-configuration")
+    async def get_vault_notifications(vault_name: str) -> Response:
+        return await _get_vault_notifications(state, vault_name)
+
+    @app.delete("/-/vaults/{vault_name}/notification-configuration")
+    async def delete_vault_notifications(vault_name: str) -> Response:
+        return await _delete_vault_notifications(state, vault_name)
+
+
 def create_glacier_app(
     lifecycle: ResourceLifecycleConfig | None = None,
     capacity: AwsCapacityConfig | None = None,
@@ -389,40 +367,8 @@ def create_glacier_app(
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="glacier")
     state = _GlacierState()
 
-    @app.put("/-/vaults/{vault_name}")
-    async def create_vault(vault_name: str) -> Response:
-        return await _lifecycle_create_vault(state, vault_name, _lc, _tracker)
-
-    @app.delete("/-/vaults/{vault_name}")
-    async def delete_vault(vault_name: str) -> Response:
-        return await _lifecycle_delete_vault(state, vault_name, _lc, _tracker)
-
-    @app.get("/-/vaults/{vault_name}")
-    async def describe_vault(vault_name: str) -> Response:
-        return await _lifecycle_describe_vault(state, vault_name, _lc, _tracker)
-
-    @app.get("/-/vaults")
-    async def list_vaults() -> Response:
-        return await _list_vaults(state)
-
-    @app.post("/-/vaults/{vault_name}/archives")
-    async def upload_archive(vault_name: str, request: Request) -> Response:
-        return await _upload_archive(state, vault_name, request, _capacity)
-
-    @app.delete("/-/vaults/{vault_name}/archives/{archive_id}")
-    async def delete_archive(vault_name: str, archive_id: str) -> Response:
-        return await _delete_archive(state, vault_name, archive_id)
-
-    @app.post("/-/vaults/{vault_name}/jobs")
-    async def initiate_job(vault_name: str, request: Request) -> Response:
-        return await _initiate_job(state, vault_name, request, _capacity)
-
-    @app.get("/-/vaults/{vault_name}/jobs")
-    async def list_jobs(vault_name: str) -> Response:
-        return await _list_jobs(state, vault_name)
-
-    @app.get("/-/vaults/{vault_name}/jobs/{job_id}/output")
-    async def get_job_output(vault_name: str, job_id: str) -> Response:
-        return await _get_job_output(state, vault_name, job_id)
+    _register_vault_crud_routes(app, state, _lc, _tracker, _capacity)
+    _register_job_routes(app, state, _capacity)
+    _register_multipart_and_notification_routes(app, state)
 
     return app, state
