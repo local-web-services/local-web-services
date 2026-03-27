@@ -48,6 +48,16 @@ class AwsChaosConfig:
     connection_reset_rate: float = 0.0
     timeout_rate: float = 0.0
 
+    def reset(self) -> None:
+        """Disable chaos and restore all fields to their default values."""
+        self.enabled = False
+        self.error_rate = 0.0
+        self.latency_min_ms = 0
+        self.latency_max_ms = 0
+        self.errors = []
+        self.connection_reset_rate = 0.0
+        self.timeout_rate = 0.0
+
 
 # ------------------------------------------------------------------
 # Error format enum

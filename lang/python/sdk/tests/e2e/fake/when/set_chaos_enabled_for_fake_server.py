@@ -2,11 +2,18 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_SERVER_NAME
 
 
 @when("chaos is enabled or disabled for a fake server")
-def set_chaos_enabled_for_fake_server():
-    """No-op: skipped — fake server service is not yet available in LwsSession."""
-    pytest.skip("Fake service is not yet available in LwsSession")
+def set_chaos_enabled_for_fake_server(lws_session, world):
+    try:
+        world["result"] = lws_session.client("fake").set_chaos(
+            TEST_SERVER_NAME, enabled=True, error_rate=0.5
+        )
+        world["error"] = None
+    except Exception as exc:
+        world["result"] = None
+        world["error"] = exc

@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
+
+from ..client import FakeTestClient
 
 
 @given("chaos has been enabled or disabled for a fake server")
-def fake_chaos_has_been_enabled_or_disabled():
-    pytest.skip("Fake service is not yet available in LwsSession")
+def fake_chaos_has_been_enabled_or_disabled(lws_session):
+    FakeTestClient(lws_session).create_server()
+    FakeTestClient(lws_session).set_chaos(enabled=True)

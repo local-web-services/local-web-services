@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
+
+from ..client import AwsFakeTestClient
 
 
 @given('an operation has been removed from an "AWS" fake')
-def aws_fake_operation_has_been_removed():
-    pytest.skip("AWS fake service is not yet available in LwsSession")
+def aws_fake_operation_has_been_removed(lws_session):
+    AwsFakeTestClient(lws_session).create()
+    AwsFakeTestClient(lws_session).add_operation()
+    AwsFakeTestClient(lws_session).remove_operation()

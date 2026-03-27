@@ -291,12 +291,31 @@ class LwsSession:
     # ── boto3 client factory ──────────────────────────────────────────────────
 
     def client(self, service: str, config: Any = None) -> Any:
-        """Return a pre-configured boto3 client pointing at the local service.
+        """Return a pre-configured client for the given service.
+
+        For standard AWS services (e.g. ``"dynamodb"``, ``"sqs"``) this returns a
+        boto3 client pointed at the local service endpoint.  For ``"fake"`` and
+        ``"aws_fake"`` it returns the respective management API client.
 
         Args:
-            service: AWS service name (e.g. ``"dynamodb"``, ``"sqs"``, ``"s3"``).
-            config: Optional botocore Config object to pass through to boto3.client.
+            service: Service name.  AWS services use their boto3 name; use
+                ``"fake"`` for the fake server management client and ``"aws_fake"``
+                for the AWS fake interceptor client.
+            config: Optional botocore Config object (AWS services only).
         """
+        if service == "fake":
+            from lws_testing._management.fake import (  # pylint: disable=import-outside-toplevel
+                FakeServerClient,
+            )
+
+            return FakeServerClient(self._mgmt_port)
+        if service == "aws_fake":
+            from lws_testing._management.aws_fake import (  # pylint: disable=import-outside-toplevel
+                AwsFakeClient,
+            )
+
+            return AwsFakeClient(self._mgmt_port)
+
         import boto3  # pylint: disable=import-outside-toplevel
 
         port = self._ports.get(service)
@@ -449,6 +468,30 @@ class LwsSession:
         from lws_testing._builders.chaos import ChaosBuilder
 
         return ChaosBuilder(service, self._mgmt_port)
+
+    def set_chaos(self, service: str, error_rate: float = 1.0, latency_ms: int = 0) -> None:
+        """Enable chaos for *service* (PUT /_ldk/chaos/{service})."""
+        from lws_testing._management.chaos import (  # pylint: disable=import-outside-toplevel
+            set_chaos as _set_chaos,
+        )
+
+        _set_chaos(self._mgmt_port, service, error_rate, latency_ms)
+
+    def reset_chaos(self, service: str) -> None:
+        """Disable and reset chaos for *service* (DELETE /_ldk/chaos/{service})."""
+        from lws_testing._management.chaos import (  # pylint: disable=import-outside-toplevel
+            reset_chaos as _reset_chaos,
+        )
+
+        _reset_chaos(self._mgmt_port, service)
+
+    def get_chaos_status(self, service: str) -> dict[str, Any]:
+        """Return the current chaos configuration for *service* (GET /_ldk/chaos/{service})."""
+        from lws_testing._management.chaos import (  # pylint: disable=import-outside-toplevel
+            get_chaos_status as _get_chaos_status,
+        )
+
+        return _get_chaos_status(self._mgmt_port, service)
 
     def lifecycle(self, service: str) -> Any:
         """Return a fluent lifecycle builder for the given service."""
