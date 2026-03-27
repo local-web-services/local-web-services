@@ -49,7 +49,7 @@ class TestUpdateUserPoolLambdaConfig:
     ) -> None:
         # Arrange
         lambda_arn = "arn:aws:lambda:us-east-1:000000000000:function:my-pre-signup-fn"
-        expected_trigger = "my-pre-signup-fn"
+        expected_trigger = lambda_arn
         body = json.dumps(
             {
                 "UserPoolId": pool_id,
