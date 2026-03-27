@@ -39,6 +39,7 @@ def build_extended_service_apps(
     from lws.providers.rds.routes import create_rds_app
     from lws.providers.s3tables.routes import create_s3tables_app
 
+    _cap = capacity_configs or {}
     lambda_registry = LambdaRegistry()
 
     # Wire DynamoDB stream dispatcher into the DynamoDB provider and the Lambda
@@ -58,12 +59,17 @@ def build_extended_service_apps(
     lambda_app = create_lambda_management_app(
         registry=lambda_registry,
         lifecycle=lifecycle_configs["lambda"],
+        capacity=_cap.get("lambda"),
+        async_capacity=_cap.get("lambda-async"),
         event_source_manager=event_source_manager,
         dynamodb_provider=dynamo_provider,
         dynamodb_tracker_ref=dynamodb_tracker_ref,
     )
 
-    glacier_app, glacier_state = create_glacier_app(lifecycle=lifecycle_configs["glacier"])
+    glacier_app, glacier_state = create_glacier_app(
+        lifecycle=lifecycle_configs["glacier"],
+        capacity=_cap.get("glacier"),
+    )
     s3tables_app, s3tables_state = create_s3tables_app(lifecycle=lifecycle_configs["s3tables"])
     elasticsearch_app, elasticsearch_state = create_elasticsearch_app(
         lifecycle=lifecycle_configs["es"]
@@ -72,7 +78,6 @@ def build_extended_service_apps(
         lifecycle=lifecycle_configs["opensearch"]
     )
 
-    _cap = capacity_configs or {}
     apps = [
         (
             "cognito-idp",

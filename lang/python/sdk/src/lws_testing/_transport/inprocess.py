@@ -46,6 +46,7 @@ def _create_management_app(
     from fastapi import FastAPI
     from fastapi.responses import JSONResponse
     from lws.api.management import _handle_reset, create_management_router
+    from lws.providers._shared.capacity_control import create_capacity_control_router
 
     orchestrator = _StubOrchestrator(providers)
     app = FastAPI(title="LWS Testing Management")
@@ -59,6 +60,7 @@ def _create_management_app(
         capacity_configs=capacity_configs,
     )
     app.include_router(router)
+    app.include_router(create_capacity_control_router(capacity_configs or {}))
 
     # Alias endpoint used by LwsSession.reset()
     @app.post("/_ldk/state/clear")
@@ -237,6 +239,7 @@ def _build_service_apps(
                 chaos=chaos_configs["sns"],
                 aws_fake=fake_configs["sns"],
                 lifecycle=lifecycle_configs["sns"],
+                sns_capacity=_cap.get("sns"),
                 sqs_capacity=_cap.get("sqs"),
                 sqs_provider=providers["sqs"],
                 sqs_tracker=_sqs_tracker_ref[0] if _sqs_tracker_ref else None,
@@ -279,6 +282,7 @@ def _build_service_apps(
                     service_providers={
                         k: providers[k] for k in ("dynamodb", "sqs", "s3", "sns", "stepfunctions")
                     },
+                    capacity=_cap.get("apigateway"),
                 )
             )[0],
         ),
@@ -375,6 +379,7 @@ async def start_services(
     fake_configs: dict[str, Any] = {s: AwsFakeConfig(service=s) for s in _SERVICE_NAMES}
     lifecycle_configs: dict[str, Any] = {s: ResourceLifecycleConfig() for s in _SERVICE_NAMES}
     capacity_configs: dict[str, Any] = {s: AwsCapacityConfig() for s in _SERVICE_NAMES}
+    capacity_configs["lambda-async"] = AwsCapacityConfig()
     _sockets: dict[str, socket.socket] = {s: _bound_socket() for s in _SERVICE_NAMES}
     _mgmt_socket = _bound_socket()
     ports: dict[str, int] = {s: sock.getsockname()[1] for s, sock in _sockets.items()}
