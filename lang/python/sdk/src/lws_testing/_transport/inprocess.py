@@ -37,6 +37,11 @@ def _bound_socket() -> socket.socket:
     return sock
 
 
+def _unbox(ref: list[Any]) -> Any | None:
+    """Return ref[0] if non-empty, else None."""
+    return ref[0] if ref else None
+
+
 def _create_management_app(
     providers: dict[str, Any],
     chaos_configs: dict[str, Any],
@@ -248,7 +253,7 @@ def _build_service_apps(
                 sns_capacity=_cap.get("sns"),
                 sqs_capacity=_cap.get("sqs"),
                 sqs_provider=providers["sqs"],
-                sqs_tracker=_sqs_tracker_ref[0] if _sqs_tracker_ref else None,
+                sqs_tracker=_unbox(_sqs_tracker_ref),
                 tracker_ref=(_sns_tracker_ref := []),
             ),
         ),
@@ -261,6 +266,8 @@ def _build_service_apps(
                 lifecycle=lifecycle_configs["stepfunctions"],
                 tracker_ref=(_sf_tracker_ref := []),
                 capacity=_cap.get("stepfunctions"),
+                sqs_provider=providers["sqs"],
+                sqs_tracker=_unbox(_sqs_tracker_ref),
             ),
         ),
         ("ssm", ssm_app),
@@ -272,12 +279,16 @@ def _build_service_apps(
                 chaos=chaos_configs["events"],
                 aws_fake=fake_configs["events"],
                 lifecycle=lifecycle_configs["events"],
-                sf_tracker=_sf_tracker_ref[0] if _sf_tracker_ref else None,
+                sf_tracker=_unbox(_sf_tracker_ref),
                 sqs_capacity=_cap.get("sqs"),
                 sqs_provider=providers["sqs"],
-                sqs_tracker=_sqs_tracker_ref[0] if _sqs_tracker_ref else None,
+                sqs_tracker=_unbox(_sqs_tracker_ref),
                 sns_provider=providers["sns"],
-                sns_tracker=_sns_tracker_ref[0] if _sns_tracker_ref else None,
+                sns_tracker=_unbox(_sns_tracker_ref),
+                lambda_registry=extended_extra_providers["lambda_registry"],
+                lambda_tracker=extended_extra_providers.get("lambda_tracker"),
+                dynamodb_provider=providers["dynamodb"],
+                dynamodb_tracker=_unbox(_dynamodb_tracker_ref),
             ),
         ),
         (

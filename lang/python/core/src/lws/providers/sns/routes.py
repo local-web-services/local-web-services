@@ -198,6 +198,69 @@ def _check_sqs_subscribe_target(
     return None
 
 
+def _check_publish_subscription(
+    action: str,
+    params: dict,
+    provider: SnsProvider,
+) -> Response | None:
+    """Reject Publish when no confirmed subscriptions exist for the topic."""
+    if action != "Publish":
+        return None
+    topic_arn = params.get("TopicArn", "")
+    if not topic_arn:
+        return None
+    topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
+    try:
+        topic = provider.get_topic(topic_name)
+    except (KeyError, Exception):  # noqa: BLE001
+        return None
+    if not topic.subscribers:
+        return _sns_xml_error(
+            "InvalidParameter", f"No confirmed subscriptions for topic: {topic_arn}", 400
+        )
+    return None
+
+
+def _queue_name_from_endpoint(endpoint: str) -> str:
+    """Extract queue name from a URL, ARN, or bare queue name."""
+    if endpoint.startswith("http"):
+        return endpoint.rsplit("/", 1)[-1]
+    if ":" in endpoint:
+        return endpoint.rsplit(":", 1)[-1]
+    return endpoint
+
+
+def _check_publish_sqs_target_state(
+    action: str,
+    params: dict,
+    provider: SnsProvider,
+    sqs_tracker: ResourceStateTracker | None,
+) -> Response | None:
+    """Reject Publish if any SQS subscription target is not ACTIVE."""
+    if action != "Publish" or sqs_tracker is None:
+        return None
+    topic_arn = params.get("TopicArn", "")
+    if not topic_arn:
+        return None
+    topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
+    try:
+        topic = provider.get_topic(topic_name)
+    except (KeyError, Exception):  # noqa: BLE001
+        return None
+    for sub in topic.subscribers:
+        if sub.protocol != "sqs":
+            continue
+        queue_name = _queue_name_from_endpoint(sub.endpoint)
+        state = sqs_tracker.get_state(queue_name)
+        if state in ("CREATING", "DELETING"):
+            return _sns_xml_error(
+                "InvalidParameter",
+                f"SQS queue is not ACTIVE: {sub.endpoint} (status: {state})",
+                400,
+            )
+    return None
+
+
 def _check_sns_capacity(
     action: str,
     sqs_capacity: AwsCapacityConfig | None,
@@ -254,6 +317,14 @@ async def _sns_dispatch(
         return err
 
     err = _check_sqs_subscribe_target(action, params, sqs_provider, sqs_tracker)
+    if err is not None:
+        return err
+
+    err = _check_publish_subscription(action, params, provider)
+    if err is not None:
+        return err
+
+    err = _check_publish_sqs_target_state(action, params, provider, sqs_tracker)
     if err is not None:
         return err
 

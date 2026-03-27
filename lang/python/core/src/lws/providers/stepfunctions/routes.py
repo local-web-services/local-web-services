@@ -26,6 +26,7 @@ from lws.providers._shared.aws_operation_fake import (
     AwsOperationFakeMiddleware,
 )
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
+from lws.providers.sqs.provider import SqsProvider
 from lws.providers.stepfunctions._stepfunctions_helpers import (
     _error_response,
     _extract_state_machine_name,
@@ -33,7 +34,9 @@ from lws.providers.stepfunctions._stepfunctions_helpers import (
     _format_execution_summary,
     _json_response,
     _parse_input,
+    check_sm_lifecycle,
 )
+from lws.providers.stepfunctions._stepfunctions_sqs_validator import check_sqs_task_targets
 from lws.providers.stepfunctions.provider import StepFunctionsProvider
 
 _logger = get_logger("ldk.stepfunctions")
@@ -47,11 +50,15 @@ class StepFunctionsRouter:
         provider: StepFunctionsProvider,
         lifecycle: ResourceLifecycleConfig | None = None,
         capacity: AwsCapacityConfig | None = None,
+        sqs_provider: SqsProvider | None = None,
+        sqs_tracker: ResourceStateTracker | None = None,
     ) -> None:
         self.provider = provider
         self._lifecycle = lifecycle or ResourceLifecycleConfig()
         self._tracker = ResourceStateTracker(self._lifecycle)
         self._capacity = capacity or AwsCapacityConfig()
+        self._sqs_provider = sqs_provider
+        self._sqs_tracker = sqs_tracker
         self.router = APIRouter()
         self.router.add_api_route("/", self._dispatch, methods=["POST"])
 
@@ -186,7 +193,7 @@ class StepFunctionsRouter:
         sm_arn = body.get("stateMachineArn", "")
         sm_name = sm_arn.rsplit(":", 1)[-1] if ":" in sm_arn else sm_arn
         if sm_name:
-            err = self._check_sm_lifecycle(sm_arn)
+            err = check_sm_lifecycle(sm_arn, self._tracker, self.provider)
             if err:
                 return err
         executions = self.provider.list_executions(sm_name or None)
@@ -324,38 +331,14 @@ class StepFunctionsRouter:
 
     async def _list_state_machine_versions(self, body: dict) -> Response:
         sm_arn = body.get("stateMachineArn", "")
-        err = self._check_sm_lifecycle(sm_arn)
+        err = check_sm_lifecycle(sm_arn, self._tracker, self.provider)
         if err:
             return err
         return _json_response({"stateMachineVersions": []})
 
-    def _sm_name_from_arn(self, resource_arn: str) -> str:
-        return resource_arn.rsplit(":", 1)[-1] if ":" in resource_arn else resource_arn
-
-    def _check_sm_lifecycle(self, resource_arn: str) -> Response | None:
-        """Return error response if SM is not in ACTIVE state (CREATING or DELETING)."""
-        sm_name = self._sm_name_from_arn(resource_arn)
-        lc_status = self._tracker.get_state(sm_name)
-        if lc_status == "DELETING":
-            return _error_response(
-                "StateMachineDoesNotExist",
-                f"Resource not found: {resource_arn}",
-            )
-        if lc_status == "CREATING":
-            return _error_response(
-                "StateMachineDeleting",
-                f"State machine is not ACTIVE: {resource_arn}",
-            )
-        if sm_name not in self.provider.list_state_machines():
-            return _error_response(
-                "ResourceNotFoundException",
-                f"Resource not found: {resource_arn}",
-            )
-        return None
-
     async def _tag_resource(self, body: dict) -> Response:
         resource_arn = body.get("resourceArn", "")
-        err = self._check_sm_lifecycle(resource_arn)
+        err = check_sm_lifecycle(resource_arn, self._tracker, self.provider)
         if err:
             return err
         tags = body.get("tags", [])
@@ -364,7 +347,7 @@ class StepFunctionsRouter:
 
     async def _untag_resource(self, body: dict) -> Response:
         resource_arn = body.get("resourceArn", "")
-        err = self._check_sm_lifecycle(resource_arn)
+        err = check_sm_lifecycle(resource_arn, self._tracker, self.provider)
         if err:
             return err
         tag_keys = body.get("tagKeys", [])
@@ -381,7 +364,7 @@ class StepFunctionsRouter:
 
     async def _list_tags_for_resource(self, body: dict) -> Response:
         resource_arn = body.get("resourceArn", "")
-        err = self._check_sm_lifecycle(resource_arn)
+        err = check_sm_lifecycle(resource_arn, self._tracker, self.provider)
         if err:
             return err
         tags = self.provider.list_tags_for_resource(resource_arn)
@@ -424,6 +407,11 @@ class StepFunctionsRouter:
                 "StateMachineDeleting",
                 f"State machine is not ACTIVE: {sm_arn}",
             )
+
+        if definition is not None:
+            err = check_sqs_task_targets(definition, self._sqs_provider, self._sqs_tracker)
+            if err is not None:
+                return err
 
         try:
             update_date = self.provider.update_state_machine(
@@ -474,6 +462,8 @@ def create_stepfunctions_app(
     lifecycle: ResourceLifecycleConfig | None = None,
     tracker_ref: list[ResourceStateTracker] | None = None,
     capacity: AwsCapacityConfig | None = None,
+    sqs_provider: SqsProvider | None = None,
+    sqs_tracker: ResourceStateTracker | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the Step Functions wire protocol.
 
@@ -482,6 +472,10 @@ def create_stepfunctions_app(
             ``ResourceStateTracker`` used by this app is deposited at index 0
             so callers can share it with other services (e.g. EventBridge).
         capacity: Optional capacity configuration for slot-limit enforcement.
+        sqs_provider: Optional SQS provider for validating SQS task queue existence
+            in UpdateStateMachine calls.
+        sqs_tracker: Optional SQS lifecycle tracker for validating queue state in
+            UpdateStateMachine calls.
     """
     app = FastAPI()
     if aws_fake is not None:
@@ -492,7 +486,13 @@ def create_stepfunctions_app(
     if chaos is not None:
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="stepfunctions")
-    sfn_router = StepFunctionsRouter(provider, lifecycle=lifecycle, capacity=capacity)
+    sfn_router = StepFunctionsRouter(
+        provider,
+        lifecycle=lifecycle,
+        capacity=capacity,
+        sqs_provider=sqs_provider,
+        sqs_tracker=sqs_tracker,
+    )
     if tracker_ref is not None:
         tracker_ref.append(sfn_router.tracker)
     app.include_router(sfn_router.router)

@@ -85,6 +85,7 @@ class LambdaManagementRouter:
         event_source_manager: EventSourceManager | None = None,
         dynamodb_provider: Any = None,
         dynamodb_tracker_ref: list | None = None,
+        tracker_ref: list | None = None,
     ) -> None:
         self._registry = registry
         self._project_dir = project_dir
@@ -93,6 +94,8 @@ class LambdaManagementRouter:
         _lc = lifecycle or ResourceLifecycleConfig()
         self._lifecycle = _lc
         self._tracker = ResourceStateTracker(_lc)
+        if tracker_ref is not None:
+            tracker_ref.append(self._tracker)
         self._capacity = capacity or AwsCapacityConfig()
         self._async_capacity = async_capacity or AwsCapacityConfig()
         self._event_source_manager = event_source_manager
@@ -469,6 +472,7 @@ def create_lambda_management_app(
     event_source_manager: EventSourceManager | None = None,
     dynamodb_provider: Any = None,
     dynamodb_tracker_ref: list | None = None,
+    tracker_ref: list | None = None,
 ) -> FastAPI:
     """Create a FastAPI app that speaks the Lambda management protocol."""
     if registry is None:
@@ -485,6 +489,7 @@ def create_lambda_management_app(
         event_source_manager=event_source_manager,
         dynamodb_provider=dynamodb_provider,
         dynamodb_tracker_ref=dynamodb_tracker_ref,
+        tracker_ref=tracker_ref,
     )
     app.include_router(router.router)
     return app

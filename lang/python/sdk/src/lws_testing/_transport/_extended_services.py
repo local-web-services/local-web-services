@@ -56,6 +56,7 @@ def build_extended_service_apps(
         shared_stream_dispatcher=stream_dispatcher,
     )
 
+    _lambda_tracker_ref: list = []
     lambda_app = create_lambda_management_app(
         registry=lambda_registry,
         lifecycle=lifecycle_configs["lambda"],
@@ -64,6 +65,7 @@ def build_extended_service_apps(
         event_source_manager=event_source_manager,
         dynamodb_provider=dynamo_provider,
         dynamodb_tracker_ref=dynamodb_tracker_ref,
+        tracker_ref=_lambda_tracker_ref,
     )
 
     glacier_app, glacier_state = create_glacier_app(
@@ -100,6 +102,7 @@ def build_extended_service_apps(
     ]
     return apps, {
         "lambda_registry": lambda_registry,
+        "lambda_tracker": _lambda_tracker_ref[0] if _lambda_tracker_ref else None,
         "glacier_state": glacier_state,
         "s3tables_state": s3tables_state,
         "elasticsearch_state": elasticsearch_state,

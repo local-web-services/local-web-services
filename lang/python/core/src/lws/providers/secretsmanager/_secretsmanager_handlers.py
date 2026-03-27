@@ -156,6 +156,12 @@ async def _handle_delete_secret(state: _SecretsState, body: dict) -> Response:
             f"Secret {secret_id} not found.",
         )
 
+    if secret.deleted_date is not None:
+        return _error_response(
+            "InvalidRequestException",
+            f"Secret {secret_id} is already scheduled for deletion.",
+        )
+
     if force_delete:
         state.secrets.pop(secret.name, None)
     else:
