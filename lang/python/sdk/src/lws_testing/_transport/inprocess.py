@@ -18,6 +18,7 @@ from lws_testing._transport._provider_wrappers import (
     _SsmStateProvider,
     _StubOrchestrator,
 )
+from lws_testing._transport._spec_converters import convert_spec
 
 
 def _bound_socket() -> socket.socket:
@@ -32,78 +33,6 @@ def _bound_socket() -> socket.socket:
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind(("127.0.0.1", 0))
     return sock
-
-
-def _make_table_config(spec: dict[str, Any]) -> Any:
-    """Convert a table spec dict to a TableConfig."""
-    from lws.interfaces.key_value_store import KeyAttribute, KeySchema, TableConfig
-
-    pk = KeyAttribute(
-        name=spec["partition_key"],
-        type=spec.get("partition_key_type", "S"),
-    )
-    sk = None
-    if "sort_key" in spec:
-        sk = KeyAttribute(
-            name=spec["sort_key"],
-            type=spec.get("sort_key_type", "S"),
-        )
-    return TableConfig(
-        table_name=spec["name"],
-        key_schema=KeySchema(partition_key=pk, sort_key=sk),
-    )
-
-
-def _make_queue_config(spec: str | dict[str, Any]) -> Any:
-    """Convert a queue spec (str or dict) to a QueueConfig."""
-    from lws.providers.sqs.provider import QueueConfig
-
-    if isinstance(spec, str):
-        return QueueConfig(queue_name=spec)
-    return QueueConfig(
-        queue_name=spec["name"],
-        visibility_timeout=spec.get("visibility_timeout", 30),
-        is_fifo=spec.get("is_fifo", False),
-        content_based_dedup=spec.get("content_based_dedup", False),
-    )
-
-
-def _make_topic_config(spec: str | dict[str, Any]) -> Any:
-    """Convert a topic spec (str or dict) to a TopicConfig."""
-    from lws.providers.sns.provider import TopicConfig
-
-    if isinstance(spec, str):
-        name = spec
-        arn = f"arn:aws:sns:us-east-1:000000000000:{name}"
-    else:
-        name = spec["name"]
-        arn = spec.get("arn", f"arn:aws:sns:us-east-1:000000000000:{name}")
-    return TopicConfig(topic_name=name, topic_arn=arn)
-
-
-def _make_state_machine_config(spec: dict[str, Any]) -> Any:
-    """Convert a state machine spec dict to a StateMachineConfig."""
-    from lws.providers.stepfunctions.provider import StateMachineConfig
-
-    return StateMachineConfig(
-        name=spec["name"],
-        definition=spec.get("definition", "{}"),
-        role_arn=spec.get("role_arn", ""),
-    )
-
-
-def _make_initial_parameter(spec: str | dict[str, Any]) -> dict[str, Any]:
-    """Convert a parameter spec to the dict format expected by create_ssm_app."""
-    if isinstance(spec, str):
-        return {"name": spec, "value": "", "type": "String"}
-    return spec
-
-
-def _make_initial_secret(spec: str | dict[str, Any]) -> dict[str, Any]:
-    """Convert a secret spec to the dict format expected by create_secretsmanager_app."""
-    if isinstance(spec, str):
-        return {"name": spec, "secret_string": ""}
-    return spec
 
 
 def _create_management_app(
@@ -146,19 +75,6 @@ def _setup_logging() -> Any:
     log_handler = WebSocketLogHandler()
     set_ws_handler(log_handler)
     return log_handler
-
-
-def _convert_spec(spec: dict[str, Any]) -> dict[str, list[Any]]:
-    """Convert raw spec dict to typed provider config lists."""
-    return {
-        "tables": [_make_table_config(t) for t in spec.get("tables", [])],
-        "queues": [_make_queue_config(q) for q in spec.get("queues", [])],
-        "buckets": [b if isinstance(b, str) else b["name"] for b in spec.get("buckets", [])],
-        "topics": [_make_topic_config(t) for t in spec.get("topics", [])],
-        "state_machines": [_make_state_machine_config(sm) for sm in spec.get("state_machines", [])],
-        "parameters": [_make_initial_parameter(p) for p in spec.get("parameters", [])],
-        "secrets": [_make_initial_secret(s) for s in spec.get("secrets", [])],
-    }
 
 
 def _create_providers(cfg: dict[str, list[Any]], data_dir: Path) -> dict[str, Any]:
@@ -452,7 +368,7 @@ async def start_services(
     from lws.providers._shared.aws_operation_fake import AwsFakeConfig
 
     log_handler = _setup_logging()
-    cfg = _convert_spec(spec)
+    cfg = convert_spec(spec)
     providers = _create_providers(cfg, data_dir)
 
     chaos_configs: dict[str, Any] = {s: AwsChaosConfig() for s in _SERVICE_NAMES}

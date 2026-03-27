@@ -23,9 +23,7 @@ def put_object_event_fails(lws_session, world):
         lws_session.client("events").describe_event_bus(Name=TEST_BUS)
         # Bus still exists — event delivery would NOT have failed
         world["result"] = None
-        world["error"] = Exception(
-            f"Expected bus '{TEST_BUS}' to be deleted but it still exists"
-        )
+        world["error"] = Exception(f"Expected bus '{TEST_BUS}' to be deleted but it still exists")
     except Exception:
         # Bus does not exist — event delivery correctly failed
         world["error"] = None

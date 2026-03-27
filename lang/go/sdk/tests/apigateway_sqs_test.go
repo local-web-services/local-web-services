@@ -315,9 +315,18 @@ func registerAPIGatewaySqsSteps(sc *godog.ScenarioContext, world *World) {
 	// ── Given: message state ──────────────────────────────────────────────────────
 
 	sc.Given(`^an "AVAILABLE" message exists in the queue$`, func() error {
-		// No-op: cannot pre-seed queue messages for API Gateway integration test;
-		// scenarios using this step are tagged @minimal and use the When/Then flow.
-		return nil
+		// Arrange: create the queue if it does not exist.
+		if _, err := world.SQSClient().CreateQueue(context.Background(), &sqs.CreateQueueInput{
+			QueueName: aws.String(apigwSqsTestQueue),
+		}); err != nil {
+			return fmt.Errorf("create queue: %w", err)
+		}
+		// Act: seed a test message directly into the queue so the consumer step can read it.
+		_, err := world.SQSClient().SendMessage(context.Background(), &sqs.SendMessageInput{
+			QueueUrl:    aws.String(world.SQSQueueURL(apigwSqsTestQueue)),
+			MessageBody: aws.String(`{"source":"e2e-seed"}`),
+		})
+		return err
 	})
 
 	sc.Given(`^no "AVAILABLE" message exists in the queue$`, func() error {

@@ -196,10 +196,11 @@ func registerElastiCacheSNSSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.When(`^the "([^"]*)" topic is deleted$`, func(service string) error {
-		// Arrange: (topic state set up by Given steps)
+		// Arrange: use the topic created by "Given the topic exists" (snsTopicArn),
+		// which is the generic SNS topic seeded across all cross-service delete_topic scenarios.
 		// Act
 		resp, err := world.SNSClient().DeleteTopic(context.Background(), &sns.DeleteTopicInput{
-			TopicArn: aws.String(elasticacheSnsTopicArn()),
+			TopicArn: aws.String(snsTopicArn()),
 		})
 		// Assert: captured in world
 		setResult(world, resp, err)

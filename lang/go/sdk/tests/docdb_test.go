@@ -168,10 +168,10 @@ func registerDocDBSteps(sc *godog.ScenarioContext, world *World) {
 		}
 		for _, name := range memorydbNames {
 			_, err := world.MemoryDBClient().CreateCluster(context.Background(), &memorydb.CreateClusterInput{
-				ClusterName:  aws.String(name),
-				NodeType:     aws.String("db.t4g.small"),
-				ACLName:      aws.String("open-access"),
-				NumShards:    aws.Int32(1),
+				ClusterName:         aws.String(name),
+				NodeType:            aws.String("db.t4g.small"),
+				ACLName:             aws.String("open-access"),
+				NumShards:           aws.Int32(1),
 				NumReplicasPerShard: aws.Int32(0),
 			})
 			if err != nil && !isAlreadyExists(err) {
