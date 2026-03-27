@@ -76,6 +76,8 @@ class CognitoGroupOpsMixin:
     ) -> None:
         """Remove a user from a group."""
         self._validate_user_pool_id(user_pool_id)
+        if group_name not in self._groups:
+            raise CognitoError("ResourceNotFoundException", f"Group '{group_name}' not found.")
         if username in self._user_groups:
             self._user_groups[username].discard(group_name)
 

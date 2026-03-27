@@ -105,3 +105,22 @@ class TestAdminGroupMembership:
         assert (
             resp.status_code == expected_status
         ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+
+    async def test_remove_from_nonexistent_group_returns_error(
+        self, client: httpx.AsyncClient
+    ) -> None:
+        # Arrange
+        await _create_user(client, "dave")
+
+        # Act
+        resp = await _request(
+            client,
+            "AdminRemoveUserFromGroup",
+            {"UserPoolId": _POOL_ID, "Username": "dave", "GroupName": "ghost-group"},
+        )
+
+        # Assert
+        expected_status = 400
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
