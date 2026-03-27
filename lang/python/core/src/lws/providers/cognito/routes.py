@@ -85,6 +85,12 @@ class CognitoRouter:
             "ConfirmForgotPassword": self._confirm_forgot_password,
             "ChangePassword": self._change_password,
             "GlobalSignOut": self._global_sign_out,
+            "CreateGroup": self._create_group,
+            "DeleteGroup": self._delete_group,
+            "AdminAddUserToGroup": self._admin_add_user_to_group,
+            "AdminRemoveUserFromGroup": self._admin_remove_user_from_group,
+            "ListGroups": self._list_groups,
+            "ListUsersInGroup": self._list_users_in_group,
         }
 
     async def _jwks(self) -> Response:
@@ -302,7 +308,74 @@ class CognitoRouter:
         err = self._check_pool_state(user_pool_id)
         if err is not None:
             return err
-        result = await self._provider.update_user_pool(user_pool_id)
+        lambda_config = body.get("LambdaConfig")
+        result = await self._provider.update_user_pool(user_pool_id, lambda_config=lambda_config)
+        return _json_response(result)
+
+    async def _create_group(self, body: dict) -> Response:
+        """Handle CreateGroup operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        err = self._check_pool_state(user_pool_id)
+        if err is not None:
+            return err
+        group_name = body.get("GroupName", "")
+        description = body.get("Description", "")
+        precedence = body.get("Precedence")
+        role_arn = body.get("RoleArn")
+        result = await self._provider.create_group(
+            user_pool_id, group_name, description, precedence, role_arn
+        )
+        return _json_response(result)
+
+    async def _delete_group(self, body: dict) -> Response:
+        """Handle DeleteGroup operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        err = self._check_pool_state(user_pool_id)
+        if err is not None:
+            return err
+        group_name = body.get("GroupName", "")
+        await self._provider.delete_group(user_pool_id, group_name)
+        return _json_response({})
+
+    async def _admin_add_user_to_group(self, body: dict) -> Response:
+        """Handle AdminAddUserToGroup operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        err = self._check_pool_state(user_pool_id)
+        if err is not None:
+            return err
+        username = body.get("Username", "")
+        group_name = body.get("GroupName", "")
+        await self._provider.admin_add_user_to_group(user_pool_id, username, group_name)
+        return _json_response({})
+
+    async def _admin_remove_user_from_group(self, body: dict) -> Response:
+        """Handle AdminRemoveUserFromGroup operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        err = self._check_pool_state(user_pool_id)
+        if err is not None:
+            return err
+        username = body.get("Username", "")
+        group_name = body.get("GroupName", "")
+        await self._provider.admin_remove_user_from_group(user_pool_id, username, group_name)
+        return _json_response({})
+
+    async def _list_groups(self, body: dict) -> Response:
+        """Handle ListGroups operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        err = self._check_pool_state(user_pool_id)
+        if err is not None:
+            return err
+        result = await self._provider.list_groups(user_pool_id)
+        return _json_response(result)
+
+    async def _list_users_in_group(self, body: dict) -> Response:
+        """Handle ListUsersInGroup operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        err = self._check_pool_state(user_pool_id)
+        if err is not None:
+            return err
+        group_name = body.get("GroupName", "")
+        result = await self._provider.list_users_in_group(user_pool_id, group_name)
         return _json_response(result)
 
     async def _list_users(self, body: dict) -> Response:

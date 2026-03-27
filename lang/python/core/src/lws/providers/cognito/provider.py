@@ -10,6 +10,7 @@ from typing import Any
 
 from lws.interfaces.provider import Provider
 from lws.logging.logger import get_logger
+from lws.providers.cognito._cognito_group_ops import CognitoGroupOpsMixin
 from lws.providers.cognito.tokens import TokenIssuer
 from lws.providers.cognito.user_store import (
     CognitoError,
@@ -25,7 +26,7 @@ _logger = get_logger("ldk.cognito")
 TriggerFunc = Callable[[dict], Coroutine[Any, Any, dict]]
 
 
-class CognitoProvider(Provider):
+class CognitoProvider(Provider, CognitoGroupOpsMixin):
     """Local Cognito User Pool provider.
 
     Manages user sign-up, sign-in (with JWT tokens), confirmation,
@@ -57,6 +58,10 @@ class CognitoProvider(Provider):
         self._triggers = trigger_functions or {}
         # In-memory store for user pool clients (client_id -> client_info)
         self._clients: dict[str, dict[str, Any]] = {}
+        # In-memory store for groups (group_name -> group_info)
+        self._groups: dict[str, dict[str, Any]] = {}
+        # Mapping of username -> set of group names
+        self._user_groups: dict[str, set[str]] = {}
 
     # -- Provider lifecycle ---------------------------------------------------
 
@@ -77,9 +82,11 @@ class CognitoProvider(Provider):
         return await self._store.is_healthy()
 
     async def reset(self) -> None:
-        """Clear all user pool state (pool name, clients, and users) for test isolation."""
+        """Clear all user pool state (pool name, clients, users, and groups) for test isolation."""
         self._config.user_pool_name = ""
         self._clients.clear()
+        self._groups.clear()
+        self._user_groups.clear()
         await self._store.clear()
 
     # -- Public API -----------------------------------------------------------
@@ -271,9 +278,17 @@ class CognitoProvider(Provider):
     async def update_user_pool(
         self,
         user_pool_id: str,
+        lambda_config: dict[str, str] | None = None,
     ) -> dict[str, Any]:
-        """Update a user pool. Currently a no-op that validates the pool exists."""
+        """Update a user pool, optionally wiring Lambda trigger function names."""
         self._validate_user_pool_id(user_pool_id)
+        if lambda_config:
+            pre_auth = lambda_config.get("PreAuthentication")
+            if pre_auth is not None:
+                self._config.pre_authentication_trigger = pre_auth or None
+            post_confirm = lambda_config.get("PostConfirmation")
+            if post_confirm is not None:
+                self._config.post_confirmation_trigger = post_confirm or None
         return {}
 
     async def list_users(

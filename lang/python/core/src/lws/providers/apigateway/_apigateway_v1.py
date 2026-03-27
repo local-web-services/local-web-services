@@ -3,14 +3,22 @@
 from __future__ import annotations
 
 import json as _json
-from typing import Any
+import time
+import uuid
+from typing import TYPE_CHECKING, Any
 
 from fastapi import APIRouter, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
+from lws.providers._shared.lambda_helpers import build_default_lambda_context
 from lws.providers._shared.request_helpers import parse_json_body
+from lws.providers.apigateway._apigateway_proxy_helpers import (
+    _build_proxy_response,
+    _extract_function_name,
+)
 from lws.providers.apigateway._apigateway_state import (
+    _ACCOUNT_ID,
     _ApiGatewayState,
     _json_response,
     _not_found,
@@ -19,8 +27,14 @@ from lws.providers.apigateway._apigateway_state import (
 from lws.providers.apigateway._apigateway_v1_dispatch import (
     _dispatch_integration,
     _parse_integration_uri,
+    is_lambda_proxy_uri,
 )
 from lws.providers.apigateway._apigateway_v1_resources import ApiGatewayResourceRouter
+from lws.providers.cognito.authorizer import AuthorizationError
+
+if TYPE_CHECKING:
+    from lws.providers.cognito.authorizer import CognitoAuthorizer
+    from lws.providers.lambda_runtime.routes import LambdaRegistry
 
 _log = get_logger("ldk.apigateway-v1-proxy")
 
@@ -47,6 +61,8 @@ class ApiGatewayManagementRouter:
         self.router = APIRouter()
         self._resource_router = ApiGatewayResourceRouter(self._state)
         self._service_providers: dict[str, Any] = {}
+        self._lambda_registry: LambdaRegistry | None = None
+        self._cognito_authorizer: CognitoAuthorizer | None = None
         self._register_routes()
 
     def _get_lifecycle_error(self, api_id: str) -> Response | None:
@@ -65,6 +81,14 @@ class ApiGatewayManagementRouter:
         """Register backend service providers for V1 integration dispatch."""
         self._service_providers = providers
         self._resource_router.set_service_providers(providers)
+
+    def set_lambda_registry(self, registry: LambdaRegistry) -> None:
+        """Register the Lambda registry for AWS_PROXY integrations."""
+        self._lambda_registry = registry
+
+    def set_cognito_authorizer(self, authorizer: CognitoAuthorizer) -> None:
+        """Register the Cognito authorizer for COGNITO_USER_POOLS authorization."""
+        self._cognito_authorizer = authorizer
 
     def reset(self) -> None:
         """Clear all REST API state and cancel pending lifecycle transitions."""
@@ -87,13 +111,22 @@ class ApiGatewayManagementRouter:
     def _resolve_v1_integration(
         self, method_config: dict | None
     ) -> tuple[dict | None, Response | None]:
-        """Return (service_descriptor, error_response) for a V1 integration.
+        """Return (service_descriptor, error_response) for a V1 AWS service integration.
 
-        Returns ``(descriptor, None)`` on success or ``(None, error_response)``
-        when the integration is missing or unsupported.
+        Returns ``(descriptor, None)`` on success, ``(None, None)`` when the integration
+        is AWS_PROXY (handled separately), or ``(None, error_response)`` on failure.
         """
         integration = (method_config or {}).get("methodIntegration")
-        if integration is None or integration.get("type") != "AWS":
+        if integration is None:
+            return None, _json_response(
+                {"message": "lws: No integration configured for this method"},
+                status_code=500,
+            )
+        integration_type = integration.get("type", "")
+        # AWS_PROXY (Lambda) is handled by the caller — signal with (None, None)
+        if integration_type == "AWS_PROXY":
+            return None, None
+        if integration_type != "AWS":
             return None, _json_response(
                 {"message": "lws: No AWS integration configured for this method"},
                 status_code=500,
@@ -168,6 +201,105 @@ class ApiGatewayManagementRouter:
             )
         return method_config, None
 
+    def _check_cognito_auth(
+        self, request: Request, method_config: dict
+    ) -> tuple[dict | None, Response | None]:
+        """Validate Cognito token when method uses COGNITO_USER_POOLS authorization.
+
+        Returns ``(claims, None)`` on success or ``(None, error_response)`` on failure.
+        Returns ``(None, None)`` when no Cognito authorization is required.
+        """
+        auth_type = method_config.get("authorizationType", "NONE")
+        if auth_type != "COGNITO_USER_POOLS":
+            return None, None
+        if self._cognito_authorizer is None:
+            return None, None
+
+        auth_header = request.headers.get("authorization") or request.headers.get("Authorization")
+        try:
+            claims = self._cognito_authorizer.validate_token(auth_header)
+            return claims, None
+        except AuthorizationError as exc:
+            return None, _json_response(
+                {"message": f"Unauthorized: {exc.message}"},
+                status_code=401,
+            )
+
+    async def _invoke_lambda_proxy(
+        self,
+        request: Request,
+        rest_api_id: str,
+        stage_name: str,
+        resource_path: str,
+        method_config: dict,
+        claims: dict | None,
+    ) -> Response | None:
+        """Invoke a Lambda proxy integration and return the response.
+
+        Returns ``None`` when no Lambda registry or function is available.
+        """
+        if self._lambda_registry is None:
+            return None
+        integration = method_config.get("methodIntegration", {})
+        uri = integration.get("uri", "")
+        if not is_lambda_proxy_uri(uri):
+            return None
+        function_name = _extract_function_name(uri)
+        if not function_name:
+            return None
+        compute = self._lambda_registry.get_compute(function_name)
+        if compute is None:
+            return _json_response(
+                {"message": f"lws: Lambda function '{function_name}' not found"},
+                status_code=500,
+            )
+
+        body_bytes = await request.body()
+        body_str = body_bytes.decode("utf-8") if body_bytes else None
+
+        headers: dict[str, str] = {}
+        for key, value in request.headers.raw:
+            headers[key.decode("latin-1")] = value.decode("latin-1")
+
+        query_params: dict[str, str] = dict(request.query_params)
+
+        request_context: dict = {
+            "accountId": _ACCOUNT_ID,
+            "apiId": rest_api_id,
+            "httpMethod": request.method.upper(),
+            "path": resource_path,
+            "resourcePath": resource_path,
+            "stage": stage_name,
+            "requestId": str(uuid.uuid4()),
+            "requestTime": time.strftime("%d/%b/%Y:%H:%M:%S +0000", time.gmtime()),
+            "requestTimeEpoch": int(time.time() * 1000),
+            "identity": {"sourceIp": "127.0.0.1", "userAgent": headers.get("user-agent", "")},
+        }
+        if claims is not None:
+            request_context["authorizer"] = {"claims": claims}
+
+        event: dict = {
+            "version": "1.0",
+            "resource": resource_path,
+            "path": resource_path,
+            "httpMethod": request.method.upper(),
+            "headers": headers,
+            "queryStringParameters": query_params or None,
+            "pathParameters": None,
+            "stageVariables": None,
+            "requestContext": request_context,
+            "body": body_str,
+            "isBase64Encoded": False,
+        }
+
+        context = build_default_lambda_context(function_name)
+        result = await compute.invoke(event, context)
+
+        if result.error:
+            return _json_response({"message": result.error}, 502)
+
+        return _build_proxy_response(result.payload)
+
     async def proxy_v1_request(self, request: Request, path: str) -> Response | None:
         """Try to dispatch an incoming request as a V1 REST API invocation.
 
@@ -191,6 +323,17 @@ class ApiGatewayManagementRouter:
             return err
         if method_config is None:
             return None
+
+        # Validate Cognito token if required
+        claims, auth_err = self._check_cognito_auth(request, method_config)
+        if auth_err is not None:
+            return auth_err
+
+        integration = method_config.get("methodIntegration", {})
+        if integration.get("type") == "AWS_PROXY":
+            return await self._invoke_lambda_proxy(
+                request, rest_api_id, stage_name, resource_path, method_config, claims
+            )
 
         service_descriptor, err = self._resolve_v1_integration(method_config)
         if err is not None:
