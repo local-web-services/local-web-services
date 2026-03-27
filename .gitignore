@@ -7,7 +7,7 @@ lang/*/sample/cdk/node_modules/
 __pycache__
 *.pyc
 .entire
-.claude
+.claude/settings.local.json
 allure-results
 allure-report
 _lws_override.tf
