@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import socket
 from pathlib import Path
 
 import uvicorn
@@ -19,23 +20,35 @@ logger = logging.getLogger(__name__)
 
 async def start_uvicorn_server(
     app: object,
-    port: int,
+    port: int | socket.socket,
     host: str = "0.0.0.0",
 ) -> tuple[uvicorn.Server, asyncio.Task]:  # type: ignore[type-arg]
     """Start a uvicorn server and wait for it to bind.
 
+    ``port`` may be an integer port number or a pre-bound ``socket.socket``.
+    Passing a pre-bound socket eliminates the TOCTOU race that occurs when
+    multiple processes call ``_free_port()`` simultaneously and then race to
+    bind the same port.
+
     Raises OSError if the server fails to bind within the timeout.
     """
-    uvi_config = uvicorn.Config(app=app, host=host, port=port, log_level="warning")
-    server = uvicorn.Server(uvi_config)
-    task = asyncio.create_task(server.serve())
+    if isinstance(port, socket.socket):
+        actual_port = port.getsockname()[1]
+        uvi_config = uvicorn.Config(app=app, host=host, port=actual_port, log_level="warning")
+        server = uvicorn.Server(uvi_config)
+        task = asyncio.create_task(server.serve(sockets=[port]))
+    else:
+        actual_port = port
+        uvi_config = uvicorn.Config(app=app, host=host, port=port, log_level="warning")
+        server = uvicorn.Server(uvi_config)
+        task = asyncio.create_task(server.serve())
     for _ in range(50):
         if server.started:
             break
         await asyncio.sleep(0.1)
     if not server.started:
         task.cancel()
-        raise OSError(f"Failed to bind server on {host}:{port} — port may be in use")
+        raise OSError(f"Failed to bind server on {host}:{actual_port} — port may be in use")
     return server, task
 
 

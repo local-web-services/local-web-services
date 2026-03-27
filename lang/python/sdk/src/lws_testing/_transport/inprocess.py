@@ -20,11 +20,18 @@ from lws_testing._transport._provider_wrappers import (
 )
 
 
-def _free_port() -> int:
-    """Return a free ephemeral TCP port on localhost."""
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind(("127.0.0.1", 0))
-        return s.getsockname()[1]
+def _bound_socket() -> socket.socket:
+    """Bind a socket to an OS-assigned port and return it (kept open).
+
+    Keeping the socket open prevents other processes from claiming the same
+    port between the ``bind`` call and the moment uvicorn starts listening —
+    the TOCTOU race that causes ``[Errno 48] address already in use`` when
+    many test processes start in parallel.
+    """
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind(("127.0.0.1", 0))
+    return sock
 
 
 def _make_table_config(spec: dict[str, Any]) -> Any:
@@ -387,18 +394,18 @@ def _build_service_apps(
 
 async def _start_all_servers(
     service_apps: list[tuple[str, Any]],
-    ports: dict[str, int],
+    sockets: dict[str, socket.socket],
     mgmt_app: Any,
-    mgmt_port: int,
+    mgmt_socket: socket.socket,
 ) -> list[Any]:
     """Start uvicorn servers for every service app plus the management app."""
     from lws.providers.fakeserver.provider import start_uvicorn_server
 
     servers: list[Any] = []
     for svc, app in service_apps:
-        server, task = await start_uvicorn_server(app, ports[svc], host="127.0.0.1")
+        server, task = await start_uvicorn_server(app, sockets[svc], host="127.0.0.1")
         servers.append((server, task))
-    mgmt_server, mgmt_task = await start_uvicorn_server(mgmt_app, mgmt_port, host="127.0.0.1")
+    mgmt_server, mgmt_task = await start_uvicorn_server(mgmt_app, mgmt_socket, host="127.0.0.1")
     servers.append((mgmt_server, mgmt_task))
     return servers
 
@@ -452,8 +459,10 @@ async def start_services(
     fake_configs: dict[str, Any] = {s: AwsFakeConfig(service=s) for s in _SERVICE_NAMES}
     lifecycle_configs: dict[str, Any] = {s: ResourceLifecycleConfig() for s in _SERVICE_NAMES}
     capacity_configs: dict[str, Any] = {s: AwsCapacityConfig() for s in _SERVICE_NAMES}
-    ports: dict[str, int] = {s: _free_port() for s in _SERVICE_NAMES}
-    mgmt_port = _free_port()
+    _sockets: dict[str, socket.socket] = {s: _bound_socket() for s in _SERVICE_NAMES}
+    _mgmt_socket = _bound_socket()
+    ports: dict[str, int] = {s: sock.getsockname()[1] for s, sock in _sockets.items()}
+    mgmt_port = _mgmt_socket.getsockname()[1]
 
     service_apps, extra_providers = _build_service_apps(
         providers,
@@ -485,7 +494,7 @@ async def start_services(
     mgmt_app = _create_management_app(
         all_providers, chaos_configs, fake_configs, lifecycle_configs, capacity_configs
     )
-    servers = await _start_all_servers(service_apps, ports, mgmt_app, mgmt_port)
+    servers = await _start_all_servers(service_apps, _sockets, mgmt_app, _mgmt_socket)
 
     return log_handler, ports, mgmt_port, servers
 
