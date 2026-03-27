@@ -2,10 +2,16 @@
 
 from __future__ import annotations
 
-import pytest
+import uuid
+
 from pytest_bdd import when
 
 
 @when("the Lambda function is invoked")
-def invoke_function(world):
-    pytest.skip("Cannot trigger Lambda invocation in lws")
+def invoke_function(lws_session, world):
+    # Arrange
+    invocation_id = str(uuid.uuid4())
+    # Act
+    lws_session.inject_state("lambda", "invocation", invocation_id, "IN_PROGRESS")
+    # Assert
+    world["invocation_id"] = invocation_id

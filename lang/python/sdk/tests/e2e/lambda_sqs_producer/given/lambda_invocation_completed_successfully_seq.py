@@ -2,10 +2,16 @@
 
 from __future__ import annotations
 
-import pytest
+import uuid
+
 from pytest_bdd import given
 
 
 @given("the Lambda invocation has completed successfully")
-def lambda_invocation_completed_successfully_seq():
-    pytest.skip("Cannot create a completed Lambda invocation in lws")
+def lambda_invocation_completed_successfully_seq(lws_session, world):
+    # Arrange
+    invocation_id = str(uuid.uuid4())
+    # Act
+    lws_session.inject_state("lambda", "invocation", invocation_id, "SUCCESS")
+    # Assert
+    world["invocation_id"] = invocation_id

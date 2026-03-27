@@ -2,15 +2,17 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import then
 
 from ..constants import TEST_USER
 
 
 @then('the user is in "MODIFYING" state')
-def user_is_modifying_then(lws_session):
-    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
-    resp = lws_session.client("memorydb").describe_users(UserName=TEST_USER)
-    actual_users = resp.get("Users", [])
-    assert len(actual_users) > 0, f"Expected user '{TEST_USER}' to exist but found none"
+def user_is_modifying_then(lws_session, world):
+    # Arrange
+    user_name = world.get("user_name", TEST_USER)
+    expected_state = "modifying"
+    # Act
+    actual_state = lws_session.get_injected_state("memorydb", "user", user_name)
+    # Assert
+    assert actual_state == expected_state, f"Expected {expected_state!r} but got {actual_state!r}"

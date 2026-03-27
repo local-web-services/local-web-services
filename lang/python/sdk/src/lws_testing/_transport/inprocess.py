@@ -6,6 +6,8 @@ import socket
 from pathlib import Path
 from typing import Any
 
+from lws.providers._shared.async_state_store import AsyncStateStore
+
 from lws_testing._transport._provider_wrappers import (
     _ApiGatewayStateProvider,
     _ElasticsearchStateProvider,
@@ -41,6 +43,7 @@ def _create_management_app(
     fake_configs: dict[str, Any],
     lifecycle_configs: dict[str, Any],
     capacity_configs: dict[str, Any] | None = None,
+    state_store: Any | None = None,
 ) -> Any:
     """Build a FastAPI management app with reset, fake, chaos, lifecycle, and capacity endpoints."""
     from fastapi import FastAPI
@@ -58,6 +61,7 @@ def _create_management_app(
         aws_fake_configs=fake_configs,
         lifecycle_configs=lifecycle_configs,
         capacity_configs=capacity_configs,
+        state_store=state_store,
     )
     app.include_router(router)
     app.include_router(create_capacity_control_router(capacity_configs or {}))
@@ -65,7 +69,7 @@ def _create_management_app(
     # Alias endpoint used by LwsSession.reset()
     @app.post("/_ldk/state/clear")
     async def state_clear() -> JSONResponse:
-        return await _handle_reset(providers)
+        return await _handle_reset(providers, state_store=state_store)
 
     return app
 
@@ -410,10 +414,11 @@ async def start_services(
         s3_capacity=capacity_configs.get("s3"),
     )
 
+    state_store = AsyncStateStore()
     for provider in providers.values():
         await provider.start()
     mgmt_app = _create_management_app(
-        all_providers, chaos_configs, fake_configs, lifecycle_configs, capacity_configs
+        all_providers, chaos_configs, fake_configs, lifecycle_configs, capacity_configs, state_store
     )
     servers = await _start_all_servers(service_apps, _sockets, mgmt_app, _mgmt_socket)
 
