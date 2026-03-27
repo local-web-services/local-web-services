@@ -12,12 +12,16 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from fastapi import FastAPI
+
+from lws.api.management import create_management_router
 from lws.interfaces import Provider
 from lws.parser.assembly import AppModel
 from lws.providers._shared.aws_capacity import AwsCapacityConfig
 from lws.providers._shared.aws_chaos import AwsChaosConfig
 from lws.providers._shared.aws_iam_auth import IamAuthBundle
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig
+from lws.providers._shared.capacity_control import create_capacity_control_router
 from lws.providers.apigateway.provider import ApiGatewayProvider
 from lws.providers.cognito.provider import CognitoProvider
 from lws.providers.cognito.user_store import UserPoolConfig
@@ -426,12 +430,6 @@ def _mount_management_api(
     capacity_configs: dict[str, AwsCapacityConfig] | None = None,
 ) -> None:
     """Mount the management API router on the API Gateway app or create a standalone one."""
-    from fastapi import FastAPI  # pylint: disable=import-outside-toplevel
-
-    from lws.api.management import (  # pylint: disable=import-outside-toplevel
-        create_management_router,
-    )
-
     mgmt_router = create_management_router(
         orchestrator,
         providers,
@@ -442,16 +440,19 @@ def _mount_management_api(
         lifecycle_configs=lifecycle_configs,
         capacity_configs=capacity_configs,
     )
+    capacity_router = create_capacity_control_router(capacity_configs or {})
 
     # Try to find an existing API Gateway provider to mount on
     for _key, prov in providers.items():
         if isinstance(prov, ApiGatewayProvider):
             prov.app.include_router(mgmt_router)
+            prov.app.include_router(capacity_router)
             return
 
     # No API Gateway — create a standalone FastAPI app for management
     mgmt_app = FastAPI(title="LDK Management")
     mgmt_app.include_router(mgmt_router)
+    mgmt_app.include_router(capacity_router)
     providers["__management_http__"] = _HttpServiceProvider(
         "management-http", lambda: mgmt_app, port
     )
