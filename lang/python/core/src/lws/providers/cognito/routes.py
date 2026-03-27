@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import json
-
 import jwt
 from fastapi import APIRouter, FastAPI, Request, Response
 
@@ -14,6 +12,9 @@ from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, 
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
+from lws.providers.cognito._cognito_routes_groups import _CognitoGroupRoutesMixin
+from lws.providers.cognito._cognito_routes_helpers import error_response as _error_response
+from lws.providers.cognito._cognito_routes_helpers import json_response as _json_response
 from lws.providers.cognito.provider import CognitoProvider
 from lws.providers.cognito.user_store import CognitoError
 
@@ -23,7 +24,7 @@ _logger = get_logger("ldk.cognito")
 _TARGET_PREFIX = "AWSCognitoIdentityProviderService."
 
 
-class CognitoRouter:
+class CognitoRouter(_CognitoGroupRoutesMixin):
     """Route Cognito wire-protocol requests to the CognitoProvider."""
 
     def __init__(
@@ -90,6 +91,12 @@ class CognitoRouter:
             "ConfirmForgotPassword": self._confirm_forgot_password,
             "ChangePassword": self._change_password,
             "GlobalSignOut": self._global_sign_out,
+            "CreateGroup": self._create_group,
+            "DeleteGroup": self._delete_group,
+            "AdminAddUserToGroup": self._admin_add_user_to_group,
+            "AdminRemoveUserFromGroup": self._admin_remove_user_from_group,
+            "ListGroups": self._list_groups,
+            "ListUsersInGroup": self._list_users_in_group,
         }
 
     async def _jwks(self) -> Response:
@@ -307,8 +314,11 @@ class CognitoRouter:
         err = self._check_pool_state(user_pool_id)
         if err is not None:
             return err
-        result = await self._provider.update_user_pool(user_pool_id)
+        lambda_config = body.get("LambdaConfig")
+        result = await self._provider.update_user_pool(user_pool_id, lambda_config=lambda_config)
         return _json_response(result)
+
+    # Group operation handlers are inherited from _CognitoGroupRoutesMixin.
 
     async def _list_users(self, body: dict) -> Response:
         """Handle ListUsers operation."""
@@ -425,23 +435,6 @@ class CognitoRouter:
 def _parse_user_attributes(attrs: list[dict]) -> dict[str, str]:
     """Convert Cognito UserAttributes list format to a flat dict."""
     return {attr["Name"]: attr["Value"] for attr in attrs if "Name" in attr and "Value" in attr}
-
-
-def _json_response(data: dict, status_code: int = 200) -> Response:
-    """Create a JSON response with the Cognito content type."""
-    return Response(
-        content=json.dumps(data),
-        status_code=status_code,
-        media_type="application/x-amz-json-1.1",
-    )
-
-
-def _error_response(error_type: str, message: str) -> Response:
-    """Create an error response."""
-    return _json_response(
-        {"__type": error_type, "message": message},
-        status_code=400,
-    )
 
 
 # ---------------------------------------------------------------------------

@@ -174,8 +174,19 @@ async def _dispatch_integration(
     raise ValueError(f"Unsupported service: {service}")
 
 
+_LAMBDA_PROXY_PATTERN = r"^arn:aws:apigateway:[^:]+:lambda:path/.+/functions/.+/invocations$"
+
+
+def is_lambda_proxy_uri(uri: str) -> bool:
+    """Return True if the URI is a Lambda proxy integration URI."""
+    return bool(re.match(_LAMBDA_PROXY_PATTERN, uri))
+
+
 def validate_integration_target(uri: str, service_providers: dict[str, Any]) -> Response | None:
     """Return an error response if the integration target resource does not exist."""
+    # Lambda proxy URIs are always valid — they don't reference a service provider.
+    if is_lambda_proxy_uri(uri):
+        return None
     descriptor = _parse_integration_uri(uri)
     if descriptor is None:
         return None

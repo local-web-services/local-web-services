@@ -42,6 +42,7 @@ from lws.providers.apigateway._apigateway_v1 import ApiGatewayManagementRouter
 from lws.providers.apigateway._apigateway_v2 import ApiGatewayV2Router, _format_http_api
 
 if TYPE_CHECKING:
+    from lws.providers.cognito.authorizer import CognitoAuthorizer
     from lws.providers.lambda_runtime.routes import LambdaRegistry
 
 _logger = get_logger("ldk.apigateway-mgmt")
@@ -67,6 +68,7 @@ __all__ = [
     "ApiGatewayV2Router",
     "ApiGatewayRouterBundle",
     "create_apigateway_management_app",
+    "CognitoAuthorizer",
 ]
 
 
@@ -103,12 +105,17 @@ class ApiGatewayRouterBundle:
         """Wire backend service providers into V1 integration dispatch."""
         self._v1.set_service_providers(providers)
 
+    def set_cognito_authorizer(self, authorizer: CognitoAuthorizer) -> None:
+        """Wire a Cognito authorizer into V1 token validation."""
+        self._v1.set_cognito_authorizer(authorizer)
+
 
 def create_apigateway_management_app(
     lambda_registry: LambdaRegistry | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
     service_providers: dict | None = None,
     capacity: AwsCapacityConfig | None = None,
+    cognito_authorizer: CognitoAuthorizer | None = None,
 ) -> tuple[FastAPI, ApiGatewayRouterBundle]:
     """Create a FastAPI app that speaks the API Gateway management protocol.
 
@@ -136,6 +143,10 @@ def create_apigateway_management_app(
     v1_router = ApiGatewayManagementRouter(lifecycle=lifecycle)
     if service_providers:
         v1_router.set_service_providers(service_providers)
+    if lambda_registry is not None:
+        v1_router.set_lambda_registry(lambda_registry)
+    if cognito_authorizer is not None:
+        v1_router.set_cognito_authorizer(cognito_authorizer)
 
     # V2 management routes (+ proxy)
     v2_router = ApiGatewayV2Router(lambda_registry=lambda_registry, lifecycle=lifecycle)
