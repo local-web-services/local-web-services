@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
 
 
 @when("a request matching a header-filtered operation is intercepted")
-def intercept_header_filtered_request():
-    pytest.skip("AWS fake service is not yet available in LwsSession")
+def intercept_header_filtered_request(lws_session, world):
+    try:
+        world["result"] = lws_session.client("dynamodb").list_tables()
+        world["error"] = None
+    except Exception as exc:
+        world["result"] = None
+        world["error"] = exc

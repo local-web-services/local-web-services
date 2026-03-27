@@ -67,6 +67,17 @@ class ChaosConfig:
     connection_reset_rate: float = 0.0
     timeout_rate: float = 0.0
 
+    def apply_overrides(self, body: dict[str, Any]) -> None:
+        """Apply partial overrides from a request body dict in place."""
+        if "enabled" in body:
+            self.enabled = bool(body["enabled"])
+        if "error_rate" in body:
+            self.error_rate = float(body["error_rate"])
+        if "latency_min_ms" in body:
+            self.latency_min_ms = int(body["latency_min_ms"])
+        if "latency_max_ms" in body:
+            self.latency_max_ms = int(body["latency_max_ms"])
+
 
 @dataclass
 class FakeServerDefaults:

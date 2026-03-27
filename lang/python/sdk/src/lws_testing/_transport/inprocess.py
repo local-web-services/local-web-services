@@ -41,6 +41,7 @@ def _create_management_app(
     fake_configs: dict[str, Any],
     lifecycle_configs: dict[str, Any],
     capacity_configs: dict[str, Any] | None = None,
+    fake_provider: Any | None = None,
 ) -> Any:
     """Build a FastAPI management app with reset, fake, chaos, lifecycle, and capacity endpoints."""
     from fastapi import FastAPI
@@ -57,6 +58,7 @@ def _create_management_app(
         aws_fake_configs=fake_configs,
         lifecycle_configs=lifecycle_configs,
         capacity_configs=capacity_configs,
+        fake_provider=fake_provider,
     )
     app.include_router(router)
 
@@ -366,10 +368,12 @@ async def start_services(
     from lws.providers._shared.aws_chaos import AwsChaosConfig
     from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig
     from lws.providers._shared.aws_operation_fake import AwsFakeConfig
+    from lws.providers.fakeserver.provider import FakeServerProvider
 
     log_handler = _setup_logging()
     cfg = convert_spec(spec)
     providers = _create_providers(cfg, data_dir)
+    fake_server_provider = FakeServerProvider(project_dir=data_dir, base_port=14000)
 
     chaos_configs: dict[str, Any] = {s: AwsChaosConfig() for s in _SERVICE_NAMES}
     fake_configs: dict[str, Any] = {s: AwsFakeConfig(service=s) for s in _SERVICE_NAMES}
@@ -407,8 +411,15 @@ async def start_services(
 
     for provider in providers.values():
         await provider.start()
+    await fake_server_provider.start()
+    all_providers["__fake_server__"] = fake_server_provider
     mgmt_app = _create_management_app(
-        all_providers, chaos_configs, fake_configs, lifecycle_configs, capacity_configs
+        all_providers,
+        chaos_configs,
+        fake_configs,
+        lifecycle_configs,
+        capacity_configs,
+        fake_provider=fake_server_provider,
     )
     servers = await _start_all_servers(service_apps, _sockets, mgmt_app, _mgmt_socket)
 

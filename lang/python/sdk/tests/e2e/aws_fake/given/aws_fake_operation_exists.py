@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
+
+from ..client import AwsFakeTestClient
 
 
 @given("the operation exists")
-def aws_fake_operation_exists():
-    pytest.skip("AWS fake service is not yet available in LwsSession")
+def aws_fake_operation_exists(lws_session):
+    AwsFakeTestClient(lws_session).create()
+    AwsFakeTestClient(lws_session).add_operation()

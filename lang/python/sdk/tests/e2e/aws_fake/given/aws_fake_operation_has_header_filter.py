@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
+
+from ..client import AwsFakeTestClient
 
 
 @given("the operation has a header filter")
-def aws_fake_operation_has_header_filter():
-    pytest.skip("AWS fake service is not yet available in LwsSession")
+def aws_fake_operation_has_header_filter(lws_session):
+    AwsFakeTestClient(lws_session).add_operation_with_header()

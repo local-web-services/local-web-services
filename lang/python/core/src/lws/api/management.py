@@ -23,8 +23,20 @@ from lws.api._management_capacity import (
     _register_capacity_routes,
 )
 from lws.api._management_chaos import (
+    _handle_delete_chaos_service,
     _handle_get_chaos,
+    _handle_get_chaos_service,
+    _handle_put_chaos_service,
     _handle_set_chaos,
+)
+from lws.api._management_fake import (
+    _handle_add_route,
+    _handle_create_fake_server,
+    _handle_delete_fake_server,
+    _handle_get_fake_server,
+    _handle_list_fake_servers,
+    _handle_remove_route,
+    _handle_set_fake_server_chaos,
 )
 from lws.api._management_iam_auth import (
     _handle_get_iam_auth,
@@ -57,13 +69,7 @@ def _reset_chaos_configs(chaos_configs: dict[str, AwsChaosConfig] | None) -> Non
     if chaos_configs is None:
         return
     for cfg in chaos_configs.values():
-        cfg.enabled = False
-        cfg.error_rate = 0.0
-        cfg.latency_min_ms = 0
-        cfg.latency_max_ms = 0
-        cfg.errors = []
-        cfg.connection_reset_rate = 0.0
-        cfg.timeout_rate = 0.0
+        cfg.reset()
 
 
 def _reset_lifecycle_configs(lifecycle_configs: dict[str, ResourceLifecycleConfig] | None) -> None:
@@ -190,6 +196,7 @@ def create_management_router(
     iam_auth_bundle: Any | None = None,
     lifecycle_configs: dict[str, ResourceLifecycleConfig] | None = None,
     capacity_configs: dict[str, AwsCapacityConfig] | None = None,
+    fake_provider: Any | None = None,
 ) -> APIRouter:
     """Create a management API router.
 
@@ -203,6 +210,7 @@ def create_management_router(
         lifecycle_configs: Map of service name to mutable ``ResourceLifecycleConfig``
             for runtime updates.
         capacity_configs: Map of service name to mutable ``AwsCapacityConfig`` for runtime updates.
+        fake_provider: Optional ``FakeServerProvider`` for runtime fake server management.
 
     Returns:
         A FastAPI ``APIRouter`` to be included in the main application.
@@ -229,6 +237,7 @@ def create_management_router(
     _register_iam_auth_routes(router, iam_auth_bundle)
     _register_function_url_routes(router, all_providers)
     _register_aws_fake_routes(router, _aws_fake_configs)
+    _register_fake_server_routes(router, fake_provider)
     _register_lifecycle_routes(router, _lifecycle_configs)
     _register_capacity_routes(router, _capacity_configs)
 
@@ -293,6 +302,18 @@ def _register_chaos_routes(
     async def set_chaos(request: Request) -> JSONResponse:
         return await _handle_set_chaos(request, chaos_configs)
 
+    @router.get("/chaos/{service}")
+    async def get_chaos_service(service: str) -> JSONResponse:
+        return _handle_get_chaos_service(chaos_configs, service)
+
+    @router.put("/chaos/{service}")
+    async def put_chaos_service(service: str, request: Request) -> JSONResponse:
+        return await _handle_put_chaos_service(request, chaos_configs, service)
+
+    @router.delete("/chaos/{service}")
+    async def delete_chaos_service(service: str) -> JSONResponse:
+        return _handle_delete_chaos_service(chaos_configs, service)
+
 
 def _register_iam_auth_routes(
     router: APIRouter,
@@ -349,3 +370,40 @@ def _register_aws_fake_routes(
     @router.post("/aws-fake")
     async def set_aws_fake(request: Request) -> JSONResponse:
         return await _handle_set_aws_fake(request, aws_fake_configs)
+
+
+def _register_fake_server_routes(
+    router: APIRouter,
+    fake_provider: Any | None,
+) -> None:
+    """Register fake server management routes on the router."""
+    if fake_provider is None:
+        return
+
+    @router.get("/fake")
+    async def list_fake_servers() -> JSONResponse:
+        return _handle_list_fake_servers(fake_provider)
+
+    @router.post("/fake")
+    async def create_fake_server(request: Request) -> JSONResponse:
+        return await _handle_create_fake_server(request, fake_provider)
+
+    @router.get("/fake/{name}")
+    async def get_fake_server(name: str) -> JSONResponse:
+        return _handle_get_fake_server(fake_provider, name)
+
+    @router.delete("/fake/{name}")
+    async def delete_fake_server(name: str) -> JSONResponse:
+        return await _handle_delete_fake_server(fake_provider, name)
+
+    @router.post("/fake/{name}/routes")
+    async def add_fake_route(name: str, request: Request) -> JSONResponse:
+        return await _handle_add_route(request, fake_provider, name)
+
+    @router.delete("/fake/{name}/routes")
+    async def remove_fake_route(name: str, request: Request) -> JSONResponse:
+        return await _handle_remove_route(request, fake_provider, name)
+
+    @router.post("/fake/{name}/chaos")
+    async def set_fake_server_chaos(name: str, request: Request) -> JSONResponse:
+        return await _handle_set_fake_server_chaos(request, fake_provider, name)
