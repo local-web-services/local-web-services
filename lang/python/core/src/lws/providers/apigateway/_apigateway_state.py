@@ -140,3 +140,21 @@ class _ApiGatewayV2State:
     def reset(self) -> None:
         """Clear all stored HTTP APIs."""
         self._apis.clear()
+
+
+def apply_stage_patch_op(stage: dict, op: dict) -> None:
+    """Apply a single PATCH replace operation to a stage's defaultRouteSettings."""
+    path = op.get("path", "")
+    value = op.get("value")
+    if op.get("op") != "replace":
+        return
+    if "defaultRouteSettings" not in stage:
+        stage["defaultRouteSettings"] = {}
+    if path == "/defaultRouteSettings/throttlingBurstLimit":
+        stage["defaultRouteSettings"]["throttlingBurstLimit"] = (
+            int(value) if value is not None else None
+        )
+    elif path == "/defaultRouteSettings/throttlingRateLimit":
+        stage["defaultRouteSettings"]["throttlingRateLimit"] = (
+            float(value) if value is not None else None
+        )

@@ -2,10 +2,19 @@
 
 from __future__ import annotations
 
-import pytest
+from botocore.exceptions import ClientError
 from pytest_bdd import when
+
+from ..constants import TEST_CLUSTER
 
 
 @when('a multi-"AZ" failover is triggered on a cluster')
 def multi_az_failover(lws_session, world):
-    pytest.skip("Cannot trigger internal Neptune multi-AZ failover in lws")
+    try:
+        cluster_id = world.get("cluster_id", TEST_CLUSTER)
+        result = lws_session.client("neptune").failover_db_cluster(DBClusterIdentifier=cluster_id)
+        world["result"] = result
+        world["error"] = None
+    except ClientError as exc:
+        world["result"] = None
+        world["error"] = exc

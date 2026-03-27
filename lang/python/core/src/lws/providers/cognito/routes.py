@@ -68,6 +68,8 @@ class CognitoRouter:
             "SignUp": self._sign_up,
             "ConfirmSignUp": self._confirm_sign_up,
             "InitiateAuth": self._initiate_auth,
+            "AdminInitiateAuth": self._admin_initiate_auth,
+            "RespondToAuthChallenge": self._respond_to_auth_challenge,
             "CreateUserPool": self._create_user_pool,
             "DeleteUserPool": self._delete_user_pool,
             "ListUserPools": self._list_user_pools,
@@ -79,6 +81,9 @@ class CognitoRouter:
             "AdminCreateUser": self._admin_create_user,
             "AdminDeleteUser": self._admin_delete_user,
             "AdminGetUser": self._admin_get_user,
+            "AdminConfirmSignUp": self._admin_confirm_sign_up,
+            "AdminSetUserPassword": self._admin_set_user_password,
+            "AdminUpdateUserAttributes": self._admin_update_user_attributes,
             "UpdateUserPool": self._update_user_pool,
             "ListUsers": self._list_users,
             "ForgotPassword": self._forgot_password,
@@ -350,6 +355,65 @@ class CognitoRouter:
             await self._provider.global_sign_out(access_token)
         except jwt.InvalidTokenError:
             return _error_response("NotAuthorizedException", "Invalid access token.")
+        return _json_response({})
+
+    async def _admin_initiate_auth(self, body: dict) -> Response:
+        """Handle AdminInitiateAuth operation."""
+        cap_err = check_capacity(self._capacity, "TooManyRequestsException", 400)
+        if cap_err is not None:
+            return cap_err
+        user_pool_id = body.get("UserPoolId", "")
+        auth_flow = body.get("AuthFlow", "")
+        auth_params = body.get("AuthParameters", {})
+        username = auth_params.get("USERNAME", "")
+        password = auth_params.get("PASSWORD", "")
+        result = await self._provider.admin_initiate_auth(
+            user_pool_id, auth_flow, username, password
+        )
+        return _json_response(result)
+
+    async def _respond_to_auth_challenge(self, body: dict) -> Response:
+        """Handle RespondToAuthChallenge operation."""
+        client_id = body.get("ClientId", "")
+        challenge_name = body.get("ChallengeName", "")
+        session = body.get("Session", "")
+        challenge_responses = body.get("ChallengeResponses", {})
+        result = await self._provider.respond_to_auth_challenge(
+            client_id, challenge_name, session, challenge_responses
+        )
+        return _json_response(result)
+
+    async def _admin_confirm_sign_up(self, body: dict) -> Response:
+        """Handle AdminConfirmSignUp operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        err = self._check_pool_state(user_pool_id)
+        if err is not None:
+            return err
+        username = body.get("Username", "")
+        await self._provider.admin_confirm_sign_up(user_pool_id, username)
+        return _json_response({})
+
+    async def _admin_set_user_password(self, body: dict) -> Response:
+        """Handle AdminSetUserPassword operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        err = self._check_pool_state(user_pool_id)
+        if err is not None:
+            return err
+        username = body.get("Username", "")
+        password = body.get("Password", "")
+        permanent = body.get("Permanent", True)
+        await self._provider.admin_set_user_password(user_pool_id, username, password, permanent)
+        return _json_response({})
+
+    async def _admin_update_user_attributes(self, body: dict) -> Response:
+        """Handle AdminUpdateUserAttributes operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        err = self._check_pool_state(user_pool_id)
+        if err is not None:
+            return err
+        username = body.get("Username", "")
+        user_attributes = _parse_user_attributes(body.get("UserAttributes", []))
+        await self._provider.admin_update_user_attributes(user_pool_id, username, user_attributes)
         return _json_response({})
 
 
