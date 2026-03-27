@@ -84,7 +84,8 @@ class FakeServerClient:
 
     def remove_route(self, server_name: str, method: str, path: str) -> None:
         """Remove a route from a fake server."""
-        resp = httpx.delete(
+        resp = httpx.request(
+            "DELETE",
             f"{self._base}/{server_name}/routes",
             json={"method": method, "path": path},
             timeout=5.0,
