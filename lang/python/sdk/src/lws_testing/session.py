@@ -34,7 +34,6 @@ from lws_testing._spec import (
 ResourceSpec = DynamoTable | SqsQueue | S3Bucket | SnsTopic | SsmParameter | Secret | StateMachine
 
 
-
 class LwsSession:
     """In-process LWS session for testing.
 
