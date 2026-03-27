@@ -2,10 +2,16 @@
 
 from __future__ import annotations
 
-import pytest
+import uuid
+
 from pytest_bdd import given
 
 
 @given("the caller Lambda function has been invoked")
-def caller_lambda_function_has_been_invoked_seq():
-    pytest.skip("Cannot create a completed Lambda invocation in lws")
+def caller_lambda_function_has_been_invoked_seq(lws_session, world):
+    # Arrange
+    invocation_id = str(uuid.uuid4())
+    # Act
+    lws_session.inject_state("lambda", "invocation", invocation_id, "IN_PROGRESS")
+    # Assert
+    world["invocation_id"] = invocation_id

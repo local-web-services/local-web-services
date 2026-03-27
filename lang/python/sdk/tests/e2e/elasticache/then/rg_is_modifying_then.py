@@ -2,19 +2,19 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import then
 
 from ..constants import TEST_REPLICATION_GROUP
 
 
 @then('the replication group is in "MODIFYING" state')
-def rg_is_modifying_then(lws_session):
-    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
-    resp = lws_session.client("elasticache").describe_replication_groups(
-        ReplicationGroupId=TEST_REPLICATION_GROUP
+def rg_is_modifying_then(lws_session, world):
+    # Arrange
+    replication_group_id = world.get("replication_group_id", TEST_REPLICATION_GROUP)
+    expected_state = "modifying"
+    # Act
+    actual_state = lws_session.get_injected_state(
+        "elasticache", "replication_group", replication_group_id
     )
-    actual_groups = resp.get("ReplicationGroups", [])
-    assert (
-        len(actual_groups) > 0
-    ), f"Expected replication group '{TEST_REPLICATION_GROUP}' to exist but found none"
+    # Assert
+    assert actual_state == expected_state, f"Expected {expected_state!r} but got {actual_state!r}"

@@ -2,15 +2,17 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import then
 
 from ..constants import TEST_CLUSTER
 
 
 @then('the cluster is in "MODIFYING" state')
-def cluster_is_modifying_then(lws_session):
-    pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
-    resp = lws_session.client("memorydb").describe_clusters(ClusterName=TEST_CLUSTER)
-    actual_clusters = resp.get("Clusters", [])
-    assert len(actual_clusters) > 0, f"Expected cluster '{TEST_CLUSTER}' to exist but found none"
+def cluster_is_modifying_then(lws_session, world):
+    # Arrange
+    cluster_id = world.get("cluster_id", TEST_CLUSTER)
+    expected_state = "modifying"
+    # Act
+    actual_state = lws_session.get_injected_state("memorydb", "cluster", cluster_id)
+    # Assert
+    assert actual_state == expected_state, f"Expected {expected_state!r} but got {actual_state!r}"

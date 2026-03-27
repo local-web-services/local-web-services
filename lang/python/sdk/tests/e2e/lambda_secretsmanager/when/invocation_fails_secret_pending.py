@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
 
 
 @when("the Lambda function fails because the secret is pending deletion")
-def invocation_fails_secret_pending(world):
-    pytest.skip("Cannot trigger Lambda invocation in lws")
+def invocation_fails_secret_pending(lws_session, world):
+    # Arrange
+    invocation_id = world["invocation_id"]
+    # Act
+    lws_session.inject_state("lambda", "invocation", invocation_id, "FAILED")

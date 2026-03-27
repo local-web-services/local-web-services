@@ -373,6 +373,26 @@ class LwsSession:
             f"http://127.0.0.1:{self._mgmt_port}/_ldk/state/{service}/{resource_type}/{resource_id}"
         )
 
+    def get_injected_state(self, service: str, resource_type: str, resource_id: str) -> str | None:
+        """Return the current injected state for a resource, or None if not set.
+
+        Calls ``GET /_ldk/state/{service}/{resource_type}/{resource_id}``
+        on the management API to read back the previously injected state.
+
+        Args:
+            service: AWS service name (e.g. ``"stepfunctions"``, ``"lambda"``).
+            resource_type: Resource type (e.g. ``"execution"``, ``"invocation"``).
+            resource_id: Resource identifier.
+        """
+        import httpx  # pylint: disable=import-outside-toplevel
+
+        resp = httpx.get(
+            f"http://127.0.0.1:{self._mgmt_port}/_ldk/state/{service}/{resource_type}/{resource_id}"
+        )
+        if resp.status_code == 404:
+            return None
+        return resp.json().get("state")
+
     # ── Resource helpers ──────────────────────────────────────────────────────
 
     def dynamodb(self, table_name: str) -> Any:
