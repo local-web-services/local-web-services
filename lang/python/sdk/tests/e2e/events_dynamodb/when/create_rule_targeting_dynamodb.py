@@ -5,14 +5,21 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..constants import EVENT_PATTERN, TEST_BUS, TEST_RULE
+from ..constants import EVENT_PATTERN, ROLE_ARN, TEST_BUS, TEST_RULE, TEST_TABLE
 
 
 @when("an EventBridge rule is created targeting a DynamoDB table")
 def create_rule_targeting_dynamodb(lws_session, world):
     try:
-        world["result"] = lws_session.client("events").put_rule(
+        events = lws_session.client("events")
+        world["result"] = events.put_rule(
             Name=TEST_RULE, EventBusName=TEST_BUS, EventPattern=EVENT_PATTERN, State="DISABLED"
+        )
+        table_arn = f"arn:aws:dynamodb:us-east-1:000000000000:table/{TEST_TABLE}"
+        events.put_targets(
+            Rule=TEST_RULE,
+            EventBusName=TEST_BUS,
+            Targets=[{"Id": "target-1", "Arn": table_arn, "RoleArn": ROLE_ARN}],
         )
         world["error"] = None
     except (ClientError, Exception) as exc:

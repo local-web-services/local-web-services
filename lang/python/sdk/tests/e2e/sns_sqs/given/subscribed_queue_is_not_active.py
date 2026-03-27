@@ -2,10 +2,20 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
+
+from ..client import SnsSqsTestClient
 
 
 @given('the subscribed queue is not "ACTIVE"')
 def subscribed_queue_is_not_active(lws_session, world):
-    pytest.skip("lws does not enforce queue lifecycle state during SNS publish/deliver")
+    try:
+        SnsSqsTestClient(lws_session)._sqs.delete_queue(
+            QueueUrl=SnsSqsTestClient(lws_session).queue_url()
+        )
+    except Exception:
+        pass
+    lws_session.lifecycle("sqs").create_dwell_ms(5000).apply()
+    SnsSqsTestClient(lws_session).create_queue()
+    world["result"] = None
+    world["error"] = None

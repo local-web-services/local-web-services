@@ -14,9 +14,10 @@ _EXPECTED_ERROR_CODE = "KMSThrottlingException"
 
 
 async def _started_provider() -> SnsProvider:
-    """Return a started SnsProvider with a single test topic."""
+    """Return a started SnsProvider with a topic that has a confirmed subscription."""
     provider = SnsProvider(topics=[TopicConfig(topic_name="my-topic", topic_arn=_TOPIC_ARN)])
     await provider.start()
+    await provider.subscribe(topic_name="my-topic", protocol="lambda", endpoint="my-func")
     return provider
 
 
