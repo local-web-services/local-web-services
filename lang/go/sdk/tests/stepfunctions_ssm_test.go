@@ -38,8 +38,8 @@ func registerStepfunctionsSsmSteps(sc *godog.ScenarioContext, world *World) {
 		}
 		// Also create the cross-service parameter name used by lambda_ssm tests
 		_, _ = world.SSMClient().PutParameter(context.Background(), &ssm.PutParameterInput{
-			Name:  aws.String("/e2e/test/param/1"),
-			Value: aws.String("test-param-value"),
+			Name:  aws.String(lsTestParamName),
+			Value: aws.String(lsTestParamValue),
 			Type:  "String",
 		})
 		return nil
