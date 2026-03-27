@@ -33,7 +33,7 @@ Feature: Elasticache - A Cache Cluster Is Created From A Snapshot
     When a cache cluster is created from a snapshot
     Then the operation is rejected
 
-  @standard @negative @create_cache_cluster_from_snapshot
+  @standard @negative @internal @create_cache_cluster_from_snapshot
   Scenario: a cache cluster is created from a snapshot fails when the target cluster slot is not available
     Given the snapshot exists
     And the snapshot is "AVAILABLE"

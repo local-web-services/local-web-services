@@ -614,3 +614,11 @@ func registerOpenSearchSteps(sc *godog.ScenarioContext, world *World) {
 		return nil
 	})
 }
+
+// createOpenSearchDomain creates any OpenSearch domain by name (ignores already-exists errors).
+func createOpenSearchDomain(world *World, domainName string) error {
+	_, err := world.OpenSearchClient().CreateDomain(context.Background(), &opensearch.CreateDomainInput{
+		DomainName: aws.String(domainName),
+	})
+	return err
+}

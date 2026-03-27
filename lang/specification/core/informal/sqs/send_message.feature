@@ -31,7 +31,7 @@ Feature: Sqs - A Message Is Sent To The Queue
     When a message is sent to the queue
     Then the operation is rejected
 
-  @standard @negative @send_message @capacity
+  @standard @negative @internal @send_message @capacity
   Scenario: a message is sent to the queue fails when the message slot is not available
     Given the queue exists
     And the queue is "ACTIVE"

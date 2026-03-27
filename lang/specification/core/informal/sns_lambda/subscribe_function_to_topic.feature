@@ -50,7 +50,7 @@ Feature: SnsLambda - A Lambda Function Subscribes To An Sns Topic
     When a Lambda function subscribes to an "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @subscribe_function_to_topic @capacity
+  @standard @negative @internal @subscribe_function_to_topic @capacity
   Scenario: a Lambda function subscribes to an "SNS" topic fails when the subscription slot is not available
     Given the topic exists
     And the topic is "ACTIVE"

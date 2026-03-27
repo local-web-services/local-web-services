@@ -142,6 +142,12 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation strin
 	switch operation {
 	case "CreateElasticsearchDomain":
 		name := getString(body, "DomainName")
+		h.store.mu.Lock()
+		if _, exists := h.store.domains[name]; exists {
+			h.store.mu.Unlock()
+			writeErr(w, 409, "ResourceAlreadyExistsException", "Domain already exists: "+name)
+			return
+		}
 		arn := fmt.Sprintf("arn:aws:es:%s:%s:domain/%s", region, accountID, name)
 		domain := &Domain{
 			DomainId:   fmt.Sprintf("%s/%s", accountID, name),
@@ -154,7 +160,6 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation strin
 			Tags:       make(map[string]string),
 			CreatedAt:  time.Now(),
 		}
-		h.store.mu.Lock()
 		h.store.domains[name] = domain
 		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{"DomainStatus": domainDesc(domain)})

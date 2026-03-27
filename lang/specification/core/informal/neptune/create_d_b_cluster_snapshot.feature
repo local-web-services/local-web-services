@@ -36,7 +36,7 @@ Feature: Neptune - A Database Cluster Snapshot Is Created
     When a database cluster snapshot is created
     Then the operation is rejected
 
-  @standard @negative @create_d_b_cluster_snapshot
+  @standard @negative @internal @create_d_b_cluster_snapshot
   Scenario: a database cluster snapshot is created fails when the snapshot slot is not available
     Given the cluster exists
     And the cluster is "AVAILABLE"

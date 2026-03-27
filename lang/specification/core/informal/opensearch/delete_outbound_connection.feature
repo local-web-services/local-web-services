@@ -25,7 +25,7 @@ Feature: Opensearch - An Outbound Cross-Cluster Connection Is Deleted
     When an outbound cross-cluster connection is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_outbound_connection
+  @standard @negative @internal @delete_outbound_connection
   Scenario: an outbound cross-cluster connection is deleted fails when the outbound connection is already "DELETING"
     Given the outbound connection exists
     And the outbound connection is already "DELETING"

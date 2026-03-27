@@ -39,7 +39,7 @@ Feature: S3apiEvents - An Object Is Uploaded But Event Delivery Fails Because Th
     When an object is uploaded but event delivery fails because the bus has been deleted
     Then the operation is rejected
 
-  @standard @negative @put_object_event_fails @capacity
+  @standard @negative @internal @put_object_event_fails @capacity
   Scenario: an object is uploaded but event delivery fails because the bus has been deleted fails when no object slot is available
     Given the bucket is "ACTIVE"
     And the bucket has an EventBridge notification configured

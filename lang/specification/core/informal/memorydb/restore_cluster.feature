@@ -33,7 +33,7 @@ Feature: Memorydb - A Cluster Is Restored From A Snapshot
     When a cluster is restored from a snapshot
     Then the operation is rejected
 
-  @standard @negative @restore_cluster
+  @standard @negative @internal @restore_cluster
   Scenario: a cluster is restored from a snapshot fails when the target cluster slot is not available
     Given the snapshot exists
     And the snapshot is "AVAILABLE"

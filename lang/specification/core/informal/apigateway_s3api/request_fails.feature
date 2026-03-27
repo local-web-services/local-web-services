@@ -39,7 +39,7 @@ Feature: ApigatewayS3api - A Request Fails Because The S3 Bucket Has Been Delete
     When a request fails because the S3 bucket has been deleted
     Then the operation is rejected
 
-  @standard @negative @request_fails @capacity
+  @standard @negative @internal @request_fails @capacity
   Scenario: a request fails because the S3 bucket has been deleted fails when no request slot is available
     Given the "API" is "ACTIVE"
     And the "API" has an S3 integration configured

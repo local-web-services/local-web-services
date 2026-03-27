@@ -27,7 +27,7 @@ Feature: Apigateway - A Rest Api Is Created With A Root Resource
     When a "REST" "API" is created with a root resource
     Then the operation is rejected
 
-  @standard @negative @create_rest_api @capacity
+  @standard @negative @internal @create_rest_api @capacity
   Scenario: a "REST" "API" is created with a root resource fails when no resource slot is available
     Given the "API" does not already exist
     And no resource slot is available

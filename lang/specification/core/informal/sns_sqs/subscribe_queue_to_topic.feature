@@ -50,7 +50,7 @@ Feature: SnsSqs - An Sqs Queue Subscribes To An Sns Topic
     When an "SQS" queue subscribes to an "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @subscribe_queue_to_topic @capacity
+  @standard @negative @internal @subscribe_queue_to_topic @capacity
   Scenario: an "SQS" queue subscribes to an "SNS" topic fails when the subscription slot is not available
     Given the topic exists
     And the topic is "ACTIVE"

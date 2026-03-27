@@ -32,7 +32,7 @@ Feature: ApigatewayCognito - Cognito Issues A Jwt Token For A Confirmed User
     When Cognito issues a "JWT" token for a confirmed user
     Then the operation is rejected
 
-  @standard @negative @issue_token @capacity
+  @standard @negative @internal @issue_token @capacity
   Scenario: Cognito issues a "JWT" token for a confirmed user fails when no token slot is available
     Given the user exists
     And the user is "CONFIRMED"

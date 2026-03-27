@@ -30,7 +30,7 @@ Feature: LambdaStepfunctions - The Lambda Function Is Invoked
     When the Lambda function is invoked
     Then the operation is rejected
 
-  @standard @negative @invoke_function @capacity
+  @standard @negative @internal @invoke_function @capacity
   Scenario: the Lambda function is invoked fails when no invocation slot is available
     Given the function exists
     And the function is "ACTIVE"

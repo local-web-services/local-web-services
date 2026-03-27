@@ -50,7 +50,7 @@ Feature: S3apiLambda - An Object Is Put Into The Bucket And Asynchronously Invok
     When an object is put into the bucket and asynchronously invokes the configured Lambda function
     Then the operation is rejected
 
-  @standard @negative @put_object_and_notify @capacity
+  @standard @negative @internal @put_object_and_notify @capacity
   Scenario: an object is put into the bucket and asynchronously invokes the configured Lambda function fails when no object slot is available
     Given the bucket exists
     And the bucket is "ACTIVE"
@@ -60,7 +60,7 @@ Feature: S3apiLambda - An Object Is Put Into The Bucket And Asynchronously Invok
     When an object is put into the bucket and asynchronously invokes the configured Lambda function
     Then the operation is rejected
 
-  @standard @negative @put_object_and_notify @capacity
+  @standard @negative @internal @put_object_and_notify @capacity
   Scenario: an object is put into the bucket and asynchronously invokes the configured Lambda function fails when no invocation slot is available
     Given the bucket exists
     And the bucket is "ACTIVE"

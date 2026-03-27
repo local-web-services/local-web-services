@@ -40,7 +40,7 @@ Feature: StepfunctionsEvents - An Execution Starts And Step Functions Delivers A
     When an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus
     Then the operation is rejected
 
-  @standard @negative @start_execution_event_delivered @capacity
+  @standard @negative @internal @start_execution_event_delivered @capacity
   Scenario: an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus fails when no execution slot is available
     Given the state machine exists and is "ACTIVE"
     And the state machine has an EventBridge bus configured
@@ -49,7 +49,7 @@ Feature: StepfunctionsEvents - An Execution Starts And Step Functions Delivers A
     When an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus
     Then the operation is rejected
 
-  @standard @negative @start_execution_event_delivered @capacity
+  @standard @negative @internal @start_execution_event_delivered @capacity
   Scenario: an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus fails when no event slot is available
     Given the state machine exists and is "ACTIVE"
     And the state machine has an EventBridge bus configured

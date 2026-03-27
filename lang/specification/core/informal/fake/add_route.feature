@@ -30,7 +30,7 @@ Feature: Fake - A Route Is Added To A Fake Server
     When a route is added to a fake server
     Then the operation is rejected
 
-  @standard @negative @add_route
+  @standard @negative @internal @add_route
   Scenario: a route is added to a fake server fails when no route slot is available
     Given the server exists
     And the server is "ACTIVE"

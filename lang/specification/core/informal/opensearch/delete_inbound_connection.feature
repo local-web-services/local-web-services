@@ -25,14 +25,14 @@ Feature: Opensearch - An Inbound Cross-Cluster Connection Is Deleted
     When an inbound cross-cluster connection is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_inbound_connection
+  @standard @negative @internal @delete_inbound_connection
   Scenario: an inbound cross-cluster connection is deleted fails when the inbound connection is already "DELETING"
     Given the inbound connection exists
     And the inbound connection is already "DELETING"
     When an inbound cross-cluster connection is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_inbound_connection
+  @standard @negative @internal @delete_inbound_connection
   Scenario: an inbound cross-cluster connection is deleted fails when the inbound connection is already "DELETED"
     Given the inbound connection exists
     And the inbound connection is not already "DELETING"

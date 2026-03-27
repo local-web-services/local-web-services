@@ -96,6 +96,8 @@ func registerS3APISteps(sc *godog.ScenarioContext, world *World) {
 		}
 		// Also create the cross-service bucket name used by s3api_lambda, lambda_s3api tests
 		_ = createBucket("e2e-test-bucket-1")
+		// Also create the S3Tables table bucket (idempotent for s3tables scenarios)
+		_ = s3tablesCreateBucket(world)
 		return nil
 	})
 

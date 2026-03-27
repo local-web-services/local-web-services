@@ -39,7 +39,7 @@ Feature: LambdaS3api - The Lambda Function Writes An Object To The S3 Bucket Dur
     When the Lambda function writes an object to the S3 bucket during invocation
     Then the operation is rejected
 
-  @standard @negative @put_object @capacity
+  @standard @negative @internal @put_object @capacity
   Scenario: the Lambda function writes an object to the S3 bucket during invocation fails when no object slot is available
     Given an invocation is "IN_PROGRESS"
     And the bucket exists

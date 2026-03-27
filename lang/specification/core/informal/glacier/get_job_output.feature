@@ -33,7 +33,7 @@ Feature: Glacier - The Output Of A Succeeded Job Is Retrieved
     When the output of a succeeded job is retrieved
     Then the operation is rejected
 
-  @standard @negative @get_job_output
+  @standard @negative @internal @get_job_output
   Scenario: the output of a succeeded job is retrieved fails when the job output is not available
     Given the job exists
     And the job is Succeeded

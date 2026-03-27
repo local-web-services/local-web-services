@@ -22,7 +22,7 @@ Feature: Apigateway - A Child Resource Is Created Under An Existing Resource
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @create_resource
+  @standard @negative @internal @create_resource
   Scenario: a child resource is created under an existing resource fails when the resource slot is already allocated
     Given the resource slot is already allocated
     When a child resource is created under an existing resource

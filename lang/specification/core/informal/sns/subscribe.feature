@@ -32,7 +32,7 @@ Feature: Sns - An Endpoint Subscribes To A Topic
     When an endpoint subscribes to a topic
     Then the operation is rejected
 
-  @standard @negative @subscribe @capacity
+  @standard @negative @internal @subscribe @capacity
   Scenario: an endpoint subscribes to a topic fails when the subscription slot is not available
     Given the topic exists
     And the topic is "ACTIVE"

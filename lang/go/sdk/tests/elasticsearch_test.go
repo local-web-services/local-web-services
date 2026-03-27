@@ -70,7 +70,15 @@ func registerElasticsearchServiceSteps(sc *godog.ScenarioContext, world *World) 
 
 	sc.Given(`^the domain already exists$`, func() error {
 		// Arrange / Act: create the domain so it already exists.
-		return esCreateDomain(world)
+		// Also pre-create all cross-service domain variants (idempotent).
+		_ = esCreateDomain(world)
+		_ = createLambdaOpenSearchDomain(world)
+		_ = lambdaElasticsearchCreateDomain(world)
+		// Create sfn and opensearch main variants inline.
+		_ = createOpenSearchDomain(world, "test-sf-opensearch-domain-1")
+		_ = createOpenSearchDomain(world, "test-opensearch-domain-1")
+		_ = createESServiceDomain(world, "test-sf-elasticsearch-domain-1")
+		return nil
 	})
 
 	sc.Given(`^the domain exists$`, func() error {
@@ -423,4 +431,12 @@ func registerElasticsearchServiceSteps(sc *godog.ScenarioContext, world *World) 
 		// No-op invariant: trivially satisfied in an isolated test context.
 		return nil
 	})
+}
+
+// createESServiceDomain creates any Elasticsearch domain by name (ignores already-exists errors).
+func createESServiceDomain(world *World, domainName string) error {
+	_, err := world.ElasticsearchClient().CreateElasticsearchDomain(context.Background(), &elasticsearchservice.CreateElasticsearchDomainInput{
+		DomainName: aws.String(domainName),
+	})
+	return err
 }

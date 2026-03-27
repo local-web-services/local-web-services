@@ -39,7 +39,7 @@ Feature: StepfunctionsEvents - An Execution Starts But The Started Event Deliver
     When an execution starts but the "STARTED" event delivery fails because the bus is deleted
     Then the operation is rejected
 
-  @standard @negative @start_execution_event_fails @capacity
+  @standard @negative @internal @start_execution_event_fails @capacity
   Scenario: an execution starts but the "STARTED" event delivery fails because the bus is deleted fails when no execution slot is available
     Given the state machine exists and is "ACTIVE"
     And the state machine has an EventBridge bus configured

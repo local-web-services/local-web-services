@@ -50,7 +50,7 @@ Feature: SnsSqs - A Message Is Published To An Sns Topic And Delivered To The Su
     When a message is published to an "SNS" topic and delivered to the subscribed "SQS" queue
     Then the operation is rejected
 
-  @standard @negative @publish_and_deliver @capacity
+  @standard @negative @internal @publish_and_deliver @capacity
   Scenario: a message is published to an "SNS" topic and delivered to the subscribed "SQS" queue fails when no message slot is available
     Given the topic exists
     And the topic is "ACTIVE"

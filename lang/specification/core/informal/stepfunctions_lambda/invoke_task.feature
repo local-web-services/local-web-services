@@ -40,7 +40,7 @@ Feature: StepfunctionsLambda - A Running Execution Reaches The Lambda Task State
     When a running execution reaches the Lambda task state and invokes the function
     Then the operation is rejected
 
-  @standard @negative @invoke_task @capacity
+  @standard @negative @internal @invoke_task @capacity
   Scenario: a running execution reaches the Lambda task state and invokes the function fails when no invocation slot is available
     Given an execution is "RUNNING"
     And the execution's state machine has a configured Lambda task

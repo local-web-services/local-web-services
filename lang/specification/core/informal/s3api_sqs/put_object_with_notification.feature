@@ -40,7 +40,7 @@ Feature: S3apiSqs - An Object Is Uploaded To The Bucket And S3 Delivers A Notifi
     When an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
     Then the operation is rejected
 
-  @standard @negative @put_object_with_notification @capacity
+  @standard @negative @internal @put_object_with_notification @capacity
   Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue fails when no object slot is available
     Given the bucket is "ACTIVE"
     And the bucket has a notification configuration
@@ -49,7 +49,7 @@ Feature: S3apiSqs - An Object Is Uploaded To The Bucket And S3 Delivers A Notifi
     When an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
     Then the operation is rejected
 
-  @standard @negative @put_object_with_notification @capacity
+  @standard @negative @internal @put_object_with_notification @capacity
   Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue fails when no message slot is available
     Given the bucket is "ACTIVE"
     And the bucket has a notification configuration

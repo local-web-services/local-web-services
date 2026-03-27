@@ -39,7 +39,7 @@ Feature: LambdaElasticache - The Lambda Function Writes A Value To The Elasticac
     When the Lambda function writes a value to the ElastiCache cluster during invocation
     Then the operation is rejected
 
-  @standard @negative @cache_write @capacity
+  @standard @negative @internal @cache_write @capacity
   Scenario: the Lambda function writes a value to the ElastiCache cluster during invocation fails when no key slot is available
     Given an invocation is "IN_PROGRESS"
     And the cluster exists

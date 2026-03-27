@@ -85,14 +85,14 @@ func decodedPath(r *http.Request) string {
 //
 // The AWS S3 Tables REST API uses these paths:
 //
-//	POST   /buckets                                       → CreateTableBucket
+//	PUT    /buckets                                       → CreateTableBucket
 //	GET    /buckets                                       → ListTableBuckets
 //	DELETE /buckets/{tableBucketARN}                      → DeleteTableBucket
 //	GET    /buckets/{tableBucketARN}                      → GetTableBucket
-//	POST   /namespaces/{tableBucketARN}                   → CreateNamespace
+//	PUT    /namespaces/{tableBucketARN}                   → CreateNamespace
 //	GET    /namespaces/{tableBucketARN}                   → ListNamespaces
 //	DELETE /namespaces/{tableBucketARN}/{namespace}       → DeleteNamespace
-//	POST   /tables/{tableBucketARN}/{namespace}           → CreateTable
+//	PUT    /tables/{tableBucketARN}/{namespace}           → CreateTable
 //	GET    /tables/{tableBucketARN}/{namespace}           → ListTables
 //	DELETE /tables/{tableBucketARN}/{namespace}/{name}    → DeleteTable
 //	GET    /tables/{tableBucketARN}/{namespace}/{name}    → GetTable
@@ -117,7 +117,7 @@ func (h *Handler) routeOperation(method, path string) string {
 	case "buckets":
 		if rest == "" {
 			switch method {
-			case http.MethodPost:
+			case http.MethodPut, http.MethodPost:
 				return "CreateTableBucket"
 			case http.MethodGet:
 				return "ListTableBuckets"
@@ -149,7 +149,7 @@ func (h *Handler) routeOperation(method, path string) string {
 		if len(parts) == 2 {
 			// Just bucket ARN (the ARN "bucket/name" gives 2 parts)
 			switch method {
-			case http.MethodPost:
+			case http.MethodPut, http.MethodPost:
 				return "CreateNamespace"
 			case http.MethodGet:
 				return "ListNamespaces"
@@ -173,7 +173,7 @@ func (h *Handler) routeOperation(method, path string) string {
 			}
 		} else if len(parts) == 3 {
 			// /tables/{tableBucketARN}/{namespace} → CreateTable
-			if method == http.MethodPost {
+			if method == http.MethodPut || method == http.MethodPost {
 				return "CreateTable"
 			}
 		} else if len(parts) == 4 {

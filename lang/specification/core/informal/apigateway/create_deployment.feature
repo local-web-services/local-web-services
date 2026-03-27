@@ -25,7 +25,7 @@ Feature: Apigateway - An Api Deployment Is Created
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @create_deployment
+  @standard @negative @internal @create_deployment
   Scenario: an "API" deployment is created fails when the deployment slot is already in use
     Given the deployment slot is already in use
     When an "API" deployment is created

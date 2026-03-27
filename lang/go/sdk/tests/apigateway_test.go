@@ -327,9 +327,15 @@ func registerAPIGatewaySteps(sc *godog.ScenarioContext, world *World) {
 	// ── Given: resource state ─────────────────────────────────────────────────────
 
 	sc.Given(`^the resource exists$`, func() error {
-		// Arrange: create an API which provides a root resource
-		// Act
-		return createAPIWithRoot()
+		// Arrange: create an API which provides a root resource (for apigateway scenarios)
+		// and an ElastiCache cluster (for elasticache tag scenarios which share this step text)
+		if err := createAPIWithRoot(); err != nil {
+			return err
+		}
+		// Also create the ElastiCache cluster so elasticache add/remove tag scenarios can find it.
+		// If creation fails (e.g. cluster already exists) we ignore the error — the cluster exists.
+		_ = elasticacheCreateCluster(world) //nolint:errcheck
+		return nil
 	})
 
 	sc.Given(`^the resource does not exist$`, func() error {

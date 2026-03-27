@@ -42,7 +42,7 @@ Feature: Stepfunctions - A Synchronous Execution Is Started On An Express State 
     When a synchronous execution is started on an express state machine
     Then the operation is rejected
 
-  @standard @negative @start_sync_execution @capacity
+  @standard @negative @internal @start_sync_execution @capacity
   Scenario: a synchronous execution is started on an express state machine fails when the execution slot is not available
     Given the state machine exists
     And the state machine is "ACTIVE"
