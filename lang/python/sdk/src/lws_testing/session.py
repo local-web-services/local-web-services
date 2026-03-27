@@ -31,8 +31,8 @@ from lws_testing._spec import (
     StateMachine,
 )
 
-# Union type for all typed resource specs accepted by LwsSession.
 ResourceSpec = DynamoTable | SqsQueue | S3Bucket | SnsTopic | SsmParameter | Secret | StateMachine
+
 
 
 class LwsSession:
@@ -432,3 +432,24 @@ class LwsSession:
         if self._log_handler is None:
             return []
         return self._log_handler.backlog()
+
+    # ── Lambda helpers ────────────────────────────────────────────────────────
+
+    def get_lambda_invocations(self, function_name: str) -> list[dict[str, Any]]:
+        """Return the list of invocation records for a Lambda function.
+
+        Calls ``GET /lws/lambda/invocations/{function_name}`` on the Lambda
+        management API and returns the ``Invocations`` list.
+
+        Args:
+            function_name: The Lambda function name to query.
+        """
+        import httpx  # pylint: disable=import-outside-toplevel
+
+        port = self._ports.get("lambda")
+        if port is None:
+            return []
+        resp = httpx.get(f"http://127.0.0.1:{port}/lws/lambda/invocations/{function_name}")
+        if resp.status_code != 200:
+            return []
+        return resp.json().get("Invocations", [])

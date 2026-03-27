@@ -113,6 +113,7 @@ class CognitoProvider(Provider, CognitoGroupOpsMixin, _CognitoTriggersMixin):
         attributes: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         """Register a new user. Returns sign-up result dict."""
+        await self._invoke_pre_signup(username, attributes or {})
         sub = await self._store.sign_up(username, password, attributes)
         result: dict[str, Any] = {
             "UserConfirmed": self._config.auto_confirm,
@@ -349,6 +350,9 @@ class CognitoProvider(Provider, CognitoGroupOpsMixin, _CognitoTriggersMixin):
         """Update a user pool, optionally wiring Lambda trigger function names."""
         self._validate_user_pool_id(user_pool_id)
         if lambda_config:
+            pre_signup = lambda_config.get("PreSignUp")
+            if pre_signup is not None:
+                self._config.pre_signup_trigger = pre_signup or None
             pre_auth = lambda_config.get("PreAuthentication")
             if pre_auth is not None:
                 self._config.pre_authentication_trigger = pre_auth or None

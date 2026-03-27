@@ -10,6 +10,9 @@ from lws.providers.cognito._cognito_trigger_events import (
 from lws.providers.cognito._cognito_trigger_events import (
     build_pre_auth_event as _build_pre_auth_event,
 )
+from lws.providers.cognito._cognito_trigger_events import (
+    build_pre_signup_event as _build_pre_signup_event,
+)
 from lws.providers.cognito.user_store import NotAuthorizedException
 
 if TYPE_CHECKING:
@@ -27,6 +30,20 @@ class _CognitoTriggersMixin:
 
     _config: UserPoolConfig
     _triggers: dict[str, TriggerFunc]
+
+    async def _invoke_pre_signup(self, username: str, attributes: dict[str, str]) -> None:
+        """Invoke the pre-signup Lambda trigger if configured."""
+        trigger_name = self._config.pre_signup_trigger
+        if not trigger_name or trigger_name not in self._triggers:
+            return
+        event = _build_pre_signup_event(
+            username=username,
+            attributes=attributes,
+            user_pool_id=self._config.user_pool_id,
+            client_id=self._config.client_id or "local-client-id",
+        )
+        trigger_fn = self._triggers[trigger_name]
+        await trigger_fn(event)
 
     async def _invoke_pre_authentication(self, username: str) -> None:
         """Invoke the pre-authentication Lambda trigger if configured."""

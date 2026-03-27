@@ -1,12 +1,4 @@
-"""Lambda management HTTP routes.
-
-Implements the Lambda REST management API that the AWS SDK and Terraform
-use to create/read/delete Lambda functions and invoke them.
-
-Also provides ``LambdaRegistry``, a shared registry of function name ->
-``ICompute`` instances used by both this module and the API Gateway V2
-proxy to invoke Lambda functions.
-"""
+"""Lambda management HTTP routes."""
 
 from __future__ import annotations
 
@@ -29,6 +21,7 @@ from lws.providers.lambda_runtime._lambda_esm_ops import (
     handle_delete_event_source_mapping,
     handle_get_event_source_mapping,
     handle_list_event_source_mappings,
+    handle_update_event_source_mapping,
 )
 from lws.providers.lambda_runtime._lambda_function_ops import (
     _json_response,
@@ -61,14 +54,6 @@ from lws.providers.lambda_runtime._lambda_url_ops import (
 from lws.providers.lambda_runtime.event_source_manager import EventSourceManager
 
 _logger = get_logger("ldk.lambda-mgmt")
-
-_ACCOUNT_ID = "000000000000"
-_REGION = "us-east-1"
-
-
-# ---------------------------------------------------------------------------
-# Router
-# ---------------------------------------------------------------------------
 
 
 class LambdaManagementRouter:
@@ -162,6 +147,11 @@ class LambdaManagementRouter:
         )
         r.add_api_route(
             "/2015-03-31/event-source-mappings/{esm_uuid}",
+            self._update_event_source_mapping,
+            methods=["PUT"],
+        )
+        r.add_api_route(
+            "/2015-03-31/event-source-mappings/{esm_uuid}",
             self._delete_event_source_mapping,
             methods=["DELETE"],
         )
@@ -214,6 +204,11 @@ class LambdaManagementRouter:
         r.add_api_route(
             "/lws/invocations/{invocation_id}",
             self._get_invocation_state,
+            methods=["GET"],
+        )
+        r.add_api_route(
+            "/lws/lambda/invocations/{function_name}",
+            self._get_function_invocations,
             methods=["GET"],
         )
         r.add_api_route(
@@ -295,7 +290,7 @@ class LambdaManagementRouter:
             if async_capacity_err is not None:
                 return async_capacity_err
             invocation_id = str(uuid.uuid4())
-            self._state.record_invocation(invocation_id)
+            self._state.record_invocation(invocation_id, function_name)
             asyncio.create_task(
                 run_async_invocation(
                     compute, body, context, invocation_id, self._state, function_name
@@ -306,7 +301,10 @@ class LambdaManagementRouter:
                 headers={"X-Amzn-RequestId": invocation_id},
             )
 
+        invocation_id = str(uuid.uuid4())
+        self._state.record_invocation(invocation_id, function_name)
         result = await compute.invoke(body, context)
+        self._state.complete_invocation(invocation_id, success=not result.error)
 
         if result.error:
             return _json_response({"errorMessage": result.error}, 200)
@@ -362,6 +360,11 @@ class LambdaManagementRouter:
         if self._event_source_manager is not None:
             await self._event_source_manager.deactivate(esm_uuid)
         return response
+
+    async def _update_event_source_mapping(self, esm_uuid: str, request: Request) -> Response:
+        return await handle_update_event_source_mapping(
+            esm_uuid, request, self._state.event_source_mappings
+        )
 
     async def _list_event_source_mappings(self, _request: Request) -> Response:
         return await handle_list_event_source_mappings(self._state.event_source_mappings)
@@ -443,6 +446,10 @@ class LambdaManagementRouter:
             return _json_response({"Message": f"Invocation not found: {invocation_id}"}, 404)
         return _json_response({"InvocationId": invocation_id, "State": state})
 
+    async def _get_function_invocations(self, function_name: str) -> Response:
+        records = self._state.get_function_invocations(function_name)
+        return _json_response({"FunctionName": function_name, "Invocations": records})
+
     async def _stub_handler(self, request: Request, path: str) -> Response:
         _logger.warning("Unknown Lambda path: %s %s", request.method, path)
         return _json_response(
@@ -455,11 +462,6 @@ class LambdaManagementRouter:
     def _create_compute(self, func_config: dict[str, Any]) -> Any:
         """Create an ICompute provider from the function configuration."""
         return create_compute(func_config, self._project_dir, self._sdk_env)
-
-
-# ---------------------------------------------------------------------------
-# App factory
-# ---------------------------------------------------------------------------
 
 
 def create_lambda_management_app(

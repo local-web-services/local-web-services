@@ -53,3 +53,27 @@ def build_post_confirmation_event(
         },
         "response": {},
     }
+
+
+def build_pre_signup_event(
+    username: str,
+    attributes: dict[str, str],
+    user_pool_id: str,
+    client_id: str,
+) -> dict[str, Any]:
+    """Build a Cognito pre-signup trigger event."""
+    return {
+        "version": "1",
+        "triggerSource": "PreSignUp_SignUp",
+        "region": "us-east-1",
+        "userPoolId": user_pool_id,
+        "callerContext": {
+            "awsSdkVersion": "ldk-local",
+            "clientId": client_id,
+        },
+        "userName": username,
+        "request": {
+            "userAttributes": dict(attributes),
+        },
+        "response": {},
+    }
