@@ -521,15 +521,38 @@ jobs:
         working-directory: lang/typescript/sdk
         run: make architecture-test
 
+  typescript-sdk-e2e-suites:
+    needs: [changes]
+    if: |
+      always() && !cancelled() && needs.changes.outputs.typescript-sdk == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      suites: ${{ steps.list.outputs.suites }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: list
+        run: |
+          suites=$(
+            { echo "sdk"; ls lang/specification/core/informal/; } |
+              sort -u |
+              jq -R . | jq -sc .
+          )
+          echo "suites=$suites" >> $GITHUB_OUTPUT
+
   typescript-sdk-e2e-test:
-    needs: [changes, typescript-core-lint, typescript-core-integration-test, typescript-core-architecture-test]
+    needs: [changes, typescript-sdk-e2e-suites, typescript-core-lint, typescript-core-integration-test, typescript-core-architecture-test]
     if: |
       always() &&
       !cancelled() &&
       needs.changes.outputs.typescript-sdk == 'true' &&
+      (needs.typescript-sdk-e2e-suites.result == 'success' || needs.typescript-sdk-e2e-suites.result == 'skipped') &&
       (needs.typescript-core-lint.result == 'success' || needs.typescript-core-lint.result == 'skipped') &&
       (needs.typescript-core-integration-test.result == 'success' || needs.typescript-core-integration-test.result == 'skipped') &&
       (needs.typescript-core-architecture-test.result == 'success' || needs.typescript-core-architecture-test.result == 'skipped')
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: ${{ fromJSON(needs.typescript-sdk-e2e-suites.outputs.suites) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -545,9 +568,11 @@ jobs:
       - name: Install sdk
         working-directory: lang/typescript/sdk
         run: npm ci
-      - name: E2E test
+      - name: Run e2e suite
+        env:
+          SUITE: ${{ matrix.suite }}
         working-directory: lang/typescript/sdk
-        run: make e2e-test
+        run: make e2e-test-suite SUITE="$SUITE"
 
   # ── TypeScript Example ──────────────────────────────────────────────────────
   typescript-example-lint:

@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help install unit-test integration-test e2e-test architecture-test test lint format format-check complexity cpd type-check check
+.PHONY: help install unit-test integration-test e2e-test e2e-test-suite architecture-test test lint format format-check complexity cpd type-check check
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
@@ -16,6 +16,21 @@ integration-test: ## Run integration tests (none in sdk — skip)
 
 e2e-test: ## Run e2e tests (Cucumber BDD)
 	npm run test:e2e
+
+e2e-test-suite: ## Run a single e2e suite: make e2e-test-suite SUITE=<service> or SUITE=sdk
+	@if [ "$(SUITE)" = "sdk" ]; then \
+		npx cucumber-js \
+			--require-module ts-node/register \
+			--require 'tests/support/world.ts' \
+			--require 'tests/steps/**/*.ts' \
+			'../../../lang/specification/sdk/features/**/*.feature'; \
+	else \
+		npx cucumber-js \
+			--require-module ts-node/register \
+			--require 'tests/support/world.ts' \
+			--require 'tests/steps/**/*.ts' \
+			"../../../lang/specification/core/informal/$(SUITE)/**/*.feature"; \
+	fi
 
 architecture-test: ## Run architecture constraint tests
 	npm run test:architecture
