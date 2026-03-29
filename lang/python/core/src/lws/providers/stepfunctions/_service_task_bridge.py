@@ -72,6 +72,7 @@ class ServiceTaskBridge:
         params = payload if isinstance(payload, dict) else {}
         table_name = params.get("TableName", "")
         item = params.get("Item", {})
+        self._check_capacity(self._services.get("dynamodb_capacity"), "DynamoDB")
         await self._check_dynamodb_table_exists(dynamodb, table_name)
         await dynamodb.put_item(table_name, item)
         return {}
@@ -84,6 +85,7 @@ class ServiceTaskBridge:
         params = payload if isinstance(payload, dict) else {}
         table_name = params.get("TableName", "")
         key = params.get("Key", {})
+        self._check_capacity(self._services.get("dynamodb_capacity"), "DynamoDB")
         await self._check_dynamodb_table_exists(dynamodb, table_name)
         item = await dynamodb.get_item(table_name, key)
         if item is None:
@@ -100,6 +102,7 @@ class ServiceTaskBridge:
         queue_name = (
             queue_url_or_name.rsplit("/", 1)[-1] if "/" in queue_url_or_name else queue_url_or_name
         )
+        self._check_capacity(self._services.get("sqs_capacity"), "SQS")
         self._check_sqs_queue_exists(sqs, queue_name)
         message_body = params.get("MessageBody", "")
         message_id = await sqs.send_message(queue_name=queue_name, message_body=message_body)
@@ -113,6 +116,7 @@ class ServiceTaskBridge:
         params = payload if isinstance(payload, dict) else {}
         topic_arn = params.get("TopicArn", "")
         topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
+        self._check_capacity(self._services.get("sns_capacity"), "SNS")
         self._check_sns_topic_exists(sns, topic_name)
         self._check_sns_topic_lifecycle(topic_name, self._services.get("sns_tracker"))
         message = params.get("Message", "")
@@ -127,6 +131,7 @@ class ServiceTaskBridge:
         params = payload if isinstance(payload, dict) else {}
         bucket = params.get("Bucket", "")
         key = params.get("Key", "")
+        self._check_capacity(self._services.get("s3_capacity"), "S3")
         await self._check_s3_bucket_exists(s3, bucket)
         body = await s3.get_object(bucket, key)
         if body is None:
@@ -141,17 +146,25 @@ class ServiceTaskBridge:
         params = payload if isinstance(payload, dict) else {}
         bucket = params.get("Bucket", "")
         key = params.get("Key", "")
+        self._check_capacity(self._services.get("s3_capacity"), "S3")
         await self._check_s3_bucket_exists(s3, bucket)
         self._check_s3_bucket_lifecycle(bucket, self._services.get("s3_tracker"))
-        self._check_s3_capacity(self._services.get("s3_capacity"))
         body_raw = params.get("Body", "")
         body = body_raw.encode("utf-8") if isinstance(body_raw, str) else body_raw
         await s3.put_object(bucket, key, body)
         return {}
 
     # ------------------------------------------------------------------
-    # Pre-flight existence checks
+    # Pre-flight capacity and existence checks
     # ------------------------------------------------------------------
+
+    @staticmethod
+    def _check_capacity(capacity: Any, service_name: str) -> None:
+        """Raise RuntimeError if the given service capacity is exhausted."""
+        if capacity is None:
+            return
+        if capacity.is_exhausted:
+            raise RuntimeError(f"{service_name} capacity is exhausted")
 
     @staticmethod
     def _check_sqs_queue_exists(sqs: Any, queue_name: str) -> None:
@@ -306,6 +319,7 @@ class ServiceTaskBridge:
         secretsmanager = self._services.get("secretsmanager")
         if secretsmanager is None:
             raise RuntimeError("No SecretsManager provider registered for service task bridge")
+        self._check_capacity(self._services.get("secretsmanager_capacity"), "SecretsManager")
         params = payload if isinstance(payload, dict) else {}
         secret_id = params.get("SecretId", "")
         return secretsmanager.get_secret_value(secret_id)
@@ -315,6 +329,7 @@ class ServiceTaskBridge:
         ssm = self._services.get("ssm")
         if ssm is None:
             raise RuntimeError("No SSM provider registered for service task bridge")
+        self._check_capacity(self._services.get("ssm_capacity"), "SSM")
         params = payload if isinstance(payload, dict) else {}
         name = params.get("Name", "")
         return ssm.get_parameter(name)
@@ -324,6 +339,7 @@ class ServiceTaskBridge:
         eventbridge = self._services.get("eventbridge")
         if eventbridge is None:
             raise RuntimeError("No EventBridge provider registered for service task bridge")
+        self._check_capacity(self._services.get("events_capacity"), "EventBridge")
         params = payload if isinstance(payload, dict) else {}
         entries = params.get("Entries", [])
         results = await eventbridge.put_events(entries)

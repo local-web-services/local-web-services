@@ -172,6 +172,12 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 	switch operation {
 	case "CreateCluster":
 		name := getString(body, "ClusterName")
+		h.store.mu.Lock()
+		if existing, exists := h.store.clusters[name]; exists && existing.Status != "deleting" {
+			h.store.mu.Unlock()
+			writeErr(w, "ClusterAlreadyExistsFault", "Cluster already exists: "+name)
+			return
+		}
 		cluster := &Cluster{
 			Name:        name,
 			Status:      "available",
@@ -180,7 +186,6 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			Description: getString(body, "Description"),
 			CreatedAt:   time.Now(),
 		}
-		h.store.mu.Lock()
 		h.store.clusters[name] = cluster
 		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{"Cluster": clusterDesc(cluster)})
@@ -189,12 +194,13 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		name := getString(body, "ClusterName")
 		h.store.mu.Lock()
 		cluster := h.store.clusters[name]
-		delete(h.store.clusters, name)
-		h.store.mu.Unlock()
 		if cluster == nil {
+			h.store.mu.Unlock()
 			writeErr(w, "ClusterNotFoundFault", "Cluster not found: "+name)
 			return
 		}
+		cluster.Status = "deleting"
+		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{"Cluster": clusterDesc(cluster)})
 
 	case "DescribeClusters":
@@ -214,13 +220,18 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 
 	case "CreateUser":
 		name := getString(body, "UserName")
+		h.store.mu.Lock()
+		if existing, exists := h.store.users[name]; exists && existing.Status != "deleting" {
+			h.store.mu.Unlock()
+			writeErr(w, "UserAlreadyExistsFault", "User already exists: "+name)
+			return
+		}
 		user := &User{
 			Name:         name,
-			Status:       "active",
+			Status:       "creating",
 			AccessString: getString(body, "AccessString"),
 			CreatedAt:    time.Now(),
 		}
-		h.store.mu.Lock()
 		h.store.users[name] = user
 		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{"User": userDesc(user)})
@@ -229,12 +240,13 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		name := getString(body, "UserName")
 		h.store.mu.Lock()
 		user := h.store.users[name]
-		delete(h.store.users, name)
-		h.store.mu.Unlock()
 		if user == nil {
+			h.store.mu.Unlock()
 			writeErr(w, "UserNotFoundFault", "User not found: "+name)
 			return
 		}
+		user.Status = "deleting"
+		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{"User": userDesc(user)})
 
 	case "DescribeUsers":
@@ -254,13 +266,18 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 
 	case "CreateACL":
 		name := getString(body, "ACLName")
+		h.store.mu.Lock()
+		if existing, exists := h.store.acls[name]; exists && existing.Status != "deleting" {
+			h.store.mu.Unlock()
+			writeErr(w, "ACLAlreadyExistsFault", "ACL already exists: "+name)
+			return
+		}
 		acl := &ACL{
 			Name:      name,
-			Status:    "active",
+			Status:    "creating",
 			UserNames: []string{},
 			CreatedAt: time.Now(),
 		}
-		h.store.mu.Lock()
 		h.store.acls[name] = acl
 		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{"ACL": aclDesc(acl)})
@@ -269,12 +286,13 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		name := getString(body, "ACLName")
 		h.store.mu.Lock()
 		acl := h.store.acls[name]
-		delete(h.store.acls, name)
-		h.store.mu.Unlock()
 		if acl == nil {
+			h.store.mu.Unlock()
 			writeErr(w, "ACLNotFoundFault", "ACL not found: "+name)
 			return
 		}
+		acl.Status = "deleting"
+		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{"ACL": aclDesc(acl)})
 
 	case "DescribeACLs":
@@ -295,13 +313,24 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 	case "CreateSnapshot":
 		name := getString(body, "SnapshotName")
 		clusterName := getString(body, "ClusterName")
+		h.store.mu.Lock()
+		cluster := h.store.clusters[clusterName]
+		if cluster == nil || cluster.Status == "deleting" {
+			h.store.mu.Unlock()
+			writeErr(w, "ClusterNotFoundFault", "Cluster not found: "+clusterName)
+			return
+		}
+		if existing, exists := h.store.snapshots[name]; exists && existing.Status != "deleting" {
+			h.store.mu.Unlock()
+			writeErr(w, "SnapshotAlreadyExistsFault", "Snapshot already exists: "+name)
+			return
+		}
 		snap := &Snapshot{
 			Name:        name,
 			ClusterName: clusterName,
 			Status:      "available",
 			CreatedAt:   time.Now(),
 		}
-		h.store.mu.Lock()
 		h.store.snapshots[name] = snap
 		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{"Snapshot": snapshotDesc(snap)})
@@ -310,12 +339,13 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		name := getString(body, "SnapshotName")
 		h.store.mu.Lock()
 		snap := h.store.snapshots[name]
-		delete(h.store.snapshots, name)
-		h.store.mu.Unlock()
 		if snap == nil {
+			h.store.mu.Unlock()
 			writeErr(w, "SnapshotNotFoundFault", "Snapshot not found: "+name)
 			return
 		}
+		snap.Status = "deleting"
+		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{"Snapshot": snapshotDesc(snap)})
 
 	case "DescribeSnapshots":
@@ -334,6 +364,48 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			snaps = []map[string]interface{}{}
 		}
 		writeOK(w, map[string]interface{}{"Snapshots": snaps})
+
+	case "UpdateCluster":
+		name := getString(body, "ClusterName")
+		h.store.mu.Lock()
+		cluster := h.store.clusters[name]
+		h.store.mu.Unlock()
+		if cluster == nil {
+			writeErr(w, "ClusterNotFoundFault", "Cluster not found: "+name)
+			return
+		}
+		if v := getString(body, "Description"); v != "" {
+			cluster.Description = v
+		}
+		if v := getString(body, "NodeType"); v != "" {
+			cluster.NodeType = v
+		}
+		writeOK(w, map[string]interface{}{"Cluster": clusterDesc(cluster)})
+
+	case "UpdateUser":
+		name := getString(body, "UserName")
+		h.store.mu.Lock()
+		user := h.store.users[name]
+		h.store.mu.Unlock()
+		if user == nil {
+			writeErr(w, "UserNotFoundFault", "User not found: "+name)
+			return
+		}
+		if v := getString(body, "AccessString"); v != "" {
+			user.AccessString = v
+		}
+		writeOK(w, map[string]interface{}{"User": userDesc(user)})
+
+	case "UpdateACL":
+		name := getString(body, "ACLName")
+		h.store.mu.Lock()
+		acl := h.store.acls[name]
+		h.store.mu.Unlock()
+		if acl == nil {
+			writeErr(w, "ACLNotFoundFault", "ACL not found: "+name)
+			return
+		}
+		writeOK(w, map[string]interface{}{"ACL": aclDesc(acl)})
 
 	case "ListTags", "TagResource", "UntagResource":
 		writeOK(w, map[string]interface{}{"TagList": []interface{}{}})

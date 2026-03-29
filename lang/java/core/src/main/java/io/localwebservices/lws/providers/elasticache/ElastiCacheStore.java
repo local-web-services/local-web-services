@@ -9,11 +9,36 @@ public class ElastiCacheStore {
   private final Map<String, Map<String, Object>> cacheClusters = new ConcurrentHashMap<>();
   private final Map<String, Map<String, Object>> replicationGroups = new ConcurrentHashMap<>();
   private final Map<String, Map<String, Object>> subnetGroups = new ConcurrentHashMap<>();
+  private final Map<String, Map<String, Object>> parameterGroups = new ConcurrentHashMap<>();
+  private final Map<String, Map<String, Object>> snapshots = new ConcurrentHashMap<>();
+  private final Map<String, List<Map<String, String>>> resourceTags = new ConcurrentHashMap<>();
 
   public void reset() {
     cacheClusters.clear();
     replicationGroups.clear();
     subnetGroups.clear();
+    parameterGroups.clear();
+    snapshots.clear();
+    resourceTags.clear();
+  }
+
+  public List<Map<String, String>> addTagsToResource(
+      String resourceName, List<Map<String, String>> tags) {
+    List<Map<String, String>> existing =
+        resourceTags.computeIfAbsent(resourceName, k -> new ArrayList<>());
+    existing.addAll(tags);
+    return existing;
+  }
+
+  public List<Map<String, String>> removeTagsFromResource(
+      String resourceName, List<String> tagKeys) {
+    List<Map<String, String>> existing = resourceTags.getOrDefault(resourceName, new ArrayList<>());
+    existing.removeIf(tag -> tagKeys.contains(tag.get("Key")));
+    return existing;
+  }
+
+  public List<Map<String, String>> listTagsForResource(String resourceName) {
+    return resourceTags.getOrDefault(resourceName, new ArrayList<>());
   }
 
   public Map<String, Object> createCacheCluster(Map<String, String> params) {
@@ -78,6 +103,52 @@ public class ElastiCacheStore {
       list.addAll(replicationGroups.values());
     }
     return list;
+  }
+
+  public Map<String, Object> modifyCacheCluster(String id) {
+    Map<String, Object> cluster = cacheClusters.get(id);
+    if (cluster == null) {
+      throw new IllegalArgumentException("CacheCluster not found: " + id);
+    }
+    return cluster;
+  }
+
+  public Map<String, Object> modifyReplicationGroup(String id) {
+    Map<String, Object> rg = replicationGroups.get(id);
+    if (rg == null) {
+      throw new IllegalArgumentException("ReplicationGroup not found: " + id);
+    }
+    return rg;
+  }
+
+  public Map<String, Object> createCacheParameterGroup(Map<String, String> params) {
+    String name = params.get("CacheParameterGroupName");
+    Map<String, Object> pg = new LinkedHashMap<>();
+    pg.put("CacheParameterGroupName", name);
+    pg.put("CacheParameterGroupFamily", params.getOrDefault("CacheParameterGroupFamily", ""));
+    pg.put("Description", params.getOrDefault("Description", ""));
+    parameterGroups.put(name, pg);
+    return pg;
+  }
+
+  public void deleteCacheParameterGroup(String name) {
+    parameterGroups.remove(name);
+  }
+
+  public Map<String, Object> createSnapshot(Map<String, String> params) {
+    String name = params.get("SnapshotName");
+    Map<String, Object> snap = new LinkedHashMap<>();
+    snap.put("SnapshotName", name);
+    snap.put("SnapshotStatus", "available");
+    snap.put("CacheClusterId", params.getOrDefault("CacheClusterId", ""));
+    snap.put("ReplicationGroupId", params.getOrDefault("ReplicationGroupId", ""));
+    snap.put("Engine", "redis");
+    snapshots.put(name, snap);
+    return snap;
+  }
+
+  public Map<String, Object> deleteSnapshot(String name) {
+    return snapshots.remove(name);
   }
 
   public Map<String, Object> createCacheSubnetGroup(Map<String, String> params) {

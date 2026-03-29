@@ -153,7 +153,7 @@ func StartServer(basePort int) (*Server, error) {
 
 	// Lambda
 	lambdaMux := http.NewServeMux()
-	lambdaMux.Handle("/", lambda.NewHandler(state))
+	lambdaMux.Handle("/", lambda.NewHandlerWithPorts(state, basePort+ServiceOffsets["dynamodb"]))
 	if err := srv.startService(lambdaMux, basePort+ServiceOffsets["lambda"]); err != nil {
 		srv.Close()
 		return nil, fmt.Errorf("lambda server: %w", err)

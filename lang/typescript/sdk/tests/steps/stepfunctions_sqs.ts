@@ -139,6 +139,10 @@ Then("the execution is {string}", async function (this: SdkWorld, expectedState:
       actualSuccess,
       `Expected execution to be RUNNING but last call failed: ${JSON.stringify(this.lastCallResult.error)}`,
     );
+    // Also check for executionArn if present (from start_execution response)
+    if (outputData && "executionArn" in outputData) {
+      assert.ok(outputData.executionArn, "Expected 'executionArn' in start_execution response");
+    }
   } else if (actualStatus !== null) {
     const expectedStateVal = expectedState;
     assert.strictEqual(

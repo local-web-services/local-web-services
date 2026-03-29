@@ -83,14 +83,22 @@ func (s *Store) Reset() {
 // ── Handler ──────────────────────────────────────────────────────────────────
 
 type Handler struct {
-	state *state.ServerState
-	store *Store
+	state        *state.ServerState
+	store        *Store
+	dynamodbPort int
 }
 
 func NewHandler(st *state.ServerState) *Handler {
 	store := NewStore()
 	st.AddResetCallback(store.Reset)
 	return &Handler{state: st, store: store}
+}
+
+// NewHandlerWithPorts creates a Lambda handler with cross-service port references.
+func NewHandlerWithPorts(st *state.ServerState, dynamodbPort int) *Handler {
+	h := NewHandler(st)
+	h.dynamodbPort = dynamodbPort
+	return h
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -120,25 +128,25 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.deleteFunction(w, name)
 	case r.Method == http.MethodPut && strings.HasSuffix(path, "/code"):
 		parts := strings.Split(path, "/")
-		if len(parts) >= 6 {
-			h.updateFunctionCode(w, parts[4])
+		if len(parts) >= 5 {
+			h.updateFunctionCode(w, parts[3])
 		}
 	case r.Method == http.MethodPut && strings.HasSuffix(path, "/configuration"):
 		parts := strings.Split(path, "/")
-		if len(parts) >= 6 {
-			h.updateFunctionConfiguration(w, r, parts[4])
+		if len(parts) >= 5 {
+			h.updateFunctionConfiguration(w, r, parts[3])
 		}
 	case r.Method == http.MethodGet && strings.HasSuffix(path, "/configuration"):
 		parts := strings.Split(path, "/")
-		if len(parts) >= 6 {
-			h.getFunctionConfiguration(w, parts[4])
+		if len(parts) >= 5 {
+			h.getFunctionConfiguration(w, parts[3])
 		}
 
 	// ── Invocations ───────────────────────────────────────────────────────────
 	case strings.HasSuffix(path, "/invocations"):
 		parts := strings.Split(path, "/")
-		if len(parts) >= 6 {
-			h.invokeFunction(w, r, parts[4])
+		if len(parts) >= 5 {
+			h.invokeFunction(w, r, parts[3])
 		}
 
 	// ── Event source mappings ─────────────────────────────────────────────────
@@ -159,24 +167,37 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// ── Permissions ───────────────────────────────────────────────────────────
 	case r.Method == http.MethodPost && strings.HasSuffix(path, "/policy"):
 		parts := strings.Split(path, "/")
-		if len(parts) >= 6 {
-			h.addPermission(w, r, parts[4])
+		if len(parts) >= 5 {
+			h.addPermission(w, r, parts[3])
 		}
 	case r.Method == http.MethodGet && strings.HasSuffix(path, "/policy"):
 		parts := strings.Split(path, "/")
+		if len(parts) >= 5 {
+			h.getPolicy(w, parts[3])
+		}
+	case r.Method == http.MethodDelete && strings.Contains(path, "/policy/"):
+		parts := strings.Split(path, "/")
 		if len(parts) >= 6 {
-			h.getPolicy(w, parts[4])
+			h.removePermission(w, parts[3], parts[5])
 		}
 
 	// ── Tags ──────────────────────────────────────────────────────────────────
 	case r.Method == http.MethodPost && strings.HasPrefix(path, "/2017-03-31/tags/"):
-		h.tagResource(w, r)
+		arn := strings.TrimPrefix(path, "/2017-03-31/tags/")
+		h.tagResource(w, r, arn)
+	case r.Method == http.MethodGet && strings.HasPrefix(path, "/2017-03-31/tags/"):
+		arn := strings.TrimPrefix(path, "/2017-03-31/tags/")
+		h.listTags(w, arn)
 	case r.Method == http.MethodDelete && strings.HasPrefix(path, "/2017-03-31/tags/"):
-		h.untagResource(w, r)
+		arn := strings.TrimPrefix(path, "/2017-03-31/tags/")
+		h.untagResource(w, r, arn)
 
 	// ── Concurrency ───────────────────────────────────────────────────────────
 	case strings.Contains(path, "/concurrency"):
-		jsonOK(w, map[string]interface{}{"ReservedConcurrentExecutions": 0})
+		parts := strings.Split(path, "/")
+		if len(parts) >= 5 {
+			h.putFunctionConcurrency(w, parts[3])
+		}
 
 	default:
 		w.Header().Set("Content-Type", "application/json")
@@ -194,6 +215,10 @@ func (h *Handler) createFunction(w http.ResponseWriter, r *http.Request) {
 	var body map[string]interface{}
 	json.NewDecoder(r.Body).Decode(&body) //nolint:errcheck
 	name := str(body, "FunctionName")
+	if _, exists := h.store.functions[name]; exists {
+		jsonErr(w, "ResourceConflictException", "Function already exist: "+name)
+		return
+	}
 	now := time.Now().UTC().Format(time.RFC3339)
 	fn := &Function{
 		Name:         name,
@@ -245,6 +270,11 @@ func (h *Handler) listFunctions(w http.ResponseWriter) {
 func (h *Handler) deleteFunction(w http.ResponseWriter, name string) {
 	if _, ok := h.store.functions[name]; !ok {
 		jsonErr(w, "ResourceNotFoundException", "Function "+name+" not found")
+		return
+	}
+	// Reject if there are active executions (modelled via exhausted capacity).
+	if h.state.GetCapacityRule("lambda").IsExhausted() {
+		jsonErr(w, "ResourceConflictException", "Function "+name+" has active executions")
 		return
 	}
 	delete(h.store.functions, name)
@@ -319,13 +349,55 @@ func (h *Handler) invokeFunction(w http.ResponseWriter, r *http.Request, name st
 func (h *Handler) createEventSourceMapping(w http.ResponseWriter, r *http.Request) {
 	var body map[string]interface{}
 	json.NewDecoder(r.Body).Decode(&body) //nolint:errcheck
+	eventSourceArn := str(body, "EventSourceArn")
+	functionName := str(body, "FunctionName")
+	if functionName == "" {
+		functionName = h.arnToFunctionName(str(body, "FunctionArn"))
+	}
+
+	// Validate the referenced Lambda function exists.
+	if functionName != "" {
+		if _, ok := h.store.functions[functionName]; !ok {
+			jsonErr(w, "ResourceNotFoundException", "Function not found: "+functionName)
+			return
+		}
+	}
+
+	// Check for duplicate event source mapping (same source ARN + function).
+	functionArn := ""
+	if fn, ok := h.store.functions[functionName]; ok {
+		functionArn = fn.ARN
+	}
+	for _, m := range h.store.eventSourceMappings {
+		if m.EventSourceArn == eventSourceArn && m.FunctionArn == functionArn {
+			jsonErr(w, "ResourceConflictException", "Event source mapping already exists for "+eventSourceArn)
+			return
+		}
+	}
+
+	// Validate the DynamoDB stream table exists and has streaming enabled.
+	if h.dynamodbPort != 0 && strings.Contains(eventSourceArn, ":dynamodb:") && strings.Contains(eventSourceArn, "/stream/") {
+		tableName := dynamodbTableNameFromStreamArn(eventSourceArn)
+		if tableName != "" {
+			status, streamEnabled := h.describeDynamoDBTable(tableName)
+			if status == "" {
+				jsonErr(w, "ResourceNotFoundException", "DynamoDB table not found: "+tableName)
+				return
+			}
+			if !streamEnabled {
+				jsonErr(w, "InvalidParameterValueException", "DynamoDB table "+tableName+" does not have streaming enabled")
+				return
+			}
+		}
+	}
+
 	uuid := genID()
 	now := nowSeconds()
 	batchSize := intOrDefault(body, "BatchSize", 10)
 	mapping := &EventSourceMapping{
 		UUID:             uuid,
-		EventSourceArn:   str(body, "EventSourceArn"),
-		FunctionArn:      str(body, "FunctionArn"),
+		EventSourceArn:   eventSourceArn,
+		FunctionArn:      functionArn,
 		State:            "Enabled",
 		BatchSize:        batchSize,
 		StartingPosition: strOrDefault(body, "StartingPosition", "TRIM_HORIZON"),
@@ -333,6 +405,64 @@ func (h *Handler) createEventSourceMapping(w http.ResponseWriter, r *http.Reques
 	}
 	h.store.eventSourceMappings[uuid] = mapping
 	jsonCreated(w, mappingToMap(mapping))
+}
+
+// dynamodbTableNameFromStreamArn extracts the table name from a DynamoDB stream ARN.
+// Stream ARN format: arn:aws:dynamodb:region:accountid:table/tableName/stream/timestamp
+func dynamodbTableNameFromStreamArn(arn string) string {
+	// Find the "table/" prefix
+	idx := strings.Index(arn, "table/")
+	if idx < 0 {
+		return ""
+	}
+	rest := arn[idx+len("table/"):]
+	// Remove stream suffix
+	if slashIdx := strings.Index(rest, "/stream/"); slashIdx >= 0 {
+		return rest[:slashIdx]
+	}
+	return rest
+}
+
+// describeDynamoDBTable makes an HTTP call to the DynamoDB handler to check
+// whether a table exists and has streaming enabled.
+// Returns (tableStatus, streamEnabled). tableStatus is "" if table not found.
+func (h *Handler) describeDynamoDBTable(tableName string) (string, bool) {
+	reqBody, err := json.Marshal(map[string]string{"TableName": tableName})
+	if err != nil {
+		return "", false
+	}
+	url := fmt.Sprintf("http://127.0.0.1:%d/", h.dynamodbPort)
+	req, err := http.NewRequest(http.MethodPost, url, strings.NewReader(string(reqBody)))
+	if err != nil {
+		return "", false
+	}
+	req.Header.Set("Content-Type", "application/x-amz-json-1.0")
+	req.Header.Set("X-Amz-Target", "DynamoDB_20120810.DescribeTable")
+	resp, err := http.DefaultClient.Do(req) //nolint:noctx
+	if err != nil {
+		return "", false
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return "", false
+	}
+	var result map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return "", false
+	}
+	table, ok := result["Table"].(map[string]interface{})
+	if !ok {
+		return "", false
+	}
+	status, _ := table["TableStatus"].(string)
+	streamSpec, _ := table["StreamSpecification"].(map[string]interface{})
+	streamEnabled := false
+	if streamSpec != nil {
+		if enabled, ok := streamSpec["StreamEnabled"].(bool); ok {
+			streamEnabled = enabled
+		}
+	}
+	return status, streamEnabled
 }
 
 func (h *Handler) listEventSourceMappings(w http.ResponseWriter, r *http.Request) {
@@ -383,6 +513,10 @@ func (h *Handler) updateEventSourceMapping(w http.ResponseWriter, r *http.Reques
 // ── Permission operations ─────────────────────────────────────────────────────
 
 func (h *Handler) addPermission(w http.ResponseWriter, r *http.Request, name string) {
+	if _, ok := h.store.functions[name]; !ok {
+		jsonErr(w, "ResourceNotFoundException", "Function "+name+" not found")
+		return
+	}
 	var body map[string]interface{}
 	json.NewDecoder(r.Body).Decode(&body) //nolint:errcheck
 	if _, ok := h.store.permissions[name]; !ok {
@@ -391,6 +525,34 @@ func (h *Handler) addPermission(w http.ResponseWriter, r *http.Request, name str
 	h.store.permissions[name] = append(h.store.permissions[name], body)
 	statementBytes, _ := json.Marshal(body)
 	jsonOK(w, map[string]interface{}{"Statement": string(statementBytes)})
+}
+
+func (h *Handler) removePermission(w http.ResponseWriter, name, statementID string) {
+	if _, ok := h.store.functions[name]; !ok {
+		jsonErr(w, "ResourceNotFoundException", "Function "+name+" not found")
+		return
+	}
+	perms := h.store.permissions[name]
+	if len(perms) == 0 {
+		jsonErr(w, "ResourceNotFoundException", "Function "+name+" has no resource policy")
+		return
+	}
+	var updated []map[string]interface{}
+	found := false
+	for _, p := range perms {
+		sid, _ := p["StatementId"].(string)
+		if sid == statementID {
+			found = true
+		} else {
+			updated = append(updated, p)
+		}
+	}
+	if !found {
+		jsonErr(w, "ResourceNotFoundException", "Statement "+statementID+" not found in resource policy")
+		return
+	}
+	h.store.permissions[name] = updated
+	w.WriteHeader(204)
 }
 
 func (h *Handler) getPolicy(w http.ResponseWriter, name string) {
@@ -406,12 +568,82 @@ func (h *Handler) getPolicy(w http.ResponseWriter, name string) {
 	})
 }
 
-func (h *Handler) tagResource(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) arnToFunctionName(arn string) string {
+	// arn:aws:lambda:us-east-1:000000000000:function:{name}
+	parts := strings.Split(arn, ":")
+	if len(parts) >= 7 && parts[5] == "function" {
+		return parts[6]
+	}
+	// If it's already a name, return as-is
+	return arn
+}
+
+func (h *Handler) tagResource(w http.ResponseWriter, r *http.Request, arn string) {
+	name := h.arnToFunctionName(arn)
+	fn, ok := h.store.functions[name]
+	if !ok {
+		jsonErr(w, "ResourceNotFoundException", "Function "+name+" not found")
+		return
+	}
+	var body map[string]interface{}
+	json.NewDecoder(r.Body).Decode(&body) //nolint:errcheck
+	if tags, ok := body["Tags"].(map[string]interface{}); ok {
+		if fn.Tags == nil {
+			fn.Tags = make(map[string]string)
+		}
+		for k, v := range tags {
+			if s, ok := v.(string); ok {
+				fn.Tags[k] = s
+			}
+		}
+	}
 	w.WriteHeader(204)
 }
 
-func (h *Handler) untagResource(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) listTags(w http.ResponseWriter, arn string) {
+	name := h.arnToFunctionName(arn)
+	fn, ok := h.store.functions[name]
+	if !ok {
+		jsonErr(w, "ResourceNotFoundException", "Function "+name+" not found")
+		return
+	}
+	tags := map[string]string{}
+	for k, v := range fn.Tags {
+		tags[k] = v
+	}
+	jsonOK(w, map[string]interface{}{"Tags": tags})
+}
+
+func (h *Handler) untagResource(w http.ResponseWriter, r *http.Request, arn string) {
+	name := h.arnToFunctionName(arn)
+	fn, ok := h.store.functions[name]
+	if !ok {
+		jsonErr(w, "ResourceNotFoundException", "Function "+name+" not found")
+		return
+	}
+	tagKeys := r.URL.Query()["tagKeys"]
+	if len(tagKeys) == 0 {
+		w.WriteHeader(204)
+		return
+	}
+	for _, key := range tagKeys {
+		if _, exists := fn.Tags[key]; !exists {
+			jsonErr(w, "ResourceNotFoundException", "Tag key "+key+" does not exist on function "+name)
+			return
+		}
+	}
+	for _, key := range tagKeys {
+		delete(fn.Tags, key)
+	}
 	w.WriteHeader(204)
+}
+
+func (h *Handler) putFunctionConcurrency(w http.ResponseWriter, name string) {
+	if _, ok := h.store.functions[name]; !ok {
+		jsonErr(w, "ResourceNotFoundException", "Function "+name+" not found")
+		return
+	}
+	jsonOK(w, map[string]interface{}{"ReservedConcurrentExecutions": 5})
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

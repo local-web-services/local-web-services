@@ -39,7 +39,7 @@ Feature: RdsLambda - An Rds Stored Procedure Fails To Invoke Lambda Because The 
     When an "RDS" stored procedure fails to invoke Lambda because the function has been deleted
     Then the operation is rejected
 
-  @standard @negative @invocation_fails_function_deleted @capacity
+  @standard @negative @internal @invocation_fails_function_deleted @capacity
   Scenario: an "RDS" stored procedure fails to invoke Lambda because the function has been deleted fails when no invocation slot is available
     Given the "DB" instance is "AVAILABLE"
     And the "DB" instance has a Lambda integration configured

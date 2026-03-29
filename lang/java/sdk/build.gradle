@@ -115,6 +115,7 @@ spotless {
 
 test {
     useJUnitPlatform()
+    maxHeapSize = '2g'
     systemProperty 'cucumber.junit-platform.naming-strategy', 'long'
     testLogging {
         events 'passed', 'skipped', 'failed'

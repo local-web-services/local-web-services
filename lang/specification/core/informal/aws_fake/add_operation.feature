@@ -30,7 +30,7 @@ Feature: AwsFake - An Operation Is Added To An Aws Fake
     When an operation is added to an "AWS" fake
     Then the operation is rejected
 
-  @standard @negative @add_operation
+  @standard @negative @internal @add_operation
   Scenario: an operation is added to an "AWS" fake fails when no operation slot is available
     Given the "AWS" fake exists
     And the "AWS" fake is "ACTIVE"

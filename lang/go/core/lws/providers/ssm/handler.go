@@ -144,12 +144,22 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 				writeErr(w, "ParameterNotFound", "Parameter not found: "+name, 400)
 				return
 			}
+			if h.state.IsResourceInDwell("ssm", name) {
+				h.store.mu.Unlock()
+				writeErr(w, "ParameterNotFound", "Parameter "+name+" is not active", 400)
+				return
+			}
 		} else {
 			// Overwrite=false: update-mode that records ParameterAlreadyExists.
 			// Fail if parameter does NOT exist (nothing to conflict with).
 			if !exists {
 				h.store.mu.Unlock()
 				writeErr(w, "ParameterNotFound", "Parameter not found: "+name, 400)
+				return
+			}
+			if h.state.IsResourceInDwell("ssm", name) {
+				h.store.mu.Unlock()
+				writeErr(w, "ParameterNotFound", "Parameter "+name+" is not active", 400)
 				return
 			}
 			// Parameter exists: return ParameterAlreadyExists (as expected error).
@@ -165,6 +175,7 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		if exists && existing.Tags != nil {
 			tags = existing.Tags
 		}
+		isNew := !exists
 		h.store.parameters[name] = &Parameter{
 			Name:      name,
 			Value:     value,
@@ -175,6 +186,9 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			CreatedAt: time.Now(),
 		}
 		h.store.mu.Unlock()
+		if isNew {
+			h.state.TrackResourceCreation("ssm", name)
+		}
 		writeOK(w, map[string]interface{}{"Version": version, "Tier": "Standard"})
 
 	case "GetParameter":
@@ -184,6 +198,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		h.store.mu.RUnlock()
 		if !ok {
 			writeErr(w, "ParameterNotFound", "Parameter not found: "+name, 400)
+			return
+		}
+		if h.state.IsResourceInDwell("ssm", name) {
+			writeErr(w, "ParameterNotFound", "Parameter "+name+" is not active", 400)
 			return
 		}
 		writeOK(w, map[string]interface{}{"Parameter": paramDesc(p)})
@@ -237,6 +255,11 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			writeErr(w, "ParameterNotFound", "Parameter not found: "+name, 400)
 			return
 		}
+		if h.state.IsResourceInDwell("ssm", name) {
+			h.store.mu.Unlock()
+			writeErr(w, "ParameterNotFound", "Parameter "+name+" is not active", 400)
+			return
+		}
 		delete(h.store.parameters, name)
 		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{})
@@ -252,6 +275,11 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 				continue
 			}
 			if _, found := h.store.parameters[name]; found {
+				if h.state.IsResourceInDwell("ssm", name) {
+					h.store.mu.Unlock()
+					writeErr(w, "ParameterNotFound", "Parameter "+name+" is not active", 400)
+					return
+				}
 				delete(h.store.parameters, name)
 				deleted = append(deleted, name)
 			} else {
@@ -298,6 +326,11 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			writeErr(w, "ParameterNotFound", "Parameter not found: "+resourceID, 400)
 			return
 		}
+		if h.state.IsResourceInDwell("ssm", resourceID) {
+			h.store.mu.Unlock()
+			writeErr(w, "ParameterNotFound", "Parameter "+resourceID+" is not active", 400)
+			return
+		}
 		for _, t := range tags {
 			if tm, ok := t.(map[string]interface{}); ok {
 				k := getString(tm, "Key")
@@ -316,6 +349,11 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		if !ok {
 			h.store.mu.Unlock()
 			writeErr(w, "ParameterNotFound", "Parameter not found: "+resourceID, 400)
+			return
+		}
+		if h.state.IsResourceInDwell("ssm", resourceID) {
+			h.store.mu.Unlock()
+			writeErr(w, "ParameterNotFound", "Parameter "+resourceID+" is not active", 400)
 			return
 		}
 		// Check that all requested tag keys exist.
@@ -343,6 +381,11 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		if !ok {
 			h.store.mu.RUnlock()
 			writeErr(w, "ParameterNotFound", "Parameter not found: "+resourceID, 400)
+			return
+		}
+		if h.state.IsResourceInDwell("ssm", resourceID) {
+			h.store.mu.RUnlock()
+			writeErr(w, "ParameterNotFound", "Parameter "+resourceID+" is not active", 400)
 			return
 		}
 		var tagList []map[string]string

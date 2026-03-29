@@ -6,6 +6,17 @@ from typing import Any
 from lws.providers.stepfunctions.engine import StatesTaskFailed
 
 
+class FakeRequest:
+    """Minimal Starlette-compatible request stub for unit tests."""
+
+    def __init__(self, body: bytes, content_type: str = "application/x-www-form-urlencoded"):
+        self._body = body
+        self.headers = {"content-type": content_type}
+
+    async def body(self) -> bytes:
+        return self._body
+
+
 class FakeLambdaHandler:
     """Collects stream events for assertions."""
 
@@ -189,6 +200,18 @@ class FakeServiceBridge:
         return {"service": resource_arn}
 
 
+class FakeExhaustedCapacity:
+    """Capacity object that is always exhausted (slots == 0)."""
+
+    is_exhausted = True
+
+
+class FakeUnlimitedCapacity:
+    """Capacity object that is never exhausted (slots == None)."""
+
+    is_exhausted = False
+
+
 class FakeLambdaBridge:
     """Records which ARNs it handled, for composite invoker tests."""
 
@@ -198,3 +221,34 @@ class FakeLambdaBridge:
     async def invoke_function(self, resource_arn: str, payload: Any) -> Any:
         self.invoked_arns.append(resource_arn)
         return {"lambda": resource_arn}
+
+
+class FakeRotationCompute:
+    """Stub ICompute that records invocations for rotation tests."""
+
+    def __init__(self, *, should_fail: bool = False) -> None:
+        self.invocations: list[dict] = []
+        self._should_fail = should_fail
+
+    async def invoke(self, event: dict, _context) -> object:
+        self.invocations.append(event)
+
+        class _Result:
+            error = None
+            payload = {}
+
+        class _FailResult:
+            error = "lambda error"
+            payload = None
+
+        return _FailResult() if self._should_fail else _Result()
+
+
+class FakeRotationRegistry:
+    """Stub LambdaRegistry that returns a fixed compute for rotation tests."""
+
+    def __init__(self, compute: FakeRotationCompute) -> None:
+        self._compute = compute
+
+    def get_compute(self, _function_name: str) -> FakeRotationCompute:
+        return self._compute

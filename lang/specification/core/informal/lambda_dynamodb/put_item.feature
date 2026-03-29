@@ -39,7 +39,7 @@ Feature: LambdaDynamodb - The Lambda Function Writes An Item To The Dynamodb Tab
     When the Lambda function writes an item to the DynamoDB table during invocation
     Then the operation is rejected
 
-  @standard @negative @put_item @capacity
+  @standard @negative @internal @put_item @capacity
   Scenario: the Lambda function writes an item to the DynamoDB table during invocation fails when no item slot is available
     Given an invocation is "IN_PROGRESS"
     And the table exists

@@ -6,12 +6,15 @@ Target prefix: AmazonRDSv19.{Action}
 
 from __future__ import annotations
 
-from dataclasses import replace
-
 from fastapi import FastAPI
 
+from lws.providers._shared.aws_capacity import AwsCapacityConfig
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig
-from lws.providers._shared.cluster_db_service import ClusterDBConfig, create_cluster_db_app
+from lws.providers._shared.cluster_db_service import (
+    ClusterDBConfig,
+    _ClusterDBState,
+    create_cluster_db_app,
+)
 
 _DOCDB_CONFIG = ClusterDBConfig(
     service_name="docdb",
@@ -24,6 +27,7 @@ _DOCDB_CONFIG = ClusterDBConfig(
     endpoint_suffix="docdb.amazonaws.com",
     include_master_username=True,
     include_remove_tags=True,
+    use_query_protocol=True,
 )
 
 
@@ -31,12 +35,12 @@ def create_docdb_app(
     *,
     container_manager=None,
     lifecycle: ResourceLifecycleConfig | None = None,
-) -> FastAPI:
-    """Create a FastAPI app that speaks the DocumentDB wire protocol."""
-    overrides: dict = {}
-    if container_manager:
-        overrides["container_manager"] = container_manager
-    if lifecycle is not None:
-        overrides["lifecycle"] = lifecycle
-    config = replace(_DOCDB_CONFIG, **overrides) if overrides else _DOCDB_CONFIG
-    return create_cluster_db_app(config)
+    capacity: AwsCapacityConfig | None = None,
+) -> tuple[FastAPI, _ClusterDBState]:
+    """Create a FastAPI app that speaks the DocumentDB wire protocol.
+
+    Returns a tuple of (app, state) so the caller can register state for reset.
+    """
+    return create_cluster_db_app(
+        _DOCDB_CONFIG.with_overrides(container_manager, lifecycle, capacity)
+    )

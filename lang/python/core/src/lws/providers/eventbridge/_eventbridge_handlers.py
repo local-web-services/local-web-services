@@ -202,9 +202,20 @@ async def _handle_delete_rule(provider: EventBridgeProvider, body: dict) -> Resp
     rule_name = body.get("Name", "")
     try:
         await provider.delete_rule(rule_name)
-    except (KeyError, ValueError) as exc:
+    except ValueError:
         return Response(
-            content=json.dumps({"Error": str(exc)}),
+            content=json.dumps(
+                {
+                    "__type": "ValidationException",
+                    "message": f"Rule can't be deleted: rule '{rule_name}' has targets",
+                }
+            ),
+            status_code=400,
+            media_type="application/json",
+        )
+    except KeyError:
+        return Response(
+            content=json.dumps({"Error": f"Rule not found: {rule_name}"}),
             status_code=400,
             media_type="application/json",
         )

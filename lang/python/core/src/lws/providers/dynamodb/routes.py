@@ -7,6 +7,8 @@ Each operation is dispatched based on the ``X-Amz-Target`` header value
 
 from __future__ import annotations
 
+import asyncio  # needed for Lock type in _transaction_locks
+
 from fastapi import APIRouter, FastAPI, Request, Response
 
 from lws.interfaces.key_value_store import (
@@ -14,20 +16,23 @@ from lws.interfaces.key_value_store import (
 )
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
-from lws.providers._shared.aws_capacity import AwsCapacityConfig
+from lws.providers._shared.aws_capacity import AwsCapacityConfig, check_capacity
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
 from lws.providers.dynamodb._dynamodb_helpers import (
     _error_response,
-    _extract_condition_params,
     _json_response,
     _parse_table_config,
     _table_not_found_response,
-    _unwrap_item,
+    check_transact_conditions,
+    check_transact_lifecycle,
+    collect_transact_lock_keys,
+    execute_transact_writes,
+    transact_item_lock_key,
+    try_acquire_transact_locks,
 )
-from lws.providers.dynamodb.expressions import evaluate_filter_expression
 
 _logger = get_logger("ldk.dynamodb")
 
@@ -48,6 +53,7 @@ class DynamoDbRouter:
         self._lifecycle = lifecycle or ResourceLifecycleConfig()
         self._tracker = ResourceStateTracker(self._lifecycle)
         self._capacity = capacity or AwsCapacityConfig()
+        self._transaction_locks: dict[str, asyncio.Lock] = {}
         self.router = APIRouter()
         self.router.add_api_route("/", self._dispatch, methods=["POST"])
 
@@ -121,6 +127,9 @@ class DynamoDbRouter:
         return None
 
     async def _get_item(self, body: dict) -> Response:
+        cap_err = check_capacity(self._capacity, "ProvisionedThroughputExceededException", 400)
+        if cap_err is not None:
+            return cap_err
         table_name = body["TableName"]
         err = self._get_lifecycle_error(table_name)
         if err is not None:
@@ -136,8 +145,9 @@ class DynamoDbRouter:
         return _json_response(result)
 
     async def _put_item(self, body: dict) -> Response:
-        if self._capacity.is_exhausted:
-            return _error_response("ServiceUnavailableException", "lws: no item slots available")
+        cap_err = check_capacity(self._capacity, "ProvisionedThroughputExceededException", 400)
+        if cap_err is not None:
+            return cap_err
         table_name = body["TableName"]
         err = self._get_lifecycle_error(table_name)
         if err is not None:
@@ -150,6 +160,9 @@ class DynamoDbRouter:
         return _json_response({})
 
     async def _delete_item(self, body: dict) -> Response:
+        cap_err = check_capacity(self._capacity, "ProvisionedThroughputExceededException", 400)
+        if cap_err is not None:
+            return cap_err
         table_name = body["TableName"]
         err = self._get_lifecycle_error(table_name)
         if err is not None:
@@ -162,6 +175,9 @@ class DynamoDbRouter:
         return _json_response({})
 
     async def _update_item(self, body: dict) -> Response:
+        cap_err = check_capacity(self._capacity, "ProvisionedThroughputExceededException", 400)
+        if cap_err is not None:
+            return cap_err
         table_name = body["TableName"]
         err = self._get_lifecycle_error(table_name)
         if err is not None:
@@ -183,6 +199,9 @@ class DynamoDbRouter:
         return _json_response({"Attributes": updated})
 
     async def _query(self, body: dict) -> Response:
+        cap_err = check_capacity(self._capacity, "ProvisionedThroughputExceededException", 400)
+        if cap_err is not None:
+            return cap_err
         table_name = body["TableName"]
         err = self._get_lifecycle_error(table_name)
         if err is not None:
@@ -206,6 +225,9 @@ class DynamoDbRouter:
         return _json_response({"Items": items, "Count": len(items)})
 
     async def _scan(self, body: dict) -> Response:
+        cap_err = check_capacity(self._capacity, "ProvisionedThroughputExceededException", 400)
+        if cap_err is not None:
+            return cap_err
         table_name = body["TableName"]
         err = self._get_lifecycle_error(table_name)
         if err is not None:
@@ -225,6 +247,9 @@ class DynamoDbRouter:
         return _json_response({"Items": items, "Count": len(items)})
 
     async def _batch_get_item(self, body: dict) -> Response:
+        cap_err = check_capacity(self._capacity, "ProvisionedThroughputExceededException", 400)
+        if cap_err is not None:
+            return cap_err
         request_items = body.get("RequestItems", {})
         responses: dict[str, list[dict]] = {}
         for table_name, table_req in request_items.items():
@@ -234,8 +259,9 @@ class DynamoDbRouter:
         return _json_response({"Responses": responses})
 
     async def _batch_write_item(self, body: dict) -> Response:
-        if self._capacity.is_exhausted:
-            return _error_response("ServiceUnavailableException", "lws: no item slots available")
+        cap_err = check_capacity(self._capacity, "ProvisionedThroughputExceededException", 400)
+        if cap_err is not None:
+            return cap_err
         request_items = body.get("RequestItems", {})
         for table_name, requests in request_items.items():
             put_items: list[dict] = []
@@ -261,16 +287,17 @@ class DynamoDbRouter:
                 "ResourceInUseException",
                 f"Table already exists: {config.table_name}",
             )
-        # Lifecycle: set CREATING status if dwell time configured
-        if self._lifecycle.enabled and self._lifecycle.create_dwell_ms > 0:
+        # Lifecycle: track CREATING state; mutate response only if dwell > 0
+        if self._lifecycle.enabled:
             self._tracker.set_state(config.table_name, "CREATING")
             self._tracker.schedule_transition(
                 config.table_name,
                 "ACTIVE",
                 self._lifecycle.create_dwell_ms,
             )
-            description = dict(description)
-            description["TableStatus"] = "CREATING"
+            if self._lifecycle.create_dwell_ms > 0:
+                description = dict(description)
+                description["TableStatus"] = "CREATING"
         return _json_response({"TableDescription": description})
 
     async def _delete_table(self, body: dict) -> Response:
@@ -289,16 +316,17 @@ class DynamoDbRouter:
                 "ResourceNotFoundException",
                 f"Requested resource not found: Table: {table_name} not found",
             )
-        # Lifecycle: set DELETING status if dwell time configured
-        if self._lifecycle.enabled and self._lifecycle.delete_dwell_ms > 0:
+        # Lifecycle: track DELETING state; mutate response only if dwell > 0
+        if self._lifecycle.enabled:
             self._tracker.set_state(table_name, "DELETING")
             self._tracker.schedule_transition(
                 table_name,
                 None,  # remove from tracker after dwell (table is already gone from store)
                 self._lifecycle.delete_dwell_ms,
             )
-            description = dict(description)
-            description["TableStatus"] = "DELETING"
+            if self._lifecycle.delete_dwell_ms > 0:
+                description = dict(description)
+                description["TableStatus"] = "DELETING"
         return _json_response({"TableDescription": description})
 
     async def _describe_table(self, body: dict) -> Response:
@@ -350,85 +378,38 @@ class DynamoDbRouter:
             )
         return _json_response({"TableDescription": description})
 
+    def _item_lock_key(self, table_name: str, key: dict) -> str:
+        """Return a string key identifying the item for lock tracking."""
+        return transact_item_lock_key(table_name, key)
+
     async def _transact_write_items(self, body: dict) -> Response:
+        cap_err = check_capacity(self._capacity, "ProvisionedThroughputExceededException", 400)
+        if cap_err is not None:
+            return cap_err
         transact_items = body.get("TransactItems", [])
 
         # Pass 0: lifecycle check — reject if any referenced table is not ACTIVE
-        for transact_item in transact_items:
-            for op_key in ("Put", "Delete", "Update", "ConditionCheck"):
-                if op_key in transact_item:
-                    table_name = transact_item[op_key]["TableName"]
-                    err = self._get_lifecycle_error(table_name)
-                    if err is not None:
-                        return err
+        lifecycle_err = await check_transact_lifecycle(self._get_lifecycle_error, transact_items)
+        if lifecycle_err is not None:
+            return lifecycle_err
 
-        # Pass 1: evaluate all condition expressions
-        failure = await self._check_transact_conditions(transact_items)
-        if failure is not None:
-            return failure
+        lock_keys = collect_transact_lock_keys(transact_items)
+        acquired, conflict_err = await try_acquire_transact_locks(
+            self._transaction_locks, lock_keys
+        )
+        if conflict_err is not None:
+            return conflict_err
 
-        # Pass 2: execute writes
-        for transact_item in transact_items:
-            if "Put" in transact_item:
-                put = transact_item["Put"]
-                await self.store.put_item(put["TableName"], put["Item"])
-            elif "Delete" in transact_item:
-                delete = transact_item["Delete"]
-                await self.store.delete_item(delete["TableName"], delete["Key"])
-            elif "Update" in transact_item:
-                update = transact_item["Update"]
-                await self.store.update_item(
-                    update["TableName"],
-                    update["Key"],
-                    update.get("UpdateExpression", ""),
-                    expression_values=update.get("ExpressionAttributeValues"),
-                    expression_names=update.get("ExpressionAttributeNames"),
-                )
-        return _json_response({})
-
-    async def _check_transact_conditions(self, transact_items: list) -> Response | None:
-        """Evaluate ConditionExpressions across all transact items.
-
-        Returns an error Response if any condition fails, or None if all pass.
-        """
-        reasons: list[dict] = []
-        any_failed = False
-
-        for transact_item in transact_items:
-            condition_expr, names, values, table_name, key = _extract_condition_params(
-                transact_item
-            )
-
-            if condition_expr is None:
-                reasons.append({"Code": "None"})
-                continue
-
-            item = await self.store.get_item(table_name, key)
-            target = _unwrap_item(item) if item is not None else {}
-            passed = evaluate_filter_expression(target, condition_expr, names, values)
-            if passed:
-                reasons.append({"Code": "None"})
-            else:
-                reasons.append(
-                    {
-                        "Code": "ConditionalCheckFailed",
-                        "Message": "The conditional request failed",
-                    }
-                )
-                any_failed = True
-
-        if any_failed:
-            return _json_response(
-                {
-                    "__type": "com.amazonaws.dynamodb.v20120810" "#TransactionCanceledException",
-                    "Message": "Transaction cancelled, please refer "
-                    "cancellation reasons for specific reasons "
-                    "[ConditionalCheckFailed]",
-                    "CancellationReasons": reasons,
-                },
-                status_code=400,
-            )
-        return None
+        try:
+            failure = await check_transact_conditions(self.store, transact_items)
+            if failure is not None:
+                return failure
+            await execute_transact_writes(self.store, transact_items)
+            return _json_response({})
+        finally:
+            for held_key in acquired:
+                if self._transaction_locks[held_key].locked():
+                    self._transaction_locks[held_key].release()
 
     async def _transact_get_items(self, body: dict) -> Response:
         transact_items = body.get("TransactItems", [])

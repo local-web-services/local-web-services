@@ -44,7 +44,7 @@ Feature: CognitoIdp - A Confirmed Enabled User Initiates Authentication
     When a confirmed enabled user initiates authentication
     Then the operation is rejected
 
-  @standard @negative @initiate_auth @capacity
+  @standard @negative @internal @initiate_auth @capacity
   Scenario: a confirmed enabled user initiates authentication fails when the session slot is not available
     Given the user exists
     And the user is "CONFIRMED"

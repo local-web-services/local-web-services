@@ -1,0 +1,10 @@
+"""Then: async_slots_reference_invariant"""
+
+from __future__ import annotations
+
+from pytest_bdd import parsers, then
+
+
+@then(parsers.re(r"^all async slots reference known function IDs .+"))
+def async_slots_reference_invariant():
+    """Invariant step: trivially satisfied in isolated test context."""

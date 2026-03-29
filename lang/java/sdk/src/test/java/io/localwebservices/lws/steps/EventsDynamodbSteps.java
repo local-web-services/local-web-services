@@ -97,38 +97,6 @@ public class EventsDynamodbSteps {
   }
 
   // ---------------------------------------------------------------------------
-  // Rule existence preconditions
-  // ---------------------------------------------------------------------------
-
-  @Given("the rule exists")
-  public void theRuleExists() {
-    // Arrange
-    EventBridgeClient client = world.session.eventBridgeClient();
-    // Act — ensure bus and rule exist
-    try {
-      client.createEventBus(r -> r.name(TEST_EVENT_BUS));
-    } catch (Exception ignored) {
-      // bus may already exist
-    }
-    try {
-      client.putRule(
-          r ->
-              r.name(TEST_EVENT_RULE)
-                  .eventBusName(TEST_EVENT_BUS)
-                  .eventPattern("{\"source\":[\"lws.test\"]}")
-                  .state(software.amazon.awssdk.services.eventbridge.model.RuleState.ENABLED));
-    } catch (Exception ignored) {
-      // rule may already exist
-    }
-    // Assert — rule now exists; verified by subsequent steps
-  }
-
-  @Given("the rule does not exist")
-  public void theRuleDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh session has no EventBridge rules
-  }
-
-  // ---------------------------------------------------------------------------
   // Rule preconditions (events_dynamodb-specific "rule is/already" variants)
   // ---------------------------------------------------------------------------
 
@@ -136,13 +104,22 @@ public class EventsDynamodbSteps {
   public void theRuleIs(String state) {
     // Arrange
     EventBridgeClient client = world.session.eventBridgeClient();
-    RuleState ruleState = "ENABLED".equals(state) ? RuleState.ENABLED : RuleState.DISABLED;
-    // Act — ensure bus and rule exist in the requested state
+    // Act — ensure bus exists
     try {
       client.createEventBus(r -> r.name(TEST_EVENT_BUS));
     } catch (Exception ignored) {
       // bus may already exist
     }
+    if ("DELETED".equals(state)) {
+      // Act — delete the rule so it is in DELETED (absent) state
+      try {
+        client.deleteRule(r -> r.name(TEST_EVENT_RULE).eventBusName(TEST_EVENT_BUS));
+      } catch (Exception ignored) {
+        // rule may not exist yet
+      }
+      return;
+    }
+    RuleState ruleState = "ENABLED".equals(state) ? RuleState.ENABLED : RuleState.DISABLED;
     try {
       client.putRule(
           r ->
@@ -166,13 +143,22 @@ public class EventsDynamodbSteps {
     }
     // Arrange
     EventBridgeClient client = world.session.eventBridgeClient();
-    RuleState ruleState = "ENABLED".equals(state) ? RuleState.ENABLED : RuleState.DISABLED;
-    // Act — ensure bus and rule exist in the specified state
+    // Act — ensure bus exists
     try {
       client.createEventBus(r -> r.name(TEST_EVENT_BUS));
     } catch (Exception ignored) {
       // bus may already exist
     }
+    if ("DELETED".equals(state)) {
+      // Act — delete the rule so it is in DELETED (absent) state
+      try {
+        client.deleteRule(r -> r.name(TEST_EVENT_RULE).eventBusName(TEST_EVENT_BUS));
+      } catch (Exception ignored) {
+        // rule may not exist yet
+      }
+      return;
+    }
+    RuleState ruleState = "ENABLED".equals(state) ? RuleState.ENABLED : RuleState.DISABLED;
     try {
       client.putRule(
           r ->
@@ -248,20 +234,6 @@ public class EventsDynamodbSteps {
                   .state(RuleState.DISABLED));
       Target target = Target.builder().id("ddb-target-1").arn(tableArn).build();
       client.putTargets(r -> r.rule(TEST_EVENT_RULE).eventBusName(TEST_EVENT_BUS).targets(target));
-      // Assert
-      world.setSuccess(null);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("a table deletion is initiated")
-  public void aTableDeletionIsInitiated() {
-    // Arrange
-    DynamoDbClient client = world.session.dynamoDbClient();
-    try {
-      // Act
-      client.deleteTable(r -> r.tableName(TEST_DDB_TABLE));
       // Assert
       world.setSuccess(null);
     } catch (Exception e) {

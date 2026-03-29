@@ -121,6 +121,40 @@ public class SsmStorePutGetTest {
   }
 
   @Test
+  public void putParameter_overwriteExisting_incrementsVersion() {
+    // Arrange
+    SsmStore store = new SsmStore();
+    String paramName = "myParam";
+    store.putParameter(paramName, "value1", "String", false);
+    int expectedVersion = 2;
+
+    // Act
+    Map<String, Object> actualParam = store.putParameter(paramName, "value2", "String", true);
+
+    // Assert
+    assertEquals(
+        expectedVersion,
+        ((Number) actualParam.get("Version")).intValue(),
+        "Expected version to be incremented on overwrite");
+  }
+
+  @Test
+  public void putParameter_overwriteNew_versionIsOne() {
+    // Arrange
+    SsmStore store = new SsmStore();
+    int expectedVersion = 1;
+
+    // Act
+    Map<String, Object> actualParam = store.putParameter("newParam", "value1", "String", true);
+
+    // Assert
+    assertEquals(
+        expectedVersion,
+        ((Number) actualParam.get("Version")).intValue(),
+        "Expected version to be 1 for new parameter even with overwrite=true");
+  }
+
+  @Test
   public void reset_clearsAllParameters() {
     // Arrange
     SsmStore store = new SsmStore();

@@ -40,7 +40,7 @@ Feature: LambdaOpensearch - The Lambda Function Indexes A Document Into The Open
     When the Lambda function indexes a document into the OpenSearch index during invocation
     Then the operation is rejected
 
-  @standard @negative @index_document @capacity
+  @standard @negative @internal @index_document @capacity
   Scenario: the Lambda function indexes a document into the OpenSearch index during invocation fails when no document slot is available
     Given an invocation is "IN_PROGRESS"
     And the index exists

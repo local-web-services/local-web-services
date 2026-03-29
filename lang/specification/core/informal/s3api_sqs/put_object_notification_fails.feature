@@ -39,7 +39,7 @@ Feature: S3apiSqs - An Object Is Uploaded But Notification Delivery Fails Becaus
     When an object is uploaded but notification delivery fails because the queue has been deleted
     Then the operation is rejected
 
-  @standard @negative @put_object_notification_fails @capacity
+  @standard @negative @internal @put_object_notification_fails @capacity
   Scenario: an object is uploaded but notification delivery fails because the queue has been deleted fails when no object slot is available
     Given the bucket is "ACTIVE"
     And the bucket has a notification configuration

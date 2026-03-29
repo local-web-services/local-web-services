@@ -37,7 +37,7 @@ architecture-test: ## Run architecture constraint tests
 	uv run pytest tests/architecture
 
 e2e-test: ## Run e2e tests (requires Docker)
-	uv run pytest tests/e2e -v -m "not internal"
+	uv run pytest tests/e2e -v
 
 test: unit-test architecture-test ## Run all tests (unit + architecture)
 

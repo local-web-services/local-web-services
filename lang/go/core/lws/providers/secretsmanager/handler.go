@@ -14,9 +14,11 @@ import (
 const accountID = "000000000000"
 const region = "us-east-1"
 
+// Secret holds all state for a single Secrets Manager secret.
 type Secret struct {
 	Name         string
 	ARN          string
+	Description  string
 	SecretString string
 	SecretBinary []byte
 	Deleted      bool
@@ -108,6 +110,7 @@ func secretDesc(s *Secret) map[string]interface{} {
 	return map[string]interface{}{
 		"Name":        s.Name,
 		"ARN":         s.ARN,
+		"Description": s.Description,
 		"CreatedDate": s.CreatedAt.Unix(),
 		"DeletedDate": nil,
 	}
@@ -209,11 +212,14 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			writeErr(w, "ResourceNotFoundException", "Secret not found: "+secretID, 400)
 			return
 		}
+		h.store.mu.Lock()
 		if newVal := getString(body, "SecretString"); newVal != "" {
-			h.store.mu.Lock()
 			s.SecretString = newVal
-			h.store.mu.Unlock()
 		}
+		if newDesc := getString(body, "Description"); newDesc != "" {
+			s.Description = newDesc
+		}
+		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{"ARN": s.ARN, "Name": s.Name})
 
 	case "DeleteSecret":

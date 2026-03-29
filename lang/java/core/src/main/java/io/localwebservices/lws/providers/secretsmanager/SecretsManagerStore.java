@@ -57,10 +57,17 @@ public class SecretsManagerStore {
   }
 
   public void updateSecret(
-      Map<String, Object> secret, Object secretString, Object secretBinary, String versionId) {
+      Map<String, Object> secret,
+      Object secretString,
+      Object secretBinary,
+      String versionId,
+      String description) {
     secret.put("SecretString", secretString);
     secret.put("SecretBinary", secretBinary);
     secret.put("VersionId", versionId);
+    if (description != null && !description.isEmpty()) {
+      secret.put("Description", description);
+    }
   }
 
   public void deleteSecret(String name, boolean force) {

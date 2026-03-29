@@ -1127,6 +1127,11 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 	case "DeleteStateMachine":
 		arn := getString(body, "stateMachineArn")
 		h.store.mu.Lock()
+		if _, ok := h.store.stateMachines[arn]; !ok {
+			h.store.mu.Unlock()
+			writeErr(w, "StateMachineDoesNotExist", "State machine not found: "+arn, 400)
+			return
+		}
 		delete(h.store.stateMachines, arn)
 		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{})
@@ -1162,21 +1167,45 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 	case "UpdateStateMachine":
 		arn := getString(body, "stateMachineArn")
 		h.store.mu.Lock()
-		if sm, ok := h.store.stateMachines[arn]; ok {
-			if def := getString(body, "definition"); def != "" {
-				sm.Definition = def
-			}
-			if role := getString(body, "roleArn"); role != "" {
-				sm.RoleArn = role
-			}
+		sm, ok := h.store.stateMachines[arn]
+		if !ok {
+			h.store.mu.Unlock()
+			writeErr(w, "StateMachineDoesNotExist", "State machine not found: "+arn, 400)
+			return
+		}
+		if def := getString(body, "definition"); def != "" {
+			sm.Definition = def
+		}
+		if role := getString(body, "roleArn"); role != "" {
+			sm.RoleArn = role
 		}
 		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{"updateDate": time.Now().Unix()})
 
 	case "ValidateStateMachineDefinition":
+		arn := getString(body, "stateMachineArn")
+		if arn != "" {
+			h.store.mu.RLock()
+			_, ok := h.store.stateMachines[arn]
+			h.store.mu.RUnlock()
+			if !ok {
+				writeErr(w, "StateMachineDoesNotExist", "State machine not found: "+arn, 400)
+				return
+			}
+		}
 		writeOK(w, map[string]interface{}{"result": "OK", "diagnostics": []interface{}{}})
 
 	case "ListStateMachineVersions":
+		arn := getString(body, "stateMachineArn")
+		if arn != "" {
+			h.store.mu.RLock()
+			_, ok := h.store.stateMachines[arn]
+			h.store.mu.RUnlock()
+			if !ok {
+				writeErr(w, "StateMachineDoesNotExist", "State machine not found: "+arn, 400)
+				return
+			}
+		}
 		writeOK(w, map[string]interface{}{"stateMachineVersions": []interface{}{}})
 
 	case "StartExecution":
@@ -1248,6 +1277,11 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		input := getString(body, "input")
 		if input == "" {
 			input = "{}"
+		}
+
+		if h.state.GetCapacityRule("stepfunctions").IsExhausted() {
+			writeErr(w, "ServiceUnavailableException", "No execution slot is available", 503)
+			return
 		}
 
 		h.store.mu.RLock()
@@ -1351,6 +1385,11 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		smArn := getString(body, "stateMachineArn")
 		statusFilter := getString(body, "statusFilter")
 		h.store.mu.RLock()
+		if _, ok := h.store.stateMachines[smArn]; !ok {
+			h.store.mu.RUnlock()
+			writeErr(w, "StateMachineDoesNotExist", "State machine not found: "+smArn, 400)
+			return
+		}
 		var execs []map[string]interface{}
 		for _, exec := range h.store.executions {
 			if exec.StateMachineArn != smArn {

@@ -349,15 +349,39 @@ def build_negative_scenarios_for_action(action: Action) -> list[list[str]]:
 
 
 def build_sequence_scenarios(spec: ParsedSpec, depth: int = 3) -> list[list[str]]:
+    """Build the minimal transition-pair covering set for sequence scenarios.
+
+    Generates all N*(N-1) length-2 pairs, which form the complete
+    transition-pair covering set: every consecutive (A -> B) pair appears
+    exactly once.
+
+    The naive approach of generating all N*(N-1)*(N-2) length-3 permutations
+    repeats each pair N-2 times with no new transition-pair coverage - for a
+    30-action spec that produces 24,360 redundant scenarios instead of 870.
+
+    With depth >= 3, each pair is extended by one representative third action
+    (selected by cycling through candidates) so every pair (A -> B) also
+    appears as the prefix of at least one length-3 sequence, distributing
+    depth-3 coverage uniformly without the O(N^3) explosion.
+    """
     names = [a.name for a in spec.non_init_actions]
-    chains: list[list[str]] = [[a, b] for a, b in itertools.permutations(names, 2)]
-    if depth >= 3:
-        state_changing = [a.name for a in spec.non_init_actions if a.state_effects]
-        for triple in itertools.permutations(state_changing, min(3, len(state_changing))):
-            chains.append(list(triple))
+    if not names:
+        return []
+
+    # All length-2 pairs: complete transition-pair coverage - N*(N-1) scenarios.
+    pairs = list(itertools.permutations(names, 2))
+    chains: list[list[str]] = [list(p) for p in pairs]
+
+    # Depth-3 extension: one triple per pair, cycling through third-action
+    # candidates so coverage is distributed across all actions.
+    if depth >= 3 and len(names) >= 3:
+        for i, (a, b) in enumerate(pairs):
+            candidates = [n for n in names if n != a and n != b]
+            c = candidates[i % len(candidates)]
+            chains.append([a, b, c])
 
     seen: set[tuple[str, ...]] = set()
-    unique = []
+    unique: list[list[str]] = []
     for chain in chains:
         key = tuple(chain)
         if key not in seen:
@@ -410,7 +434,7 @@ def _feature_header(service: str, title: str, spec: ParsedSpec) -> list[str]:
     return lines
 
 
-def generate_action_feature(action: Action, spec: ParsedSpec, service: str, tier: str, depth: int) -> str:
+def generate_action_feature(action: Action, spec: ParsedSpec, service: str, tier: str) -> str:
     """Generate a feature file for a single action."""
     title = f"{service} - {action.step_text.title() if action.step_text else _camel_to_words(action.name).title()}"
     lines = _feature_header(service, title, spec)
@@ -504,12 +528,20 @@ def main() -> None:
     service = args.service or spec_path.stem.split("_")[0].upper()
     spec = parse_fizz(source, spec_path.name)
 
+    n = len(spec.non_init_actions)
+    pairs = n * (n - 1)
+    old_triples = n * (n - 1) * (n - 2) if n >= 3 and args.depth >= 3 else 0
+    new_triples = pairs if n >= 3 and args.depth >= 3 else 0
+
     print(f"Parsed from {spec_path.name}:", file=sys.stderr)
     print(f"  Init action  : {spec.init_action.name if spec.init_action else 'None'}", file=sys.stderr)
     print(f"  Actions      : {[a.name for a in spec.non_init_actions]}", file=sys.stderr)
     print(f"  Assertions   : {[a.name for a in spec.assertions if not a.is_liveness]}", file=sys.stderr)
     print(f"  Liveness     : {[a.name for a in spec.assertions if a.is_liveness]}", file=sys.stderr)
     print(f"  Tier         : {args.tier}", file=sys.stderr)
+    if args.tier == "exhaustive":
+        print(f"  Covering set : {pairs} pairs + {new_triples} triples = {pairs + new_triples} scenarios", file=sys.stderr)
+        print(f"  (vs naive    : {pairs} pairs + {old_triples} triples = {pairs + old_triples} scenarios)", file=sys.stderr)
 
     if args.single:
         output = generate_feature(spec, service, args.tier, args.depth)
@@ -525,7 +557,7 @@ def main() -> None:
             out_dir = Path(args.output)
             out_dir.mkdir(parents=True, exist_ok=True)
             for action in spec.non_init_actions:
-                content = generate_action_feature(action, spec, service, args.tier, args.depth)
+                content = generate_action_feature(action, spec, service, args.tier)
                 out_path = out_dir / f"{_snake(action.name)}.feature"
                 out_path.write_text(content)
                 print(f"Written to {out_path}", file=sys.stderr)
@@ -549,7 +581,7 @@ def main() -> None:
         else:
             # stdout: print all actions separated by a blank line
             for action in spec.non_init_actions:
-                print(generate_action_feature(action, spec, service, args.tier, args.depth))
+                print(generate_action_feature(action, spec, service, args.tier))
             for assertion in spec.assertions:
                 if _is_stub(assertion):
                     print(generate_stub_assertion_feature(assertion, spec, service))

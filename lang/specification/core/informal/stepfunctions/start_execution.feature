@@ -42,7 +42,7 @@ Feature: Stepfunctions - An Execution Is Started On A Standard State Machine
     When an execution is started on a standard state machine
     Then the operation is rejected
 
-  @standard @negative @start_execution @capacity
+  @standard @negative @internal @start_execution @capacity
   Scenario: an execution is started on a standard state machine fails when the execution slot is not available
     Given the state machine exists
     And the state machine is "ACTIVE"

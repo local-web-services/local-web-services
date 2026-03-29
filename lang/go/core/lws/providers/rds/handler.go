@@ -1,7 +1,7 @@
 package rds
 
 import (
-	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"net/http"
@@ -85,42 +85,76 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.handle(w, action, params)
 }
 
-func sendJSON(w http.ResponseWriter, status int, v interface{}) {
-	w.Header().Set("Content-Type", "application/json")
+func sendXML(w http.ResponseWriter, status int, v interface{}) {
+	w.Header().Set("Content-Type", "text/xml")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(v) //nolint:errcheck
+	io.WriteString(w, xml.Header) //nolint:errcheck
+	xml.NewEncoder(w).Encode(v)   //nolint:errcheck
 }
 
 func sendError(w http.ResponseWriter, status int, code, msg string) {
-	sendJSON(w, status, map[string]string{"__type": code, "message": msg})
+	type xmlError struct {
+		XMLName   xml.Name `xml:"ErrorResponse"`
+		Code      string   `xml:"Error>Code"`
+		Message   string   `xml:"Error>Message"`
+		RequestID string   `xml:"RequestId"`
+	}
+	sendXML(w, status, xmlError{Code: code, Message: msg, RequestID: "00000000-0000-0000-0000-000000000000"})
 }
 
-func instanceDesc(i *DBInstance) map[string]interface{} {
-	return map[string]interface{}{
-		"DBInstanceIdentifier": i.DBInstanceIdentifier,
-		"DBInstanceClass":      i.DBInstanceClass,
-		"Engine":               i.Engine,
-		"DBInstanceStatus":     i.DBInstanceStatus,
-		"DBName":               i.DBName,
-		"MasterUsername":       i.MasterUsername,
-		"AllocatedStorage":     i.AllocatedStorage,
-		"MultiAZ":              i.MultiAZ,
-		"Endpoint": map[string]interface{}{
-			"Address": i.EndpointAddress,
-			"Port":    i.EndpointPort,
+type xmlEndpoint struct {
+	Address string `xml:"Address"`
+	Port    int    `xml:"Port"`
+}
+
+type xmlDBInstance struct {
+	DBInstanceIdentifier string      `xml:"DBInstanceIdentifier"`
+	DBInstanceClass      string      `xml:"DBInstanceClass"`
+	Engine               string      `xml:"Engine"`
+	DBInstanceStatus     string      `xml:"DBInstanceStatus"`
+	DBName               string      `xml:"DBName"`
+	MasterUsername       string      `xml:"MasterUsername"`
+	AllocatedStorage     int         `xml:"AllocatedStorage"`
+	MultiAZ              bool        `xml:"MultiAZ"`
+	Endpoint             xmlEndpoint `xml:"Endpoint"`
+	DBInstanceArn        string      `xml:"DBInstanceArn"`
+}
+
+type xmlDBSnapshot struct {
+	DBSnapshotIdentifier string `xml:"DBSnapshotIdentifier"`
+	DBInstanceIdentifier string `xml:"DBInstanceIdentifier"`
+	Status               string `xml:"Status"`
+	Engine               string `xml:"Engine"`
+	SnapshotType         string `xml:"SnapshotType"`
+	DBSnapshotArn        string `xml:"DBSnapshotArn"`
+}
+
+func instanceXML(i *DBInstance) xmlDBInstance {
+	return xmlDBInstance{
+		DBInstanceIdentifier: i.DBInstanceIdentifier,
+		DBInstanceClass:      i.DBInstanceClass,
+		Engine:               i.Engine,
+		DBInstanceStatus:     i.DBInstanceStatus,
+		DBName:               i.DBName,
+		MasterUsername:       i.MasterUsername,
+		AllocatedStorage:     i.AllocatedStorage,
+		MultiAZ:              i.MultiAZ,
+		Endpoint: xmlEndpoint{
+			Address: i.EndpointAddress,
+			Port:    i.EndpointPort,
 		},
-		"DBInstanceArn": fmt.Sprintf("arn:aws:rds:%s:%s:db:%s", region, accountID, i.DBInstanceIdentifier),
+		DBInstanceArn: fmt.Sprintf("arn:aws:rds:%s:%s:db:%s", region, accountID, i.DBInstanceIdentifier),
 	}
 }
 
-func snapshotDesc(s *DBSnapshot) map[string]interface{} {
-	return map[string]interface{}{
-		"DBSnapshotIdentifier": s.DBSnapshotIdentifier,
-		"DBInstanceIdentifier": s.DBInstanceIdentifier,
-		"Status":               s.Status,
-		"Engine":               s.Engine,
-		"SnapshotType":         s.SnapshotType,
-		"DBSnapshotArn":        fmt.Sprintf("arn:aws:rds:%s:%s:snapshot:%s", region, accountID, s.DBSnapshotIdentifier),
+func snapshotXML(s *DBSnapshot) xmlDBSnapshot {
+	return xmlDBSnapshot{
+		DBSnapshotIdentifier: s.DBSnapshotIdentifier,
+		DBInstanceIdentifier: s.DBInstanceIdentifier,
+		Status:               s.Status,
+		Engine:               s.Engine,
+		SnapshotType:         s.SnapshotType,
+		DBSnapshotArn:        fmt.Sprintf("arn:aws:rds:%s:%s:snapshot:%s", region, accountID, s.DBSnapshotIdentifier),
 	}
 }
 
@@ -128,6 +162,12 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 	switch action {
 	case "CreateDBInstance":
 		id := params.Get("DBInstanceIdentifier")
+		h.store.mu.Lock()
+		if existing, exists := h.store.instances[id]; exists && existing.DBInstanceStatus != "deleting" {
+			h.store.mu.Unlock()
+			sendError(w, 400, "DBInstanceAlreadyExists", "DB instance already exists: "+id)
+			return
+		}
 		inst := &DBInstance{
 			DBInstanceIdentifier: id,
 			DBInstanceClass:      params.Get("DBInstanceClass"),
@@ -144,37 +184,46 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		if strings.Contains(strings.ToLower(inst.Engine), "postgres") {
 			inst.EndpointPort = 5432
 		}
-		h.store.mu.Lock()
 		h.store.instances[id] = inst
 		h.store.mu.Unlock()
-		sendJSON(w, 200, map[string]interface{}{"DBInstance": instanceDesc(inst)})
+		type resp struct {
+			XMLName xml.Name      `xml:"CreateDBInstanceResponse"`
+			Result  xmlDBInstance `xml:"CreateDBInstanceResult>DBInstance"`
+		}
+		sendXML(w, 200, resp{Result: instanceXML(inst)})
 
 	case "DeleteDBInstance":
 		id := params.Get("DBInstanceIdentifier")
 		h.store.mu.Lock()
 		inst := h.store.instances[id]
-		delete(h.store.instances, id)
-		h.store.mu.Unlock()
 		if inst == nil {
+			h.store.mu.Unlock()
 			sendError(w, 404, "DBInstanceNotFound", "DB instance not found: "+id)
 			return
 		}
-		sendJSON(w, 200, map[string]interface{}{"DBInstance": instanceDesc(inst)})
+		inst.DBInstanceStatus = "deleting"
+		h.store.mu.Unlock()
+		type resp struct {
+			XMLName xml.Name      `xml:"DeleteDBInstanceResponse"`
+			Result  xmlDBInstance `xml:"DeleteDBInstanceResult>DBInstance"`
+		}
+		sendXML(w, 200, resp{Result: instanceXML(inst)})
 
 	case "DescribeDBInstances":
 		filterID := params.Get("DBInstanceIdentifier")
 		h.store.mu.RLock()
-		var instances []map[string]interface{}
+		var instances []xmlDBInstance
 		for _, inst := range h.store.instances {
 			if filterID == "" || inst.DBInstanceIdentifier == filterID {
-				instances = append(instances, instanceDesc(inst))
+				instances = append(instances, instanceXML(inst))
 			}
 		}
 		h.store.mu.RUnlock()
-		if instances == nil {
-			instances = []map[string]interface{}{}
+		type resp struct {
+			XMLName   xml.Name        `xml:"DescribeDBInstancesResponse"`
+			Instances []xmlDBInstance `xml:"DescribeDBInstancesResult>DBInstances>DBInstance"`
 		}
-		sendJSON(w, 200, map[string]interface{}{"DBInstances": instances})
+		sendXML(w, 200, resp{Instances: instances})
 
 	case "ModifyDBInstance":
 		id := params.Get("DBInstanceIdentifier")
@@ -188,7 +237,14 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		if v := params.Get("DBInstanceClass"); v != "" {
 			inst.DBInstanceClass = v
 		}
-		sendJSON(w, 200, map[string]interface{}{"DBInstance": instanceDesc(inst)})
+		if v := params.Get("MultiAZ"); v == "true" {
+			inst.MultiAZ = true
+		}
+		type resp struct {
+			XMLName xml.Name      `xml:"ModifyDBInstanceResponse"`
+			Result  xmlDBInstance `xml:"ModifyDBInstanceResult>DBInstance"`
+		}
+		sendXML(w, 200, resp{Result: instanceXML(inst)})
 
 	case "RebootDBInstance":
 		id := params.Get("DBInstanceIdentifier")
@@ -199,14 +255,22 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 			sendError(w, 404, "DBInstanceNotFound", "DB instance not found: "+id)
 			return
 		}
-		sendJSON(w, 200, map[string]interface{}{"DBInstance": instanceDesc(inst)})
+		type resp struct {
+			XMLName xml.Name      `xml:"RebootDBInstanceResponse"`
+			Result  xmlDBInstance `xml:"RebootDBInstanceResult>DBInstance"`
+		}
+		sendXML(w, 200, resp{Result: instanceXML(inst)})
 
 	case "CreateDBSnapshot":
 		snapID := params.Get("DBSnapshotIdentifier")
 		dbID := params.Get("DBInstanceIdentifier")
-		h.store.mu.RLock()
+		h.store.mu.Lock()
+		if existing, exists := h.store.snapshots[snapID]; exists && existing.Status != "deleting" {
+			h.store.mu.Unlock()
+			sendError(w, 400, "DBSnapshotAlreadyExists", "DB snapshot already exists: "+snapID)
+			return
+		}
 		inst := h.store.instances[dbID]
-		h.store.mu.RUnlock()
 		engine := "mysql"
 		if inst != nil {
 			engine = inst.Engine
@@ -214,44 +278,93 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		snap := &DBSnapshot{
 			DBSnapshotIdentifier: snapID,
 			DBInstanceIdentifier: dbID,
-			Status:               "available",
+			Status:               "creating",
 			Engine:               engine,
 			SnapshotType:         "manual",
 			CreatedAt:            time.Now(),
 		}
-		h.store.mu.Lock()
 		h.store.snapshots[snapID] = snap
 		h.store.mu.Unlock()
-		sendJSON(w, 200, map[string]interface{}{"DBSnapshot": snapshotDesc(snap)})
+		type resp struct {
+			XMLName xml.Name      `xml:"CreateDBSnapshotResponse"`
+			Result  xmlDBSnapshot `xml:"CreateDBSnapshotResult>DBSnapshot"`
+		}
+		sendXML(w, 200, resp{Result: snapshotXML(snap)})
 
 	case "DeleteDBSnapshot":
 		snapID := params.Get("DBSnapshotIdentifier")
 		h.store.mu.Lock()
 		snap := h.store.snapshots[snapID]
-		delete(h.store.snapshots, snapID)
-		h.store.mu.Unlock()
 		if snap == nil {
+			h.store.mu.Unlock()
 			sendError(w, 404, "DBSnapshotNotFound", "DB snapshot not found: "+snapID)
 			return
 		}
-		sendJSON(w, 200, map[string]interface{}{"DBSnapshot": snapshotDesc(snap)})
+		snap.Status = "deleting"
+		h.store.mu.Unlock()
+		type resp struct {
+			XMLName xml.Name      `xml:"DeleteDBSnapshotResponse"`
+			Result  xmlDBSnapshot `xml:"DeleteDBSnapshotResult>DBSnapshot"`
+		}
+		sendXML(w, 200, resp{Result: snapshotXML(snap)})
 
 	case "DescribeDBSnapshots":
 		filterID := params.Get("DBSnapshotIdentifier")
 		dbID := params.Get("DBInstanceIdentifier")
 		h.store.mu.RLock()
-		var snaps []map[string]interface{}
+		var snaps []xmlDBSnapshot
 		for _, snap := range h.store.snapshots {
 			if (filterID == "" || snap.DBSnapshotIdentifier == filterID) &&
 				(dbID == "" || snap.DBInstanceIdentifier == dbID) {
-				snaps = append(snaps, snapshotDesc(snap))
+				snaps = append(snaps, snapshotXML(snap))
 			}
 		}
 		h.store.mu.RUnlock()
-		if snaps == nil {
-			snaps = []map[string]interface{}{}
+		type resp struct {
+			XMLName   xml.Name        `xml:"DescribeDBSnapshotsResponse"`
+			Snapshots []xmlDBSnapshot `xml:"DescribeDBSnapshotsResult>DBSnapshots>DBSnapshot"`
 		}
-		sendJSON(w, 200, map[string]interface{}{"DBSnapshots": snaps})
+		sendXML(w, 200, resp{Snapshots: snaps})
+
+	case "AddTagsToResource":
+		type resp struct {
+			XMLName xml.Name `xml:"AddTagsToResourceResponse"`
+		}
+		sendXML(w, 200, resp{})
+
+	case "RestoreDBInstanceFromDBSnapshot":
+		id := params.Get("DBInstanceIdentifier")
+		snapID := params.Get("DBSnapshotIdentifier")
+		h.store.mu.RLock()
+		snap := h.store.snapshots[snapID]
+		h.store.mu.RUnlock()
+		engine := "mysql"
+		if snap != nil {
+			engine = snap.Engine
+		}
+		inst := &DBInstance{
+			DBInstanceIdentifier: id,
+			DBInstanceClass:      params.Get("DBInstanceClass"),
+			Engine:               engine,
+			DBInstanceStatus:     "restoring",
+			DBName:               params.Get("DBName"),
+			AllocatedStorage:     20,
+			MultiAZ:              false,
+			EndpointAddress:      "localhost",
+			EndpointPort:         3306,
+			CreatedAt:            time.Now(),
+		}
+		if strings.Contains(strings.ToLower(inst.Engine), "postgres") {
+			inst.EndpointPort = 5432
+		}
+		h.store.mu.Lock()
+		h.store.instances[id] = inst
+		h.store.mu.Unlock()
+		type resp struct {
+			XMLName xml.Name      `xml:"RestoreDBInstanceFromDBSnapshotResponse"`
+			Result  xmlDBInstance `xml:"RestoreDBInstanceFromDBSnapshotResult>DBInstance"`
+		}
+		sendXML(w, 200, resp{Result: instanceXML(inst)})
 
 	default:
 		sendError(w, 400, "InvalidAction", "Unknown action: "+action)

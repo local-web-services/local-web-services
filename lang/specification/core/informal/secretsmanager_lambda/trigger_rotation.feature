@@ -30,7 +30,7 @@ Feature: SecretsmanagerLambda - A Rotation Is Triggered For The Secret
     When a rotation is triggered for the secret
     Then the operation is rejected
 
-  @standard @negative @trigger_rotation @capacity
+  @standard @negative @internal @trigger_rotation @capacity
   Scenario: a rotation is triggered for the secret fails when no invocation slot is available
     Given the secret exists and is "ACTIVE"
     And the secret has a rotation function configured

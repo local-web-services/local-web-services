@@ -51,7 +51,7 @@ Feature: ApigatewayLambda - The Api Receives An Http Request And Synchronously I
     When the "API" receives an "HTTP" request and synchronously invokes the Lambda function
     Then the operation is rejected
 
-  @standard @negative @handle_request @capacity
+  @standard @negative @internal @handle_request @capacity
   Scenario: the "API" receives an "HTTP" request and synchronously invokes the Lambda function fails when no request slot is available
     Given the "API" exists
     And the "API" is "ACTIVE"
@@ -61,7 +61,7 @@ Feature: ApigatewayLambda - The Api Receives An Http Request And Synchronously I
     When the "API" receives an "HTTP" request and synchronously invokes the Lambda function
     Then the operation is rejected
 
-  @standard @negative @handle_request @capacity
+  @standard @negative @internal @handle_request @capacity
   Scenario: the "API" receives an "HTTP" request and synchronously invokes the Lambda function fails when no invocation slot is available
     Given the "API" exists
     And the "API" is "ACTIVE"

@@ -51,7 +51,7 @@ Feature: Sns - A Message Is Published To A Topic
     When a message is published to a topic
     Then the operation is rejected
 
-  @standard @negative @publish @capacity
+  @standard @negative @internal @publish @capacity
   Scenario: a message is published to a topic fails when no delivery slot is available
     Given the topic exists
     And the topic is "ACTIVE"

@@ -50,7 +50,7 @@ Feature: EventsLambda - An Event Is Published To The Bus And Triggers An Asynchr
     When an event is published to the bus and triggers an asynchronous Lambda invocation
     Then the operation is rejected
 
-  @standard @negative @put_event @capacity
+  @standard @negative @internal @put_event @capacity
   Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation fails when no invocation slot is available
     Given the event bus exists
     And the event bus is "ACTIVE"

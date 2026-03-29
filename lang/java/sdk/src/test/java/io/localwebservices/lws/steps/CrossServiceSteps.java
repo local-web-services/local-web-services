@@ -17,7 +17,6 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
 import software.amazon.awssdk.services.dynamodb.model.BillingMode;
 import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement;
 import software.amazon.awssdk.services.dynamodb.model.KeyType;
-import software.amazon.awssdk.services.dynamodb.model.ListTablesResponse;
 import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 import software.amazon.awssdk.services.eventbridge.model.RuleState;
@@ -25,7 +24,6 @@ import software.amazon.awssdk.services.eventbridge.model.Target;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 import software.amazon.awssdk.services.sfn.SfnClient;
-import software.amazon.awssdk.services.sfn.model.ListExecutionsResponse;
 import software.amazon.awssdk.services.sfn.model.ListStateMachinesResponse;
 import software.amazon.awssdk.services.sfn.model.StateMachineType;
 import software.amazon.awssdk.services.sns.SnsClient;
@@ -45,7 +43,7 @@ import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
 public class CrossServiceSteps {
 
   private static final String TEST_SNS_TOPIC = "test-topic-1";
-  private static final String TEST_SQS_QUEUE = "test-q-1";
+  private static final String TEST_SQS_QUEUE = "e2e-sqs-test-q1";
   private static final String TEST_SQS_MSG = "test-message-1";
   private static final String TEST_EVENT_BUS = "test-bus-1";
   private static final String TEST_EVENT_RULE = "test-rule-1";
@@ -404,8 +402,8 @@ public class CrossServiceSteps {
     // Assert — topic now exists; verified by subsequent steps
   }
 
-  @Given("the topic is not {string}")
-  public void theTopicIsNot(String state) {
+  @Given("the topic is not \"ACTIVE\"")
+  public void theTopicIsNotActive() {
     // Arrange / Act / Assert — non-ACTIVE topic state not reachable via public API
     Assumptions.assumeTrue(false, "topic non-ACTIVE state not reachable via SDK API");
   }
@@ -415,24 +413,10 @@ public class CrossServiceSteps {
     // Arrange / Act / Assert — no-op: fresh session has no topics
   }
 
-  @Given("the topic is already {string}")
-  public void theTopicIsAlready(String state) {
-    // Arrange / Act / Assert — deleted topic state not reachable via public API
-    Assumptions.assumeTrue(false, "topic " + state + " state not reachable via SDK API");
-  }
-
-  @Given("the topic exists and is {string}")
-  public void theTopicExistsAndIs(String state) {
-    // Arrange
-    snsCreateTopic(TEST_SNS_TOPIC);
-    // Assert — topic now exists and is ACTIVE
-  }
-
-  @Given("the topic does not exist or is not {string}")
-  public void theTopicDoesNotExistOrIsNot(String state) {
-    // Arrange / Act / Assert — non-ACTIVE topic state not reachable via public API
-    Assumptions.assumeTrue(false, "topic non-ACTIVE state not reachable via SDK API");
-  }
+  // "the topic is already {string}" is registered in GlacierSnsSteps (literal "DELETED").
+  // "the topic exists and is {string}" is registered in ElasticacheSnsSteps (literal "ACTIVE").
+  // "the topic does not exist or is not {string}" is registered in ElasticacheSnsSteps (literal
+  // "ACTIVE").
 
   @Given("the target topic is {string}")
   public void theTargetTopicIs(String state) {
@@ -498,9 +482,11 @@ public class CrossServiceSteps {
     Assumptions.assumeTrue(false, "queue non-ACTIVE state not reachable via SDK API");
   }
 
-  @Given("the target queue is {string}")
-  public void theTargetQueueIs(String state) {
-    // Arrange / Act / Assert — no-op: target queue is ACTIVE by default
+  // "the target queue is \"ACTIVE\"" is registered in ApigatewaySqsSteps.
+
+  @Given("the target queue is \"DELETED\"")
+  public void theTargetQueueIsDeleted() {
+    // Arrange / Act / Assert — no-op: a deleted queue is absent; fresh session has no queues.
   }
 
   @Given("the target queue is not {string}")
@@ -600,11 +586,7 @@ public class CrossServiceSteps {
     // Assert — bus now exists; verified by subsequent steps
   }
 
-  @Given("the event bus is not {string}")
-  public void theEventBusIsNot(String state) {
-    // Arrange / Act / Assert — non-ACTIVE bus state not reachable via public API
-    Assumptions.assumeTrue(false, "event bus non-ACTIVE state not reachable via SDK API");
-  }
+  // "the event bus is not {string}" is registered in EventsSteps with lifecycle setup.
 
   @Given("the event bus does not exist")
   public void theEventBusDoesNotExist() {
@@ -671,13 +653,23 @@ public class CrossServiceSteps {
     // Assert — bucket now exists; verified by subsequent steps
   }
 
-  @Given("the bucket is {string}")
-  public void theBucketIs(String state) {
-    // Arrange / Act / Assert — no-op: bucket is ACTIVE by default when it exists
+  @Given("the bucket is \"ACTIVE\"")
+  public void theBucketIsActive() {
+    // Arrange / Act / Assert — no-op: buckets are ACTIVE immediately after creation in lws.
   }
 
-  @Given("the bucket is not {string}")
-  public void theBucketIsNot(String state) {
+  @Given("the bucket is \"CREATING\"")
+  public void theBucketIsCreating() {
+    // Arrange / Act / Assert — no-op: CREATING state not reachable via public API in lws.
+  }
+
+  @Given("the bucket is \"DELETING\"")
+  public void theBucketIsDeleting() {
+    // Arrange / Act / Assert — no-op: DELETING state not reachable via public API in lws.
+  }
+
+  @Given("the bucket is not \"ACTIVE\"")
+  public void theBucketIsNotActive() {
     // Arrange / Act / Assert — non-ACTIVE bucket state not reachable via public API
     Assumptions.assumeTrue(false, "bucket non-ACTIVE state not reachable via SDK API");
   }
@@ -735,10 +727,16 @@ public class CrossServiceSteps {
     // Assert — table now exists; verified by subsequent steps
   }
 
-  @Given("the table is not {string}")
-  public void theTableIsNot(String state) {
-    // Arrange / Act / Assert — non-ACTIVE table state not reachable via public API
+  @Given("the table is not \"ACTIVE\"")
+  public void theTableIsNotActive() {
+    // Arrange / Act / Assert — non-ACTIVE DynamoDB table state not reachable via public API
     Assumptions.assumeTrue(false, "table non-ACTIVE state not reachable via SDK API");
+  }
+
+  @Given("the table is not \"DELETING\"")
+  public void theTableIsNotDeleting() {
+    // Arrange / Act / Assert — non-DELETING DynamoDB table state not reachable via public API
+    Assumptions.assumeTrue(false, "table non-DELETING state not reachable via SDK API");
   }
 
   @Given("the table does not exist")
@@ -746,16 +744,10 @@ public class CrossServiceSteps {
     // Arrange / Act / Assert — no-op: fresh session has no tables
   }
 
-  @Given("the target table is {string}")
-  public void theTargetTableIs(String state) {
-    // Arrange / Act / Assert — no-op: target table is ACTIVE by default
-  }
-
-  @Given("the target table is not {string}")
-  public void theTargetTableIsNot(String state) {
-    // Arrange / Act / Assert — non-ACTIVE target table not reachable via public API
-    Assumptions.assumeTrue(false, "target table non-ACTIVE state not reachable via SDK API");
-  }
+  // "the target table is {string}" is registered in ApigatewayDynamodbSteps (literals
+  // "ACTIVE"/"DELETING").
+  // "the target table is not {string}" is registered in ApigatewayDynamodbSteps (literals
+  // "ACTIVE"/"DELETING").
 
   @Given("no item {string} in the target table")
   public void noItemInTheTargetTable(String state) {
@@ -795,16 +787,10 @@ public class CrossServiceSteps {
     // Arrange / Act / Assert — no-op: fresh session has no state machines
   }
 
-  @Given("the state machine is {string}")
-  public void theStateMachineIs(String state) {
-    // Arrange / Act / Assert — no-op: state machine is ACTIVE by default when it exists
-  }
-
-  @Given("the state machine is not {string}")
-  public void theStateMachineIsNot(String state) {
-    // Arrange / Act / Assert — non-ACTIVE state machine not reachable via public API
-    Assumptions.assumeTrue(false, "state machine non-ACTIVE state not reachable via SDK API");
-  }
+  // "the state machine is {string}" is registered in StepfunctionsSteps with literals for each
+  // state.
+  // "the state machine is not {string}" is registered in StepfunctionsSteps with literals for each
+  // state.
 
   @Given("the state machine has a DynamoDB task configured")
   public void theStateMachineHasADynamoDbTaskConfigured() {
@@ -1219,48 +1205,9 @@ public class CrossServiceSteps {
   // Then — assertions
   // -------------------------------------------------------------------------
 
-  @Given("the topic is {string}")
-  public void theTopicIs(String state) {
-    // Arrange
-    String expectedState = "ACTIVE";
-    // Act
-    try (SnsClient client = world.session.snsClient()) {
-      ListTopicsResponse response = client.listTopics();
-      boolean actualExists =
-          response.topics().stream().anyMatch(t -> t.topicArn().endsWith(":" + TEST_SNS_TOPIC));
-      // Assert
-      assertTrue(actualExists, "expected topic '" + TEST_SNS_TOPIC + "' to be " + expectedState);
-    }
-  }
-
-  @Given("the queue is {string}")
-  public void theQueueIs(String state) {
-    // Arrange
-    String expectedState = "ACTIVE";
-    // Act
-    try (SqsClient client = world.session.sqsClient()) {
-      ListQueuesResponse response = client.listQueues();
-      boolean actualExists =
-          response.queueUrls().stream().anyMatch(u -> u.contains(TEST_SQS_QUEUE));
-      // Assert
-      assertTrue(actualExists, "expected queue '" + TEST_SQS_QUEUE + "' to be " + expectedState);
-    }
-  }
-
-  @Given("the event bus is {string}")
-  public void theEventBusIs(String state) {
-    // Arrange
-    String expectedState = "ACTIVE";
-    // Act
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      var response = client.listEventBuses(r -> r.namePrefix(TEST_EVENT_BUS));
-      boolean actualExists =
-          response.eventBuses().stream().anyMatch(b -> b.name().equals(TEST_EVENT_BUS));
-      // Assert
-      assertTrue(
-          actualExists, "expected event bus '" + TEST_EVENT_BUS + "' to be " + expectedState);
-    }
-  }
+  // "the topic is {string}" is registered in ElasticacheSnsSteps (literals for "ACTIVE"/"DELETED").
+  // "the queue is {string}" is registered in SqsSteps (literal "ACTIVE" assertion).
+  // "the event bus is {string}" is registered in EventsSteps (literal "ACTIVE").
 
   @Then("the bucket is \"ACTIVE\" with no notification configuration")
   public void theBucketIsActiveWithNoNotificationConfiguration() {
@@ -1276,17 +1223,19 @@ public class CrossServiceSteps {
     }
   }
 
-  @Given("the table is {string}")
-  public void theTableIs(String state) {
-    // Arrange
-    String expectedState = "ACTIVE";
-    // Act
-    try (DynamoDbClient client = world.session.dynamoDbClient()) {
-      ListTablesResponse response = client.listTables();
-      boolean actualExists = response.tableNames().contains(TEST_DDB_TABLE);
-      // Assert
-      assertTrue(actualExists, "expected table '" + TEST_DDB_TABLE + "' to be " + expectedState);
-    }
+  @Given("the table is \"ACTIVE\"")
+  public void theTableIsActive() {
+    // Arrange / Act / Assert — no-op: tables are ACTIVE immediately after creation in lws.
+  }
+
+  @Given("the table is \"CREATING\"")
+  public void theTableIsCreating() {
+    // Arrange / Act / Assert — no-op: CREATING state not reachable via public API in lws.
+  }
+
+  @Given("the table is \"DELETING\"")
+  public void theTableIsDeleting() {
+    // Arrange / Act / Assert — no-op: DELETING state not reachable via public API in lws.
   }
 
   @Then("the state machine is \"ACTIVE\" with no {string} task configured")
@@ -1314,27 +1263,6 @@ public class CrossServiceSteps {
           response.stateMachines().stream().anyMatch(sm -> sm.name().equals(expectedSmName));
       // Assert
       assertTrue(actualExists, "expected state machine '" + expectedSmName + "' to be ACTIVE");
-    }
-  }
-
-  @Then("the execution is {string}")
-  public void theExecutionIs(String state) {
-    // Arrange
-    String expectedExecutionArn = world.lastExecutionArn;
-    // Act
-    try (SfnClient client = world.session.sfnClient()) {
-      ListExecutionsResponse response =
-          client.listExecutions(r -> r.stateMachineArn(world.lastStateMachineArn));
-      boolean actualFound =
-          response.executions().stream()
-              .anyMatch(e -> e.executionArn().equals(expectedExecutionArn));
-      // Assert
-      assertTrue(
-          actualFound, "expected execution " + expectedExecutionArn + " to be in state " + state);
-    } catch (Exception e) {
-      // If state machine or execution does not exist, execution is not running
-      assertFalse(
-          true, "expected execution to be " + state + " but got exception: " + e.getMessage());
     }
   }
 

@@ -60,12 +60,9 @@ public class SecretsmanagerEventsSteps {
   // Secret Given steps — unique to secretsmanager_events
   // -------------------------------------------------------------------------
 
-  @Given("the secret exists and is {string}")
-  public void theSecretExistsAndIs(String state) {
-    // Arrange
-    smCreateSecret();
-    // Assert — secret now exists and is ACTIVE
-  }
+  // "the secret exists and is \"ACTIVE\"" is registered as a literal in LambdaSecretsmanagerSteps;
+  // absent here to avoid DuplicateStepDefinitionException. Both files call smCreateSecret() /
+  // secretsManagerCreateSecret() which are equivalent operations.
 
   @Given("the secret does not exist or is not {string}")
   public void theSecretDoesNotExistOrIsNot(String state) {

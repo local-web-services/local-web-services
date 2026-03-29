@@ -12,11 +12,16 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from fastapi import FastAPI
+
+from lws.api.management import create_management_router
 from lws.interfaces import Provider
 from lws.parser.assembly import AppModel
+from lws.providers._shared.aws_capacity import AwsCapacityConfig
 from lws.providers._shared.aws_chaos import AwsChaosConfig
 from lws.providers._shared.aws_iam_auth import IamAuthBundle
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig
+from lws.providers._shared.capacity_control import create_capacity_control_router
 from lws.providers.apigateway.provider import ApiGatewayProvider
 from lws.providers.cognito.provider import CognitoProvider
 from lws.providers.cognito.user_store import UserPoolConfig
@@ -145,6 +150,7 @@ def _register_http_providers(
     aws_fake_configs: dict[str, AwsFakeConfig] | None = None,
     iam_auth: IamAuthBundle | None = None,
     lifecycle_configs: dict[str, Any] | None = None,
+    capacity_configs: dict[str, AwsCapacityConfig] | None = None,
 ) -> None:
     """Register HTTP service providers for each active backend."""
     from lws.providers.cognito.routes import (  # pylint: disable=import-outside-toplevel
@@ -161,6 +167,7 @@ def _register_http_providers(
     mc = aws_fake_configs or {}
     ia = iam_auth
     lc = lifecycle_configs or {}
+    cap = capacity_configs or {}
 
     http_services: list[tuple[str, Any, Callable[[], Any]]] = []
     http_services.append(
@@ -169,7 +176,9 @@ def _register_http_providers(
             ports["dynamodb"],
             lambda p=dynamo_provider, c=cc.get("dynamodb"), m=mc.get(
                 "dynamodb"
-            ), i=ia: create_dynamodb_app(p, chaos=c, aws_fake=m, iam_auth=i),
+            ), i=ia, cap_val=cap.get("dynamodb"): create_dynamodb_app(
+                p, chaos=c, aws_fake=m, iam_auth=i, capacity=cap_val
+            ),
         )
     )
     http_services.append(
@@ -178,7 +187,9 @@ def _register_http_providers(
             ports["sqs"],
             lambda p=sqs_provider, pt=ports["sqs"], c=cc.get("sqs"), m=mc.get(
                 "sqs"
-            ), i=ia: create_sqs_app(p, pt, chaos=c, aws_fake=m, iam_auth=i),
+            ), i=ia, cap_val=cap.get("sqs"): create_sqs_app(
+                p, pt, chaos=c, aws_fake=m, iam_auth=i, capacity=cap_val
+            ),
         )
     )
     http_services.append(
@@ -194,9 +205,9 @@ def _register_http_providers(
         (
             "sns",
             ports["sns"],
-            lambda p=sns_provider, c=cc.get("sns"), m=mc.get("sns"), i=ia: create_sns_app(
-                p, chaos=c, aws_fake=m, iam_auth=i
-            ),
+            lambda p=sns_provider, c=cc.get("sns"), m=mc.get("sns"), i=ia, cap_val=cap.get(
+                "sns"
+            ): create_sns_app(p, chaos=c, aws_fake=m, iam_auth=i, sns_capacity=cap_val),
         )
     )
     http_services.append(
@@ -214,7 +225,9 @@ def _register_http_providers(
             ports["stepfunctions"],
             lambda p=sf_provider, c=cc.get("stepfunctions"), m=mc.get(
                 "stepfunctions"
-            ), i=ia: create_stepfunctions_app(p, chaos=c, aws_fake=m, iam_auth=i),
+            ), i=ia, cap_val=cap.get("stepfunctions"): create_stepfunctions_app(
+                p, chaos=c, aws_fake=m, iam_auth=i, capacity=cap_val
+            ),
         )
     )
     http_services.append(
@@ -223,8 +236,8 @@ def _register_http_providers(
             ports["cognito-idp"],
             lambda p=cognito_provider, c=cc.get("cognito-idp"), m=mc.get(
                 "cognito-idp"
-            ), i=ia, lc_val=lc.get("cognito"): create_cognito_app(
-                p, chaos=c, aws_fake=m, iam_auth=i, lifecycle=lc_val
+            ), i=ia, lc_val=lc.get("cognito"), cap_val=cap.get("cognito"): create_cognito_app(
+                p, chaos=c, aws_fake=m, iam_auth=i, lifecycle=lc_val, capacity=cap_val
             ),
         )
     )
@@ -242,6 +255,7 @@ def _register_http_providers_from_set(
     aws_fake_configs: dict[str, AwsFakeConfig] | None = None,
     iam_auth: IamAuthBundle | None = None,
     lifecycle_configs: dict[str, Any] | None = None,
+    capacity_configs: dict[str, AwsCapacityConfig] | None = None,
 ) -> None:
     """Register HTTP service providers from a ``_CoreProviderSet``."""
     _register_http_providers(
@@ -258,6 +272,7 @@ def _register_http_providers_from_set(
         aws_fake_configs=aws_fake_configs,
         iam_auth=iam_auth,
         lifecycle_configs=lifecycle_configs,
+        capacity_configs=capacity_configs,
     )
 
 
@@ -412,14 +427,9 @@ def _mount_management_api(
     aws_fake_configs: dict[str, AwsFakeConfig] | None = None,
     iam_auth_bundle: IamAuthBundle | None = None,
     lifecycle_configs: dict[str, Any] | None = None,
+    capacity_configs: dict[str, AwsCapacityConfig] | None = None,
 ) -> None:
     """Mount the management API router on the API Gateway app or create a standalone one."""
-    from fastapi import FastAPI  # pylint: disable=import-outside-toplevel
-
-    from lws.api.management import (  # pylint: disable=import-outside-toplevel
-        create_management_router,
-    )
-
     mgmt_router = create_management_router(
         orchestrator,
         providers,
@@ -428,17 +438,21 @@ def _mount_management_api(
         aws_fake_configs=aws_fake_configs,
         iam_auth_bundle=iam_auth_bundle,
         lifecycle_configs=lifecycle_configs,
+        capacity_configs=capacity_configs,
     )
+    capacity_router = create_capacity_control_router(capacity_configs or {})
 
     # Try to find an existing API Gateway provider to mount on
     for _key, prov in providers.items():
         if isinstance(prov, ApiGatewayProvider):
             prov.app.include_router(mgmt_router)
+            prov.app.include_router(capacity_router)
             return
 
     # No API Gateway — create a standalone FastAPI app for management
     mgmt_app = FastAPI(title="LDK Management")
     mgmt_app.include_router(mgmt_router)
+    mgmt_app.include_router(capacity_router)
     providers["__management_http__"] = _HttpServiceProvider(
         "management-http", lambda: mgmt_app, port
     )

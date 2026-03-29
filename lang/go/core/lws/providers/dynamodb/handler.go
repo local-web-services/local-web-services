@@ -21,14 +21,15 @@ type TableItem = map[string]interface{}
 
 // Table represents a DynamoDB table.
 type Table struct {
-	Name         string
-	PartitionKey string
-	SortKey      string
-	Items        map[string]TableItem
-	Tags         []map[string]string
-	CreatedAt    time.Time
-	TTLAttr      string
-	TTLEnabled   bool
+	Name          string
+	PartitionKey  string
+	SortKey       string
+	Items         map[string]TableItem
+	Tags          []map[string]string
+	CreatedAt     time.Time
+	TTLAttr       string
+	TTLEnabled    bool
+	StreamEnabled bool
 }
 
 // Store holds all DynamoDB tables.
@@ -216,7 +217,7 @@ func tableDesc(t *Table) map[string]interface{} {
 		attrDefs = append(attrDefs, map[string]string{"AttributeName": t.SortKey, "AttributeType": "S"})
 	}
 	arn := fmt.Sprintf("arn:aws:dynamodb:%s:%s:table/%s", region, accountID, t.Name)
-	return map[string]interface{}{
+	desc := map[string]interface{}{
 		"TableName":             t.Name,
 		"TableArn":              arn,
 		"TableStatus":           "ACTIVE",
@@ -228,6 +229,14 @@ func tableDesc(t *Table) map[string]interface{} {
 		"BillingModeSummary":    map[string]string{"BillingMode": "PAY_PER_REQUEST"},
 		"ProvisionedThroughput": map[string]interface{}{"ReadCapacityUnits": 0, "WriteCapacityUnits": 0},
 	}
+	if t.StreamEnabled {
+		desc["StreamSpecification"] = map[string]interface{}{
+			"StreamEnabled":  true,
+			"StreamViewType": "NEW_AND_OLD_IMAGES",
+		}
+		desc["LatestStreamArn"] = fmt.Sprintf("arn:aws:dynamodb:%s:%s:table/%s/stream/2024-01-01T00:00:00.000", region, accountID, t.Name)
+	}
+	return desc
 }
 
 // ── FilterExpression evaluation ──────────────────────────────────────────────
@@ -681,6 +690,13 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			writeErr(w, "ResourceInUseException", "Table already exists: "+name, 400)
 			return
 		}
+		// Parse StreamSpecification if provided
+		if ss, ok := body["StreamSpecification"].(map[string]interface{}); ok {
+			if enabled, ok := ss["StreamEnabled"].(bool); ok && enabled {
+				t.StreamEnabled = true
+			}
+		}
+		h.state.TrackResourceCreation("dynamodb", name)
 		writeOK(w, map[string]interface{}{"TableDescription": tableDesc(t)})
 
 	case "DeleteTable":
@@ -699,6 +715,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		t := h.store.getTable(name)
 		if t == nil {
 			writeErr(w, "ResourceNotFoundException", "Table not found: "+name, 400)
+			return
+		}
+		if h.state.IsResourceInDwell("dynamodb", name) {
+			writeErr(w, "ResourceNotFoundException", "Table "+name+" is not ACTIVE", 400)
 			return
 		}
 		writeOK(w, map[string]interface{}{"Table": tableDesc(t)})
@@ -735,6 +755,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		t := h.store.getTable(name)
 		if t == nil {
 			writeErr(w, "ResourceNotFoundException", "Table not found: "+name, 400)
+			return
+		}
+		if h.state.GetCapacityRule("dynamodb").IsExhausted() {
+			writeErr(w, "ProvisionedThroughputExceededException", "Reads are throttled", 400)
 			return
 		}
 		key, _ := body["Key"].(map[string]interface{})
@@ -833,6 +857,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			writeErr(w, "ResourceNotFoundException", "Table not found: "+name, 400)
 			return
 		}
+		if h.state.GetCapacityRule("dynamodb").IsExhausted() {
+			writeErr(w, "ProvisionedThroughputExceededException", "Reads are throttled", 400)
+			return
+		}
 		var items []interface{}
 		for _, item := range t.Items {
 			items = append(items, item)
@@ -852,6 +880,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		t := h.store.getTable(name)
 		if t == nil {
 			writeErr(w, "ResourceNotFoundException", "Table not found: "+name, 400)
+			return
+		}
+		if h.state.GetCapacityRule("dynamodb").IsExhausted() {
+			writeErr(w, "ProvisionedThroughputExceededException", "Reads are throttled", 400)
 			return
 		}
 		var items []interface{}
@@ -949,6 +981,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		writeOK(w, map[string]interface{}{"Responses": responses})
 
 	case "TransactWriteItems":
+		if h.state.GetCapacityRule("dynamodb").IsExhausted() {
+			writeErr(w, "ProvisionedThroughputExceededException", "Writes are throttled", 400)
+			return
+		}
 		transItems, _ := body["TransactItems"].([]interface{})
 		// First pass: validate all tables exist.
 		for _, tRaw := range transItems {

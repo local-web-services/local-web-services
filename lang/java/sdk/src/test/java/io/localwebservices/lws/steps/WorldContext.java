@@ -30,6 +30,29 @@ public class WorldContext {
   public String lastStateMachineArn;
   public String lastExecutionArn;
 
+  // Last cluster service used in a When step — used to dispatch shared "the cluster is in X state"
+  // assertions between DocDB and MemoryDB (both share identical step text).
+  public String lastClusterService;
+
+  // Resource service context — set by @Before hooks on service-tagged scenarios, used to dispatch
+  // shared "the resource exists" step between ApiGateway and ElastiCache.
+  public String lastResourceService;
+
+  // SQS spec state — receipt handle for in-flight message operations
+  public String sqsReceiptHandle;
+
+  // Active SQS queue name — set by SQS spec steps; null means use the default cross-service queue.
+  public String sqsActiveQueueName;
+
+  // S3api multipart upload state — set when an S3 multipart upload is created for s3api scenarios.
+  public String s3UploadId;
+  public String s3UploadBucket;
+
+  // Cognito IDP spec state
+  public String cognitoPoolId;
+  public String cognitoUsername;
+  public String cognitoGroupName;
+
   public void setSuccess(Object output) {
     lastSuccess = true;
     lastOutput = output;

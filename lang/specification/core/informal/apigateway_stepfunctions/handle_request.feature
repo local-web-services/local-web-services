@@ -51,7 +51,7 @@ Feature: ApigatewayStepfunctions - The Api Receives An Http Request And Synchron
     When the "API" receives an "HTTP" request and synchronously starts a Step Functions execution
     Then the operation is rejected
 
-  @standard @negative @handle_request @capacity
+  @standard @negative @internal @handle_request @capacity
   Scenario: the "API" receives an "HTTP" request and synchronously starts a Step Functions execution fails when no request slot is available
     Given the "API" exists
     And the "API" is "ACTIVE"
@@ -61,7 +61,7 @@ Feature: ApigatewayStepfunctions - The Api Receives An Http Request And Synchron
     When the "API" receives an "HTTP" request and synchronously starts a Step Functions execution
     Then the operation is rejected
 
-  @standard @negative @handle_request @capacity
+  @standard @negative @internal @handle_request @capacity
   Scenario: the "API" receives an "HTTP" request and synchronously starts a Step Functions execution fails when no execution slot is available
     Given the "API" exists
     And the "API" is "ACTIVE"

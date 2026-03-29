@@ -1,0 +1,13 @@
+"""Given: the namespace already exists"""
+
+from __future__ import annotations
+
+from pytest_bdd import given
+from starlette.testclient import TestClient
+
+from ..client import S3tablesTestClient
+
+
+@given("the namespace already exists")
+def namespace_already_exists(client: TestClient):
+    S3tablesTestClient(client).create_namespace()

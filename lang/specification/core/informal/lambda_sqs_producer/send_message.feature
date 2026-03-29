@@ -39,7 +39,7 @@ Feature: LambdaSqsProducer - The Lambda Function Sends A Message To The Sqs Queu
     When the Lambda function sends a message to the "SQS" queue during invocation
     Then the operation is rejected
 
-  @standard @negative @send_message @capacity
+  @standard @negative @internal @send_message @capacity
   Scenario: the Lambda function sends a message to the "SQS" queue during invocation fails when no message slot is available
     Given an invocation is "IN_PROGRESS"
     And the queue exists

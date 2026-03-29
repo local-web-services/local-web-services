@@ -31,7 +31,7 @@ Feature: EventsDynamodb - An Event Matches An Enabled Rule And Eventbridge Write
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     Then the operation is rejected
 
-  @standard @negative @event_targets_dynamo_d_b @capacity
+  @standard @negative @internal @event_targets_dynamo_d_b @capacity
   Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target fails when no event slot is available
     Given a rule is "ENABLED"
     And the target table is "ACTIVE"
@@ -39,7 +39,7 @@ Feature: EventsDynamodb - An Event Matches An Enabled Rule And Eventbridge Write
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     Then the operation is rejected
 
-  @standard @negative @event_targets_dynamo_d_b @capacity
+  @standard @negative @internal @event_targets_dynamo_d_b @capacity
   Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target fails when no item slot is available
     Given a rule is "ENABLED"
     And the target table is "ACTIVE"

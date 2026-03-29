@@ -1,0 +1,17 @@
+"""Given: the subscription's topic is not "ACTIVE" """
+
+from __future__ import annotations
+
+from pytest_bdd import given
+
+from ..client import SnsTestClient
+
+
+@given('the subscription\'s topic is not "ACTIVE"')
+def subscriptions_topic_is_not_active(lws_session, world):
+    try:
+        SnsTestClient(lws_session).delete_topic(TopicArn=SnsTestClient(lws_session).get_topic_arn())
+    except Exception:
+        pass
+    lws_session.lifecycle("sns").create_dwell_ms(5000).apply()
+    world["topic_arn"] = SnsTestClient(lws_session).create_topic()

@@ -19,6 +19,21 @@ async def parse_json_body(request: Request) -> dict:
         return {}
 
 
+async def parse_query_body(request: Request) -> dict:
+    """Parse an application/x-www-form-urlencoded request body.
+
+    Returns a flat dict where each query-string parameter maps to its
+    first (and typically only) value.
+    """
+    from urllib.parse import parse_qs  # pylint: disable=import-outside-toplevel
+
+    body_bytes = await request.body()
+    if not body_bytes:
+        return {}
+    params = parse_qs(body_bytes.decode("utf-8"), keep_blank_values=True)
+    return {k: v[0] for k, v in params.items()}
+
+
 def resolve_api_action(target: str, body: dict) -> str:
     """Resolve the API action from the X-Amz-Target header or body."""
     if target:

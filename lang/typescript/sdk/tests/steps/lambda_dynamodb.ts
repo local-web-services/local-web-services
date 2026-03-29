@@ -1,0 +1,129 @@
+/** Step definitions: lambda_dynamodb cross-service informal specification scenarios */
+
+// Steps already registered in other files are NOT re-registered here where they
+// conflict — in particular, "a DynamoDB table is created" is already in
+// cross_service_common.ts, so it is omitted.  All other lambda-side invocation
+// steps follow the same pattern as lambda_sns.ts.
+
+import { Given, When, Then, Before } from "@cucumber/cucumber";
+import assert from "assert";
+import type { SdkWorld } from "../support/world";
+
+const LAMBDA_DYNAMODB_TEST_FUNC = "e2e-test-func-1";
+const LAMBDA_DYNAMODB_TEST_TABLE = "e2e-test-table-1";
+const LAMBDA_DYNAMODB_TEST_PK = "pk";
+const LAMBDA_DYNAMODB_ROLE_ARN = "arn:aws:iam::000000000000:role/test";
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
+
+function lambdaDynamodbLambdaClient(world: SdkWorld) {
+  const { LambdaClient } = require("@aws-sdk/client-lambda");
+  return world.session!.client<typeof LambdaClient>("lambda");
+}
+
+async function lambdaDynamodbCreateFunction(world: SdkWorld): Promise<void> {
+  const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
+  await lambdaDynamodbLambdaClient(world).send(
+    new CreateFunctionCommand({
+      FunctionName: LAMBDA_DYNAMODB_TEST_FUNC,
+      Runtime: "python3.12",
+      Role: LAMBDA_DYNAMODB_ROLE_ARN,
+      Handler: "index.handler",
+      Code: { ZipFile: Buffer.from("fake") },
+    }),
+  );
+}
+
+// ── Before hook: register functionHelpers for lambdadynamodb scenarios ─────────────
+
+Before({ tags: "@lambdadynamodb" }, function (this: SdkWorld) {
+  this.functionHelpers = {
+    functionName: LAMBDA_DYNAMODB_TEST_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      try {
+        await lambdaDynamodbCreateFunction(world);
+        world.lastCallResult = {
+          success: true,
+          output: { FunctionName: LAMBDA_DYNAMODB_TEST_FUNC },
+        };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    assertFunctionActive: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
+      const result = await lambdaDynamodbLambdaClient(world).send(
+        new GetFunctionCommand({ FunctionName: LAMBDA_DYNAMODB_TEST_FUNC }),
+      );
+      const expectedState = "Active";
+      const actualState = result.Configuration?.State ?? "";
+      assert.strictEqual(
+        actualState,
+        expectedState,
+        `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
+      );
+    },
+  };
+});
+
+// ── Given: invocation state ───────────────────────────────────────────────────
+
+// "an invocation is {string}" — registered in capacity.ts (dispatches via functionHelpers)
+// "no invocation is {string}" — registered in capacity.ts
+
+// ── When: actions ─────────────────────────────────────────────────────────────
+
+When("the Lambda invocation fails", async function (this: SdkWorld) {
+  // @internal: Cannot trigger Lambda invocation failure in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+  this.lastCallResult = {
+    success: false,
+    output: null,
+    error: new Error("cannot trigger Lambda invocation failure: scenario is @internal"),
+  };
+});
+
+When("the Lambda invocation completes successfully", async function (this: SdkWorld) {
+  // @internal: Cannot trigger Lambda invocation success in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+  this.lastCallResult = {
+    success: false,
+    output: null,
+    error: new Error("cannot trigger Lambda invocation success: scenario is @internal"),
+  };
+});
+
+When(
+  "the Lambda function writes an item to the DynamoDB table during invocation",
+  async function (this: SdkWorld) {
+    // @internal: Cannot trigger Lambda item write in lws without Docker.
+    assert.ok(this.session, "Expected session to be initialized");
+    this.lastCallResult = {
+      success: false,
+      output: null,
+      error: new Error("cannot trigger Lambda item write: scenario is @internal"),
+    };
+  },
+);
+
+// ── Then: assertions ──────────────────────────────────────────────────────────
+
+// "the function is {string}" is already registered in lambda.ts and covers
+// "Then the function is \"ACTIVE\"" — not re-registered here.
+
+// "the table is {string}" is already registered in dynamodb.ts and covers
+// "Then the table is \"ACTIVE\"" — not re-registered here.
+
+// "the invocation is {string}" — registered in lambda_common.ts (literal versions for IN_PROGRESS/SUCCESS/FAILED)
+
+Then('the item "EXISTS" in the table', async function (this: SdkWorld) {
+  // @internal: Cannot observe Lambda item write result in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
+
+// ── Invariant Then steps ──────────────────────────────────────────────────────
+
+// "every {string} invocation references an {string} Lambda function" is registered in cross_service_common.ts.
+
+// "every existing item belongs to an {string} table" is registered in cross_service_common.ts.

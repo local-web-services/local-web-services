@@ -9,7 +9,7 @@ class TestParseLifecycleConfigDefaults:
     def test_parse_lifecycle_config_defaults(self):
         # Arrange
         raw: dict = {}
-        expected_enabled = False
+        expected_enabled = True
         expected_create_dwell_ms = 0
         expected_delete_dwell_ms = 0
 

@@ -99,9 +99,26 @@ func (s *Store) Reset() {
 	s.stages = make(map[string]map[string]*Stage)
 }
 
-func (s *Store) createRestAPI(name, description string, tags map[string]string) *RestAPI {
+func (s *Store) findAPIByName(name string) *RestAPI {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	for _, a := range s.apis {
+		if a.Name == name {
+			return a
+		}
+	}
+	return nil
+}
+
+func (s *Store) createRestAPI(name, description string, tags map[string]string) (*RestAPI, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	// Check for duplicate name.
+	for _, a := range s.apis {
+		if a.Name == name {
+			return nil, fmt.Errorf("REST API with name %q already exists", name)
+		}
+	}
 	id := uuid10()
 	if tags == nil {
 		tags = map[string]string{}
@@ -114,7 +131,7 @@ func (s *Store) createRestAPI(name, description string, tags map[string]string) 
 	}
 	s.deployments[id] = make(map[string]*Deployment)
 	s.stages[id] = make(map[string]*Stage)
-	return api
+	return api, nil
 }
 
 func (s *Store) getRestAPI(id string) *RestAPI {
@@ -198,8 +215,13 @@ func (s *Store) deleteResource(apiID, resourceID string) error {
 	if !ok {
 		return fmt.Errorf("NotFoundException: Rest API %s not found", apiID)
 	}
-	if _, ok := rm[resourceID]; !ok {
+	resource, ok := rm[resourceID]
+	if !ok {
 		return fmt.Errorf("NotFoundException: Resource %s not found", resourceID)
+	}
+	// Reject deletion of the root resource (path == "/" or no parent).
+	if resource.Path == "/" || resource.ParentID == nil {
+		return fmt.Errorf("BadRequestException: Cannot delete the root resource")
 	}
 	delete(rm, resourceID)
 	return nil
@@ -240,14 +262,22 @@ func (s *Store) getMethod(apiID, resourceID, httpMethod string) *ResourceMethod 
 	return nil
 }
 
-func (s *Store) deleteMethod(apiID, resourceID, httpMethod string) {
+func (s *Store) deleteMethod(apiID, resourceID, httpMethod string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if rm, ok := s.resources[apiID]; ok {
-		if resource, ok := rm[resourceID]; ok {
-			delete(resource.ResourceMethods, httpMethod)
-		}
+	rm, ok := s.resources[apiID]
+	if !ok {
+		return fmt.Errorf("NotFoundException: Rest API %s not found", apiID)
 	}
+	resource, ok := rm[resourceID]
+	if !ok {
+		return fmt.Errorf("NotFoundException: Resource %s not found", resourceID)
+	}
+	if _, ok := resource.ResourceMethods[httpMethod]; !ok {
+		return fmt.Errorf("NotFoundException: Method %s not found", httpMethod)
+	}
+	delete(resource.ResourceMethods, httpMethod)
+	return nil
 }
 
 func (s *Store) putMethodResponse(apiID, resourceID, httpMethod, statusCode string) (*MethodResponse, error) {
@@ -294,13 +324,18 @@ func (s *Store) getIntegration(apiID, resourceID, httpMethod string) *MethodInte
 	return nil
 }
 
-func (s *Store) deleteIntegration(apiID, resourceID, httpMethod string) {
+func (s *Store) deleteIntegration(apiID, resourceID, httpMethod string) error {
 	method := s.getMethod(apiID, resourceID, httpMethod)
-	if method != nil {
-		s.mu.Lock()
-		method.MethodIntegration = nil
-		s.mu.Unlock()
+	if method == nil {
+		return fmt.Errorf("NotFoundException: Method %s not found", httpMethod)
 	}
+	if method.MethodIntegration == nil {
+		return fmt.Errorf("NotFoundException: Integration not found for method %s", httpMethod)
+	}
+	s.mu.Lock()
+	method.MethodIntegration = nil
+	s.mu.Unlock()
+	return nil
 }
 
 func (s *Store) putIntegrationResponse(apiID, resourceID, httpMethod, statusCode string) (*IntegrationResponse, error) {
@@ -382,10 +417,14 @@ func (s *Store) createStage(apiID, stageName, deploymentID, description string) 
 	if !ok {
 		return nil, fmt.Errorf("NotFoundException: Rest API %s not found", apiID)
 	}
-	if existing, ok := sm[stageName]; ok {
-		existing.DeploymentID = deploymentID
-		existing.LastUpdatedDate = time.Now().Unix()
-		return existing, nil
+	// Validate that the deployment exists.
+	dm, ok := s.deployments[apiID]
+	if !ok || dm[deploymentID] == nil {
+		return nil, fmt.Errorf("NotFoundException: Deployment %s not found", deploymentID)
+	}
+	// Reject if stage already exists.
+	if _, ok := sm[stageName]; ok {
+		return nil, fmt.Errorf("ConflictException: Stage %s already exists", stageName)
 	}
 	stage := &Stage{
 		StageName: stageName, DeploymentID: deploymentID, Description: description,
@@ -475,12 +514,20 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch {
 	// POST /restapis
 	case method == http.MethodPost && path == "/restapis":
-		api := h.store.createRestAPI(strVal(body, "name"), strVal(body, "description"), mapStrStr(body, "tags"))
+		if h.state.GetCapacityRule("apigateway").IsExhausted() {
+			sendError(w, 429, "TooManyRequestsException", "No resource slot is available")
+			return
+		}
+		api, err := h.store.createRestAPI(strVal(body, "name"), strVal(body, "description"), mapStrStr(body, "tags"))
+		if err != nil {
+			sendError(w, 409, "ConflictException", err.Error())
+			return
+		}
 		sendJSON(w, 201, api)
 
 	// GET /restapis
 	case method == http.MethodGet && path == "/restapis":
-		sendJSON(w, 200, map[string]interface{}{"items": h.store.listRestAPIs()})
+		sendJSON(w, 200, map[string]interface{}{"item": h.store.listRestAPIs()})
 
 	// GET /restapis/:id
 	case method == http.MethodGet && len(parts) == 2 && parts[0] == "restapis":
@@ -503,7 +550,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if resources, err := h.store.getResources(parts[1]); err != nil {
 			sendError(w, 404, "NotFoundException", err.Error())
 		} else {
-			sendJSON(w, 200, map[string]interface{}{"items": resources})
+			sendJSON(w, 200, map[string]interface{}{"item": resources})
 		}
 
 	// POST /restapis/:id/resources/:parentId
@@ -571,8 +618,11 @@ func (h *Handler) handleMethodRoute(w http.ResponseWriter, method string, parts 
 			sendError(w, 404, "NotFoundException", "Method not found")
 		}
 	case method == http.MethodDelete && len(parts) == 6:
-		h.store.deleteMethod(apiID, resourceID, httpMethod)
-		w.WriteHeader(204)
+		if err := h.store.deleteMethod(apiID, resourceID, httpMethod); err != nil {
+			sendError(w, 404, "NotFoundException", err.Error())
+		} else {
+			w.WriteHeader(204)
+		}
 
 	// PUT /…/methods/:m/responses/:statusCode
 	case method == http.MethodPut && len(parts) == 8 && parts[6] == "responses":
@@ -598,8 +648,11 @@ func (h *Handler) handleMethodRoute(w http.ResponseWriter, method string, parts 
 			sendError(w, 404, "NotFoundException", "Integration not found")
 		}
 	case method == http.MethodDelete && len(parts) == 7 && parts[6] == "integration":
-		h.store.deleteIntegration(apiID, resourceID, httpMethod)
-		w.WriteHeader(204)
+		if err := h.store.deleteIntegration(apiID, resourceID, httpMethod); err != nil {
+			sendError(w, 404, "NotFoundException", err.Error())
+		} else {
+			w.WriteHeader(204)
+		}
 
 	// PUT /…/methods/:m/integration/responses/:statusCode
 	case method == http.MethodPut && len(parts) == 9 && parts[6] == "integration" && parts[7] == "responses":
@@ -629,7 +682,7 @@ func (h *Handler) handleDeploymentRoute(w http.ResponseWriter, method string, pa
 		if err != nil {
 			sendError(w, 404, "NotFoundException", err.Error())
 		} else {
-			sendJSON(w, 200, map[string]interface{}{"items": deps})
+			sendJSON(w, 200, map[string]interface{}{"item": deps})
 		}
 	case method == http.MethodGet && len(parts) == 4:
 		if d := h.store.getDeployment(apiID, parts[3]); d != nil {
@@ -654,7 +707,11 @@ func (h *Handler) handleStageRoute(w http.ResponseWriter, r *http.Request, metho
 	case method == http.MethodPost && len(parts) == 3:
 		stage, err := h.store.createStage(apiID, strVal(body, "stageName"), strVal(body, "deploymentId"), strVal(body, "description"))
 		if err != nil {
-			sendError(w, 404, "NotFoundException", err.Error())
+			if strings.HasPrefix(err.Error(), "ConflictException:") {
+				sendError(w, 409, "ConflictException", err.Error())
+			} else {
+				sendError(w, 404, "NotFoundException", err.Error())
+			}
 		} else {
 			sendJSON(w, 201, stage)
 		}

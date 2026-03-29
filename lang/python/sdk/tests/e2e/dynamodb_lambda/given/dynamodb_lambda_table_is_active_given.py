@@ -1,0 +1,10 @@
+"""Given: the table is "ACTIVE" """
+
+from __future__ import annotations
+
+from pytest_bdd import given
+
+
+@given('the table is "ACTIVE"')
+def dynamodb_lambda_table_is_active_given():
+    """No-op: DynamoDB tables are ACTIVE immediately after creation."""

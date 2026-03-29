@@ -41,7 +41,7 @@ public class SecretsManagerStorePutRotateTest {
     String expectedSecretString = "updated";
 
     // Act
-    store.updateSecret(secret, expectedSecretString, null, "newVer");
+    store.updateSecret(secret, expectedSecretString, null, "newVer", null);
 
     // Assert
     assertEquals(

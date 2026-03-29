@@ -26,6 +26,7 @@ testpaths = ["tests"]
 timeout = 120
 pythonpath = ["."]
 asyncio_mode = "auto"
+addopts = "-qq --no-header --disable-warnings"
 markers = [
     "internal: scenarios tagged @internal in Gherkin (excluded from standard test runs)",
 ]

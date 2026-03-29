@@ -36,7 +36,7 @@ Feature: Neptune - A Cluster Is Restored From A Snapshot
     When a cluster is restored from a snapshot
     Then the operation is rejected
 
-  @standard @negative @restore_d_b_cluster_from_snapshot
+  @standard @negative @internal @restore_d_b_cluster_from_snapshot
   Scenario: a cluster is restored from a snapshot fails when the target cluster slot is not available
     Given the snapshot exists
     And the snapshot is "AVAILABLE"

@@ -39,7 +39,7 @@ Feature: RdsLambda - An Rds Stored Procedure Invokes The Lambda Function And Suc
     When an "RDS" stored procedure invokes the Lambda function and succeeds
     Then the operation is rejected
 
-  @standard @negative @stored_proc_invokes_lambda @capacity
+  @standard @negative @internal @stored_proc_invokes_lambda @capacity
   Scenario: an "RDS" stored procedure invokes the Lambda function and succeeds fails when no invocation slot is available
     Given the "DB" instance is "AVAILABLE"
     And the "DB" instance has a Lambda integration configured

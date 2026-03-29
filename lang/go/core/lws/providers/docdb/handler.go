@@ -1,7 +1,7 @@
 package docdb
 
 import (
-	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"net/http"
@@ -94,51 +94,92 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.handle(w, action, params)
 }
 
-func sendJSON(w http.ResponseWriter, status int, v interface{}) {
-	w.Header().Set("Content-Type", "application/json")
+func sendXML(w http.ResponseWriter, status int, v interface{}) {
+	w.Header().Set("Content-Type", "text/xml")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(v) //nolint:errcheck
+	io.WriteString(w, xml.Header) //nolint:errcheck
+	xml.NewEncoder(w).Encode(v)   //nolint:errcheck
 }
 
 func sendError(w http.ResponseWriter, status int, code, msg string) {
-	sendJSON(w, status, map[string]string{"__type": code, "message": msg})
+	type xmlError struct {
+		XMLName   xml.Name `xml:"ErrorResponse"`
+		Code      string   `xml:"Error>Code"`
+		Message   string   `xml:"Error>Message"`
+		RequestID string   `xml:"RequestId"`
+	}
+	sendXML(w, status, xmlError{Code: code, Message: msg, RequestID: "00000000-0000-0000-0000-000000000000"})
 }
 
-func clusterDesc(c *DBCluster) map[string]interface{} {
-	return map[string]interface{}{
-		"DBClusterIdentifier": c.DBClusterIdentifier,
-		"Status":              c.Status,
-		"Engine":              c.Engine,
-		"Endpoint":            c.Endpoint,
-		"ReaderEndpoint":      c.ReaderEndpoint,
-		"Port":                c.Port,
-		"MasterUsername":      c.MasterUsername,
-		"DBClusterArn":        fmt.Sprintf("arn:aws:rds:%s:%s:cluster:%s", region, accountID, c.DBClusterIdentifier),
+type xmlEndpoint struct {
+	Address string `xml:"Address"`
+	Port    int    `xml:"Port"`
+}
+
+type xmlDBCluster struct {
+	DBClusterIdentifier string `xml:"DBClusterIdentifier"`
+	Status              string `xml:"Status"`
+	Engine              string `xml:"Engine"`
+	Endpoint            string `xml:"Endpoint"`
+	ReaderEndpoint      string `xml:"ReaderEndpoint"`
+	Port                int    `xml:"Port"`
+	MasterUsername      string `xml:"MasterUsername"`
+	DBClusterArn        string `xml:"DBClusterArn"`
+}
+
+type xmlDBInstance struct {
+	DBInstanceIdentifier string      `xml:"DBInstanceIdentifier"`
+	DBClusterIdentifier  string      `xml:"DBClusterIdentifier"`
+	DBInstanceClass      string      `xml:"DBInstanceClass"`
+	Engine               string      `xml:"Engine"`
+	DBInstanceStatus     string      `xml:"DBInstanceStatus"`
+	Endpoint             xmlEndpoint `xml:"Endpoint"`
+	DBInstanceArn        string      `xml:"DBInstanceArn"`
+}
+
+type xmlDBClusterSnapshot struct {
+	DBClusterSnapshotIdentifier string `xml:"DBClusterSnapshotIdentifier"`
+	DBClusterIdentifier         string `xml:"DBClusterIdentifier"`
+	Status                      string `xml:"Status"`
+	Engine                      string `xml:"Engine"`
+	DBClusterSnapshotArn        string `xml:"DBClusterSnapshotArn"`
+}
+
+func clusterXML(c *DBCluster) xmlDBCluster {
+	return xmlDBCluster{
+		DBClusterIdentifier: c.DBClusterIdentifier,
+		Status:              c.Status,
+		Engine:              c.Engine,
+		Endpoint:            c.Endpoint,
+		ReaderEndpoint:      c.ReaderEndpoint,
+		Port:                c.Port,
+		MasterUsername:      c.MasterUsername,
+		DBClusterArn:        fmt.Sprintf("arn:aws:rds:%s:%s:cluster:%s", region, accountID, c.DBClusterIdentifier),
 	}
 }
 
-func instanceDesc(i *DBInstance) map[string]interface{} {
-	return map[string]interface{}{
-		"DBInstanceIdentifier": i.DBInstanceIdentifier,
-		"DBClusterIdentifier":  i.DBClusterIdentifier,
-		"DBInstanceClass":      i.DBInstanceClass,
-		"Engine":               i.Engine,
-		"DBInstanceStatus":     i.DBInstanceStatus,
-		"Endpoint": map[string]interface{}{
-			"Address": i.EndpointAddress,
-			"Port":    i.EndpointPort,
+func instanceXML(i *DBInstance) xmlDBInstance {
+	return xmlDBInstance{
+		DBInstanceIdentifier: i.DBInstanceIdentifier,
+		DBClusterIdentifier:  i.DBClusterIdentifier,
+		DBInstanceClass:      i.DBInstanceClass,
+		Engine:               i.Engine,
+		DBInstanceStatus:     i.DBInstanceStatus,
+		Endpoint: xmlEndpoint{
+			Address: i.EndpointAddress,
+			Port:    i.EndpointPort,
 		},
-		"DBInstanceArn": fmt.Sprintf("arn:aws:rds:%s:%s:db:%s", region, accountID, i.DBInstanceIdentifier),
+		DBInstanceArn: fmt.Sprintf("arn:aws:rds:%s:%s:db:%s", region, accountID, i.DBInstanceIdentifier),
 	}
 }
 
-func snapshotDesc(s *DBClusterSnapshot) map[string]interface{} {
-	return map[string]interface{}{
-		"DBClusterSnapshotIdentifier": s.DBClusterSnapshotIdentifier,
-		"DBClusterIdentifier":         s.DBClusterIdentifier,
-		"Status":                      s.Status,
-		"Engine":                      s.Engine,
-		"DBClusterSnapshotArn":        fmt.Sprintf("arn:aws:rds:%s:%s:cluster-snapshot:%s", region, accountID, s.DBClusterSnapshotIdentifier),
+func snapshotXML(s *DBClusterSnapshot) xmlDBClusterSnapshot {
+	return xmlDBClusterSnapshot{
+		DBClusterSnapshotIdentifier: s.DBClusterSnapshotIdentifier,
+		DBClusterIdentifier:         s.DBClusterIdentifier,
+		Status:                      s.Status,
+		Engine:                      s.Engine,
+		DBClusterSnapshotArn:        fmt.Sprintf("arn:aws:rds:%s:%s:cluster-snapshot:%s", region, accountID, s.DBClusterSnapshotIdentifier),
 	}
 }
 
@@ -146,9 +187,15 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 	switch action {
 	case "CreateDBCluster":
 		id := params.Get("DBClusterIdentifier")
+		h.store.mu.Lock()
+		if existing, exists := h.store.clusters[id]; exists && existing.Status != "deleting" {
+			h.store.mu.Unlock()
+			sendError(w, 400, "DBClusterAlreadyExistsFault", "DB cluster already exists: "+id)
+			return
+		}
 		cluster := &DBCluster{
 			DBClusterIdentifier: id,
-			Status:              "available",
+			Status:              "creating",
 			Engine:              "docdb",
 			Endpoint:            "localhost",
 			ReaderEndpoint:      "localhost",
@@ -156,125 +203,242 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 			MasterUsername:      params.Get("MasterUsername"),
 			CreatedAt:           time.Now(),
 		}
-		h.store.mu.Lock()
 		h.store.clusters[id] = cluster
 		h.store.mu.Unlock()
-		sendJSON(w, 200, map[string]interface{}{"DBCluster": clusterDesc(cluster)})
+		type resp struct {
+			XMLName xml.Name     `xml:"CreateDBClusterResponse"`
+			Result  xmlDBCluster `xml:"CreateDBClusterResult>DBCluster"`
+		}
+		sendXML(w, 200, resp{Result: clusterXML(cluster)})
 
 	case "DeleteDBCluster":
 		id := params.Get("DBClusterIdentifier")
 		h.store.mu.Lock()
 		cluster := h.store.clusters[id]
-		delete(h.store.clusters, id)
-		h.store.mu.Unlock()
 		if cluster == nil {
+			h.store.mu.Unlock()
 			sendError(w, 404, "DBClusterNotFoundFault", "DB cluster not found: "+id)
 			return
 		}
-		sendJSON(w, 200, map[string]interface{}{"DBCluster": clusterDesc(cluster)})
+		cluster.Status = "deleting"
+		h.store.mu.Unlock()
+		type resp struct {
+			XMLName xml.Name     `xml:"DeleteDBClusterResponse"`
+			Result  xmlDBCluster `xml:"DeleteDBClusterResult>DBCluster"`
+		}
+		sendXML(w, 200, resp{Result: clusterXML(cluster)})
 
 	case "DescribeDBClusters":
 		filterID := params.Get("DBClusterIdentifier")
 		h.store.mu.RLock()
-		var clusters []map[string]interface{}
+		var clusters []xmlDBCluster
 		for _, c := range h.store.clusters {
 			if filterID == "" || c.DBClusterIdentifier == filterID {
-				clusters = append(clusters, clusterDesc(c))
+				clusters = append(clusters, clusterXML(c))
 			}
 		}
 		h.store.mu.RUnlock()
-		if clusters == nil {
-			clusters = []map[string]interface{}{}
+		type resp struct {
+			XMLName  xml.Name       `xml:"DescribeDBClustersResponse"`
+			Clusters []xmlDBCluster `xml:"DescribeDBClustersResult>DBClusters>DBCluster"`
 		}
-		sendJSON(w, 200, map[string]interface{}{"DBClusters": clusters})
+		sendXML(w, 200, resp{Clusters: clusters})
 
 	case "CreateDBInstance":
 		id := params.Get("DBInstanceIdentifier")
+		clusterID := params.Get("DBClusterIdentifier")
+		h.store.mu.Lock()
+		cluster, clusterExists := h.store.clusters[clusterID]
+		if !clusterExists || cluster.Status == "deleting" {
+			h.store.mu.Unlock()
+			sendError(w, 404, "DBClusterNotFoundFault", "DB cluster not found: "+clusterID)
+			return
+		}
+		if existing, exists := h.store.instances[id]; exists && existing.DBInstanceStatus != "deleting" {
+			h.store.mu.Unlock()
+			sendError(w, 400, "DBInstanceAlreadyExists", "DB instance already exists: "+id)
+			return
+		}
 		inst := &DBInstance{
 			DBInstanceIdentifier: id,
-			DBClusterIdentifier:  params.Get("DBClusterIdentifier"),
+			DBClusterIdentifier:  clusterID,
 			DBInstanceClass:      params.Get("DBInstanceClass"),
 			Engine:               "docdb",
-			DBInstanceStatus:     "available",
+			DBInstanceStatus:     "creating",
 			EndpointAddress:      "localhost",
 			EndpointPort:         27017,
 			CreatedAt:            time.Now(),
 		}
-		h.store.mu.Lock()
 		h.store.instances[id] = inst
 		h.store.mu.Unlock()
-		sendJSON(w, 200, map[string]interface{}{"DBInstance": instanceDesc(inst)})
+		type resp struct {
+			XMLName xml.Name      `xml:"CreateDBInstanceResponse"`
+			Result  xmlDBInstance `xml:"CreateDBInstanceResult>DBInstance"`
+		}
+		sendXML(w, 200, resp{Result: instanceXML(inst)})
 
 	case "DeleteDBInstance":
 		id := params.Get("DBInstanceIdentifier")
 		h.store.mu.Lock()
 		inst := h.store.instances[id]
-		delete(h.store.instances, id)
-		h.store.mu.Unlock()
 		if inst == nil {
+			h.store.mu.Unlock()
 			sendError(w, 404, "DBInstanceNotFound", "DB instance not found: "+id)
 			return
 		}
-		sendJSON(w, 200, map[string]interface{}{"DBInstance": instanceDesc(inst)})
+		inst.DBInstanceStatus = "deleting"
+		h.store.mu.Unlock()
+		type resp struct {
+			XMLName xml.Name      `xml:"DeleteDBInstanceResponse"`
+			Result  xmlDBInstance `xml:"DeleteDBInstanceResult>DBInstance"`
+		}
+		sendXML(w, 200, resp{Result: instanceXML(inst)})
 
 	case "DescribeDBInstances":
 		filterID := params.Get("DBInstanceIdentifier")
 		h.store.mu.RLock()
-		var instances []map[string]interface{}
+		var instances []xmlDBInstance
 		for _, inst := range h.store.instances {
 			if filterID == "" || inst.DBInstanceIdentifier == filterID {
-				instances = append(instances, instanceDesc(inst))
+				instances = append(instances, instanceXML(inst))
 			}
 		}
 		h.store.mu.RUnlock()
-		if instances == nil {
-			instances = []map[string]interface{}{}
+		type resp struct {
+			XMLName   xml.Name        `xml:"DescribeDBInstancesResponse"`
+			Instances []xmlDBInstance `xml:"DescribeDBInstancesResult>DBInstances>DBInstance"`
 		}
-		sendJSON(w, 200, map[string]interface{}{"DBInstances": instances})
+		sendXML(w, 200, resp{Instances: instances})
 
 	case "CreateDBClusterSnapshot":
 		snapID := params.Get("DBClusterSnapshotIdentifier")
 		clusterID := params.Get("DBClusterIdentifier")
+		h.store.mu.Lock()
+		cluster, clusterExists := h.store.clusters[clusterID]
+		if !clusterExists || cluster.Status == "deleting" {
+			h.store.mu.Unlock()
+			sendError(w, 404, "DBClusterNotFoundFault", "DB cluster not found: "+clusterID)
+			return
+		}
+		if existing, exists := h.store.snapshots[snapID]; exists && existing.Status != "deleting" {
+			h.store.mu.Unlock()
+			sendError(w, 400, "DBClusterSnapshotAlreadyExistsFault", "DB cluster snapshot already exists: "+snapID)
+			return
+		}
 		snap := &DBClusterSnapshot{
 			DBClusterSnapshotIdentifier: snapID,
 			DBClusterIdentifier:         clusterID,
-			Status:                      "available",
+			Status:                      "creating",
 			Engine:                      "docdb",
 			CreatedAt:                   time.Now(),
 		}
-		h.store.mu.Lock()
 		h.store.snapshots[snapID] = snap
 		h.store.mu.Unlock()
-		sendJSON(w, 200, map[string]interface{}{"DBClusterSnapshot": snapshotDesc(snap)})
+		type resp struct {
+			XMLName xml.Name             `xml:"CreateDBClusterSnapshotResponse"`
+			Result  xmlDBClusterSnapshot `xml:"CreateDBClusterSnapshotResult>DBClusterSnapshot"`
+		}
+		sendXML(w, 200, resp{Result: snapshotXML(snap)})
 
 	case "DeleteDBClusterSnapshot":
 		snapID := params.Get("DBClusterSnapshotIdentifier")
 		h.store.mu.Lock()
 		snap := h.store.snapshots[snapID]
-		delete(h.store.snapshots, snapID)
-		h.store.mu.Unlock()
 		if snap == nil {
+			h.store.mu.Unlock()
 			sendError(w, 404, "DBClusterSnapshotNotFoundFault", "DB cluster snapshot not found: "+snapID)
 			return
 		}
-		sendJSON(w, 200, map[string]interface{}{"DBClusterSnapshot": snapshotDesc(snap)})
+		snap.Status = "deleting"
+		h.store.mu.Unlock()
+		type resp struct {
+			XMLName xml.Name             `xml:"DeleteDBClusterSnapshotResponse"`
+			Result  xmlDBClusterSnapshot `xml:"DeleteDBClusterSnapshotResult>DBClusterSnapshot"`
+		}
+		sendXML(w, 200, resp{Result: snapshotXML(snap)})
 
 	case "DescribeDBClusterSnapshots":
 		filterID := params.Get("DBClusterSnapshotIdentifier")
-		clusterID := params.Get("DBClusterIdentifier")
+		dbID := params.Get("DBClusterIdentifier")
 		h.store.mu.RLock()
-		var snaps []map[string]interface{}
+		var snaps []xmlDBClusterSnapshot
 		for _, snap := range h.store.snapshots {
 			if (filterID == "" || snap.DBClusterSnapshotIdentifier == filterID) &&
-				(clusterID == "" || snap.DBClusterIdentifier == clusterID) {
-				snaps = append(snaps, snapshotDesc(snap))
+				(dbID == "" || snap.DBClusterIdentifier == dbID) {
+				snaps = append(snaps, snapshotXML(snap))
 			}
 		}
 		h.store.mu.RUnlock()
-		if snaps == nil {
-			snaps = []map[string]interface{}{}
+		type resp struct {
+			XMLName   xml.Name               `xml:"DescribeDBClusterSnapshotsResponse"`
+			Snapshots []xmlDBClusterSnapshot `xml:"DescribeDBClusterSnapshotsResult>DBClusterSnapshots>DBClusterSnapshot"`
 		}
-		sendJSON(w, 200, map[string]interface{}{"DBClusterSnapshots": snaps})
+		sendXML(w, 200, resp{Snapshots: snaps})
+
+	case "ModifyDBCluster":
+		id := params.Get("DBClusterIdentifier")
+		h.store.mu.Lock()
+		cluster := h.store.clusters[id]
+		h.store.mu.Unlock()
+		if cluster == nil {
+			sendError(w, 404, "DBClusterNotFoundFault", "DB cluster not found: "+id)
+			return
+		}
+		cluster.Status = "modifying"
+		type resp struct {
+			XMLName xml.Name     `xml:"ModifyDBClusterResponse"`
+			Result  xmlDBCluster `xml:"ModifyDBClusterResult>DBCluster"`
+		}
+		sendXML(w, 200, resp{Result: clusterXML(cluster)})
+
+	case "ModifyDBInstance":
+		id := params.Get("DBInstanceIdentifier")
+		h.store.mu.Lock()
+		inst := h.store.instances[id]
+		h.store.mu.Unlock()
+		if inst == nil {
+			sendError(w, 404, "DBInstanceNotFound", "DB instance not found: "+id)
+			return
+		}
+		inst.DBInstanceStatus = "modifying"
+		if v := params.Get("DBInstanceClass"); v != "" {
+			inst.DBInstanceClass = v
+		}
+		type resp struct {
+			XMLName xml.Name      `xml:"ModifyDBInstanceResponse"`
+			Result  xmlDBInstance `xml:"ModifyDBInstanceResult>DBInstance"`
+		}
+		sendXML(w, 200, resp{Result: instanceXML(inst)})
+
+	case "RestoreDBClusterFromSnapshot":
+		id := params.Get("DBClusterIdentifier")
+		engine := params.Get("Engine")
+		if engine == "" {
+			engine = "docdb"
+		}
+		cluster := &DBCluster{
+			DBClusterIdentifier: id,
+			Status:              "restoring",
+			Engine:              engine,
+			Endpoint:            "localhost",
+			ReaderEndpoint:      "localhost",
+			Port:                27017,
+			CreatedAt:           time.Now(),
+		}
+		h.store.mu.Lock()
+		h.store.clusters[id] = cluster
+		h.store.mu.Unlock()
+		type resp struct {
+			XMLName xml.Name     `xml:"RestoreDBClusterFromSnapshotResponse"`
+			Result  xmlDBCluster `xml:"RestoreDBClusterFromSnapshotResult>DBCluster"`
+		}
+		sendXML(w, 200, resp{Result: clusterXML(cluster)})
+
+	case "AddTagsToResource":
+		type resp struct {
+			XMLName xml.Name `xml:"AddTagsToResourceResponse"`
+		}
+		sendXML(w, 200, resp{})
 
 	default:
 		sendError(w, 400, "InvalidAction", "Unknown action: "+action)

@@ -198,6 +198,106 @@ def _check_sqs_subscribe_target(
     return None
 
 
+def _check_publish_subscription(
+    action: str,
+    params: dict,
+    provider: SnsProvider,
+) -> Response | None:
+    """Reject Publish when no confirmed subscriptions exist for the topic."""
+    if action != "Publish":
+        return None
+    topic_arn = params.get("TopicArn", "")
+    if not topic_arn:
+        return None
+    topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
+    try:
+        topic = provider.get_topic(topic_name)
+    except (KeyError, Exception):  # noqa: BLE001
+        return None
+    if not topic.subscribers:
+        return _sns_xml_error(
+            "InvalidParameter", f"No confirmed subscriptions for topic: {topic_arn}", 400
+        )
+    return None
+
+
+def _queue_name_from_endpoint(endpoint: str) -> str:
+    """Extract queue name from a URL, ARN, or bare queue name."""
+    if endpoint.startswith("http"):
+        return endpoint.rsplit("/", 1)[-1]
+    if ":" in endpoint:
+        return endpoint.rsplit(":", 1)[-1]
+    return endpoint
+
+
+def _check_publish_sqs_target_state(
+    action: str,
+    params: dict,
+    provider: SnsProvider,
+    sqs_tracker: ResourceStateTracker | None,
+) -> Response | None:
+    """Reject Publish if any SQS subscription target is not ACTIVE."""
+    if action != "Publish" or sqs_tracker is None:
+        return None
+    topic_arn = params.get("TopicArn", "")
+    if not topic_arn:
+        return None
+    topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
+    try:
+        topic = provider.get_topic(topic_name)
+    except (KeyError, Exception):  # noqa: BLE001
+        return None
+    for sub in topic.subscribers:
+        if sub.protocol != "sqs":
+            continue
+        queue_name = _queue_name_from_endpoint(sub.endpoint)
+        state = sqs_tracker.get_state(queue_name)
+        if state in ("CREATING", "DELETING"):
+            return _sns_xml_error(
+                "InvalidParameter",
+                f"SQS queue is not ACTIVE: {sub.endpoint} (status: {state})",
+                400,
+            )
+    return None
+
+
+def _check_sns_capacity(
+    action: str,
+    sqs_capacity: AwsCapacityConfig | None,
+    sns_capacity: AwsCapacityConfig | None,
+) -> Response | None:
+    """Return an error response if any capacity limit is exhausted."""
+    if (
+        action in ("Publish", "Subscribe")
+        and sns_capacity is not None
+        and sns_capacity.is_exhausted
+    ):
+        return _sns_xml_error("KMSThrottlingException", "lws: SNS capacity exhausted", 400)
+    if action == "Publish" and sqs_capacity is not None and sqs_capacity.is_exhausted:
+        xml = (
+            "<ErrorResponse><Error>"
+            "<Code>ServiceUnavailableException</Code>"
+            "<Message>lws: no message slots available</Message>"
+            "</Error>"
+            f"<RequestId>{uuid.uuid4()}</RequestId>"
+            "</ErrorResponse>"
+        )
+        return Response(content=xml, status_code=503, media_type="text/xml")
+    return None
+
+
+def _sns_xml_error(code: str, message: str, status_code: int = 400) -> Response:
+    xml = (
+        "<ErrorResponse><Error>"
+        f"<Code>{code}</Code>"
+        f"<Message>{message}</Message>"
+        "</Error>"
+        f"<RequestId>{uuid.uuid4()}</RequestId>"
+        "</ErrorResponse>"
+    )
+    return Response(content=xml, status_code=status_code, media_type="text/xml")
+
+
 async def _sns_dispatch(
     request: Request,
     provider: SnsProvider,
@@ -206,6 +306,7 @@ async def _sns_dispatch(
     sqs_capacity: AwsCapacityConfig | None = None,
     sqs_provider: SqsProvider | None = None,
     sqs_tracker: ResourceStateTracker | None = None,
+    sns_capacity: AwsCapacityConfig | None = None,
 ) -> Response:
     """Route a single SNS request."""
     params = await _parse_form(request)
@@ -219,16 +320,17 @@ async def _sns_dispatch(
     if err is not None:
         return err
 
-    if action == "Publish" and sqs_capacity is not None and sqs_capacity.is_exhausted:
-        xml = (
-            "<ErrorResponse><Error>"
-            "<Code>ServiceUnavailableException</Code>"
-            "<Message>lws: no message slots available</Message>"
-            "</Error>"
-            f"<RequestId>{uuid.uuid4()}</RequestId>"
-            "</ErrorResponse>"
-        )
-        return Response(content=xml, status_code=503, media_type="text/xml")
+    err = _check_publish_subscription(action, params, provider)
+    if err is not None:
+        return err
+
+    err = _check_publish_sqs_target_state(action, params, provider, sqs_tracker)
+    if err is not None:
+        return err
+
+    cap_err = _check_sns_capacity(action, sqs_capacity, sns_capacity)
+    if cap_err is not None:
+        return cap_err
 
     handler = _ACTION_HANDLERS.get(action)
     if handler is None:
@@ -263,6 +365,7 @@ def create_sns_app(
     sqs_provider: SqsProvider | None = None,
     sqs_tracker: ResourceStateTracker | None = None,
     tracker_ref: list[ResourceStateTracker] | None = None,
+    sns_capacity: AwsCapacityConfig | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the SNS wire protocol.
 
@@ -291,7 +394,7 @@ def create_sns_app(
     @app.post("/")
     async def dispatch(request: Request) -> Response:
         return await _sns_dispatch(
-            request, provider, _lc, _tracker, sqs_capacity, sqs_provider, sqs_tracker
+            request, provider, _lc, _tracker, sqs_capacity, sqs_provider, sqs_tracker, sns_capacity
         )
 
     return app

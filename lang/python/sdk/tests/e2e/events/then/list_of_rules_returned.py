@@ -1,0 +1,11 @@
+"""Then: the list of rules is returned"""
+
+from __future__ import annotations
+
+from pytest_bdd import then
+
+
+@then("the list of rules is returned")
+def list_of_rules_returned(world):
+    assert world["error"] is None, f"Expected list_rules to succeed but got: {world['error']}"
+    assert "Rules" in world["result"], "Expected 'Rules' in response"

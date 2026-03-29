@@ -12,7 +12,7 @@ from lws.providers.docdb.routes import create_docdb_app
 
 @pytest.fixture()
 def client() -> TestClient:
-    app = create_docdb_app()
+    app, _ = create_docdb_app()
     return TestClient(app)
 
 
@@ -35,6 +35,11 @@ class TestCreateDBInstance:
         cluster_id = "my-cluster"
         expected_engine = "docdb"
         expected_status = "available"
+        _post(
+            client,
+            "CreateDBCluster",
+            {"DBClusterIdentifier": cluster_id, "Engine": "docdb"},
+        )
 
         # Act
         result = _post(

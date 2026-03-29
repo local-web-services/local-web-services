@@ -213,7 +213,8 @@ public class SecretsManagerHandler implements HttpHandler {
               body.containsKey("SecretBinary")
                   ? body.get("SecretBinary")
                   : secret.get("SecretBinary");
-          store.updateSecret(secret, secretString, secretBinary, versionId);
+          String description = (String) body.get("Description");
+          store.updateSecret(secret, secretString, secretBinary, versionId, description);
           sendJson(
               exchange,
               200,

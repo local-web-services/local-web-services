@@ -40,7 +40,7 @@ Feature: DynamodbLambda - A Change To The Dynamodb Table Produces A Stream Recor
     When a change to the DynamoDB table produces a stream record
     Then the operation is rejected
 
-  @standard @negative @table_change_produces_record @capacity
+  @standard @negative @internal @table_change_produces_record @capacity
   Scenario: a change to the DynamoDB table produces a stream record fails when no record slot is available
     Given the table exists
     And the table is "ACTIVE"

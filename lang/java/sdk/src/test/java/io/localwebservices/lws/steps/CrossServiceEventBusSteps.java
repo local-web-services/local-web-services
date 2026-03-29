@@ -117,7 +117,10 @@ public class CrossServiceEventBusSteps {
 
   @Given("the bus is not {string}")
   public void theBusIsNot(String state) {
-    // Arrange / Act / Assert — non-DELETED bus state means bus is ACTIVE; no-op
+    // Arrange / Act / Assert — "not DELETED" means the bus is ACTIVE; ensure it exists
+    if ("DELETED".equals(state)) {
+      ebCreateBus();
+    }
   }
 
   @Given("the bus exists and is {string}")

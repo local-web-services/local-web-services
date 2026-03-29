@@ -173,6 +173,19 @@ func (q *LocalQueue) approximateCount() int {
 	return count
 }
 
+func (q *LocalQueue) inFlightCount() int {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	count := 0
+	now := time.Now()
+	for _, m := range q.messages {
+		if now.Before(m.visibleAfter) {
+			count++
+		}
+	}
+	return count
+}
+
 // changeVisibility changes the visibility timeout for a message, returning true if found.
 func (q *LocalQueue) changeVisibility(receiptHandle string, timeoutSec int) bool {
 	q.mu.Lock()
@@ -488,6 +501,10 @@ func (h *Handler) handleJSON(w http.ResponseWriter, r *http.Request, action stri
 			writeErr("AWS.SimpleQueueService.NonExistentQueue", "Queue not found: "+queueURL)
 			return
 		}
+		if h.state.GetCapacityRule("sqs").IsExhausted() {
+			writeErr("AWS.SimpleQueueService.InternalError", "No message slot is available")
+			return
+		}
 		msgBody := getString(body, "MessageBody")
 		groupId := getString(body, "MessageGroupId")
 		dedupId := getString(body, "MessageDeduplicationId")
@@ -611,7 +628,7 @@ func (h *Handler) handleJSON(w http.ResponseWriter, r *http.Request, action stri
 		attrs := map[string]string{
 			"QueueArn":                              fmt.Sprintf("arn:aws:sqs:us-east-1:%s:%s", accountID, q.Name),
 			"ApproximateNumberOfMessages":           fmt.Sprintf("%d", q.approximateCount()),
-			"ApproximateNumberOfMessagesNotVisible": "0",
+			"ApproximateNumberOfMessagesNotVisible": fmt.Sprintf("%d", q.inFlightCount()),
 			"VisibilityTimeout":                     fmt.Sprintf("%d", q.VisibilityTimeout),
 			"FifoQueue":                             fmt.Sprintf("%v", q.IsFifo),
 		}
@@ -627,22 +644,40 @@ func (h *Handler) handleJSON(w http.ResponseWriter, r *http.Request, action stri
 	case "SetQueueAttributes":
 		queueURL := getString(body, "QueueUrl")
 		q := h.store.getQueue(queueURL)
-		if q != nil {
-			if attrs, ok := body["Attributes"].(map[string]interface{}); ok {
-				if rpJSON, ok := attrs["RedrivePolicy"].(string); ok && rpJSON != "" {
-					var rpMap map[string]interface{}
-					if err := json.Unmarshal([]byte(rpJSON), &rpMap); err == nil {
-						rp := &RedrivePolicy{}
-						if v, ok := rpMap["deadLetterTargetArn"].(string); ok {
-							rp.DeadLetterTargetArn = v
-						}
-						if v, ok := rpMap["maxReceiveCount"].(float64); ok {
-							rp.MaxReceiveCount = int(v)
-						}
-						q.mu.Lock()
-						q.RedrivePolicy = rp
-						q.mu.Unlock()
+		if q == nil {
+			writeErr("AWS.SimpleQueueService.NonExistentQueue", "Queue not found: "+queueURL)
+			return
+		}
+		if attrs, ok := body["Attributes"].(map[string]interface{}); ok {
+			if rpJSON, ok := attrs["RedrivePolicy"].(string); ok && rpJSON != "" {
+				var rpMap map[string]interface{}
+				if err := json.Unmarshal([]byte(rpJSON), &rpMap); err == nil {
+					dlqArn, _ := rpMap["deadLetterTargetArn"].(string)
+					// Validate: reject if a DLQ is already configured on this queue.
+					q.mu.Lock()
+					hasExistingDLQ := q.RedrivePolicy != nil
+					q.mu.Unlock()
+					if hasExistingDLQ {
+						writeErr("InvalidParameterValue", "Queue "+queueURL+" already has a dead-letter queue configured")
+						return
 					}
+					// Validate: the DLQ ARN must reference an existing queue.
+					if dlqArn != "" {
+						dlqParts := strings.Split(dlqArn, ":")
+						dlqName := dlqParts[len(dlqParts)-1]
+						if h.store.getQueue(dlqName) == nil {
+							writeErr("AWS.SimpleQueueService.NonExistentQueue", "Dead-letter queue not found: "+dlqName)
+							return
+						}
+					}
+					rp := &RedrivePolicy{}
+					rp.DeadLetterTargetArn = dlqArn
+					if v, ok := rpMap["maxReceiveCount"].(float64); ok {
+						rp.MaxReceiveCount = int(v)
+					}
+					q.mu.Lock()
+					q.RedrivePolicy = rp
+					q.mu.Unlock()
 				}
 			}
 		}
@@ -796,6 +831,10 @@ func (h *Handler) handleForm(w http.ResponseWriter, r *http.Request, action stri
 			xmlErr("AWS.SimpleQueueService.NonExistentQueue", "Queue not found: "+queueURL)
 			return
 		}
+		if h.state.GetCapacityRule("sqs").IsExhausted() {
+			xmlErr("AWS.SimpleQueueService.InternalError", "No message slot is available")
+			return
+		}
 		msgBody := form.Get("MessageBody")
 		groupId := form.Get("MessageGroupId")
 		dedupId := form.Get("MessageDeduplicationId")
@@ -855,10 +894,11 @@ func (h *Handler) handleForm(w http.ResponseWriter, r *http.Request, action stri
 			return
 		}
 		attrs := map[string]string{
-			"QueueArn":                    fmt.Sprintf("arn:aws:sqs:us-east-1:%s:%s", accountID, q.Name),
-			"ApproximateNumberOfMessages": fmt.Sprintf("%d", q.approximateCount()),
-			"VisibilityTimeout":           fmt.Sprintf("%d", q.VisibilityTimeout),
-			"FifoQueue":                   fmt.Sprintf("%v", q.IsFifo),
+			"QueueArn":                              fmt.Sprintf("arn:aws:sqs:us-east-1:%s:%s", accountID, q.Name),
+			"ApproximateNumberOfMessages":           fmt.Sprintf("%d", q.approximateCount()),
+			"ApproximateNumberOfMessagesNotVisible": fmt.Sprintf("%d", q.inFlightCount()),
+			"VisibilityTimeout":                     fmt.Sprintf("%d", q.VisibilityTimeout),
+			"FifoQueue":                             fmt.Sprintf("%v", q.IsFifo),
 		}
 		if q.RedrivePolicy != nil {
 			rpBytes, _ := json.Marshal(map[string]interface{}{
@@ -874,6 +914,50 @@ func (h *Handler) handleForm(w http.ResponseWriter, r *http.Request, action stri
 		xmlWrite(fmt.Sprintf(`GetQueueAttributesResponse xmlns="http://queue.amazonaws.com/doc/2012-11-05/"><GetQueueAttributesResult>%s</GetQueueAttributesResult><ResponseMetadata><RequestId>00000000-0000-0000-0000-000000000000</RequestId></ResponseMetadata></GetQueueAttributesResponse>`, attrsXML))
 
 	case "SetQueueAttributes":
+		queueURLXML := form.Get("QueueUrl")
+		qXML := h.store.getQueue(queueURLXML)
+		if qXML == nil {
+			xmlErr("AWS.SimpleQueueService.NonExistentQueue", "Queue not found: "+queueURLXML)
+			return
+		}
+		// Parse RedrivePolicy from form fields (Attribute.N.Name / Attribute.N.Value).
+		for i := 1; ; i++ {
+			attrName := form.Get(fmt.Sprintf("Attribute.%d.Name", i))
+			if attrName == "" {
+				break
+			}
+			if attrName == "RedrivePolicy" {
+				rpJSON := form.Get(fmt.Sprintf("Attribute.%d.Value", i))
+				if rpJSON != "" {
+					var rpMap map[string]interface{}
+					if err := json.Unmarshal([]byte(rpJSON), &rpMap); err == nil {
+						dlqArn, _ := rpMap["deadLetterTargetArn"].(string)
+						qXML.mu.Lock()
+						hasExistingDLQ := qXML.RedrivePolicy != nil
+						qXML.mu.Unlock()
+						if hasExistingDLQ {
+							xmlErr("InvalidParameterValue", "Queue "+queueURLXML+" already has a dead-letter queue configured")
+							return
+						}
+						if dlqArn != "" {
+							dlqParts := strings.Split(dlqArn, ":")
+							dlqName := dlqParts[len(dlqParts)-1]
+							if h.store.getQueue(dlqName) == nil {
+								xmlErr("AWS.SimpleQueueService.NonExistentQueue", "Dead-letter queue not found: "+dlqName)
+								return
+							}
+						}
+						rp := &RedrivePolicy{DeadLetterTargetArn: dlqArn}
+						if v, ok := rpMap["maxReceiveCount"].(float64); ok {
+							rp.MaxReceiveCount = int(v)
+						}
+						qXML.mu.Lock()
+						qXML.RedrivePolicy = rp
+						qXML.mu.Unlock()
+					}
+				}
+			}
+		}
 		xmlWrite(`SetQueueAttributesResponse xmlns="http://queue.amazonaws.com/doc/2012-11-05/"><ResponseMetadata><RequestId>00000000-0000-0000-0000-000000000000</RequestId></ResponseMetadata></SetQueueAttributesResponse>`)
 
 	case "ChangeMessageVisibility":

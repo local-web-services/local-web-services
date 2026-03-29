@@ -32,6 +32,7 @@ const (
 	StatusUnconfirmed         UserStatus = "UNCONFIRMED"
 	StatusConfirmed           UserStatus = "CONFIRMED"
 	StatusForceChangePassword UserStatus = "FORCE_CHANGE_PASSWORD"
+	StatusResetRequired       UserStatus = "RESET_REQUIRED"
 	StatusDisabled            UserStatus = "DISABLED"
 	StatusCompromised         UserStatus = "COMPROMISED"
 )
@@ -153,6 +154,13 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 
 	case "CreateUserPool":
 		name := str(body, "PoolName")
+		// Reject if a pool with this name already exists.
+		for _, p := range h.store.pools {
+			if p.Name == name {
+				jsonErr(w, "ResourceConflictException", "User pool with name "+name+" already exists")
+				return
+			}
+		}
 		id := fmt.Sprintf("%s_%s", region, uuid9())
 		now := nowSeconds()
 		pool := &UserPool{
@@ -320,6 +328,11 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			jsonErr(w, "UserNotFoundException", "User "+username+" not found")
 			return
 		}
+		// Reject if the user is already confirmed or in any state other than UNCONFIRMED/FORCE_CHANGE_PASSWORD.
+		if user.Status != StatusUnconfirmed && user.Status != StatusForceChangePassword {
+			jsonErr(w, "NotAuthorizedException", "User cannot be confirmed in state "+string(user.Status))
+			return
+		}
 		user.Status = StatusConfirmed
 		user.LastModifiedDate = nowSeconds()
 		jsonOK(w, map[string]interface{}{})
@@ -330,6 +343,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		user, ok := h.store.users[poolID][username]
 		if !ok {
 			jsonErr(w, "UserNotFoundException", "User "+username+" not found")
+			return
+		}
+		if !user.Enabled {
+			jsonErr(w, "NotAuthorizedException", "User "+username+" is already disabled")
 			return
 		}
 		user.Enabled = false
@@ -344,6 +361,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			jsonErr(w, "UserNotFoundException", "User "+username+" not found")
 			return
 		}
+		if user.Enabled {
+			jsonErr(w, "NotAuthorizedException", "User "+username+" is already enabled")
+			return
+		}
 		user.Enabled = true
 		user.LastModifiedDate = nowSeconds()
 		jsonOK(w, map[string]interface{}{})
@@ -356,6 +377,11 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		user, ok := h.store.users[poolID][username]
 		if !ok {
 			jsonErr(w, "UserNotFoundException", "User "+username+" not found")
+			return
+		}
+		// Only allow setting password when user is in RESET_REQUIRED state.
+		if user.Status != StatusResetRequired {
+			jsonErr(w, "NotAuthorizedException", "User "+username+" cannot set password in state "+string(user.Status))
 			return
 		}
 		user.Password = password
@@ -377,7 +403,12 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			jsonErr(w, "UserNotFoundException", "User "+username+" not found")
 			return
 		}
-		user.Status = StatusForceChangePassword
+		// Only CONFIRMED users can have their password reset.
+		if user.Status != StatusConfirmed {
+			jsonErr(w, "NotAuthorizedException", "User "+username+" cannot reset password in state "+string(user.Status))
+			return
+		}
+		user.Status = StatusResetRequired
 		user.TempPassword = ""
 		user.LastModifiedDate = nowSeconds()
 		jsonOK(w, map[string]interface{}{})
@@ -388,6 +419,11 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		user, ok := h.store.users[poolID][username]
 		if !ok {
 			jsonErr(w, "UserNotFoundException", "User "+username+" not found")
+			return
+		}
+		// Only CONFIRMED users can have attributes updated.
+		if user.Status != StatusConfirmed {
+			jsonErr(w, "NotAuthorizedException", "User "+username+" cannot update attributes in state "+string(user.Status))
 			return
 		}
 		newAttrs := parseAttrs(body["UserAttributes"])
@@ -492,6 +528,14 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		poolID := str(body, "UserPoolId")
 		username := str(body, "Username")
 		groupName := str(body, "GroupName")
+		if _, ok := h.store.users[poolID][username]; !ok {
+			jsonErr(w, "UserNotFoundException", "User "+username+" not found")
+			return
+		}
+		if _, ok := h.store.groups[poolID][groupName]; !ok {
+			jsonErr(w, "ResourceNotFoundException", "Group "+groupName+" not found")
+			return
+		}
 		if members, ok := h.store.groupMembers[poolID][groupName]; ok {
 			delete(members, username)
 		}
@@ -525,6 +569,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 	// ── Auth ───────────────────────────────────────────────────────────────────
 
 	case "AdminInitiateAuth":
+		if h.state.GetCapacityRule("cognitoidp").IsExhausted() {
+			jsonErr(w, "LimitExceededException", "No session slot is available")
+			return
+		}
 		poolID := str(body, "UserPoolId")
 		authFlow := str(body, "AuthFlow")
 		authParams := strMap(body["AuthParameters"])
@@ -536,15 +584,32 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		jsonOK(w, result)
 
 	case "InitiateAuth":
+		if h.state.GetCapacityRule("cognitoidp").IsExhausted() {
+			jsonErr(w, "LimitExceededException", "No session slot is available")
+			return
+		}
 		clientID := str(body, "ClientId")
-		client, ok := h.store.clients[clientID]
-		if !ok {
+		authFlow := str(body, "AuthFlow")
+		authParams := strMap(body["AuthParameters"])
+		poolID := ""
+		// mu is already held by ServeHTTP; no additional locking needed.
+		if client, ok := h.store.clients[clientID]; ok {
+			poolID = client.PoolID
+		} else {
+			// Client not found; find a pool that contains the username.
+			username := authParams["USERNAME"]
+			for pid, users := range h.store.users {
+				if _, ok := users[username]; ok {
+					poolID = pid
+					break
+				}
+			}
+		}
+		if poolID == "" {
 			jsonErr(w, "ResourceNotFoundException", "Client "+clientID+" not found")
 			return
 		}
-		authFlow := str(body, "AuthFlow")
-		authParams := strMap(body["AuthParameters"])
-		result, err := h.doAuth(client.PoolID, authFlow, authParams)
+		result, err := h.doAuth(poolID, authFlow, authParams)
 		if err != nil {
 			jsonErr(w, errorType(err.Error()), err.Error())
 			return
@@ -653,7 +718,7 @@ func (h *Handler) doAuth(poolID, authFlow string, authParams map[string]string) 
 	if _, ok := h.store.pools[poolID]; !ok {
 		return nil, fmt.Errorf("ResourceNotFoundException: User pool %s not found", poolID)
 	}
-	if authFlow == "ADMIN_USER_PASSWORD_AUTH" {
+	if authFlow == "ADMIN_USER_PASSWORD_AUTH" || authFlow == "ADMIN_NO_SRP_AUTH" || authFlow == "USER_PASSWORD_AUTH" {
 		username := authParams["USERNAME"]
 		password := authParams["PASSWORD"]
 		user, ok := h.store.users[poolID][username]
@@ -667,6 +732,10 @@ func (h *Handler) doAuth(poolID, authFlow string, authParams map[string]string) 
 			return nil, fmt.Errorf("NotAuthorizedException: Incorrect username or password")
 		}
 		if user.Status == StatusForceChangePassword {
+			if authFlow == "USER_PASSWORD_AUTH" {
+				// USER_PASSWORD_AUTH rejects non-confirmed users.
+				return nil, fmt.Errorf("NotAuthorizedException: User is not confirmed")
+			}
 			sessionToken := fmt.Sprintf("lws-session-%s", uuid26())
 			h.store.authSessions[sessionToken] = &AuthSession{
 				PoolID:    poolID,

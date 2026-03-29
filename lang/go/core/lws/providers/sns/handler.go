@@ -454,6 +454,11 @@ func (h *Handler) handleJSON(w http.ResponseWriter, action string, body map[stri
 		msgAttrs := parseMessageAttributesJSON(body["MessageAttributes"])
 		messageID := fmt.Sprintf("msg-%d", time.Now().UnixNano())
 
+		if h.state.GetCapacityRule("sns").IsExhausted() {
+			writeErr("ServiceUnavailableException", "No delivery slot is available")
+			return
+		}
+
 		if topicArn != "" {
 			t := h.store.getTopic(topicArn)
 			if t == nil {
@@ -486,6 +491,11 @@ func (h *Handler) handleJSON(w http.ResponseWriter, action string, body map[stri
 		// Verify topic exists.
 		if h.store.getTopic(topicArn) == nil {
 			writeErr("NotFound", "Topic not found: "+topicArn)
+			return
+		}
+
+		if h.state.GetCapacityRule("sns").IsExhausted() {
+			writeErr("ServiceUnavailableException", "No subscription slot is available")
 			return
 		}
 
@@ -642,6 +652,10 @@ func (h *Handler) handleForm(w http.ResponseWriter, action string, form url.Valu
 			writeXMLErr("NotFound", "Topic not found: "+topicArn)
 			return
 		}
+		if h.state.GetCapacityRule("sns").IsExhausted() {
+			writeXMLErr("ServiceUnavailableException", "No delivery slot is available")
+			return
+		}
 		// Fail if no subscriptions exist for the topic (all subscriptions are treated as confirmed).
 		h.store.mu.RLock()
 		hasSubscription := len(t.Subscriptions) > 0
@@ -673,6 +687,11 @@ func (h *Handler) handleForm(w http.ResponseWriter, action string, form url.Valu
 		// Verify topic exists.
 		if h.store.getTopic(topicArn) == nil {
 			writeXMLErr("NotFound", "Topic not found: "+topicArn)
+			return
+		}
+
+		if h.state.GetCapacityRule("sns").IsExhausted() {
+			writeXMLErr("ServiceUnavailableException", "No subscription slot is available")
 			return
 		}
 

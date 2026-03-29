@@ -18,6 +18,7 @@ from fastapi import FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_capacity import AwsCapacityConfig
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig
 from lws.providers.apigateway._apigateway_proxy_helpers import (
     _build_apigw_v2_event,
@@ -41,6 +42,7 @@ from lws.providers.apigateway._apigateway_v1 import ApiGatewayManagementRouter
 from lws.providers.apigateway._apigateway_v2 import ApiGatewayV2Router, _format_http_api
 
 if TYPE_CHECKING:
+    from lws.providers.cognito.authorizer import CognitoAuthorizer
     from lws.providers.lambda_runtime.routes import LambdaRegistry
 
 _logger = get_logger("ldk.apigateway-mgmt")
@@ -66,6 +68,7 @@ __all__ = [
     "ApiGatewayV2Router",
     "ApiGatewayRouterBundle",
     "create_apigateway_management_app",
+    "CognitoAuthorizer",
 ]
 
 
@@ -102,11 +105,17 @@ class ApiGatewayRouterBundle:
         """Wire backend service providers into V1 integration dispatch."""
         self._v1.set_service_providers(providers)
 
+    def set_cognito_authorizer(self, authorizer: CognitoAuthorizer) -> None:
+        """Wire a Cognito authorizer into V1 token validation."""
+        self._v1.set_cognito_authorizer(authorizer)
+
 
 def create_apigateway_management_app(
     lambda_registry: LambdaRegistry | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
     service_providers: dict | None = None,
+    capacity: AwsCapacityConfig | None = None,
+    cognito_authorizer: CognitoAuthorizer | None = None,
 ) -> tuple[FastAPI, ApiGatewayRouterBundle]:
     """Create a FastAPI app that speaks the API Gateway management protocol.
 
@@ -119,11 +128,14 @@ def create_apigateway_management_app(
         service_providers: Optional map of service-name → provider instance.
             When provided, V1 REST API direct service integrations (DynamoDB,
             SQS, SNS, S3, StepFunctions) will be dispatched to these providers.
+        capacity: Optional capacity configuration. When exhausted, all REST API
+            invocation paths return HTTP 429.
 
     Returns:
         A tuple of (app, router_bundle). Call ``router_bundle.reset()`` to
         clear all API Gateway state between tests.
     """
+    capacity_config = capacity or AwsCapacityConfig()
     app = FastAPI(title="LDK API Gateway Management")
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="apigateway-mgmt")
 
@@ -131,6 +143,10 @@ def create_apigateway_management_app(
     v1_router = ApiGatewayManagementRouter(lifecycle=lifecycle)
     if service_providers:
         v1_router.set_service_providers(service_providers)
+    if lambda_registry is not None:
+        v1_router.set_lambda_registry(lambda_registry)
+    if cognito_authorizer is not None:
+        v1_router.set_cognito_authorizer(cognito_authorizer)
 
     # V2 management routes (+ proxy)
     v2_router = ApiGatewayV2Router(lambda_registry=lambda_registry, lifecycle=lifecycle)
@@ -142,6 +158,8 @@ def create_apigateway_management_app(
     # Wire V2 proxy into the catch-all: override the V1 stub to also try V2 proxy
     @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"])
     async def _catch_all_with_proxy(request: Request, path: str) -> Response:
+        if capacity_config.is_exhausted:
+            return Response(status_code=429)
         # Try V1 REST API direct integration proxy first
         v1_resp = await v1_router.proxy_v1_request(request, path)
         if v1_resp is not None:

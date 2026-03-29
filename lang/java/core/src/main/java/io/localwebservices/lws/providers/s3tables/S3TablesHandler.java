@@ -7,6 +7,8 @@ import io.localwebservices.lws.ServerState;
 import io.localwebservices.lws.middleware.ChaosMiddleware;
 import io.localwebservices.lws.middleware.IamMiddleware;
 import java.io.*;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,12 +21,12 @@ public class S3TablesHandler implements HttpHandler {
   private static final String REGION = "us-east-1";
 
   private final ServerState state;
-  // bucketName -> bucket metadata
+  // bucketArn -> bucket metadata
   private final Map<String, Map<String, Object>> tableBuckets = new ConcurrentHashMap<>();
-  // bucketName -> namespaceName -> namespace metadata
+  // bucketArn -> namespaceName -> namespace metadata
   private final Map<String, Map<String, Map<String, Object>>> namespaces =
       new ConcurrentHashMap<>();
-  // bucketName -> namespace/tableName -> table metadata
+  // bucketArn -> namespace/tableName -> table metadata
   private final Map<String, Map<String, Map<String, Object>>> tables = new ConcurrentHashMap<>();
 
   public S3TablesHandler(ServerState state) {
@@ -41,10 +43,15 @@ public class S3TablesHandler implements HttpHandler {
   @Override
   public void handle(HttpExchange exchange) throws IOException {
     String method = exchange.getRequestMethod();
-    String path = exchange.getRequestURI().getPath();
-    // path: /buckets[/{bucket}[/namespaces[/{namespace}]][/tables[/{namespace}/{table}]]]
-    String[] segments = path.split("/");
-    // segments[0]="", segments[1]="buckets", ...
+    // Use raw path to preserve percent-encoded ARNs as single segments
+    String rawPath = exchange.getRequestURI().getRawPath();
+    // Raw path segments: ["", "buckets", "arn%3A...", "namespaces", ...]
+    String[] rawSegments = rawPath.split("/");
+    // Decode each segment individually
+    String[] segments = new String[rawSegments.length];
+    for (int i = 0; i < rawSegments.length; i++) {
+      segments[i] = URLDecoder.decode(rawSegments[i], StandardCharsets.UTF_8);
+    }
 
     byte[] bodyBytes;
     try (InputStream is = exchange.getRequestBody()) {
@@ -67,109 +74,197 @@ public class S3TablesHandler implements HttpHandler {
 
   private String inferOperation(String method, String[] segments) {
     int len = segments.length;
-    // /buckets/{bucket}/namespaces/{namespace}
-    if (len >= 5 && "namespaces".equals(segments[3])) {
-      if (len >= 6) return "DELETE".equals(method) ? "DeleteNamespace" : "GetNamespace";
-      return "POST".equals(method) ? "CreateNamespace" : "ListNamespaces";
+    // /buckets/{arn}/namespaces[/{namespace}]
+    if (len >= 4 && "namespaces".equals(segments[3])) {
+      if (len >= 5) return "DELETE".equals(method) ? "DeleteNamespace" : "GetNamespace";
+      return "POST".equals(method) || "PUT".equals(method) ? "CreateNamespace" : "ListNamespaces";
     }
-    // /buckets/{bucket}/tables/{namespace}/{table}
-    if (len >= 5 && "tables".equals(segments[3])) {
+    // /buckets/{arn}/tables[/{namespace}/{table}[/...]]
+    if (len >= 4 && "tables".equals(segments[3])) {
       if (len >= 6) return "DELETE".equals(method) ? "DeleteTable" : "GetTable";
-      return "POST".equals(method) ? "CreateTable" : "ListTables";
+      return "POST".equals(method) || "PUT".equals(method) ? "CreateTable" : "ListTables";
     }
-    // /buckets/{bucket}
-    if (len >= 3 && !"buckets".equals(segments[2])) {
-      if ("POST".equals(method)) return "CreateBucket";
+    // /buckets/{arn}/policy or /buckets/{arn}/maintenance or /buckets/{arn}/compaction
+    if (len >= 4 && "policy".equals(segments[3])) {
+      if ("DELETE".equals(method)) return "DeleteTablePolicy";
+      if ("PUT".equals(method)) return "PutTablePolicy";
+      return "GetTablePolicy";
+    }
+    if (len >= 4 && "maintenance".equals(segments[3])) {
+      return "PUT".equals(method)
+          ? "PutTableMaintenanceConfiguration"
+          : "GetTableMaintenanceConfiguration";
+    }
+    if (len >= 4 && "compaction".equals(segments[3])) {
+      return "CreateTableCompaction";
+    }
+    // /buckets/{arn}/snapshots
+    if (len >= 4 && "snapshots".equals(segments[3])) {
+      return "ListTableSnapshots";
+    }
+    // /buckets/{arn}
+    if (len == 3 && !"buckets".equals(segments[2]) && !segments[2].isEmpty()) {
       if ("DELETE".equals(method)) return "DeleteTableBucket";
       return "GetTableBucket";
     }
     // /buckets
-    return "POST".equals(method) ? "CreateTableBucket" : "ListTableBuckets";
+    return ("POST".equals(method) || "PUT".equals(method))
+        ? "CreateTableBucket"
+        : "ListTableBuckets";
   }
 
   @SuppressWarnings("unchecked")
   private void route(String method, String[] segments, byte[] bodyBytes, HttpExchange exchange)
       throws IOException {
     int len = segments.length;
-    // segments: ["", "buckets", ...]
-    String bucketName = len >= 3 ? segments[2] : null;
+    // segments: ["", "buckets", {arnOrEmpty}, ...]
+    String bucketArn = len >= 3 && !segments[2].isEmpty() ? segments[2] : null;
 
-    // /buckets/{bucket}/namespaces[/{namespace}]
-    if (bucketName != null && len >= 4 && "namespaces".equals(segments[3])) {
+    // /buckets/{arn}/namespaces[/{namespace}]
+    if (bucketArn != null && len >= 4 && "namespaces".equals(segments[3])) {
       String nsName = len >= 5 ? segments[4] : null;
-      if ("POST".equals(method) && nsName == null) {
+      if (("POST".equals(method) || "PUT".equals(method)) && nsName == null) {
         // CreateNamespace
         Map<String, Object> body =
             bodyBytes.length > 0 ? MAPPER.readValue(bodyBytes, Map.class) : new LinkedHashMap<>();
         Object nsObj = body.get("namespace");
         String ns = nsObj instanceof List ? (String) ((List<?>) nsObj).get(0) : (String) nsObj;
+        Map<String, Map<String, Object>> bucketNs =
+            namespaces.computeIfAbsent(bucketArn, k -> new ConcurrentHashMap<>());
+        if (bucketNs.containsKey(ns)) {
+          sendJson(
+              exchange,
+              409,
+              Map.of("message", "Namespace already exists: " + ns, "code", "ConflictException"));
+          return;
+        }
         Map<String, Object> namespace = new LinkedHashMap<>();
-        namespace.put("Namespace", List.of(ns));
-        namespace.put("TableBucketName", bucketName);
-        namespace.put("CreatedAt", Instant.now().toString());
-        namespace.put("OwnerAccountId", ACCOUNT);
-        namespaces.computeIfAbsent(bucketName, k -> new ConcurrentHashMap<>()).put(ns, namespace);
+        namespace.put("namespace", List.of(ns));
+        namespace.put("tableBucketArn", bucketArn);
+        namespace.put("createdAt", Instant.now().toString());
+        namespace.put("ownerAccountId", ACCOUNT);
+        bucketNs.put(ns, namespace);
         sendJson(exchange, 200, namespace);
         return;
       }
       if ("DELETE".equals(method) && nsName != null) {
-        namespaces.getOrDefault(bucketName, new ConcurrentHashMap<>()).remove(nsName);
+        namespaces.getOrDefault(bucketArn, new ConcurrentHashMap<>()).remove(nsName);
         exchange.sendResponseHeaders(204, -1);
         return;
       }
       if ("GET".equals(method) && nsName == null) {
         // ListNamespaces
         List<Map<String, Object>> nsList =
-            new ArrayList<>(
-                namespaces.getOrDefault(bucketName, new ConcurrentHashMap<>()).values());
-        sendJson(exchange, 200, Map.of("Namespaces", nsList));
+            new ArrayList<>(namespaces.getOrDefault(bucketArn, new ConcurrentHashMap<>()).values());
+        sendJson(exchange, 200, Map.of("namespaces", nsList));
         return;
       }
     }
 
-    // /buckets/{bucket}/tables[/{namespace}/{table}]
-    if (bucketName != null && len >= 4 && "tables".equals(segments[3])) {
+    // /buckets/{arn}/tables[/{namespace}/{table}[/...]]
+    if (bucketArn != null && len >= 4 && "tables".equals(segments[3])) {
       String nsName = len >= 5 ? segments[4] : null;
       String tableName = len >= 6 ? segments[5] : null;
+      String subResource = len >= 7 ? segments[6] : null;
 
-      if ("POST".equals(method) && nsName == null) {
+      // /buckets/{arn}/tables/{ns}/{table}/policy
+      if (nsName != null && tableName != null && "policy".equals(subResource)) {
+        String tableKey = nsName + "/" + tableName;
+        Map<String, Object> tbl =
+            tables.getOrDefault(bucketArn, new ConcurrentHashMap<>()).get(tableKey);
+        if ("DELETE".equals(method)) {
+          if (tbl != null) tbl.remove("policy");
+          exchange.sendResponseHeaders(204, -1);
+          return;
+        }
+        if ("PUT".equals(method)) {
+          Map<String, Object> body =
+              bodyBytes.length > 0 ? MAPPER.readValue(bodyBytes, Map.class) : new LinkedHashMap<>();
+          if (tbl != null) tbl.put("policy", body.get("resourcePolicy"));
+          exchange.sendResponseHeaders(200, -1);
+          return;
+        }
+        // GET
+        String policy = tbl != null ? (String) tbl.get("policy") : null;
+        sendJson(exchange, 200, Map.of("resourcePolicy", policy != null ? policy : "{}"));
+        return;
+      }
+
+      // /buckets/{arn}/tables/{ns}/{table}/maintenance
+      if (nsName != null && tableName != null && "maintenance".equals(subResource)) {
+        String tableKey = nsName + "/" + tableName;
+        Map<String, Object> tbl =
+            tables.getOrDefault(bucketArn, new ConcurrentHashMap<>()).get(tableKey);
+        if ("PUT".equals(method)) {
+          if (tbl != null) {
+            Map<String, Object> body =
+                bodyBytes.length > 0
+                    ? MAPPER.readValue(bodyBytes, Map.class)
+                    : new LinkedHashMap<>();
+            tbl.put("maintenanceConfiguration", body);
+          }
+          exchange.sendResponseHeaders(200, -1);
+          return;
+        }
+        // GET
+        Map<String, Object> config =
+            tbl != null && tbl.get("maintenanceConfiguration") != null
+                ? (Map<String, Object>) tbl.get("maintenanceConfiguration")
+                : new LinkedHashMap<>();
+        sendJson(exchange, 200, config);
+        return;
+      }
+
+      // /buckets/{arn}/tables/{ns}/{table}/compaction
+      if (nsName != null && tableName != null && "compaction".equals(subResource)) {
+        if ("POST".equals(method) || "PUT".equals(method)) {
+          sendJson(exchange, 200, Map.of("compactionJobId", UUID.randomUUID().toString()));
+          return;
+        }
+      }
+
+      // /buckets/{arn}/tables/{ns}/{table}/snapshots
+      if (nsName != null && tableName != null && "snapshots".equals(subResource)) {
+        sendJson(exchange, 200, Map.of("snapshots", List.of()));
+        return;
+      }
+
+      if (("POST".equals(method) || "PUT".equals(method)) && nsName == null) {
         // CreateTable
         Map<String, Object> body =
             bodyBytes.length > 0 ? MAPPER.readValue(bodyBytes, Map.class) : new LinkedHashMap<>();
         String ns = (String) body.get("namespace");
         String tName = (String) body.get("name");
         String tableKey = ns + "/" + tName;
-        Map<String, Object> table = new LinkedHashMap<>();
-        table.put("Name", tName);
-        table.put("Namespace", ns);
-        table.put("Type", "customer");
-        table.put(
-            "TableArn",
+        String tableArn =
             "arn:aws:s3tables:"
                 + REGION
                 + ":"
                 + ACCOUNT
                 + ":bucket/"
-                + bucketName
+                + extractBucketName(bucketArn)
                 + "/table/"
-                + tableKey);
-        table.put("CreatedAt", Instant.now().toString());
-        table.put("ModifiedAt", Instant.now().toString());
-        tables.computeIfAbsent(bucketName, k -> new ConcurrentHashMap<>()).put(tableKey, table);
+                + tableKey;
+        Map<String, Object> table = new LinkedHashMap<>();
+        table.put("name", tName);
+        table.put("namespace", ns);
+        table.put("type", "customer");
+        table.put("tableArn", tableArn);
+        table.put("createdAt", Instant.now().toString());
+        table.put("modifiedAt", Instant.now().toString());
+        tables.computeIfAbsent(bucketArn, k -> new ConcurrentHashMap<>()).put(tableKey, table);
         sendJson(exchange, 200, table);
         return;
       }
       if ("DELETE".equals(method) && nsName != null && tableName != null) {
-        tables.getOrDefault(bucketName, new ConcurrentHashMap<>()).remove(nsName + "/" + tableName);
+        tables.getOrDefault(bucketArn, new ConcurrentHashMap<>()).remove(nsName + "/" + tableName);
         exchange.sendResponseHeaders(204, -1);
         return;
       }
       if ("GET".equals(method) && nsName != null && tableName != null) {
         // GetTable
         Map<String, Object> table =
-            tables
-                .getOrDefault(bucketName, new ConcurrentHashMap<>())
-                .get(nsName + "/" + tableName);
+            tables.getOrDefault(bucketArn, new ConcurrentHashMap<>()).get(nsName + "/" + tableName);
         if (table == null) {
           sendJson(
               exchange, 404, Map.of("message", "Table not found: " + nsName + "/" + tableName));
@@ -181,37 +276,40 @@ public class S3TablesHandler implements HttpHandler {
       if ("GET".equals(method) && nsName == null) {
         // ListTables
         List<Map<String, Object>> tableList =
-            new ArrayList<>(tables.getOrDefault(bucketName, new ConcurrentHashMap<>()).values());
-        sendJson(exchange, 200, Map.of("Tables", tableList, "ContinuationToken", (Object) null));
+            new ArrayList<>(tables.getOrDefault(bucketArn, new ConcurrentHashMap<>()).values());
+        sendJson(exchange, 200, Map.of("tables", tableList));
         return;
       }
     }
 
-    // /buckets/{bucket}
-    if (bucketName != null && len == 3) {
-      if ("POST".equals(method)) {
-        // CreateTableBucket
-        Map<String, Object> body =
-            bodyBytes.length > 0 ? MAPPER.readValue(bodyBytes, Map.class) : new LinkedHashMap<>();
-        String bName = (String) body.getOrDefault("name", bucketName);
-        Map<String, Object> bucket = new LinkedHashMap<>();
-        bucket.put("Name", bName);
-        bucket.put("Arn", "arn:aws:s3tables:" + REGION + ":" + ACCOUNT + ":bucket/" + bName);
-        bucket.put("CreatedAt", Instant.now().toString());
-        bucket.put("OwnerAccountId", ACCOUNT);
-        tableBuckets.put(bName, bucket);
-        sendJson(exchange, 200, Map.of("TableBucket", bucket));
+    // /buckets/{arn}/policy
+    if (bucketArn != null && len == 4 && "policy".equals(segments[3])) {
+      if ("DELETE".equals(method)) {
+        Map<String, Object> bucket = tableBuckets.get(bucketArn);
+        if (bucket != null) bucket.remove("policy");
+        exchange.sendResponseHeaders(204, -1);
         return;
       }
+      if ("PUT".equals(method)) {
+        exchange.sendResponseHeaders(200, -1);
+        return;
+      }
+      // GET
+      sendJson(exchange, 200, Map.of("resourcePolicy", "{}"));
+      return;
+    }
+
+    // /buckets/{arn}
+    if (bucketArn != null && len == 3) {
       if ("DELETE".equals(method)) {
-        tableBuckets.remove(bucketName);
+        tableBuckets.remove(bucketArn);
         exchange.sendResponseHeaders(204, -1);
         return;
       }
       if ("GET".equals(method)) {
-        Map<String, Object> bucket = tableBuckets.get(bucketName);
+        Map<String, Object> bucket = tableBuckets.get(bucketArn);
         if (bucket == null) {
-          sendJson(exchange, 404, Map.of("message", "TableBucket not found: " + bucketName));
+          sendJson(exchange, 404, Map.of("message", "TableBucket not found: " + bucketArn));
           return;
         }
         sendJson(exchange, 200, bucket);
@@ -221,25 +319,35 @@ public class S3TablesHandler implements HttpHandler {
 
     // /buckets
     if (len <= 2) {
-      if ("POST".equals(method)) {
+      if ("POST".equals(method) || "PUT".equals(method)) {
         // CreateTableBucket from body
         Map<String, Object> body =
             bodyBytes.length > 0 ? MAPPER.readValue(bodyBytes, Map.class) : new LinkedHashMap<>();
         String bName = (String) body.get("name");
+        String bArn = "arn:aws:s3tables:" + REGION + ":" + ACCOUNT + ":bucket/" + bName;
+        if (tableBuckets.containsKey(bArn)) {
+          sendJson(
+              exchange,
+              409,
+              Map.of(
+                  "message", "Table bucket already exists: " + bName, "code", "ConflictException"));
+          return;
+        }
         Map<String, Object> bucket = new LinkedHashMap<>();
-        bucket.put("Name", bName);
-        bucket.put("Arn", "arn:aws:s3tables:" + REGION + ":" + ACCOUNT + ":bucket/" + bName);
-        bucket.put("CreatedAt", Instant.now().toString());
-        bucket.put("OwnerAccountId", ACCOUNT);
-        tableBuckets.put(bName, bucket);
-        sendJson(exchange, 200, Map.of("TableBucket", bucket));
+        bucket.put("arn", bArn);
+        bucket.put("name", bName);
+        bucket.put("tableBucketId", UUID.randomUUID().toString());
+        bucket.put("type", "customer");
+        bucket.put("createdAt", Instant.now().toString());
+        bucket.put("ownerAccountId", ACCOUNT);
+        tableBuckets.put(bArn, bucket);
+        sendJson(exchange, 200, bucket);
         return;
       }
       if ("GET".equals(method)) {
         // ListTableBuckets
         List<Map<String, Object>> bucketList = new ArrayList<>(tableBuckets.values());
-        sendJson(
-            exchange, 200, Map.of("TableBuckets", bucketList, "ContinuationToken", (Object) null));
+        sendJson(exchange, 200, Map.of("tableBuckets", bucketList));
         return;
       }
     }
@@ -248,6 +356,12 @@ public class S3TablesHandler implements HttpHandler {
         exchange,
         400,
         Map.of("message", "Unknown operation for " + method + " " + String.join("/", segments)));
+  }
+
+  private String extractBucketName(String arn) {
+    // arn:aws:s3tables:region:account:bucket/name
+    int idx = arn.lastIndexOf('/');
+    return idx >= 0 ? arn.substring(idx + 1) : arn;
   }
 
   private void sendJson(HttpExchange exchange, int status, Object body) throws IOException {

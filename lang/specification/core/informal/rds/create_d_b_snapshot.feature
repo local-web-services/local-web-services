@@ -31,7 +31,7 @@ Feature: Rds - A Database Snapshot Is Created From An Instance
     When a database snapshot is created from an instance
     Then the operation is rejected
 
-  @standard @negative @create_d_b_snapshot
+  @standard @negative @internal @create_d_b_snapshot
   Scenario: a database snapshot is created from an instance fails when no snapshot slot is available
     Given the database instance exists
     And the instance is "AVAILABLE"

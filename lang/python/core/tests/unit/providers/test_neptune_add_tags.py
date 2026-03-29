@@ -12,7 +12,7 @@ from lws.providers.neptune.routes import create_neptune_app
 
 @pytest.fixture()
 def client() -> TestClient:
-    app = create_neptune_app()
+    app, _ = create_neptune_app()
     return TestClient(app)
 
 

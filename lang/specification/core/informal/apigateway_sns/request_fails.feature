@@ -39,7 +39,7 @@ Feature: ApigatewaySns - A Request Is Received But The Sns Publish Fails Because
     When a request is received but the "SNS" publish fails because the topic has been deleted
     Then the operation is rejected
 
-  @standard @negative @request_fails @capacity
+  @standard @negative @internal @request_fails @capacity
   Scenario: a request is received but the "SNS" publish fails because the topic has been deleted fails when no request slot is available
     Given the "API" is "ACTIVE"
     And the "API" has an "SNS" integration configured

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import socket
 from pathlib import Path
 
 import uvicorn
@@ -19,23 +20,35 @@ logger = logging.getLogger(__name__)
 
 async def start_uvicorn_server(
     app: object,
-    port: int,
+    port: int | socket.socket,
     host: str = "0.0.0.0",
 ) -> tuple[uvicorn.Server, asyncio.Task]:  # type: ignore[type-arg]
     """Start a uvicorn server and wait for it to bind.
 
+    ``port`` may be an integer port number or a pre-bound ``socket.socket``.
+    Passing a pre-bound socket eliminates the TOCTOU race that occurs when
+    multiple processes call ``_free_port()`` simultaneously and then race to
+    bind the same port.
+
     Raises OSError if the server fails to bind within the timeout.
     """
-    uvi_config = uvicorn.Config(app=app, host=host, port=port, log_level="warning")
-    server = uvicorn.Server(uvi_config)
-    task = asyncio.create_task(server.serve())
+    if isinstance(port, socket.socket):
+        actual_port = port.getsockname()[1]
+        uvi_config = uvicorn.Config(app=app, host=host, port=actual_port, log_level="warning")
+        server = uvicorn.Server(uvi_config)
+        task = asyncio.create_task(server.serve(sockets=[port]))
+    else:
+        actual_port = port
+        uvi_config = uvicorn.Config(app=app, host=host, port=port, log_level="warning")
+        server = uvicorn.Server(uvi_config)
+        task = asyncio.create_task(server.serve())
     for _ in range(50):
         if server.started:
             break
         await asyncio.sleep(0.1)
     if not server.started:
         task.cancel()
-        raise OSError(f"Failed to bind server on {host}:{port} — port may be in use")
+        raise OSError(f"Failed to bind server on {host}:{actual_port} — port may be in use")
     return server, task
 
 
@@ -167,3 +180,82 @@ class FakeServerProvider(Provider):
             await child.start()
             self._children[server_name] = child
         return True
+
+    async def create_server_in_memory(
+        self, name: str, protocol: str = "rest", description: str = ""
+    ) -> dict:
+        """Create and start a new fake server in memory (no disk storage)."""
+        if name in self._children:
+            raise ValueError(f"Fake server '{name}' already exists")
+        config = FakeServerConfig(name=name, protocol=protocol, description=description)
+        port = self._base_port + self._next_port_offset
+        self._next_port_offset += 1
+        child = _FakeChildServer(config, port)
+        await child.start()
+        self._children[name] = child
+        return {"name": name, "port": port, "protocol": protocol, "route_count": 0}
+
+    async def delete_server_in_memory(self, name: str) -> None:
+        """Stop and remove an in-memory fake server."""
+        child = self._children.pop(name, None)
+        if child is None:
+            raise KeyError(f"Fake server '{name}' not found")
+        await child.stop()
+
+    def add_route_in_memory(
+        self,
+        name: str,
+        method: str,
+        path: str,
+        status: int = 200,
+        body: object = None,
+        headers: dict | None = None,
+    ) -> None:
+        """Add a route to an in-memory fake server."""
+        from lws.providers.fakeserver.models import (  # pylint: disable=import-outside-toplevel
+            FakeResponse,
+            MatchCriteria,
+            RouteRule,
+        )
+
+        child = self._children.get(name)
+        if child is None:
+            raise KeyError(f"Fake server '{name}' not found")
+        existing = next(
+            (r for r in child.config.routes if r.method == method.upper() and r.path == path),
+            None,
+        )
+        if existing is not None:
+            raise ValueError(f"Route {method.upper()} {path} already exists on server '{name}'")
+        rule = RouteRule(
+            path=path,
+            method=method.upper(),
+            responses=[
+                (MatchCriteria(), FakeResponse(status=status, body=body, headers=headers or {}))
+            ],
+        )
+        child.config.routes.append(rule)
+        child.reload(child.config)
+
+    def remove_route_in_memory(self, name: str, method: str, path: str) -> None:
+        """Remove a route from an in-memory fake server."""
+        child = self._children.get(name)
+        if child is None:
+            raise KeyError(f"Fake server '{name}' not found")
+        before = len(child.config.routes)
+        child.config.routes = [
+            r for r in child.config.routes if not (r.method == method.upper() and r.path == path)
+        ]
+        if len(child.config.routes) == before:
+            raise KeyError(f"Route {method.upper()} {path} not found on server '{name}'")
+        child.reload(child.config)
+
+    async def reset_in_memory(self) -> None:
+        """Stop and remove all in-memory fake servers."""
+        for name in list(self._children):
+            child = self._children.pop(name)
+            await child.stop()
+
+    async def reset(self) -> None:
+        """Reset all in-memory fake servers (called by management reset endpoint)."""
+        await self.reset_in_memory()

@@ -30,7 +30,7 @@ Feature: EventsDynamodb - An Event Matches An Enabled Rule But The Dynamodb Writ
     When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
     Then the operation is rejected
 
-  @standard @negative @event_target_fails @capacity
+  @standard @negative @internal @event_target_fails @capacity
   Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted fails when no event slot is available
     Given a rule is "ENABLED"
     And the target table is "DELETING"

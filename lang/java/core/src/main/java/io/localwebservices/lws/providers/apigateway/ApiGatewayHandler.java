@@ -68,7 +68,7 @@ public class ApiGatewayHandler implements HttpHandler {
     // GET /restapis
     if ("GET".equals(method) && parts.length == 1 && "restapis".equals(parts[0])) {
       List<Map<String, Object>> items = new ArrayList<>(store.apis.values());
-      sendJson(exchange, 200, Map.of("items", items));
+      sendJson(exchange, 200, Map.of("item", items));
       return;
     }
     if (parts.length < 2 || !"restapis".equals(parts[0])) {
@@ -108,13 +108,13 @@ public class ApiGatewayHandler implements HttpHandler {
     String section = parts[2];
 
     switch (section) {
-      case "store.resources":
+      case "resources":
         handleResourceRoute(method, parts, apiId, body, exchange);
         break;
-      case "store.deployments":
+      case "deployments":
         handleDeploymentRoute(method, parts, apiId, body, exchange);
         break;
-      case "store.stages":
+      case "stages":
         handleStageRoute(method, parts, apiId, body, exchange);
         break;
       default:
@@ -161,9 +161,9 @@ public class ApiGatewayHandler implements HttpHandler {
       return;
     }
 
-    // GET /restapis/:id/store.resources
+    // GET /restapis/:id/resources
     if ("GET".equals(method) && parts.length == 3) {
-      sendJson(exchange, 200, Map.of("items", new ArrayList<>(rm.values())));
+      sendJson(exchange, 200, Map.of("item", new ArrayList<>(rm.values())));
       return;
     }
     // POST /restapis/:id/store.resources/:parentId
@@ -379,7 +379,7 @@ public class ApiGatewayHandler implements HttpHandler {
       return;
     }
     if ("GET".equals(method) && parts.length == 3) {
-      sendJson(exchange, 200, Map.of("items", new ArrayList<>(dm.values())));
+      sendJson(exchange, 200, Map.of("item", new ArrayList<>(dm.values())));
       return;
     }
     if (parts.length < 4) {

@@ -119,7 +119,7 @@ dev dependency in `core/`, `sdk/`, and `example/`.
 | `test_aaa_comments.py` | All test functions have `# Arrange` / `# Act` / `# Assert` comments |
 | `test_no_bare_except.py` | No bare `except:` in `src/` |
 | `test_no_magic_strings_in_assertions.py` | Assertions use `expected_*` / `actual_*` variables, no literals |
-| `test_file_naming.py` | Test files named `test_<subject>_<scenario>.py` |
+| `test_file_naming.py` | Test files named `test_<subject>_<scenario>.py`; also allows `__init__`, `conftest`, `constants`, `client`, `_helpers` |
 | `tests/unit/test_one_class_per_file.py` | One test class per file in `tests/unit/` |
 
 ### Universal e2e tests (run in sdk and example only)
@@ -223,11 +223,41 @@ E2e suites live in `lang/python/sdk/tests/e2e/<service>/`. Each suite must conta
 
 ```
 tests/e2e/<service>/
-├── conftest.py      Step definitions (Given/When/Then); no httpx imports
-└── test_scenarios.py  pytest-bdd scenario runner; imports feature file
+├── __init__.py
+├── client.py            PascalCaseTestClient (session helpers — boto3 calls)
+├── conftest.py          fixtures + step registration (wildcard imports)
+├── constants.py         constants (TEST_*) + pure helpers
+├── test_scenarios.py    pytest-bdd scenario runner; loads feature files
+├── given/
+│   ├── __init__.py      aggregates: from .step_name import *  # noqa: F401,F403
+│   └── <step_name>.py   one file per step
+├── when/
+│   ├── __init__.py
+│   └── <step_name>.py
+└── then/
+    ├── __init__.py
+    └── <step_name>.py
 ```
 
 Feature files (`.feature`) live in `lang/specification/core/informal/<service>/`.
 
 After adding a suite, `test_provider_feature_e2e_coverage.py` will automatically
 verify it is wired up.
+
+### client.py convention
+
+Session helper functions (those taking `lws_session` as first param) belong in `client.py`,
+not in `constants.py`. Name the class `<PascalCaseService>TestClient`. Step files import
+from `..client`:
+
+```python
+# given/table_exists.py
+from ..client import DynamodbTestClient
+
+@given("the table exists")
+def table_exists(lws_session):
+    DynamodbTestClient(lws_session).create_table()
+```
+
+Use `tools/client_refactor.py` to generate `client.py` automatically from an existing
+`constants.py`.

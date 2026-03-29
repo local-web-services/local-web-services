@@ -51,7 +51,7 @@ Feature: S3tables - An Expired Snapshot Is Removed From A Table
     When an expired snapshot is removed from a table
     Then the operation is rejected
 
-  @standard @negative @expire_snapshot
+  @standard @negative @internal @expire_snapshot
   Scenario: an expired snapshot is removed from a table fails when the snapshot is not "ACTIVE"
     Given the table exists
     And the table is "ACTIVE"

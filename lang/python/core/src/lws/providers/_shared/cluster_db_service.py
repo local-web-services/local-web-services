@@ -7,15 +7,47 @@ via a config dataclass so each provider is a thin wrapper.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Any
 
 from fastapi import FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared._cluster_db_config import ClusterDBConfig
+from lws.providers._shared._cluster_db_dispatch import dispatch_request
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_create_db_cluster_snapshot as _handle_create_db_cluster_snapshot,
+)
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_delete_db_cluster_snapshot as _handle_delete_db_cluster_snapshot,
+)
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_describe_db_cluster_snapshots as _handle_describe_db_cluster_snapshots,
+)
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_failover_db_cluster as _handle_failover_db_cluster,
+)
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_modify_db_cluster as _handle_modify_db_cluster,
+)
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_modify_db_instance as _handle_modify_db_instance,
+)
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_reboot_db_instance as _handle_reboot_db_instance,
+)
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_restore_db_cluster_from_snapshot as _handle_restore_db_cluster_from_snapshot,
+)
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_start_db_cluster as _handle_start_db_cluster,
+)
+from lws.providers._shared._cluster_db_extra_handlers import (
+    handle_stop_db_cluster as _handle_stop_db_cluster,
+)
 from lws.providers._shared._cluster_db_state import (
     _apply_tags,
+    _cluster_available_guard,
     _ClusterDBState,
     _DBCluster,
     _DBInstance,
@@ -23,13 +55,12 @@ from lws.providers._shared._cluster_db_state import (
     _describe_instance,
     _find_tags_by_arn,
 )
+from lws.providers._shared.aws_capacity import check_capacity as _check_capacity
 from lws.providers._shared.aws_lifecycle import (
     ResourceLifecycleConfig,
     ResourceStateTracker,
     apply_delete_lifecycle,
 )
-from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
-from lws.providers._shared.resource_container import ResourceContainerManager
 from lws.providers._shared.response_helpers import (
     creating_guard as _creating_guard,
 )
@@ -44,27 +75,14 @@ _ACCOUNT_ID = "000000000000"
 _REGION = "us-east-1"
 
 
-# ------------------------------------------------------------------
-# Config
-# ------------------------------------------------------------------
-
-
-@dataclass
-class ClusterDBConfig:
-    """Configuration that varies between DocumentDB and Neptune."""
-
-    service_name: str
-    display_name: str
-    logger_name: str
-    arn_service: str
-    default_engine: str
-    default_port: int
-    default_instance_class: str
-    endpoint_suffix: str
-    include_master_username: bool = False
-    include_remove_tags: bool = True
-    container_manager: ResourceContainerManager | None = None
-    lifecycle: ResourceLifecycleConfig | None = None
+# ClusterDBConfig is defined in _cluster_db_config.py and re-exported here
+# for backward-compatibility with existing imports.
+__all__ = [
+    "ClusterDBConfig",
+    "create_cluster_db_app",
+    "check_db_resource_read_lifecycle",
+    "_ClusterDBState",
+]
 
 
 # ------------------------------------------------------------------
@@ -117,13 +135,18 @@ async def _handle_delete_db_cluster(
     state: _ClusterDBState, body: dict, config: ClusterDBConfig
 ) -> Response:
     cid = body.get("DBClusterIdentifier", "")
-    cluster = state.clusters.pop(cid, None)
-    if cluster is None:
+    cluster = state.clusters.get(cid)
+    guard = _cluster_available_guard(cid, cluster)
+    if guard is not None:
+        return guard
+    active_instances = [i for i in state.instances.values() if i.db_cluster_identifier == cid]
+    if active_instances:
         return _error_response(
-            "DBClusterNotFoundFault",
-            f"Cluster {cid} not found.",
+            "InvalidDBClusterStateFault",
+            f"Cluster {cid} has non-deleted instances.",
         )
-    cluster.status = "deleting"
+    state.clusters.pop(cid)
+    cluster.status = "deleting"  # type: ignore[union-attr]
     if config.container_manager:
         await config.container_manager.stop_container(cid)
     return _json_response({"DBCluster": _describe_cluster(cluster, config)})
@@ -132,6 +155,10 @@ async def _handle_delete_db_cluster(
 async def _handle_create_db_instance(
     state: _ClusterDBState, body: dict, config: ClusterDBConfig
 ) -> Response:
+    if config.capacity is not None:
+        cap_err = _check_capacity(config.capacity, "DBInstanceAlreadyExistsFault", 400)
+        if cap_err is not None:
+            return cap_err
     iid = body.get("DBInstanceIdentifier", "")
     if iid in state.instances:
         return _error_response(
@@ -141,8 +168,12 @@ async def _handle_create_db_instance(
 
     cid = body.get("DBClusterIdentifier", "")
     endpoint = None
-    if cid and cid in state.clusters:
-        endpoint = state.clusters[cid].endpoint
+    if cid:
+        cluster = state.clusters.get(cid)
+        guard = _cluster_available_guard(cid, cluster)
+        if guard is not None:
+            return guard
+        endpoint = cluster.endpoint  # type: ignore[union-attr]
     instance = _DBInstance(
         db_instance_identifier=iid,
         db_instance_class=body.get("DBInstanceClass", config.default_instance_class),
@@ -343,8 +374,11 @@ async def _lifecycle_delete_instance(
 # ------------------------------------------------------------------
 
 
-def create_cluster_db_app(config: ClusterDBConfig) -> FastAPI:
-    """Create a FastAPI app that speaks a cluster-DB wire protocol."""
+def create_cluster_db_app(config: ClusterDBConfig) -> tuple[FastAPI, _ClusterDBState]:
+    """Create a FastAPI app that speaks a cluster-DB wire protocol.
+
+    Returns a tuple of (app, state) so the caller can register state for reset.
+    """
     logger = get_logger(config.logger_name)
     _lc = config.lifecycle or ResourceLifecycleConfig()
     _cluster_tracker = ResourceStateTracker(_lc)
@@ -358,9 +392,19 @@ def create_cluster_db_app(config: ClusterDBConfig) -> FastAPI:
         "CreateDBCluster": _handle_create_db_cluster,
         "DescribeDBClusters": _handle_describe_db_clusters,
         "DeleteDBCluster": _handle_delete_db_cluster,
+        "StopDBCluster": _handle_stop_db_cluster,
+        "StartDBCluster": _handle_start_db_cluster,
+        "FailoverDBCluster": _handle_failover_db_cluster,
+        "ModifyDBCluster": _handle_modify_db_cluster,
         "CreateDBInstance": _handle_create_db_instance,
         "DescribeDBInstances": _handle_describe_db_instances,
         "DeleteDBInstance": _handle_delete_db_instance,
+        "RebootDBInstance": _handle_reboot_db_instance,
+        "ModifyDBInstance": _handle_modify_db_instance,
+        "CreateDBClusterSnapshot": _handle_create_db_cluster_snapshot,
+        "DescribeDBClusterSnapshots": _handle_describe_db_cluster_snapshots,
+        "DeleteDBClusterSnapshot": _handle_delete_db_cluster_snapshot,
+        "RestoreDBClusterFromSnapshot": _handle_restore_db_cluster_from_snapshot,
         "ListTagsForResource": _handle_list_tags,
         "AddTagsToResource": _handle_add_tags,
     }
@@ -369,46 +413,40 @@ def create_cluster_db_app(config: ClusterDBConfig) -> FastAPI:
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:
-        target = request.headers.get("x-amz-target", "")
-        body = await parse_json_body(request)
-        action = resolve_api_action(target, body)
+        return await dispatch_request(
+            request,
+            config,
+            state,
+            action_handlers,
+            logger,
+            _lc,
+            _cluster_tracker,
+            _instance_tracker,
+            _check_cluster_read_lifecycle,
+            _check_instance_read_lifecycle,
+            _run_with_lifecycle,
+        )
 
-        err = _check_cluster_read_lifecycle(action, body, _lc, _cluster_tracker)
-        if err is not None:
-            return err
+    return app, state
 
-        err = _check_instance_read_lifecycle(action, body, _lc, _instance_tracker)
-        if err is not None:
-            return err
 
-        handler = action_handlers.get(action)
-        if handler is None:
-            logger.warning("Unknown %s action: %s", config.display_name, action)
-            return _error_response(
-                "InvalidAction",
-                f"lws: {config.display_name} operation '{action}' is not yet implemented",
-            )
-
-        if action == "CreateDBCluster" and _lc.enabled and _lc.create_dwell_ms > 0:
-            return await _lifecycle_create_cluster(
-                handler, state, body, config, _lc, _cluster_tracker
-            )
-
-        if action == "DeleteDBCluster" and _lc.enabled:
-            return await _lifecycle_delete_cluster(
-                handler, state, body, config, _lc, _cluster_tracker
-            )
-
-        if action == "CreateDBInstance" and _lc.enabled and _lc.create_dwell_ms > 0:
-            return await _lifecycle_create_instance(
-                handler, state, body, config, _lc, _instance_tracker
-            )
-
-        if action == "DeleteDBInstance" and _lc.enabled:
-            return await _lifecycle_delete_instance(
-                handler, state, body, config, _lc, _instance_tracker
-            )
-
-        return await handler(state, body, config)
-
-    return app
+async def _run_with_lifecycle(
+    handler: Any,
+    state: _ClusterDBState,
+    body: dict,
+    config: ClusterDBConfig,
+    lc: ResourceLifecycleConfig,
+    cluster_tracker: ResourceStateTracker,
+    instance_tracker: ResourceStateTracker,
+    action: str,
+) -> Response:
+    """Run handler, applying lifecycle management for create/delete actions."""
+    if action == "CreateDBCluster" and lc.enabled:
+        return await _lifecycle_create_cluster(handler, state, body, config, lc, cluster_tracker)
+    if action == "DeleteDBCluster" and lc.enabled:
+        return await _lifecycle_delete_cluster(handler, state, body, config, lc, cluster_tracker)
+    if action == "CreateDBInstance" and lc.enabled:
+        return await _lifecycle_create_instance(handler, state, body, config, lc, instance_tracker)
+    if action == "DeleteDBInstance" and lc.enabled:
+        return await _lifecycle_delete_instance(handler, state, body, config, lc, instance_tracker)
+    return await handler(state, body, config)

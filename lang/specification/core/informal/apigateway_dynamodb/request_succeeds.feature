@@ -40,7 +40,7 @@ Feature: ApigatewayDynamodb - A Request Is Received, The Api Writes To The Dynam
     When a request is received, the "API" writes to the DynamoDB table, and returns 200
     Then the operation is rejected
 
-  @standard @negative @request_succeeds @capacity
+  @standard @negative @internal @request_succeeds @capacity
   Scenario: a request is received, the "API" writes to the DynamoDB table, and returns 200 fails when no request slot is available
     Given the "API" is "ACTIVE"
     And the "API" has a DynamoDB integration configured
@@ -49,7 +49,7 @@ Feature: ApigatewayDynamodb - A Request Is Received, The Api Writes To The Dynam
     When a request is received, the "API" writes to the DynamoDB table, and returns 200
     Then the operation is rejected
 
-  @standard @negative @request_succeeds @capacity
+  @standard @negative @internal @request_succeeds @capacity
   Scenario: a request is received, the "API" writes to the DynamoDB table, and returns 200 fails when no item slot is available
     Given the "API" is "ACTIVE"
     And the "API" has a DynamoDB integration configured

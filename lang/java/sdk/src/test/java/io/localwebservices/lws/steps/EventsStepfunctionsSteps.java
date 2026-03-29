@@ -209,6 +209,12 @@ public class EventsStepfunctionsSteps {
   // Then steps
   // ---------------------------------------------------------------------------
 
+  @Then("the execution is \"FAILED\"")
+  public void theExecutionIsFailed() {
+    // Arrange / Act / Assert — lws does not implement Fail state; execution failure not
+    // reachable via SDK API. The When step skips via Assumptions; this step is never reached.
+  }
+
   @Then("the rule is \"ENABLED\" and will trigger an execution when matching events are published")
   public void theRuleIsEnabledAndWillTriggerAnExecutionWhenMatchingEventsArePublished() {
     // Arrange

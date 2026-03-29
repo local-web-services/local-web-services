@@ -7,10 +7,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
-import software.amazon.awssdk.services.secretsmanager.model.CreateSecretResponse;
 import software.amazon.awssdk.services.secretsmanager.model.ListSecretsResponse;
-import software.amazon.awssdk.services.sfn.SfnClient;
-import software.amazon.awssdk.services.sfn.model.ListExecutionsResponse;
 
 /**
  * Step definitions for the stepfunctions_secretsmanager cross-service feature files.
@@ -82,24 +79,6 @@ public class StepfunctionsSecretsmanagerSteps {
     Assumptions.assumeTrue(false, "secret non-ACTIVE state not reachable via SDK API");
   }
 
-  @Given("the secret is \"PENDING_DELETION\"")
-  public void theSecretIsPendingDeletion() {
-    // Arrange / Act / Assert — PENDING_DELETION state not directly configurable via public API
-    Assumptions.assumeTrue(false, "secret PENDING_DELETION state not reachable via SDK API");
-  }
-
-  @Given("the secret is not pending deletion")
-  public void theSecretIsNotPendingDeletion() {
-    // Arrange / Act / Assert — no-op: secret is not pending deletion by default
-  }
-
-  @Given("the secret exists and is \"ACTIVE\"")
-  public void theSecretExistsAndIsActive() {
-    // Arrange
-    secretsManagerCreateSecret(TEST_SECRET_NAME);
-    // Assert — secret now exists and is ACTIVE; verified by subsequent steps
-  }
-
   @Given("the secret does not exist or is not \"ACTIVE\"")
   public void theSecretDoesNotExistOrIsNotActive() {
     // Arrange / Act / Assert — non-ACTIVE secret state not reachable via public API
@@ -119,38 +98,6 @@ public class StepfunctionsSecretsmanagerSteps {
   @Given("^sid in secret_status$")
   public void sidInSecretStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
-  }
-
-  // -------------------------------------------------------------------------
-  // When — secret actions
-  // -------------------------------------------------------------------------
-
-  @When("a secret is created in Secrets Manager")
-  public void aSecretIsCreatedInSecretsManager() {
-    // Arrange
-    try (SecretsManagerClient client = world.session.secretsManagerClient()) {
-      // Act
-      CreateSecretResponse response =
-          client.createSecret(r -> r.name(TEST_SECRET_NAME).secretString(TEST_SECRET_VALUE));
-      // Assert
-      world.setSuccess(response);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
-
-  @When("a secret is scheduled for deletion")
-  public void aSecretIsScheduledForDeletion() {
-    // Arrange
-    try (SecretsManagerClient client = world.session.secretsManagerClient()) {
-      // Act
-      var response =
-          client.deleteSecret(r -> r.secretId(TEST_SECRET_NAME).recoveryWindowInDays(7L));
-      // Assert
-      world.setSuccess(response);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
   }
 
   // -------------------------------------------------------------------------
@@ -207,26 +154,5 @@ public class StepfunctionsSecretsmanagerSteps {
     assertTrue(
         actualMarkedForDeletion,
         "expected secret '" + expectedSecretName + "' to be PENDING_DELETION");
-  }
-
-  // -------------------------------------------------------------------------
-  // Then — execution failed with ResourceNotFoundException
-  // -------------------------------------------------------------------------
-
-  @Then("the execution is \"FAILED\" with a ResourceNotFoundException")
-  public void theExecutionIsFailedWithAResourceNotFoundException() {
-    // Arrange
-    String expectedExecutionArn = world.lastExecutionArn;
-    // Act
-    try (SfnClient client = world.session.sfnClient()) {
-      ListExecutionsResponse response =
-          client.listExecutions(r -> r.stateMachineArn(world.lastStateMachineArn));
-      boolean actualFound =
-          response.executions().stream()
-              .anyMatch(e -> e.executionArn().equals(expectedExecutionArn));
-      // Assert
-      assertTrue(
-          actualFound, "expected execution " + expectedExecutionArn + " to be in state FAILED");
-    }
   }
 }

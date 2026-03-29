@@ -26,6 +26,8 @@ def _parse_integration_uri(uri: str) -> dict[str, Any] | None:
       → ``{"service": "s3", "bucket": "<bucket>", "key": "<key>"}``
     - ``arn:aws:apigateway:{region}:states:action/StartExecution``
       → ``{"service": "states", "action": "StartExecution"}``
+    - ``arn:aws:apigateway:{region}:lambda:path/2015-03-31/functions/{function_arn}/invocations``
+      → ``{"service": "lambda", "function_name": "<name>"}``
 
     Returns ``None`` when the URI does not match any known pattern.
     """
@@ -34,6 +36,10 @@ def _parse_integration_uri(uri: str) -> dict[str, Any] | None:
     sns_pattern = r"^arn:aws:apigateway:[^:]+:sns:action/(.+)$"
     s3_pattern = r"^arn:aws:apigateway:[^:]+:s3:path/([^/]+)/(.+)$"
     states_pattern = r"^arn:aws:apigateway:[^:]+:states:action/(.+)$"
+    lambda_pattern = (
+        r"^arn:aws:apigateway:[^:]+:lambda:path/[^/]+/functions"
+        r"/[^/]+:function:([^/]+)/invocations$"
+    )
 
     m = re.match(dynamodb_pattern, uri)
     if m:
@@ -54,6 +60,10 @@ def _parse_integration_uri(uri: str) -> dict[str, Any] | None:
     m = re.match(states_pattern, uri)
     if m:
         return {"service": "states", "action": m.group(1)}
+
+    m = re.match(lambda_pattern, uri)
+    if m:
+        return {"service": "lambda", "function_name": m.group(1)}
 
     return None
 
@@ -137,6 +147,28 @@ async def _dispatch_states(request_body: dict, service_providers: dict[str, Any]
     )
 
 
+async def _dispatch_lambda(
+    service_descriptor: dict[str, Any], request_body: dict, service_providers: dict[str, Any]
+) -> dict:
+    """Dispatch a Lambda proxy integration synchronous invocation."""
+    from lws.providers._shared.lambda_helpers import (  # pylint: disable=import-outside-toplevel
+        build_default_lambda_context,
+    )
+
+    registry = service_providers.get("lambda_registry")
+    if registry is None:
+        raise ValueError("No Lambda registry configured")
+    function_name = service_descriptor["function_name"]
+    compute = registry.get_compute(function_name)
+    if compute is None:
+        raise ValueError(f"Lambda function not found: {function_name}")
+    context = build_default_lambda_context(function_name)
+    result = await compute.invoke(request_body, context)
+    if result.error:
+        raise ValueError(f"Lambda invocation error: {result.error}")
+    return result.payload if result.payload is not None else {}
+
+
 async def _dispatch_integration(
     service_descriptor: dict[str, Any],
     request_body: dict,
@@ -170,12 +202,25 @@ async def _dispatch_integration(
         return await _dispatch_s3(service_descriptor, request_body, service_providers)
     if service == "states":
         return await _dispatch_states(request_body, service_providers)
+    if service == "lambda":
+        return await _dispatch_lambda(service_descriptor, request_body, service_providers)
 
     raise ValueError(f"Unsupported service: {service}")
 
 
+_LAMBDA_PROXY_PATTERN = r"^arn:aws:apigateway:[^:]+:lambda:path/.+/functions/.+/invocations$"
+
+
+def is_lambda_proxy_uri(uri: str) -> bool:
+    """Return True if the URI is a Lambda proxy integration URI."""
+    return bool(re.match(_LAMBDA_PROXY_PATTERN, uri))
+
+
 def validate_integration_target(uri: str, service_providers: dict[str, Any]) -> Response | None:
     """Return an error response if the integration target resource does not exist."""
+    # Lambda proxy URIs are always valid — they don't reference a service provider.
+    if is_lambda_proxy_uri(uri):
+        return None
     descriptor = _parse_integration_uri(uri)
     if descriptor is None:
         return None

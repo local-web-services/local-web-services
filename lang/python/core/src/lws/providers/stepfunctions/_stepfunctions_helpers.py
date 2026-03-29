@@ -79,3 +79,29 @@ def _error_response(code: str, message: str, status_code: int = 400) -> Response
         "requestId": str(uuid.uuid4()),
     }
     return _json_response(error_body, status_code=status_code)
+
+
+def check_sm_lifecycle(
+    resource_arn: str,
+    tracker: object,
+    provider: object,
+) -> Response | None:
+    """Return error response if SM is not in ACTIVE state (CREATING or DELETING)."""
+    sm_name = resource_arn.rsplit(":", 1)[-1] if ":" in resource_arn else resource_arn
+    lc_status = tracker.get_state(sm_name)  # type: ignore[union-attr]
+    if lc_status == "DELETING":
+        return _error_response(
+            "StateMachineDoesNotExist",
+            f"Resource not found: {resource_arn}",
+        )
+    if lc_status == "CREATING":
+        return _error_response(
+            "StateMachineDeleting",
+            f"State machine is not ACTIVE: {resource_arn}",
+        )
+    if sm_name not in provider.list_state_machines():  # type: ignore[union-attr]
+        return _error_response(
+            "ResourceNotFoundException",
+            f"Resource not found: {resource_arn}",
+        )
+    return None

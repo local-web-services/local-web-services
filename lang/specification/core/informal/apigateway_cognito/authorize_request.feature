@@ -62,7 +62,7 @@ Feature: ApigatewayCognito - A Request With A Valid Token From A User In The Api
     When a request with a valid token from a user in the "API"'s configured pool is authorized
     Then the operation is rejected
 
-  @standard @negative @authorize_request @capacity
+  @standard @negative @internal @authorize_request @capacity
   Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized fails when no request slot is available
     Given the "API" exists
     And the "API" is "ACTIVE"

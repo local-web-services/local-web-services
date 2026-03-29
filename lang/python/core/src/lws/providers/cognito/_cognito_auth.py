@@ -38,6 +38,7 @@ class UserPoolConfig:
     explicit_auth_flows: list[str] = field(default_factory=list)
     pre_authentication_trigger: str | None = None
     post_confirmation_trigger: str | None = None
+    pre_signup_trigger: str | None = None
 
 
 # ---------------------------------------------------------------------------
