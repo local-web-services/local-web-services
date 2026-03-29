@@ -3,7 +3,7 @@
 GRADLE_OPTS := -Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-sdk
 export GRADLE_OPTS
 
-.PHONY: help test test-e2e e2e-test lint format format-check cpd spotbugs architecture-test check
+.PHONY: help test test-e2e e2e-test e2e-test-suite lint format format-check cpd spotbugs architecture-test check
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
@@ -14,6 +14,13 @@ test: ## Run test suite
 test-e2e: test ## Run e2e tests
 
 e2e-test: test ## Run e2e tests
+
+e2e-test-suite: ## Run a single e2e suite by Cucumber tag: make e2e-test-suite SUITE=<service> or SUITE=sdk
+	@if [ "$(SUITE)" = "sdk" ]; then \
+		./gradlew test -Dcucumber.filter.tags="@sdk"; \
+	else \
+		./gradlew test -Dcucumber.filter.tags="@$(SUITE)"; \
+	fi
 
 lint: ## Check style, imports, and complexity (Checkstyle)
 	./gradlew checkstyleMain checkstyleTest

@@ -785,16 +785,39 @@ jobs:
         working-directory: lang/java/sdk
         run: make lint format-check cpd spotbugs
 
+  java-sdk-e2e-suites:
+    needs: [changes]
+    if: |
+      always() && !cancelled() && needs.changes.outputs.java-sdk == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      suites: ${{ steps.list.outputs.suites }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: list
+        run: |
+          suites=$(
+            { echo "sdk"; ls lang/specification/core/informal/; } |
+              sort -u |
+              jq -R . | jq -sc .
+          )
+          echo "suites=$suites" >> $GITHUB_OUTPUT
+
   java-sdk-e2e-test:
-    needs: [changes, java-core-lint, java-core-integration-test, java-core-architecture-test, java-core-unit-test]
+    needs: [changes, java-sdk-e2e-suites, java-core-lint, java-core-integration-test, java-core-architecture-test, java-core-unit-test]
     if: |
       always() &&
       !cancelled() &&
       needs.changes.outputs.java-sdk == 'true' &&
+      (needs.java-sdk-e2e-suites.result == 'success' || needs.java-sdk-e2e-suites.result == 'skipped') &&
       (needs.java-core-lint.result == 'success' || needs.java-core-lint.result == 'skipped') &&
       (needs.java-core-integration-test.result == 'success' || needs.java-core-integration-test.result == 'skipped') &&
       (needs.java-core-architecture-test.result == 'success' || needs.java-core-architecture-test.result == 'skipped') &&
       (needs.java-core-unit-test.result == 'success' || needs.java-core-unit-test.result == 'skipped')
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: ${{ fromJSON(needs.java-sdk-e2e-suites.outputs.suites) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -805,9 +828,11 @@ jobs:
       - name: Build Java core JAR
         working-directory: lang/java/core
         run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew jar
-      - name: E2E test
+      - name: Run e2e suite
+        env:
+          SUITE: ${{ matrix.suite }}
         working-directory: lang/java/sdk
-        run: make e2e-test
+        run: make e2e-test-suite SUITE="$SUITE"
 
   java-sdk-architecture-test:
     needs: [changes, java-core-lint, java-core-integration-test, java-core-architecture-test, java-core-unit-test]
