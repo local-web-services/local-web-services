@@ -334,7 +334,16 @@ export class LwsSession {
    * @param service  AWS service name, e.g. `"dynamodb"`, `"s3"`, `"sqs"`.
    */
   client<T>(service: string): T {
-    const offset = SERVICE_OFFSETS[service.toLowerCase()];
+    const lowerService = service.toLowerCase();
+
+    // "fake" and "aws_fake" use registered fake server endpoints; no AWS SDK client is returned
+    if (lowerService === "fake" || lowerService === "aws_fake") {
+      throw new Error(
+        `Service "${service}" uses registered fake servers. Use registerFakeServer() and listFakeServers() to manage fake server endpoints.`,
+      );
+    }
+
+    const offset = SERVICE_OFFSETS[lowerService];
     if (offset === undefined) {
       throw new Error(
         `Service "${service}" is not supported. Available: ${Object.keys(SERVICE_OFFSETS).join(", ")}`,
@@ -348,7 +357,7 @@ export class LwsSession {
     };
     const region = "us-east-1";
 
-    switch (service.toLowerCase()) {
+    switch (lowerService) {
       case "dynamodb": {
         const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
         return new DynamoDBClient({ endpoint: endpointUrl, credentials, region }) as T;
@@ -493,6 +502,67 @@ export class LwsSession {
 
   capacity(service: string): CapacityBuilder {
     return new CapacityBuilder(service, this._basePort);
+  }
+
+  async setChaos(service: string, errorRate: number, latencyMs: number): Promise<void> {
+    await fetch(`http://127.0.0.1:${this._basePort}/_ldk/chaos/${service}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ error_rate: errorRate, latency_ms: latencyMs }),
+    });
+  }
+
+  async resetChaos(service: string): Promise<void> {
+    await fetch(`http://127.0.0.1:${this._basePort}/_ldk/chaos/${service}`, {
+      method: "DELETE",
+    });
+  }
+
+  async getChaosStatus(service: string): Promise<Record<string, unknown>> {
+    const response = await fetch(`http://127.0.0.1:${this._basePort}/_ldk/chaos/${service}`);
+    return response.json() as Promise<Record<string, unknown>>;
+  }
+
+  async injectState(
+    service: string,
+    resourceType: string,
+    resourceId: string,
+    injectedState: string,
+  ): Promise<void> {
+    await fetch(
+      `http://127.0.0.1:${this._basePort}/_ldk/state/${service}/${resourceType}/${resourceId}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ state: injectedState }),
+      },
+    );
+  }
+
+  async clearInjectedState(
+    service: string,
+    resourceType: string,
+    resourceId: string,
+  ): Promise<void> {
+    await fetch(
+      `http://127.0.0.1:${this._basePort}/_ldk/state/${service}/${resourceType}/${resourceId}`,
+      {
+        method: "DELETE",
+      },
+    );
+  }
+
+  async registerFakeServer(name: string, endpoint: string): Promise<void> {
+    await fetch(`http://127.0.0.1:${this._basePort}/_ldk/fake`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, endpoint }),
+    });
+  }
+
+  async listFakeServers(): Promise<Record<string, unknown>> {
+    const response = await fetch(`http://127.0.0.1:${this._basePort}/_ldk/fake`);
+    return response.json() as Promise<Record<string, unknown>>;
   }
 
   async recentLogs(): Promise<LogEntry[]> {

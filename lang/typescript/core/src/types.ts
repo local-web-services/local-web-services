@@ -91,6 +91,12 @@ export function defaultCapacityConfigs(): Record<string, CapacityConfig> {
   return configs;
 }
 
+export interface LifecycleRule {
+  enabled: boolean;
+  createDwellMs: number;
+  deleteDwellMs: number;
+}
+
 export interface ServerState {
   /** Chaos rules: service -> operation -> ChaosRule */
   chaosRules: Map<string, Map<string, ChaosRule>>;
@@ -113,6 +119,12 @@ export interface ServerState {
   arnExistsCheckers: Map<string, (arn: string) => boolean>;
   /** Capacity configs: service -> CapacityConfig */
   capacityConfigs: Record<string, CapacityConfig>;
+  /** Fake servers: name -> endpoint URL */
+  fakeServers: Map<string, string>;
+  /** Injected states: "service:resourceType:resourceId" -> state string */
+  injectedStates: Map<string, string>;
+  /** Lifecycle rules: service -> LifecycleRule */
+  lifecycleRules: Map<string, LifecycleRule>;
 }
 
 export function createServerState(): ServerState {
@@ -125,5 +137,8 @@ export function createServerState(): ServerState {
     resetCallbacks: [],
     arnExistsCheckers: new Map(),
     capacityConfigs: defaultCapacityConfigs(),
+    fakeServers: new Map(),
+    injectedStates: new Map(),
+    lifecycleRules: new Map(),
   };
 }

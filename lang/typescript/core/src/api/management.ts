@@ -1,7 +1,7 @@
 /** Management API — /_ldk/* endpoints. */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import type { ServerState, ChaosRule, FakeRule, IamPolicy, CapacityConfig } from "../types";
+import type { ServerState, ChaosRule, FakeRule, IamPolicy, CapacityConfig, LifecycleRule } from "../types";
 import { defaultCapacityConfigs } from "../types";
 import { WebSocketServer, type WebSocket } from "ws";
 
@@ -26,6 +26,9 @@ export function registerManagementApi(
     state.fakeRules.clear();
     state.iamConfig = { enforce: false, identities: {}, resource_policies: {} };
     state.logBuffer = [];
+    state.fakeServers.clear();
+    state.injectedStates.clear();
+    state.lifecycleRules.clear();
 
     const defaultConfigs = defaultCapacityConfigs();
     for (const service of Object.keys(state.capacityConfigs)) {
@@ -269,10 +272,205 @@ export function registerManagementApi(
     reply.send({ status: "ok" });
   });
 
+  // GET /_ldk/chaos/:service
+  app.get(
+    "/_ldk/chaos/:service",
+    async (req: FastifyRequest<{ Params: { service: string } }>, reply: FastifyReply) => {
+      const { service } = req.params;
+      const rules = state.chaosRules.get(service);
+      if (!rules) {
+        reply.send({ enabled: false });
+        return;
+      }
+      const rule = rules.get("*") ?? {};
+      reply.send({
+        enabled: true,
+        error_rate: rule.error_rate ?? 0,
+        latency_min_ms: rule.latency_min_ms ?? rule.latency_ms ?? 0,
+        latency_max_ms: rule.latency_max_ms ?? rule.latency_ms ?? 0,
+      });
+    },
+  );
+
+  // PUT /_ldk/chaos/:service
+  app.put(
+    "/_ldk/chaos/:service",
+    async (
+      req: FastifyRequest<{ Params: { service: string }; Body: { error_rate?: number; latency_ms?: number } }>,
+      reply: FastifyReply,
+    ) => {
+      const { service } = req.params;
+      const body = req.body;
+      const errorRate = body.error_rate ?? 0;
+      const latencyMs = body.latency_ms ?? 0;
+      const rule: ChaosRule = {
+        error_rate: errorRate,
+        latency_ms: latencyMs,
+        latency_min_ms: latencyMs,
+        latency_max_ms: latencyMs,
+      };
+      state.chaosRules.set(service, new Map([["*", rule]]));
+      reply.send({ status: "ok" });
+    },
+  );
+
+  // DELETE /_ldk/chaos/:service
+  app.delete(
+    "/_ldk/chaos/:service",
+    async (req: FastifyRequest<{ Params: { service: string } }>, reply: FastifyReply) => {
+      const { service } = req.params;
+      state.chaosRules.delete(service);
+      reply.send({ status: "ok" });
+    },
+  );
+
+  // GET /_ldk/capacity/:service
+  app.get(
+    "/_ldk/capacity/:service",
+    async (req: FastifyRequest<{ Params: { service: string } }>, reply: FastifyReply) => {
+      const { service } = req.params;
+      const config = state.capacityConfigs[service] ?? { slots: null };
+      reply.send(config);
+    },
+  );
+
+  // PUT /_ldk/capacity/:service
+  app.put(
+    "/_ldk/capacity/:service",
+    async (
+      req: FastifyRequest<{ Params: { service: string }; Body: { slots: number | null } }>,
+      reply: FastifyReply,
+    ) => {
+      const { service } = req.params;
+      const body = req.body as { slots: number | null };
+      state.capacityConfigs[service] = { slots: body.slots } as CapacityConfig;
+      reply.send({ status: "ok" });
+    },
+  );
+
+  // DELETE /_ldk/capacity/:service
+  app.delete(
+    "/_ldk/capacity/:service",
+    async (req: FastifyRequest<{ Params: { service: string } }>, reply: FastifyReply) => {
+      const { service } = req.params;
+      state.capacityConfigs[service] = { slots: null };
+      reply.send({ status: "ok" });
+    },
+  );
+
+  // GET /_ldk/lifecycle
+  app.get("/_ldk/lifecycle", async (_req: FastifyRequest, reply: FastifyReply) => {
+    const result: Record<string, unknown> = {};
+    for (const [service, rule] of state.lifecycleRules.entries()) {
+      result[service] = {
+        enabled: rule.enabled,
+        create_dwell_ms: rule.createDwellMs,
+        delete_dwell_ms: rule.deleteDwellMs,
+      };
+    }
+    reply.send(result);
+  });
+
   // POST /_ldk/lifecycle
-  app.post("/_ldk/lifecycle", async (_req: FastifyRequest, reply: FastifyReply) => {
+  app.post("/_ldk/lifecycle", async (req: FastifyRequest, reply: FastifyReply) => {
+    const body = req.body as Record<
+      string,
+      { enabled?: boolean; create_dwell_ms?: number; delete_dwell_ms?: number }
+    >;
+    for (const [service, config] of Object.entries(body)) {
+      const rule: LifecycleRule = {
+        enabled: config.enabled ?? true,
+        createDwellMs: config.create_dwell_ms ?? 0,
+        deleteDwellMs: config.delete_dwell_ms ?? 0,
+      };
+      state.lifecycleRules.set(service, rule);
+    }
     reply.send({ status: "ok" });
   });
+
+  // POST /_ldk/fake
+  app.post("/_ldk/fake", async (req: FastifyRequest, reply: FastifyReply) => {
+    const body = req.body as { name: string; endpoint: string };
+    state.fakeServers.set(body.name, body.endpoint);
+    reply.send({ status: "ok" });
+  });
+
+  // GET /_ldk/fake
+  app.get("/_ldk/fake", async (_req: FastifyRequest, reply: FastifyReply) => {
+    const result: Record<string, string> = {};
+    for (const [name, endpoint] of state.fakeServers.entries()) {
+      result[name] = endpoint;
+    }
+    reply.send(result);
+  });
+
+  // GET /_ldk/fake/:name
+  app.get(
+    "/_ldk/fake/:name",
+    async (req: FastifyRequest<{ Params: { name: string } }>, reply: FastifyReply) => {
+      const { name } = req.params;
+      const endpoint = state.fakeServers.get(name);
+      if (endpoint === undefined) {
+        reply.status(404).send({ error: `Fake server "${name}" not found` });
+        return;
+      }
+      reply.send({ name, endpoint });
+    },
+  );
+
+  // PUT /_ldk/state/:service/:resourceType/:resourceId
+  app.put(
+    "/_ldk/state/:service/:resourceType/:resourceId",
+    async (
+      req: FastifyRequest<{
+        Params: { service: string; resourceType: string; resourceId: string };
+        Body: { state: string };
+      }>,
+      reply: FastifyReply,
+    ) => {
+      const { service, resourceType, resourceId } = req.params;
+      const body = req.body as { state: string };
+      const key = `${service}:${resourceType}:${resourceId}`;
+      state.injectedStates.set(key, body.state);
+      reply.send({ status: "ok" });
+    },
+  );
+
+  // GET /_ldk/state/:service/:resourceType/:resourceId
+  app.get(
+    "/_ldk/state/:service/:resourceType/:resourceId",
+    async (
+      req: FastifyRequest<{
+        Params: { service: string; resourceType: string; resourceId: string };
+      }>,
+      reply: FastifyReply,
+    ) => {
+      const { service, resourceType, resourceId } = req.params;
+      const key = `${service}:${resourceType}:${resourceId}`;
+      const injectedState = state.injectedStates.get(key);
+      if (injectedState === undefined) {
+        reply.status(404).send({ error: `No injected state for "${key}"` });
+        return;
+      }
+      reply.send({ service, resourceType, resourceId, state: injectedState });
+    },
+  );
+
+  // DELETE /_ldk/state/:service/:resourceType/:resourceId
+  app.delete(
+    "/_ldk/state/:service/:resourceType/:resourceId",
+    async (
+      req: FastifyRequest<{
+        Params: { service: string; resourceType: string; resourceId: string };
+      }>,
+      reply: FastifyReply,
+    ) => {
+      const { service, resourceType, resourceId } = req.params;
+      const key = `${service}:${resourceType}:${resourceId}`;
+      state.injectedStates.delete(key);
+      reply.send({ status: "ok" });
+    },
+  );
 
   // POST /_ldk/shutdown
   app.post("/_ldk/shutdown", async (_req: FastifyRequest, reply: FastifyReply) => {
