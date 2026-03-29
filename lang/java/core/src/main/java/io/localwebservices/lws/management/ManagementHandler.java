@@ -38,6 +38,24 @@ public class ManagementHandler implements HttpHandler {
     String method = exchange.getRequestMethod();
 
     try {
+      // Prefix-based routing must come before the switch
+      if (path.startsWith("/_ldk/chaos/")) {
+        handlePerServiceChaos(exchange, path, method);
+        return;
+      }
+      if (path.startsWith("/_ldk/capacity/")) {
+        handlePerServiceCapacity(exchange, path, method);
+        return;
+      }
+      if (path.startsWith("/_ldk/state/")) {
+        handleStateInjection(exchange, path, method);
+        return;
+      }
+      if (path.startsWith("/_ldk/fake/")) {
+        handleFakeServerByName(exchange, path);
+        return;
+      }
+
       switch (path) {
         case "/_ldk/status":
           handleStatus(exchange);
@@ -65,7 +83,12 @@ public class ManagementHandler implements HttpHandler {
           else handlePostFake(exchange);
           break;
         case "/_ldk/lifecycle":
-          sendJson(exchange, 200, Map.of("status", "ok"));
+          if ("GET".equalsIgnoreCase(method)) handleGetLifecycle(exchange);
+          else handlePostLifecycle(exchange);
+          break;
+        case "/_ldk/fake":
+          if ("GET".equalsIgnoreCase(method)) sendJson(exchange, 200, state.listFakeServers());
+          else handlePostFakeServer(exchange);
           break;
         case "/_ldk/resources":
           sendJson(exchange, 200, Map.of("resources", Map.of()));
@@ -254,6 +277,123 @@ public class ManagementHandler implements HttpHandler {
         }
       }
     }
+    sendJson(exchange, 200, Map.of("status", "ok"));
+  }
+
+  private void handlePerServiceChaos(HttpExchange exchange, String path, String method)
+      throws IOException {
+    String service = path.substring("/_ldk/chaos/".length());
+    if ("PUT".equalsIgnoreCase(method) || "POST".equalsIgnoreCase(method)) {
+      Map<String, Object> body = readJson(exchange);
+      state.chaosRules.computeIfAbsent(
+          service, k -> Collections.synchronizedMap(new LinkedHashMap<>())).put("*", body);
+      sendJson(exchange, 200, Map.of("status", "ok"));
+    } else if ("DELETE".equalsIgnoreCase(method)) {
+      state.chaosRules.remove(service);
+      sendJson(exchange, 200, Map.of("status", "ok"));
+    } else {
+      Map<String, Map<String, Object>> serviceRules = state.chaosRules.get(service);
+      Map<String, Object> rule =
+          serviceRules != null ? serviceRules.getOrDefault("*", Map.of()) : Map.of();
+      sendJson(exchange, 200, rule);
+    }
+  }
+
+  private void handlePerServiceCapacity(HttpExchange exchange, String path, String method)
+      throws IOException {
+    String service = path.substring("/_ldk/capacity/".length());
+    if ("PUT".equalsIgnoreCase(method) || "POST".equalsIgnoreCase(method)) {
+      Map<String, Object> body = readJson(exchange);
+      if (body.containsKey("slots")) {
+        Object slotsVal = body.get("slots");
+        if (slotsVal == null) {
+          state.getCapacityConfig(service).reset();
+        } else {
+          state.getCapacityConfig(service).setSlots(((Number) slotsVal).intValue());
+        }
+      }
+      sendJson(exchange, 200, Map.of("status", "ok"));
+    } else if ("DELETE".equalsIgnoreCase(method)) {
+      state.getCapacityConfig(service).reset();
+      sendJson(exchange, 200, Map.of("status", "ok"));
+    } else {
+      Map<String, Object> result = new LinkedHashMap<>();
+      result.put("slots", state.getCapacityConfig(service).getSlots());
+      sendJson(exchange, 200, result);
+    }
+  }
+
+  private void handleStateInjection(HttpExchange exchange, String path, String method)
+      throws IOException {
+    String[] parts = path.substring("/_ldk/state/".length()).split("/", 3);
+    if (parts.length < 3) {
+      sendJson(exchange, 400, Map.of("error", "path must be /_ldk/state/{service}/{resourceType}/{resourceId}"));
+      return;
+    }
+    String service = parts[0];
+    String resourceType = parts[1];
+    String resourceId = parts[2];
+    if ("PUT".equalsIgnoreCase(method)) {
+      Map<String, Object> body = readJson(exchange);
+      String stateValue = (String) body.get("state");
+      state.setInjectedState(service, resourceType, resourceId, stateValue);
+      sendJson(exchange, 200, Map.of("status", "ok"));
+    } else if ("DELETE".equalsIgnoreCase(method)) {
+      state.clearInjectedState(service, resourceType, resourceId);
+      sendJson(exchange, 200, Map.of("status", "ok"));
+    } else {
+      Map<String, Object> result = new LinkedHashMap<>();
+      result.put("state", state.getInjectedState(service, resourceType, resourceId).orElse(null));
+      sendJson(exchange, 200, result);
+    }
+  }
+
+  private void handleFakeServerByName(HttpExchange exchange, String path) throws IOException {
+    String name = path.substring("/_ldk/fake/".length());
+    Map<String, Object> result = new LinkedHashMap<>();
+    result.put("name", name);
+    result.put("endpoint", state.getFakeServer(name).orElse(null));
+    sendJson(exchange, 200, result);
+  }
+
+  private void handleGetLifecycle(HttpExchange exchange) throws IOException {
+    Map<String, Object> result = new LinkedHashMap<>();
+    for (Map.Entry<String, ServerState.LifecycleRule> entry :
+        state.getAllLifecycleRules().entrySet()) {
+      ServerState.LifecycleRule rule = entry.getValue();
+      Map<String, Object> ruleMap = new LinkedHashMap<>();
+      ruleMap.put("enabled", rule.isEnabled());
+      ruleMap.put("create_dwell_ms", rule.getCreateDwellMs());
+      ruleMap.put("delete_dwell_ms", rule.getDeleteDwellMs());
+      result.put(entry.getKey(), ruleMap);
+    }
+    sendJson(exchange, 200, result);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void handlePostLifecycle(HttpExchange exchange) throws IOException {
+    Map<String, Object> body = readJson(exchange);
+    for (Map.Entry<String, Object> entry : body.entrySet()) {
+      String service = entry.getKey();
+      Map<String, Object> config = (Map<String, Object>) entry.getValue();
+      ServerState.LifecycleRule rule = new ServerState.LifecycleRule();
+      rule.setEnabled(!Boolean.FALSE.equals(config.get("enabled")));
+      if (config.containsKey("create_dwell_ms")) {
+        rule.setCreateDwellMs(((Number) config.get("create_dwell_ms")).intValue());
+      }
+      if (config.containsKey("delete_dwell_ms")) {
+        rule.setDeleteDwellMs(((Number) config.get("delete_dwell_ms")).intValue());
+      }
+      state.setLifecycleRule(service, rule);
+    }
+    sendJson(exchange, 200, Map.of("status", "ok"));
+  }
+
+  private void handlePostFakeServer(HttpExchange exchange) throws IOException {
+    Map<String, Object> body = readJson(exchange);
+    String name = (String) body.get("name");
+    String endpoint = (String) body.get("endpoint");
+    state.registerFakeServer(name, endpoint);
     sendJson(exchange, 200, Map.of("status", "ok"));
   }
 

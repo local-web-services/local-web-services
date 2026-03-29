@@ -32,6 +32,18 @@ public class ServerState {
   private final Map<String, CapacityConfig> capacityConfigs =
       Collections.synchronizedMap(new LinkedHashMap<>());
 
+  // fake servers: name -> endpoint URL
+  private final Map<String, String> fakeServers =
+      Collections.synchronizedMap(new LinkedHashMap<>());
+
+  // injected states: "service:resourceType:resourceId" -> state string
+  private final Map<String, String> injectedStates =
+      Collections.synchronizedMap(new LinkedHashMap<>());
+
+  // lifecycle rules: service -> LifecycleRule
+  private final Map<String, LifecycleRule> lifecycleRules =
+      Collections.synchronizedMap(new LinkedHashMap<>());
+
   /**
    * Per-service capacity configuration. {@code slots=null} means unlimited; {@code slots=0} means
    * exhausted.
@@ -56,6 +68,37 @@ public class ServerState {
     }
   }
 
+  /** Per-service lifecycle dwell configuration. */
+  public static class LifecycleRule {
+    private boolean enabled;
+    private int createDwellMs;
+    private int deleteDwellMs;
+
+    public boolean isEnabled() {
+      return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+      this.enabled = enabled;
+    }
+
+    public int getCreateDwellMs() {
+      return createDwellMs;
+    }
+
+    public void setCreateDwellMs(int createDwellMs) {
+      this.createDwellMs = createDwellMs;
+    }
+
+    public int getDeleteDwellMs() {
+      return deleteDwellMs;
+    }
+
+    public void setDeleteDwellMs(int deleteDwellMs) {
+      this.deleteDwellMs = deleteDwellMs;
+    }
+  }
+
   /** Returns the {@link CapacityConfig} for the given service, creating one if absent. */
   public CapacityConfig getCapacityConfig(String service) {
     return capacityConfigs.computeIfAbsent(service, k -> new CapacityConfig());
@@ -64,6 +107,45 @@ public class ServerState {
   /** Resets capacity for all services to unlimited. */
   public void resetAllCapacity() {
     capacityConfigs.values().forEach(CapacityConfig::reset);
+  }
+
+  public void registerFakeServer(String name, String endpoint) {
+    fakeServers.put(name, endpoint);
+  }
+
+  public Optional<String> getFakeServer(String name) {
+    return Optional.ofNullable(fakeServers.get(name));
+  }
+
+  public Map<String, String> listFakeServers() {
+    return Collections.unmodifiableMap(fakeServers);
+  }
+
+  public void setInjectedState(
+      String service, String resourceType, String resourceId, String stateValue) {
+    injectedStates.put(service + ":" + resourceType + ":" + resourceId, stateValue);
+  }
+
+  public void clearInjectedState(String service, String resourceType, String resourceId) {
+    injectedStates.remove(service + ":" + resourceType + ":" + resourceId);
+  }
+
+  public Optional<String> getInjectedState(
+      String service, String resourceType, String resourceId) {
+    return Optional.ofNullable(
+        injectedStates.get(service + ":" + resourceType + ":" + resourceId));
+  }
+
+  public LifecycleRule getLifecycleRule(String service) {
+    return lifecycleRules.getOrDefault(service, new LifecycleRule());
+  }
+
+  public void setLifecycleRule(String service, LifecycleRule rule) {
+    lifecycleRules.put(service, rule);
+  }
+
+  public Map<String, LifecycleRule> getAllLifecycleRules() {
+    return Collections.unmodifiableMap(lifecycleRules);
   }
 
   public void reset() {
@@ -75,6 +157,9 @@ public class ServerState {
     iamResourcePolicies.clear();
     logBuffer.clear();
     resetAllCapacity();
+    fakeServers.clear();
+    injectedStates.clear();
+    lifecycleRules.clear();
     for (Runnable cb : resetCallbacks) {
       try {
         cb.run();
