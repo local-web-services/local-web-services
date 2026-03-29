@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -324,6 +325,15 @@ func TestMain(m *testing.M) {
 			"../../../../lang/specification/core/informal/cognito_idp/admin_remove_user_from_group.feature",
 		},
 	}
+	if suite := os.Getenv("GODOG_SUITE"); suite != "" {
+		opts.Paths = filterPathsBySuite(opts.Paths, suite)
+		if len(opts.Paths) == 0 {
+			fmt.Printf("No feature paths matched suite %q — skipping\n", suite)
+			sharedServer.Close()
+			os.Exit(0)
+		}
+	}
+
 	status := godog.TestSuite{
 		Name:                "lws-go-sdk",
 		ScenarioInitializer: InitializeScenario,
@@ -332,6 +342,28 @@ func TestMain(m *testing.M) {
 
 	sharedServer.Close()
 	os.Exit(status)
+}
+
+// filterPathsBySuite returns only the paths that belong to the given suite name.
+// "sdk" matches paths under /specification/sdk/; any other name matches paths
+// under /specification/core/informal/<suite>/. An empty suite returns all paths.
+func filterPathsBySuite(paths []string, suite string) []string {
+	var filtered []string
+	if suite == "sdk" {
+		for _, p := range paths {
+			if strings.Contains(p, "/specification/sdk/") {
+				filtered = append(filtered, p)
+			}
+		}
+	} else {
+		needle := "/specification/core/informal/" + suite + "/"
+		for _, p := range paths {
+			if strings.Contains(p, needle) {
+				filtered = append(filtered, p)
+			}
+		}
+	}
+	return filtered
 }
 
 func awaitReady() error {

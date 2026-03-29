@@ -937,23 +937,48 @@ jobs:
         working-directory: lang/go/sdk
         run: make lint format-check
 
+  go-sdk-e2e-suites:
+    needs: [changes]
+    if: |
+      always() && !cancelled() && needs.changes.outputs.go-sdk == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      suites: ${{ steps.list.outputs.suites }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: list
+        run: |
+          suites=$(
+            { echo "sdk"; ls lang/specification/core/informal/; } |
+              sort -u |
+              jq -R . | jq -sc .
+          )
+          echo "suites=$suites" >> $GITHUB_OUTPUT
+
   go-sdk-test:
-    needs: [changes, go-core-lint, go-core-test]
+    needs: [changes, go-sdk-e2e-suites, go-core-lint, go-core-test]
     if: |
       always() &&
       !cancelled() &&
       needs.changes.outputs.go-sdk == 'true' &&
+      (needs.go-sdk-e2e-suites.result == 'success' || needs.go-sdk-e2e-suites.result == 'skipped') &&
       (needs.go-core-lint.result == 'success' || needs.go-core-lint.result == 'skipped') &&
       (needs.go-core-test.result == 'success' || needs.go-core-test.result == 'skipped')
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: ${{ fromJSON(needs.go-sdk-e2e-suites.outputs.suites) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
           go-version: "1.23"
-      - name: Test
+      - name: Run e2e suite
+        env:
+          SUITE: ${{ matrix.suite }}
         working-directory: lang/go/sdk
-        run: make test
+        run: make e2e-test-suite SUITE="$SUITE"
 
   # ── Python Example ─────────────────────────────────────────────────────────
   python-example-lint:
