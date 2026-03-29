@@ -1,8 +1,11 @@
 package lws
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -525,6 +528,145 @@ func (s *Session) Iam() *IamBuilder {
 		updates:    make(map[string]any),
 		identities: make(map[string]*IdentityBuilder),
 	}
+}
+
+// ── Management API helpers ────────────────────────────────────────────────────
+
+// SetChaos configures per-service chaos injection via the management API.
+func (s *Session) SetChaos(service string, errorRate float64, latencyMs int) error {
+	payload := map[string]interface{}{
+		"error_rate":  errorRate,
+		"latency_ms":  latencyMs,
+	}
+	data, err := json.Marshal(payload)
+	if err != nil {
+		return fmt.Errorf("SetChaos: marshal payload: %w", err)
+	}
+	url := fmt.Sprintf("http://127.0.0.1:%d/_ldk/chaos/%s", s.basePort, service)
+	req, err := http.NewRequest(http.MethodPut, url, bytes.NewReader(data))
+	if err != nil {
+		return fmt.Errorf("SetChaos: create request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := http.DefaultClient.Do(req) //nolint:noctx
+	if err != nil {
+		return fmt.Errorf("SetChaos: %w", err)
+	}
+	resp.Body.Close()
+	return nil
+}
+
+// ResetChaos disables chaos for the given service via the management API.
+func (s *Session) ResetChaos(service string) error {
+	url := fmt.Sprintf("http://127.0.0.1:%d/_ldk/chaos/%s", s.basePort, service)
+	req, err := http.NewRequest(http.MethodDelete, url, nil)
+	if err != nil {
+		return fmt.Errorf("ResetChaos: create request: %w", err)
+	}
+	resp, err := http.DefaultClient.Do(req) //nolint:noctx
+	if err != nil {
+		return fmt.Errorf("ResetChaos: %w", err)
+	}
+	resp.Body.Close()
+	return nil
+}
+
+// GetChaosStatus returns the chaos configuration for the given service.
+func (s *Session) GetChaosStatus(service string) (map[string]interface{}, error) {
+	url := fmt.Sprintf("http://127.0.0.1:%d/_ldk/chaos/%s", s.basePort, service)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("GetChaosStatus: create request: %w", err)
+	}
+	resp, err := http.DefaultClient.Do(req) //nolint:noctx
+	if err != nil {
+		return nil, fmt.Errorf("GetChaosStatus: %w", err)
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("GetChaosStatus: read body: %w", err)
+	}
+	var result map[string]interface{}
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("GetChaosStatus: decode: %w", err)
+	}
+	return result, nil
+}
+
+// InjectState sets an injected state value for a resource via the management API.
+func (s *Session) InjectState(service, resourceType, resourceID, stateVal string) error {
+	payload := map[string]string{"state": stateVal}
+	data, err := json.Marshal(payload)
+	if err != nil {
+		return fmt.Errorf("InjectState: marshal payload: %w", err)
+	}
+	url := fmt.Sprintf("http://127.0.0.1:%d/_ldk/state/%s/%s/%s", s.basePort, service, resourceType, resourceID)
+	req, err := http.NewRequest(http.MethodPut, url, bytes.NewReader(data))
+	if err != nil {
+		return fmt.Errorf("InjectState: create request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := http.DefaultClient.Do(req) //nolint:noctx
+	if err != nil {
+		return fmt.Errorf("InjectState: %w", err)
+	}
+	resp.Body.Close()
+	return nil
+}
+
+// ClearInjectedState removes the injected state for a resource via the management API.
+func (s *Session) ClearInjectedState(service, resourceType, resourceID string) error {
+	url := fmt.Sprintf("http://127.0.0.1:%d/_ldk/state/%s/%s/%s", s.basePort, service, resourceType, resourceID)
+	req, err := http.NewRequest(http.MethodDelete, url, nil)
+	if err != nil {
+		return fmt.Errorf("ClearInjectedState: create request: %w", err)
+	}
+	resp, err := http.DefaultClient.Do(req) //nolint:noctx
+	if err != nil {
+		return fmt.Errorf("ClearInjectedState: %w", err)
+	}
+	resp.Body.Close()
+	return nil
+}
+
+// RegisterFakeServer registers a fake server with the management API.
+func (s *Session) RegisterFakeServer(name, endpoint string) error {
+	payload := map[string]string{"name": name, "endpoint": endpoint}
+	data, err := json.Marshal(payload)
+	if err != nil {
+		return fmt.Errorf("RegisterFakeServer: marshal payload: %w", err)
+	}
+	url := fmt.Sprintf("http://127.0.0.1:%d/_ldk/fake", s.basePort)
+	resp, err := http.Post(url, "application/json", bytes.NewReader(data)) //nolint:noctx
+	if err != nil {
+		return fmt.Errorf("RegisterFakeServer: %w", err)
+	}
+	resp.Body.Close()
+	return nil
+}
+
+// ListFakeServers returns all registered fake servers from the management API.
+func (s *Session) ListFakeServers() (map[string]interface{}, error) {
+	url := fmt.Sprintf("http://127.0.0.1:%d/_ldk/fake", s.basePort)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("ListFakeServers: create request: %w", err)
+	}
+	resp, err := http.DefaultClient.Do(req) //nolint:noctx
+	if err != nil {
+		return nil, fmt.Errorf("ListFakeServers: %w", err)
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("ListFakeServers: read body: %w", err)
+	}
+	var result map[string]interface{}
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("ListFakeServers: decode: %w", err)
+	}
+	return result, nil
 }
 
 // ── Resource helpers ──────────────────────────────────────────────────────────

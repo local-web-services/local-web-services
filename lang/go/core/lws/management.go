@@ -3,6 +3,7 @@ package lws
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -272,6 +273,153 @@ func RegisterManagementAPI(mux *http.ServeMux, state *ServerState, shutdownCh ch
 	// GET /_ldk/resources
 	mux.HandleFunc("/_ldk/resources", func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, map[string]interface{}{"resources": map[string]interface{}{}}, 200)
+	})
+
+	// Per-service chaos: PUT/GET/DELETE /_ldk/chaos/{service}
+	mux.HandleFunc("/_ldk/chaos/", func(w http.ResponseWriter, r *http.Request) {
+		service := strings.TrimPrefix(r.URL.Path, "/_ldk/chaos/")
+		if service == "" {
+			http.NotFound(w, r)
+			return
+		}
+		switch r.Method {
+		case http.MethodPut:
+			var body struct {
+				ErrorRate float64 `json:"error_rate"`
+				LatencyMs int     `json:"latency_ms"`
+			}
+			if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+				writeJSONError(w, "ValidationException", "invalid JSON", 400)
+				return
+			}
+			rule := &ChaosRule{
+				ErrorRate:    body.ErrorRate,
+				LatencyMinMs: body.LatencyMs,
+				LatencyMaxMs: body.LatencyMs,
+			}
+			state.SetChaosRule(service, "*", rule)
+			writeJSON(w, map[string]string{"status": "ok"}, 200)
+		case http.MethodGet:
+			svcRules := state.GetAllChaosStatus()
+			if info, ok := svcRules[service]; ok {
+				writeJSON(w, info, 200)
+			} else {
+				writeJSON(w, map[string]interface{}{
+					"enabled":        false,
+					"error_rate":     0,
+					"latency_min_ms": 0,
+					"latency_max_ms": 0,
+				}, 200)
+			}
+		case http.MethodDelete:
+			state.DisableChaos(service)
+			writeJSON(w, map[string]string{"status": "ok"}, 200)
+		default:
+			http.NotFound(w, r)
+		}
+	})
+
+	// Per-service capacity: PUT/GET/DELETE /_ldk/capacity/{service}
+	mux.HandleFunc("/_ldk/capacity/", func(w http.ResponseWriter, r *http.Request) {
+		service := strings.TrimPrefix(r.URL.Path, "/_ldk/capacity/")
+		if service == "" {
+			http.NotFound(w, r)
+			return
+		}
+		switch r.Method {
+		case http.MethodPut:
+			var body struct {
+				Slots *int `json:"slots"`
+			}
+			if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+				writeJSONError(w, "ValidationException", "invalid JSON", 400)
+				return
+			}
+			state.SetCapacityRule(service, CapacityRule{Slots: body.Slots})
+			writeJSON(w, map[string]string{"status": "ok"}, 200)
+		case http.MethodGet:
+			rule := state.GetCapacityRule(service)
+			writeJSON(w, map[string]interface{}{"slots": rule.Slots}, 200)
+		case http.MethodDelete:
+			state.SetCapacityRule(service, CapacityRule{})
+			writeJSON(w, map[string]string{"status": "ok"}, 200)
+		default:
+			http.NotFound(w, r)
+		}
+	})
+
+	// Fake server instances: POST/GET /_ldk/fake and GET /_ldk/fake/{name}
+	mux.HandleFunc("/_ldk/fake", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodPost:
+			var body struct {
+				Name     string `json:"name"`
+				Endpoint string `json:"endpoint"`
+			}
+			if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+				writeJSONError(w, "ValidationException", "invalid JSON", 400)
+				return
+			}
+			state.RegisterFakeServer(body.Name, body.Endpoint)
+			writeJSON(w, map[string]string{"status": "ok"}, 200)
+		case http.MethodGet:
+			servers := state.ListFakeServers()
+			writeJSON(w, servers, 200)
+		default:
+			http.NotFound(w, r)
+		}
+	})
+
+	mux.HandleFunc("/_ldk/fake/", func(w http.ResponseWriter, r *http.Request) {
+		name := strings.TrimPrefix(r.URL.Path, "/_ldk/fake/")
+		if name == "" {
+			http.NotFound(w, r)
+			return
+		}
+		if r.Method != http.MethodGet {
+			http.NotFound(w, r)
+			return
+		}
+		endpoint, ok := state.GetFakeServer(name)
+		if !ok {
+			http.NotFound(w, r)
+			return
+		}
+		writeJSON(w, map[string]string{"name": name, "endpoint": endpoint}, 200)
+	})
+
+	// State injection: PUT/GET/DELETE /_ldk/state/{service}/{resourceType}/{resourceId}
+	mux.HandleFunc("/_ldk/state/", func(w http.ResponseWriter, r *http.Request) {
+		parts := strings.SplitN(strings.TrimPrefix(r.URL.Path, "/_ldk/state/"), "/", 3)
+		if len(parts) != 3 {
+			writeJSONError(w, "ValidationException", "path must be /_ldk/state/{service}/{resourceType}/{resourceId}", 400)
+			return
+		}
+		service, resourceType, resourceID := parts[0], parts[1], parts[2]
+		switch r.Method {
+		case http.MethodPut:
+			var body struct {
+				State string `json:"state"`
+			}
+			if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+				writeJSONError(w, "ValidationException", "invalid JSON", 400)
+				return
+			}
+			state.SetInjectedState(service, resourceType, resourceID, body.State)
+			writeJSON(w, map[string]string{"status": "ok"}, 200)
+		case http.MethodGet:
+			val, ok := state.GetInjectedState(service, resourceType, resourceID)
+			if !ok {
+				http.NotFound(w, r)
+				return
+			}
+			writeJSON(w, map[string]string{"state": val}, 200)
+		case http.MethodDelete:
+			state.ClearInjectedState(service, resourceType, resourceID)
+			writeJSON(w, map[string]string{"status": "ok"}, 200)
+		default:
+			http.NotFound(w, r)
+		}
 	})
 
 	// POST /_ldk/aws-fake — configure fake responses for AWS service operations.

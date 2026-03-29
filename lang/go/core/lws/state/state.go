@@ -113,6 +113,12 @@ type ServerState struct {
 	// resourceCreatedAt: "service/resourceID" -> creation time
 	resourceCreatedAt map[string]time.Time
 
+	// fakeServers: name -> endpoint URL
+	fakeServers map[string]string
+
+	// injectedStates: "service:resourceType:resourceId" -> state string
+	injectedStates map[string]string
+
 	// resetCallbacks called on POST /_ldk/reset
 	resetCallbacks []func()
 }
@@ -125,6 +131,8 @@ func NewServerState() *ServerState {
 		capacityRules:     make(map[string]CapacityRule),
 		lifecycleRules:    make(map[string]LifecycleRule),
 		resourceCreatedAt: make(map[string]time.Time),
+		fakeServers:       make(map[string]string),
+		injectedStates:    make(map[string]string),
 		iamConfig: IamConfig{
 			Identities:       make(map[string]IamIdentity),
 			ResourcePolicies: make(map[string]IamPolicy),
@@ -147,6 +155,8 @@ func (s *ServerState) Reset() {
 	s.capacityRules = make(map[string]CapacityRule)
 	s.lifecycleRules = make(map[string]LifecycleRule)
 	s.resourceCreatedAt = make(map[string]time.Time)
+	s.fakeServers = make(map[string]string)
+	s.injectedStates = make(map[string]string)
 	s.iamConfig = IamConfig{
 		Identities:       make(map[string]IamIdentity),
 		ResourcePolicies: make(map[string]IamPolicy),
@@ -378,6 +388,57 @@ func (s *ServerState) IsResourceInDwell(service, resourceID string) bool {
 	}
 	elapsed := time.Since(createdAt).Milliseconds()
 	return elapsed < int64(rule.CreateDwellMs)
+}
+
+// RegisterFakeServer registers a fake server with a name and endpoint URL.
+func (s *ServerState) RegisterFakeServer(name, endpoint string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.fakeServers[name] = endpoint
+}
+
+// GetFakeServer returns the endpoint for a registered fake server.
+func (s *ServerState) GetFakeServer(name string) (string, bool) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	endpoint, ok := s.fakeServers[name]
+	return endpoint, ok
+}
+
+// ListFakeServers returns a copy of all registered fake servers.
+func (s *ServerState) ListFakeServers() map[string]string {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	result := make(map[string]string, len(s.fakeServers))
+	for k, v := range s.fakeServers {
+		result[k] = v
+	}
+	return result
+}
+
+// SetInjectedState sets an injected state value for a resource.
+func (s *ServerState) SetInjectedState(service, resourceType, resourceID, stateVal string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	key := service + ":" + resourceType + ":" + resourceID
+	s.injectedStates[key] = stateVal
+}
+
+// ClearInjectedState removes an injected state value for a resource.
+func (s *ServerState) ClearInjectedState(service, resourceType, resourceID string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	key := service + ":" + resourceType + ":" + resourceID
+	delete(s.injectedStates, key)
+}
+
+// GetInjectedState returns the injected state for a resource.
+func (s *ServerState) GetInjectedState(service, resourceType, resourceID string) (string, bool) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	key := service + ":" + resourceType + ":" + resourceID
+	val, ok := s.injectedStates[key]
+	return val, ok
 }
 
 // toKebab converts CamelCase to kebab-case for operation matching.
