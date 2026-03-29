@@ -1,0 +1,91 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 8
+---
+# AWS CloudTrail Formal Specification
+# Models trail lifecycle, logging state, event selectors, and event recording.
+
+TRAIL_IDS = ["trail-1", "trail-2"]
+
+action Init:
+    trail_status = {}
+    trail_logging = {}
+    trail_selectors = {}
+    trail_events = []
+
+# step: a trail is created
+# result: the trail exists and is active
+# guard: the trail does not already exist
+# guard_violation: the trail already exists
+atomic action CreateTrail:
+    oneof trail_id in TRAIL_IDS:
+        if trail_id not in trail_status:
+            trail_status[trail_id] = "ACTIVE"
+            trail_logging[trail_id] = False
+            trail_events.append(trail_id + "#CreateTrail")
+
+# step: a trail is deleted
+# result: the trail no longer exists
+# guard: the trail exists
+# guard_violation: the trail does not exist
+atomic action DeleteTrail:
+    oneof trail_id in TRAIL_IDS:
+        if trail_id in trail_status:
+            if trail_status[trail_id] == "ACTIVE":
+                trail_status[trail_id] = "DELETED"
+                trail_logging[trail_id] = False
+                trail_events.append(trail_id + "#DeleteTrail")
+
+# step: logging is started on the trail
+# result: the trail has logging enabled
+# guard: the trail exists
+# guard_violation: the trail does not exist
+atomic action StartLogging:
+    oneof trail_id in TRAIL_IDS:
+        if trail_id in trail_status:
+            if trail_status[trail_id] == "ACTIVE":
+                trail_logging[trail_id] = True
+                trail_events.append(trail_id + "#StartLogging")
+
+# step: logging is stopped on the trail
+# result: the trail has logging disabled
+# guard: the trail exists
+# guard_violation: the trail does not exist
+atomic action StopLogging:
+    oneof trail_id in TRAIL_IDS:
+        if trail_id in trail_status:
+            if trail_status[trail_id] == "ACTIVE":
+                trail_logging[trail_id] = False
+                trail_events.append(trail_id + "#StopLogging")
+
+# step: event selectors are put for the trail
+# result: the event selectors are returned for the trail
+# guard: the trail exists
+# guard_violation: the trail does not exist
+atomic action PutEventSelectors:
+    oneof trail_id in TRAIL_IDS:
+        if trail_id in trail_status:
+            if trail_status[trail_id] == "ACTIVE":
+                trail_selectors[trail_id] = True
+                trail_events.append(trail_id + "#PutEventSelectors")
+
+# check: every trail has either ACTIVE or DELETED status
+always assertion TrailStatusValid:
+    for trail_id in TRAIL_IDS:
+        if trail_id in trail_status:
+            if trail_status[trail_id] != "ACTIVE" and trail_status[trail_id] != "DELETED":
+                return False
+    return True
+
+# check: logging is only enabled for ACTIVE trails
+always assertion LoggingOnlyForActiveTrails:
+    for trail_id in TRAIL_IDS:
+        if trail_id in trail_logging:
+            if trail_logging[trail_id] == True:
+                if trail_id not in trail_status:
+                    return False
+                if trail_status[trail_id] != "ACTIVE":
+                    return False
+    return True

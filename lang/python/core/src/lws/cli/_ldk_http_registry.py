@@ -295,6 +295,7 @@ def _service_ports(port: int) -> dict[str, int]:
         "glacier": port + 21,
         "s3tables": port + 22,
         "organizations": port + 50,
+        "cloudtrail": port + 51,
     }
 
 

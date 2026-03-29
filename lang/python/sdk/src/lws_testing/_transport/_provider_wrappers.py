@@ -175,3 +175,20 @@ class _OrganizationsStateProvider:
 
     async def health_check(self) -> bool:
         return True
+
+
+class _CloudTrailStateProvider:
+    """Thin wrapper that exposes _CloudTrailState as a resettable provider."""
+
+    def __init__(self, state: Any) -> None:
+        self._state = state
+
+    @property
+    def name(self) -> str:
+        return "cloudtrail"
+
+    async def reset(self) -> None:
+        self._state.reset()
+
+    async def health_check(self) -> bool:
+        return True

@@ -9,6 +9,7 @@ PROVIDERS_DIR = Path(__file__).parent.parent.parent.parent.parent / "src" / "lws
 # Providers that do not need a provider.py file.
 # These are stateless routes-only or non-provider directories.
 PROVIDER_PY_EXCEPTIONS = {
+    "cloudtrail",
     "iam",
     "organizations",
     "sts",

@@ -102,6 +102,30 @@ def _register_organizations_provider(
     )
 
 
+def _register_cloudtrail_provider(
+    providers: dict,
+    *,
+    chaos_configs: dict,
+    aws_fake_configs: dict,
+    cloudtrail_port: int,
+) -> None:
+    """Register the CloudTrail HTTP provider."""
+    from lws.cli._ldk_http_registry import (  # pylint: disable=import-outside-toplevel
+        _HttpServiceProvider,
+    )
+    from lws.providers.cloudtrail.routes import (  # pylint: disable=import-outside-toplevel
+        create_cloudtrail_app,
+    )
+
+    providers["__cloudtrail_http__"] = _HttpServiceProvider(
+        "cloudtrail-http",
+        lambda c=chaos_configs.get("cloudtrail"), m=aws_fake_configs.get(
+            "cloudtrail"
+        ): create_cloudtrail_app(chaos=c, aws_fake=m),
+        cloudtrail_port,
+    )
+
+
 def _register_experimental_providers(
     providers: dict[str, Provider],
     ports: dict[str, int],

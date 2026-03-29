@@ -33,6 +33,7 @@ from lws.cli._ldk_providers_core import (  # noqa: F401  # pylint: disable=unuse
     _wire_remaining_providers,
 )
 from lws.cli._ldk_providers_extended import (  # noqa: F401  # pylint: disable=unused-import
+    _register_cloudtrail_provider,
     _register_experimental_providers,
     _register_organizations_provider,
     _register_ssm_secretsmanager_providers,
@@ -57,6 +58,7 @@ _CHAOS_SERVICES = [
     "secretsmanager",
     "iam",
     "organizations",
+    "cloudtrail",
 ]
 
 _LIFECYCLE_SERVICES = [
@@ -242,6 +244,7 @@ def _create_providers(  # pylint: disable=too-many-statements
     local_endpoints["ssm"] = f"http://127.0.0.1:{ports['ssm']}"
     local_endpoints["secretsmanager"] = f"http://127.0.0.1:{ports['secretsmanager']}"
     local_endpoints["organizations"] = f"http://127.0.0.1:{ports['organizations']}"
+    local_endpoints["cloudtrail"] = f"http://127.0.0.1:{ports['cloudtrail']}"
     sdk_env = build_sdk_env(local_endpoints)
     for compute in lambda_registry.compute.values():
         if hasattr(compute, "sdk_env"):
@@ -313,7 +316,15 @@ def _create_providers(  # pylint: disable=too-many-statements
         organizations_port=ports["organizations"],
     )
 
-    # 13. Wire service providers into the StepFunctions engine
+    # 13. CloudTrail
+    _register_cloudtrail_provider(
+        providers,
+        chaos_configs=chaos_configs,
+        aws_fake_configs=aws_fake_configs,
+        cloudtrail_port=ports["cloudtrail"],
+    )
+
+    # 14. Wire service providers into the StepFunctions engine
     from lws.providers.stepfunctions._service_task_bridge import (  # pylint: disable=import-outside-toplevel
         SecretsManagerStateAdapter,
         SsmStateAdapter,

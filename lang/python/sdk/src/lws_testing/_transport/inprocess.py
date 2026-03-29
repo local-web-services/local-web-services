@@ -8,6 +8,7 @@ from typing import Any
 
 from lws_testing._transport._provider_wrappers import (
     _ApiGatewayStateProvider,
+    _CloudTrailStateProvider,
     _ElasticsearchStateProvider,
     _GlacierStateProvider,
     _LambdaRegistryProvider,
@@ -368,10 +369,18 @@ def _build_service_apps(
     )
     service_apps.append(("organizations", organizations_app))
 
+    from lws.providers.cloudtrail.routes import create_cloudtrail_app  # pylint: disable=import-outside-toplevel
+    cloudtrail_app, cloudtrail_state = create_cloudtrail_app(
+        chaos=chaos_configs["cloudtrail"],
+        aws_fake=fake_configs["cloudtrail"],
+    )
+    service_apps.append(("cloudtrail", cloudtrail_app))
+
     extra_providers = {
         "ssm": _SsmStateProvider(ssm_state),
         "secretsmanager": _SecretsManagerStateProvider(secretsmanager_state),
         "organizations": _OrganizationsStateProvider(organizations_state),
+        "cloudtrail": _CloudTrailStateProvider(cloudtrail_state),
         "lambda": _LambdaRegistryProvider(extended_extra_providers["lambda_registry"]),
         "apigateway-state": _ApiGatewayStateProvider(_apigateway_app[1]),
         "glacier": _GlacierStateProvider(extended_extra_providers["glacier_state"]),
@@ -414,6 +423,7 @@ _SERVICE_NAMES = [
     "events",
     "apigateway",
     "organizations",
+    "cloudtrail",
     "cognito-idp",
     "docdb",
     "neptune",

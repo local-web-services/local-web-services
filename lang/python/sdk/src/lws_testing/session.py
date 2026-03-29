@@ -40,6 +40,7 @@ _SERVICE_ENV_VARS: dict[str, str] = {
     "events": "AWS_ENDPOINT_URL_EVENTS",
     "apigateway": "AWS_ENDPOINT_URL_API_GATEWAY",
     "organizations": "AWS_ENDPOINT_URL_ORGANIZATIONS",
+    "cloudtrail": "AWS_ENDPOINT_URL_CLOUDTRAIL",
 }
 
 # Credential / region overrides so boto3 never tries to contact IAM or STS.
