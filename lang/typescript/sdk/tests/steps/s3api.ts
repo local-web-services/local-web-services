@@ -59,6 +59,7 @@ Before({ tags: "@s3api" }, function (this: SdkWorld) {
     setupUploadExists: async (world: SdkWorld) => {
       // Arrange
       assert.ok(world.session, "Expected session to be initialized");
+      await createBucket(world, S3API_TEST_BUCKET);
       const { CreateMultipartUploadCommand } = require("@aws-sdk/client-s3");
       // Act
       const resp = await s3Client(world).send(

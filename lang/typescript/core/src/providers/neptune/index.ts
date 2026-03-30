@@ -363,6 +363,10 @@ ${responseMeta()}
           errorReply(reply, "DBInstanceAlreadyExists", `DB instance already exists: ${id}`);
           break;
         }
+        if (!clusters.has(clusterId)) {
+          errorReply(reply, "DBClusterNotFoundFault", `DB cluster not found: ${clusterId}`);
+          break;
+        }
         const instance: DBInstance = {
           DBInstanceIdentifier: id,
           DBClusterIdentifier: clusterId,
@@ -507,6 +511,10 @@ ${responseMeta()}
           break;
         }
         const cluster = clusters.get(clusterId);
+        if (!cluster) {
+          errorReply(reply, "DBClusterNotFoundFault", `DB cluster not found: ${clusterId}`);
+          break;
+        }
         const snap: DBClusterSnapshot = {
           DBClusterSnapshotIdentifier: snapId,
           DBClusterIdentifier: clusterId,

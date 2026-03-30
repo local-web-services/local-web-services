@@ -52,6 +52,14 @@ function jsonReply(reply: FastifyReply, data: unknown, status = 200): void {
   reply.status(status).header("Content-Type", "application/json").send(data);
 }
 
+function errNotFound(reply: FastifyReply, message: string): void {
+  jsonReply(reply, { code: "ResourceNotFoundException", message }, 404);
+}
+
+function errInvalid(reply: FastifyReply, message: string): void {
+  jsonReply(reply, { code: "InvalidParameterValueException", message }, 400);
+}
+
 export function registerGlacier(app: FastifyInstance, state: ServerState): void {
   const vaults = new Map<string, Vault>();
   const archives = new Map<string, Archive>();
@@ -64,6 +72,12 @@ export function registerGlacier(app: FastifyInstance, state: ServerState): void 
     jobs.clear();
     multipartUploads.clear();
   });
+
+  app.addContentTypeParser(
+    ["application/octet-stream", "application/x-www-form-urlencoded"],
+    { parseAs: "buffer" },
+    (_req, body, done) => done(null, body),
+  );
 
   // Create vault: PUT /:accountId/vaults/:vaultName
   app.put("/:accountId/vaults/:vaultName", async (req: FastifyRequest, reply: FastifyReply) => {
@@ -83,6 +97,11 @@ export function registerGlacier(app: FastifyInstance, state: ServerState): void 
       return;
     }
 
+    if (vaults.has(vaultName)) {
+      errInvalid(reply, `Vault ${vaultName} already exists`);
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
+    }
     const vault: Vault = {
       VaultARN: `arn:aws:glacier:${REGION}:${ACCOUNT_ID}:vaults/${vaultName}`,
       VaultName: vaultName,
@@ -110,6 +129,25 @@ export function registerGlacier(app: FastifyInstance, state: ServerState): void 
       return;
     }
 
+    const vault = vaults.get(vaultName);
+    if (!vault) {
+      errNotFound(reply, `Vault ${vaultName} not found`);
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
+    }
+    if (vault.NumberOfArchives > 0) {
+      errInvalid(reply, `Vault ${vaultName} is not empty`);
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
+    }
+    const hasJobs = Array.from(jobs.values()).some(
+      (j) => j.VaultARN === vault.VaultARN && !j.Completed,
+    );
+    if (hasJobs) {
+      errInvalid(reply, `Vault ${vaultName} has in-progress jobs`);
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
+    }
     vaults.delete(vaultName);
     reply.status(204).send();
     recordLog(state, ctx, req.method, req.url, reply.statusCode);
@@ -127,11 +165,7 @@ export function registerGlacier(app: FastifyInstance, state: ServerState): void 
 
     const vault = vaults.get(vaultName);
     if (!vault) {
-      jsonReply(
-        reply,
-        { code: "ResourceNotFoundException", message: `Vault ${vaultName} not found` },
-        404,
-      );
+      errNotFound(reply, `Vault ${vaultName} not found`);
     } else {
       jsonReply(reply, vault);
     }
@@ -163,6 +197,12 @@ export function registerGlacier(app: FastifyInstance, state: ServerState): void 
         return;
       }
       if (await applyChaos(state, "glacier", "UploadArchive", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+
+      if (!vaults.has(vaultName)) {
+        errNotFound(reply, `Vault ${vaultName} not found`);
         recordLog(state, ctx, req.method, req.url, reply.statusCode);
         return;
       }
@@ -227,6 +267,12 @@ export function registerGlacier(app: FastifyInstance, state: ServerState): void 
         return;
       }
 
+      if (!vaults.has(vaultName)) {
+        errNotFound(reply, `Vault ${vaultName} not found`);
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+
       const uploadId = uuidv4();
       const upload: MultipartUpload = {
         MultipartUploadId: uploadId,
@@ -240,6 +286,97 @@ export function registerGlacier(app: FastifyInstance, state: ServerState): void 
         .header("x-amz-multipart-upload-id", uploadId)
         .header("Location", `/${ACCOUNT_ID}/vaults/${vaultName}/multipart-uploads/${uploadId}`)
         .send();
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
+
+  // Upload multipart part
+  app.put(
+    "/:accountId/vaults/:vaultName/multipart-uploads/:uploadId",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { uploadId } = req.params as { uploadId: string };
+      const ctx = createRequestContext("glacier", "UploadMultipartPart");
+
+      if (await applyIamAuth(state, "glacier", "UploadMultipartPart", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+
+      if (!multipartUploads.has(uploadId)) {
+        errNotFound(reply, `Upload ${uploadId} not found`);
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+      reply
+        .status(204)
+        .header("x-amz-sha256-tree-hash", (req.headers["x-amz-sha256-tree-hash"] as string) ?? "")
+        .send();
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
+
+  // Complete multipart upload
+  app.post(
+    "/:accountId/vaults/:vaultName/multipart-uploads/:uploadId",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { vaultName, uploadId } = req.params as { vaultName: string; uploadId: string };
+      const ctx = createRequestContext("glacier", "CompleteMultipartUpload");
+
+      if (await applyIamAuth(state, "glacier", "CompleteMultipartUpload", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+
+      if (!multipartUploads.has(uploadId)) {
+        errNotFound(reply, `Upload ${uploadId} not found`);
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+      multipartUploads.delete(uploadId);
+      const archiveId = uuidv4();
+      const archive: Archive = {
+        archiveId,
+        vaultName,
+        description: (req.headers["x-amz-archive-description"] as string) ?? "",
+        size: parseInt((req.headers["x-amz-archive-size"] as string) ?? "0", 10),
+        checksum: (req.headers["x-amz-sha256-tree-hash"] as string) ?? "",
+        creationDate: new Date().toISOString(),
+      };
+      archives.set(archiveId, archive);
+      const vault = vaults.get(vaultName);
+      if (vault) {
+        vault.NumberOfArchives++;
+        vault.SizeInBytes += archive.size;
+      }
+      reply
+        .status(201)
+        .header("x-amz-archive-id", archiveId)
+        .header("x-amz-sha256-tree-hash", archive.checksum)
+        .header("Location", `/${ACCOUNT_ID}/vaults/${vaultName}/archives/${archiveId}`)
+        .send();
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
+
+  // Abort multipart upload
+  app.delete(
+    "/:accountId/vaults/:vaultName/multipart-uploads/:uploadId",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { uploadId } = req.params as { uploadId: string };
+      const ctx = createRequestContext("glacier", "AbortMultipartUpload");
+
+      if (await applyIamAuth(state, "glacier", "AbortMultipartUpload", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+
+      if (!multipartUploads.has(uploadId)) {
+        errNotFound(reply, `Upload ${uploadId} not found`);
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+      multipartUploads.delete(uploadId);
+      reply.status(204).send();
       recordLog(state, ctx, req.method, req.url, reply.statusCode);
     },
   );
@@ -260,8 +397,20 @@ export function registerGlacier(app: FastifyInstance, state: ServerState): void 
         return;
       }
 
+      if (!vaults.has(vaultName)) {
+        errNotFound(reply, `Vault ${vaultName} not found`);
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+
       const body = req.body as Record<string, unknown>;
       const jobParams = (body.jobParameters ?? body) as Record<string, unknown>;
+      const archiveIdParam = jobParams.ArchiveId as string | undefined;
+      if (archiveIdParam && !archives.has(archiveIdParam)) {
+        errNotFound(reply, `Archive ${archiveIdParam} not found`);
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
       const jobId = uuidv4();
       const job: Job = {
         JobId: jobId,
@@ -314,11 +463,7 @@ export function registerGlacier(app: FastifyInstance, state: ServerState): void 
 
       const job = jobs.get(jobId);
       if (!job) {
-        jsonReply(
-          reply,
-          { code: "ResourceNotFoundException", message: `Job ${jobId} not found` },
-          404,
-        );
+        errNotFound(reply, `Job ${jobId} not found`);
       } else {
         jsonReply(reply, job);
       }
@@ -340,11 +485,7 @@ export function registerGlacier(app: FastifyInstance, state: ServerState): void 
 
       const job = jobs.get(jobId);
       if (!job) {
-        jsonReply(
-          reply,
-          { code: "ResourceNotFoundException", message: `Job ${jobId} not found` },
-          404,
-        );
+        errNotFound(reply, `Job ${jobId} not found`);
       } else {
         jsonReply(reply, {
           VaultARN: job.VaultARN,

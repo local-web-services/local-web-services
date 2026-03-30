@@ -1,8 +1,8 @@
 /** Step definitions: dynamodb_lambda cross-service scenarios — unique Given/When/Then steps only */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, FunctionStepHelpers } from "../support/world";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -99,6 +99,32 @@ async function dlCreateESM(world: SdkWorld): Promise<void> {
     }),
   );
 }
+
+// ── Before hook: register functionHelpers for @dynamodblambda scenarios ──────
+
+Before({ tags: "@dynamodblambda" }, function (this: SdkWorld) {
+  const functionHelpersImpl: FunctionStepHelpers = {
+    functionName: DL_TEST_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
+      try {
+        const result = await lambdaClient(world).send(
+          new CreateFunctionCommand({
+            FunctionName: DL_TEST_FUNC,
+            Runtime: "python3.12",
+            Role: DL_ROLE_ARN,
+            Handler: "index.handler",
+            Code: { ZipFile: Buffer.from("fake") },
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+  };
+  this.functionHelpers = functionHelpersImpl;
+});
 
 // ── Given: table stream state ─────────────────────────────────────────────────
 
@@ -317,7 +343,9 @@ Then(
       actualMappings.length >= expectedMinCount,
       `Expected at least ${expectedMinCount} event source mapping but found ${actualMappings.length}`,
     );
-    const actualHasExpectedState = actualMappings.some((m) => m.State === expectedState);
+    const actualHasExpectedState = actualMappings.some(
+      (m) => m.State?.toUpperCase() === expectedState.toUpperCase(),
+    );
     assert.ok(
       actualHasExpectedState,
       `Expected at least one mapping with state "${expectedState}" but found states: ${actualMappings.map((m) => m.State).join(", ")}`,

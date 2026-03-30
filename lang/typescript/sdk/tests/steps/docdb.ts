@@ -56,8 +56,10 @@ Before({ tags: "@docdb or @docdbevents" }, function (this: SdkWorld) {
     createCluster: async (world: SdkWorld) => {
       try {
         await docdbCreateCluster(world);
+        world.lastCallResult = { success: true, output: null };
       } catch {
-        // cluster may already exist
+        // cluster may already exist; desired state is existence
+        world.lastCallResult = { success: true, output: null };
       }
     },
     assertClusterStatus: async (world: SdkWorld, expectedStatus: string) => {

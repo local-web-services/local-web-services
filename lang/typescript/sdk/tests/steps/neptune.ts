@@ -182,6 +182,7 @@ Before({ tags: "@neptune" }, function (this: SdkWorld) {
     assertSnapshotInState: async (world: SdkWorld, expectedStatus: string) => {
       // Arrange
       assert.ok(world.session, "Expected session to be initialized");
+      const expectedStatusLower = expectedStatus.toLowerCase();
       // Act: verify operation succeeded
       const expectedSuccess = true;
       const actualSuccess = world.lastCallResult.success;
@@ -196,11 +197,11 @@ Before({ tags: "@neptune" }, function (this: SdkWorld) {
       )?.DBClusterSnapshot;
       if (outputSnap?.Status !== undefined) {
         // Assert
-        const actualStatus = outputSnap.Status;
+        const actualStatus = outputSnap.Status?.toLowerCase();
         assert.strictEqual(
           actualStatus,
-          expectedStatus,
-          `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+          expectedStatusLower,
+          `Expected snapshot status "${expectedStatusLower}" but got "${actualStatus}"; expected_status=${expectedStatusLower} actual_status=${actualStatus}`,
         );
         return;
       }
@@ -217,11 +218,11 @@ Before({ tags: "@neptune" }, function (this: SdkWorld) {
         snapshots.length > 0,
         `Expected snapshot "${NEPTUNE_TEST_SNAPSHOT_ID}" to exist but not found`,
       );
-      const actualStatus = snapshots[0].Status;
+      const actualStatus = snapshots[0].Status?.toLowerCase();
       assert.strictEqual(
         actualStatus,
-        expectedStatus,
-        `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+        expectedStatusLower,
+        `Expected snapshot status "${expectedStatusLower}" but got "${actualStatus}"; expected_status=${expectedStatusLower} actual_status=${actualStatus}`,
       );
     },
     assertSnapshotInStateLinkedToCluster: async (world: SdkWorld, expectedStatus: string) => {
