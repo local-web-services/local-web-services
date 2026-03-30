@@ -19,7 +19,7 @@ Feature: Dynamodb - A Rolled-Back Transaction Is Cleared
     And items only exist in non-deleted tables
     And deleted tables are never the target of a pending transaction
 
-  @standard @negative @clear_rolled_back @internal
+  @guard @negative @clear_rolled_back @internal
   Scenario: a rolled-back transaction is cleared fails when the transaction is not "ROLLED_BACK"
     Given the transaction is not "ROLLED_BACK"
     When a rolled-back transaction is cleared

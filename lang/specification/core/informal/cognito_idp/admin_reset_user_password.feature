@@ -21,13 +21,13 @@ Feature: CognitoIdp - An Admin Resets A User Password
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @admin_reset_user_password
+  @guard @negative @admin_reset_user_password
   Scenario: an admin resets a user password fails when the user does not exist
     Given the user does not exist
     When an admin resets a user password
     Then the operation is rejected
 
-  @standard @negative @admin_reset_user_password
+  @guard @negative @admin_reset_user_password
   Scenario: an admin resets a user password fails when the user is not "CONFIRMED"
     Given the user exists
     And the user is not "CONFIRMED"

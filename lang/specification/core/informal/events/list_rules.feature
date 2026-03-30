@@ -22,13 +22,13 @@ Feature: Events - All Rules On An Event Bus Are Listed
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @list_rules
+  @guard @negative @list_rules
   Scenario: all rules on an event bus are listed fails when the event bus does not exist
     Given the event bus does not exist
     When all rules on an event bus are listed
     Then the operation is rejected
 
-  @standard @negative @list_rules
+  @guard @negative @list_rules
   Scenario: all rules on an event bus are listed fails when the event bus is not "ACTIVE"
     Given the event bus exists
     And the event bus is not "ACTIVE"

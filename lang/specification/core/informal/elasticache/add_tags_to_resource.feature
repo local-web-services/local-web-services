@@ -19,13 +19,13 @@ Feature: Elasticache - Tags Are Added To A Cache Resource
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @add_tags_to_resource
+  @guard @negative @add_tags_to_resource
   Scenario: tags are added to a cache resource fails when the resource does not exist
     Given the resource does not exist
     When tags are added to a cache resource
     Then the operation is rejected
 
-  @standard @negative @add_tags_to_resource
+  @guard @negative @add_tags_to_resource
   Scenario: tags are added to a cache resource fails when the resource does not have tags
     Given the resource exists
     And the resource does not have tags

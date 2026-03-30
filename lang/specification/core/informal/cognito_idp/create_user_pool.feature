@@ -20,7 +20,7 @@ Feature: CognitoIdp - A User Pool Is Created
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @create_user_pool
+  @guard @negative @create_user_pool
   Scenario: a user pool is created fails when the user pool already exists
     Given the user pool already exists
     When a user pool is created

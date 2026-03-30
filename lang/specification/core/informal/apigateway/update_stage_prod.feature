@@ -23,20 +23,20 @@ Feature: Apigateway - The Prod Stage Is Redeployed To A New Deployment
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @update_stage_prod
+  @guard @negative @update_stage_prod
   Scenario: the prod stage is redeployed to a new deployment fails when the deployment does not exist
     Given the deployment does not exist
     When the prod stage is redeployed to a new deployment
     Then the operation is rejected
 
-  @standard @negative @update_stage_prod @lifecycle
+  @guard @negative @update_stage_prod @lifecycle
   Scenario: the prod stage is redeployed to a new deployment fails when the deployment is not "ACTIVE"
     Given the deployment exists
     And the deployment is not "ACTIVE"
     When the prod stage is redeployed to a new deployment
     Then the operation is rejected
 
-  @standard @negative @update_stage_prod
+  @guard @negative @update_stage_prod
   Scenario: the prod stage is redeployed to a new deployment fails when the prod stage does not exist
     Given the deployment exists
     And the deployment is "ACTIVE"
@@ -44,7 +44,7 @@ Feature: Apigateway - The Prod Stage Is Redeployed To A New Deployment
     When the prod stage is redeployed to a new deployment
     Then the operation is rejected
 
-  @standard @negative @update_stage_prod @lifecycle
+  @guard @negative @update_stage_prod @lifecycle
   Scenario: the prod stage is redeployed to a new deployment fails when the prod stage is not active
     Given the deployment exists
     And the deployment is "ACTIVE"

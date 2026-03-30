@@ -17,20 +17,20 @@ Feature: ApigatewayS3api - A Get Request Is Received And The Api Retrieves An Ex
     And every existing object references a bucket that exists
     And every successful request references an "API" that exists
 
-  @standard @negative @get_object_request_succeeds @lifecycle
+  @guard @negative @get_object_request_succeeds @lifecycle
   Scenario: a "GET" request is received and the "API" retrieves an existing object from S3 fails when the "API" is not "ACTIVE"
     Given the "API" is not "ACTIVE"
     When a "GET" request is received and the "API" retrieves an existing object from S3
     Then the operation is rejected
 
-  @standard @negative @get_object_request_succeeds
+  @guard @negative @get_object_request_succeeds
   Scenario: a "GET" request is received and the "API" retrieves an existing object from S3 fails when the "API" has no S3 integration configured
     Given the "API" is "ACTIVE"
     And the "API" has no S3 integration configured
     When a "GET" request is received and the "API" retrieves an existing object from S3
     Then the operation is rejected
 
-  @standard @negative @get_object_request_succeeds @lifecycle
+  @guard @negative @get_object_request_succeeds @lifecycle
   Scenario: a "GET" request is received and the "API" retrieves an existing object from S3 fails when no object "EXISTS" in the target bucket
     Given the "API" is "ACTIVE"
     And the "API" has an S3 integration configured

@@ -15,7 +15,7 @@ Feature: RdsLambda - A Lambda Function Is Deployed
     And every successful invocation references a "DB" instance that exists
     And every successful invocation recorded which function it invoked
 
-  @standard @negative @deploy_function
+  @guard @negative @deploy_function
   Scenario: a Lambda function is deployed fails when the function already exists
     Given the function already exists
     When a Lambda function is deployed

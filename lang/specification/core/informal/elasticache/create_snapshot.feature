@@ -21,20 +21,20 @@ Feature: Elasticache - A Snapshot Is Created From An Available Redis Cache Clust
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @create_snapshot
+  @guard @negative @create_snapshot
   Scenario: a snapshot is created from an available redis cache cluster fails when the cluster does not exist
     Given the cluster does not exist
     When a snapshot is created from an available redis cache cluster
     Then the operation is rejected
 
-  @standard @negative @create_snapshot @lifecycle
+  @guard @negative @create_snapshot @lifecycle
   Scenario: a snapshot is created from an available redis cache cluster fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"
     When a snapshot is created from an available redis cache cluster
     Then the operation is rejected
 
-  @standard @negative @create_snapshot
+  @guard @negative @create_snapshot
   Scenario: a snapshot is created from an available redis cache cluster fails when the cluster does not use the redis engine
     Given the cluster exists
     And the cluster is "AVAILABLE"
@@ -42,7 +42,7 @@ Feature: Elasticache - A Snapshot Is Created From An Available Redis Cache Clust
     When a snapshot is created from an available redis cache cluster
     Then the operation is rejected
 
-  @standard @negative @create_snapshot
+  @guard @negative @internal @create_snapshot
   Scenario: a snapshot is created from an available redis cache cluster fails when the snapshot slot is not available
     Given the cluster exists
     And the cluster is "AVAILABLE"

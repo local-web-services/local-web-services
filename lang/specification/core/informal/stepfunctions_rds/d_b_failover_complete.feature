@@ -15,7 +15,7 @@ Feature: StepfunctionsRds - The Db Instance Failover Completes
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which "DB" instance it queried
 
-  @standard @negative @d_b_failover_complete @internal
+  @guard @negative @d_b_failover_complete @internal
   Scenario: the "DB" instance failover completes fails when the "DB" instance is not "FAILING_OVER"
     Given the "DB" instance is not "FAILING_OVER"
     When the "DB" instance failover completes

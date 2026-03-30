@@ -16,13 +16,13 @@ Feature: StepfunctionsDocdb - A Running Execution Fails To Connect Because The D
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
-  @standard @negative @query_document_task_fails @internal
+  @guard @negative @query_document_task_fails @internal
   Scenario: a running execution fails to connect because the DocumentDB cluster is stopped fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution fails to connect because the DocumentDB cluster is stopped
     Then the operation is rejected
 
-  @standard @negative @query_document_task_fails @internal
+  @guard @negative @query_document_task_fails @internal
   Scenario: a running execution fails to connect because the DocumentDB cluster is stopped fails when the cluster is not "STOPPED"
     Given an execution is "RUNNING"
     And the cluster is not "STOPPED"

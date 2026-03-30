@@ -17,7 +17,7 @@ Feature: ApigatewayCognito - A Rest Api Is Created
     And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
     And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
 
-  @standard @negative @create_rest_api
+  @guard @negative @create_rest_api
   Scenario: a "REST" "API" is created fails when the "API" already exists
     Given the "API" already exists
     When a "REST" "API" is created

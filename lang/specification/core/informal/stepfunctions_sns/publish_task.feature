@@ -16,13 +16,13 @@ Feature: StepfunctionsSns - A Running Execution Publishes A Message To The Sns T
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every "RUNNING" execution's state machine targets an "ACTIVE" topic
 
-  @standard @negative @publish_task
+  @guard @negative @publish_task
   Scenario: a running execution publishes a message to the "SNS" topic and succeeds fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution publishes a message to the "SNS" topic and succeeds
     Then the operation is rejected
 
-  @standard @negative @publish_task @lifecycle
+  @guard @negative @publish_task @lifecycle
   Scenario: a running execution publishes a message to the "SNS" topic and succeeds fails when the target topic is not "ACTIVE"
     Given an execution is "RUNNING"
     And the target topic is not "ACTIVE"

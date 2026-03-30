@@ -16,13 +16,13 @@ Feature: StepfunctionsElasticsearch - A Running Execution Calls An Available Ela
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which domain it called
 
-  @standard @negative @search_task_succeeds @internal
+  @guard @negative @search_task_succeeds @internal
   Scenario: a running execution calls an "AVAILABLE" Elasticsearch domain and the task succeeds fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution calls an "AVAILABLE" Elasticsearch domain and the task succeeds
     Then the operation is rejected
 
-  @standard @negative @search_task_succeeds @internal
+  @guard @negative @search_task_succeeds @internal
   Scenario: a running execution calls an "AVAILABLE" Elasticsearch domain and the task succeeds fails when the domain is not "AVAILABLE"
     Given an execution is "RUNNING"
     And the domain is not "AVAILABLE"

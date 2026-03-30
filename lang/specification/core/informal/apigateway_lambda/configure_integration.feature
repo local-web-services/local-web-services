@@ -20,20 +20,20 @@ Feature: ApigatewayLambda - A Lambda Integration Is Configured On The Rest Api
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation has a corresponding "IN_PROGRESS" request
 
-  @standard @negative @configure_integration
+  @guard @negative @configure_integration
   Scenario: a Lambda integration is configured on the "REST" "API" fails when the "API" does not exist
     Given the "API" does not exist
     When a Lambda integration is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_integration @lifecycle
+  @guard @negative @configure_integration @lifecycle
   Scenario: a Lambda integration is configured on the "REST" "API" fails when the "API" is not "ACTIVE"
     Given the "API" exists
     And the "API" is not "ACTIVE"
     When a Lambda integration is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_integration
+  @guard @negative @configure_integration
   Scenario: a Lambda integration is configured on the "REST" "API" fails when the "API" already has an integration configured
     Given the "API" exists
     And the "API" is "ACTIVE"
@@ -41,7 +41,7 @@ Feature: ApigatewayLambda - A Lambda Integration Is Configured On The Rest Api
     When a Lambda integration is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_integration
+  @guard @negative @configure_integration
   Scenario: a Lambda integration is configured on the "REST" "API" fails when the function does not exist
     Given the "API" exists
     And the "API" is "ACTIVE"
@@ -50,7 +50,7 @@ Feature: ApigatewayLambda - A Lambda Integration Is Configured On The Rest Api
     When a Lambda integration is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_integration @lifecycle
+  @guard @negative @configure_integration @lifecycle
   Scenario: a Lambda integration is configured on the "REST" "API" fails when the function is not "ACTIVE"
     Given the "API" exists
     And the "API" is "ACTIVE"

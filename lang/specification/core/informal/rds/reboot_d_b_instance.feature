@@ -17,13 +17,13 @@ Feature: Rds - A Database Instance Is Rebooted
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
 
-  @standard @negative @reboot_d_b_instance
+  @guard @negative @reboot_d_b_instance
   Scenario: a database instance is rebooted fails when the database instance does not exist
     Given the database instance does not exist
     When a database instance is rebooted
     Then the operation is rejected
 
-  @standard @negative @reboot_d_b_instance @lifecycle
+  @guard @negative @reboot_d_b_instance @lifecycle
   Scenario: a database instance is rebooted fails when the instance is not "AVAILABLE"
     Given the database instance exists
     And the instance is not "AVAILABLE"

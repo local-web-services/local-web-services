@@ -23,20 +23,20 @@ Feature: Events - An Eventbridge Rule Is Deleted
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @delete_rule
+  @guard @negative @delete_rule
   Scenario: an EventBridge rule is deleted fails when the rule does not exist
     Given the rule does not exist
     When an EventBridge rule is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_rule
+  @guard @negative @delete_rule
   Scenario: an EventBridge rule is deleted fails when the rule is already "DELETED"
     Given the rule exists
     And the rule is already "DELETED"
     When an EventBridge rule is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_rule
+  @guard @negative @delete_rule
   Scenario: an EventBridge rule is deleted fails when the rule has active targets
     Given the rule exists
     And the rule is not already "DELETED"

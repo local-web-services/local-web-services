@@ -22,13 +22,13 @@ Feature: Events - Targets For A Rule Are Listed
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @list_targets_by_rule
+  @guard @negative @list_targets_by_rule
   Scenario: targets for a rule are listed fails when the rule does not exist
     Given the rule does not exist
     When targets for a rule are listed
     Then the operation is rejected
 
-  @standard @negative @list_targets_by_rule
+  @guard @negative @list_targets_by_rule
   Scenario: targets for a rule are listed fails when the rule is "DELETED"
     Given the rule exists
     And the rule is "DELETED"

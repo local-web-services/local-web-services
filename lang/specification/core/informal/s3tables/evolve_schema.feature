@@ -18,13 +18,13 @@ Feature: S3tables - A Table'S Schema Is Evolved
     And snapshot count is never negative
     And schema version is always at least one
 
-  @standard @negative @evolve_schema
+  @guard @negative @evolve_schema
   Scenario: a table's schema is evolved fails when the table does not exist
     Given the table does not exist
     When a table's schema is evolved
     Then the operation is rejected
 
-  @standard @negative @evolve_schema @lifecycle
+  @guard @negative @evolve_schema @lifecycle
   Scenario: a table's schema is evolved fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"

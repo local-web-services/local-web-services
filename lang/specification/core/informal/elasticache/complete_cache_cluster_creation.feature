@@ -20,20 +20,20 @@ Feature: Elasticache - A Standalone Cache Cluster Finishes Creating
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @complete_cache_cluster_creation @internal
+  @guard @negative @complete_cache_cluster_creation @internal
   Scenario: a standalone cache cluster finishes creating fails when the cluster does not exist
     Given the cluster does not exist
     When a standalone cache cluster finishes creating
     Then the operation is rejected
 
-  @standard @negative @complete_cache_cluster_creation @internal
+  @guard @negative @complete_cache_cluster_creation @internal
   Scenario: a standalone cache cluster finishes creating fails when the cluster is not "CREATING"
     Given the cluster exists
     And the cluster is not "CREATING"
     When a standalone cache cluster finishes creating
     Then the operation is rejected
 
-  @standard @negative @complete_cache_cluster_creation @internal
+  @guard @negative @complete_cache_cluster_creation @internal
   Scenario: a standalone cache cluster finishes creating fails when the cluster is part of a replication group
     Given the cluster exists
     And the cluster is "CREATING"

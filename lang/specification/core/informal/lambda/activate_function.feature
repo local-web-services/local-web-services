@@ -21,13 +21,13 @@ Feature: Lambda - A Pending Function Resolves Its Deployment
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @activate_function @internal
+  @guard @negative @activate_function @internal
   Scenario: a pending function resolves its deployment fails when the function does not exist
     Given the function does not exist
     When a pending function resolves its deployment
     Then the operation is rejected
 
-  @standard @negative @activate_function @internal
+  @guard @negative @activate_function @internal
   Scenario: a pending function resolves its deployment fails when the function is not "PENDING"
     Given the function exists
     And the function is not "PENDING"

@@ -21,13 +21,13 @@ Feature: Lambda - An Event Source Mapping Finishes Creating
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @activate_event_source_mapping @internal
+  @guard @negative @activate_event_source_mapping @internal
   Scenario: an event source mapping finishes creating fails when the event source mapping does not exist
     Given the event source mapping does not exist
     When an event source mapping finishes creating
     Then the operation is rejected
 
-  @standard @negative @activate_event_source_mapping @internal
+  @guard @negative @activate_event_source_mapping @internal
   Scenario: an event source mapping finishes creating fails when the mapping is not "CREATING"
     Given the event source mapping exists
     And the mapping is not "CREATING"

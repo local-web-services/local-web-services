@@ -19,13 +19,13 @@ Feature: Memorydb - A User Deletion Completes
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @complete_user_deletion @internal
+  @guard @negative @complete_user_deletion @internal
   Scenario: a user deletion completes fails when the user does not exist
     Given the user does not exist
     When a user deletion completes
     Then the operation is rejected
 
-  @standard @negative @complete_user_deletion @internal
+  @guard @negative @complete_user_deletion @internal
   Scenario: a user deletion completes fails when the user is not "DELETING"
     Given the user exists
     And the user is not "DELETING"

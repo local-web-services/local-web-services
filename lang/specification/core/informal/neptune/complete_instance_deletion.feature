@@ -24,20 +24,20 @@ Feature: Neptune - A Database Instance Deletion Completes
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @complete_instance_deletion @internal
+  @guard @negative @complete_instance_deletion @internal
   Scenario: a database instance deletion completes fails when the instance does not exist
     Given the instance does not exist
     When a database instance deletion completes
     Then the operation is rejected
 
-  @standard @negative @complete_instance_deletion @internal
+  @guard @negative @complete_instance_deletion @internal
   Scenario: a database instance deletion completes fails when the instance is not "DELETING"
     Given the instance exists
     And the instance is not "DELETING"
     When a database instance deletion completes
     Then the operation is rejected
 
-  @standard @negative @complete_instance_deletion @internal
+  @guard @negative @complete_instance_deletion @internal
   Scenario: a database instance deletion completes fails when the cluster does not exist
     Given the instance exists
     And the instance is "DELETING"
@@ -45,7 +45,7 @@ Feature: Neptune - A Database Instance Deletion Completes
     When a database instance deletion completes
     Then the operation is rejected
 
-  @standard @negative @complete_instance_deletion @internal
+  @guard @negative @complete_instance_deletion @internal
   Scenario: a database instance deletion completes fails when the instance is not the primary of the cluster
     Given the instance exists
     And the instance is "DELETING"

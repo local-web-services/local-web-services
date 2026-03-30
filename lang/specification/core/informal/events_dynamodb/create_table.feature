@@ -15,7 +15,7 @@ Feature: EventsDynamodb - A Dynamodb Table Is Created
     And every existing item references a table that exists
     And every matched event references a rule that exists
 
-  @standard @negative @create_table
+  @guard @negative @create_table
   Scenario: a DynamoDB table is created fails when the table already exists
     Given the table already exists
     When a DynamoDB table is created

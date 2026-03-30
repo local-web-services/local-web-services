@@ -17,7 +17,7 @@ Feature: ApigatewayCognito - A Cognito User Pool Is Created
     And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
     And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
 
-  @standard @negative @create_user_pool
+  @guard @negative @create_user_pool
   Scenario: a Cognito User Pool is created fails when the pool already exists
     Given the pool already exists
     When a Cognito User Pool is created

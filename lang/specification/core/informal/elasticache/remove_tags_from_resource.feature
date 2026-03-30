@@ -19,13 +19,13 @@ Feature: Elasticache - Tags Are Removed From A Cache Resource
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @remove_tags_from_resource
+  @guard @negative @remove_tags_from_resource
   Scenario: tags are removed from a cache resource fails when the resource does not exist
     Given the resource does not exist
     When tags are removed from a cache resource
     Then the operation is rejected
 
-  @standard @negative @remove_tags_from_resource
+  @guard @negative @remove_tags_from_resource
   Scenario: tags are removed from a cache resource fails when the resource does not have tags
     Given the resource exists
     And the resource does not have tags

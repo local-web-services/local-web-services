@@ -19,7 +19,7 @@ Feature: Dynamodb - A Committed Transaction Is Cleared
     And items only exist in non-deleted tables
     And deleted tables are never the target of a pending transaction
 
-  @standard @negative @clear_transaction @internal
+  @guard @negative @clear_transaction @internal
   Scenario: a committed transaction is cleared fails when the transaction is not "COMMITTED"
     Given the transaction is not "COMMITTED"
     When a committed transaction is cleared

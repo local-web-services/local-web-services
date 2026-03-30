@@ -19,13 +19,13 @@ Feature: Elasticache - A Replication Group Deletion Completes
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @complete_replication_group_deletion @internal
+  @guard @negative @complete_replication_group_deletion @internal
   Scenario: a replication group deletion completes fails when the replication group does not exist
     Given the replication group does not exist
     When a replication group deletion completes
     Then the operation is rejected
 
-  @standard @negative @complete_replication_group_deletion @internal
+  @guard @negative @complete_replication_group_deletion @internal
   Scenario: a replication group deletion completes fails when the replication group is not "DELETING"
     Given the replication group exists
     And the replication group is not "DELETING"

@@ -19,13 +19,13 @@ Feature: Memorydb - A Snapshot Is Deleted
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @delete_snapshot
+  @guard @negative @delete_snapshot
   Scenario: a snapshot is deleted fails when the snapshot does not exist
     Given the snapshot does not exist
     When a snapshot is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_snapshot @lifecycle
+  @guard @negative @delete_snapshot @lifecycle
   Scenario: a snapshot is deleted fails when the snapshot is not "AVAILABLE"
     Given the snapshot exists
     And the snapshot is not "AVAILABLE"

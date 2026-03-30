@@ -16,7 +16,7 @@ Feature: ApigatewayStepfunctions - The Step Functions Execution Fails And The Ap
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every "RUNNING" execution has a corresponding "IN_PROGRESS" request
 
-  @standard @negative @execution_fails @internal
+  @guard @negative @execution_fails @internal
   Scenario: the Step Functions execution fails and the "API" returns an error response fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When the Step Functions execution fails and the "API" returns an error response

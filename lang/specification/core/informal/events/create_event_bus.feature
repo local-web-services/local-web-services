@@ -21,7 +21,7 @@ Feature: Events - An Event Bus Is Created
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @create_event_bus
+  @guard @negative @create_event_bus
   Scenario: an event bus is created fails when the event bus already exists
     Given the event bus already exists
     When an event bus is created

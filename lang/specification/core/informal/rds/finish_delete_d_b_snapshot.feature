@@ -17,13 +17,13 @@ Feature: Rds - A Database Snapshot Deletion Completes
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
 
-  @standard @negative @finish_delete_d_b_snapshot @internal
+  @guard @negative @finish_delete_d_b_snapshot @internal
   Scenario: a database snapshot deletion completes fails when the snapshot does not exist
     Given the snapshot does not exist
     When a database snapshot deletion completes
     Then the operation is rejected
 
-  @standard @negative @finish_delete_d_b_snapshot @internal
+  @guard @negative @finish_delete_d_b_snapshot @internal
   Scenario: a database snapshot deletion completes fails when the snapshot is not "DELETING"
     Given the snapshot exists
     And the snapshot is not "DELETING"

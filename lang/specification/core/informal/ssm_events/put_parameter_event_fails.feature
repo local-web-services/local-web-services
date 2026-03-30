@@ -16,13 +16,13 @@ Feature: SsmEvents - A Parameter Is Created But The Created Event Delivery Fails
     And every "DELIVERED" event references a parameter that exists (in any state)
     And every "DELIVERED" event references a bus that exists
 
-  @standard @negative @put_parameter_event_fails @internal
+  @guard @negative @put_parameter_event_fails @internal
   Scenario: a parameter is created but the "CREATED" event delivery fails because the bus is deleted fails when the parameter already exists
     Given the parameter already exists
     When a parameter is created but the "CREATED" event delivery fails because the bus is deleted
     Then the operation is rejected
 
-  @standard @negative @put_parameter_event_fails @internal
+  @guard @negative @put_parameter_event_fails @internal
   Scenario: a parameter is created but the "CREATED" event delivery fails because the bus is deleted fails when the bus is not "DELETED"
     Given the parameter does not already exist
     And the bus is not "DELETED"

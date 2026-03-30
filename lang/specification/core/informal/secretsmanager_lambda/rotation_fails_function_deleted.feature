@@ -16,13 +16,13 @@ Feature: SecretsmanagerLambda - The Lambda Rotation Function Fails And The Rotat
     And every "ROTATING" secret has an "IN_PROGRESS" rotation invocation
     And every successful rotation invocation recorded which secret it rotated
 
-  @standard @negative @rotation_fails_function_deleted @internal
+  @guard @negative @rotation_fails_function_deleted @internal
   Scenario: the Lambda rotation function fails and the rotation is aborted fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda rotation function fails and the rotation is aborted
     Then the operation is rejected
 
-  @standard @negative @rotation_fails_function_deleted @internal
+  @guard @negative @rotation_fails_function_deleted @internal
   Scenario: the Lambda rotation function fails and the rotation is aborted fails when the rotation function is not "DELETED"
     Given an invocation is "IN_PROGRESS"
     And the rotation function is not "DELETED"

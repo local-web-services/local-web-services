@@ -15,7 +15,7 @@ Feature: StepfunctionsSsm - A Parameter Is Created In Ssm Parameter Store
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which parameter it read
 
-  @standard @negative @create_parameter
+  @guard @negative @create_parameter
   Scenario: a parameter is created in "SSM" Parameter Store fails when the parameter already exists
     Given the parameter already exists
     When a parameter is created in "SSM" Parameter Store

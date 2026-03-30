@@ -1,0 +1,22 @@
+# lefthook.yml — pre-commit hook configuration
+# Install hooks: lefthook install  (or: make install-hooks)
+# All four commands run in parallel. test-e2e-minimal requires Docker.
+
+pre-commit:
+  parallel: true
+  commands:
+    python-lint:
+      root: "lang/python"
+      run: make lint
+
+    python-test-unit:
+      root: "lang/python"
+      run: make test-unit
+
+    python-test-architecture:
+      root: "lang/python"
+      run: make test-architecture
+
+    python-test-e2e-minimal:
+      root: "lang/python"
+      run: make test-e2e-minimal

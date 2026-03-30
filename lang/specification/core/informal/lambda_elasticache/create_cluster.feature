@@ -15,7 +15,7 @@ Feature: LambdaElasticache - An Elasticache Cluster Is Created
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "CACHED" entry belongs to an "AVAILABLE" cluster
 
-  @standard @negative @create_cluster
+  @guard @negative @create_cluster
   Scenario: an ElastiCache cluster is created fails when the cluster already exists
     Given the cluster already exists
     When an ElastiCache cluster is created

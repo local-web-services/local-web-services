@@ -21,13 +21,13 @@ Feature: Apigateway - A Request Is Made To The Throttled Prod Stage
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @request_throttled_prod @internal
+  @guard @negative @request_throttled_prod @internal
   Scenario: a request is made to the throttled prod stage fails when the prod stage does not have throttling configured
     Given the prod stage does not have throttling configured
     When a request is made to the throttled prod stage
     Then the operation is rejected
 
-  @standard @negative @request_throttled_prod @internal
+  @guard @negative @request_throttled_prod @internal
   Scenario: a request is made to the throttled prod stage fails when throttling is not enabled for the prod stage
     Given the prod stage has throttling configured
     And throttling is not enabled for the prod stage

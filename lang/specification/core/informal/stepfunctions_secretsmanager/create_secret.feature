@@ -15,7 +15,7 @@ Feature: StepfunctionsSecretsmanager - A Secret Is Created In Secrets Manager
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
-  @standard @negative @create_secret
+  @guard @negative @create_secret
   Scenario: a secret is created in Secrets Manager fails when the secret already exists
     Given the secret already exists
     When a secret is created in Secrets Manager

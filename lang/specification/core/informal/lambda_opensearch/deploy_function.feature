@@ -16,7 +16,7 @@ Feature: LambdaOpensearch - A Lambda Function Is Deployed
     And every indexed document belongs to an existing index
     And every existing index belongs to an "ACTIVE" domain
 
-  @standard @negative @deploy_function
+  @guard @negative @deploy_function
   Scenario: a Lambda function is deployed fails when the function already exists
     Given the function already exists
     When a Lambda function is deployed

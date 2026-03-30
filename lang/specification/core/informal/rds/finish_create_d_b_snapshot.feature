@@ -19,20 +19,20 @@ Feature: Rds - A Database Snapshot Finishes Creating
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
 
-  @standard @negative @finish_create_d_b_snapshot @internal
+  @guard @negative @finish_create_d_b_snapshot @internal
   Scenario: a database snapshot finishes creating fails when the snapshot does not exist
     Given the snapshot does not exist
     When a database snapshot finishes creating
     Then the operation is rejected
 
-  @standard @negative @finish_create_d_b_snapshot @internal
+  @guard @negative @finish_create_d_b_snapshot @internal
   Scenario: a database snapshot finishes creating fails when the snapshot is not "CREATING"
     Given the snapshot exists
     And the snapshot is not "CREATING"
     When a database snapshot finishes creating
     Then the operation is rejected
 
-  @standard @negative @finish_create_d_b_snapshot @internal
+  @guard @negative @finish_create_d_b_snapshot @internal
   Scenario: a database snapshot finishes creating fails when the instance does not exist
     Given the snapshot exists
     And the snapshot is "CREATING"
@@ -40,7 +40,7 @@ Feature: Rds - A Database Snapshot Finishes Creating
     When a database snapshot finishes creating
     Then the operation is rejected
 
-  @standard @negative @finish_create_d_b_snapshot @internal
+  @guard @negative @finish_create_d_b_snapshot @internal
   Scenario: a database snapshot finishes creating fails when the instance is not "BACKING_UP"
     Given the snapshot exists
     And the snapshot is "CREATING"

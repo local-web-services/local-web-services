@@ -15,7 +15,7 @@ Feature: LambdaDynamodb - A Dynamodb Table Is Created
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing item belongs to an "ACTIVE" table
 
-  @standard @negative @create_table
+  @guard @negative @create_table
   Scenario: a DynamoDB table is created fails when the table already exists
     Given the table already exists
     When a DynamoDB table is created

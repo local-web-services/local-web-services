@@ -16,7 +16,7 @@ Feature: DynamodbLambda - A Dynamodb Table Is Created With Streaming Enabled
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "ENABLED" event source mapping references an "ACTIVE" table with streaming enabled
 
-  @standard @negative @create_table_with_stream
+  @guard @negative @create_table_with_stream
   Scenario: a DynamoDB table is created with streaming enabled fails when the table already exists
     Given the table already exists
     When a DynamoDB table is created with streaming enabled

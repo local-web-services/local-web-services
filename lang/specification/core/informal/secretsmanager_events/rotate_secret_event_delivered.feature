@@ -17,20 +17,20 @@ Feature: SecretsmanagerEvents - A Secret Rotation Occurs And Secrets Manager Del
     And every "DELIVERED" event references a secret that exists
     And every "DELIVERED" event references a bus that exists
 
-  @standard @negative @rotate_secret_event_delivered @internal
+  @guard @negative @rotate_secret_event_delivered @internal
   Scenario: a secret rotation occurs and Secrets Manager delivers a "ROTATED" event to the bus fails when the secret does not exist or is not "ACTIVE"
     Given the secret does not exist or is not "ACTIVE"
     When a secret rotation occurs and Secrets Manager delivers a "ROTATED" event to the bus
     Then the operation is rejected
 
-  @standard @negative @rotate_secret_event_delivered @internal
+  @guard @negative @rotate_secret_event_delivered @internal
   Scenario: a secret rotation occurs and Secrets Manager delivers a "ROTATED" event to the bus fails when the bus is "DELETED"
     Given the secret exists and is "ACTIVE"
     And the bus is "DELETED"
     When a secret rotation occurs and Secrets Manager delivers a "ROTATED" event to the bus
     Then the operation is rejected
 
-  @standard @negative @rotate_secret_event_delivered @internal
+  @guard @negative @rotate_secret_event_delivered @internal
   Scenario: a secret rotation occurs and Secrets Manager delivers a "ROTATED" event to the bus fails when no event slot is available
     Given the secret exists and is "ACTIVE"
     And the bus is "ACTIVE"

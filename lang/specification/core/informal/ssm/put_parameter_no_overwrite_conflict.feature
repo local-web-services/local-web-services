@@ -18,13 +18,13 @@ Feature: Ssm - A Parameter Is Written Without Overwrite When It Already Exists
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
-  @standard @negative @put_parameter_no_overwrite_conflict
+  @guard @negative @put_parameter_no_overwrite_conflict
   Scenario: a parameter is written without overwrite when it already exists fails when the parameter does not exist
     Given the parameter does not exist
     When a parameter is written without overwrite when it already exists
     Then the operation is rejected
 
-  @standard @negative @put_parameter_no_overwrite_conflict
+  @guard @negative @put_parameter_no_overwrite_conflict
   Scenario: a parameter is written without overwrite when it already exists fails when the parameter is not active
     Given the parameter exists
     And the parameter is not active

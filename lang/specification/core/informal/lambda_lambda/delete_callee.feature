@@ -16,13 +16,13 @@ Feature: LambdaLambda - The Callee Lambda Function Is Deleted
     And every "IN_PROGRESS" invocation references an "ACTIVE" caller function
     And every successful invocation recorded which callee was invoked
 
-  @standard @negative @delete_callee
+  @guard @negative @delete_callee
   Scenario: the callee Lambda function is deleted fails when the callee does not exist
     Given the callee does not exist
     When the callee Lambda function is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_callee @lifecycle
+  @guard @negative @delete_callee @lifecycle
   Scenario: the callee Lambda function is deleted fails when the callee is already "DELETED"
     Given the callee exists
     And the callee is already "DELETED"

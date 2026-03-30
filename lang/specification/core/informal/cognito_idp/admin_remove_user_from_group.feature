@@ -23,20 +23,20 @@ Feature: CognitoIdp - An Admin Removes A User From A Group
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @admin_remove_user_from_group
+  @guard @negative @admin_remove_user_from_group
   Scenario: an admin removes a user from a group fails when the user does not exist
     Given the user does not exist
     When an admin removes a user from a group
     Then the operation is rejected
 
-  @standard @negative @admin_remove_user_from_group
+  @guard @negative @admin_remove_user_from_group
   Scenario: an admin removes a user from a group fails when the user is "DELETED"
     Given the user exists
     And the user is "DELETED"
     When an admin removes a user from a group
     Then the operation is rejected
 
-  @standard @negative @admin_remove_user_from_group
+  @guard @negative @admin_remove_user_from_group
   Scenario: an admin removes a user from a group fails when the group does not exist
     Given the user exists
     And the user is not "DELETED"
@@ -44,7 +44,7 @@ Feature: CognitoIdp - An Admin Removes A User From A Group
     When an admin removes a user from a group
     Then the operation is rejected
 
-  @standard @negative @admin_remove_user_from_group
+  @guard @negative @admin_remove_user_from_group
   Scenario: an admin removes a user from a group fails when the group is not "ACTIVE"
     Given the user exists
     And the user is not "DELETED"

@@ -22,20 +22,20 @@ Feature: Apigateway - A Dev Stage Is Created For An Api
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @create_stage_dev
+  @guard @negative @create_stage_dev
   Scenario: a dev stage is created for an "API" fails when the deployment does not exist
     Given the deployment does not exist
     When a dev stage is created for an "API"
     Then the operation is rejected
 
-  @standard @negative @create_stage_dev @lifecycle
+  @guard @negative @create_stage_dev @lifecycle
   Scenario: a dev stage is created for an "API" fails when the deployment is not "ACTIVE"
     Given the deployment exists
     And the deployment is not "ACTIVE"
     When a dev stage is created for an "API"
     Then the operation is rejected
 
-  @standard @negative @create_stage_dev
+  @guard @negative @create_stage_dev
   Scenario: a dev stage is created for an "API" fails when the dev stage already exists for this "API"
     Given the deployment exists
     And the deployment is "ACTIVE"

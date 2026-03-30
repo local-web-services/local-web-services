@@ -15,7 +15,7 @@ Feature: LambdaS3api - An S3 Bucket Is Created
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing object belongs to an "ACTIVE" bucket
 
-  @standard @negative @create_bucket
+  @guard @negative @create_bucket
   Scenario: an S3 bucket is created fails when the bucket already exists
     Given the bucket already exists
     When an S3 bucket is created

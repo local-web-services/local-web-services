@@ -17,20 +17,20 @@ Feature: LambdaGlacier - The Lambda Function Uploads An Archive To An Existing V
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing archive references a vault that exists
 
-  @standard @negative @upload_archive_task @internal
+  @guard @negative @upload_archive_task @internal
   Scenario: the Lambda function uploads an archive to an existing vault and succeeds fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda function uploads an archive to an existing vault and succeeds
     Then the operation is rejected
 
-  @standard @negative @upload_archive_task @internal
+  @guard @negative @upload_archive_task @internal
   Scenario: the Lambda function uploads an archive to an existing vault and succeeds fails when the vault does not exist or is "DELETED"
     Given an invocation is "IN_PROGRESS"
     And the vault does not exist or is "DELETED"
     When the Lambda function uploads an archive to an existing vault and succeeds
     Then the operation is rejected
 
-  @standard @negative @upload_archive_task @internal
+  @guard @negative @upload_archive_task @internal
   Scenario: the Lambda function uploads an archive to an existing vault and succeeds fails when no archive slot is available
     Given an invocation is "IN_PROGRESS"
     And the vault "EXISTS"

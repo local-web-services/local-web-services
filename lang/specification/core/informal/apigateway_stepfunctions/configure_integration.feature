@@ -20,20 +20,20 @@ Feature: ApigatewayStepfunctions - A Step Functions Direct Integration Is Config
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every "RUNNING" execution has a corresponding "IN_PROGRESS" request
 
-  @standard @negative @configure_integration
+  @guard @negative @configure_integration
   Scenario: a Step Functions direct integration is configured on the "REST" "API" fails when the "API" does not exist
     Given the "API" does not exist
     When a Step Functions direct integration is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_integration @lifecycle
+  @guard @negative @configure_integration @lifecycle
   Scenario: a Step Functions direct integration is configured on the "REST" "API" fails when the "API" is not "ACTIVE"
     Given the "API" exists
     And the "API" is not "ACTIVE"
     When a Step Functions direct integration is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_integration
+  @guard @negative @configure_integration
   Scenario: a Step Functions direct integration is configured on the "REST" "API" fails when the "API" already has an integration configured
     Given the "API" exists
     And the "API" is "ACTIVE"
@@ -41,7 +41,7 @@ Feature: ApigatewayStepfunctions - A Step Functions Direct Integration Is Config
     When a Step Functions direct integration is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_integration
+  @guard @negative @configure_integration
   Scenario: a Step Functions direct integration is configured on the "REST" "API" fails when the state machine does not exist
     Given the "API" exists
     And the "API" is "ACTIVE"
@@ -50,7 +50,7 @@ Feature: ApigatewayStepfunctions - A Step Functions Direct Integration Is Config
     When a Step Functions direct integration is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_integration @lifecycle
+  @guard @negative @configure_integration @lifecycle
   Scenario: a Step Functions direct integration is configured on the "REST" "API" fails when the state machine is not "ACTIVE"
     Given the "API" exists
     And the "API" is "ACTIVE"

@@ -16,7 +16,7 @@ Feature: SnsSqs - An Sqs Queue Is Created
     And every "AVAILABLE" message belongs to an "ACTIVE" queue
     And a message can only be delivered if a confirmed subscription exists for the topic
 
-  @standard @negative @create_queue
+  @guard @negative @create_queue
   Scenario: an "SQS" queue is created fails when the queue already exists
     Given the queue already exists
     When an "SQS" queue is created

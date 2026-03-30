@@ -17,20 +17,20 @@ Feature: LambdaDocdb - The Lambda Function Writes A Document To The Available Do
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing document references a cluster that exists
 
-  @standard @negative @write_document @internal
+  @guard @negative @write_document @internal
   Scenario: the Lambda function writes a document to the "AVAILABLE" DocumentDB cluster and succeeds fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda function writes a document to the "AVAILABLE" DocumentDB cluster and succeeds
     Then the operation is rejected
 
-  @standard @negative @write_document @internal
+  @guard @negative @write_document @internal
   Scenario: the Lambda function writes a document to the "AVAILABLE" DocumentDB cluster and succeeds fails when the cluster is not "AVAILABLE"
     Given an invocation is "IN_PROGRESS"
     And the cluster is not "AVAILABLE"
     When the Lambda function writes a document to the "AVAILABLE" DocumentDB cluster and succeeds
     Then the operation is rejected
 
-  @standard @negative @write_document @internal
+  @guard @negative @write_document @internal
   Scenario: the Lambda function writes a document to the "AVAILABLE" DocumentDB cluster and succeeds fails when no document slot is available
     Given an invocation is "IN_PROGRESS"
     And the cluster is "AVAILABLE"

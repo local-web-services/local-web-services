@@ -21,13 +21,13 @@ Feature: CognitoIdp - A User Responds To An Auth Challenge
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @respond_to_auth_challenge
+  @guard @negative @respond_to_auth_challenge
   Scenario: a user responds to an auth challenge fails when the session does not exist
     Given the session does not exist
     When a user responds to an auth challenge
     Then the operation is rejected
 
-  @standard @negative @respond_to_auth_challenge
+  @guard @negative @respond_to_auth_challenge
   Scenario: a user responds to an auth challenge fails when the session is not "CHALLENGE_REQUIRED"
     Given the session exists
     And the session is not "CHALLENGE_REQUIRED"

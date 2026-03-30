@@ -21,20 +21,20 @@ Feature: Dynamodb - Items Are Queried From The Table By Key
     And items only exist in non-deleted tables
     And deleted tables are never the target of a pending transaction
 
-  @standard @negative @query
+  @guard @negative @query
   Scenario: items are queried from the table by key fails when the table does not exist
     Given the table does not exist
     When items are queried from the table by key
     Then the operation is rejected
 
-  @standard @negative @query @lifecycle
+  @guard @negative @query @lifecycle
   Scenario: items are queried from the table by key fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"
     When items are queried from the table by key
     Then the operation is rejected
 
-  @standard @negative @query @capacity
+  @guard @negative @query @capacity
   Scenario: items are queried from the table by key fails when reads are throttled
     Given the table exists
     And the table is "ACTIVE"

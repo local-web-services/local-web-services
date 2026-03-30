@@ -16,13 +16,13 @@ Feature: StepfunctionsElasticache - A Running Execution Fails To Connect Because
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it read
 
-  @standard @negative @read_cache_task_fails @internal
+  @guard @negative @read_cache_task_fails @internal
   Scenario: a running execution fails to connect because the cluster is being modified fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution fails to connect because the cluster is being modified
     Then the operation is rejected
 
-  @standard @negative @read_cache_task_fails @internal
+  @guard @negative @read_cache_task_fails @internal
   Scenario: a running execution fails to connect because the cluster is being modified fails when the cluster is not "MODIFYING"
     Given an execution is "RUNNING"
     And the cluster is not "MODIFYING"

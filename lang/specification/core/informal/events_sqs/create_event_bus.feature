@@ -15,7 +15,7 @@ Feature: EventsSqs - An Eventbridge Event Bus Is Created
     And every "ENABLED" rule references an "ACTIVE" event bus
     And every "AVAILABLE" message belongs to an "ACTIVE" queue
 
-  @standard @negative @create_event_bus
+  @guard @negative @create_event_bus
   Scenario: an EventBridge event bus is created fails when the event bus already exists
     Given the event bus already exists
     When an EventBridge event bus is created

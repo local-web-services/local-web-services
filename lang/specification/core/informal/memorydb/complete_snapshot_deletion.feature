@@ -19,13 +19,13 @@ Feature: Memorydb - A Snapshot Deletion Completes
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @complete_snapshot_deletion @internal
+  @guard @negative @complete_snapshot_deletion @internal
   Scenario: a snapshot deletion completes fails when the snapshot does not exist
     Given the snapshot does not exist
     When a snapshot deletion completes
     Then the operation is rejected
 
-  @standard @negative @complete_snapshot_deletion @internal
+  @guard @negative @complete_snapshot_deletion @internal
   Scenario: a snapshot deletion completes fails when the snapshot is not "DELETING"
     Given the snapshot exists
     And the snapshot is not "DELETING"

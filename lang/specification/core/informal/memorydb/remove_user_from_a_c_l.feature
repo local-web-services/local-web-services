@@ -21,20 +21,20 @@ Feature: Memorydb - A User Is Removed From An Acl
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @remove_user_from_a_c_l
+  @guard @negative @remove_user_from_a_c_l
   Scenario: a user is removed from an "ACL" fails when the "ACL" does not exist
     Given the "ACL" does not exist
     When a user is removed from an "ACL"
     Then the operation is rejected
 
-  @standard @negative @remove_user_from_a_c_l @lifecycle
+  @guard @negative @remove_user_from_a_c_l @lifecycle
   Scenario: a user is removed from an "ACL" fails when the "ACL" is not "ACTIVE"
     Given the "ACL" exists
     And the "ACL" is not "ACTIVE"
     When a user is removed from an "ACL"
     Then the operation is rejected
 
-  @standard @negative @remove_user_from_a_c_l
+  @guard @negative @remove_user_from_a_c_l
   Scenario: a user is removed from an "ACL" fails when the user membership entry does not exist
     Given the "ACL" exists
     And the "ACL" is "ACTIVE"
@@ -42,7 +42,7 @@ Feature: Memorydb - A User Is Removed From An Acl
     When a user is removed from an "ACL"
     Then the operation is rejected
 
-  @standard @negative @remove_user_from_a_c_l
+  @guard @negative @remove_user_from_a_c_l
   Scenario: a user is removed from an "ACL" fails when the user is not a member of the "ACL"
     Given the "ACL" exists
     And the "ACL" is "ACTIVE"

@@ -17,7 +17,7 @@ Feature: Opensearch - A Search Domain Is Created
     And an outbound connection that is "ACTIVE" cannot have a "REJECTED" inbound connection
     And a pending config change only exists on a domain that is "PROCESSING"
 
-  @standard @negative @create_domain
+  @guard @negative @create_domain
   Scenario: a search domain is created fails when the domain already exists
     Given the domain already exists
     When a search domain is created

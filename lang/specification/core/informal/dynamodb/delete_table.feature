@@ -20,13 +20,13 @@ Feature: Dynamodb - A Table Is Deleted
     And items only exist in non-deleted tables
     And deleted tables are never the target of a pending transaction
 
-  @standard @negative @delete_table
+  @guard @negative @delete_table
   Scenario: a table is deleted fails when the table does not exist
     Given the table does not exist
     When a table is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_table @lifecycle
+  @guard @negative @delete_table @lifecycle
   Scenario: a table is deleted fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"

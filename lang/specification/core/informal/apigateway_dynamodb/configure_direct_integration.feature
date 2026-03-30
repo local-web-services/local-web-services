@@ -17,20 +17,20 @@ Feature: ApigatewayDynamodb - A Direct Dynamodb Integration Is Configured On The
     And every existing item references a table that exists
     And every successful request references an "API" that exists
 
-  @standard @negative @configure_direct_integration
+  @guard @negative @configure_direct_integration
   Scenario: a direct DynamoDB integration is configured on the "API" fails when the "API" does not exist or is not "ACTIVE"
     Given the "API" does not exist or is not "ACTIVE"
     When a direct DynamoDB integration is configured on the "API"
     Then the operation is rejected
 
-  @standard @negative @configure_direct_integration
+  @guard @negative @configure_direct_integration
   Scenario: a direct DynamoDB integration is configured on the "API" fails when the "API" already has a DynamoDB integration configured
     Given the "API" exists and is "ACTIVE"
     And the "API" already has a DynamoDB integration configured
     When a direct DynamoDB integration is configured on the "API"
     Then the operation is rejected
 
-  @standard @negative @configure_direct_integration
+  @guard @negative @configure_direct_integration
   Scenario: a direct DynamoDB integration is configured on the "API" fails when the table does not exist or is not "ACTIVE"
     Given the "API" exists and is "ACTIVE"
     And the "API" has no DynamoDB integration configured

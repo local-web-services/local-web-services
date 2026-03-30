@@ -18,20 +18,20 @@ Feature: LambdaOpensearch - An Index Is Created In The Opensearch Domain
     And every indexed document belongs to an existing index
     And every existing index belongs to an "ACTIVE" domain
 
-  @standard @negative @create_index
+  @guard @negative @create_index
   Scenario: an index is created in the OpenSearch domain fails when the domain does not exist
     Given the domain does not exist
     When an index is created in the OpenSearch domain
     Then the operation is rejected
 
-  @standard @negative @create_index @lifecycle
+  @guard @negative @create_index @lifecycle
   Scenario: an index is created in the OpenSearch domain fails when the domain is not "ACTIVE"
     Given the domain exists
     And the domain is not "ACTIVE"
     When an index is created in the OpenSearch domain
     Then the operation is rejected
 
-  @standard @negative @create_index
+  @guard @negative @create_index
   Scenario: an index is created in the OpenSearch domain fails when the index already exists
     Given the domain exists
     And the domain is "ACTIVE"

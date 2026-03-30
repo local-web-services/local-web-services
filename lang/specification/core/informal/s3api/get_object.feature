@@ -20,20 +20,20 @@ Feature: S3api - An Object Is Retrieved From A Bucket
     And every multipart upload has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
     And deleting a bucket requires it to be empty
 
-  @standard @negative @get_object
+  @guard @negative @get_object
   Scenario: an object is retrieved from a bucket fails when the bucket does not exist
     Given the bucket does not exist
     When an object is retrieved from a bucket
     Then the operation is rejected
 
-  @standard @negative @get_object @lifecycle
+  @guard @negative @get_object @lifecycle
   Scenario: an object is retrieved from a bucket fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"
     When an object is retrieved from a bucket
     Then the operation is rejected
 
-  @standard @negative @get_object
+  @guard @negative @get_object
   Scenario: an object is retrieved from a bucket fails when the object does not exist in the bucket
     Given the bucket exists
     And the bucket is "ACTIVE"
@@ -41,7 +41,7 @@ Feature: S3api - An Object Is Retrieved From A Bucket
     When an object is retrieved from a bucket
     Then the operation is rejected
 
-  @standard @negative @get_object
+  @guard @negative @get_object
   Scenario: an object is retrieved from a bucket fails when the object is deleted
     Given the bucket exists
     And the bucket is "ACTIVE"

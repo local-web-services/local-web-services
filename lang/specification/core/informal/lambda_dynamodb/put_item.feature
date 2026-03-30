@@ -18,20 +18,20 @@ Feature: LambdaDynamodb - The Lambda Function Writes An Item To The Dynamodb Tab
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing item belongs to an "ACTIVE" table
 
-  @standard @negative @put_item @lifecycle
+  @guard @negative @put_item @lifecycle
   Scenario: the Lambda function writes an item to the DynamoDB table during invocation fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda function writes an item to the DynamoDB table during invocation
     Then the operation is rejected
 
-  @standard @negative @put_item
+  @guard @negative @put_item
   Scenario: the Lambda function writes an item to the DynamoDB table during invocation fails when the table does not exist
     Given an invocation is "IN_PROGRESS"
     And the table does not exist
     When the Lambda function writes an item to the DynamoDB table during invocation
     Then the operation is rejected
 
-  @standard @negative @put_item @lifecycle
+  @guard @negative @put_item @lifecycle
   Scenario: the Lambda function writes an item to the DynamoDB table during invocation fails when the table is not "ACTIVE"
     Given an invocation is "IN_PROGRESS"
     And the table exists
@@ -39,7 +39,7 @@ Feature: LambdaDynamodb - The Lambda Function Writes An Item To The Dynamodb Tab
     When the Lambda function writes an item to the DynamoDB table during invocation
     Then the operation is rejected
 
-  @standard @negative @put_item @capacity
+  @guard @negative @internal @put_item @capacity
   Scenario: the Lambda function writes an item to the DynamoDB table during invocation fails when no item slot is available
     Given an invocation is "IN_PROGRESS"
     And the table exists

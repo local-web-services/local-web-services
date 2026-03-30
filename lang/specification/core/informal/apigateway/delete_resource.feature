@@ -23,20 +23,20 @@ Feature: Apigateway - A Non-Root Resource Is Deleted Along With Its Methods And 
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @delete_resource
+  @guard @negative @delete_resource
   Scenario: a non-root resource is deleted along with its methods and integrations fails when the resource does not exist
     Given the resource does not exist
     When a non-root resource is deleted along with its methods and integrations
     Then the operation is rejected
 
-  @standard @negative @delete_resource @lifecycle
+  @guard @negative @delete_resource @lifecycle
   Scenario: a non-root resource is deleted along with its methods and integrations fails when the resource is not "ACTIVE"
     Given the resource exists
     And the resource is not "ACTIVE"
     When a non-root resource is deleted along with its methods and integrations
     Then the operation is rejected
 
-  @standard @negative @delete_resource
+  @guard @negative @delete_resource
   Scenario: a non-root resource is deleted along with its methods and integrations fails when the resource does not have a path
     Given the resource exists
     And the resource is "ACTIVE"
@@ -44,7 +44,7 @@ Feature: Apigateway - A Non-Root Resource Is Deleted Along With Its Methods And 
     When a non-root resource is deleted along with its methods and integrations
     Then the operation is rejected
 
-  @standard @negative @delete_resource
+  @guard @negative @delete_resource
   Scenario: a non-root resource is deleted along with its methods and integrations fails when the resource is the root resource
     Given the resource exists
     And the resource is "ACTIVE"

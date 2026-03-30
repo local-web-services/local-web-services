@@ -21,13 +21,13 @@ Feature: CognitoIdp - A User Is Deleted By An Admin
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @admin_delete_user
+  @guard @negative @admin_delete_user
   Scenario: a user is deleted by an admin fails when the user does not exist
     Given the user does not exist
     When a user is deleted by an admin
     Then the operation is rejected
 
-  @standard @negative @admin_delete_user
+  @guard @negative @admin_delete_user
   Scenario: a user is deleted by an admin fails when the user is already "DELETED"
     Given the user exists
     And the user is already "DELETED"

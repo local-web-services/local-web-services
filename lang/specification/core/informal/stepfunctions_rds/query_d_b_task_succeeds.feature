@@ -16,13 +16,13 @@ Feature: StepfunctionsRds - A Running Execution Queries The Available Db Instanc
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which "DB" instance it queried
 
-  @standard @negative @query_d_b_task_succeeds @internal
+  @guard @negative @query_d_b_task_succeeds @internal
   Scenario: a running execution queries the "AVAILABLE" "DB" instance and the task succeeds fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution queries the "AVAILABLE" "DB" instance and the task succeeds
     Then the operation is rejected
 
-  @standard @negative @query_d_b_task_succeeds @internal
+  @guard @negative @query_d_b_task_succeeds @internal
   Scenario: a running execution queries the "AVAILABLE" "DB" instance and the task succeeds fails when the "DB" instance is not "AVAILABLE"
     Given an execution is "RUNNING"
     And the "DB" instance is not "AVAILABLE"

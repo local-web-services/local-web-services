@@ -21,13 +21,13 @@ Feature: Apigateway - A Rest Api Is Created With A Root Resource
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @create_rest_api
+  @guard @negative @create_rest_api
   Scenario: a "REST" "API" is created with a root resource fails when the "API" already exists
     Given the "API" already exists
     When a "REST" "API" is created with a root resource
     Then the operation is rejected
 
-  @standard @negative @create_rest_api @capacity
+  @guard @negative @internal @create_rest_api @capacity
   Scenario: a "REST" "API" is created with a root resource fails when no resource slot is available
     Given the "API" does not already exist
     And no resource slot is available

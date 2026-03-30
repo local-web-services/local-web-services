@@ -15,7 +15,7 @@ Feature: SecretsmanagerLambda - A Lambda Rotation Function Is Deployed
     And every "ROTATING" secret has an "IN_PROGRESS" rotation invocation
     And every successful rotation invocation recorded which secret it rotated
 
-  @standard @negative @deploy_function
+  @guard @negative @deploy_function
   Scenario: a Lambda rotation function is deployed fails when the function already exists
     Given the function already exists
     When a Lambda rotation function is deployed

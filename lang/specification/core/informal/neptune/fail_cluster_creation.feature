@@ -22,13 +22,13 @@ Feature: Neptune - A Database Cluster Creation Fails
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @fail_cluster_creation @internal
+  @guard @negative @fail_cluster_creation @internal
   Scenario: a database cluster creation fails fails when the cluster does not exist
     Given the cluster does not exist
     When a database cluster creation fails
     Then the operation is rejected
 
-  @standard @negative @fail_cluster_creation @internal
+  @guard @negative @fail_cluster_creation @internal
   Scenario: a database cluster creation fails fails when the cluster is not "CREATING"
     Given the cluster exists
     And the cluster is not "CREATING"

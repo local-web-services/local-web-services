@@ -21,13 +21,13 @@ Feature: Apigateway - A 200 Method Response Is Configured
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @put_method_response
+  @guard @negative @put_method_response
   Scenario: a 200 method response is configured fails when the method does not exist
     Given the method does not exist
     When a 200 method response is configured
     Then the operation is rejected
 
-  @standard @negative @put_method_response
+  @guard @negative @put_method_response
   Scenario: a 200 method response is configured fails when the method does not exist
     Given the method exists
     And the method does not exist

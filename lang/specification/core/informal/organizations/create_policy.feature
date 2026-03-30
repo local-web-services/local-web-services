@@ -19,13 +19,13 @@ Feature: Organizations - A Service Control Policy Is Created
     And no active node is a child of a deleted organizational unit
     And every active policy attachment targets an "ACTIVE" node
 
-  @standard @negative @create_policy
+  @guard @negative @create_policy
   Scenario: a service control policy is created fails when the organization does not exist
     Given the organization does not exist
     When a service control policy is created
     Then the operation is rejected
 
-  @standard @negative @create_policy
+  @guard @negative @create_policy
   Scenario: a service control policy is created fails when the policy already exists
     Given the organization exists
     And the policy already exists

@@ -19,13 +19,13 @@ Feature: Stepfunctions - A State Machine Definition Is Validated
     And synchronous executions only run on express state machines
     And every execution belongs to a known state machine
 
-  @standard @negative @validate_state_machine_definition
+  @guard @negative @validate_state_machine_definition
   Scenario: a state machine definition is validated fails when the state machine does not exist
     Given the state machine does not exist
     When a state machine definition is validated
     Then the operation is rejected
 
-  @standard @negative @validate_state_machine_definition @lifecycle
+  @guard @negative @validate_state_machine_definition @lifecycle
   Scenario: a state machine definition is validated fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"

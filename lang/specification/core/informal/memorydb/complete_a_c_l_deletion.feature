@@ -19,13 +19,13 @@ Feature: Memorydb - An Acl Deletion Completes
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @complete_a_c_l_deletion @internal
+  @guard @negative @complete_a_c_l_deletion @internal
   Scenario: an "ACL" deletion completes fails when the "ACL" does not exist
     Given the "ACL" does not exist
     When an "ACL" deletion completes
     Then the operation is rejected
 
-  @standard @negative @complete_a_c_l_deletion @internal
+  @guard @negative @complete_a_c_l_deletion @internal
   Scenario: an "ACL" deletion completes fails when the "ACL" is not "DELETING"
     Given the "ACL" exists
     And the "ACL" is not "DELETING"

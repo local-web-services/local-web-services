@@ -18,7 +18,7 @@ Feature: Memorydb - An Acl Is Created
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @create_a_c_l
+  @guard @negative @create_a_c_l
   Scenario: an "ACL" is created fails when the "ACL" already exists
     Given the "ACL" already exists
     When an "ACL" is created

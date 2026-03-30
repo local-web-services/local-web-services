@@ -21,13 +21,13 @@ Feature: Lambda - An Enabled Event Source Mapping Is Disabled
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @disable_event_source_mapping
+  @guard @negative @disable_event_source_mapping
   Scenario: an enabled event source mapping is disabled fails when the event source mapping does not exist
     Given the event source mapping does not exist
     When an enabled event source mapping is disabled
     Then the operation is rejected
 
-  @standard @negative @disable_event_source_mapping @lifecycle
+  @guard @negative @disable_event_source_mapping @lifecycle
   Scenario: an enabled event source mapping is disabled fails when the mapping is not "ENABLED"
     Given the event source mapping exists
     And the mapping is not "ENABLED"

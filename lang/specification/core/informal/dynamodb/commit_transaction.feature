@@ -21,20 +21,20 @@ Feature: Dynamodb - A Pending Transaction Resolves Non-Deterministically
     And items only exist in non-deleted tables
     And deleted tables are never the target of a pending transaction
 
-  @standard @negative @commit_transaction @internal
+  @guard @negative @commit_transaction @internal
   Scenario: a pending transaction resolves non-deterministically fails when no transaction is "PENDING"
     Given no transaction is "PENDING"
     When a pending transaction resolves non-deterministically
     Then the operation is rejected
 
-  @standard @negative @commit_transaction @internal
+  @guard @negative @commit_transaction @internal
   Scenario: a pending transaction resolves non-deterministically fails when the transaction's table does not exist
     Given a transaction is "PENDING"
     And the transaction's table does not exist
     When a pending transaction resolves non-deterministically
     Then the operation is rejected
 
-  @standard @negative @commit_transaction @internal
+  @guard @negative @commit_transaction @internal
   Scenario: a pending transaction resolves non-deterministically fails when the transaction's table is not "ACTIVE"
     Given a transaction is "PENDING"
     And the transaction's table exists

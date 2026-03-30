@@ -21,13 +21,13 @@ Feature: Apigateway - Throttling Is Enabled For The Dev Stage
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @enable_stage_throttling_dev
+  @guard @negative @enable_stage_throttling_dev
   Scenario: throttling is enabled for the dev stage fails when the dev stage does not exist
     Given the dev stage does not exist
     When throttling is enabled for the dev stage
     Then the operation is rejected
 
-  @standard @negative @enable_stage_throttling_dev @lifecycle
+  @guard @negative @enable_stage_throttling_dev @lifecycle
   Scenario: throttling is enabled for the dev stage fails when the dev stage is not active
     Given the dev stage exists
     And the dev stage is not active

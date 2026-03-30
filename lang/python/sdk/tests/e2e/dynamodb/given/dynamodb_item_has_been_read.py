@@ -1,0 +1,13 @@
+"""Given: an item has been read from the table"""
+
+from __future__ import annotations
+
+from pytest_bdd import given
+
+from ..client import DynamodbTestClient
+
+
+@given("an item has been read from the table")
+def dynamodb_item_has_been_read(lws_session):
+    DynamodbTestClient(lws_session).create_table()
+    DynamodbTestClient(lws_session).put_item()

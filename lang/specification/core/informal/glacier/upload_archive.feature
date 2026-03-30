@@ -20,20 +20,20 @@ Feature: Glacier - An Archive Is Uploaded To A Vault
     And job output is only available for succeeded jobs
     And every archive retrieval job references a non-empty archive "ID"
 
-  @standard @negative @upload_archive
+  @guard @negative @upload_archive
   Scenario: an archive is uploaded to a vault fails when the vault does not exist
     Given the vault does not exist
     When an archive is uploaded to a vault
     Then the operation is rejected
 
-  @standard @negative @upload_archive @lifecycle
+  @guard @negative @upload_archive @lifecycle
   Scenario: an archive is uploaded to a vault fails when the vault is not "ACTIVE"
     Given the vault exists
     And the vault is not "ACTIVE"
     When an archive is uploaded to a vault
     Then the operation is rejected
 
-  @standard @negative @upload_archive
+  @guard @negative @upload_archive
   Scenario: an archive is uploaded to a vault fails when the archive already exists
     Given the vault exists
     And the vault is "ACTIVE"

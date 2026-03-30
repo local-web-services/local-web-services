@@ -15,7 +15,7 @@ Feature: StepfunctionsDocdb - A Step Functions State Machine Is Created
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
-  @standard @negative @create_state_machine
+  @guard @negative @create_state_machine
   Scenario: a Step Functions state machine is created fails when the state machine already exists
     Given the state machine already exists
     When a Step Functions state machine is created

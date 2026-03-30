@@ -21,20 +21,20 @@ Feature: S3api - A Multipart Upload Is Completed
     And every multipart upload has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
     And deleting a bucket requires it to be empty
 
-  @standard @negative @complete_multipart_upload
+  @guard @negative @complete_multipart_upload
   Scenario: a multipart upload is completed fails when the bucket does not exist
     Given the bucket does not exist
     When a multipart upload is completed
     Then the operation is rejected
 
-  @standard @negative @complete_multipart_upload @lifecycle
+  @guard @negative @complete_multipart_upload @lifecycle
   Scenario: a multipart upload is completed fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"
     When a multipart upload is completed
     Then the operation is rejected
 
-  @standard @negative @complete_multipart_upload
+  @guard @negative @complete_multipart_upload
   Scenario: a multipart upload is completed fails when the upload does not exist
     Given the bucket exists
     And the bucket is "ACTIVE"
@@ -42,7 +42,7 @@ Feature: S3api - A Multipart Upload Is Completed
     When a multipart upload is completed
     Then the operation is rejected
 
-  @standard @negative @complete_multipart_upload
+  @guard @negative @complete_multipart_upload
   Scenario: a multipart upload is completed fails when the upload is not "IN_PROGRESS"
     Given the bucket exists
     And the bucket is "ACTIVE"
@@ -51,7 +51,7 @@ Feature: S3api - A Multipart Upload Is Completed
     When a multipart upload is completed
     Then the operation is rejected
 
-  @standard @negative @complete_multipart_upload
+  @guard @negative @complete_multipart_upload
   Scenario: a multipart upload is completed fails when the upload has no parts
     Given the bucket exists
     And the bucket is "ACTIVE"

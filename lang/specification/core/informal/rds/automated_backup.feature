@@ -18,20 +18,20 @@ Feature: Rds - An Automated Backup Runs On An Available Instance
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
 
-  @standard @negative @automated_backup @internal
+  @guard @negative @automated_backup @internal
   Scenario: an automated backup runs on an available instance fails when the database instance does not exist
     Given the database instance does not exist
     When an automated backup runs on an available instance
     Then the operation is rejected
 
-  @standard @negative @automated_backup @internal
+  @guard @negative @automated_backup @internal
   Scenario: an automated backup runs on an available instance fails when the instance is not "AVAILABLE"
     Given the database instance exists
     And the instance is not "AVAILABLE"
     When an automated backup runs on an available instance
     Then the operation is rejected
 
-  @standard @negative @automated_backup @internal
+  @guard @negative @automated_backup @internal
   Scenario: an automated backup runs on an available instance fails when no snapshot slot is available
     Given the database instance exists
     And the instance is "AVAILABLE"

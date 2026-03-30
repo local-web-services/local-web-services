@@ -18,13 +18,13 @@ Feature: Sns - A Delivery Attempt Succeeds
     And every active subscription references an "ACTIVE" topic
     And every delivery retry count is within the allowed limit
 
-  @standard @negative @delivery_succeeds @internal
+  @guard @negative @delivery_succeeds @internal
   Scenario: a delivery attempt succeeds fails when the delivery does not exist
     Given the delivery does not exist
     When a delivery attempt succeeds
     Then the operation is rejected
 
-  @standard @negative @delivery_succeeds @internal
+  @guard @negative @delivery_succeeds @internal
   Scenario: a delivery attempt succeeds fails when the delivery is not "IN_FLIGHT"
     Given the delivery exists
     And the delivery is not "IN_FLIGHT"

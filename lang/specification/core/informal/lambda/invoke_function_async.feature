@@ -22,20 +22,20 @@ Feature: Lambda - A Function Is Invoked Asynchronously
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @invoke_function_async
+  @guard @negative @invoke_function_async
   Scenario: a function is invoked asynchronously fails when the function does not exist
     Given the function does not exist
     When a function is invoked asynchronously
     Then the operation is rejected
 
-  @standard @negative @invoke_function_async @lifecycle
+  @guard @negative @invoke_function_async @lifecycle
   Scenario: a function is invoked asynchronously fails when the function is not "ACTIVE"
     Given the function exists
     And the function is not "ACTIVE"
     When a function is invoked asynchronously
     Then the operation is rejected
 
-  @standard @negative @invoke_function_async @capacity
+  @guard @negative @internal @invoke_function_async @capacity
   Scenario: a function is invoked asynchronously fails when no async slot is available
     Given the function exists
     And the function is "ACTIVE"

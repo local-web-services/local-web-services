@@ -18,7 +18,7 @@ Feature: Organizations - An Organization Is Created
     And no active node is a child of a deleted organizational unit
     And every active policy attachment targets an "ACTIVE" node
 
-  @standard @negative @create_organization
+  @guard @negative @create_organization
   Scenario: an organization is created fails when the organization already exists
     Given the organization already exists
     When an organization is created

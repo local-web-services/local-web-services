@@ -21,13 +21,13 @@ Feature: CognitoIdp - An Admin Updates Attributes For A Confirmed User
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @admin_update_user_attributes
+  @guard @negative @admin_update_user_attributes
   Scenario: an admin updates attributes for a confirmed user fails when the user does not exist
     Given the user does not exist
     When an admin updates attributes for a confirmed user
     Then the operation is rejected
 
-  @standard @negative @admin_update_user_attributes
+  @guard @negative @admin_update_user_attributes
   Scenario: an admin updates attributes for a confirmed user fails when the user is not "CONFIRMED"
     Given the user exists
     And the user is not "CONFIRMED"

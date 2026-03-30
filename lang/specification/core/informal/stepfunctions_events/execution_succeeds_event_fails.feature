@@ -16,13 +16,13 @@ Feature: StepfunctionsEvents - A Running Execution Succeeds But The Succeeded Ev
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every "DELIVERED" event references an execution that exists
 
-  @standard @negative @execution_succeeds_event_fails
+  @guard @negative @execution_succeeds_event_fails
   Scenario: a running execution succeeds but the "SUCCEEDED" event delivery fails because the bus is deleted fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution succeeds but the "SUCCEEDED" event delivery fails because the bus is deleted
     Then the operation is rejected
 
-  @standard @negative @execution_succeeds_event_fails @lifecycle
+  @guard @negative @execution_succeeds_event_fails @lifecycle
   Scenario: a running execution succeeds but the "SUCCEEDED" event delivery fails because the bus is deleted fails when the bus is not "DELETED"
     Given an execution is "RUNNING"
     And the bus is not "DELETED"

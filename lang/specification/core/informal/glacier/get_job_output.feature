@@ -20,20 +20,20 @@ Feature: Glacier - The Output Of A Succeeded Job Is Retrieved
     And job output is only available for succeeded jobs
     And every archive retrieval job references a non-empty archive "ID"
 
-  @standard @negative @get_job_output
+  @guard @negative @get_job_output
   Scenario: the output of a succeeded job is retrieved fails when the job does not exist
     Given the job does not exist
     When the output of a succeeded job is retrieved
     Then the operation is rejected
 
-  @standard @negative @get_job_output @lifecycle
+  @guard @negative @get_job_output @lifecycle
   Scenario: the output of a succeeded job is retrieved fails when the job is not Succeeded
     Given the job exists
     And the job is not Succeeded
     When the output of a succeeded job is retrieved
     Then the operation is rejected
 
-  @standard @negative @get_job_output
+  @guard @negative @internal @get_job_output
   Scenario: the output of a succeeded job is retrieved fails when the job output is not available
     Given the job exists
     And the job is Succeeded

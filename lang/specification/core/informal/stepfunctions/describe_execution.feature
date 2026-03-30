@@ -18,7 +18,7 @@ Feature: Stepfunctions - An Execution Is Described
     And synchronous executions only run on express state machines
     And every execution belongs to a known state machine
 
-  @standard @negative @describe_execution
+  @guard @negative @describe_execution
   Scenario: an execution is described fails when the execution does not exist
     Given the execution does not exist
     When an execution is described

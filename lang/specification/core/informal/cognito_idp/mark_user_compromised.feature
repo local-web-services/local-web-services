@@ -21,13 +21,13 @@ Feature: CognitoIdp - A User Account Is Marked As Compromised
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @mark_user_compromised @internal
+  @guard @negative @mark_user_compromised @internal
   Scenario: a user account is marked as compromised fails when the user does not exist
     Given the user does not exist
     When a user account is marked as compromised
     Then the operation is rejected
 
-  @standard @negative @mark_user_compromised @internal
+  @guard @negative @mark_user_compromised @internal
   Scenario: a user account is marked as compromised fails when the user is not "CONFIRMED"
     Given the user exists
     And the user is not "CONFIRMED"

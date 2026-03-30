@@ -19,13 +19,13 @@ Feature: Stepfunctions - A Running Execution Is Stopped
     And synchronous executions only run on express state machines
     And every execution belongs to a known state machine
 
-  @standard @negative @stop_execution
+  @guard @negative @stop_execution
   Scenario: a running execution is stopped fails when the execution does not exist
     Given the execution does not exist
     When a running execution is stopped
     Then the operation is rejected
 
-  @standard @negative @stop_execution @lifecycle
+  @guard @negative @stop_execution @lifecycle
   Scenario: a running execution is stopped fails when the execution is not "RUNNING"
     Given the execution exists
     And the execution is not "RUNNING"

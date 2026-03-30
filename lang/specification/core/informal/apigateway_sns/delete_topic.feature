@@ -16,13 +16,13 @@ Feature: ApigatewaySns - The Sns Topic Is Deleted
     And every "PUBLISHED" message references a topic that exists
     And every successful request references an "API" that exists
 
-  @standard @negative @delete_topic
+  @guard @negative @delete_topic
   Scenario: the "SNS" topic is deleted fails when the topic does not exist
     Given the topic does not exist
     When the "SNS" topic is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_topic @lifecycle
+  @guard @negative @delete_topic @lifecycle
   Scenario: the "SNS" topic is deleted fails when the topic is already "DELETED"
     Given the topic exists
     And the topic is already "DELETED"

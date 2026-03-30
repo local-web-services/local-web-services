@@ -19,13 +19,13 @@ Feature: Memorydb - A Memorydb Cluster Update Completes
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @complete_cluster_update @internal
+  @guard @negative @complete_cluster_update @internal
   Scenario: a MemoryDB cluster update completes fails when the cluster does not exist
     Given the cluster does not exist
     When a MemoryDB cluster update completes
     Then the operation is rejected
 
-  @standard @negative @complete_cluster_update @internal
+  @guard @negative @complete_cluster_update @internal
   Scenario: a MemoryDB cluster update completes fails when the cluster is not "MODIFYING"
     Given the cluster exists
     And the cluster is not "MODIFYING"

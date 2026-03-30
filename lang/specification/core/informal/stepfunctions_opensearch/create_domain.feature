@@ -15,7 +15,7 @@ Feature: StepfunctionsOpensearch - An Opensearch Domain Is Created And Becomes A
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which domain it called
 
-  @standard @negative @create_domain
+  @guard @negative @create_domain
   Scenario: an OpenSearch domain is created and becomes "ACTIVE" fails when the domain already exists
     Given the domain already exists
     When an OpenSearch domain is created and becomes "ACTIVE"

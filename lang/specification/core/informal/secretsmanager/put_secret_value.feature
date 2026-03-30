@@ -22,13 +22,13 @@ Feature: Secretsmanager - A New Value Is Stored For An Active Secret
     And every deleted secret with an open recovery window can still be restored or expired
     And every active secret has a current version assigned
 
-  @standard @negative @put_secret_value
+  @guard @negative @put_secret_value
   Scenario: a new value is stored for an active secret fails when the secret does not exist
     Given the secret does not exist
     When a new value is stored for an active secret
     Then the operation is rejected
 
-  @standard @negative @put_secret_value @lifecycle
+  @guard @negative @put_secret_value @lifecycle
   Scenario: a new value is stored for an active secret fails when the secret is not "ACTIVE"
     Given the secret exists
     And the secret is not "ACTIVE"

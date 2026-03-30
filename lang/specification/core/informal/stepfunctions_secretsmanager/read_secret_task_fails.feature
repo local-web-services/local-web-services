@@ -16,13 +16,13 @@ Feature: StepfunctionsSecretsmanager - A Running Execution Fails To Read The Sec
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
-  @standard @negative @read_secret_task_fails @internal
+  @guard @negative @read_secret_task_fails @internal
   Scenario: a running execution fails to read the secret because it is pending deletion fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution fails to read the secret because it is pending deletion
     Then the operation is rejected
 
-  @standard @negative @read_secret_task_fails @internal
+  @guard @negative @read_secret_task_fails @internal
   Scenario: a running execution fails to read the secret because it is pending deletion fails when the secret is not pending deletion
     Given an execution is "RUNNING"
     And the secret is not pending deletion

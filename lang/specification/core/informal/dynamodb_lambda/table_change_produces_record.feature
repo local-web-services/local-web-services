@@ -19,20 +19,20 @@ Feature: DynamodbLambda - A Change To The Dynamodb Table Produces A Stream Recor
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "ENABLED" event source mapping references an "ACTIVE" table with streaming enabled
 
-  @standard @negative @table_change_produces_record
+  @guard @negative @table_change_produces_record
   Scenario: a change to the DynamoDB table produces a stream record fails when the table does not exist
     Given the table does not exist
     When a change to the DynamoDB table produces a stream record
     Then the operation is rejected
 
-  @standard @negative @table_change_produces_record @lifecycle
+  @guard @negative @table_change_produces_record @lifecycle
   Scenario: a change to the DynamoDB table produces a stream record fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"
     When a change to the DynamoDB table produces a stream record
     Then the operation is rejected
 
-  @standard @negative @table_change_produces_record
+  @guard @negative @table_change_produces_record
   Scenario: a change to the DynamoDB table produces a stream record fails when the table does not have a stream enabled
     Given the table exists
     And the table is "ACTIVE"
@@ -40,7 +40,7 @@ Feature: DynamodbLambda - A Change To The Dynamodb Table Produces A Stream Recor
     When a change to the DynamoDB table produces a stream record
     Then the operation is rejected
 
-  @standard @negative @table_change_produces_record @capacity
+  @guard @negative @internal @table_change_produces_record @capacity
   Scenario: a change to the DynamoDB table produces a stream record fails when no record slot is available
     Given the table exists
     And the table is "ACTIVE"

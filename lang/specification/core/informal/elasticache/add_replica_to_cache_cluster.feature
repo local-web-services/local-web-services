@@ -20,20 +20,20 @@ Feature: Elasticache - A Replica Is Added To A Replication Group
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @add_replica_to_cache_cluster
+  @guard @negative @add_replica_to_cache_cluster
   Scenario: a replica is added to a replication group fails when the replication group does not exist
     Given the replication group does not exist
     When a replica is added to a replication group
     Then the operation is rejected
 
-  @standard @negative @add_replica_to_cache_cluster @lifecycle
+  @guard @negative @add_replica_to_cache_cluster @lifecycle
   Scenario: a replica is added to a replication group fails when the replication group is not "AVAILABLE"
     Given the replication group exists
     And the replication group is not "AVAILABLE"
     When a replica is added to a replication group
     Then the operation is rejected
 
-  @standard @negative @add_replica_to_cache_cluster
+  @guard @negative @internal @add_replica_to_cache_cluster
   Scenario: a replica is added to a replication group fails when no cluster slot is available
     Given the replication group exists
     And the replication group is "AVAILABLE"

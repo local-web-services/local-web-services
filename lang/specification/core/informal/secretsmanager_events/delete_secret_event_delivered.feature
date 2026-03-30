@@ -17,20 +17,20 @@ Feature: SecretsmanagerEvents - A Secret Is Scheduled For Deletion And Secrets M
     And every "DELIVERED" event references a secret that exists
     And every "DELIVERED" event references a bus that exists
 
-  @standard @negative @delete_secret_event_delivered @internal
+  @guard @negative @delete_secret_event_delivered @internal
   Scenario: a secret is scheduled for deletion and Secrets Manager delivers a "DELETED" event to the bus fails when the secret does not exist or is not "ACTIVE"
     Given the secret does not exist or is not "ACTIVE"
     When a secret is scheduled for deletion and Secrets Manager delivers a "DELETED" event to the bus
     Then the operation is rejected
 
-  @standard @negative @delete_secret_event_delivered @internal
+  @guard @negative @delete_secret_event_delivered @internal
   Scenario: a secret is scheduled for deletion and Secrets Manager delivers a "DELETED" event to the bus fails when the bus is "DELETED"
     Given the secret exists and is "ACTIVE"
     And the bus is "DELETED"
     When a secret is scheduled for deletion and Secrets Manager delivers a "DELETED" event to the bus
     Then the operation is rejected
 
-  @standard @negative @delete_secret_event_delivered @internal
+  @guard @negative @delete_secret_event_delivered @internal
   Scenario: a secret is scheduled for deletion and Secrets Manager delivers a "DELETED" event to the bus fails when no event slot is available
     Given the secret exists and is "ACTIVE"
     And the bus is "ACTIVE"

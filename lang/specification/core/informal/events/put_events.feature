@@ -27,20 +27,20 @@ Feature: Events - Events Are Published To An Event Bus
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @put_events
+  @guard @negative @put_events
   Scenario: events are published to an event bus fails when the event bus does not exist
     Given the event bus does not exist
     When events are published to an event bus
     Then the operation is rejected
 
-  @standard @negative @put_events
+  @guard @negative @put_events
   Scenario: events are published to an event bus fails when the event bus is not "ACTIVE"
     Given the event bus exists
     And the event bus is not "ACTIVE"
     When events are published to an event bus
     Then the operation is rejected
 
-  @standard @negative @put_events
+  @guard @negative @put_events
   Scenario: events are published to an event bus fails when no rule is associated with the event bus
     Given the event bus exists
     And the event bus is "ACTIVE"
@@ -48,7 +48,7 @@ Feature: Events - Events Are Published To An Event Bus
     When events are published to an event bus
     Then the operation is rejected
 
-  @standard @negative @put_events
+  @guard @negative @put_events
   Scenario: events are published to an event bus fails when the rule's event bus does not match
     Given the event bus exists
     And the event bus is "ACTIVE"
@@ -57,7 +57,7 @@ Feature: Events - Events Are Published To An Event Bus
     When events are published to an event bus
     Then the operation is rejected
 
-  @standard @negative @put_events
+  @guard @negative @put_events
   Scenario: events are published to an event bus fails when the rule is not "ENABLED"
     Given the event bus exists
     And the event bus is "ACTIVE"
@@ -67,7 +67,7 @@ Feature: Events - Events Are Published To An Event Bus
     When events are published to an event bus
     Then the operation is rejected
 
-  @standard @negative @put_events
+  @guard @negative @put_events
   Scenario: events are published to an event bus fails when no target is associated with the rule
     Given the event bus exists
     And the event bus is "ACTIVE"
@@ -78,7 +78,7 @@ Feature: Events - Events Are Published To An Event Bus
     When events are published to an event bus
     Then the operation is rejected
 
-  @standard @negative @put_events
+  @guard @negative @put_events
   Scenario: events are published to an event bus fails when the target association is not active
     Given the event bus exists
     And the event bus is "ACTIVE"

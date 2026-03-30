@@ -13,11 +13,13 @@ from lws.providers.apigateway._apigateway_state import (
     _ApiGatewayState,
     _json_response,
     _not_found,
+    apply_stage_patch_op,
 )
+from lws.providers.apigateway._apigateway_v1_authorizers import _ApiGatewayAuthorizerMixin
 from lws.providers.apigateway._apigateway_v1_dispatch import validate_integration_target
 
 
-class ApiGatewayResourceRouter:
+class ApiGatewayResourceRouter(_ApiGatewayAuthorizerMixin):
     """Mixin-style helper that registers resource/method/integration/deployment/stage routes.
 
     Expects ``self._state`` (``_ApiGatewayState``) and ``self.router`` to be set up by
@@ -170,11 +172,27 @@ class ApiGatewayResourceRouter:
         )
         r.add_api_route(
             "/restapis/{rest_api_id}/authorizers/{authorizer_id}",
+            self._update_authorizer,
+            methods=["PATCH"],
+        )
+        r.add_api_route(
+            "/restapis/{rest_api_id}/authorizers/{authorizer_id}",
             self._delete_authorizer,
             methods=["DELETE"],
         )
+        # Deployment delete
+        r.add_api_route(
+            "/restapis/{rest_api_id}/deployments/{deployment_id}",
+            self._delete_deployment,
+            methods=["DELETE"],
+        )
+        # Method update
+        r.add_api_route(
+            "/restapis/{rest_api_id}/resources/{resource_id}/methods/{http_method}",
+            self._update_method,
+            methods=["PATCH"],
+        )
 
-    # -- Resources -----------------------------------------------------------
     async def _get_resources(self, rest_api_id: str) -> Response:
         api = self._res_state.get_rest_api(rest_api_id)
         if api is None:
@@ -220,8 +238,6 @@ class ApiGatewayResourceRouter:
             api.resources.pop(resource_id, None)
         return Response(status_code=202)
 
-    # -- Methods -------------------------------------------------------------
-
     async def _put_method(
         self,
         rest_api_id: str,
@@ -240,6 +256,7 @@ class ApiGatewayResourceRouter:
         method_data = {
             "httpMethod": http_method,
             "authorizationType": body.get("authorizationType", "NONE"),
+            "authorizerId": body.get("authorizerId"),
             "apiKeyRequired": body.get("apiKeyRequired", False),
             "requestParameters": body.get("requestParameters", {}),
         }
@@ -247,15 +264,9 @@ class ApiGatewayResourceRouter:
         return _json_response(method_data, 201)
 
     async def _get_method(self, rest_api_id: str, resource_id: str, http_method: str) -> Response:
-        api = self._res_state.get_rest_api(rest_api_id)
-        if api is None:
-            return _not_found("RestApi", rest_api_id)
-        resource = api.resources.get(resource_id)
-        if resource is None:
-            return _not_found("Resource", resource_id)
-        method = resource["resourceMethods"].get(http_method)
-        if method is None:
-            return _not_found("Method", http_method)
+        method, err = self._resolve_method(rest_api_id, resource_id, http_method)
+        if err is not None:
+            return err
         return _json_response(method)
 
     async def _delete_method(
@@ -267,8 +278,6 @@ class ApiGatewayResourceRouter:
             if resource is not None:
                 resource["resourceMethods"].pop(http_method, None)
         return Response(status_code=204)
-
-    # -- Integrations --------------------------------------------------------
 
     async def _put_integration(
         self,
@@ -303,13 +312,9 @@ class ApiGatewayResourceRouter:
     async def _get_integration(
         self, rest_api_id: str, resource_id: str, http_method: str
     ) -> Response:
-        api = self._res_state.get_rest_api(rest_api_id)
-        if api is None:
-            return _not_found("RestApi", rest_api_id)
-        resource = api.resources.get(resource_id)
-        if resource is None:
-            return _not_found("Resource", resource_id)
-        method = resource["resourceMethods"].get(http_method, {})
+        method, err = self._resolve_method(rest_api_id, resource_id, http_method)
+        if err is not None:
+            return err
         integration = method.get("methodIntegration")
         if integration is None:
             return _not_found("Integration", http_method)
@@ -325,8 +330,6 @@ class ApiGatewayResourceRouter:
                 method = resource["resourceMethods"].get(http_method, {})
                 method.pop("methodIntegration", None)
         return Response(status_code=204)
-
-    # -- Integration responses -----------------------------------------------
 
     async def _put_integration_response(  # pylint: disable=unused-argument
         self,
@@ -353,8 +356,6 @@ class ApiGatewayResourceRouter:
     ) -> Response:
         return _json_response({"statusCode": status_code})
 
-    # -- Method responses ----------------------------------------------------
-
     async def _put_method_response(  # pylint: disable=unused-argument
         self,
         rest_api_id: str,
@@ -379,8 +380,6 @@ class ApiGatewayResourceRouter:
         status_code: str,
     ) -> Response:
         return _json_response({"statusCode": status_code})
-
-    # -- Deployments ---------------------------------------------------------
 
     async def _create_deployment(self, rest_api_id: str, request: Request) -> Response:
         api = self._res_state.get_rest_api(rest_api_id)
@@ -412,24 +411,25 @@ class ApiGatewayResourceRouter:
             return _not_found("Deployment", deployment_id)
         return _json_response(deployment)
 
-    # -- Stages --------------------------------------------------------------
-
     async def _create_stage(self, rest_api_id: str, request: Request) -> Response:
         api = self._res_state.get_rest_api(rest_api_id)
         if api is None:
             return _not_found("RestApi", rest_api_id)
-
         body = await parse_json_body(request)
-        stage_name = body.get("stageName", "")
-        deployment_id = body.get("deploymentId", "")
+        drs = body.get("defaultRouteSettings", {})
         stage = {
-            "stageName": stage_name,
-            "deploymentId": deployment_id,
+            "stageName": body.get("stageName", ""),
+            "deploymentId": body.get("deploymentId", ""),
             "createdDate": time.time(),
             "lastUpdatedDate": time.time(),
             "methodSettings": {},
+            "defaultRouteSettings": {
+                "throttlingBurstLimit": drs.get("throttlingBurstLimit"),
+                "throttlingRateLimit": drs.get("throttlingRateLimit"),
+            },
+            "_request_count": 0,
         }
-        api.stages[stage_name] = stage
+        api.stages[stage["stageName"]] = stage
         return _json_response(stage, 201)
 
     async def _get_stage(self, rest_api_id: str, stage_name: str) -> Response:
@@ -441,13 +441,16 @@ class ApiGatewayResourceRouter:
             return _not_found("Stage", stage_name)
         return _json_response(stage)
 
-    async def _update_stage(self, rest_api_id: str, stage_name: str, _request: Request) -> Response:
+    async def _update_stage(self, rest_api_id: str, stage_name: str, request: Request) -> Response:
         api = self._res_state.get_rest_api(rest_api_id)
         if api is None:
             return _not_found("RestApi", rest_api_id)
         stage = api.stages.get(stage_name)
         if stage is None:
             return _not_found("Stage", stage_name)
+        body = await parse_json_body(request)
+        for op in body.get("patchOperations", []):
+            apply_stage_patch_op(stage, op)
         stage["lastUpdatedDate"] = time.time()
         return _json_response(stage)
 
@@ -457,42 +460,5 @@ class ApiGatewayResourceRouter:
             api.stages.pop(stage_name, None)
         return Response(status_code=202)
 
-    # -- Authorizers ---------------------------------------------------------
-
-    async def _create_authorizer(self, rest_api_id: str, request: Request) -> Response:
-        api = self._res_state.get_rest_api(rest_api_id)
-        if api is None:
-            return _not_found("RestApi", rest_api_id)
-        body = await parse_json_body(request)
-        authorizer_id = str(uuid.uuid4())[:10]
-        authorizer = {
-            "id": authorizer_id,
-            "name": body.get("name", ""),
-            "type": body.get("type", "TOKEN"),
-            "providerARNs": body.get("providerARNs", []),
-            "authorizerUri": body.get("authorizerUri", ""),
-            "identitySource": body.get("identitySource", ""),
-        }
-        api.authorizers[authorizer_id] = authorizer
-        return _json_response(authorizer, 201)
-
-    async def _list_authorizers(self, rest_api_id: str) -> Response:
-        api = self._res_state.get_rest_api(rest_api_id)
-        if api is None:
-            return _not_found("RestApi", rest_api_id)
-        return _json_response({"item": list(api.authorizers.values())})
-
-    async def _get_authorizer(self, rest_api_id: str, authorizer_id: str) -> Response:
-        api = self._res_state.get_rest_api(rest_api_id)
-        if api is None:
-            return _not_found("RestApi", rest_api_id)
-        authorizer = api.authorizers.get(authorizer_id)
-        if authorizer is None:
-            return _not_found("Authorizer", authorizer_id)
-        return _json_response(authorizer)
-
-    async def _delete_authorizer(self, rest_api_id: str, authorizer_id: str) -> Response:
-        api = self._res_state.get_rest_api(rest_api_id)
-        if api is not None:
-            api.authorizers.pop(authorizer_id, None)
-        return Response(status_code=202)
+    # Authorizer, deployment-delete, and method-update handlers are inherited
+    # from _ApiGatewayAuthorizerMixin.

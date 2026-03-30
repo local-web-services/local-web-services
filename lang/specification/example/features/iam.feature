@@ -1,7 +1,7 @@
 @iam @process_order @controlplane
 Feature: IAM enforce mode controls access to AWS operations
 
-  @happy
+  @happy @minimal
   Scenario: Wildcard allow policy permits order processing
     Given an OrderProcessor state machine is running
     And IAM is in enforce mode with identity "test-user" allowed all actions on all resources

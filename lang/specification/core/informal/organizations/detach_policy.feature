@@ -18,7 +18,7 @@ Feature: Organizations - A Policy Is Detached From A Target
     And no active node is a child of a deleted organizational unit
     And every active policy attachment targets an "ACTIVE" node
 
-  @standard @negative @detach_policy
+  @guard @negative @detach_policy
   Scenario: a policy is detached from a target fails when the policy is not attached to the target
     Given the policy is not attached to the target
     When a policy is detached from a target

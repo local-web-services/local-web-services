@@ -19,20 +19,20 @@ Feature: StepfunctionsSns - An Sns Publish Task Is Configured On The State Machi
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every "RUNNING" execution's state machine targets an "ACTIVE" topic
 
-  @standard @negative @configure_s_n_s_task
+  @guard @negative @configure_s_n_s_task
   Scenario: an "SNS" publish task is configured on the state machine fails when the state machine does not exist
     Given the state machine does not exist
     When an "SNS" publish task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_s_n_s_task @lifecycle
+  @guard @negative @configure_s_n_s_task @lifecycle
   Scenario: an "SNS" publish task is configured on the state machine fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"
     When an "SNS" publish task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_s_n_s_task
+  @guard @negative @configure_s_n_s_task
   Scenario: an "SNS" publish task is configured on the state machine fails when the state machine already has an "SNS" task configured
     Given the state machine exists
     And the state machine is "ACTIVE"
@@ -40,7 +40,7 @@ Feature: StepfunctionsSns - An Sns Publish Task Is Configured On The State Machi
     When an "SNS" publish task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_s_n_s_task
+  @guard @negative @configure_s_n_s_task
   Scenario: an "SNS" publish task is configured on the state machine fails when the topic does not exist
     Given the state machine exists
     And the state machine is "ACTIVE"
@@ -49,7 +49,7 @@ Feature: StepfunctionsSns - An Sns Publish Task Is Configured On The State Machi
     When an "SNS" publish task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_s_n_s_task @lifecycle
+  @guard @negative @configure_s_n_s_task @lifecycle
   Scenario: an "SNS" publish task is configured on the state machine fails when the topic is not "ACTIVE"
     Given the state machine exists
     And the state machine is "ACTIVE"

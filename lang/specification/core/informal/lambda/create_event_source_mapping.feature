@@ -22,20 +22,20 @@ Feature: Lambda - An Event Source Mapping Is Created
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @create_event_source_mapping
+  @guard @negative @create_event_source_mapping
   Scenario: an event source mapping is created fails when the event source mapping already exists
     Given the event source mapping already exists
     When an event source mapping is created
     Then the operation is rejected
 
-  @standard @negative @create_event_source_mapping
+  @guard @negative @create_event_source_mapping
   Scenario: an event source mapping is created fails when the function does not exist
     Given the event source mapping does not already exist
     And the function does not exist
     When an event source mapping is created
     Then the operation is rejected
 
-  @standard @negative @create_event_source_mapping @lifecycle
+  @guard @negative @create_event_source_mapping @lifecycle
   Scenario: an event source mapping is created fails when the function is not "ACTIVE"
     Given the event source mapping does not already exist
     And the function exists

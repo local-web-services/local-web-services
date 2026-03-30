@@ -20,20 +20,20 @@ Feature: EventsLambda - An Event Is Published To The Bus And Triggers An Asynchr
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "ENABLED" rule references an "ACTIVE" event bus
 
-  @standard @negative @put_event
+  @guard @negative @put_event
   Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation fails when the event bus does not exist
     Given the event bus does not exist
     When an event is published to the bus and triggers an asynchronous Lambda invocation
     Then the operation is rejected
 
-  @standard @negative @put_event @lifecycle
+  @guard @negative @put_event @lifecycle
   Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation fails when the event bus is not "ACTIVE"
     Given the event bus exists
     And the event bus is not "ACTIVE"
     When an event is published to the bus and triggers an asynchronous Lambda invocation
     Then the operation is rejected
 
-  @standard @negative @put_event @lifecycle
+  @guard @negative @put_event @lifecycle
   Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation fails when no "ENABLED" rule exists on the bus targeting a function
     Given the event bus exists
     And the event bus is "ACTIVE"
@@ -41,7 +41,7 @@ Feature: EventsLambda - An Event Is Published To The Bus And Triggers An Asynchr
     When an event is published to the bus and triggers an asynchronous Lambda invocation
     Then the operation is rejected
 
-  @standard @negative @put_event @lifecycle
+  @guard @negative @put_event @lifecycle
   Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation fails when the target function is not "ACTIVE"
     Given the event bus exists
     And the event bus is "ACTIVE"
@@ -50,7 +50,7 @@ Feature: EventsLambda - An Event Is Published To The Bus And Triggers An Asynchr
     When an event is published to the bus and triggers an asynchronous Lambda invocation
     Then the operation is rejected
 
-  @standard @negative @put_event @capacity
+  @guard @negative @internal @put_event @capacity
   Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation fails when no invocation slot is available
     Given the event bus exists
     And the event bus is "ACTIVE"

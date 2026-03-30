@@ -19,20 +19,20 @@ Feature: Sqs - A Message Is Received From The Queue
     And every in-flight message belongs to an "ACTIVE" queue
     And every message has a non-negative receive count
 
-  @standard @negative @receive_message
+  @guard @negative @receive_message
   Scenario: a message is received from the queue fails when the message does not exist
     Given the message does not exist
     When a message is received from the queue
     Then the operation is rejected
 
-  @standard @negative @receive_message
+  @guard @negative @receive_message
   Scenario: a message is received from the queue fails when the message is not "AVAILABLE"
     Given the message exists
     And the message is not "AVAILABLE"
     When a message is received from the queue
     Then the operation is rejected
 
-  @standard @negative @receive_message
+  @guard @negative @receive_message
   Scenario: a message is received from the queue fails when the message's queue does not exist
     Given the message exists
     And the message is "AVAILABLE"
@@ -40,7 +40,7 @@ Feature: Sqs - A Message Is Received From The Queue
     When a message is received from the queue
     Then the operation is rejected
 
-  @standard @negative @receive_message @lifecycle
+  @guard @negative @receive_message @lifecycle
   Scenario: a message is received from the queue fails when the message's queue is not "ACTIVE"
     Given the message exists
     And the message is "AVAILABLE"

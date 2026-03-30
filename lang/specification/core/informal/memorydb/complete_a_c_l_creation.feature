@@ -19,13 +19,13 @@ Feature: Memorydb - An Acl Finishes Creating
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @complete_a_c_l_creation @internal
+  @guard @negative @complete_a_c_l_creation @internal
   Scenario: an "ACL" finishes creating fails when the "ACL" does not exist
     Given the "ACL" does not exist
     When an "ACL" finishes creating
     Then the operation is rejected
 
-  @standard @negative @complete_a_c_l_creation @internal
+  @guard @negative @complete_a_c_l_creation @internal
   Scenario: an "ACL" finishes creating fails when the "ACL" is not "CREATING"
     Given the "ACL" exists
     And the "ACL" is not "CREATING"

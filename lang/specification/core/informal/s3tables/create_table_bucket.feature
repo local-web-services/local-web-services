@@ -17,7 +17,7 @@ Feature: S3tables - A Table Bucket Is Created
     And snapshot count is never negative
     And schema version is always at least one
 
-  @standard @negative @create_table_bucket
+  @guard @negative @create_table_bucket
   Scenario: a table bucket is created fails when the bucket already exists
     Given the bucket already exists
     When a table bucket is created

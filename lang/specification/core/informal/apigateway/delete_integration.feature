@@ -21,13 +21,13 @@ Feature: Apigateway - An Integration Is Deleted
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @delete_integration
+  @guard @negative @delete_integration
   Scenario: an integration is deleted fails when the integration does not exist
     Given the integration does not exist
     When an integration is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_integration
+  @guard @negative @delete_integration
   Scenario: an integration is deleted fails when the integration does not exist
     Given the integration exists
     And the integration does not exist

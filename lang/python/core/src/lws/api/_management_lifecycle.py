@@ -52,6 +52,7 @@ def _serialize_lifecycle(cfg: ResourceLifecycleConfig) -> dict[str, Any]:
         "enabled": cfg.enabled,
         "create_dwell_ms": cfg.create_dwell_ms,
         "delete_dwell_ms": cfg.delete_dwell_ms,
+        "modify_dwell_ms": cfg.modify_dwell_ms,
     }
 
 
@@ -63,3 +64,5 @@ def _apply_lifecycle_overrides(cfg: ResourceLifecycleConfig, overrides: dict[str
         cfg.create_dwell_ms = int(overrides["create_dwell_ms"])
     if "delete_dwell_ms" in overrides:
         cfg.delete_dwell_ms = int(overrides["delete_dwell_ms"])
+    if "modify_dwell_ms" in overrides:
+        cfg.modify_dwell_ms = int(overrides["modify_dwell_ms"])

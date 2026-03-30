@@ -19,13 +19,13 @@ Feature: Stepfunctions - Tags Are Added To A State Machine
     And synchronous executions only run on express state machines
     And every execution belongs to a known state machine
 
-  @standard @negative @tag_resource
+  @guard @negative @tag_resource
   Scenario: tags are added to a state machine fails when the state machine does not exist
     Given the state machine does not exist
     When tags are added to a state machine
     Then the operation is rejected
 
-  @standard @negative @tag_resource @lifecycle
+  @guard @negative @tag_resource @lifecycle
   Scenario: tags are added to a state machine fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"

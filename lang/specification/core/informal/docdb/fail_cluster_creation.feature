@@ -21,13 +21,13 @@ Feature: Docdb - A Database Cluster Creation Fails
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @fail_cluster_creation @internal
+  @guard @negative @fail_cluster_creation @internal
   Scenario: a database cluster creation fails fails when the cluster does not exist
     Given the cluster does not exist
     When a database cluster creation fails
     Then the operation is rejected
 
-  @standard @negative @fail_cluster_creation @internal
+  @guard @negative @fail_cluster_creation @internal
   Scenario: a database cluster creation fails fails when the cluster is not "CREATING"
     Given the cluster exists
     And the cluster is not "CREATING"

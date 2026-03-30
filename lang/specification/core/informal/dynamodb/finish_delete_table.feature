@@ -20,13 +20,13 @@ Feature: Dynamodb - A Table Deletion Completes
     And items only exist in non-deleted tables
     And deleted tables are never the target of a pending transaction
 
-  @standard @negative @finish_delete_table @internal
+  @guard @negative @finish_delete_table @internal
   Scenario: a table deletion completes fails when the table does not exist
     Given the table does not exist
     When a table deletion completes
     Then the operation is rejected
 
-  @standard @negative @finish_delete_table @internal
+  @guard @negative @finish_delete_table @internal
   Scenario: a table deletion completes fails when the table is not "DELETING"
     Given the table exists
     And the table is not "DELETING"

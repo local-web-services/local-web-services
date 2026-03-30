@@ -21,13 +21,13 @@ Feature: Apigateway - The Prod Stage Is Deleted
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @delete_stage_prod
+  @guard @negative @delete_stage_prod
   Scenario: the prod stage is deleted fails when the prod stage does not exist
     Given the prod stage does not exist
     When the prod stage is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_stage_prod @lifecycle
+  @guard @negative @delete_stage_prod @lifecycle
   Scenario: the prod stage is deleted fails when the prod stage is not active
     Given the prod stage exists
     And the prod stage is not active

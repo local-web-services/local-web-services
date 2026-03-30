@@ -19,13 +19,13 @@ Feature: Elasticache - A Cache Subnet Group Is Deleted
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @delete_cache_subnet_group
+  @guard @negative @delete_cache_subnet_group
   Scenario: a cache subnet group is deleted fails when the subnet group does not exist
     Given the subnet group does not exist
     When a cache subnet group is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_cache_subnet_group
+  @guard @negative @delete_cache_subnet_group
   Scenario: a cache subnet group is deleted fails when the subnet group is not present
     Given the subnet group exists
     And the subnet group is not present

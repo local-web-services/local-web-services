@@ -17,20 +17,20 @@ Feature: StepfunctionsEvents - A Running Execution Succeeds And Step Functions D
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every "DELIVERED" event references an execution that exists
 
-  @standard @negative @execution_succeeds_event_delivered
+  @guard @negative @execution_succeeds_event_delivered
   Scenario: a running execution succeeds and Step Functions delivers a "SUCCEEDED" event to the bus fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution succeeds and Step Functions delivers a "SUCCEEDED" event to the bus
     Then the operation is rejected
 
-  @standard @negative @execution_succeeds_event_delivered @lifecycle
+  @guard @negative @execution_succeeds_event_delivered @lifecycle
   Scenario: a running execution succeeds and Step Functions delivers a "SUCCEEDED" event to the bus fails when the bus is "DELETED"
     Given an execution is "RUNNING"
     And the bus is "DELETED"
     When a running execution succeeds and Step Functions delivers a "SUCCEEDED" event to the bus
     Then the operation is rejected
 
-  @standard @negative @execution_succeeds_event_delivered @capacity
+  @guard @negative @internal @execution_succeeds_event_delivered @capacity
   Scenario: a running execution succeeds and Step Functions delivers a "SUCCEEDED" event to the bus fails when no event slot is available
     Given an execution is "RUNNING"
     And the bus is "ACTIVE"

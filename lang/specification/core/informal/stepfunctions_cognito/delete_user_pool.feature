@@ -16,13 +16,13 @@ Feature: StepfunctionsCognito - A Cognito User Pool Is Deleted
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
-  @standard @negative @delete_user_pool
+  @guard @negative @delete_user_pool
   Scenario: a Cognito user pool is deleted fails when the pool does not exist
     Given the pool does not exist
     When a Cognito user pool is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_user_pool @lifecycle
+  @guard @negative @delete_user_pool @lifecycle
   Scenario: a Cognito user pool is deleted fails when the pool is already "DELETED"
     Given the pool exists
     And the pool is already "DELETED"

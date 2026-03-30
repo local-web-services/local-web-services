@@ -21,13 +21,13 @@ Feature: Docdb - A Database Instance Is Deleted
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @delete_d_b_instance
+  @guard @negative @delete_d_b_instance
   Scenario: a database instance is deleted fails when the instance does not exist
     Given the instance does not exist
     When a database instance is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_d_b_instance @lifecycle
+  @guard @negative @delete_d_b_instance @lifecycle
   Scenario: a database instance is deleted fails when the instance is not "AVAILABLE"
     Given the instance exists
     And the instance is not "AVAILABLE"

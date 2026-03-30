@@ -1,0 +1,10 @@
+"""Given: the database instance does not already exist"""
+
+from __future__ import annotations
+
+from pytest_bdd import given
+
+
+@given("the database instance does not already exist")
+def db_instance_not_already_exist():
+    """No-op: fresh state has no DB instances."""

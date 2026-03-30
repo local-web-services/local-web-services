@@ -15,7 +15,7 @@ Feature: StepfunctionsRds - An Rds Db Instance Is Created
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which "DB" instance it queried
 
-  @standard @negative @create_d_b_instance
+  @guard @negative @create_d_b_instance
   Scenario: an "RDS" "DB" instance is created fails when the "DB" instance already exists
     Given the "DB" instance already exists
     When an "RDS" "DB" instance is created

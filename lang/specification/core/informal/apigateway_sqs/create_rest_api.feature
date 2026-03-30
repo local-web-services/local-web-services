@@ -15,7 +15,7 @@ Feature: ApigatewaySqs - A Rest Api Is Created
     And every "ACCEPTED" request references an "ACTIVE" "API"
     And every "AVAILABLE" message belongs to an "ACTIVE" queue
 
-  @standard @negative @create_rest_api
+  @guard @negative @create_rest_api
   Scenario: a "REST" "API" is created fails when the "API" already exists
     Given the "API" already exists
     When a "REST" "API" is created

@@ -22,13 +22,13 @@ Feature: Events - An Event Bus Is Described
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @describe_event_bus
+  @guard @negative @describe_event_bus
   Scenario: an event bus is described fails when the event bus does not exist
     Given the event bus does not exist
     When an event bus is described
     Then the operation is rejected
 
-  @standard @negative @describe_event_bus
+  @guard @negative @describe_event_bus
   Scenario: an event bus is described fails when the event bus is not "ACTIVE"
     Given the event bus exists
     And the event bus is not "ACTIVE"

@@ -26,20 +26,20 @@ Feature: Neptune - A Replica Instance Is Promoted To Primary During Failover
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @promote_replica_to_primary @internal
+  @guard @negative @promote_replica_to_primary @internal
   Scenario: a replica instance is promoted to primary during failover fails when the cluster does not exist
     Given the cluster does not exist
     When a replica instance is promoted to primary during failover
     Then the operation is rejected
 
-  @standard @negative @promote_replica_to_primary @internal
+  @guard @negative @promote_replica_to_primary @internal
   Scenario: a replica instance is promoted to primary during failover fails when the cluster is not "MODIFYING"
     Given the cluster exists
     And the cluster is not "MODIFYING"
     When a replica instance is promoted to primary during failover
     Then the operation is rejected
 
-  @standard @negative @promote_replica_to_primary @internal
+  @guard @negative @promote_replica_to_primary @internal
   Scenario: a replica instance is promoted to primary during failover fails when the new primary instance does not exist
     Given the cluster exists
     And the cluster is "MODIFYING"
@@ -47,7 +47,7 @@ Feature: Neptune - A Replica Instance Is Promoted To Primary During Failover
     When a replica instance is promoted to primary during failover
     Then the operation is rejected
 
-  @standard @negative @promote_replica_to_primary @internal
+  @guard @negative @promote_replica_to_primary @internal
   Scenario: a replica instance is promoted to primary during failover fails when the instance does not belong to this cluster
     Given the cluster exists
     And the cluster is "MODIFYING"
@@ -56,7 +56,7 @@ Feature: Neptune - A Replica Instance Is Promoted To Primary During Failover
     When a replica instance is promoted to primary during failover
     Then the operation is rejected
 
-  @standard @negative @promote_replica_to_primary @internal
+  @guard @negative @promote_replica_to_primary @internal
   Scenario: a replica instance is promoted to primary during failover fails when the instance is already the primary
     Given the cluster exists
     And the cluster is "MODIFYING"
@@ -66,7 +66,7 @@ Feature: Neptune - A Replica Instance Is Promoted To Primary During Failover
     When a replica instance is promoted to primary during failover
     Then the operation is rejected
 
-  @standard @negative @promote_replica_to_primary @internal
+  @guard @negative @promote_replica_to_primary @internal
   Scenario: a replica instance is promoted to primary during failover fails when the instance is not "AVAILABLE"
     Given the cluster exists
     And the cluster is "MODIFYING"

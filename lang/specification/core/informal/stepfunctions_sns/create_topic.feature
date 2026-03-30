@@ -15,7 +15,7 @@ Feature: StepfunctionsSns - An Sns Topic Is Created
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every "RUNNING" execution's state machine targets an "ACTIVE" topic
 
-  @standard @negative @create_topic
+  @guard @negative @create_topic
   Scenario: an "SNS" topic is created fails when the topic already exists
     Given the topic already exists
     When an "SNS" topic is created

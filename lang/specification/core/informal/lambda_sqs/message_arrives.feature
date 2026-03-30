@@ -19,20 +19,20 @@ Feature: LambdaSqs - A Message Arrives In The Sqs Queue
     And every "AVAILABLE" or "IN_FLIGHT" message belongs to an "ACTIVE" queue
     And every "ENABLED" event source mapping references an "ACTIVE" queue
 
-  @standard @negative @message_arrives @internal
+  @guard @negative @message_arrives @internal
   Scenario: a message arrives in the "SQS" queue fails when the queue does not exist
     Given the queue does not exist
     When a message arrives in the "SQS" queue
     Then the operation is rejected
 
-  @standard @negative @message_arrives @internal
+  @guard @negative @message_arrives @internal
   Scenario: a message arrives in the "SQS" queue fails when the queue is not "ACTIVE"
     Given the queue exists
     And the queue is not "ACTIVE"
     When a message arrives in the "SQS" queue
     Then the operation is rejected
 
-  @standard @negative @message_arrives @internal
+  @guard @negative @message_arrives @internal
   Scenario: a message arrives in the "SQS" queue fails when no message slot is available
     Given the queue exists
     And the queue is "ACTIVE"

@@ -19,20 +19,20 @@ Feature: Sns - An Endpoint Subscribes To A Topic
     And every active subscription references an "ACTIVE" topic
     And every delivery retry count is within the allowed limit
 
-  @standard @negative @subscribe
+  @guard @negative @subscribe
   Scenario: an endpoint subscribes to a topic fails when the topic does not exist
     Given the topic does not exist
     When an endpoint subscribes to a topic
     Then the operation is rejected
 
-  @standard @negative @subscribe @lifecycle
+  @guard @negative @subscribe @lifecycle
   Scenario: an endpoint subscribes to a topic fails when the topic is not "ACTIVE"
     Given the topic exists
     And the topic is not "ACTIVE"
     When an endpoint subscribes to a topic
     Then the operation is rejected
 
-  @standard @negative @subscribe @capacity
+  @guard @negative @internal @subscribe @capacity
   Scenario: an endpoint subscribes to a topic fails when the subscription slot is not available
     Given the topic exists
     And the topic is "ACTIVE"

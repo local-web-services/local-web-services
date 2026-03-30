@@ -18,7 +18,7 @@ Feature: Memorydb - A Memorydb Cluster Is Created
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @create_cluster
+  @guard @negative @create_cluster
   Scenario: a MemoryDB cluster is created fails when the cluster already exists
     Given the cluster already exists
     When a MemoryDB cluster is created

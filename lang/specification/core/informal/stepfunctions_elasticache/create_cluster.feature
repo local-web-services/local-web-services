@@ -15,7 +15,7 @@ Feature: StepfunctionsElasticache - An Elasticache Cluster Is Created And Become
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it read
 
-  @standard @negative @create_cluster
+  @guard @negative @create_cluster
   Scenario: an ElastiCache cluster is created and becomes "AVAILABLE" fails when the cluster already exists
     Given the cluster already exists
     When an ElastiCache cluster is created and becomes "AVAILABLE"

@@ -4,8 +4,19 @@ from __future__ import annotations
 
 from typing import Any
 
+from fastapi import Response
+
+from lws.providers._shared.response_helpers import error_response as _error_response
+
 _ACCOUNT_ID = "000000000000"
 _REGION = "us-east-1"
+
+
+def _iso_now() -> str:
+    """Return current UTC time in ISO-8601 format."""
+    import datetime  # pylint: disable=import-outside-toplevel
+
+    return datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
 
 # ------------------------------------------------------------------
@@ -24,11 +35,12 @@ class _DBCluster:
         *,
         config: Any,
         data_plane_endpoint: str | None = None,
+        initial_status: str = "available",
     ) -> None:
         self.db_cluster_identifier = db_cluster_identifier
         self.engine = engine
         self.master_username = master_username
-        self.status = "available"
+        self.status = initial_status
         self.port = config.default_port
         self.arn = (
             f"arn:aws:{config.arn_service}:{_REGION}:{_ACCOUNT_ID}"
@@ -41,6 +53,7 @@ class _DBCluster:
                 f"{db_cluster_identifier}.cluster-local" f".{_REGION}.{config.endpoint_suffix}"
             )
         self.tags: dict[str, str] = {}
+        self.multi_az: bool = False
 
 
 class _DBInstance:
@@ -73,17 +86,69 @@ class _DBInstance:
         self.tags: dict[str, str] = {}
 
 
+class _DBClusterSnapshot:
+    """Represents a cluster snapshot in a cluster-DB service."""
+
+    def __init__(
+        self,
+        snapshot_identifier: str,
+        cluster_identifier: str,
+        engine: str,
+        *,
+        config: Any,
+    ) -> None:
+        self.snapshot_identifier = snapshot_identifier
+        self.cluster_identifier = cluster_identifier
+        self.engine = engine
+        self.status = "available"
+        self.created_date = _iso_now()
+        self.arn = (
+            f"arn:aws:{config.arn_service}:{_REGION}:{_ACCOUNT_ID}"
+            f":cluster-snapshot:{snapshot_identifier}"
+        )
+
+
 class _ClusterDBState:
     """In-memory store for clusters and instances."""
 
     def __init__(self) -> None:
         self.clusters: dict[str, _DBCluster] = {}
         self.instances: dict[str, _DBInstance] = {}
+        self.snapshots: dict[str, _DBClusterSnapshot] = {}
+
+    def reset(self) -> None:
+        """Clear all in-memory state for test isolation."""
+        self.clusters.clear()
+        self.instances.clear()
+        self.snapshots.clear()
 
 
 # ------------------------------------------------------------------
 # Helpers
 # ------------------------------------------------------------------
+
+
+def _cluster_not_found_guard(cid: str, cluster: _DBCluster | None) -> Response | None:
+    """Return an error response if cluster is None, else None."""
+    if cluster is None:
+        return _error_response(
+            "DBClusterNotFoundFault",
+            f"Cluster {cid} not found.",
+        )
+    return None
+
+
+def _cluster_available_guard(cid: str, cluster: _DBCluster | None) -> Response | None:
+    """Return an error response if cluster is None or not in available state."""
+    guard = _cluster_not_found_guard(cid, cluster)
+    if guard is not None:
+        return guard
+    if cluster.status != "available":  # type: ignore[union-attr]
+        return _error_response(
+            "InvalidDBClusterStateFault",
+            f"Cluster {cid} is not in available state.",
+        )
+    return None
 
 
 def _apply_tags(tags: dict[str, str], tag_list: list[dict[str, str]]) -> None:
@@ -118,6 +183,18 @@ def _describe_cluster(cluster: _DBCluster, config: Any) -> dict[str, Any]:
     if cluster.tags:
         result["TagList"] = [{"Key": k, "Value": v} for k, v in cluster.tags.items()]
     return result
+
+
+def _describe_snapshot(snapshot: _DBClusterSnapshot) -> dict[str, Any]:
+    """Format a cluster snapshot for API response."""
+    return {
+        "DBClusterSnapshotIdentifier": snapshot.snapshot_identifier,
+        "DBClusterIdentifier": snapshot.cluster_identifier,
+        "Engine": snapshot.engine,
+        "Status": snapshot.status,
+        "DBClusterSnapshotArn": snapshot.arn,
+        "SnapshotCreateTime": snapshot.created_date,
+    }
 
 
 def _describe_instance(instance: _DBInstance) -> dict[str, Any]:

@@ -16,13 +16,13 @@ Feature: LambdaLambda - The Caller Fails To Invoke The Callee Because The Callee
     And every "IN_PROGRESS" invocation references an "ACTIVE" caller function
     And every successful invocation recorded which callee was invoked
 
-  @standard @negative @callee_invocation_fails @internal
+  @guard @negative @callee_invocation_fails @internal
   Scenario: the caller fails to invoke the callee because the callee has been deleted fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the caller fails to invoke the callee because the callee has been deleted
     Then the operation is rejected
 
-  @standard @negative @callee_invocation_fails @internal
+  @guard @negative @callee_invocation_fails @internal
   Scenario: the caller fails to invoke the callee because the callee has been deleted fails when the callee is not "DELETED"
     Given an invocation is "IN_PROGRESS"
     And the callee is not "DELETED"

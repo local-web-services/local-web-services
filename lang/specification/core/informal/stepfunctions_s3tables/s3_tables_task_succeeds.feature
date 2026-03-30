@@ -16,13 +16,13 @@ Feature: StepfunctionsS3tables - A Running Execution Calls An Active S3 Tables T
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which table it called
 
-  @standard @negative @s3_tables_task_succeeds @internal
+  @guard @negative @s3_tables_task_succeeds @internal
   Scenario: a running execution calls an "ACTIVE" S3 Tables table and the task succeeds fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution calls an "ACTIVE" S3 Tables table and the task succeeds
     Then the operation is rejected
 
-  @standard @negative @s3_tables_task_succeeds @internal
+  @guard @negative @s3_tables_task_succeeds @internal
   Scenario: a running execution calls an "ACTIVE" S3 Tables table and the task succeeds fails when the table does not exist or is "DELETING"
     Given an execution is "RUNNING"
     And the table does not exist or is "DELETING"

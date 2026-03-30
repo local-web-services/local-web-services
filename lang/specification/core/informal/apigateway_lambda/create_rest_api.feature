@@ -16,7 +16,7 @@ Feature: ApigatewayLambda - A Rest Api Is Created
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation has a corresponding "IN_PROGRESS" request
 
-  @standard @negative @create_rest_api
+  @guard @negative @create_rest_api
   Scenario: a "REST" "API" is created fails when the "API" already exists
     Given the "API" already exists
     When a "REST" "API" is created

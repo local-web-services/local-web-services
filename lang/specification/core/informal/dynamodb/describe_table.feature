@@ -20,13 +20,13 @@ Feature: Dynamodb - A Table Is Described
     And items only exist in non-deleted tables
     And deleted tables are never the target of a pending transaction
 
-  @standard @negative @describe_table
+  @guard @negative @describe_table
   Scenario: a table is described fails when the table does not exist
     Given the table does not exist
     When a table is described
     Then the operation is rejected
 
-  @standard @negative @describe_table
+  @guard @negative @describe_table
   Scenario: a table is described fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"

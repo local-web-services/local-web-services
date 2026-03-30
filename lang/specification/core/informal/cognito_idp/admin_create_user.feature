@@ -22,20 +22,20 @@ Feature: CognitoIdp - A User Is Created By An Admin In An Active User Pool
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @admin_create_user
+  @guard @negative @admin_create_user
   Scenario: a user is created by an admin in an active user pool fails when the user pool does not exist
     Given the user pool does not exist
     When a user is created by an admin in an active user pool
     Then the operation is rejected
 
-  @standard @negative @admin_create_user
+  @guard @negative @admin_create_user
   Scenario: a user is created by an admin in an active user pool fails when the user pool is not "ACTIVE"
     Given the user pool exists
     And the user pool is not "ACTIVE"
     When a user is created by an admin in an active user pool
     Then the operation is rejected
 
-  @standard @negative @admin_create_user
+  @guard @negative @admin_create_user
   Scenario: a user is created by an admin in an active user pool fails when the user already exists
     Given the user pool exists
     And the user pool is "ACTIVE"

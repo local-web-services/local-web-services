@@ -21,20 +21,20 @@ Feature: S3tables - An Expired Snapshot Is Removed From A Table
     And snapshot count is never negative
     And schema version is always at least one
 
-  @standard @negative @expire_snapshot
+  @guard @negative @expire_snapshot
   Scenario: an expired snapshot is removed from a table fails when the table does not exist
     Given the table does not exist
     When an expired snapshot is removed from a table
     Then the operation is rejected
 
-  @standard @negative @expire_snapshot @lifecycle
+  @guard @negative @expire_snapshot @lifecycle
   Scenario: an expired snapshot is removed from a table fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"
     When an expired snapshot is removed from a table
     Then the operation is rejected
 
-  @standard @negative @expire_snapshot
+  @guard @negative @expire_snapshot
   Scenario: an expired snapshot is removed from a table fails when the table has one or fewer snapshots
     Given the table exists
     And the table is "ACTIVE"
@@ -42,7 +42,7 @@ Feature: S3tables - An Expired Snapshot Is Removed From A Table
     When an expired snapshot is removed from a table
     Then the operation is rejected
 
-  @standard @negative @expire_snapshot
+  @guard @negative @expire_snapshot
   Scenario: an expired snapshot is removed from a table fails when the snapshot does not exist
     Given the table exists
     And the table is "ACTIVE"
@@ -51,7 +51,7 @@ Feature: S3tables - An Expired Snapshot Is Removed From A Table
     When an expired snapshot is removed from a table
     Then the operation is rejected
 
-  @standard @negative @expire_snapshot
+  @guard @negative @internal @expire_snapshot
   Scenario: an expired snapshot is removed from a table fails when the snapshot is not "ACTIVE"
     Given the table exists
     And the table is "ACTIVE"

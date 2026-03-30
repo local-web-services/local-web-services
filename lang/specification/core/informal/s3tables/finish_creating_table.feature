@@ -18,13 +18,13 @@ Feature: S3tables - A Table Finishes Creating
     And snapshot count is never negative
     And schema version is always at least one
 
-  @standard @negative @finish_creating_table @internal
+  @guard @negative @finish_creating_table @internal
   Scenario: a table finishes creating fails when the table does not exist
     Given the table does not exist
     When a table finishes creating
     Then the operation is rejected
 
-  @standard @negative @finish_creating_table @internal
+  @guard @negative @finish_creating_table @internal
   Scenario: a table finishes creating fails when the table is not "CREATING"
     Given the table exists
     And the table is not "CREATING"

@@ -21,13 +21,13 @@ Feature: Apigateway - Throttling Is Enabled For The Prod Stage
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @enable_stage_throttling_prod
+  @guard @negative @enable_stage_throttling_prod
   Scenario: throttling is enabled for the prod stage fails when the prod stage does not exist
     Given the prod stage does not exist
     When throttling is enabled for the prod stage
     Then the operation is rejected
 
-  @standard @negative @enable_stage_throttling_prod @lifecycle
+  @guard @negative @enable_stage_throttling_prod @lifecycle
   Scenario: throttling is enabled for the prod stage fails when the prod stage is not active
     Given the prod stage exists
     And the prod stage is not active

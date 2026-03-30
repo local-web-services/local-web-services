@@ -15,7 +15,7 @@ Feature: LambdaStepfunctions - A Running Execution Completes Successfully
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "RUNNING" execution references a state machine that exists
 
-  @standard @negative @execution_completes @internal
+  @guard @negative @execution_completes @internal
   Scenario: a running execution completes successfully fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution completes successfully

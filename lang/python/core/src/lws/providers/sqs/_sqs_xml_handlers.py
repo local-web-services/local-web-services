@@ -39,9 +39,9 @@ class _SqsXmlHandlersMixin(_SqsQueueOpsMixin):
     async def _send_message(self, params: dict) -> Response:
         if self._capacity.is_exhausted:  # type: ignore[attr-defined]
             return _error_xml(
-                "ServiceUnavailableException",
+                "OverLimit",
                 "lws: no message slots available",
-                503,
+                400,
             )
         queue_name = _extract_queue_name(params)
         err = self._get_lifecycle_error_xml(queue_name)  # type: ignore[attr-defined]
@@ -218,6 +218,12 @@ class _SqsXmlHandlersMixin(_SqsQueueOpsMixin):
         return _xml_response(xml)
 
     async def _send_message_batch(self, params: dict) -> Response:
+        if self._capacity.is_exhausted:  # type: ignore[attr-defined]
+            return _error_xml(
+                "OverLimit",
+                "lws: no message slots available",
+                400,
+            )
         queue_name = _extract_queue_name(params)
         successful: list[str] = []
         failed: list[str] = []

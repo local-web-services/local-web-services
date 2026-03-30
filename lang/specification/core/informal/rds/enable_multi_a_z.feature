@@ -17,13 +17,13 @@ Feature: Rds - Multi-Az Is Enabled On A Database Instance
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
 
-  @standard @negative @enable_multi_a_z
+  @guard @negative @enable_multi_a_z
   Scenario: multi-"AZ" is enabled on a database instance fails when the database instance does not exist
     Given the database instance does not exist
     When multi-"AZ" is enabled on a database instance
     Then the operation is rejected
 
-  @standard @negative @enable_multi_a_z @lifecycle
+  @guard @negative @enable_multi_a_z @lifecycle
   Scenario: multi-"AZ" is enabled on a database instance fails when the instance is not "AVAILABLE"
     Given the database instance exists
     And the instance is not "AVAILABLE"

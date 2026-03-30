@@ -17,13 +17,13 @@ Feature: Elasticsearch - A Node Failure Occurs In An Active Domain
     And every active tag belongs to an existing non-deleted domain
     And a pending config change only exists on a domain that is "PROCESSING"
 
-  @standard @negative @node_failure @internal
+  @guard @negative @node_failure @internal
   Scenario: a node failure occurs in an active domain fails when the domain does not exist
     Given the domain does not exist
     When a node failure occurs in an active domain
     Then the operation is rejected
 
-  @standard @negative @node_failure @internal
+  @guard @negative @node_failure @internal
   Scenario: a node failure occurs in an active domain fails when the domain is not "ACTIVE"
     Given the domain exists
     And the domain is not "ACTIVE"

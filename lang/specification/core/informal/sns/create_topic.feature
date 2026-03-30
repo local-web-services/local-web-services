@@ -17,7 +17,7 @@ Feature: Sns - An Sns Topic Is Created
     And every active subscription references an "ACTIVE" topic
     And every delivery retry count is within the allowed limit
 
-  @standard @negative @create_topic
+  @guard @negative @create_topic
   Scenario: an "SNS" topic is created fails when the topic already exists
     Given the topic already exists
     When an "SNS" topic is created

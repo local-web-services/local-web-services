@@ -17,20 +17,20 @@ Feature: GlacierSns - An Sns Notification Is Configured On The Vault
     And every "PUBLISHED" notification references a job that exists
     And every "PUBLISHED" notification references a topic that exists
 
-  @standard @negative @configure_notification
+  @guard @negative @configure_notification
   Scenario: an "SNS" notification is configured on the vault fails when the vault does not exist
     Given the vault does not exist
     When an "SNS" notification is configured on the vault
     Then the operation is rejected
 
-  @standard @negative @configure_notification
+  @guard @negative @configure_notification
   Scenario: an "SNS" notification is configured on the vault fails when the vault already has an "SNS" notification configured
     Given the vault exists
     And the vault already has an "SNS" notification configured
     When an "SNS" notification is configured on the vault
     Then the operation is rejected
 
-  @standard @negative @configure_notification
+  @guard @negative @configure_notification
   Scenario: an "SNS" notification is configured on the vault fails when the topic does not exist or is not "ACTIVE"
     Given the vault exists
     And the vault has no "SNS" notification configured

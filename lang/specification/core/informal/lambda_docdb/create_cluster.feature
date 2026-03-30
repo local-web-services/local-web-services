@@ -15,7 +15,7 @@ Feature: LambdaDocdb - A Documentdb Cluster Is Created
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing document references a cluster that exists
 
-  @standard @negative @create_cluster
+  @guard @negative @create_cluster
   Scenario: a DocumentDB cluster is created fails when the cluster already exists
     Given the cluster already exists
     When a DocumentDB cluster is created

@@ -21,20 +21,20 @@ Feature: Sns - A Message Is Published To A Topic
     And every active subscription references an "ACTIVE" topic
     And every delivery retry count is within the allowed limit
 
-  @standard @negative @publish
+  @guard @negative @publish
   Scenario: a message is published to a topic fails when the topic does not exist
     Given the topic does not exist
     When a message is published to a topic
     Then the operation is rejected
 
-  @standard @negative @publish @lifecycle
+  @guard @negative @publish @lifecycle
   Scenario: a message is published to a topic fails when the topic is not "ACTIVE"
     Given the topic exists
     And the topic is not "ACTIVE"
     When a message is published to a topic
     Then the operation is rejected
 
-  @standard @negative @publish
+  @guard @negative @publish
   Scenario: a message is published to a topic fails when no confirmed subscription exists for the topic
     Given the topic exists
     And the topic is "ACTIVE"
@@ -42,7 +42,7 @@ Feature: Sns - A Message Is Published To A Topic
     When a message is published to a topic
     Then the operation is rejected
 
-  @standard @negative @publish
+  @guard @negative @publish
   Scenario: a message is published to a topic fails when the subscription does not belong to this topic
     Given the topic exists
     And the topic is "ACTIVE"
@@ -51,7 +51,7 @@ Feature: Sns - A Message Is Published To A Topic
     When a message is published to a topic
     Then the operation is rejected
 
-  @standard @negative @publish @capacity
+  @guard @negative @internal @publish @capacity
   Scenario: a message is published to a topic fails when no delivery slot is available
     Given the topic exists
     And the topic is "ACTIVE"

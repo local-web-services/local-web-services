@@ -367,3 +367,23 @@ def parse_cloud_assembly_state_machine(
     return _parse_cloud_assembly_config(
         logical_id, resource_properties, resource_mapping, StateMachineConfig, WorkflowType
     )
+
+
+def build_injected_execution_history(execution_arn: str, state: str) -> ExecutionHistory:
+    """Build a fake ExecutionHistory for state injection test setup.
+
+    Parses the state machine name from the execution ARN and creates a
+    minimal ExecutionHistory with the requested status.
+    """
+    parts = execution_arn.split(":execution:")
+    sm_name = parts[1].rsplit(":", 1)[0] if len(parts) > 1 and ":" in parts[1] else ""
+    status = (
+        ExecutionStatus[state] if state in ExecutionStatus.__members__ else ExecutionStatus.RUNNING
+    )
+    return ExecutionHistory(
+        execution_arn=execution_arn,
+        state_machine_name=sm_name,
+        status=status,
+        start_time=time.time(),
+        input_data="{}",
+    )

@@ -17,13 +17,13 @@ Feature: Sqs - All Messages In A Queue Are Purged
     And every in-flight message belongs to an "ACTIVE" queue
     And every message has a non-negative receive count
 
-  @standard @negative @purge_queue
+  @guard @negative @purge_queue
   Scenario: all messages in a queue are purged fails when the queue does not exist
     Given the queue does not exist
     When all messages in a queue are purged
     Then the operation is rejected
 
-  @standard @negative @purge_queue @lifecycle
+  @guard @negative @purge_queue @lifecycle
   Scenario: all messages in a queue are purged fails when the queue is not "ACTIVE"
     Given the queue exists
     And the queue is not "ACTIVE"

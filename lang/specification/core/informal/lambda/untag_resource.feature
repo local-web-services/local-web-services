@@ -22,20 +22,20 @@ Feature: Lambda - A Tag Is Removed From A Function
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @untag_resource
+  @guard @negative @untag_resource
   Scenario: a tag is removed from a function fails when the function does not exist
     Given the function does not exist
     When a tag is removed from a function
     Then the operation is rejected
 
-  @standard @negative @untag_resource
+  @guard @negative @untag_resource
   Scenario: a tag is removed from a function fails when the tag does not exist on the function
     Given the function exists
     And the tag does not exist on the function
     When a tag is removed from a function
     Then the operation is rejected
 
-  @standard @negative @untag_resource
+  @guard @negative @untag_resource
   Scenario: a tag is removed from a function fails when the tag is not set
     Given the function exists
     And the tag exists on the function

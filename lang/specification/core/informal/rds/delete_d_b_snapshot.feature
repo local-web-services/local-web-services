@@ -17,13 +17,13 @@ Feature: Rds - A Database Snapshot Is Deleted
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
 
-  @standard @negative @delete_d_b_snapshot
+  @guard @negative @delete_d_b_snapshot
   Scenario: a database snapshot is deleted fails when the snapshot does not exist
     Given the snapshot does not exist
     When a database snapshot is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_d_b_snapshot @lifecycle
+  @guard @negative @delete_d_b_snapshot @lifecycle
   Scenario: a database snapshot is deleted fails when the snapshot is not "AVAILABLE"
     Given the snapshot exists
     And the snapshot is not "AVAILABLE"

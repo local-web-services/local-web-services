@@ -22,13 +22,13 @@ Feature: Neptune - A Stopped Database Cluster Is Started
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @start_d_b_cluster
+  @guard @negative @start_d_b_cluster
   Scenario: a stopped database cluster is started fails when the cluster does not exist
     Given the cluster does not exist
     When a stopped database cluster is started
     Then the operation is rejected
 
-  @standard @negative @start_d_b_cluster @lifecycle
+  @guard @negative @start_d_b_cluster @lifecycle
   Scenario: a stopped database cluster is started fails when the cluster is not "STOPPED"
     Given the cluster exists
     And the cluster is not "STOPPED"

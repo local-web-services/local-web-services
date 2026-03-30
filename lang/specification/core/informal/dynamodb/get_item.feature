@@ -21,20 +21,20 @@ Feature: Dynamodb - An Item Is Read From The Table
     And items only exist in non-deleted tables
     And deleted tables are never the target of a pending transaction
 
-  @standard @negative @get_item
+  @guard @negative @get_item
   Scenario: an item is read from the table fails when the table does not exist
     Given the table does not exist
     When an item is read from the table
     Then the operation is rejected
 
-  @standard @negative @get_item @lifecycle
+  @guard @negative @get_item @lifecycle
   Scenario: an item is read from the table fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"
     When an item is read from the table
     Then the operation is rejected
 
-  @standard @negative @get_item @capacity
+  @guard @negative @get_item @capacity
   Scenario: an item is read from the table fails when reads are throttled
     Given the table exists
     And the table is "ACTIVE"

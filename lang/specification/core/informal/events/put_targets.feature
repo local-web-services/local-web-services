@@ -22,13 +22,13 @@ Feature: Events - Targets Are Added To A Rule
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @put_targets
+  @guard @negative @put_targets
   Scenario: targets are added to a rule fails when the rule does not exist
     Given the rule does not exist
     When targets are added to a rule
     Then the operation is rejected
 
-  @standard @negative @put_targets
+  @guard @negative @put_targets
   Scenario: targets are added to a rule fails when the rule is "DELETED"
     Given the rule exists
     And the rule is "DELETED"

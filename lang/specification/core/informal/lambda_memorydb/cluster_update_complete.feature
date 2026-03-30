@@ -15,7 +15,7 @@ Feature: LambdaMemorydb - The Memorydb Cluster Update Completes
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @standard @negative @cluster_update_complete @lifecycle
+  @guard @negative @cluster_update_complete @lifecycle
   Scenario: the MemoryDB cluster update completes fails when the cluster is not "UPDATING"
     Given the cluster is not "UPDATING"
     When the MemoryDB cluster update completes

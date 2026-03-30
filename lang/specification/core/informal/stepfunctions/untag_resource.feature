@@ -21,20 +21,20 @@ Feature: Stepfunctions - Tags Are Removed From A State Machine
     And synchronous executions only run on express state machines
     And every execution belongs to a known state machine
 
-  @standard @negative @untag_resource
+  @guard @negative @untag_resource
   Scenario: tags are removed from a state machine fails when the state machine does not exist
     Given the state machine does not exist
     When tags are removed from a state machine
     Then the operation is rejected
 
-  @standard @negative @untag_resource @lifecycle
+  @guard @negative @untag_resource @lifecycle
   Scenario: tags are removed from a state machine fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"
     When tags are removed from a state machine
     Then the operation is rejected
 
-  @standard @negative @untag_resource
+  @guard @negative @untag_resource
   Scenario: tags are removed from a state machine fails when the tag is not associated with the state machine
     Given the state machine exists
     And the state machine is "ACTIVE"
@@ -42,7 +42,7 @@ Feature: Stepfunctions - Tags Are Removed From A State Machine
     When tags are removed from a state machine
     Then the operation is rejected
 
-  @standard @negative @untag_resource
+  @guard @negative @untag_resource
   Scenario: tags are removed from a state machine fails when the tag association is not active
     Given the state machine exists
     And the state machine is "ACTIVE"

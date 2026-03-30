@@ -20,20 +20,20 @@ Feature: SnsSqs - A Message Is Published To An Sns Topic And Delivered To The Su
     And every "AVAILABLE" message belongs to an "ACTIVE" queue
     And a message can only be delivered if a confirmed subscription exists for the topic
 
-  @standard @negative @publish_and_deliver
+  @guard @negative @publish_and_deliver
   Scenario: a message is published to an "SNS" topic and delivered to the subscribed "SQS" queue fails when the topic does not exist
     Given the topic does not exist
     When a message is published to an "SNS" topic and delivered to the subscribed "SQS" queue
     Then the operation is rejected
 
-  @standard @negative @publish_and_deliver @lifecycle
+  @guard @negative @publish_and_deliver @lifecycle
   Scenario: a message is published to an "SNS" topic and delivered to the subscribed "SQS" queue fails when the topic is not "ACTIVE"
     Given the topic exists
     And the topic is not "ACTIVE"
     When a message is published to an "SNS" topic and delivered to the subscribed "SQS" queue
     Then the operation is rejected
 
-  @standard @negative @publish_and_deliver @lifecycle
+  @guard @negative @publish_and_deliver @lifecycle
   Scenario: a message is published to an "SNS" topic and delivered to the subscribed "SQS" queue fails when no confirmed subscription exists for the topic
     Given the topic exists
     And the topic is "ACTIVE"
@@ -41,7 +41,7 @@ Feature: SnsSqs - A Message Is Published To An Sns Topic And Delivered To The Su
     When a message is published to an "SNS" topic and delivered to the subscribed "SQS" queue
     Then the operation is rejected
 
-  @standard @negative @publish_and_deliver @lifecycle
+  @guard @negative @publish_and_deliver @lifecycle
   Scenario: a message is published to an "SNS" topic and delivered to the subscribed "SQS" queue fails when the subscribed queue is not "ACTIVE"
     Given the topic exists
     And the topic is "ACTIVE"
@@ -50,7 +50,7 @@ Feature: SnsSqs - A Message Is Published To An Sns Topic And Delivered To The Su
     When a message is published to an "SNS" topic and delivered to the subscribed "SQS" queue
     Then the operation is rejected
 
-  @standard @negative @publish_and_deliver @capacity
+  @guard @negative @internal @publish_and_deliver @capacity
   Scenario: a message is published to an "SNS" topic and delivered to the subscribed "SQS" queue fails when no message slot is available
     Given the topic exists
     And the topic is "ACTIVE"

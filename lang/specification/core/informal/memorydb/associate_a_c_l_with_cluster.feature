@@ -21,20 +21,20 @@ Feature: Memorydb - An Acl Is Associated With A Cluster
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @associate_a_c_l_with_cluster
+  @guard @negative @associate_a_c_l_with_cluster
   Scenario: an "ACL" is associated with a cluster fails when the cluster does not exist
     Given the cluster does not exist
     When an "ACL" is associated with a cluster
     Then the operation is rejected
 
-  @standard @negative @associate_a_c_l_with_cluster @lifecycle
+  @guard @negative @associate_a_c_l_with_cluster @lifecycle
   Scenario: an "ACL" is associated with a cluster fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"
     When an "ACL" is associated with a cluster
     Then the operation is rejected
 
-  @standard @negative @associate_a_c_l_with_cluster
+  @guard @negative @associate_a_c_l_with_cluster
   Scenario: an "ACL" is associated with a cluster fails when the "ACL" does not exist
     Given the cluster exists
     And the cluster is "AVAILABLE"
@@ -42,7 +42,7 @@ Feature: Memorydb - An Acl Is Associated With A Cluster
     When an "ACL" is associated with a cluster
     Then the operation is rejected
 
-  @standard @negative @associate_a_c_l_with_cluster @lifecycle
+  @guard @negative @associate_a_c_l_with_cluster @lifecycle
   Scenario: an "ACL" is associated with a cluster fails when the "ACL" is not "ACTIVE"
     Given the cluster exists
     And the cluster is "AVAILABLE"

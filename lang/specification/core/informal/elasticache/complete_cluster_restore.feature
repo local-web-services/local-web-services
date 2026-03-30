@@ -19,13 +19,13 @@ Feature: Elasticache - A Cache Cluster Restore From Snapshot Completes
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @complete_cluster_restore @internal
+  @guard @negative @complete_cluster_restore @internal
   Scenario: a cache cluster restore from snapshot completes fails when the cluster does not exist
     Given the cluster does not exist
     When a cache cluster restore from snapshot completes
     Then the operation is rejected
 
-  @standard @negative @complete_cluster_restore @internal
+  @guard @negative @complete_cluster_restore @internal
   Scenario: a cache cluster restore from snapshot completes fails when the cluster is not "RESTORING"
     Given the cluster exists
     And the cluster is not "RESTORING"

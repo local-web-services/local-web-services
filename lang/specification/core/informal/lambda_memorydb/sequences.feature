@@ -7,2228 +7,716 @@ Feature: LambdaMemorydb - Action Sequences
   Background:
     Given the system is initialized
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a Lambda function is deployed then a MemoryDB cluster is created
     Given fid not in func_status
-    When a Lambda function is deployed
+    Given a Lambda function has been deployed
     When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a Lambda function is deployed then a MemoryDB cluster update begins
     Given fid not in func_status
-    When a Lambda function is deployed
+    Given a Lambda function has been deployed
     When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a Lambda function is deployed then the MemoryDB cluster update completes
     Given fid not in func_status
-    When a Lambda function is deployed
+    Given a Lambda function has been deployed
     When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a Lambda function is deployed then the Lambda function is invoked
     Given fid not in func_status
-    When a Lambda function is deployed
+    Given a Lambda function has been deployed
     When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a Lambda function is deployed then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
     Given fid not in func_status
-    When a Lambda function is deployed
+    Given a Lambda function has been deployed
     When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a Lambda function is deployed then the Lambda function fails to write because the cluster is updating
     Given fid not in func_status
-    When a Lambda function is deployed
+    Given a Lambda function has been deployed
     When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster is created then a Lambda function is deployed
     Given cid not in cluster_status
-    When a MemoryDB cluster is created
+    Given a MemoryDB cluster has been created
     When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster is created then a MemoryDB cluster update begins
     Given cid not in cluster_status
-    When a MemoryDB cluster is created
+    Given a MemoryDB cluster has been created
     When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster is created then the MemoryDB cluster update completes
     Given cid not in cluster_status
-    When a MemoryDB cluster is created
+    Given a MemoryDB cluster has been created
     When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster is created then the Lambda function is invoked
     Given cid not in cluster_status
-    When a MemoryDB cluster is created
+    Given a MemoryDB cluster has been created
     When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster is created then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
     Given cid not in cluster_status
-    When a MemoryDB cluster is created
+    Given a MemoryDB cluster has been created
     When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster is created then the Lambda function fails to write because the cluster is updating
     Given cid not in cluster_status
-    When a MemoryDB cluster is created
+    Given a MemoryDB cluster has been created
     When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster update begins then a Lambda function is deployed
     Given cid in cluster_status
-    When a MemoryDB cluster update begins
+    Given a MemoryDB cluster update has begun
     When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster update begins then a MemoryDB cluster is created
     Given cid in cluster_status
-    When a MemoryDB cluster update begins
+    Given a MemoryDB cluster update has begun
     When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster update begins then the MemoryDB cluster update completes
     Given cid in cluster_status
-    When a MemoryDB cluster update begins
+    Given a MemoryDB cluster update has begun
     When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster update begins then the Lambda function is invoked
     Given cid in cluster_status
-    When a MemoryDB cluster update begins
+    Given a MemoryDB cluster update has begun
     When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster update begins then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
     Given cid in cluster_status
-    When a MemoryDB cluster update begins
+    Given a MemoryDB cluster update has begun
     When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster update begins then the Lambda function fails to write because the cluster is updating
     Given cid in cluster_status
-    When a MemoryDB cluster update begins
+    Given a MemoryDB cluster update has begun
     When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the MemoryDB cluster update completes then a Lambda function is deployed
     Given cid in cluster_status
-    When the MemoryDB cluster update completes
+    Given the MemoryDB cluster update has completed
     When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the MemoryDB cluster update completes then a MemoryDB cluster is created
     Given cid in cluster_status
-    When the MemoryDB cluster update completes
+    Given the MemoryDB cluster update has completed
     When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the MemoryDB cluster update completes then a MemoryDB cluster update begins
     Given cid in cluster_status
-    When the MemoryDB cluster update completes
+    Given the MemoryDB cluster update has completed
     When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the MemoryDB cluster update completes then the Lambda function is invoked
     Given cid in cluster_status
-    When the MemoryDB cluster update completes
+    Given the MemoryDB cluster update has completed
     When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the MemoryDB cluster update completes then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
     Given cid in cluster_status
-    When the MemoryDB cluster update completes
+    Given the MemoryDB cluster update has completed
     When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the MemoryDB cluster update completes then the Lambda function fails to write because the cluster is updating
     Given cid in cluster_status
-    When the MemoryDB cluster update completes
+    Given the MemoryDB cluster update has completed
     When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function is invoked then a Lambda function is deployed
     Given fid in func_status
-    When the Lambda function is invoked
+    Given the Lambda function has been invoked
     When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function is invoked then a MemoryDB cluster is created
     Given fid in func_status
-    When the Lambda function is invoked
+    Given the Lambda function has been invoked
     When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function is invoked then a MemoryDB cluster update begins
     Given fid in func_status
-    When the Lambda function is invoked
+    Given the Lambda function has been invoked
     When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function is invoked then the MemoryDB cluster update completes
     Given fid in func_status
-    When the Lambda function is invoked
+    Given the Lambda function has been invoked
     When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function is invoked then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
     Given fid in func_status
-    When the Lambda function is invoked
+    Given the Lambda function has been invoked
     When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function is invoked then the Lambda function fails to write because the cluster is updating
     Given fid in func_status
-    When the Lambda function is invoked
+    Given the Lambda function has been invoked
     When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a Lambda function is deployed
     Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
+    Given the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation
     When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster is created
     Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
+    Given the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation
     When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster update begins
     Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
+    Given the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation
     When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the MemoryDB cluster update completes
     Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
+    Given the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation
     When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function is invoked
     Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
+    Given the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation
     When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function fails to write because the cluster is updating
     Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
+    Given the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation
     When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function fails to write because the cluster is updating then a Lambda function is deployed
     Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
+    Given the Lambda function has failed to write because the cluster is updating
     When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function fails to write because the cluster is updating then a MemoryDB cluster is created
     Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
+    Given the Lambda function has failed to write because the cluster is updating
     When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function fails to write because the cluster is updating then a MemoryDB cluster update begins
     Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
+    Given the Lambda function has failed to write because the cluster is updating
     When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function fails to write because the cluster is updating then the MemoryDB cluster update completes
     Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
+    Given the Lambda function has failed to write because the cluster is updating
     When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function fails to write because the cluster is updating then the Lambda function is invoked
     Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
+    Given the Lambda function has failed to write because the cluster is updating
     When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function fails to write because the cluster is updating then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
     Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
+    Given the Lambda function has failed to write because the cluster is updating
     When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a Lambda function is deployed then a MemoryDB cluster is created then a MemoryDB cluster update begins
     Given fid not in func_status
-    When a Lambda function is deployed
-    When a MemoryDB cluster is created
+    Given a Lambda function has been deployed
+    Given a MemoryDB cluster has been created
     When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then a MemoryDB cluster is created then the MemoryDB cluster update completes
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When a MemoryDB cluster is created
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then a MemoryDB cluster is created then the Lambda function is invoked
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When a MemoryDB cluster is created
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then a MemoryDB cluster is created then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When a MemoryDB cluster is created
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then a MemoryDB cluster is created then the Lambda function fails to write because the cluster is updating
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When a MemoryDB cluster is created
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then a MemoryDB cluster update begins then a MemoryDB cluster is created
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When a MemoryDB cluster update begins
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: a Lambda function is deployed then a MemoryDB cluster update begins then the MemoryDB cluster update completes
     Given fid not in func_status
-    When a Lambda function is deployed
-    When a MemoryDB cluster update begins
+    Given a Lambda function has been deployed
+    Given a MemoryDB cluster update has begun
     When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then a MemoryDB cluster update begins then the Lambda function is invoked
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When a MemoryDB cluster update begins
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then a MemoryDB cluster update begins then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When a MemoryDB cluster update begins
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then a MemoryDB cluster update begins then the Lambda function fails to write because the cluster is updating
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When a MemoryDB cluster update begins
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then the MemoryDB cluster update completes then a MemoryDB cluster is created
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then the MemoryDB cluster update completes then a MemoryDB cluster update begins
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: a Lambda function is deployed then the MemoryDB cluster update completes then the Lambda function is invoked
     Given fid not in func_status
-    When a Lambda function is deployed
-    When the MemoryDB cluster update completes
+    Given a Lambda function has been deployed
+    Given the MemoryDB cluster update has completed
     When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then the MemoryDB cluster update completes then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When the MemoryDB cluster update completes
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then the MemoryDB cluster update completes then the Lambda function fails to write because the cluster is updating
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When the MemoryDB cluster update completes
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then the Lambda function is invoked then a MemoryDB cluster is created
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When the Lambda function is invoked
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then the Lambda function is invoked then a MemoryDB cluster update begins
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When the Lambda function is invoked
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then the Lambda function is invoked then the MemoryDB cluster update completes
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When the Lambda function is invoked
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: a Lambda function is deployed then the Lambda function is invoked then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
     Given fid not in func_status
-    When a Lambda function is deployed
-    When the Lambda function is invoked
+    Given a Lambda function has been deployed
+    Given the Lambda function has been invoked
     When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then the Lambda function is invoked then the Lambda function fails to write because the cluster is updating
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When the Lambda function is invoked
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster is created
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster update begins
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the MemoryDB cluster update completes
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function is invoked
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: a Lambda function is deployed then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function fails to write because the cluster is updating
     Given fid not in func_status
-    When a Lambda function is deployed
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
+    Given a Lambda function has been deployed
+    Given the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation
     When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a Lambda function is deployed then the Lambda function fails to write because the cluster is updating then a MemoryDB cluster is created
     Given fid not in func_status
-    When a Lambda function is deployed
-    When the Lambda function fails to write because the cluster is updating
+    Given a Lambda function has been deployed
+    Given the Lambda function has failed to write because the cluster is updating
     When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then the Lambda function fails to write because the cluster is updating then a MemoryDB cluster update begins
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When the Lambda function fails to write because the cluster is updating
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then the Lambda function fails to write because the cluster is updating then the MemoryDB cluster update completes
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When the Lambda function fails to write because the cluster is updating
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then the Lambda function fails to write because the cluster is updating then the Lambda function is invoked
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When the Lambda function fails to write because the cluster is updating
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a Lambda function is deployed then the Lambda function fails to write because the cluster is updating then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given fid not in func_status
-    When a Lambda function is deployed
-    When the Lambda function fails to write because the cluster is updating
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then a Lambda function is deployed then a MemoryDB cluster update begins
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When a Lambda function is deployed
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster is created then a Lambda function is deployed then the MemoryDB cluster update completes
     Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When a Lambda function is deployed
+    Given a MemoryDB cluster has been created
+    Given a Lambda function has been deployed
     When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then a Lambda function is deployed then the Lambda function is invoked
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When a Lambda function is deployed
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then a Lambda function is deployed then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When a Lambda function is deployed
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then a Lambda function is deployed then the Lambda function fails to write because the cluster is updating
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When a Lambda function is deployed
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then a MemoryDB cluster update begins then a Lambda function is deployed
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When a MemoryDB cluster update begins
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then a MemoryDB cluster update begins then the MemoryDB cluster update completes
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When a MemoryDB cluster update begins
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster is created then a MemoryDB cluster update begins then the Lambda function is invoked
     Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When a MemoryDB cluster update begins
+    Given a MemoryDB cluster has been created
+    Given a MemoryDB cluster update has begun
     When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then a MemoryDB cluster update begins then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When a MemoryDB cluster update begins
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then a MemoryDB cluster update begins then the Lambda function fails to write because the cluster is updating
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When a MemoryDB cluster update begins
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then the MemoryDB cluster update completes then a Lambda function is deployed
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the MemoryDB cluster update completes
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then the MemoryDB cluster update completes then a MemoryDB cluster update begins
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then the MemoryDB cluster update completes then the Lambda function is invoked
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the MemoryDB cluster update completes
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster is created then the MemoryDB cluster update completes then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
     Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the MemoryDB cluster update completes
+    Given a MemoryDB cluster has been created
+    Given the MemoryDB cluster update has completed
     When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then the MemoryDB cluster update completes then the Lambda function fails to write because the cluster is updating
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the MemoryDB cluster update completes
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then the Lambda function is invoked then a Lambda function is deployed
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the Lambda function is invoked
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then the Lambda function is invoked then a MemoryDB cluster update begins
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the Lambda function is invoked
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then the Lambda function is invoked then the MemoryDB cluster update completes
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the Lambda function is invoked
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then the Lambda function is invoked then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the Lambda function is invoked
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster is created then the Lambda function is invoked then the Lambda function fails to write because the cluster is updating
     Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the Lambda function is invoked
+    Given a MemoryDB cluster has been created
+    Given the Lambda function has been invoked
     When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster is created then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a Lambda function is deployed
     Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
+    Given a MemoryDB cluster has been created
+    Given the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation
     When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster update begins
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the MemoryDB cluster update completes
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function is invoked
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function fails to write because the cluster is updating
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then the Lambda function fails to write because the cluster is updating then a Lambda function is deployed
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the Lambda function fails to write because the cluster is updating
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster is created then the Lambda function fails to write because the cluster is updating then a MemoryDB cluster update begins
     Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the Lambda function fails to write because the cluster is updating
+    Given a MemoryDB cluster has been created
+    Given the Lambda function has failed to write because the cluster is updating
     When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then the Lambda function fails to write because the cluster is updating then the MemoryDB cluster update completes
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the Lambda function fails to write because the cluster is updating
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then the Lambda function fails to write because the cluster is updating then the Lambda function is invoked
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the Lambda function fails to write because the cluster is updating
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster is created then the Lambda function fails to write because the cluster is updating then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given cid not in cluster_status
-    When a MemoryDB cluster is created
-    When the Lambda function fails to write because the cluster is updating
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then a Lambda function is deployed then a MemoryDB cluster is created
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When a Lambda function is deployed
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then a Lambda function is deployed then the MemoryDB cluster update completes
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When a Lambda function is deployed
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster update begins then a Lambda function is deployed then the Lambda function is invoked
     Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When a Lambda function is deployed
+    Given a MemoryDB cluster update has begun
+    Given a Lambda function has been deployed
     When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then a Lambda function is deployed then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When a Lambda function is deployed
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then a Lambda function is deployed then the Lambda function fails to write because the cluster is updating
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When a Lambda function is deployed
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then a MemoryDB cluster is created then a Lambda function is deployed
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When a MemoryDB cluster is created
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then a MemoryDB cluster is created then the MemoryDB cluster update completes
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When a MemoryDB cluster is created
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then a MemoryDB cluster is created then the Lambda function is invoked
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When a MemoryDB cluster is created
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster update begins then a MemoryDB cluster is created then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
     Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When a MemoryDB cluster is created
+    Given a MemoryDB cluster update has begun
+    Given a MemoryDB cluster has been created
     When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then a MemoryDB cluster is created then the Lambda function fails to write because the cluster is updating
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When a MemoryDB cluster is created
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then the MemoryDB cluster update completes then a Lambda function is deployed
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the MemoryDB cluster update completes
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then the MemoryDB cluster update completes then a MemoryDB cluster is created
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then the MemoryDB cluster update completes then the Lambda function is invoked
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the MemoryDB cluster update completes
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then the MemoryDB cluster update completes then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the MemoryDB cluster update completes
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster update begins then the MemoryDB cluster update completes then the Lambda function fails to write because the cluster is updating
     Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the MemoryDB cluster update completes
+    Given a MemoryDB cluster update has begun
+    Given the MemoryDB cluster update has completed
     When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster update begins then the Lambda function is invoked then a Lambda function is deployed
     Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the Lambda function is invoked
+    Given a MemoryDB cluster update has begun
+    Given the Lambda function has been invoked
     When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then the Lambda function is invoked then a MemoryDB cluster is created
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the Lambda function is invoked
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then the Lambda function is invoked then the MemoryDB cluster update completes
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the Lambda function is invoked
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then the Lambda function is invoked then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the Lambda function is invoked
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then the Lambda function is invoked then the Lambda function fails to write because the cluster is updating
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the Lambda function is invoked
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a Lambda function is deployed
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster update begins then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster is created
     Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
+    Given a MemoryDB cluster update has begun
+    Given the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation
     When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the MemoryDB cluster update completes
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function is invoked
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function fails to write because the cluster is updating
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then the Lambda function fails to write because the cluster is updating then a Lambda function is deployed
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the Lambda function fails to write because the cluster is updating
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then the Lambda function fails to write because the cluster is updating then a MemoryDB cluster is created
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the Lambda function fails to write because the cluster is updating
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: a MemoryDB cluster update begins then the Lambda function fails to write because the cluster is updating then the MemoryDB cluster update completes
     Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the Lambda function fails to write because the cluster is updating
+    Given a MemoryDB cluster update has begun
+    Given the Lambda function has failed to write because the cluster is updating
     When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then the Lambda function fails to write because the cluster is updating then the Lambda function is invoked
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the Lambda function fails to write because the cluster is updating
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: a MemoryDB cluster update begins then the Lambda function fails to write because the cluster is updating then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given cid in cluster_status
-    When a MemoryDB cluster update begins
-    When the Lambda function fails to write because the cluster is updating
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then a Lambda function is deployed then a MemoryDB cluster is created
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When a Lambda function is deployed
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then a Lambda function is deployed then a MemoryDB cluster update begins
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When a Lambda function is deployed
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then a Lambda function is deployed then the Lambda function is invoked
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When a Lambda function is deployed
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the MemoryDB cluster update completes then a Lambda function is deployed then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
     Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When a Lambda function is deployed
+    Given the MemoryDB cluster update has completed
+    Given a Lambda function has been deployed
     When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then a Lambda function is deployed then the Lambda function fails to write because the cluster is updating
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When a Lambda function is deployed
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then a MemoryDB cluster is created then a Lambda function is deployed
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster is created
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then a MemoryDB cluster is created then a MemoryDB cluster update begins
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster is created
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then a MemoryDB cluster is created then the Lambda function is invoked
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster is created
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then a MemoryDB cluster is created then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster is created
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the MemoryDB cluster update completes then a MemoryDB cluster is created then the Lambda function fails to write because the cluster is updating
     Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster is created
+    Given the MemoryDB cluster update has completed
+    Given a MemoryDB cluster has been created
     When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the MemoryDB cluster update completes then a MemoryDB cluster update begins then a Lambda function is deployed
     Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster update begins
+    Given the MemoryDB cluster update has completed
+    Given a MemoryDB cluster update has begun
     When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then a MemoryDB cluster update begins then a MemoryDB cluster is created
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster update begins
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then a MemoryDB cluster update begins then the Lambda function is invoked
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster update begins
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then a MemoryDB cluster update begins then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster update begins
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then a MemoryDB cluster update begins then the Lambda function fails to write because the cluster is updating
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster update begins
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then the Lambda function is invoked then a Lambda function is deployed
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When the Lambda function is invoked
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the MemoryDB cluster update completes then the Lambda function is invoked then a MemoryDB cluster is created
     Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When the Lambda function is invoked
+    Given the MemoryDB cluster update has completed
+    Given the Lambda function has been invoked
     When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then the Lambda function is invoked then a MemoryDB cluster update begins
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When the Lambda function is invoked
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then the Lambda function is invoked then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When the Lambda function is invoked
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then the Lambda function is invoked then the Lambda function fails to write because the cluster is updating
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When the Lambda function is invoked
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a Lambda function is deployed
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster is created
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the MemoryDB cluster update completes then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster update begins
     Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
+    Given the MemoryDB cluster update has completed
+    Given the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation
     When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function is invoked
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function fails to write because the cluster is updating
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then the Lambda function fails to write because the cluster is updating then a Lambda function is deployed
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When the Lambda function fails to write because the cluster is updating
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then the Lambda function fails to write because the cluster is updating then a MemoryDB cluster is created
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When the Lambda function fails to write because the cluster is updating
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then the Lambda function fails to write because the cluster is updating then a MemoryDB cluster update begins
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When the Lambda function fails to write because the cluster is updating
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the MemoryDB cluster update completes then the Lambda function fails to write because the cluster is updating then the Lambda function is invoked
     Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When the Lambda function fails to write because the cluster is updating
+    Given the MemoryDB cluster update has completed
+    Given the Lambda function has failed to write because the cluster is updating
     When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: the MemoryDB cluster update completes then the Lambda function fails to write because the cluster is updating then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given cid in cluster_status
-    When the MemoryDB cluster update completes
-    When the Lambda function fails to write because the cluster is updating
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then a Lambda function is deployed then a MemoryDB cluster is created
-    Given fid in func_status
-    When the Lambda function is invoked
-    When a Lambda function is deployed
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then a Lambda function is deployed then a MemoryDB cluster update begins
-    Given fid in func_status
-    When the Lambda function is invoked
-    When a Lambda function is deployed
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then a Lambda function is deployed then the MemoryDB cluster update completes
-    Given fid in func_status
-    When the Lambda function is invoked
-    When a Lambda function is deployed
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then a Lambda function is deployed then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given fid in func_status
-    When the Lambda function is invoked
-    When a Lambda function is deployed
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function is invoked then a Lambda function is deployed then the Lambda function fails to write because the cluster is updating
     Given fid in func_status
-    When the Lambda function is invoked
-    When a Lambda function is deployed
+    Given the Lambda function has been invoked
+    Given a Lambda function has been deployed
     When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function is invoked then a MemoryDB cluster is created then a Lambda function is deployed
     Given fid in func_status
-    When the Lambda function is invoked
-    When a MemoryDB cluster is created
+    Given the Lambda function has been invoked
+    Given a MemoryDB cluster has been created
     When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then a MemoryDB cluster is created then a MemoryDB cluster update begins
-    Given fid in func_status
-    When the Lambda function is invoked
-    When a MemoryDB cluster is created
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then a MemoryDB cluster is created then the MemoryDB cluster update completes
-    Given fid in func_status
-    When the Lambda function is invoked
-    When a MemoryDB cluster is created
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then a MemoryDB cluster is created then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given fid in func_status
-    When the Lambda function is invoked
-    When a MemoryDB cluster is created
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then a MemoryDB cluster is created then the Lambda function fails to write because the cluster is updating
-    Given fid in func_status
-    When the Lambda function is invoked
-    When a MemoryDB cluster is created
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then a MemoryDB cluster update begins then a Lambda function is deployed
-    Given fid in func_status
-    When the Lambda function is invoked
-    When a MemoryDB cluster update begins
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function is invoked then a MemoryDB cluster update begins then a MemoryDB cluster is created
     Given fid in func_status
-    When the Lambda function is invoked
-    When a MemoryDB cluster update begins
+    Given the Lambda function has been invoked
+    Given a MemoryDB cluster update has begun
     When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then a MemoryDB cluster update begins then the MemoryDB cluster update completes
-    Given fid in func_status
-    When the Lambda function is invoked
-    When a MemoryDB cluster update begins
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then a MemoryDB cluster update begins then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given fid in func_status
-    When the Lambda function is invoked
-    When a MemoryDB cluster update begins
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then a MemoryDB cluster update begins then the Lambda function fails to write because the cluster is updating
-    Given fid in func_status
-    When the Lambda function is invoked
-    When a MemoryDB cluster update begins
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then the MemoryDB cluster update completes then a Lambda function is deployed
-    Given fid in func_status
-    When the Lambda function is invoked
-    When the MemoryDB cluster update completes
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then the MemoryDB cluster update completes then a MemoryDB cluster is created
-    Given fid in func_status
-    When the Lambda function is invoked
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function is invoked then the MemoryDB cluster update completes then a MemoryDB cluster update begins
     Given fid in func_status
-    When the Lambda function is invoked
-    When the MemoryDB cluster update completes
+    Given the Lambda function has been invoked
+    Given the MemoryDB cluster update has completed
     When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then the MemoryDB cluster update completes then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given fid in func_status
-    When the Lambda function is invoked
-    When the MemoryDB cluster update completes
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then the MemoryDB cluster update completes then the Lambda function fails to write because the cluster is updating
-    Given fid in func_status
-    When the Lambda function is invoked
-    When the MemoryDB cluster update completes
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a Lambda function is deployed
-    Given fid in func_status
-    When the Lambda function is invoked
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster is created
-    Given fid in func_status
-    When the Lambda function is invoked
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster update begins
-    Given fid in func_status
-    When the Lambda function is invoked
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function is invoked then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the MemoryDB cluster update completes
     Given fid in func_status
-    When the Lambda function is invoked
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
+    Given the Lambda function has been invoked
+    Given the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation
     When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function fails to write because the cluster is updating
-    Given fid in func_status
-    When the Lambda function is invoked
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then the Lambda function fails to write because the cluster is updating then a Lambda function is deployed
-    Given fid in func_status
-    When the Lambda function is invoked
-    When the Lambda function fails to write because the cluster is updating
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then the Lambda function fails to write because the cluster is updating then a MemoryDB cluster is created
-    Given fid in func_status
-    When the Lambda function is invoked
-    When the Lambda function fails to write because the cluster is updating
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then the Lambda function fails to write because the cluster is updating then a MemoryDB cluster update begins
-    Given fid in func_status
-    When the Lambda function is invoked
-    When the Lambda function fails to write because the cluster is updating
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function is invoked then the Lambda function fails to write because the cluster is updating then the MemoryDB cluster update completes
-    Given fid in func_status
-    When the Lambda function is invoked
-    When the Lambda function fails to write because the cluster is updating
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function is invoked then the Lambda function fails to write because the cluster is updating then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
     Given fid in func_status
-    When the Lambda function is invoked
-    When the Lambda function fails to write because the cluster is updating
+    Given the Lambda function has been invoked
+    Given the Lambda function has failed to write because the cluster is updating
     When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a Lambda function is deployed then a MemoryDB cluster is created
     Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a Lambda function is deployed
+    Given the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation
+    Given a Lambda function has been deployed
     When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a Lambda function is deployed then a MemoryDB cluster update begins
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a Lambda function is deployed
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a Lambda function is deployed then the MemoryDB cluster update completes
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a Lambda function is deployed
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a Lambda function is deployed then the Lambda function is invoked
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a Lambda function is deployed
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a Lambda function is deployed then the Lambda function fails to write because the cluster is updating
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a Lambda function is deployed
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster is created then a Lambda function is deployed
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a MemoryDB cluster is created
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster is created then a MemoryDB cluster update begins
     Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a MemoryDB cluster is created
+    Given the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation
+    Given a MemoryDB cluster has been created
     When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster is created then the MemoryDB cluster update completes
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a MemoryDB cluster is created
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster is created then the Lambda function is invoked
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a MemoryDB cluster is created
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster is created then the Lambda function fails to write because the cluster is updating
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a MemoryDB cluster is created
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster update begins then a Lambda function is deployed
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a MemoryDB cluster update begins
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster update begins then a MemoryDB cluster is created
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a MemoryDB cluster update begins
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster update begins then the MemoryDB cluster update completes
     Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a MemoryDB cluster update begins
+    Given the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation
+    Given a MemoryDB cluster update has begun
     When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster update begins then the Lambda function is invoked
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a MemoryDB cluster update begins
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster update begins then the Lambda function fails to write because the cluster is updating
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a MemoryDB cluster update begins
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the MemoryDB cluster update completes then a Lambda function is deployed
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the MemoryDB cluster update completes
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the MemoryDB cluster update completes then a MemoryDB cluster is created
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the MemoryDB cluster update completes then a MemoryDB cluster update begins
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the MemoryDB cluster update completes then the Lambda function is invoked
     Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the MemoryDB cluster update completes
+    Given the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation
+    Given the MemoryDB cluster update has completed
     When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the MemoryDB cluster update completes then the Lambda function fails to write because the cluster is updating
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the MemoryDB cluster update completes
-    When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function is invoked then a Lambda function is deployed
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function is invoked
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function is invoked then a MemoryDB cluster is created
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function is invoked
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function is invoked then a MemoryDB cluster update begins
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function is invoked
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function is invoked then the MemoryDB cluster update completes
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function is invoked
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function is invoked then the Lambda function fails to write because the cluster is updating
     Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function is invoked
+    Given the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation
+    Given the Lambda function has been invoked
     When the Lambda function fails to write because the cluster is updating
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function fails to write because the cluster is updating then a Lambda function is deployed
     Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function fails to write because the cluster is updating
+    Given the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation
+    Given the Lambda function has failed to write because the cluster is updating
     When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function fails to write because the cluster is updating then a MemoryDB cluster is created
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function fails to write because the cluster is updating
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function fails to write because the cluster is updating then a MemoryDB cluster update begins
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function fails to write because the cluster is updating
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function fails to write because the cluster is updating then the MemoryDB cluster update completes
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function fails to write because the cluster is updating
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function fails to write because the cluster is updating then the Lambda function is invoked
-    Given iid in inv_status
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function fails to write because the cluster is updating
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then a Lambda function is deployed then a MemoryDB cluster is created
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When a Lambda function is deployed
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function fails to write because the cluster is updating then a Lambda function is deployed then a MemoryDB cluster update begins
     Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When a Lambda function is deployed
+    Given the Lambda function has failed to write because the cluster is updating
+    Given a Lambda function has been deployed
     When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then a Lambda function is deployed then the MemoryDB cluster update completes
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When a Lambda function is deployed
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then a Lambda function is deployed then the Lambda function is invoked
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When a Lambda function is deployed
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then a Lambda function is deployed then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When a Lambda function is deployed
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then a MemoryDB cluster is created then a Lambda function is deployed
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When a MemoryDB cluster is created
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then a MemoryDB cluster is created then a MemoryDB cluster update begins
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When a MemoryDB cluster is created
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function fails to write because the cluster is updating then a MemoryDB cluster is created then the MemoryDB cluster update completes
     Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When a MemoryDB cluster is created
+    Given the Lambda function has failed to write because the cluster is updating
+    Given a MemoryDB cluster has been created
     When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then a MemoryDB cluster is created then the Lambda function is invoked
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When a MemoryDB cluster is created
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then a MemoryDB cluster is created then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When a MemoryDB cluster is created
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then a MemoryDB cluster update begins then a Lambda function is deployed
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When a MemoryDB cluster update begins
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then a MemoryDB cluster update begins then a MemoryDB cluster is created
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When a MemoryDB cluster update begins
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then a MemoryDB cluster update begins then the MemoryDB cluster update completes
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When a MemoryDB cluster update begins
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function fails to write because the cluster is updating then a MemoryDB cluster update begins then the Lambda function is invoked
     Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When a MemoryDB cluster update begins
+    Given the Lambda function has failed to write because the cluster is updating
+    Given a MemoryDB cluster update has begun
     When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then a MemoryDB cluster update begins then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When a MemoryDB cluster update begins
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then the MemoryDB cluster update completes then a Lambda function is deployed
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When the MemoryDB cluster update completes
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then the MemoryDB cluster update completes then a MemoryDB cluster is created
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then the MemoryDB cluster update completes then a MemoryDB cluster update begins
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When the MemoryDB cluster update completes
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then the MemoryDB cluster update completes then the Lambda function is invoked
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When the MemoryDB cluster update completes
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function fails to write because the cluster is updating then the MemoryDB cluster update completes then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
     Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When the MemoryDB cluster update completes
+    Given the Lambda function has failed to write because the cluster is updating
+    Given the MemoryDB cluster update has completed
     When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function fails to write because the cluster is updating then the Lambda function is invoked then a Lambda function is deployed
     Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When the Lambda function is invoked
+    Given the Lambda function has failed to write because the cluster is updating
+    Given the Lambda function has been invoked
     When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then the Lambda function is invoked then a MemoryDB cluster is created
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When the Lambda function is invoked
-    When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then the Lambda function is invoked then a MemoryDB cluster update begins
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When the Lambda function is invoked
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then the Lambda function is invoked then the MemoryDB cluster update completes
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When the Lambda function is invoked
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then the Lambda function is invoked then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When the Lambda function is invoked
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a Lambda function is deployed
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a Lambda function is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
+  @sequence
   Scenario: the Lambda function fails to write because the cluster is updating then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster is created
     Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
+    Given the Lambda function has failed to write because the cluster is updating
+    Given the Lambda function has written a record to the "AVAILABLE" MemoryDB cluster during invocation
     When a MemoryDB cluster is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then a MemoryDB cluster update begins
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When a MemoryDB cluster update begins
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the MemoryDB cluster update completes
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the MemoryDB cluster update completes
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a cluster that exists
-
-  @exhaustive @sequence
-  Scenario: the Lambda function fails to write because the cluster is updating then the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation then the Lambda function is invoked
-    Given iid in inv_status
-    When the Lambda function fails to write because the cluster is updating
-    When the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation
-    When the Lambda function is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists

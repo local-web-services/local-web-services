@@ -20,20 +20,20 @@ Feature: Memorydb - A Cluster Is Restored From A Snapshot
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @restore_cluster
+  @guard @negative @restore_cluster
   Scenario: a cluster is restored from a snapshot fails when the snapshot does not exist
     Given the snapshot does not exist
     When a cluster is restored from a snapshot
     Then the operation is rejected
 
-  @standard @negative @restore_cluster @lifecycle
+  @guard @negative @restore_cluster @lifecycle
   Scenario: a cluster is restored from a snapshot fails when the snapshot is not "AVAILABLE"
     Given the snapshot exists
     And the snapshot is not "AVAILABLE"
     When a cluster is restored from a snapshot
     Then the operation is rejected
 
-  @standard @negative @restore_cluster
+  @guard @negative @internal @restore_cluster
   Scenario: a cluster is restored from a snapshot fails when the target cluster slot is not available
     Given the snapshot exists
     And the snapshot is "AVAILABLE"

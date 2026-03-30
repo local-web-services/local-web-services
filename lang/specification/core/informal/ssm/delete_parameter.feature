@@ -18,13 +18,13 @@ Feature: Ssm - A Parameter Is Deleted From Ssm
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
-  @standard @negative @delete_parameter
+  @guard @negative @delete_parameter
   Scenario: a parameter is deleted from "SSM" fails when the parameter does not exist
     Given the parameter does not exist
     When a parameter is deleted from "SSM"
     Then the operation is rejected
 
-  @standard @negative @delete_parameter
+  @guard @negative @delete_parameter
   Scenario: a parameter is deleted from "SSM" fails when the parameter is not active
     Given the parameter exists
     And the parameter is not active

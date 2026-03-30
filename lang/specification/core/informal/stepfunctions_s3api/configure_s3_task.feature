@@ -19,20 +19,20 @@ Feature: StepfunctionsS3api - An S3 Task Is Configured On The State Machine
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every existing object belongs to an "ACTIVE" bucket
 
-  @standard @negative @configure_s3_task
+  @guard @negative @configure_s3_task
   Scenario: an S3 task is configured on the state machine fails when the state machine does not exist
     Given the state machine does not exist
     When an S3 task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_s3_task @lifecycle
+  @guard @negative @configure_s3_task @lifecycle
   Scenario: an S3 task is configured on the state machine fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"
     When an S3 task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_s3_task
+  @guard @negative @configure_s3_task
   Scenario: an S3 task is configured on the state machine fails when the state machine already has an S3 task configured
     Given the state machine exists
     And the state machine is "ACTIVE"
@@ -40,7 +40,7 @@ Feature: StepfunctionsS3api - An S3 Task Is Configured On The State Machine
     When an S3 task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_s3_task
+  @guard @negative @configure_s3_task
   Scenario: an S3 task is configured on the state machine fails when the bucket does not exist
     Given the state machine exists
     And the state machine is "ACTIVE"
@@ -49,7 +49,7 @@ Feature: StepfunctionsS3api - An S3 Task Is Configured On The State Machine
     When an S3 task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_s3_task @lifecycle
+  @guard @negative @configure_s3_task @lifecycle
   Scenario: an S3 task is configured on the state machine fails when the bucket is not "ACTIVE"
     Given the state machine exists
     And the state machine is "ACTIVE"

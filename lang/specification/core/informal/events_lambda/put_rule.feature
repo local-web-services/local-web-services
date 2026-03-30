@@ -20,20 +20,20 @@ Feature: EventsLambda - An Eventbridge Rule Is Created To Asynchronously Invoke 
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "ENABLED" rule references an "ACTIVE" event bus
 
-  @standard @negative @put_rule
+  @guard @negative @put_rule
   Scenario: an EventBridge rule is created to asynchronously invoke a Lambda function on matching events fails when the event bus does not exist
     Given the event bus does not exist
     When an EventBridge rule is created to asynchronously invoke a Lambda function on matching events
     Then the operation is rejected
 
-  @standard @negative @put_rule @lifecycle
+  @guard @negative @put_rule @lifecycle
   Scenario: an EventBridge rule is created to asynchronously invoke a Lambda function on matching events fails when the event bus is not "ACTIVE"
     Given the event bus exists
     And the event bus is not "ACTIVE"
     When an EventBridge rule is created to asynchronously invoke a Lambda function on matching events
     Then the operation is rejected
 
-  @standard @negative @put_rule
+  @guard @negative @put_rule
   Scenario: an EventBridge rule is created to asynchronously invoke a Lambda function on matching events fails when the function does not exist
     Given the event bus exists
     And the event bus is "ACTIVE"
@@ -41,7 +41,7 @@ Feature: EventsLambda - An Eventbridge Rule Is Created To Asynchronously Invoke 
     When an EventBridge rule is created to asynchronously invoke a Lambda function on matching events
     Then the operation is rejected
 
-  @standard @negative @put_rule @lifecycle
+  @guard @negative @put_rule @lifecycle
   Scenario: an EventBridge rule is created to asynchronously invoke a Lambda function on matching events fails when the function is not "ACTIVE"
     Given the event bus exists
     And the event bus is "ACTIVE"
@@ -50,7 +50,7 @@ Feature: EventsLambda - An Eventbridge Rule Is Created To Asynchronously Invoke 
     When an EventBridge rule is created to asynchronously invoke a Lambda function on matching events
     Then the operation is rejected
 
-  @standard @negative @put_rule
+  @guard @negative @put_rule
   Scenario: an EventBridge rule is created to asynchronously invoke a Lambda function on matching events fails when the rule already exists
     Given the event bus exists
     And the event bus is "ACTIVE"

@@ -17,20 +17,20 @@ Feature: LambdaStepfunctions - The Lambda Function Starts An Execution Of An Act
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "RUNNING" execution references a state machine that exists
 
-  @standard @negative @start_execution_task @internal
+  @guard @negative @start_execution_task @internal
   Scenario: the Lambda function starts an execution of an "ACTIVE" state machine and succeeds fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda function starts an execution of an "ACTIVE" state machine and succeeds
     Then the operation is rejected
 
-  @standard @negative @start_execution_task @internal
+  @guard @negative @start_execution_task @internal
   Scenario: the Lambda function starts an execution of an "ACTIVE" state machine and succeeds fails when the state machine does not exist or is "DELETED"
     Given an invocation is "IN_PROGRESS"
     And the state machine does not exist or is "DELETED"
     When the Lambda function starts an execution of an "ACTIVE" state machine and succeeds
     Then the operation is rejected
 
-  @standard @negative @start_execution_task @internal
+  @guard @negative @start_execution_task @internal
   Scenario: the Lambda function starts an execution of an "ACTIVE" state machine and succeeds fails when no execution slot is available
     Given an invocation is "IN_PROGRESS"
     And the state machine is "ACTIVE"

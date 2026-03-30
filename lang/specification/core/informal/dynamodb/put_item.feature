@@ -21,20 +21,20 @@ Feature: Dynamodb - An Item Is Written To The Table
     And items only exist in non-deleted tables
     And deleted tables are never the target of a pending transaction
 
-  @standard @negative @put_item
+  @guard @negative @put_item
   Scenario: an item is written to the table fails when the table does not exist
     Given the table does not exist
     When an item is written to the table
     Then the operation is rejected
 
-  @standard @negative @put_item @lifecycle
+  @guard @negative @put_item @lifecycle
   Scenario: an item is written to the table fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"
     When an item is written to the table
     Then the operation is rejected
 
-  @standard @negative @put_item @capacity
+  @guard @negative @put_item @capacity
   Scenario: an item is written to the table fails when writes are throttled
     Given the table exists
     And the table is "ACTIVE"

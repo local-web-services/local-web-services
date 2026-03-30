@@ -16,13 +16,13 @@ Feature: StepfunctionsSecretsmanager - A Secret Is Scheduled For Deletion
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
-  @standard @negative @schedule_secret_deletion
+  @guard @negative @schedule_secret_deletion
   Scenario: a secret is scheduled for deletion fails when the secret does not exist
     Given the secret does not exist
     When a secret is scheduled for deletion
     Then the operation is rejected
 
-  @standard @negative @schedule_secret_deletion @lifecycle
+  @guard @negative @schedule_secret_deletion @lifecycle
   Scenario: a secret is scheduled for deletion fails when the secret is not "ACTIVE"
     Given the secret exists
     And the secret is not "ACTIVE"

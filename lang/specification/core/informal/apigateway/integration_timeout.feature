@@ -21,13 +21,13 @@ Feature: Apigateway - A Backend Integration Is Called
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @integration_timeout @internal
+  @guard @negative @integration_timeout @internal
   Scenario: a backend integration is called fails when the integration does not exist
     Given the integration does not exist
     When a backend integration is called
     Then the operation is rejected
 
-  @standard @negative @integration_timeout @internal
+  @guard @negative @integration_timeout @internal
   Scenario: a backend integration is called fails when the integration does not exist
     Given the integration exists
     And the integration does not exist

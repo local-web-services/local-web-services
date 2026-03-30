@@ -22,20 +22,20 @@ Feature: Lambda - An Active Function Is Deleted
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @delete_function
+  @guard @negative @delete_function
   Scenario: an active function is deleted fails when the function does not exist
     Given the function does not exist
     When an active function is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_function @lifecycle
+  @guard @negative @delete_function @lifecycle
   Scenario: an active function is deleted fails when the function is not "ACTIVE"
     Given the function exists
     And the function is not "ACTIVE"
     When an active function is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_function
+  @guard @negative @delete_function
   Scenario: an active function is deleted fails when the function has active executions
     Given the function exists
     And the function is "ACTIVE"

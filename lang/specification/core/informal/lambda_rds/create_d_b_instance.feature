@@ -15,7 +15,7 @@ Feature: LambdaRds - An Rds Database Instance Is Created
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
-  @standard @negative @create_d_b_instance
+  @guard @negative @create_d_b_instance
   Scenario: an "RDS" database instance is created fails when the instance already exists
     Given the instance already exists
     When an "RDS" database instance is created

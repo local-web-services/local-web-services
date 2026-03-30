@@ -16,13 +16,13 @@ Feature: LambdaStepfunctions - A Step Functions State Machine Is Deleted
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "RUNNING" execution references a state machine that exists
 
-  @standard @negative @delete_state_machine
+  @guard @negative @delete_state_machine
   Scenario: a Step Functions state machine is deleted fails when the state machine does not exist
     Given the state machine does not exist
     When a Step Functions state machine is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_state_machine @lifecycle
+  @guard @negative @delete_state_machine @lifecycle
   Scenario: a Step Functions state machine is deleted fails when the state machine is already "DELETED"
     Given the state machine exists
     And the state machine is already "DELETED"

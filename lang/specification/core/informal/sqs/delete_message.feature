@@ -17,13 +17,13 @@ Feature: Sqs - An In-Flight Message Is Deleted
     And every in-flight message belongs to an "ACTIVE" queue
     And every message has a non-negative receive count
 
-  @standard @negative @delete_message
+  @guard @negative @delete_message
   Scenario: an in-flight message is deleted fails when the message does not exist
     Given the message does not exist
     When an in-flight message is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_message
+  @guard @negative @delete_message
   Scenario: an in-flight message is deleted fails when the message is not "IN_FLIGHT"
     Given the message exists
     And the message is not "IN_FLIGHT"

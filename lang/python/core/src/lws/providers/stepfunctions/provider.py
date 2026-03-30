@@ -23,6 +23,7 @@ from lws.providers.stepfunctions._provider_helpers import (
     _build_state_machine_description,
     _build_sync_response,
     _resolve_definition,
+    build_injected_execution_history,
 )
 from lws.providers.stepfunctions._service_task_bridge import (
     ServiceTaskBridge,
@@ -86,6 +87,7 @@ class StepFunctionsProvider(IStateMachine):
         self._definitions: dict[str, StateMachineDefinition] = {}
         self._workflow_types: dict[str, WorkflowType] = {}
         self._executions: dict[str, ExecutionHistory] = {}
+        self._injected_executions: dict[str, ExecutionHistory] = {}
         self._compute_providers: dict[str, ICompute] = {}
         self._service_providers: dict[str, Any] = {}
         self._tags: dict[str, dict[str, str]] = {}
@@ -132,6 +134,7 @@ class StepFunctionsProvider(IStateMachine):
         Pre-configured state machines (from __init__) are preserved.
         """
         self._executions.clear()
+        self._injected_executions.clear()
         self._tags.clear()
         self._statuses.clear()
         # Remove any state machines that were created dynamically (not pre-configured)
@@ -228,14 +231,27 @@ class StepFunctionsProvider(IStateMachine):
     # ------------------------------------------------------------------
 
     def get_execution(self, execution_arn: str) -> ExecutionHistory | None:
-        """Get the execution history for a given ARN."""
-        return self._executions.get(execution_arn)
+        """Get the execution history for a given ARN.
+
+        Returns a real execution if present, falling back to injected executions.
+        """
+        return self._executions.get(execution_arn) or self._injected_executions.get(execution_arn)
 
     def list_executions(self, state_machine_name: str | None = None) -> list[ExecutionHistory]:
-        """List executions, optionally filtered by state machine name."""
+        """List executions, optionally filtered by state machine name.
+
+        Merges injected executions with real executions (real executions take precedence).
+        """
+        all_executions = {**self._injected_executions, **self._executions}
         if state_machine_name is None:
-            return list(self._executions.values())
-        return [h for h in self._executions.values() if h.state_machine_name == state_machine_name]
+            return list(all_executions.values())
+        return [h for h in all_executions.values() if h.state_machine_name == state_machine_name]
+
+    def inject_execution(self, execution_arn: str, state: str) -> None:
+        """Inject a fake execution into the provider for test setup."""
+        self._injected_executions[execution_arn] = build_injected_execution_history(
+            execution_arn, state
+        )
 
     def list_state_machines(self) -> list[str]:
         """Return sorted list of state machine names."""

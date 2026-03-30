@@ -23,20 +23,20 @@ Feature: Neptune - A Cluster Is Restored From A Snapshot
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @restore_d_b_cluster_from_snapshot
+  @guard @negative @restore_d_b_cluster_from_snapshot
   Scenario: a cluster is restored from a snapshot fails when the snapshot does not exist
     Given the snapshot does not exist
     When a cluster is restored from a snapshot
     Then the operation is rejected
 
-  @standard @negative @restore_d_b_cluster_from_snapshot @lifecycle
+  @guard @negative @restore_d_b_cluster_from_snapshot @lifecycle
   Scenario: a cluster is restored from a snapshot fails when the snapshot is not "AVAILABLE"
     Given the snapshot exists
     And the snapshot is not "AVAILABLE"
     When a cluster is restored from a snapshot
     Then the operation is rejected
 
-  @standard @negative @restore_d_b_cluster_from_snapshot
+  @guard @negative @internal @restore_d_b_cluster_from_snapshot
   Scenario: a cluster is restored from a snapshot fails when the target cluster slot is not available
     Given the snapshot exists
     And the snapshot is "AVAILABLE"

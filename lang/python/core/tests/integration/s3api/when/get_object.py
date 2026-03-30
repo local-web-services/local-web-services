@@ -1,0 +1,19 @@
+"""When: an object is retrieved from a bucket"""
+
+from __future__ import annotations
+
+from pytest_bdd import when
+from starlette.testclient import TestClient
+
+from ..constants import INT_BUCKET, INT_KEY
+
+
+@when("an object is retrieved from a bucket")
+def get_object(sync_client: TestClient, world):
+    r = sync_client.get(f"/{INT_BUCKET}/{INT_KEY}")
+    if r.status_code == 200:
+        world["result"] = r.content
+        world["error"] = None
+    else:
+        world["result"] = None
+        world["error"] = r.text

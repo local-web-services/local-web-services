@@ -21,13 +21,13 @@ Feature: Docdb - A Database Cluster Restore From Snapshot Completes
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @complete_cluster_restore @internal
+  @guard @negative @complete_cluster_restore @internal
   Scenario: a database cluster restore from snapshot completes fails when the cluster does not exist
     Given the cluster does not exist
     When a database cluster restore from snapshot completes
     Then the operation is rejected
 
-  @standard @negative @complete_cluster_restore @internal
+  @guard @negative @complete_cluster_restore @internal
   Scenario: a database cluster restore from snapshot completes fails when the cluster is not "RESTORING"
     Given the cluster exists
     And the cluster is not "RESTORING"

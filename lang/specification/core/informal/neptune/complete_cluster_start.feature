@@ -22,13 +22,13 @@ Feature: Neptune - A Database Cluster Start Completes
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @complete_cluster_start @internal
+  @guard @negative @complete_cluster_start @internal
   Scenario: a database cluster start completes fails when the cluster does not exist
     Given the cluster does not exist
     When a database cluster start completes
     Then the operation is rejected
 
-  @standard @negative @complete_cluster_start @internal
+  @guard @negative @complete_cluster_start @internal
   Scenario: a database cluster start completes fails when the cluster is not "STARTING"
     Given the cluster exists
     And the cluster is not "STARTING"

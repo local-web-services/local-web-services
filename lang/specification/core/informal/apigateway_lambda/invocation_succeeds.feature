@@ -16,7 +16,7 @@ Feature: ApigatewayLambda - The Lambda Invocation Completes Successfully And The
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation has a corresponding "IN_PROGRESS" request
 
-  @standard @negative @invocation_succeeds @internal
+  @guard @negative @invocation_succeeds @internal
   Scenario: the Lambda invocation completes successfully and the "API" returns a successful response fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda invocation completes successfully and the "API" returns a successful response

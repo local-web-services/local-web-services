@@ -25,20 +25,20 @@ Feature: Lambda - An Async Invocation Fails And Is Retried
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @process_async_retry @internal
+  @guard @negative @process_async_retry @internal
   Scenario: an async invocation fails and is retried fails when the async slot is empty
     Given the async slot is empty
     When an async invocation fails and is retried
     Then the operation is rejected
 
-  @standard @negative @process_async_retry @internal
+  @guard @negative @process_async_retry @internal
   Scenario: an async invocation fails and is retried fails when the async slot does not have a function assigned
     Given the async slot is occupied
     And the async slot does not have a function assigned
     When an async invocation fails and is retried
     Then the operation is rejected
 
-  @standard @negative @process_async_retry @internal
+  @guard @negative @process_async_retry @internal
   Scenario: an async invocation fails and is retried fails when the function does not exist
     Given the async slot is occupied
     And the async slot has a function assigned
@@ -46,7 +46,7 @@ Feature: Lambda - An Async Invocation Fails And Is Retried
     When an async invocation fails and is retried
     Then the operation is rejected
 
-  @standard @negative @process_async_retry @internal
+  @guard @negative @process_async_retry @internal
   Scenario: an async invocation fails and is retried fails when the function is not "ACTIVE"
     Given the async slot is occupied
     And the async slot has a function assigned
@@ -55,7 +55,7 @@ Feature: Lambda - An Async Invocation Fails And Is Retried
     When an async invocation fails and is retried
     Then the operation is rejected
 
-  @standard @negative @process_async_retry @internal
+  @guard @negative @process_async_retry @internal
   Scenario: an async invocation fails and is retried fails when retry tracking is not available for the slot
     Given the async slot is occupied
     And the async slot has a function assigned
@@ -65,7 +65,7 @@ Feature: Lambda - An Async Invocation Fails And Is Retried
     When an async invocation fails and is retried
     Then the operation is rejected
 
-  @standard @negative @process_async_retry @internal
+  @guard @negative @process_async_retry @internal
   Scenario: an async invocation fails and is retried fails when the retry count has been exhausted
     Given the async slot is occupied
     And the async slot has a function assigned

@@ -18,13 +18,13 @@ Feature: Sns - An Sns Topic Is Deleted
     And every active subscription references an "ACTIVE" topic
     And every delivery retry count is within the allowed limit
 
-  @standard @negative @delete_topic
+  @guard @negative @delete_topic
   Scenario: an "SNS" topic is deleted fails when the topic does not exist
     Given the topic does not exist
     When an "SNS" topic is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_topic @lifecycle
+  @guard @negative @delete_topic @lifecycle
   Scenario: an "SNS" topic is deleted fails when the topic is not "ACTIVE"
     Given the topic exists
     And the topic is not "ACTIVE"

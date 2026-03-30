@@ -15,7 +15,7 @@ Feature: LambdaElasticache - Elasticache Evicts A Cache Entry Due To Memory Pres
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "CACHED" entry belongs to an "AVAILABLE" cluster
 
-  @standard @negative @cache_evict @internal
+  @guard @negative @cache_evict @internal
   Scenario: ElastiCache evicts a cache entry due to memory pressure or "TTL" expiry fails when no "CACHED" entry exists
     Given no "CACHED" entry exists
     When ElastiCache evicts a cache entry due to memory pressure or "TTL" expiry

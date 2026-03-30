@@ -19,20 +19,20 @@ Feature: Elasticsearch - An Index Is Deleted From An Active Domain
     And every active tag belongs to an existing non-deleted domain
     And a pending config change only exists on a domain that is "PROCESSING"
 
-  @standard @negative @delete_index
+  @guard @negative @delete_index
   Scenario: an index is deleted from an active domain fails when the domain does not exist
     Given the domain does not exist
     When an index is deleted from an active domain
     Then the operation is rejected
 
-  @standard @negative @delete_index @lifecycle
+  @guard @negative @delete_index @lifecycle
   Scenario: an index is deleted from an active domain fails when the domain is not "ACTIVE"
     Given the domain exists
     And the domain is not "ACTIVE"
     When an index is deleted from an active domain
     Then the operation is rejected
 
-  @standard @negative @delete_index
+  @guard @negative @delete_index
   Scenario: an index is deleted from an active domain fails when the index does not exist
     Given the domain exists
     And the domain is "ACTIVE"
@@ -40,7 +40,7 @@ Feature: Elasticsearch - An Index Is Deleted From An Active Domain
     When an index is deleted from an active domain
     Then the operation is rejected
 
-  @standard @negative @delete_index
+  @guard @negative @delete_index
   Scenario: an index is deleted from an active domain fails when the index is not "ACTIVE"
     Given the domain exists
     And the domain is "ACTIVE"

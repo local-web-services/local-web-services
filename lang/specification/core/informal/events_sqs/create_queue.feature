@@ -15,7 +15,7 @@ Feature: EventsSqs - An Sqs Queue Is Created
     And every "ENABLED" rule references an "ACTIVE" event bus
     And every "AVAILABLE" message belongs to an "ACTIVE" queue
 
-  @standard @negative @create_queue
+  @guard @negative @create_queue
   Scenario: an "SQS" queue is created fails when the queue already exists
     Given the queue already exists
     When an "SQS" queue is created

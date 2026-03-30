@@ -16,7 +16,7 @@ Feature: ApigatewayLambda - The Lambda Invocation Fails And The Api Returns An E
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation has a corresponding "IN_PROGRESS" request
 
-  @standard @negative @invocation_fails @internal
+  @guard @negative @invocation_fails @internal
   Scenario: the Lambda invocation fails and the "API" returns an error response fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda invocation fails and the "API" returns an error response

@@ -16,7 +16,7 @@ Feature: EventsStepfunctions - A Running Execution Fails
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every "RUNNING" execution was started by an "ENABLED" rule
 
-  @standard @negative @execution_fails @internal
+  @guard @negative @execution_fails @internal
   Scenario: a running execution fails fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution fails

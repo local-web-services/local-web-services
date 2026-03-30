@@ -15,7 +15,7 @@ Feature: RdsEvents - The Db Instance Finishes Stopping
     And every "DELIVERED" event references a "DB" instance that exists
     And every "DELIVERED" event references a bus that exists
 
-  @standard @negative @d_b_stop_complete @internal
+  @guard @negative @d_b_stop_complete @internal
   Scenario: the "DB" instance finishes stopping fails when the "DB" instance is not "STOPPING"
     Given the "DB" instance is not "STOPPING"
     When the "DB" instance finishes stopping

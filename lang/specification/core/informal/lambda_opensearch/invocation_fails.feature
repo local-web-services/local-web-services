@@ -16,7 +16,7 @@ Feature: LambdaOpensearch - The Lambda Invocation Fails
     And every indexed document belongs to an existing index
     And every existing index belongs to an "ACTIVE" domain
 
-  @standard @negative @invocation_fails @internal
+  @guard @negative @invocation_fails @internal
   Scenario: the Lambda invocation fails fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda invocation fails

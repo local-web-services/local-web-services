@@ -20,20 +20,20 @@ Feature: Memorydb - A Snapshot Is Created From An Available Cluster
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @create_snapshot
+  @guard @negative @create_snapshot
   Scenario: a snapshot is created from an available cluster fails when the cluster does not exist
     Given the cluster does not exist
     When a snapshot is created from an available cluster
     Then the operation is rejected
 
-  @standard @negative @create_snapshot @lifecycle
+  @guard @negative @create_snapshot @lifecycle
   Scenario: a snapshot is created from an available cluster fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"
     When a snapshot is created from an available cluster
     Then the operation is rejected
 
-  @standard @negative @create_snapshot
+  @guard @negative @internal @create_snapshot
   Scenario: a snapshot is created from an available cluster fails when the snapshot slot is not available
     Given the cluster exists
     And the cluster is "AVAILABLE"

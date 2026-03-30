@@ -23,20 +23,20 @@ Feature: Neptune - An Automated Backup Window Runs On An Available Cluster
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @automated_backup_window @internal
+  @guard @negative @automated_backup_window @internal
   Scenario: an automated backup window runs on an available cluster fails when the cluster does not exist
     Given the cluster does not exist
     When an automated backup window runs on an available cluster
     Then the operation is rejected
 
-  @standard @negative @automated_backup_window @internal
+  @guard @negative @automated_backup_window @internal
   Scenario: an automated backup window runs on an available cluster fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"
     When an automated backup window runs on an available cluster
     Then the operation is rejected
 
-  @standard @negative @automated_backup_window @internal
+  @guard @negative @automated_backup_window @internal
   Scenario: an automated backup window runs on an available cluster fails when no snapshot slot is available
     Given the cluster exists
     And the cluster is "AVAILABLE"

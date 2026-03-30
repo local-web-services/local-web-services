@@ -16,13 +16,13 @@ Feature: LambdaElasticsearch - A Domain Configuration Update Begins
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing document references a domain that exists
 
-  @standard @negative @domain_processing_begins
+  @guard @negative @domain_processing_begins
   Scenario: a domain configuration update begins fails when the domain does not exist
     Given the domain does not exist
     When a domain configuration update begins
     Then the operation is rejected
 
-  @standard @negative @domain_processing_begins @lifecycle
+  @guard @negative @domain_processing_begins @lifecycle
   Scenario: a domain configuration update begins fails when the domain is not "AVAILABLE"
     Given the domain exists
     And the domain is not "AVAILABLE"

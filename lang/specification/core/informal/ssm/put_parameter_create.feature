@@ -17,7 +17,7 @@ Feature: Ssm - A Parameter Is Stored In Ssm
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
-  @standard @negative @put_parameter_create
+  @guard @negative @put_parameter_create
   Scenario: a parameter is stored in "SSM" fails when the parameter already exists
     Given the parameter already exists
     When a parameter is stored in "SSM"

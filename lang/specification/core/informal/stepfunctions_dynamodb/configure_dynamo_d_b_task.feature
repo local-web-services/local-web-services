@@ -19,20 +19,20 @@ Feature: StepfunctionsDynamodb - A Dynamodb Putitem Task Is Configured On The St
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every existing item belongs to an "ACTIVE" table
 
-  @standard @negative @configure_dynamo_d_b_task
+  @guard @negative @configure_dynamo_d_b_task
   Scenario: a DynamoDB PutItem task is configured on the state machine fails when the state machine does not exist
     Given the state machine does not exist
     When a DynamoDB PutItem task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_dynamo_d_b_task @lifecycle
+  @guard @negative @configure_dynamo_d_b_task @lifecycle
   Scenario: a DynamoDB PutItem task is configured on the state machine fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"
     When a DynamoDB PutItem task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_dynamo_d_b_task
+  @guard @negative @configure_dynamo_d_b_task
   Scenario: a DynamoDB PutItem task is configured on the state machine fails when the state machine already has a DynamoDB task configured
     Given the state machine exists
     And the state machine is "ACTIVE"
@@ -40,7 +40,7 @@ Feature: StepfunctionsDynamodb - A Dynamodb Putitem Task Is Configured On The St
     When a DynamoDB PutItem task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_dynamo_d_b_task
+  @guard @negative @configure_dynamo_d_b_task
   Scenario: a DynamoDB PutItem task is configured on the state machine fails when the table does not exist
     Given the state machine exists
     And the state machine is "ACTIVE"
@@ -49,7 +49,7 @@ Feature: StepfunctionsDynamodb - A Dynamodb Putitem Task Is Configured On The St
     When a DynamoDB PutItem task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_dynamo_d_b_task @lifecycle
+  @guard @negative @configure_dynamo_d_b_task @lifecycle
   Scenario: a DynamoDB PutItem task is configured on the state machine fails when the table is not "ACTIVE"
     Given the state machine exists
     And the state machine is "ACTIVE"

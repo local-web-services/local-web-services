@@ -21,13 +21,13 @@ Feature: Docdb - A Database Cluster Deletion Completes
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @complete_cluster_deletion @internal
+  @guard @negative @complete_cluster_deletion @internal
   Scenario: a database cluster deletion completes fails when the cluster does not exist
     Given the cluster does not exist
     When a database cluster deletion completes
     Then the operation is rejected
 
-  @standard @negative @complete_cluster_deletion @internal
+  @guard @negative @complete_cluster_deletion @internal
   Scenario: a database cluster deletion completes fails when the cluster is not "DELETING"
     Given the cluster exists
     And the cluster is not "DELETING"

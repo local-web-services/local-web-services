@@ -22,13 +22,13 @@ Feature: Secretsmanager - The Current Value Of An Active Secret Is Retrieved
     And every deleted secret with an open recovery window can still be restored or expired
     And every active secret has a current version assigned
 
-  @standard @negative @get_secret_value
+  @guard @negative @get_secret_value
   Scenario: the current value of an active secret is retrieved fails when the secret does not exist
     Given the secret does not exist
     When the current value of an active secret is retrieved
     Then the operation is rejected
 
-  @standard @negative @get_secret_value @lifecycle
+  @guard @negative @get_secret_value @lifecycle
   Scenario: the current value of an active secret is retrieved fails when the secret is not "ACTIVE"
     Given the secret exists
     And the secret is not "ACTIVE"

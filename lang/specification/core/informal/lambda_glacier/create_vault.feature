@@ -15,7 +15,7 @@ Feature: LambdaGlacier - A Glacier Vault Is Created
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing archive references a vault that exists
 
-  @standard @negative @create_vault
+  @guard @negative @create_vault
   Scenario: a Glacier vault is created fails when the vault already exists
     Given the vault already exists
     When a Glacier vault is created

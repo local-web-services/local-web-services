@@ -20,20 +20,20 @@ Feature: Elasticache - A Standalone Cache Cluster Is Deleted
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @delete_cache_cluster
+  @guard @negative @delete_cache_cluster
   Scenario: a standalone cache cluster is deleted fails when the cluster does not exist
     Given the cluster does not exist
     When a standalone cache cluster is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_cache_cluster @lifecycle
+  @guard @negative @delete_cache_cluster @lifecycle
   Scenario: a standalone cache cluster is deleted fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"
     When a standalone cache cluster is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_cache_cluster
+  @guard @negative @delete_cache_cluster
   Scenario: a standalone cache cluster is deleted fails when the cluster is part of a replication group
     Given the cluster exists
     And the cluster is "AVAILABLE"

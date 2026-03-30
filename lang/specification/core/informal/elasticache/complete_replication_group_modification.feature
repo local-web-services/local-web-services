@@ -19,13 +19,13 @@ Feature: Elasticache - A Replication Group Modification Completes
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @complete_replication_group_modification @internal
+  @guard @negative @complete_replication_group_modification @internal
   Scenario: a replication group modification completes fails when the replication group does not exist
     Given the replication group does not exist
     When a replication group modification completes
     Then the operation is rejected
 
-  @standard @negative @complete_replication_group_modification @internal
+  @guard @negative @complete_replication_group_modification @internal
   Scenario: a replication group modification completes fails when the replication group is not "MODIFYING"
     Given the replication group exists
     And the replication group is not "MODIFYING"

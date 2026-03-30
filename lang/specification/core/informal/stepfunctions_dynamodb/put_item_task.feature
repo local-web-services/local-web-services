@@ -17,20 +17,20 @@ Feature: StepfunctionsDynamodb - A Running Execution Writes An Item To The Dynam
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every existing item belongs to an "ACTIVE" table
 
-  @standard @negative @put_item_task
+  @guard @negative @put_item_task
   Scenario: a running execution writes an item to the DynamoDB table and succeeds fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution writes an item to the DynamoDB table and succeeds
     Then the operation is rejected
 
-  @standard @negative @put_item_task @lifecycle
+  @guard @negative @put_item_task @lifecycle
   Scenario: a running execution writes an item to the DynamoDB table and succeeds fails when the target table is not "ACTIVE"
     Given an execution is "RUNNING"
     And the target table is not "ACTIVE"
     When a running execution writes an item to the DynamoDB table and succeeds
     Then the operation is rejected
 
-  @standard @negative @put_item_task @capacity
+  @guard @negative @internal @put_item_task @capacity
   Scenario: a running execution writes an item to the DynamoDB table and succeeds fails when no item slot is available
     Given an execution is "RUNNING"
     And the target table is "ACTIVE"

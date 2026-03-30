@@ -21,13 +21,13 @@ Feature: Docdb - A Database Cluster Modification Completes
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @complete_cluster_modification @internal
+  @guard @negative @complete_cluster_modification @internal
   Scenario: a database cluster modification completes fails when the cluster does not exist
     Given the cluster does not exist
     When a database cluster modification completes
     Then the operation is rejected
 
-  @standard @negative @complete_cluster_modification @internal
+  @guard @negative @complete_cluster_modification @internal
   Scenario: a database cluster modification completes fails when the cluster is not "MODIFYING"
     Given the cluster exists
     And the cluster is not "MODIFYING"

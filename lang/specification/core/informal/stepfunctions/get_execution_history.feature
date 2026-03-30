@@ -18,7 +18,7 @@ Feature: Stepfunctions - The Event History Of An Execution Is Retrieved
     And synchronous executions only run on express state machines
     And every execution belongs to a known state machine
 
-  @standard @negative @get_execution_history
+  @guard @negative @get_execution_history
   Scenario: the event history of an execution is retrieved fails when the execution does not exist
     Given the execution does not exist
     When the event history of an execution is retrieved

@@ -16,13 +16,13 @@ Feature: LambdaSecretsmanager - The Lambda Function Fails Because The Secret Is 
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
-  @standard @negative @invocation_fails_secret_unavailable @lifecycle
+  @guard @negative @invocation_fails_secret_unavailable @lifecycle
   Scenario: the Lambda function fails because the secret is pending deletion fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda function fails because the secret is pending deletion
     Then the operation is rejected
 
-  @standard @negative @invocation_fails_secret_unavailable @lifecycle
+  @guard @negative @invocation_fails_secret_unavailable @lifecycle
   Scenario: the Lambda function fails because the secret is pending deletion fails when the secret is not pending deletion
     Given an invocation is "IN_PROGRESS"
     And the secret is not pending deletion

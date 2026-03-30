@@ -16,13 +16,13 @@ Feature: LambdaEvents - The Eventbridge Event Bus Is Deleted
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "PUBLISHED" event references a bus that exists
 
-  @standard @negative @delete_event_bus
+  @guard @negative @delete_event_bus
   Scenario: the EventBridge event bus is deleted fails when the bus does not exist
     Given the bus does not exist
     When the EventBridge event bus is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_event_bus @lifecycle
+  @guard @negative @delete_event_bus @lifecycle
   Scenario: the EventBridge event bus is deleted fails when the bus is already "DELETED"
     Given the bus exists
     And the bus is already "DELETED"

@@ -21,13 +21,13 @@ Feature: CognitoIdp - A Group Is Deleted
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @delete_group
+  @guard @negative @delete_group
   Scenario: a group is deleted fails when the group does not exist
     Given the group does not exist
     When a group is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_group
+  @guard @negative @delete_group
   Scenario: a group is deleted fails when the group is not "ACTIVE"
     Given the group exists
     And the group is not "ACTIVE"

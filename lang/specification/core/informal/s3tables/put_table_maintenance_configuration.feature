@@ -18,13 +18,13 @@ Feature: S3tables - Maintenance Configuration Is Applied To A Table
     And snapshot count is never negative
     And schema version is always at least one
 
-  @standard @negative @put_table_maintenance_configuration
+  @guard @negative @put_table_maintenance_configuration
   Scenario: maintenance configuration is applied to a table fails when the table does not exist
     Given the table does not exist
     When maintenance configuration is applied to a table
     Then the operation is rejected
 
-  @standard @negative @put_table_maintenance_configuration @lifecycle
+  @guard @negative @put_table_maintenance_configuration @lifecycle
   Scenario: maintenance configuration is applied to a table fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"

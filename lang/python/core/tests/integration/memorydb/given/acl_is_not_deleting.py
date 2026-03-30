@@ -1,0 +1,10 @@
+"""Given: the "ACL" is not "DELETING" """
+
+from __future__ import annotations
+
+from pytest_bdd import given
+
+
+@given('the "ACL" is not "DELETING"')
+def acl_is_not_deleting():
+    """No-op: ACLs are not in DELETING state by default."""

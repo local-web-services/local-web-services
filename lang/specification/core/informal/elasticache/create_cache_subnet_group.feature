@@ -18,7 +18,7 @@ Feature: Elasticache - A Cache Subnet Group Is Created
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @create_cache_subnet_group
+  @guard @negative @create_cache_subnet_group
   Scenario: a cache subnet group is created fails when the subnet group already exists
     Given the subnet group already exists
     When a cache subnet group is created

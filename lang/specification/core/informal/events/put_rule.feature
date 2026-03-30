@@ -23,20 +23,20 @@ Feature: Events - An Eventbridge Rule Is Created
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @put_rule
+  @guard @negative @put_rule
   Scenario: an EventBridge rule is created fails when the rule already exists
     Given the rule already exists
     When an EventBridge rule is created
     Then the operation is rejected
 
-  @standard @negative @put_rule
+  @guard @negative @put_rule
   Scenario: an EventBridge rule is created fails when the event bus does not exist
     Given the rule does not already exist
     And the event bus does not exist
     When an EventBridge rule is created
     Then the operation is rejected
 
-  @standard @negative @put_rule
+  @guard @negative @put_rule
   Scenario: an EventBridge rule is created fails when the event bus is not "ACTIVE"
     Given the rule does not already exist
     And the event bus exists

@@ -16,13 +16,13 @@ Feature: NeptuneEvents - The Neptune Cluster Stops But Event Delivery Fails Beca
     And every "DELIVERED" event references a cluster that exists
     And every "DELIVERED" event references a bus that exists
 
-  @standard @negative @cluster_stop_event_fails @internal
+  @guard @negative @cluster_stop_event_fails @internal
   Scenario: the Neptune cluster stops but event delivery fails because the bus is deleted fails when the cluster is not "AVAILABLE"
     Given the cluster is not "AVAILABLE"
     When the Neptune cluster stops but event delivery fails because the bus is deleted
     Then the operation is rejected
 
-  @standard @negative @cluster_stop_event_fails @internal
+  @guard @negative @cluster_stop_event_fails @internal
   Scenario: the Neptune cluster stops but event delivery fails because the bus is deleted fails when the bus is not "DELETED"
     Given the cluster is "AVAILABLE"
     And the bus is not "DELETED"

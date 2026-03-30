@@ -19,13 +19,13 @@ Feature: Memorydb - An Acl Is Updated
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @update_a_c_l
+  @guard @negative @update_a_c_l
   Scenario: an "ACL" is updated fails when the "ACL" does not exist
     Given the "ACL" does not exist
     When an "ACL" is updated
     Then the operation is rejected
 
-  @standard @negative @update_a_c_l @lifecycle
+  @guard @negative @update_a_c_l @lifecycle
   Scenario: an "ACL" is updated fails when the "ACL" is not "ACTIVE"
     Given the "ACL" exists
     And the "ACL" is not "ACTIVE"

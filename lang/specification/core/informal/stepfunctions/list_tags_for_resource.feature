@@ -19,13 +19,13 @@ Feature: Stepfunctions - Tags For A State Machine Are Listed
     And synchronous executions only run on express state machines
     And every execution belongs to a known state machine
 
-  @standard @negative @list_tags_for_resource
+  @guard @negative @list_tags_for_resource
   Scenario: tags for a state machine are listed fails when the state machine does not exist
     Given the state machine does not exist
     When tags for a state machine are listed
     Then the operation is rejected
 
-  @standard @negative @list_tags_for_resource @lifecycle
+  @guard @negative @list_tags_for_resource @lifecycle
   Scenario: tags for a state machine are listed fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"

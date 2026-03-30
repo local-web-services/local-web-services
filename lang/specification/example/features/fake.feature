@@ -1,7 +1,7 @@
 @stepfunctions @fake @dataplane
 Feature: Fake Step Functions API calls
 
-  @happy
+  @happy @minimal
   Scenario: Return a faked success response
     Given no state machines are configured
     And StartExecution is faked to return execution ARN "arn:aws:states:us-east-1:000000000000:execution:OrderProcessor:fake-exec"
@@ -9,14 +9,14 @@ Feature: Fake Step Functions API calls
     When I process order "order-fake" via ARN "arn:aws:states:us-east-1:000000000000:stateMachine:OrderProcessor"
     Then the output will contain order ID "order-fake"
 
-  @error
+  @error @guard
   Scenario: Propagate an injected AWS error from StartExecution
     Given no state machines are configured
     And StartExecution is faked to return error "ExecutionLimitExceeded"
     When I process order "order-999" via ARN "arn:aws:states:us-east-1:000000000000:stateMachine:OrderProcessor"
     Then an AWS error is returned
 
-  @happy
+  @happy @minimal
   Scenario: Apply a response delay to StartExecution
     Given no state machines are configured
     And StartExecution is faked with a 10ms delay returning execution ARN "arn:aws:states:us-east-1:000000000000:execution:OrderProcessor:header-exec"

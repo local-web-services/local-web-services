@@ -23,20 +23,20 @@ Feature: Apigateway - The Dev Stage Is Redeployed To A New Deployment
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @update_stage_dev
+  @guard @negative @update_stage_dev
   Scenario: the dev stage is redeployed to a new deployment fails when the deployment does not exist
     Given the deployment does not exist
     When the dev stage is redeployed to a new deployment
     Then the operation is rejected
 
-  @standard @negative @update_stage_dev @lifecycle
+  @guard @negative @update_stage_dev @lifecycle
   Scenario: the dev stage is redeployed to a new deployment fails when the deployment is not "ACTIVE"
     Given the deployment exists
     And the deployment is not "ACTIVE"
     When the dev stage is redeployed to a new deployment
     Then the operation is rejected
 
-  @standard @negative @update_stage_dev
+  @guard @negative @update_stage_dev
   Scenario: the dev stage is redeployed to a new deployment fails when the dev stage does not exist
     Given the deployment exists
     And the deployment is "ACTIVE"
@@ -44,7 +44,7 @@ Feature: Apigateway - The Dev Stage Is Redeployed To A New Deployment
     When the dev stage is redeployed to a new deployment
     Then the operation is rejected
 
-  @standard @negative @update_stage_dev @lifecycle
+  @guard @negative @update_stage_dev @lifecycle
   Scenario: the dev stage is redeployed to a new deployment fails when the dev stage is not active
     Given the deployment exists
     And the deployment is "ACTIVE"

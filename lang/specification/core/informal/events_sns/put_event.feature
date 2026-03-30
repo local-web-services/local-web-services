@@ -19,20 +19,20 @@ Feature: EventsSns - An Event Is Published To The Bus And Routed To The Target S
     And every "ENABLED" rule references an "ACTIVE" event bus
     And every "AVAILABLE" message belongs to an "ACTIVE" topic
 
-  @standard @negative @put_event
+  @guard @negative @put_event
   Scenario: an event is published to the bus and routed to the target "SNS" topic fails when the event bus does not exist
     Given the event bus does not exist
     When an event is published to the bus and routed to the target "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @put_event @lifecycle
+  @guard @negative @put_event @lifecycle
   Scenario: an event is published to the bus and routed to the target "SNS" topic fails when the event bus is not "ACTIVE"
     Given the event bus exists
     And the event bus is not "ACTIVE"
     When an event is published to the bus and routed to the target "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @put_event @lifecycle
+  @guard @negative @put_event @lifecycle
   Scenario: an event is published to the bus and routed to the target "SNS" topic fails when no "ENABLED" rule exists on the bus targeting a topic
     Given the event bus exists
     And the event bus is "ACTIVE"
@@ -40,7 +40,7 @@ Feature: EventsSns - An Event Is Published To The Bus And Routed To The Target S
     When an event is published to the bus and routed to the target "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @put_event @lifecycle
+  @guard @negative @put_event @lifecycle
   Scenario: an event is published to the bus and routed to the target "SNS" topic fails when the target topic is not "ACTIVE"
     Given the event bus exists
     And the event bus is "ACTIVE"
@@ -49,7 +49,7 @@ Feature: EventsSns - An Event Is Published To The Bus And Routed To The Target S
     When an event is published to the bus and routed to the target "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @put_event @capacity
+  @guard @negative @internal @put_event @capacity
   Scenario: an event is published to the bus and routed to the target "SNS" topic fails when no message slot is available
     Given the event bus exists
     And the event bus is "ACTIVE"

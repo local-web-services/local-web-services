@@ -18,13 +18,13 @@ Feature: S3tables - A Table Is Deleted
     And snapshot count is never negative
     And schema version is always at least one
 
-  @standard @negative @delete_table
+  @guard @negative @delete_table
   Scenario: a table is deleted fails when the table does not exist
     Given the table does not exist
     When a table is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_table @lifecycle
+  @guard @negative @delete_table @lifecycle
   Scenario: a table is deleted fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"

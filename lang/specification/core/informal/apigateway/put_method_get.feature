@@ -22,20 +22,20 @@ Feature: Apigateway - A Get Method Is Created On A Resource
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @put_method_get
+  @guard @negative @put_method_get
   Scenario: a "GET" method is created on a resource fails when the method already exists
     Given the method already exists
     When a "GET" method is created on a resource
     Then the operation is rejected
 
-  @standard @negative @put_method_get
+  @guard @negative @put_method_get
   Scenario: a "GET" method is created on a resource fails when the resource does not exist
     Given the method does not already exist
     And the resource does not exist
     When a "GET" method is created on a resource
     Then the operation is rejected
 
-  @standard @negative @put_method_get @lifecycle
+  @guard @negative @put_method_get @lifecycle
   Scenario: a "GET" method is created on a resource fails when the resource is not "ACTIVE"
     Given the method does not already exist
     And the resource exists

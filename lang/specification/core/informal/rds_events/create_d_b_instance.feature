@@ -15,7 +15,7 @@ Feature: RdsEvents - An Rds Db Instance Is Created And Becomes Available
     And every "DELIVERED" event references a "DB" instance that exists
     And every "DELIVERED" event references a bus that exists
 
-  @standard @negative @create_d_b_instance
+  @guard @negative @create_d_b_instance
   Scenario: an "RDS" "DB" instance is created and becomes "AVAILABLE" fails when the "DB" instance already exists
     Given the "DB" instance already exists
     When an "RDS" "DB" instance is created and becomes "AVAILABLE"

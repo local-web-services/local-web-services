@@ -22,13 +22,13 @@ Feature: Events - A Rule Is Disabled
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @disable_rule
+  @guard @negative @disable_rule
   Scenario: a rule is disabled fails when the rule does not exist
     Given the rule does not exist
     When a rule is disabled
     Then the operation is rejected
 
-  @standard @negative @disable_rule
+  @guard @negative @disable_rule
   Scenario: a rule is disabled fails when the rule is not "ENABLED"
     Given the rule exists
     And the rule is not "ENABLED"

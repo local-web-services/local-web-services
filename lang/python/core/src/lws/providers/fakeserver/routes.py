@@ -60,14 +60,7 @@ def _register_management_routes(app: FastAPI) -> None:
     async def set_chaos(request: Request) -> dict[str, Any]:
         body = await request.json()
         chaos: ChaosConfig = app.state.chaos
-        if "enabled" in body:
-            chaos.enabled = body["enabled"]
-        if "error_rate" in body:
-            chaos.error_rate = float(body["error_rate"])
-        if "latency_min_ms" in body:
-            chaos.latency_min_ms = int(body["latency_min_ms"])
-        if "latency_max_ms" in body:
-            chaos.latency_max_ms = int(body["latency_max_ms"])
+        chaos.apply_overrides(body)
         return {"chaos": {"enabled": chaos.enabled, "error_rate": chaos.error_rate}}
 
 

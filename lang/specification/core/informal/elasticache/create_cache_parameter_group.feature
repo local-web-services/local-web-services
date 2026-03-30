@@ -18,7 +18,7 @@ Feature: Elasticache - A Cache Parameter Group Is Created
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @create_cache_parameter_group
+  @guard @negative @create_cache_parameter_group
   Scenario: a cache parameter group is created fails when the parameter group already exists
     Given the parameter group already exists
     When a cache parameter group is created

@@ -17,7 +17,7 @@ Feature: S3api - A Bucket Is Created
     And every multipart upload has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
     And deleting a bucket requires it to be empty
 
-  @standard @negative @create_bucket
+  @guard @negative @create_bucket
   Scenario: a bucket is created fails when the bucket already exists
     Given the bucket already exists
     When a bucket is created

@@ -16,7 +16,7 @@ Feature: CognitoLambda - A Cognito User Pool Is Created
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
-  @standard @negative @create_user_pool
+  @guard @negative @create_user_pool
   Scenario: a Cognito User Pool is created fails when the pool already exists
     Given the pool already exists
     When a Cognito User Pool is created

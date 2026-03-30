@@ -7,9 +7,20 @@ export AWS_DEFAULT_REGION=us-east-1
 
 BASE_PORT=3000
 APIGW_PORT=$BASE_PORT
+SNS_PORT=$((BASE_PORT + 4))
+SQS_PORT=$((BASE_PORT + 2))
 SFN_PORT=$((BASE_PORT + 6))
 SSM_PORT=$((BASE_PORT + 12))
 SM_PORT=$((BASE_PORT + 13))
+
+echo "=== Subscribing notification queue to SNS topic ==="
+TOPIC_ARN="arn:ldk:sns:local:000000000000:order-notifications"
+QUEUE_URL="http://localhost:${SQS_PORT}/000000000000/order-notification-queue"
+curl -sf -X POST "http://localhost:${SNS_PORT}/" \
+  --data-urlencode "Action=Subscribe" \
+  --data-urlencode "TopicArn=${TOPIC_ARN}" \
+  --data-urlencode "Protocol=sqs" \
+  --data-urlencode "Endpoint=${QUEUE_URL}" > /dev/null
 
 echo "=== Creating order ==="
 CREATE_RESPONSE=$(curl -sf -X POST "http://localhost:${APIGW_PORT}/orders" \

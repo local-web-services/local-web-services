@@ -15,7 +15,7 @@ Feature: ApigatewayS3api - An S3 Bucket Is Created
     And every existing object references a bucket that exists
     And every successful request references an "API" that exists
 
-  @standard @negative @create_bucket
+  @guard @negative @create_bucket
   Scenario: an S3 bucket is created fails when the bucket already exists
     Given the bucket already exists
     When an S3 bucket is created

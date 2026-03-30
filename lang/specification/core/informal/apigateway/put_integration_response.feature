@@ -21,13 +21,13 @@ Feature: Apigateway - A 200 Integration Response Is Configured
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @put_integration_response
+  @guard @negative @put_integration_response
   Scenario: a 200 integration response is configured fails when the integration does not exist
     Given the integration does not exist
     When a 200 integration response is configured
     Then the operation is rejected
 
-  @standard @negative @put_integration_response
+  @guard @negative @put_integration_response
   Scenario: a 200 integration response is configured fails when the integration does not exist
     Given the integration exists
     And the integration does not exist

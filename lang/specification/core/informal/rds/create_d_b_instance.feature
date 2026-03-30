@@ -16,7 +16,7 @@ Feature: Rds - A Database Instance Is Created
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
 
-  @standard @negative @create_d_b_instance
+  @guard @negative @create_d_b_instance
   Scenario: a database instance is created fails when the database instance already exists
     Given the database instance already exists
     When a database instance is created

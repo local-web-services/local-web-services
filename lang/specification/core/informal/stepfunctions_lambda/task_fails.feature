@@ -16,7 +16,7 @@ Feature: StepfunctionsLambda - The Lambda Task Fails And The Execution Fails
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation has a corresponding "RUNNING" execution
 
-  @standard @negative @task_fails @internal
+  @guard @negative @task_fails @internal
   Scenario: the Lambda task fails and the execution fails fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda task fails and the execution fails

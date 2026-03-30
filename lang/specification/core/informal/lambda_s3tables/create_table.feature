@@ -16,13 +16,13 @@ Feature: LambdaS3tables - A Table Is Created In The Table Bucket
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a table that exists
 
-  @standard @negative @create_table
+  @guard @negative @create_table
   Scenario: a table is created in the table bucket fails when the table already exists
     Given the table already exists
     When a table is created in the table bucket
     Then the operation is rejected
 
-  @standard @negative @create_table @lifecycle
+  @guard @negative @create_table @lifecycle
   Scenario: a table is created in the table bucket fails when the table bucket is not "ACTIVE"
     Given the table does not already exist
     And the table bucket is not "ACTIVE"

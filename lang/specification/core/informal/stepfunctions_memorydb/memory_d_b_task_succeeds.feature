@@ -16,13 +16,13 @@ Feature: StepfunctionsMemorydb - A Running Execution Connects To The Available M
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
-  @standard @negative @memory_d_b_task_succeeds @internal
+  @guard @negative @memory_d_b_task_succeeds @internal
   Scenario: a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
     Then the operation is rejected
 
-  @standard @negative @memory_d_b_task_succeeds @internal
+  @guard @negative @memory_d_b_task_succeeds @internal
   Scenario: a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds fails when the cluster is not "AVAILABLE"
     Given an execution is "RUNNING"
     And the cluster is not "AVAILABLE"

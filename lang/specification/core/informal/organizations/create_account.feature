@@ -19,13 +19,13 @@ Feature: Organizations - An Account Is Created In The Organization
     And no active node is a child of a deleted organizational unit
     And every active policy attachment targets an "ACTIVE" node
 
-  @standard @negative @create_account
+  @guard @negative @create_account
   Scenario: an account is created in the organization fails when the organization does not exist
     Given the organization does not exist
     When an account is created in the organization
     Then the operation is rejected
 
-  @standard @negative @create_account
+  @guard @negative @create_account
   Scenario: an account is created in the organization fails when the account already exists
     Given the organization exists
     And the account already exists

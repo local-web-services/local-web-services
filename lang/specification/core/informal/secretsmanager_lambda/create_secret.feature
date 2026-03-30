@@ -15,7 +15,7 @@ Feature: SecretsmanagerLambda - A Secret Is Created In Secrets Manager
     And every "ROTATING" secret has an "IN_PROGRESS" rotation invocation
     And every successful rotation invocation recorded which secret it rotated
 
-  @standard @negative @create_secret
+  @guard @negative @create_secret
   Scenario: a secret is created in Secrets Manager fails when the secret already exists
     Given the secret already exists
     When a secret is created in Secrets Manager

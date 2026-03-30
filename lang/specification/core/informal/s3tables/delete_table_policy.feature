@@ -19,20 +19,20 @@ Feature: S3tables - A Table'S Policy Is Deleted
     And snapshot count is never negative
     And schema version is always at least one
 
-  @standard @negative @delete_table_policy
+  @guard @negative @delete_table_policy
   Scenario: a table's policy is deleted fails when the table does not exist
     Given the table does not exist
     When a table's policy is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_table_policy @lifecycle
+  @guard @negative @delete_table_policy @lifecycle
   Scenario: a table's policy is deleted fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"
     When a table's policy is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_table_policy
+  @guard @negative @delete_table_policy
   Scenario: a table's policy is deleted fails when the table does not have a policy
     Given the table exists
     And the table is "ACTIVE"

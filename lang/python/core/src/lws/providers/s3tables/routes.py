@@ -30,6 +30,11 @@ from lws.providers.s3tables._s3tables_handlers import (
     _list_tables,
     _put_table_policy,
 )
+from lws.providers.s3tables._s3tables_maintenance_handlers import (
+    _get_table_maintenance_configuration,
+    _put_table_maintenance_configuration,
+    _start_table_bucket_maintenance,
+)
 from lws.providers.s3tables._s3tables_state import _S3TablesState
 
 _logger = get_logger("ldk.s3tables")
@@ -48,14 +53,14 @@ async def _s3tables_create_table_bucket(
 ) -> Response:
     """Handle lifecycle-aware CreateTableBucket."""
     bucket_name = ""
-    if lc.enabled and lc.create_dwell_ms > 0:
+    if lc.enabled:
         try:
             raw = await request.body()
             bucket_name = json.loads(raw).get("name", "")
         except Exception:
             bucket_name = ""
     resp = await _create_table_bucket(request, state)
-    if lc.enabled and resp.status_code == 200 and lc.create_dwell_ms > 0 and bucket_name:
+    if lc.enabled and resp.status_code == 200 and bucket_name:
         tracker.set_state(bucket_name, "CREATING")
         tracker.schedule_transition(bucket_name, "ACTIVE", lc.create_dwell_ms)
     return resp
@@ -129,6 +134,17 @@ def _register_bucket_routes(
     async def delete_table_bucket(tableBucketARN: str) -> Response:
         return await _s3tables_delete_table_bucket(tableBucketARN, state, lc, tracker)
 
+    @app.put("/buckets/{path:path}")
+    async def bucket_maintenance_or_other(path: str, request: Request) -> Response:
+        # PUT /buckets/{arn}/maintenance/{type} → start_table_bucket_maintenance
+        if "/maintenance/" in path:
+            parts = path.rsplit("/maintenance/", 1)
+            bucket_arn, maintenance_type = parts[0], parts[1]
+            return await _start_table_bucket_maintenance(
+                bucket_arn, maintenance_type, request, state
+            )
+        return _error_response("BadRequestException", f"Unsupported bucket operation: {path}")
+
 
 def _register_namespace_routes(app: FastAPI, state: _S3TablesState) -> None:
     """Register namespace CRUD routes."""
@@ -170,8 +186,16 @@ def _register_table_routes(app: FastAPI, state: _S3TablesState) -> None:
 
     @app.put("/tables/{path:path}")
     async def create_or_put_policy(path: str, request: Request) -> Response:
-        # PUT /tables/{arn}/{ns}          → create_table
-        # PUT /tables/{arn}/{ns}/{name}/policy → put_table_policy
+        # PUT /tables/{arn}/{ns}                      → create_table
+        # PUT /tables/{arn}/{ns}/{name}/policy         → put_table_policy
+        # PUT /tables/{arn}/{ns}/{name}/maintenance/{t} → put_table_maintenance_configuration
+        if "/maintenance/" in path:
+            parts = path.rsplit("/maintenance/", 1)
+            inner, maintenance_type = parts[0], parts[1]
+            tableBucketARN, namespace, name = _split_arn_and_suffix(inner, 2)[:3]
+            return await _put_table_maintenance_configuration(
+                tableBucketARN, namespace, name, maintenance_type, request, state
+            )
         if path.endswith("/policy"):
             inner = path[: -len("/policy")]
             tableBucketARN, namespace, name = _split_arn_and_suffix(inner, 2)[:3]
@@ -181,6 +205,14 @@ def _register_table_routes(app: FastAPI, state: _S3TablesState) -> None:
 
     @app.get("/tables/{tableBucketARN:path}")
     async def list_tables(tableBucketARN: str, namespace: str = Query(default=None)) -> Response:
+        # GET /tables/{arn}/{ns}/{name}/maintenance/{type} → get_table_maintenance_configuration
+        if "/maintenance/" in tableBucketARN:
+            parts = tableBucketARN.rsplit("/maintenance/", 1)
+            inner, maintenance_type = parts[0], parts[1]
+            table_bucket_arn, ns, name = _split_arn_and_suffix(inner, 2)[:3]
+            return await _get_table_maintenance_configuration(
+                table_bucket_arn, ns, name, maintenance_type, state
+            )
         return await _list_tables(tableBucketARN, namespace, state)
 
     @app.get("/get-table")

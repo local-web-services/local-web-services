@@ -22,20 +22,20 @@ Feature: CognitoIdp - An Admin Sets A User Password
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @admin_set_user_password
+  @guard @negative @admin_set_user_password
   Scenario: an admin sets a user password fails when the user does not exist
     Given the user does not exist
     When an admin sets a user password
     Then the operation is rejected
 
-  @standard @negative @admin_set_user_password
+  @guard @negative @admin_set_user_password
   Scenario: an admin sets a user password fails when the user is not in "RESET_REQUIRED" state
     Given the user exists
     And the user is not in "RESET_REQUIRED" state
     When an admin sets a user password
     Then the operation is rejected
 
-  @standard @negative @admin_set_user_password
+  @guard @negative @admin_set_user_password
   Scenario: an admin sets a user password fails when the user is not in "FORCE_CHANGE_PASSWORD" state
     Given the user exists
     And the user is in "RESET_REQUIRED" state

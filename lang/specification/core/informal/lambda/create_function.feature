@@ -20,7 +20,7 @@ Feature: Lambda - A Function Is Created
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @create_function
+  @guard @negative @create_function
   Scenario: a function is created fails when the function already exists
     Given the function already exists
     When a function is created

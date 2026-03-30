@@ -19,13 +19,13 @@ Feature: Stepfunctions - A Running Execution Exceeds Its Timeout
     And synchronous executions only run on express state machines
     And every execution belongs to a known state machine
 
-  @standard @negative @execution_timeout @internal
+  @guard @negative @execution_timeout @internal
   Scenario: a running execution exceeds its timeout fails when the execution does not exist
     Given the execution does not exist
     When a running execution exceeds its timeout
     Then the operation is rejected
 
-  @standard @negative @execution_timeout @internal
+  @guard @negative @execution_timeout @internal
   Scenario: a running execution exceeds its timeout fails when the execution is not "RUNNING"
     Given the execution exists
     And the execution is not "RUNNING"

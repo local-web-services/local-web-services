@@ -16,13 +16,13 @@ Feature: LambdaS3tables - A Table Deletion Is Initiated
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a table that exists
 
-  @standard @negative @delete_table
+  @guard @negative @delete_table
   Scenario: a table deletion is initiated fails when the table does not exist
     Given the table does not exist
     When a table deletion is initiated
     Then the operation is rejected
 
-  @standard @negative @delete_table @lifecycle
+  @guard @negative @delete_table @lifecycle
   Scenario: a table deletion is initiated fails when the table is already "DELETING"
     Given the table exists
     And the table is already "DELETING"

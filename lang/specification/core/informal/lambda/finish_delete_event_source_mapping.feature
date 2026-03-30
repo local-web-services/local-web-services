@@ -21,13 +21,13 @@ Feature: Lambda - An Event Source Mapping Finishes Being Deleted
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @finish_delete_event_source_mapping
+  @guard @negative @finish_delete_event_source_mapping
   Scenario: an event source mapping finishes being deleted fails when the event source mapping does not exist
     Given the event source mapping does not exist
     When an event source mapping finishes being deleted
     Then the operation is rejected
 
-  @standard @negative @finish_delete_event_source_mapping @lifecycle
+  @guard @negative @finish_delete_event_source_mapping @lifecycle
   Scenario: an event source mapping finishes being deleted fails when the mapping is not "DELETING"
     Given the event source mapping exists
     And the mapping is not "DELETING"

@@ -17,20 +17,20 @@ Feature: LambdaSns - The Lambda Function Is Invoked
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And publishing requires an "ACTIVE" topic to be present
 
-  @standard @negative @invoke_function
+  @guard @negative @invoke_function
   Scenario: the Lambda function is invoked fails when the function does not exist
     Given the function does not exist
     When the Lambda function is invoked
     Then the operation is rejected
 
-  @standard @negative @invoke_function @lifecycle
+  @guard @negative @invoke_function @lifecycle
   Scenario: the Lambda function is invoked fails when the function is not "ACTIVE"
     Given the function exists
     And the function is not "ACTIVE"
     When the Lambda function is invoked
     Then the operation is rejected
 
-  @standard @negative @invoke_function @capacity
+  @guard @negative @internal @invoke_function @capacity
   Scenario: the Lambda function is invoked fails when no invocation slot is available
     Given the function exists
     And the function is "ACTIVE"

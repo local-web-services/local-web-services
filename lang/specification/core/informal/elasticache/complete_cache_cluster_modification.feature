@@ -19,13 +19,13 @@ Feature: Elasticache - A Cache Cluster Modification Completes
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @complete_cache_cluster_modification @internal
+  @guard @negative @complete_cache_cluster_modification @internal
   Scenario: a cache cluster modification completes fails when the cluster does not exist
     Given the cluster does not exist
     When a cache cluster modification completes
     Then the operation is rejected
 
-  @standard @negative @complete_cache_cluster_modification @internal
+  @guard @negative @complete_cache_cluster_modification @internal
   Scenario: a cache cluster modification completes fails when the cluster is not "MODIFYING"
     Given the cluster exists
     And the cluster is not "MODIFYING"

@@ -18,13 +18,13 @@ Feature: Ssm - An Existing Parameter Value Is Updated
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
-  @standard @negative @put_parameter_overwrite
+  @guard @negative @put_parameter_overwrite
   Scenario: an existing parameter value is updated fails when the parameter does not exist
     Given the parameter does not exist
     When an existing parameter value is updated
     Then the operation is rejected
 
-  @standard @negative @put_parameter_overwrite
+  @guard @negative @put_parameter_overwrite
   Scenario: an existing parameter value is updated fails when the parameter is not active
     Given the parameter exists
     And the parameter is not active

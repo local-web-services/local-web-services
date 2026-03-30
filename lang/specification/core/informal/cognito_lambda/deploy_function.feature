@@ -16,7 +16,7 @@ Feature: CognitoLambda - A Lambda Function Is Deployed
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
-  @standard @negative @deploy_function
+  @guard @negative @deploy_function
   Scenario: a Lambda function is deployed fails when the function already exists
     Given the function already exists
     When a Lambda function is deployed

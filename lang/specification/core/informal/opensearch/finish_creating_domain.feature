@@ -18,13 +18,13 @@ Feature: Opensearch - A Search Domain Finishes Creating
     And an outbound connection that is "ACTIVE" cannot have a "REJECTED" inbound connection
     And a pending config change only exists on a domain that is "PROCESSING"
 
-  @standard @negative @finish_creating_domain @internal
+  @guard @negative @finish_creating_domain @internal
   Scenario: a search domain finishes creating fails when the domain does not exist
     Given the domain does not exist
     When a search domain finishes creating
     Then the operation is rejected
 
-  @standard @negative @finish_creating_domain @internal
+  @guard @negative @finish_creating_domain @internal
   Scenario: a search domain finishes creating fails when the domain is not "CREATING"
     Given the domain exists
     And the domain is not "CREATING"

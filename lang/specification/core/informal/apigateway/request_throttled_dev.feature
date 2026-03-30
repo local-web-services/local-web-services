@@ -21,13 +21,13 @@ Feature: Apigateway - A Request Is Made To The Throttled Dev Stage
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @request_throttled_dev @internal
+  @guard @negative @request_throttled_dev @internal
   Scenario: a request is made to the throttled dev stage fails when the dev stage does not have throttling configured
     Given the dev stage does not have throttling configured
     When a request is made to the throttled dev stage
     Then the operation is rejected
 
-  @standard @negative @request_throttled_dev @internal
+  @guard @negative @request_throttled_dev @internal
   Scenario: a request is made to the throttled dev stage fails when throttling is not enabled for the dev stage
     Given the dev stage has throttling configured
     And throttling is not enabled for the dev stage

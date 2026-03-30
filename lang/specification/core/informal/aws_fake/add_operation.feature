@@ -17,20 +17,20 @@ Feature: AwsFake - An Operation Is Added To An Aws Fake
     And every "ACTIVE" operation belongs to an "ACTIVE" "AWS" fake
     And every "AWS" fake is tied to a known service
 
-  @standard @negative @add_operation
+  @guard @negative @add_operation
   Scenario: an operation is added to an "AWS" fake fails when the "AWS" fake does not exist
     Given the "AWS" fake does not exist
     When an operation is added to an "AWS" fake
     Then the operation is rejected
 
-  @standard @negative @add_operation
+  @guard @negative @add_operation
   Scenario: an operation is added to an "AWS" fake fails when the "AWS" fake is not "ACTIVE"
     Given the "AWS" fake exists
     And the "AWS" fake is not "ACTIVE"
     When an operation is added to an "AWS" fake
     Then the operation is rejected
 
-  @standard @negative @add_operation
+  @guard @negative @internal @add_operation
   Scenario: an operation is added to an "AWS" fake fails when no operation slot is available
     Given the "AWS" fake exists
     And the "AWS" fake is "ACTIVE"

@@ -17,13 +17,13 @@ Feature: Sqs - Queue Attributes Are Retrieved
     And every in-flight message belongs to an "ACTIVE" queue
     And every message has a non-negative receive count
 
-  @standard @negative @get_queue_attributes
+  @guard @negative @get_queue_attributes
   Scenario: queue attributes are retrieved fails when the queue does not exist
     Given the queue does not exist
     When queue attributes are retrieved
     Then the operation is rejected
 
-  @standard @negative @get_queue_attributes @lifecycle
+  @guard @negative @get_queue_attributes @lifecycle
   Scenario: queue attributes are retrieved fails when the queue is not "ACTIVE"
     Given the queue exists
     And the queue is not "ACTIVE"

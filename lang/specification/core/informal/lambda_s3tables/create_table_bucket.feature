@@ -15,7 +15,7 @@ Feature: LambdaS3tables - An S3 Table Bucket Is Created
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a table that exists
 
-  @standard @negative @create_table_bucket
+  @guard @negative @create_table_bucket
   Scenario: an S3 table bucket is created fails when the bucket already exists
     Given the bucket already exists
     When an S3 table bucket is created

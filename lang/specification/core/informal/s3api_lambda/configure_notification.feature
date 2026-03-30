@@ -19,20 +19,20 @@ Feature: S3apiLambda - An S3 Event Notification Is Configured To Invoke A Lambda
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation was triggered by an object in an "ACTIVE" bucket
 
-  @standard @negative @configure_notification
+  @guard @negative @configure_notification
   Scenario: an S3 event notification is configured to invoke a Lambda function on object "PUT" fails when the bucket does not exist
     Given the bucket does not exist
     When an S3 event notification is configured to invoke a Lambda function on object "PUT"
     Then the operation is rejected
 
-  @standard @negative @configure_notification @lifecycle
+  @guard @negative @configure_notification @lifecycle
   Scenario: an S3 event notification is configured to invoke a Lambda function on object "PUT" fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"
     When an S3 event notification is configured to invoke a Lambda function on object "PUT"
     Then the operation is rejected
 
-  @standard @negative @configure_notification
+  @guard @negative @configure_notification
   Scenario: an S3 event notification is configured to invoke a Lambda function on object "PUT" fails when the bucket already has a notification configured
     Given the bucket exists
     And the bucket is "ACTIVE"
@@ -40,7 +40,7 @@ Feature: S3apiLambda - An S3 Event Notification Is Configured To Invoke A Lambda
     When an S3 event notification is configured to invoke a Lambda function on object "PUT"
     Then the operation is rejected
 
-  @standard @negative @configure_notification
+  @guard @negative @configure_notification
   Scenario: an S3 event notification is configured to invoke a Lambda function on object "PUT" fails when the function does not exist
     Given the bucket exists
     And the bucket is "ACTIVE"
@@ -49,7 +49,7 @@ Feature: S3apiLambda - An S3 Event Notification Is Configured To Invoke A Lambda
     When an S3 event notification is configured to invoke a Lambda function on object "PUT"
     Then the operation is rejected
 
-  @standard @negative @configure_notification @lifecycle
+  @guard @negative @configure_notification @lifecycle
   Scenario: an S3 event notification is configured to invoke a Lambda function on object "PUT" fails when the function is not "ACTIVE"
     Given the bucket exists
     And the bucket is "ACTIVE"

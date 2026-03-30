@@ -20,20 +20,20 @@ Feature: EventsStepfunctions - An Event Is Published To The Bus And Triggers A N
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every "RUNNING" execution was started by an "ENABLED" rule
 
-  @standard @negative @put_event
+  @guard @negative @put_event
   Scenario: an event is published to the bus and triggers a new Step Functions execution fails when the event bus does not exist
     Given the event bus does not exist
     When an event is published to the bus and triggers a new Step Functions execution
     Then the operation is rejected
 
-  @standard @negative @put_event @lifecycle
+  @guard @negative @put_event @lifecycle
   Scenario: an event is published to the bus and triggers a new Step Functions execution fails when the event bus is not "ACTIVE"
     Given the event bus exists
     And the event bus is not "ACTIVE"
     When an event is published to the bus and triggers a new Step Functions execution
     Then the operation is rejected
 
-  @standard @negative @put_event @lifecycle
+  @guard @negative @put_event @lifecycle
   Scenario: an event is published to the bus and triggers a new Step Functions execution fails when no "ENABLED" rule exists on the bus targeting a state machine
     Given the event bus exists
     And the event bus is "ACTIVE"
@@ -41,7 +41,7 @@ Feature: EventsStepfunctions - An Event Is Published To The Bus And Triggers A N
     When an event is published to the bus and triggers a new Step Functions execution
     Then the operation is rejected
 
-  @standard @negative @put_event @lifecycle
+  @guard @negative @put_event @lifecycle
   Scenario: an event is published to the bus and triggers a new Step Functions execution fails when the target state machine is not "ACTIVE"
     Given the event bus exists
     And the event bus is "ACTIVE"
@@ -50,7 +50,7 @@ Feature: EventsStepfunctions - An Event Is Published To The Bus And Triggers A N
     When an event is published to the bus and triggers a new Step Functions execution
     Then the operation is rejected
 
-  @standard @negative @put_event @capacity
+  @guard @negative @internal @put_event @capacity
   Scenario: an event is published to the bus and triggers a new Step Functions execution fails when no execution slot is available
     Given the event bus exists
     And the event bus is "ACTIVE"

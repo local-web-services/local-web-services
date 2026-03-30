@@ -23,20 +23,20 @@ Feature: Lambda - A Function Is Invoked Synchronously Without A Concurrency Limi
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @invoke_function_sync
+  @guard @negative @invoke_function_sync
   Scenario: a function is invoked synchronously without a concurrency limit fails when the function does not exist
     Given the function does not exist
     When a function is invoked synchronously without a concurrency limit
     Then the operation is rejected
 
-  @standard @negative @invoke_function_sync @lifecycle
+  @guard @negative @invoke_function_sync @lifecycle
   Scenario: a function is invoked synchronously without a concurrency limit fails when the function is not "ACTIVE"
     Given the function exists
     And the function is not "ACTIVE"
     When a function is invoked synchronously without a concurrency limit
     Then the operation is rejected
 
-  @standard @negative @invoke_function_sync
+  @guard @negative @invoke_function_sync
   Scenario: a function is invoked synchronously without a concurrency limit fails when the function does not have concurrency configured
     Given the function exists
     And the function is "ACTIVE"
@@ -44,7 +44,7 @@ Feature: Lambda - A Function Is Invoked Synchronously Without A Concurrency Limi
     When a function is invoked synchronously without a concurrency limit
     Then the operation is rejected
 
-  @standard @negative @invoke_function_sync @capacity
+  @guard @negative @invoke_function_sync @capacity
   Scenario: a function is invoked synchronously without a concurrency limit fails when the function does not have unreserved concurrency
     Given the function exists
     And the function is "ACTIVE"

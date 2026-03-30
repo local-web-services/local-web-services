@@ -21,13 +21,13 @@ Feature: Lambda - A Permission Is Removed From A Function'S Resource Policy
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @remove_permission
+  @guard @negative @remove_permission
   Scenario: a permission is removed from a function's resource policy fails when the function does not have a resource policy entry
     Given the function does not have a resource policy entry
     When a permission is removed from a function's resource policy
     Then the operation is rejected
 
-  @standard @negative @remove_permission
+  @guard @negative @remove_permission
   Scenario: a permission is removed from a function's resource policy fails when the function does not have a resource policy
     Given the function has a resource policy entry
     And the function does not have a resource policy

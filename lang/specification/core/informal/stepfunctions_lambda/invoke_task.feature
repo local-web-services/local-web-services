@@ -19,20 +19,20 @@ Feature: StepfunctionsLambda - A Running Execution Reaches The Lambda Task State
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation has a corresponding "RUNNING" execution
 
-  @standard @negative @invoke_task
+  @guard @negative @invoke_task
   Scenario: a running execution reaches the Lambda task state and invokes the function fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution reaches the Lambda task state and invokes the function
     Then the operation is rejected
 
-  @standard @negative @invoke_task
+  @guard @negative @invoke_task
   Scenario: a running execution reaches the Lambda task state and invokes the function fails when the execution's state machine has no Lambda task configured
     Given an execution is "RUNNING"
     And the execution's state machine has no Lambda task configured
     When a running execution reaches the Lambda task state and invokes the function
     Then the operation is rejected
 
-  @standard @negative @invoke_task @lifecycle
+  @guard @negative @invoke_task @lifecycle
   Scenario: a running execution reaches the Lambda task state and invokes the function fails when the configured function is not "ACTIVE"
     Given an execution is "RUNNING"
     And the execution's state machine has a configured Lambda task
@@ -40,7 +40,7 @@ Feature: StepfunctionsLambda - A Running Execution Reaches The Lambda Task State
     When a running execution reaches the Lambda task state and invokes the function
     Then the operation is rejected
 
-  @standard @negative @invoke_task @capacity
+  @guard @negative @internal @invoke_task @capacity
   Scenario: a running execution reaches the Lambda task state and invokes the function fails when no invocation slot is available
     Given an execution is "RUNNING"
     And the execution's state machine has a configured Lambda task

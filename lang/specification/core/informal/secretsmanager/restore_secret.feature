@@ -23,20 +23,20 @@ Feature: Secretsmanager - A Deleted Secret Is Restored Within The Recovery Windo
     And every deleted secret with an open recovery window can still be restored or expired
     And every active secret has a current version assigned
 
-  @standard @negative @restore_secret
+  @guard @negative @restore_secret
   Scenario: a deleted secret is restored within the recovery window fails when the secret does not exist
     Given the secret does not exist
     When a deleted secret is restored within the recovery window
     Then the operation is rejected
 
-  @standard @negative @restore_secret @lifecycle
+  @guard @negative @restore_secret @lifecycle
   Scenario: a deleted secret is restored within the recovery window fails when the secret is not "DELETED"
     Given the secret exists
     And the secret is not "DELETED"
     When a deleted secret is restored within the recovery window
     Then the operation is rejected
 
-  @standard @negative @restore_secret @lifecycle
+  @guard @negative @restore_secret @lifecycle
   Scenario: a deleted secret is restored within the recovery window fails when the recovery window is not open
     Given the secret exists
     And the secret is "DELETED"

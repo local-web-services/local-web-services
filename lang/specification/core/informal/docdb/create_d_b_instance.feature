@@ -22,20 +22,20 @@ Feature: Docdb - A Database Instance Is Created In An Available Cluster
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @create_d_b_instance
+  @guard @negative @create_d_b_instance
   Scenario: a database instance is created in an available cluster fails when the cluster does not exist
     Given the cluster does not exist
     When a database instance is created in an available cluster
     Then the operation is rejected
 
-  @standard @negative @create_d_b_instance @lifecycle
+  @guard @negative @create_d_b_instance @lifecycle
   Scenario: a database instance is created in an available cluster fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"
     When a database instance is created in an available cluster
     Then the operation is rejected
 
-  @standard @negative @create_d_b_instance
+  @guard @negative @internal @create_d_b_instance
   Scenario: a database instance is created in an available cluster fails when the instance slot is not available
     Given the cluster exists
     And the cluster is "AVAILABLE"

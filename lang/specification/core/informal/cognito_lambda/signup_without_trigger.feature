@@ -19,20 +19,20 @@ Feature: CognitoLambda - A User Signs Up To A Pool That Has No Pre-Signup Trigge
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
-  @standard @negative @signup_without_trigger
+  @guard @negative @signup_without_trigger
   Scenario: a user signs up to a pool that has no pre-signup trigger configured fails when the pool does not exist
     Given the pool does not exist
     When a user signs up to a pool that has no pre-signup trigger configured
     Then the operation is rejected
 
-  @standard @negative @signup_without_trigger @lifecycle
+  @guard @negative @signup_without_trigger @lifecycle
   Scenario: a user signs up to a pool that has no pre-signup trigger configured fails when the pool is not "ACTIVE"
     Given the pool exists
     And the pool is not "ACTIVE"
     When a user signs up to a pool that has no pre-signup trigger configured
     Then the operation is rejected
 
-  @standard @negative @signup_without_trigger
+  @guard @negative @signup_without_trigger
   Scenario: a user signs up to a pool that has no pre-signup trigger configured fails when the pool has a pre-signup trigger configured
     Given the pool exists
     And the pool is "ACTIVE"
@@ -40,7 +40,7 @@ Feature: CognitoLambda - A User Signs Up To A Pool That Has No Pre-Signup Trigge
     When a user signs up to a pool that has no pre-signup trigger configured
     Then the operation is rejected
 
-  @standard @negative @signup_without_trigger @capacity
+  @guard @negative @internal @signup_without_trigger @capacity
   Scenario: a user signs up to a pool that has no pre-signup trigger configured fails when no user slot is available
     Given the pool exists
     And the pool is "ACTIVE"

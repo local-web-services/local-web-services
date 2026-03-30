@@ -17,13 +17,13 @@ Feature: Sqs - A Queue Is Deleted
     And every in-flight message belongs to an "ACTIVE" queue
     And every message has a non-negative receive count
 
-  @standard @negative @delete_queue
+  @guard @negative @delete_queue
   Scenario: a queue is deleted fails when the queue does not exist
     Given the queue does not exist
     When a queue is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_queue @lifecycle
+  @guard @negative @delete_queue @lifecycle
   Scenario: a queue is deleted fails when the queue is not "ACTIVE"
     Given the queue exists
     And the queue is not "ACTIVE"

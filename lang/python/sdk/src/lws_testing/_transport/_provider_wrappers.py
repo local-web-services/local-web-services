@@ -175,3 +175,21 @@ class _OrganizationsStateProvider:
 
     async def health_check(self) -> bool:
         return True
+
+
+class _ClusterDBStateProvider:
+    """Thin wrapper that exposes _ClusterDBState as a resettable provider."""
+
+    def __init__(self, state: Any, service_name: str) -> None:
+        self._state = state
+        self._name = service_name
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    async def reset(self) -> None:
+        self._state.reset()
+
+    async def health_check(self) -> bool:
+        return True

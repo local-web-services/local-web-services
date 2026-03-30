@@ -24,20 +24,20 @@ Feature: Neptune - A Database Instance Finishes Creating
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @complete_instance_creation @internal
+  @guard @negative @complete_instance_creation @internal
   Scenario: a database instance finishes creating fails when the instance does not exist
     Given the instance does not exist
     When a database instance finishes creating
     Then the operation is rejected
 
-  @standard @negative @complete_instance_creation @internal
+  @guard @negative @complete_instance_creation @internal
   Scenario: a database instance finishes creating fails when the instance is not "CREATING"
     Given the instance exists
     And the instance is not "CREATING"
     When a database instance finishes creating
     Then the operation is rejected
 
-  @standard @negative @complete_instance_creation @internal
+  @guard @negative @complete_instance_creation @internal
   Scenario: a database instance finishes creating fails when the cluster does not exist
     Given the instance exists
     And the instance is "CREATING"
@@ -45,7 +45,7 @@ Feature: Neptune - A Database Instance Finishes Creating
     When a database instance finishes creating
     Then the operation is rejected
 
-  @standard @negative @complete_instance_creation @internal
+  @guard @negative @complete_instance_creation @internal
   Scenario: a database instance finishes creating fails when the instance is not the primary
     Given the instance exists
     And the instance is "CREATING"

@@ -20,20 +20,20 @@ Feature: Sns - A Pending Subscription Is Confirmed
     And every active subscription references an "ACTIVE" topic
     And every delivery retry count is within the allowed limit
 
-  @standard @negative @confirm_subscription
+  @guard @negative @confirm_subscription
   Scenario: a pending subscription is confirmed fails when the subscription does not exist
     Given the subscription does not exist
     When a pending subscription is confirmed
     Then the operation is rejected
 
-  @standard @negative @confirm_subscription
+  @guard @negative @confirm_subscription
   Scenario: a pending subscription is confirmed fails when the subscription is not "PENDING_CONFIRMATION"
     Given the subscription exists
     And the subscription is not "PENDING_CONFIRMATION"
     When a pending subscription is confirmed
     Then the operation is rejected
 
-  @standard @negative @confirm_subscription
+  @guard @negative @confirm_subscription
   Scenario: a pending subscription is confirmed fails when the subscription's topic does not exist
     Given the subscription exists
     And the subscription is "PENDING_CONFIRMATION"
@@ -41,7 +41,7 @@ Feature: Sns - A Pending Subscription Is Confirmed
     When a pending subscription is confirmed
     Then the operation is rejected
 
-  @standard @negative @confirm_subscription @lifecycle
+  @guard @negative @confirm_subscription @lifecycle
   Scenario: a pending subscription is confirmed fails when the subscription's topic is not "ACTIVE"
     Given the subscription exists
     And the subscription is "PENDING_CONFIRMATION"

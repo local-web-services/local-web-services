@@ -21,20 +21,20 @@ Feature: ApigatewayCognito - A Request With A Valid Token From A User In A Diffe
     And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
     And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
 
-  @standard @negative @reject_request
+  @guard @negative @reject_request
   Scenario: a request with a valid token from a user in a different pool is rejected fails when the "API" does not exist
     Given the "API" does not exist
     When a request with a valid token from a user in a different pool is rejected
     Then the operation is rejected
 
-  @standard @negative @reject_request @lifecycle
+  @guard @negative @reject_request @lifecycle
   Scenario: a request with a valid token from a user in a different pool is rejected fails when the "API" is not "ACTIVE"
     Given the "API" exists
     And the "API" is not "ACTIVE"
     When a request with a valid token from a user in a different pool is rejected
     Then the operation is rejected
 
-  @standard @negative @reject_request
+  @guard @negative @reject_request
   Scenario: a request with a valid token from a user in a different pool is rejected fails when the "API" has no Cognito authorizer configured
     Given the "API" exists
     And the "API" is "ACTIVE"
@@ -42,7 +42,7 @@ Feature: ApigatewayCognito - A Request With A Valid Token From A User In A Diffe
     When a request with a valid token from a user in a different pool is rejected
     Then the operation is rejected
 
-  @standard @negative @reject_request @lifecycle
+  @guard @negative @reject_request @lifecycle
   Scenario: a request with a valid token from a user in a different pool is rejected fails when no such mismatched token exists
     Given the "API" exists
     And the "API" is "ACTIVE"
@@ -51,7 +51,7 @@ Feature: ApigatewayCognito - A Request With A Valid Token From A User In A Diffe
     When a request with a valid token from a user in a different pool is rejected
     Then the operation is rejected
 
-  @standard @negative @reject_request @capacity
+  @guard @negative @internal @reject_request @capacity
   Scenario: a request with a valid token from a user in a different pool is rejected fails when no request slot is available
     Given the "API" exists
     And the "API" is "ACTIVE"

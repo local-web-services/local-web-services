@@ -19,13 +19,13 @@ Feature: Stepfunctions - A State Machine Definition Is Updated
     And synchronous executions only run on express state machines
     And every execution belongs to a known state machine
 
-  @standard @negative @update_state_machine
+  @guard @negative @update_state_machine
   Scenario: a state machine definition is updated fails when the state machine does not exist
     Given the state machine does not exist
     When a state machine definition is updated
     Then the operation is rejected
 
-  @standard @negative @update_state_machine @lifecycle
+  @guard @negative @update_state_machine @lifecycle
   Scenario: a state machine definition is updated fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"

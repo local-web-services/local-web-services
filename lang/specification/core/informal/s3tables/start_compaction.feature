@@ -19,20 +19,20 @@ Feature: S3tables - Compaction Is Started On A Table
     And snapshot count is never negative
     And schema version is always at least one
 
-  @standard @negative @start_compaction
+  @guard @negative @start_compaction
   Scenario: compaction is started on a table fails when the table does not exist
     Given the table does not exist
     When compaction is started on a table
     Then the operation is rejected
 
-  @standard @negative @start_compaction @lifecycle
+  @guard @negative @start_compaction @lifecycle
   Scenario: compaction is started on a table fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"
     When compaction is started on a table
     Then the operation is rejected
 
-  @standard @negative @start_compaction
+  @guard @negative @start_compaction
   Scenario: compaction is started on a table fails when compaction is not enabled for the table
     Given the table exists
     And the table is "ACTIVE"

@@ -15,7 +15,7 @@ Feature: GlacierSns - A Glacier Vault Is Created
     And every "PUBLISHED" notification references a job that exists
     And every "PUBLISHED" notification references a topic that exists
 
-  @standard @negative @create_vault
+  @guard @negative @create_vault
   Scenario: a Glacier vault is created fails when the vault already exists
     Given the vault already exists
     When a Glacier vault is created

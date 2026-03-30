@@ -21,13 +21,13 @@ Feature: Lambda - A Failed Function Is Deleted
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @delete_failed_function
+  @guard @negative @delete_failed_function
   Scenario: a failed function is deleted fails when the function does not exist
     Given the function does not exist
     When a failed function is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_failed_function @lifecycle
+  @guard @negative @delete_failed_function @lifecycle
   Scenario: a failed function is deleted fails when the function is not "FAILED"
     Given the function exists
     And the function is not "FAILED"

@@ -23,20 +23,20 @@ Feature: Neptune - A Multi-Az Failover Is Triggered On A Cluster
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @multi_a_z_failover
+  @guard @negative @multi_a_z_failover
   Scenario: a multi-"AZ" failover is triggered on a cluster fails when the cluster does not exist
     Given the cluster does not exist
     When a multi-"AZ" failover is triggered on a cluster
     Then the operation is rejected
 
-  @standard @negative @multi_a_z_failover @lifecycle
+  @guard @negative @multi_a_z_failover @lifecycle
   Scenario: a multi-"AZ" failover is triggered on a cluster fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"
     When a multi-"AZ" failover is triggered on a cluster
     Then the operation is rejected
 
-  @standard @negative @multi_a_z_failover
+  @guard @negative @multi_a_z_failover
   Scenario: a multi-"AZ" failover is triggered on a cluster fails when multi-"AZ" is not enabled for the cluster
     Given the cluster exists
     And the cluster is "AVAILABLE"

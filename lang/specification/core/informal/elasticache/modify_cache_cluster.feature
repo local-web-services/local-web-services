@@ -19,13 +19,13 @@ Feature: Elasticache - A Cache Cluster Configuration Is Modified
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @modify_cache_cluster
+  @guard @negative @modify_cache_cluster
   Scenario: a cache cluster configuration is modified fails when the cluster does not exist
     Given the cluster does not exist
     When a cache cluster configuration is modified
     Then the operation is rejected
 
-  @standard @negative @modify_cache_cluster @lifecycle
+  @guard @negative @modify_cache_cluster @lifecycle
   Scenario: a cache cluster configuration is modified fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"

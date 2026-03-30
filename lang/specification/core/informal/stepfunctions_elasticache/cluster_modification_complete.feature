@@ -15,7 +15,7 @@ Feature: StepfunctionsElasticache - The Cluster Modification Completes
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it read
 
-  @standard @negative @cluster_modification_complete @internal
+  @guard @negative @cluster_modification_complete @internal
   Scenario: the cluster modification completes fails when the cluster is not "MODIFYING"
     Given the cluster is not "MODIFYING"
     When the cluster modification completes

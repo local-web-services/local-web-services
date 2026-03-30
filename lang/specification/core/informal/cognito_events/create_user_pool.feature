@@ -15,7 +15,7 @@ Feature: CognitoEvents - A Cognito User Pool Is Created
     And every "DELIVERED" event references a pool that exists
     And every "DELIVERED" event references a bus that exists
 
-  @standard @negative @create_user_pool
+  @guard @negative @create_user_pool
   Scenario: a Cognito user pool is created fails when the pool already exists
     Given the pool already exists
     When a Cognito user pool is created

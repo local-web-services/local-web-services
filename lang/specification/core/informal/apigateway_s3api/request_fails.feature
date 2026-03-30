@@ -18,20 +18,20 @@ Feature: ApigatewayS3api - A Request Fails Because The S3 Bucket Has Been Delete
     And every existing object references a bucket that exists
     And every successful request references an "API" that exists
 
-  @standard @negative @request_fails @lifecycle
+  @guard @negative @request_fails @lifecycle
   Scenario: a request fails because the S3 bucket has been deleted fails when the "API" is not "ACTIVE"
     Given the "API" is not "ACTIVE"
     When a request fails because the S3 bucket has been deleted
     Then the operation is rejected
 
-  @standard @negative @request_fails
+  @guard @negative @request_fails
   Scenario: a request fails because the S3 bucket has been deleted fails when the "API" has no S3 integration configured
     Given the "API" is "ACTIVE"
     And the "API" has no S3 integration configured
     When a request fails because the S3 bucket has been deleted
     Then the operation is rejected
 
-  @standard @negative @request_fails @lifecycle
+  @guard @negative @request_fails @lifecycle
   Scenario: a request fails because the S3 bucket has been deleted fails when the bucket is not "DELETED"
     Given the "API" is "ACTIVE"
     And the "API" has an S3 integration configured
@@ -39,7 +39,7 @@ Feature: ApigatewayS3api - A Request Fails Because The S3 Bucket Has Been Delete
     When a request fails because the S3 bucket has been deleted
     Then the operation is rejected
 
-  @standard @negative @request_fails @capacity
+  @guard @negative @internal @request_fails @capacity
   Scenario: a request fails because the S3 bucket has been deleted fails when no request slot is available
     Given the "API" is "ACTIVE"
     And the "API" has an S3 integration configured

@@ -22,20 +22,20 @@ Feature: S3api - An Object Is Copied From One Bucket To Another
     And every multipart upload has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
     And deleting a bucket requires it to be empty
 
-  @standard @negative @copy_object
+  @guard @negative @copy_object
   Scenario: an object is copied from one bucket to another fails when the source bucket does not exist
     Given the source bucket does not exist
     When an object is copied from one bucket to another
     Then the operation is rejected
 
-  @standard @negative @copy_object @lifecycle
+  @guard @negative @copy_object @lifecycle
   Scenario: an object is copied from one bucket to another fails when the source bucket is not "ACTIVE"
     Given the source bucket exists
     And the source bucket is not "ACTIVE"
     When an object is copied from one bucket to another
     Then the operation is rejected
 
-  @standard @negative @copy_object
+  @guard @negative @copy_object
   Scenario: an object is copied from one bucket to another fails when the source object does not exist
     Given the source bucket exists
     And the source bucket is "ACTIVE"
@@ -43,7 +43,7 @@ Feature: S3api - An Object Is Copied From One Bucket To Another
     When an object is copied from one bucket to another
     Then the operation is rejected
 
-  @standard @negative @copy_object
+  @guard @negative @copy_object
   Scenario: an object is copied from one bucket to another fails when the source object is deleted
     Given the source bucket exists
     And the source bucket is "ACTIVE"
@@ -52,7 +52,7 @@ Feature: S3api - An Object Is Copied From One Bucket To Another
     When an object is copied from one bucket to another
     Then the operation is rejected
 
-  @standard @negative @copy_object
+  @guard @negative @copy_object
   Scenario: an object is copied from one bucket to another fails when the destination bucket does not exist
     Given the source bucket exists
     And the source bucket is "ACTIVE"
@@ -62,7 +62,7 @@ Feature: S3api - An Object Is Copied From One Bucket To Another
     When an object is copied from one bucket to another
     Then the operation is rejected
 
-  @standard @negative @copy_object @lifecycle
+  @guard @negative @copy_object @lifecycle
   Scenario: an object is copied from one bucket to another fails when the destination bucket is not "ACTIVE"
     Given the source bucket exists
     And the source bucket is "ACTIVE"

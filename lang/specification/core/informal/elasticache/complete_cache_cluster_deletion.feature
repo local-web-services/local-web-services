@@ -19,13 +19,13 @@ Feature: Elasticache - A Cache Cluster Deletion Completes
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @complete_cache_cluster_deletion @internal
+  @guard @negative @complete_cache_cluster_deletion @internal
   Scenario: a cache cluster deletion completes fails when the cluster does not exist
     Given the cluster does not exist
     When a cache cluster deletion completes
     Then the operation is rejected
 
-  @standard @negative @complete_cache_cluster_deletion @internal
+  @guard @negative @complete_cache_cluster_deletion @internal
   Scenario: a cache cluster deletion completes fails when the cluster is not "DELETING"
     Given the cluster exists
     And the cluster is not "DELETING"

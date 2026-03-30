@@ -21,7 +21,7 @@ Feature: Events - A Dead-Letter Queue Entry Is Retried Or Discarded
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @retry_dead_letter @internal
+  @guard @negative @retry_dead_letter @internal
   Scenario: a dead-letter queue entry is retried or discarded fails when the dead-letter queue is empty
     Given the dead-letter queue is empty
     When a dead-letter queue entry is retried or discarded

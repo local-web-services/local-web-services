@@ -21,20 +21,20 @@ Feature: DynamodbLambda - A Lambda Event Source Mapping Is Created To Process Th
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "ENABLED" event source mapping references an "ACTIVE" table with streaming enabled
 
-  @standard @negative @create_event_source_mapping
+  @guard @negative @create_event_source_mapping
   Scenario: a Lambda event source mapping is created to process the DynamoDB Stream fails when the table does not exist
     Given the table does not exist
     When a Lambda event source mapping is created to process the DynamoDB Stream
     Then the operation is rejected
 
-  @standard @negative @create_event_source_mapping @lifecycle
+  @guard @negative @create_event_source_mapping @lifecycle
   Scenario: a Lambda event source mapping is created to process the DynamoDB Stream fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"
     When a Lambda event source mapping is created to process the DynamoDB Stream
     Then the operation is rejected
 
-  @standard @negative @create_event_source_mapping
+  @guard @negative @create_event_source_mapping
   Scenario: a Lambda event source mapping is created to process the DynamoDB Stream fails when the table does not have a stream enabled
     Given the table exists
     And the table is "ACTIVE"
@@ -42,7 +42,7 @@ Feature: DynamodbLambda - A Lambda Event Source Mapping Is Created To Process Th
     When a Lambda event source mapping is created to process the DynamoDB Stream
     Then the operation is rejected
 
-  @standard @negative @create_event_source_mapping
+  @guard @negative @create_event_source_mapping
   Scenario: a Lambda event source mapping is created to process the DynamoDB Stream fails when the function does not exist
     Given the table exists
     And the table is "ACTIVE"
@@ -51,7 +51,7 @@ Feature: DynamodbLambda - A Lambda Event Source Mapping Is Created To Process Th
     When a Lambda event source mapping is created to process the DynamoDB Stream
     Then the operation is rejected
 
-  @standard @negative @create_event_source_mapping @lifecycle
+  @guard @negative @create_event_source_mapping @lifecycle
   Scenario: a Lambda event source mapping is created to process the DynamoDB Stream fails when the function is not "ACTIVE"
     Given the table exists
     And the table is "ACTIVE"
@@ -61,7 +61,7 @@ Feature: DynamodbLambda - A Lambda Event Source Mapping Is Created To Process Th
     When a Lambda event source mapping is created to process the DynamoDB Stream
     Then the operation is rejected
 
-  @standard @negative @create_event_source_mapping
+  @guard @negative @create_event_source_mapping
   Scenario: a Lambda event source mapping is created to process the DynamoDB Stream fails when the event source mapping already exists
     Given the table exists
     And the table is "ACTIVE"

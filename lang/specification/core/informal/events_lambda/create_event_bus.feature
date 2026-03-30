@@ -16,7 +16,7 @@ Feature: EventsLambda - An Eventbridge Event Bus Is Created
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "ENABLED" rule references an "ACTIVE" event bus
 
-  @standard @negative @create_event_bus
+  @guard @negative @create_event_bus
   Scenario: an EventBridge event bus is created fails when the event bus already exists
     Given the event bus already exists
     When an EventBridge event bus is created

@@ -19,13 +19,13 @@ Feature: Glacier - A Vault Inventory Is Refreshed
     And job output is only available for succeeded jobs
     And every archive retrieval job references a non-empty archive "ID"
 
-  @standard @negative @vault_inventory_refresh @internal
+  @guard @negative @vault_inventory_refresh @internal
   Scenario: a vault inventory is refreshed fails when the vault does not exist
     Given the vault does not exist
     When a vault inventory is refreshed
     Then the operation is rejected
 
-  @standard @negative @vault_inventory_refresh @internal
+  @guard @negative @vault_inventory_refresh @internal
   Scenario: a vault inventory is refreshed fails when the vault is not "ACTIVE"
     Given the vault exists
     And the vault is not "ACTIVE"

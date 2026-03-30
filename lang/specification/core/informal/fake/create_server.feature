@@ -15,7 +15,7 @@ Feature: Fake - A Fake Server Is Created
     And every "ACTIVE" route belongs to an "ACTIVE" server
     And every server has a valid protocol
 
-  @standard @negative @create_server
+  @guard @negative @create_server
   Scenario: a fake server is created fails when the server already exists
     Given the server already exists
     When a fake server is created

@@ -19,13 +19,13 @@ Feature: Glacier - A Multipart Upload Is Aborted
     And job output is only available for succeeded jobs
     And every archive retrieval job references a non-empty archive "ID"
 
-  @standard @negative @abort_multipart_upload
+  @guard @negative @abort_multipart_upload
   Scenario: a multipart upload is aborted fails when the upload does not exist
     Given the upload does not exist
     When a multipart upload is aborted
     Then the operation is rejected
 
-  @standard @negative @abort_multipart_upload @lifecycle
+  @guard @negative @abort_multipart_upload @lifecycle
   Scenario: a multipart upload is aborted fails when the upload is not InProgress
     Given the upload exists
     And the upload is not InProgress

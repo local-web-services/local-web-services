@@ -16,7 +16,7 @@ Feature: LambdaOpensearch - An Opensearch Domain Is Created
     And every indexed document belongs to an existing index
     And every existing index belongs to an "ACTIVE" domain
 
-  @standard @negative @create_domain
+  @guard @negative @create_domain
   Scenario: an OpenSearch domain is created fails when the domain already exists
     Given the domain already exists
     When an OpenSearch domain is created

@@ -20,20 +20,20 @@ Feature: Organizations - A Policy Is Attached To A Target
     And no active node is a child of a deleted organizational unit
     And every active policy attachment targets an "ACTIVE" node
 
-  @standard @negative @attach_policy
+  @guard @negative @attach_policy
   Scenario: a policy is attached to a target fails when the policy does not exist or is not "ACTIVE"
     Given the policy does not exist or is not "ACTIVE"
     When a policy is attached to a target
     Then the operation is rejected
 
-  @standard @negative @attach_policy
+  @guard @negative @attach_policy
   Scenario: a policy is attached to a target fails when the target does not exist or is not "ACTIVE"
     Given the policy exists and is "ACTIVE"
     And the target does not exist or is not "ACTIVE"
     When a policy is attached to a target
     Then the operation is rejected
 
-  @standard @negative @attach_policy
+  @guard @negative @attach_policy
   Scenario: a policy is attached to a target fails when the policy is already attached to the target
     Given the policy exists and is "ACTIVE"
     And the target exists and is "ACTIVE"

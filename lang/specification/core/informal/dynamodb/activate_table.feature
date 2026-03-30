@@ -20,13 +20,13 @@ Feature: Dynamodb - A Table Finishes Creating And Becomes Active
     And items only exist in non-deleted tables
     And deleted tables are never the target of a pending transaction
 
-  @standard @negative @activate_table @internal
+  @guard @negative @activate_table @internal
   Scenario: a table finishes creating and becomes active fails when the table does not exist
     Given the table does not exist
     When a table finishes creating and becomes active
     Then the operation is rejected
 
-  @standard @negative @activate_table @internal
+  @guard @negative @activate_table @internal
   Scenario: a table finishes creating and becomes active fails when the table is not "CREATING"
     Given the table exists
     And the table is not "CREATING"

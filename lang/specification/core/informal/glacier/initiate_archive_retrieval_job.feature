@@ -22,20 +22,20 @@ Feature: Glacier - An Archive Retrieval Job Is Initiated
     And job output is only available for succeeded jobs
     And every archive retrieval job references a non-empty archive "ID"
 
-  @standard @negative @initiate_archive_retrieval_job
+  @guard @negative @initiate_archive_retrieval_job
   Scenario: an archive retrieval job is initiated fails when the vault does not exist
     Given the vault does not exist
     When an archive retrieval job is initiated
     Then the operation is rejected
 
-  @standard @negative @initiate_archive_retrieval_job @lifecycle
+  @guard @negative @initiate_archive_retrieval_job @lifecycle
   Scenario: an archive retrieval job is initiated fails when the vault is not "ACTIVE"
     Given the vault exists
     And the vault is not "ACTIVE"
     When an archive retrieval job is initiated
     Then the operation is rejected
 
-  @standard @negative @initiate_archive_retrieval_job
+  @guard @negative @initiate_archive_retrieval_job
   Scenario: an archive retrieval job is initiated fails when the archive does not exist
     Given the vault exists
     And the vault is "ACTIVE"
@@ -43,7 +43,7 @@ Feature: Glacier - An Archive Retrieval Job Is Initiated
     When an archive retrieval job is initiated
     Then the operation is rejected
 
-  @standard @negative @initiate_archive_retrieval_job @lifecycle
+  @guard @negative @initiate_archive_retrieval_job @lifecycle
   Scenario: an archive retrieval job is initiated fails when the archive is not "STORED"
     Given the vault exists
     And the vault is "ACTIVE"
@@ -52,7 +52,7 @@ Feature: Glacier - An Archive Retrieval Job Is Initiated
     When an archive retrieval job is initiated
     Then the operation is rejected
 
-  @standard @negative @initiate_archive_retrieval_job @capacity
+  @guard @negative @internal @initiate_archive_retrieval_job @capacity
   Scenario: an archive retrieval job is initiated fails when the job slot is not available
     Given the vault exists
     And the vault is "ACTIVE"

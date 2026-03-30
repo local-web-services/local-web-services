@@ -20,20 +20,20 @@ Feature: S3api - Object Metadata Is Retrieved From A Bucket
     And every multipart upload has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
     And deleting a bucket requires it to be empty
 
-  @standard @negative @head_object
+  @guard @negative @head_object
   Scenario: object metadata is retrieved from a bucket fails when the bucket does not exist
     Given the bucket does not exist
     When object metadata is retrieved from a bucket
     Then the operation is rejected
 
-  @standard @negative @head_object @lifecycle
+  @guard @negative @head_object @lifecycle
   Scenario: object metadata is retrieved from a bucket fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"
     When object metadata is retrieved from a bucket
     Then the operation is rejected
 
-  @standard @negative @head_object
+  @guard @negative @head_object
   Scenario: object metadata is retrieved from a bucket fails when the object does not exist in the bucket
     Given the bucket exists
     And the bucket is "ACTIVE"
@@ -41,7 +41,7 @@ Feature: S3api - Object Metadata Is Retrieved From A Bucket
     When object metadata is retrieved from a bucket
     Then the operation is rejected
 
-  @standard @negative @head_object
+  @guard @negative @head_object
   Scenario: object metadata is retrieved from a bucket fails when the object is deleted
     Given the bucket exists
     And the bucket is "ACTIVE"

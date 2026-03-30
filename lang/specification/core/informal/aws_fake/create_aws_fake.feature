@@ -15,7 +15,7 @@ Feature: AwsFake - An Aws Fake Is Created For A Service
     And every "ACTIVE" operation belongs to an "ACTIVE" "AWS" fake
     And every "AWS" fake is tied to a known service
 
-  @standard @negative @create_aws_fake
+  @guard @negative @create_aws_fake
   Scenario: an "AWS" fake is created for a service fails when the "AWS" fake already exists
     Given the "AWS" fake already exists
     When an "AWS" fake is created for a service

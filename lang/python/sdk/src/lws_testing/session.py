@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 import os
 import shutil
-import socket
 import tempfile
 import threading
 from collections.abc import Generator
@@ -13,6 +12,15 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
+from lws_testing._session_helpers import (
+    SERVICE_ENV_VARS as _SERVICE_ENV_VARS,
+)
+from lws_testing._session_helpers import (
+    TEST_CREDENTIALS as _TEST_CREDENTIALS,
+)
+from lws_testing._session_helpers import (
+    parse_typed_resources as _parse_typed_resources,
+)
 from lws_testing._spec import (
     DynamoTable,
     S3Bucket,
@@ -23,82 +31,7 @@ from lws_testing._spec import (
     StateMachine,
 )
 
-# Union type for all typed resource specs accepted by LwsSession.
 ResourceSpec = DynamoTable | SqsQueue | S3Bucket | SnsTopic | SsmParameter | Secret | StateMachine
-
-# Maps boto3 service name → AWS SDK endpoint URL env var.
-# Setting these redirects *any* boto3 client created in the process to the
-# local LWS service — no production-code changes required.
-_SERVICE_ENV_VARS: dict[str, str] = {
-    "dynamodb": "AWS_ENDPOINT_URL_DYNAMODB",
-    "sqs": "AWS_ENDPOINT_URL_SQS",
-    "s3": "AWS_ENDPOINT_URL_S3",
-    "sns": "AWS_ENDPOINT_URL_SNS",
-    "stepfunctions": "AWS_ENDPOINT_URL_STEPFUNCTIONS",
-    "ssm": "AWS_ENDPOINT_URL_SSM",
-    "secretsmanager": "AWS_ENDPOINT_URL_SECRETSMANAGER",
-    "events": "AWS_ENDPOINT_URL_EVENTS",
-    "apigateway": "AWS_ENDPOINT_URL_API_GATEWAY",
-    "organizations": "AWS_ENDPOINT_URL_ORGANIZATIONS",
-}
-
-# Credential / region overrides so boto3 never tries to contact IAM or STS.
-_TEST_CREDENTIALS: dict[str, str] = {
-    "AWS_ACCESS_KEY_ID": "test",
-    "AWS_SECRET_ACCESS_KEY": "test",
-    "AWS_DEFAULT_REGION": "us-east-1",
-}
-
-
-def _parse_typed_resources(resources: tuple) -> dict[str, list]:
-    """Convert typed resource objects into keyed lists for LwsSession._spec."""
-    tables: list[dict[str, Any]] = []
-    queues: list[str] = []
-    buckets: list[str] = []
-    topics: list[str] = []
-    state_machines: list[dict[str, Any]] = []
-    secrets: list[str] = []
-    parameters: list[str] = []
-    for resource in resources:
-        if isinstance(resource, DynamoTable):
-            entry: dict[str, Any] = {"name": resource.name, "partition_key": resource.hash_key}
-            if resource.sort_key is not None:
-                entry["sort_key"] = resource.sort_key
-            tables.append(entry)
-        elif isinstance(resource, SqsQueue):
-            queues.append(resource.name)
-        elif isinstance(resource, S3Bucket):
-            buckets.append(resource.name)
-        elif isinstance(resource, SnsTopic):
-            topics.append(resource.name)
-        elif isinstance(resource, StateMachine):
-            state_machines.append(
-                {
-                    "name": resource.name,
-                    "definition": resource.definition,
-                    "role_arn": resource.role_arn,
-                }
-            )
-        elif isinstance(resource, Secret):
-            secrets.append(resource.name)
-        elif isinstance(resource, SsmParameter):
-            parameters.append(resource.name)
-    return {
-        "tables": tables,
-        "queues": queues,
-        "buckets": buckets,
-        "topics": topics,
-        "state_machines": state_machines,
-        "secrets": secrets,
-        "parameters": parameters,
-    }
-
-
-def _free_port() -> int:
-    """Return a free ephemeral TCP port on localhost."""
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind(("127.0.0.1", 0))
-        return s.getsockname()[1]
 
 
 class LwsSession:
@@ -155,6 +88,7 @@ class LwsSession:
         self._ports: dict[str, int] = {}
         self._mgmt_port: int = 0
         self._servers: list[Any] = []
+        self._providers: dict[str, Any] = {}
         self._loop: asyncio.AbstractEventLoop | None = None
         self._thread: threading.Thread | None = None
         self._data_dir: Path | None = None
@@ -235,9 +169,13 @@ class LwsSession:
         """Create providers, build apps, start servers."""
         from lws_testing._transport.inprocess import start_services
 
-        self._log_handler, self._ports, self._mgmt_port, self._servers = await start_services(
-            self._spec, self._data_dir
-        )
+        (
+            self._log_handler,
+            self._ports,
+            self._mgmt_port,
+            self._servers,
+            self._providers,
+        ) = await start_services(self._spec, self._data_dir)
         ready.set()
 
     def _stop(self) -> None:
@@ -259,7 +197,7 @@ class LwsSession:
         """Gracefully shut down all servers."""
         from lws_testing._transport.inprocess import stop_services
 
-        await stop_services(self._servers)
+        await stop_services(self._servers, self._providers)
 
     # ── Environment patching ──────────────────────────────────────────────────
 
@@ -291,12 +229,31 @@ class LwsSession:
     # ── boto3 client factory ──────────────────────────────────────────────────
 
     def client(self, service: str, config: Any = None) -> Any:
-        """Return a pre-configured boto3 client pointing at the local service.
+        """Return a pre-configured client for the given service.
+
+        For standard AWS services (e.g. ``"dynamodb"``, ``"sqs"``) this returns a
+        boto3 client pointed at the local service endpoint.  For ``"fake"`` and
+        ``"aws_fake"`` it returns the respective management API client.
 
         Args:
-            service: AWS service name (e.g. ``"dynamodb"``, ``"sqs"``, ``"s3"``).
-            config: Optional botocore Config object to pass through to boto3.client.
+            service: Service name.  AWS services use their boto3 name; use
+                ``"fake"`` for the fake server management client and ``"aws_fake"``
+                for the AWS fake interceptor client.
+            config: Optional botocore Config object (AWS services only).
         """
+        if service == "fake":
+            from lws_testing._management.fake import (  # pylint: disable=import-outside-toplevel
+                FakeServerClient,
+            )
+
+            return FakeServerClient(self._mgmt_port)
+        if service == "aws_fake":
+            from lws_testing._management.aws_fake import (  # pylint: disable=import-outside-toplevel
+                AwsFakeClient,
+            )
+
+            return AwsFakeClient(self._mgmt_port)
+
         import boto3  # pylint: disable=import-outside-toplevel
 
         port = self._ports.get(service)
@@ -305,7 +262,9 @@ class LwsSession:
                 f"Service {service!r} is not available in this session. "
                 f"Available: {sorted(self._ports)}"
             )
-        return boto3.client(
+        import re  # pylint: disable=import-outside-toplevel
+
+        boto_client = boto3.client(
             service,
             endpoint_url=f"http://127.0.0.1:{port}",
             region_name="us-east-1",
@@ -313,8 +272,17 @@ class LwsSession:
             aws_secret_access_key="test",
             config=config,
         )
+        if service == "stepfunctions":
+            # boto3/botocore prepends "sync-" to the hostname for StartSyncExecution
+            # (e.g. http://127.0.0.1:PORT → http://sync-127.0.0.1:PORT).
+            # Strip that prefix so requests reach the local service.
+            def _fix_sync_url(request, **_kwargs):  # type: ignore[no-untyped-def]
+                request.url = re.sub(r"(https?://)sync-", r"\1", request.url)
 
-    # ── State management ──────────────────────────────────────────────────────
+            boto_client.meta.events.register(
+                "before-send.stepfunctions.StartSyncExecution", _fix_sync_url
+            )
+        return boto_client
 
     def reset(self) -> None:
         """Clear all service state. Call between tests to ensure isolation."""
@@ -322,7 +290,29 @@ class LwsSession:
 
         httpx.post(f"http://127.0.0.1:{self._mgmt_port}/_ldk/reset")
 
-    # ── Resource helpers ──────────────────────────────────────────────────────
+    def inject_state(self, service: str, resource_type: str, resource_id: str, state: str) -> None:
+        """Inject a resource state via PUT /_ldk/state/{service}/{resource_type}/{resource_id}."""
+        from lws_testing._management.state import (
+            inject_state as _inject_state,  # pylint: disable=import-outside-toplevel
+        )
+
+        _inject_state(self._mgmt_port, service, resource_type, resource_id, state)
+
+    def clear_injected_state(self, service: str, resource_type: str, resource_id: str) -> None:
+        """Clear an injected resource state via DELETE /_ldk/state."""
+        from lws_testing._management.state import (
+            clear_injected_state as _clear,  # pylint: disable=import-outside-toplevel
+        )
+
+        _clear(self._mgmt_port, service, resource_type, resource_id)
+
+    def get_injected_state(self, service: str, resource_type: str, resource_id: str) -> str | None:
+        """Return the injected state for a resource, or None if not set."""
+        from lws_testing._management.state import (
+            get_injected_state as _get,  # pylint: disable=import-outside-toplevel
+        )
+
+        return _get(self._mgmt_port, service, resource_type, resource_id)
 
     def dynamodb(self, table_name: str) -> Any:
         """Return a DynamoDB table helper for seeding and asserting."""
@@ -365,8 +355,6 @@ class LwsSession:
         """
         return f"http://127.0.0.1:{self._ports['sqs']}/000000000000/{queue_name}"
 
-    # ── Fake / chaos / IAM builders ───────────────────────────────────────────
-
     def fake(self, service: str) -> Any:
         """Return a fluent fake builder for the given service."""
         from lws_testing._builders.fake import FakeBuilder
@@ -378,6 +366,30 @@ class LwsSession:
         from lws_testing._builders.chaos import ChaosBuilder
 
         return ChaosBuilder(service, self._mgmt_port)
+
+    def set_chaos(self, service: str, error_rate: float = 1.0, latency_ms: int = 0) -> None:
+        """Enable chaos for *service* (PUT /_ldk/chaos/{service})."""
+        from lws_testing._management.chaos import (  # pylint: disable=import-outside-toplevel
+            set_chaos as _set_chaos,
+        )
+
+        _set_chaos(self._mgmt_port, service, error_rate, latency_ms)
+
+    def reset_chaos(self, service: str) -> None:
+        """Disable and reset chaos for *service* (DELETE /_ldk/chaos/{service})."""
+        from lws_testing._management.chaos import (  # pylint: disable=import-outside-toplevel
+            reset_chaos as _reset_chaos,
+        )
+
+        _reset_chaos(self._mgmt_port, service)
+
+    def get_chaos_status(self, service: str) -> dict[str, Any]:
+        """Return the current chaos configuration for *service* (GET /_ldk/chaos/{service})."""
+        from lws_testing._management.chaos import (  # pylint: disable=import-outside-toplevel
+            get_chaos_status as _get_chaos_status,
+        )
+
+        return _get_chaos_status(self._mgmt_port, service)
 
     def lifecycle(self, service: str) -> Any:
         """Return a fluent lifecycle builder for the given service."""
@@ -397,8 +409,6 @@ class LwsSession:
         from lws_testing._builders.iam import IamBuilder
 
         return IamBuilder(self._mgmt_port)
-
-    # ── Log capture ───────────────────────────────────────────────────────────
 
     @contextmanager
     def capture_logs(self) -> Generator[Any, None, None]:
@@ -426,3 +436,24 @@ class LwsSession:
         if self._log_handler is None:
             return []
         return self._log_handler.backlog()
+
+    # ── Lambda helpers ────────────────────────────────────────────────────────
+
+    def get_lambda_invocations(self, function_name: str) -> list[dict[str, Any]]:
+        """Return the list of invocation records for a Lambda function.
+
+        Calls ``GET /lws/lambda/invocations/{function_name}`` on the Lambda
+        management API and returns the ``Invocations`` list.
+
+        Args:
+            function_name: The Lambda function name to query.
+        """
+        import httpx  # pylint: disable=import-outside-toplevel
+
+        port = self._ports.get("lambda")
+        if port is None:
+            return []
+        resp = httpx.get(f"http://127.0.0.1:{port}/lws/lambda/invocations/{function_name}")
+        if resp.status_code != 200:
+            return []
+        return resp.json().get("Invocations", [])

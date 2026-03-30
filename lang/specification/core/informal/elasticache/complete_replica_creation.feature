@@ -20,20 +20,20 @@ Feature: Elasticache - A Replica Creation In A Replication Group Completes
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @complete_replica_creation @internal
+  @guard @negative @complete_replica_creation @internal
   Scenario: a replica creation in a replication group completes fails when the cluster does not exist
     Given the cluster does not exist
     When a replica creation in a replication group completes
     Then the operation is rejected
 
-  @standard @negative @complete_replica_creation @internal
+  @guard @negative @complete_replica_creation @internal
   Scenario: a replica creation in a replication group completes fails when the cluster is not "CREATING"
     Given the cluster exists
     And the cluster is not "CREATING"
     When a replica creation in a replication group completes
     Then the operation is rejected
 
-  @standard @negative @complete_replica_creation @internal
+  @guard @negative @complete_replica_creation @internal
   Scenario: a replica creation in a replication group completes fails when the cluster is not part of a replication group
     Given the cluster exists
     And the cluster is "CREATING"

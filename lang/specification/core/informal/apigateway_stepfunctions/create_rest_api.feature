@@ -16,7 +16,7 @@ Feature: ApigatewayStepfunctions - A Rest Api Is Created
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every "RUNNING" execution has a corresponding "IN_PROGRESS" request
 
-  @standard @negative @create_rest_api
+  @guard @negative @create_rest_api
   Scenario: a "REST" "API" is created fails when the "API" already exists
     Given the "API" already exists
     When a "REST" "API" is created

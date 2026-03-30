@@ -21,13 +21,13 @@ Feature: CognitoIdp - A Verification Code Delivery Fails For An Unconfirmed User
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @verification_code_delivery_failure
+  @guard @negative @verification_code_delivery_failure
   Scenario: a verification code delivery fails for an unconfirmed user fails when the user does not exist
     Given the user does not exist
     When a verification code delivery fails for an unconfirmed user
     Then the operation is rejected
 
-  @standard @negative @verification_code_delivery_failure
+  @guard @negative @verification_code_delivery_failure
   Scenario: a verification code delivery fails for an unconfirmed user fails when the user is not "UNCONFIRMED"
     Given the user exists
     And the user is not "UNCONFIRMED"

@@ -17,7 +17,7 @@ Feature: LambdaSqs - The Lambda Invocation Fails
     And every "AVAILABLE" or "IN_FLIGHT" message belongs to an "ACTIVE" queue
     And every "ENABLED" event source mapping references an "ACTIVE" queue
 
-  @standard @negative @invocation_fails @internal
+  @guard @negative @invocation_fails @internal
   Scenario: the Lambda invocation fails fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda invocation fails

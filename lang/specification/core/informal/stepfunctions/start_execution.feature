@@ -21,20 +21,20 @@ Feature: Stepfunctions - An Execution Is Started On A Standard State Machine
     And synchronous executions only run on express state machines
     And every execution belongs to a known state machine
 
-  @standard @negative @start_execution
+  @guard @negative @start_execution
   Scenario: an execution is started on a standard state machine fails when the state machine does not exist
     Given the state machine does not exist
     When an execution is started on a standard state machine
     Then the operation is rejected
 
-  @standard @negative @start_execution @lifecycle
+  @guard @negative @start_execution @lifecycle
   Scenario: an execution is started on a standard state machine fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"
     When an execution is started on a standard state machine
     Then the operation is rejected
 
-  @standard @negative @start_execution
+  @guard @negative @start_execution
   Scenario: an execution is started on a standard state machine fails when the state machine is not a "STANDARD" type
     Given the state machine exists
     And the state machine is "ACTIVE"
@@ -42,7 +42,7 @@ Feature: Stepfunctions - An Execution Is Started On A Standard State Machine
     When an execution is started on a standard state machine
     Then the operation is rejected
 
-  @standard @negative @start_execution @capacity
+  @guard @negative @internal @start_execution @capacity
   Scenario: an execution is started on a standard state machine fails when the execution slot is not available
     Given the state machine exists
     And the state machine is "ACTIVE"

@@ -21,20 +21,20 @@ Feature: Organizations - An Organizational Unit Is Deleted
     And no active node is a child of a deleted organizational unit
     And every active policy attachment targets an "ACTIVE" node
 
-  @standard @negative @delete_organizational_unit
+  @guard @negative @delete_organizational_unit
   Scenario: an organizational unit is deleted fails when the organizational unit does not exist or is not "ACTIVE"
     Given the organizational unit does not exist or is not "ACTIVE"
     When an organizational unit is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_organizational_unit
+  @guard @negative @delete_organizational_unit
   Scenario: an organizational unit is deleted fails when the organizational unit has child accounts
     Given the organizational unit exists and is "ACTIVE"
     And the organizational unit has child accounts
     When an organizational unit is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_organizational_unit
+  @guard @negative @delete_organizational_unit
   Scenario: an organizational unit is deleted fails when the organizational unit has child organizational units
     Given the organizational unit exists and is "ACTIVE"
     And the organizational unit has no child accounts
@@ -42,7 +42,7 @@ Feature: Organizations - An Organizational Unit Is Deleted
     When an organizational unit is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_organizational_unit
+  @guard @negative @delete_organizational_unit
   Scenario: an organizational unit is deleted fails when the organizational unit has attached policies
     Given the organizational unit exists and is "ACTIVE"
     And the organizational unit has no child accounts

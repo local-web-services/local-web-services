@@ -17,7 +17,7 @@ Feature: LambdaSqs - A Lambda Function Is Deployed
     And every "AVAILABLE" or "IN_FLIGHT" message belongs to an "ACTIVE" queue
     And every "ENABLED" event source mapping references an "ACTIVE" queue
 
-  @standard @negative @deploy_function
+  @guard @negative @deploy_function
   Scenario: a Lambda function is deployed fails when the function already exists
     Given the function already exists
     When a Lambda function is deployed

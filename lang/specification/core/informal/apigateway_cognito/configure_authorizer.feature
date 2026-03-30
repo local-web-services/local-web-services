@@ -21,20 +21,20 @@ Feature: ApigatewayCognito - A Cognito User Pool Authorizer Is Configured On The
     And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
     And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
 
-  @standard @negative @configure_authorizer
+  @guard @negative @configure_authorizer
   Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" fails when the "API" does not exist
     Given the "API" does not exist
     When a Cognito User Pool authorizer is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_authorizer @lifecycle
+  @guard @negative @configure_authorizer @lifecycle
   Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" fails when the "API" is not "ACTIVE"
     Given the "API" exists
     And the "API" is not "ACTIVE"
     When a Cognito User Pool authorizer is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_authorizer
+  @guard @negative @configure_authorizer
   Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" fails when the "API" already has an authorizer configured
     Given the "API" exists
     And the "API" is "ACTIVE"
@@ -42,7 +42,7 @@ Feature: ApigatewayCognito - A Cognito User Pool Authorizer Is Configured On The
     When a Cognito User Pool authorizer is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_authorizer
+  @guard @negative @configure_authorizer
   Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" fails when the pool does not exist
     Given the "API" exists
     And the "API" is "ACTIVE"
@@ -51,7 +51,7 @@ Feature: ApigatewayCognito - A Cognito User Pool Authorizer Is Configured On The
     When a Cognito User Pool authorizer is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_authorizer @lifecycle
+  @guard @negative @configure_authorizer @lifecycle
   Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" fails when the pool is not "ACTIVE"
     Given the "API" exists
     And the "API" is "ACTIVE"

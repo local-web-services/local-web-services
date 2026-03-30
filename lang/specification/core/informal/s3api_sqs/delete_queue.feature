@@ -16,13 +16,13 @@ Feature: S3apiSqs - The Sqs Queue Is Deleted
     And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
-  @standard @negative @delete_queue
+  @guard @negative @delete_queue
   Scenario: the "SQS" queue is deleted fails when the queue does not exist
     Given the queue does not exist
     When the "SQS" queue is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_queue @lifecycle
+  @guard @negative @delete_queue @lifecycle
   Scenario: the "SQS" queue is deleted fails when the queue is already "DELETED"
     Given the queue exists
     And the queue is already "DELETED"

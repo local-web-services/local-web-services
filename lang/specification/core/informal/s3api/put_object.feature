@@ -18,13 +18,13 @@ Feature: S3api - An Object Is Uploaded To A Bucket
     And every multipart upload has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
     And deleting a bucket requires it to be empty
 
-  @standard @negative @put_object
+  @guard @negative @put_object
   Scenario: an object is uploaded to a bucket fails when the bucket does not exist
     Given the bucket does not exist
     When an object is uploaded to a bucket
     Then the operation is rejected
 
-  @standard @negative @put_object @lifecycle
+  @guard @negative @put_object @lifecycle
   Scenario: an object is uploaded to a bucket fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"

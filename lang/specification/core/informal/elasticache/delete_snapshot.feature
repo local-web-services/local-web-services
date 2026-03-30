@@ -19,13 +19,13 @@ Feature: Elasticache - A Cache Snapshot Is Deleted
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @delete_snapshot
+  @guard @negative @delete_snapshot
   Scenario: a cache snapshot is deleted fails when the snapshot does not exist
     Given the snapshot does not exist
     When a cache snapshot is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_snapshot @lifecycle
+  @guard @negative @delete_snapshot @lifecycle
   Scenario: a cache snapshot is deleted fails when the snapshot is not "AVAILABLE"
     Given the snapshot exists
     And the snapshot is not "AVAILABLE"

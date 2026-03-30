@@ -18,7 +18,7 @@ Feature: Memorydb - A User Is Created
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @create_user
+  @guard @negative @create_user
   Scenario: a user is created fails when the user already exists
     Given the user already exists
     When a user is created

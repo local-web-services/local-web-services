@@ -15,7 +15,7 @@ Feature: ElasticacheSns - An Sns Topic Is Created
     And every "PUBLISHED" notification references a cluster that exists
     And every "PUBLISHED" notification references a topic that exists
 
-  @standard @negative @create_topic
+  @guard @negative @create_topic
   Scenario: an "SNS" topic is created fails when the topic already exists
     Given the topic already exists
     When an "SNS" topic is created

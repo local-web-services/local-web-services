@@ -16,13 +16,13 @@ Feature: LambdaSsm - A Parameter Is Deleted From Ssm Parameter Store
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
-  @standard @negative @delete_parameter
+  @guard @negative @delete_parameter
   Scenario: a parameter is deleted from "SSM" Parameter Store fails when the parameter does not exist
     Given the parameter does not exist
     When a parameter is deleted from "SSM" Parameter Store
     Then the operation is rejected
 
-  @standard @negative @delete_parameter @lifecycle
+  @guard @negative @delete_parameter @lifecycle
   Scenario: a parameter is deleted from "SSM" Parameter Store fails when the parameter is already "DELETED"
     Given the parameter exists
     And the parameter is already "DELETED"

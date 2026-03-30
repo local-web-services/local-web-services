@@ -16,13 +16,13 @@ Feature: StepfunctionsS3api - A Running Execution Fails To Read Because No Objec
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every existing object belongs to an "ACTIVE" bucket
 
-  @standard @negative @get_object_not_found_task
+  @guard @negative @get_object_not_found_task
   Scenario: a running execution fails to read because no object exists in the bucket fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution fails to read because no object exists in the bucket
     Then the operation is rejected
 
-  @standard @negative @get_object_not_found_task
+  @guard @negative @get_object_not_found_task
   Scenario: a running execution fails to read because no object exists in the bucket fails when an object "EXISTS" in the target bucket
     Given an execution is "RUNNING"
     And an object "EXISTS" in the target bucket

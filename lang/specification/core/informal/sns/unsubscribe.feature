@@ -18,13 +18,13 @@ Feature: Sns - A Subscription Is Removed
     And every active subscription references an "ACTIVE" topic
     And every delivery retry count is within the allowed limit
 
-  @standard @negative @unsubscribe
+  @guard @negative @unsubscribe
   Scenario: a subscription is removed fails when the subscription does not exist
     Given the subscription does not exist
     When a subscription is removed
     Then the operation is rejected
 
-  @standard @negative @unsubscribe @lifecycle
+  @guard @negative @unsubscribe @lifecycle
   Scenario: a subscription is removed fails when the subscription is not "CONFIRMED"
     Given the subscription exists
     And the subscription is not "CONFIRMED"

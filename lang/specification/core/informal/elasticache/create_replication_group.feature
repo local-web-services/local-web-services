@@ -18,7 +18,7 @@ Feature: Elasticache - A Replication Group Is Created
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @create_replication_group
+  @guard @negative @create_replication_group
   Scenario: a replication group is created fails when the replication group already exists
     Given the replication group already exists
     When a replication group is created

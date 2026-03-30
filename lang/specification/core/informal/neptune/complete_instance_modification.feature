@@ -22,13 +22,13 @@ Feature: Neptune - A Database Instance Modification Completes
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @complete_instance_modification @internal
+  @guard @negative @complete_instance_modification @internal
   Scenario: a database instance modification completes fails when the instance does not exist
     Given the instance does not exist
     When a database instance modification completes
     Then the operation is rejected
 
-  @standard @negative @complete_instance_modification @internal
+  @guard @negative @complete_instance_modification @internal
   Scenario: a database instance modification completes fails when the instance is not "MODIFYING"
     Given the instance exists
     And the instance is not "MODIFYING"

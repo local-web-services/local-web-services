@@ -22,20 +22,20 @@ Feature: Lambda - A Tag Is Added To A Function
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @tag_resource
+  @guard @negative @tag_resource
   Scenario: a tag is added to a function fails when the function does not exist
     Given the function does not exist
     When a tag is added to a function
     Then the operation is rejected
 
-  @standard @negative @tag_resource @lifecycle
+  @guard @negative @tag_resource @lifecycle
   Scenario: a tag is added to a function fails when the function is "DELETING"
     Given the function exists
     And the function is "DELETING"
     When a tag is added to a function
     Then the operation is rejected
 
-  @standard @negative @tag_resource @lifecycle
+  @guard @negative @tag_resource @lifecycle
   Scenario: a tag is added to a function fails when the function is "DELETED"
     Given the function exists
     And the function is not "DELETING"

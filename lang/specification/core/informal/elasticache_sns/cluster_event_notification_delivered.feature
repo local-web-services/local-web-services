@@ -18,20 +18,20 @@ Feature: ElasticacheSns - A Cluster Modification Event Occurs And Elasticache Pu
     And every "PUBLISHED" notification references a cluster that exists
     And every "PUBLISHED" notification references a topic that exists
 
-  @standard @negative @cluster_event_notification_delivered @internal
+  @guard @negative @cluster_event_notification_delivered @internal
   Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic fails when the cluster does not exist or is not "AVAILABLE"
     Given the cluster does not exist or is not "AVAILABLE"
     When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @cluster_event_notification_delivered @internal
+  @guard @negative @cluster_event_notification_delivered @internal
   Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic fails when the cluster has no "SNS" notification configured
     Given the cluster exists and is "AVAILABLE"
     And the cluster has no "SNS" notification configured
     When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @cluster_event_notification_delivered @internal
+  @guard @negative @cluster_event_notification_delivered @internal
   Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic fails when the topic is "DELETED"
     Given the cluster exists and is "AVAILABLE"
     And the cluster has an "SNS" notification configured
@@ -39,7 +39,7 @@ Feature: ElasticacheSns - A Cluster Modification Event Occurs And Elasticache Pu
     When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @cluster_event_notification_delivered @internal
+  @guard @negative @cluster_event_notification_delivered @internal
   Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic fails when no message slot is available
     Given the cluster exists and is "AVAILABLE"
     And the cluster has an "SNS" notification configured

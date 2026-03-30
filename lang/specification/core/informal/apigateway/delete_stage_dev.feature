@@ -21,13 +21,13 @@ Feature: Apigateway - The Dev Stage Is Deleted
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @delete_stage_dev
+  @guard @negative @delete_stage_dev
   Scenario: the dev stage is deleted fails when the dev stage does not exist
     Given the dev stage does not exist
     When the dev stage is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_stage_dev @lifecycle
+  @guard @negative @delete_stage_dev @lifecycle
   Scenario: the dev stage is deleted fails when the dev stage is not active
     Given the dev stage exists
     And the dev stage is not active

@@ -19,20 +19,20 @@ Feature: Sns - All Delivery Retries Are Exhausted
     And every active subscription references an "ACTIVE" topic
     And every delivery retry count is within the allowed limit
 
-  @standard @negative @retry_exhausted @internal
+  @guard @negative @retry_exhausted @internal
   Scenario: all delivery retries are exhausted fails when the delivery does not exist
     Given the delivery does not exist
     When all delivery retries are exhausted
     Then the operation is rejected
 
-  @standard @negative @retry_exhausted @internal
+  @guard @negative @retry_exhausted @internal
   Scenario: all delivery retries are exhausted fails when the delivery is not "IN_FLIGHT"
     Given the delivery exists
     And the delivery is not "IN_FLIGHT"
     When all delivery retries are exhausted
     Then the operation is rejected
 
-  @standard @negative @retry_exhausted @internal
+  @guard @negative @retry_exhausted @internal
   Scenario: all delivery retries are exhausted fails when the retry count is below the limit
     Given the delivery exists
     And the delivery is "IN_FLIGHT"

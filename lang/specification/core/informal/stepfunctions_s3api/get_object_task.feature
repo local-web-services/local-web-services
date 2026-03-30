@@ -16,13 +16,13 @@ Feature: StepfunctionsS3api - A Running Execution Reads An Existing Object From 
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every existing object belongs to an "ACTIVE" bucket
 
-  @standard @negative @get_object_task
+  @guard @negative @get_object_task
   Scenario: a running execution reads an existing object from the S3 bucket and succeeds fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution reads an existing object from the S3 bucket and succeeds
     Then the operation is rejected
 
-  @standard @negative @get_object_task
+  @guard @negative @get_object_task
   Scenario: a running execution reads an existing object from the S3 bucket and succeeds fails when no object "EXISTS" in the target bucket
     Given an execution is "RUNNING"
     And no object "EXISTS" in the target bucket

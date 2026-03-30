@@ -22,13 +22,13 @@ Feature: Secretsmanager - Tags Are Added To An Active Secret
     And every deleted secret with an open recovery window can still be restored or expired
     And every active secret has a current version assigned
 
-  @standard @negative @tag_resource
+  @guard @negative @tag_resource
   Scenario: tags are added to an active secret fails when the secret does not exist
     Given the secret does not exist
     When tags are added to an active secret
     Then the operation is rejected
 
-  @standard @negative @tag_resource @lifecycle
+  @guard @negative @tag_resource @lifecycle
   Scenario: tags are added to an active secret fails when the secret is not "ACTIVE"
     Given the secret exists
     And the secret is not "ACTIVE"

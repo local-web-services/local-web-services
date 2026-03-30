@@ -20,20 +20,20 @@ Feature: SnsLambda - A Lambda Function Subscribes To An Sns Topic
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation was triggered by a "CONFIRMED" subscription
 
-  @standard @negative @subscribe_function_to_topic
+  @guard @negative @subscribe_function_to_topic
   Scenario: a Lambda function subscribes to an "SNS" topic fails when the topic does not exist
     Given the topic does not exist
     When a Lambda function subscribes to an "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @subscribe_function_to_topic @lifecycle
+  @guard @negative @subscribe_function_to_topic @lifecycle
   Scenario: a Lambda function subscribes to an "SNS" topic fails when the topic is not "ACTIVE"
     Given the topic exists
     And the topic is not "ACTIVE"
     When a Lambda function subscribes to an "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @subscribe_function_to_topic
+  @guard @negative @subscribe_function_to_topic
   Scenario: a Lambda function subscribes to an "SNS" topic fails when the function does not exist
     Given the topic exists
     And the topic is "ACTIVE"
@@ -41,7 +41,7 @@ Feature: SnsLambda - A Lambda Function Subscribes To An Sns Topic
     When a Lambda function subscribes to an "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @subscribe_function_to_topic @lifecycle
+  @guard @negative @subscribe_function_to_topic @lifecycle
   Scenario: a Lambda function subscribes to an "SNS" topic fails when the function is not "ACTIVE"
     Given the topic exists
     And the topic is "ACTIVE"
@@ -50,7 +50,7 @@ Feature: SnsLambda - A Lambda Function Subscribes To An Sns Topic
     When a Lambda function subscribes to an "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @subscribe_function_to_topic @capacity
+  @guard @negative @internal @subscribe_function_to_topic @capacity
   Scenario: a Lambda function subscribes to an "SNS" topic fails when the subscription slot is not available
     Given the topic exists
     And the topic is "ACTIVE"

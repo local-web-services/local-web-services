@@ -15,7 +15,7 @@ Feature: S3apiSqs - An Sqs Queue Is Created
     And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
-  @standard @negative @create_queue
+  @guard @negative @create_queue
   Scenario: an "SQS" queue is created fails when the queue already exists
     Given the queue already exists
     When an "SQS" queue is created

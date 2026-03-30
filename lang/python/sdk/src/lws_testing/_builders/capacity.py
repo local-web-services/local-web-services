@@ -42,6 +42,18 @@ class CapacityBuilder:
             timeout=5.0,
         )
 
+    def is_exhausted(self) -> bool:
+        """Return True if the service currently has zero capacity."""
+        resp = httpx.get(
+            f"http://127.0.0.1:{self._mgmt_port}/_ldk/capacity",
+            timeout=5.0,
+        )
+        data = resp.json()
+        capacity = data.get("capacity", data)
+        svc = capacity.get(self._service, {})
+        slots = svc.get("slots")
+        return slots is not None and slots == 0
+
     def clear(self) -> None:
         """Restore unlimited capacity for this service."""
         httpx.post(

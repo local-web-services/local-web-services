@@ -22,13 +22,13 @@ Feature: Secretsmanager - A Secret Is Deleted
     And every deleted secret with an open recovery window can still be restored or expired
     And every active secret has a current version assigned
 
-  @standard @negative @delete_secret
+  @guard @negative @delete_secret
   Scenario: a secret is deleted fails when the secret does not exist
     Given the secret does not exist
     When a secret is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_secret @lifecycle
+  @guard @negative @delete_secret @lifecycle
   Scenario: a secret is deleted fails when the secret is not "ACTIVE"
     Given the secret exists
     And the secret is not "ACTIVE"

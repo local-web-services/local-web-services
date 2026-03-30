@@ -16,7 +16,7 @@ Feature: EventsLambda - A Lambda Function Is Deployed
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "ENABLED" rule references an "ACTIVE" event bus
 
-  @standard @negative @deploy_function
+  @guard @negative @deploy_function
   Scenario: a Lambda function is deployed fails when the function already exists
     Given the function already exists
     When a Lambda function is deployed

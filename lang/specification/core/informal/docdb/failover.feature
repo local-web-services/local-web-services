@@ -25,20 +25,20 @@ Feature: Docdb - A Failover Is Triggered And A Replica Is Promoted To Primary
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @failover @internal
+  @guard @negative @failover @internal
   Scenario: a failover is triggered and a replica is promoted to primary fails when the cluster does not exist
     Given the cluster does not exist
     When a failover is triggered and a replica is promoted to primary
     Then the operation is rejected
 
-  @standard @negative @failover @internal
+  @guard @negative @failover @internal
   Scenario: a failover is triggered and a replica is promoted to primary fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"
     When a failover is triggered and a replica is promoted to primary
     Then the operation is rejected
 
-  @standard @negative @failover @internal
+  @guard @negative @failover @internal
   Scenario: a failover is triggered and a replica is promoted to primary fails when the new primary instance does not exist
     Given the cluster exists
     And the cluster is "AVAILABLE"
@@ -46,7 +46,7 @@ Feature: Docdb - A Failover Is Triggered And A Replica Is Promoted To Primary
     When a failover is triggered and a replica is promoted to primary
     Then the operation is rejected
 
-  @standard @negative @failover @internal
+  @guard @negative @failover @internal
   Scenario: a failover is triggered and a replica is promoted to primary fails when the instance does not belong to this cluster
     Given the cluster exists
     And the cluster is "AVAILABLE"
@@ -55,7 +55,7 @@ Feature: Docdb - A Failover Is Triggered And A Replica Is Promoted To Primary
     When a failover is triggered and a replica is promoted to primary
     Then the operation is rejected
 
-  @standard @negative @failover @internal
+  @guard @negative @failover @internal
   Scenario: a failover is triggered and a replica is promoted to primary fails when the instance is already the primary
     Given the cluster exists
     And the cluster is "AVAILABLE"
@@ -65,7 +65,7 @@ Feature: Docdb - A Failover Is Triggered And A Replica Is Promoted To Primary
     When a failover is triggered and a replica is promoted to primary
     Then the operation is rejected
 
-  @standard @negative @failover @internal
+  @guard @negative @failover @internal
   Scenario: a failover is triggered and a replica is promoted to primary fails when the instance is not "AVAILABLE"
     Given the cluster exists
     And the cluster is "AVAILABLE"

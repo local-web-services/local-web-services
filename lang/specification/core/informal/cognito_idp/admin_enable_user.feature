@@ -21,13 +21,13 @@ Feature: CognitoIdp - A User Account Is Enabled By An Admin
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @admin_enable_user
+  @guard @negative @admin_enable_user
   Scenario: a user account is enabled by an admin fails when the user does not have an enabled flag
     Given the user does not have an enabled flag
     When a user account is enabled by an admin
     Then the operation is rejected
 
-  @standard @negative @admin_enable_user
+  @guard @negative @admin_enable_user
   Scenario: a user account is enabled by an admin fails when the user is not disabled
     Given the user has an enabled flag
     And the user is not disabled

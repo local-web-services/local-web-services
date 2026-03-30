@@ -15,7 +15,7 @@ Feature: LambdaNeptune - A Neptune Cluster Is Created
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which cluster it queried
 
-  @standard @negative @create_cluster
+  @guard @negative @create_cluster
   Scenario: a Neptune cluster is created fails when the cluster already exists
     Given the cluster already exists
     When a Neptune cluster is created

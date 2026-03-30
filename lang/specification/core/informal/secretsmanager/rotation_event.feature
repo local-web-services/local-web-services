@@ -22,13 +22,13 @@ Feature: Secretsmanager - An Automatic Rotation Event Occurs For An Active Secre
     And every deleted secret with an open recovery window can still be restored or expired
     And every active secret has a current version assigned
 
-  @standard @negative @rotation_event @internal
+  @guard @negative @rotation_event @internal
   Scenario: an automatic rotation event occurs for an active secret fails when the secret does not exist
     Given the secret does not exist
     When an automatic rotation event occurs for an active secret
     Then the operation is rejected
 
-  @standard @negative @rotation_event @internal
+  @guard @negative @rotation_event @internal
   Scenario: an automatic rotation event occurs for an active secret fails when the secret is not "ACTIVE"
     Given the secret exists
     And the secret is not "ACTIVE"

@@ -16,13 +16,13 @@ Feature: StepfunctionsDynamodb - A Running Execution Attempts To Get An Item Tha
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every existing item belongs to an "ACTIVE" table
 
-  @standard @negative @get_item_not_found_task
+  @guard @negative @get_item_not_found_task
   Scenario: a running execution attempts to get an item that does not exist and the execution fails fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution attempts to get an item that does not exist and the execution fails
     Then the operation is rejected
 
-  @standard @negative @get_item_not_found_task
+  @guard @negative @get_item_not_found_task
   Scenario: a running execution attempts to get an item that does not exist and the execution fails fails when an item "EXISTS" in the target table
     Given an execution is "RUNNING"
     And an item "EXISTS" in the target table

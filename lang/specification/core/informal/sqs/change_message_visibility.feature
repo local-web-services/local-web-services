@@ -17,13 +17,13 @@ Feature: Sqs - Message Visibility Timeout Is Changed
     And every in-flight message belongs to an "ACTIVE" queue
     And every message has a non-negative receive count
 
-  @standard @negative @change_message_visibility
+  @guard @negative @change_message_visibility
   Scenario: message visibility timeout is changed fails when the message does not exist
     Given the message does not exist
     When message visibility timeout is changed
     Then the operation is rejected
 
-  @standard @negative @change_message_visibility
+  @guard @negative @change_message_visibility
   Scenario: message visibility timeout is changed fails when the message is not "IN_FLIGHT"
     Given the message exists
     And the message is not "IN_FLIGHT"

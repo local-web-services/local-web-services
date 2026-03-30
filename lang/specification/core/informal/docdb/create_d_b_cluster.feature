@@ -20,7 +20,7 @@ Feature: Docdb - A Database Cluster Is Created
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @create_d_b_cluster
+  @guard @negative @create_d_b_cluster
   Scenario: a database cluster is created fails when the cluster already exists
     Given the cluster already exists
     When a database cluster is created

@@ -16,7 +16,7 @@ Feature: SnsSqs - An Sns Topic Is Created
     And every "AVAILABLE" message belongs to an "ACTIVE" queue
     And a message can only be delivered if a confirmed subscription exists for the topic
 
-  @standard @negative @create_topic
+  @guard @negative @create_topic
   Scenario: an "SNS" topic is created fails when the topic already exists
     Given the topic already exists
     When an "SNS" topic is created

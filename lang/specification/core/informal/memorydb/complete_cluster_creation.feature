@@ -19,13 +19,13 @@ Feature: Memorydb - A Memorydb Cluster Finishes Creating
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @complete_cluster_creation @internal
+  @guard @negative @complete_cluster_creation @internal
   Scenario: a MemoryDB cluster finishes creating fails when the cluster does not exist
     Given the cluster does not exist
     When a MemoryDB cluster finishes creating
     Then the operation is rejected
 
-  @standard @negative @complete_cluster_creation @internal
+  @guard @negative @complete_cluster_creation @internal
   Scenario: a MemoryDB cluster finishes creating fails when the cluster is not "CREATING"
     Given the cluster exists
     And the cluster is not "CREATING"

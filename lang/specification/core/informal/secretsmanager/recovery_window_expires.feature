@@ -23,20 +23,20 @@ Feature: Secretsmanager - The Recovery Window For A Deleted Secret Expires
     And every deleted secret with an open recovery window can still be restored or expired
     And every active secret has a current version assigned
 
-  @standard @negative @recovery_window_expires @internal
+  @guard @negative @recovery_window_expires @internal
   Scenario: the recovery window for a deleted secret expires fails when the secret does not exist
     Given the secret does not exist
     When the recovery window for a deleted secret expires
     Then the operation is rejected
 
-  @standard @negative @recovery_window_expires @internal
+  @guard @negative @recovery_window_expires @internal
   Scenario: the recovery window for a deleted secret expires fails when the secret is not "DELETED"
     Given the secret exists
     And the secret is not "DELETED"
     When the recovery window for a deleted secret expires
     Then the operation is rejected
 
-  @standard @negative @recovery_window_expires @internal
+  @guard @negative @recovery_window_expires @internal
   Scenario: the recovery window for a deleted secret expires fails when the recovery window is not open
     Given the secret exists
     And the secret is "DELETED"

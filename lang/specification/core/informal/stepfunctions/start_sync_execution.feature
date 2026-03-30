@@ -21,20 +21,20 @@ Feature: Stepfunctions - A Synchronous Execution Is Started On An Express State 
     And synchronous executions only run on express state machines
     And every execution belongs to a known state machine
 
-  @standard @negative @start_sync_execution
+  @guard @negative @start_sync_execution
   Scenario: a synchronous execution is started on an express state machine fails when the state machine does not exist
     Given the state machine does not exist
     When a synchronous execution is started on an express state machine
     Then the operation is rejected
 
-  @standard @negative @start_sync_execution @lifecycle
+  @guard @negative @start_sync_execution @lifecycle
   Scenario: a synchronous execution is started on an express state machine fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"
     When a synchronous execution is started on an express state machine
     Then the operation is rejected
 
-  @standard @negative @start_sync_execution
+  @guard @negative @start_sync_execution
   Scenario: a synchronous execution is started on an express state machine fails when the state machine is not an "EXPRESS" type
     Given the state machine exists
     And the state machine is "ACTIVE"
@@ -42,7 +42,7 @@ Feature: Stepfunctions - A Synchronous Execution Is Started On An Express State 
     When a synchronous execution is started on an express state machine
     Then the operation is rejected
 
-  @standard @negative @start_sync_execution @capacity
+  @guard @negative @internal @start_sync_execution @capacity
   Scenario: a synchronous execution is started on an express state machine fails when the execution slot is not available
     Given the state machine exists
     And the state machine is "ACTIVE"

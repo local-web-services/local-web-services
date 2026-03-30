@@ -16,13 +16,13 @@ Feature: DocdbEvents - A Cluster Modification Begins But Event Delivery Fails Be
     And every "DELIVERED" event references a cluster that exists
     And every "DELIVERED" event references a bus that exists
 
-  @standard @negative @cluster_modify_event_fails @internal
+  @guard @negative @cluster_modify_event_fails @internal
   Scenario: a cluster modification begins but event delivery fails because the bus is deleted fails when the cluster is not "AVAILABLE"
     Given the cluster is not "AVAILABLE"
     When a cluster modification begins but event delivery fails because the bus is deleted
     Then the operation is rejected
 
-  @standard @negative @cluster_modify_event_fails @internal
+  @guard @negative @cluster_modify_event_fails @internal
   Scenario: a cluster modification begins but event delivery fails because the bus is deleted fails when the bus is not "DELETED"
     Given the cluster is "AVAILABLE"
     And the bus is not "DELETED"

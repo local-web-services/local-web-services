@@ -18,13 +18,13 @@ Feature: S3tables - A Namespace Finishes Being Deleted
     And snapshot count is never negative
     And schema version is always at least one
 
-  @standard @negative @finish_deleting_namespace @internal
+  @guard @negative @finish_deleting_namespace @internal
   Scenario: a namespace finishes being deleted fails when the namespace does not exist
     Given the namespace does not exist
     When a namespace finishes being deleted
     Then the operation is rejected
 
-  @standard @negative @finish_deleting_namespace @internal
+  @guard @negative @finish_deleting_namespace @internal
   Scenario: a namespace finishes being deleted fails when the namespace is not "DELETING"
     Given the namespace exists
     And the namespace is not "DELETING"

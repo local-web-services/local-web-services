@@ -19,13 +19,13 @@ Feature: Elasticache - A Replication Group Configuration Is Modified
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @modify_replication_group
+  @guard @negative @modify_replication_group
   Scenario: a replication group configuration is modified fails when the replication group does not exist
     Given the replication group does not exist
     When a replication group configuration is modified
     Then the operation is rejected
 
-  @standard @negative @modify_replication_group @lifecycle
+  @guard @negative @modify_replication_group @lifecycle
   Scenario: a replication group configuration is modified fails when the replication group is not "AVAILABLE"
     Given the replication group exists
     And the replication group is not "AVAILABLE"

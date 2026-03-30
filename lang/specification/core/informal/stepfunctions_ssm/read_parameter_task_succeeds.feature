@@ -16,13 +16,13 @@ Feature: StepfunctionsSsm - A Running Execution Reads An Existing Parameter And 
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which parameter it read
 
-  @standard @negative @read_parameter_task_succeeds @internal
+  @guard @negative @read_parameter_task_succeeds @internal
   Scenario: a running execution reads an existing parameter and the task succeeds fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution reads an existing parameter and the task succeeds
     Then the operation is rejected
 
-  @standard @negative @read_parameter_task_succeeds @internal
+  @guard @negative @read_parameter_task_succeeds @internal
   Scenario: a running execution reads an existing parameter and the task succeeds fails when the parameter does not exist or is "DELETED"
     Given an execution is "RUNNING"
     And the parameter does not exist or is "DELETED"

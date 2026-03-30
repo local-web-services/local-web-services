@@ -16,13 +16,13 @@ Feature: LambdaDocdb - The Documentdb Cluster Is Stopped
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing document references a cluster that exists
 
-  @standard @negative @stop_cluster
+  @guard @negative @stop_cluster
   Scenario: the DocumentDB cluster is stopped fails when the cluster does not exist
     Given the cluster does not exist
     When the DocumentDB cluster is stopped
     Then the operation is rejected
 
-  @standard @negative @stop_cluster @lifecycle
+  @guard @negative @stop_cluster @lifecycle
   Scenario: the DocumentDB cluster is stopped fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"

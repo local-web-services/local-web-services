@@ -16,7 +16,7 @@ Feature: ApigatewayStepfunctions - A Step Functions Express Workflow State Machi
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every "RUNNING" execution has a corresponding "IN_PROGRESS" request
 
-  @standard @negative @create_state_machine
+  @guard @negative @create_state_machine
   Scenario: a Step Functions Express Workflow state machine is created fails when the state machine already exists
     Given the state machine already exists
     When a Step Functions Express Workflow state machine is created

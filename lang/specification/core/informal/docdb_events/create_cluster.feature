@@ -15,7 +15,7 @@ Feature: DocdbEvents - A Documentdb Cluster Is Created And Becomes Available
     And every "DELIVERED" event references a cluster that exists
     And every "DELIVERED" event references a bus that exists
 
-  @standard @negative @create_cluster
+  @guard @negative @create_cluster
   Scenario: a DocumentDB cluster is created and becomes "AVAILABLE" fails when the cluster already exists
     Given the cluster already exists
     When a DocumentDB cluster is created and becomes "AVAILABLE"

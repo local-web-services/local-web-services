@@ -19,20 +19,20 @@ Feature: Opensearch - Tags Are Added To A Domain
     And an outbound connection that is "ACTIVE" cannot have a "REJECTED" inbound connection
     And a pending config change only exists on a domain that is "PROCESSING"
 
-  @standard @negative @add_tags
+  @guard @negative @add_tags
   Scenario: tags are added to a domain fails when the domain does not exist
     Given the domain does not exist
     When tags are added to a domain
     Then the operation is rejected
 
-  @standard @negative @add_tags @lifecycle
+  @guard @negative @add_tags @lifecycle
   Scenario: tags are added to a domain fails when the domain is being deleted
     Given the domain exists
     And the domain is being deleted
     When tags are added to a domain
     Then the operation is rejected
 
-  @standard @negative @add_tags
+  @guard @negative @add_tags
   Scenario: tags are added to a domain fails when the domain is deleted
     Given the domain exists
     And the domain is not being deleted

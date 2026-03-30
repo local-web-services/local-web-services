@@ -20,20 +20,20 @@ Feature: CognitoLambda - A Lambda Pre-Signup Trigger Is Configured On The Cognit
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
-  @standard @negative @configure_trigger
+  @guard @negative @configure_trigger
   Scenario: a Lambda pre-signup trigger is configured on the Cognito User Pool fails when the pool does not exist
     Given the pool does not exist
     When a Lambda pre-signup trigger is configured on the Cognito User Pool
     Then the operation is rejected
 
-  @standard @negative @configure_trigger @lifecycle
+  @guard @negative @configure_trigger @lifecycle
   Scenario: a Lambda pre-signup trigger is configured on the Cognito User Pool fails when the pool is not "ACTIVE"
     Given the pool exists
     And the pool is not "ACTIVE"
     When a Lambda pre-signup trigger is configured on the Cognito User Pool
     Then the operation is rejected
 
-  @standard @negative @configure_trigger
+  @guard @negative @configure_trigger
   Scenario: a Lambda pre-signup trigger is configured on the Cognito User Pool fails when the pool already has a trigger configured
     Given the pool exists
     And the pool is "ACTIVE"
@@ -41,7 +41,7 @@ Feature: CognitoLambda - A Lambda Pre-Signup Trigger Is Configured On The Cognit
     When a Lambda pre-signup trigger is configured on the Cognito User Pool
     Then the operation is rejected
 
-  @standard @negative @configure_trigger
+  @guard @negative @configure_trigger
   Scenario: a Lambda pre-signup trigger is configured on the Cognito User Pool fails when the function does not exist
     Given the pool exists
     And the pool is "ACTIVE"
@@ -50,7 +50,7 @@ Feature: CognitoLambda - A Lambda Pre-Signup Trigger Is Configured On The Cognit
     When a Lambda pre-signup trigger is configured on the Cognito User Pool
     Then the operation is rejected
 
-  @standard @negative @configure_trigger @lifecycle
+  @guard @negative @configure_trigger @lifecycle
   Scenario: a Lambda pre-signup trigger is configured on the Cognito User Pool fails when the function is not "ACTIVE"
     Given the pool exists
     And the pool is "ACTIVE"

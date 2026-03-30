@@ -16,13 +16,13 @@ Feature: SecretsmanagerLambda - The Lambda Rotation Function Succeeds And The Se
     And every "ROTATING" secret has an "IN_PROGRESS" rotation invocation
     And every successful rotation invocation recorded which secret it rotated
 
-  @standard @negative @rotation_succeeds @internal
+  @guard @negative @rotation_succeeds @internal
   Scenario: the Lambda rotation function succeeds and the secret is rotated to a new version fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda rotation function succeeds and the secret is rotated to a new version
     Then the operation is rejected
 
-  @standard @negative @rotation_succeeds @internal
+  @guard @negative @rotation_succeeds @internal
   Scenario: the Lambda rotation function succeeds and the secret is rotated to a new version fails when the rotation function is not "ACTIVE"
     Given an invocation is "IN_PROGRESS"
     And the rotation function is not "ACTIVE"

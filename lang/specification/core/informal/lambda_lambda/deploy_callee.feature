@@ -15,7 +15,7 @@ Feature: LambdaLambda - A Callee Lambda Function Is Deployed
     And every "IN_PROGRESS" invocation references an "ACTIVE" caller function
     And every successful invocation recorded which callee was invoked
 
-  @standard @negative @deploy_callee
+  @guard @negative @deploy_callee
   Scenario: a callee Lambda function is deployed fails when the callee function already exists
     Given the callee function already exists
     When a callee Lambda function is deployed

@@ -24,20 +24,20 @@ Feature: Events - Targets Are Removed From A Rule
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @remove_targets
+  @guard @negative @remove_targets
   Scenario: targets are removed from a rule fails when the rule does not exist
     Given the rule does not exist
     When targets are removed from a rule
     Then the operation is rejected
 
-  @standard @negative @remove_targets
+  @guard @negative @remove_targets
   Scenario: targets are removed from a rule fails when the rule is "DELETED"
     Given the rule exists
     And the rule is "DELETED"
     When targets are removed from a rule
     Then the operation is rejected
 
-  @standard @negative @remove_targets
+  @guard @negative @remove_targets
   Scenario: targets are removed from a rule fails when the target is not associated with the rule
     Given the rule exists
     And the rule is not "DELETED"
@@ -45,7 +45,7 @@ Feature: Events - Targets Are Removed From A Rule
     When targets are removed from a rule
     Then the operation is rejected
 
-  @standard @negative @remove_targets
+  @guard @negative @remove_targets
   Scenario: targets are removed from a rule fails when the target association is not active
     Given the rule exists
     And the rule is not "DELETED"

@@ -22,20 +22,20 @@ Feature: Memorydb - A Snapshot Finishes Creating
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @complete_snapshot_creation @internal
+  @guard @negative @complete_snapshot_creation @internal
   Scenario: a snapshot finishes creating fails when the snapshot does not exist
     Given the snapshot does not exist
     When a snapshot finishes creating
     Then the operation is rejected
 
-  @standard @negative @complete_snapshot_creation @internal
+  @guard @negative @complete_snapshot_creation @internal
   Scenario: a snapshot finishes creating fails when the snapshot is not "CREATING"
     Given the snapshot exists
     And the snapshot is not "CREATING"
     When a snapshot finishes creating
     Then the operation is rejected
 
-  @standard @negative @complete_snapshot_creation @internal
+  @guard @negative @complete_snapshot_creation @internal
   Scenario: a snapshot finishes creating fails when the cluster does not exist
     Given the snapshot exists
     And the snapshot is "CREATING"
@@ -43,7 +43,7 @@ Feature: Memorydb - A Snapshot Finishes Creating
     When a snapshot finishes creating
     Then the operation is rejected
 
-  @standard @negative @complete_snapshot_creation @internal
+  @guard @negative @complete_snapshot_creation @internal
   Scenario: a snapshot finishes creating fails when the snapshot does not belong to this cluster
     Given the snapshot exists
     And the snapshot is "CREATING"
@@ -52,7 +52,7 @@ Feature: Memorydb - A Snapshot Finishes Creating
     When a snapshot finishes creating
     Then the operation is rejected
 
-  @standard @negative @complete_snapshot_creation @internal
+  @guard @negative @complete_snapshot_creation @internal
   Scenario: a snapshot finishes creating fails when the cluster is not "SNAPSHOTTING"
     Given the snapshot exists
     And the snapshot is "CREATING"

@@ -18,13 +18,13 @@ Feature: S3tables - Compaction Finishes On A Table
     And snapshot count is never negative
     And schema version is always at least one
 
-  @standard @negative @finish_compaction @internal
+  @guard @negative @finish_compaction @internal
   Scenario: compaction finishes on a table fails when the table does not exist
     Given the table does not exist
     When compaction finishes on a table
     Then the operation is rejected
 
-  @standard @negative @finish_compaction @internal
+  @guard @negative @finish_compaction @internal
   Scenario: compaction finishes on a table fails when the table is not in "MAINTENANCE" state
     Given the table exists
     And the table is not in "MAINTENANCE" state

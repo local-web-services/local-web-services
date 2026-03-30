@@ -16,13 +16,13 @@ Feature: LambdaSecretsmanager - The Lambda Function Reads An Active Secret And C
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
-  @standard @negative @invocation_succeeds @internal
+  @guard @negative @invocation_succeeds @internal
   Scenario: the Lambda function reads an "ACTIVE" secret and completes successfully fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda function reads an "ACTIVE" secret and completes successfully
     Then the operation is rejected
 
-  @standard @negative @invocation_succeeds @internal
+  @guard @negative @invocation_succeeds @internal
   Scenario: the Lambda function reads an "ACTIVE" secret and completes successfully fails when the secret does not exist or is not "ACTIVE"
     Given an invocation is "IN_PROGRESS"
     And the secret does not exist or is not "ACTIVE"

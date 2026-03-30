@@ -15,7 +15,7 @@ Feature: LambdaLambda - A Caller Lambda Function Is Deployed
     And every "IN_PROGRESS" invocation references an "ACTIVE" caller function
     And every successful invocation recorded which callee was invoked
 
-  @standard @negative @deploy_caller
+  @guard @negative @deploy_caller
   Scenario: a caller Lambda function is deployed fails when the caller function already exists
     Given the caller function already exists
     When a caller Lambda function is deployed

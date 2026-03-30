@@ -20,20 +20,20 @@ Feature: Glacier - A Part Is Uploaded For A Multipart Upload
     And job output is only available for succeeded jobs
     And every archive retrieval job references a non-empty archive "ID"
 
-  @standard @negative @upload_multipart_part
+  @guard @negative @upload_multipart_part
   Scenario: a part is uploaded for a multipart upload fails when the upload does not exist
     Given the upload does not exist
     When a part is uploaded for a multipart upload
     Then the operation is rejected
 
-  @standard @negative @upload_multipart_part @lifecycle
+  @guard @negative @upload_multipart_part @lifecycle
   Scenario: a part is uploaded for a multipart upload fails when the upload is not InProgress
     Given the upload exists
     And the upload is not InProgress
     When a part is uploaded for a multipart upload
     Then the operation is rejected
 
-  @standard @negative @upload_multipart_part
+  @guard @negative @upload_multipart_part
   Scenario: a part is uploaded for a multipart upload fails when the part has already been uploaded
     Given the upload exists
     And the upload is InProgress

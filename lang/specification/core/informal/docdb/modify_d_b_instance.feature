@@ -23,20 +23,20 @@ Feature: Docdb - A Database Instance Configuration Is Modified
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @modify_d_b_instance
+  @guard @negative @modify_d_b_instance
   Scenario: a database instance configuration is modified fails when the instance does not exist
     Given the instance does not exist
     When a database instance configuration is modified
     Then the operation is rejected
 
-  @standard @negative @modify_d_b_instance @lifecycle
+  @guard @negative @modify_d_b_instance @lifecycle
   Scenario: a database instance configuration is modified fails when the instance is not "AVAILABLE"
     Given the instance exists
     And the instance is not "AVAILABLE"
     When a database instance configuration is modified
     Then the operation is rejected
 
-  @standard @negative @modify_d_b_instance
+  @guard @negative @modify_d_b_instance
   Scenario: a database instance configuration is modified fails when the cluster does not exist
     Given the instance exists
     And the instance is "AVAILABLE"
@@ -44,7 +44,7 @@ Feature: Docdb - A Database Instance Configuration Is Modified
     When a database instance configuration is modified
     Then the operation is rejected
 
-  @standard @negative @modify_d_b_instance @lifecycle
+  @guard @negative @modify_d_b_instance @lifecycle
   Scenario: a database instance configuration is modified fails when the cluster is not "AVAILABLE"
     Given the instance exists
     And the instance is "AVAILABLE"

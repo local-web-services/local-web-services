@@ -21,7 +21,7 @@ Feature: Secretsmanager - A Secret Is Described
     And every deleted secret with an open recovery window can still be restored or expired
     And every active secret has a current version assigned
 
-  @standard @negative @describe_secret
+  @guard @negative @describe_secret
   Scenario: a secret is described fails when the secret does not exist
     Given the secret does not exist
     When a secret is described

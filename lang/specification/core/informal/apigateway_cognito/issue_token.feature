@@ -19,20 +19,20 @@ Feature: ApigatewayCognito - Cognito Issues A Jwt Token For A Confirmed User
     And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
     And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
 
-  @standard @negative @issue_token
+  @guard @negative @issue_token
   Scenario: Cognito issues a "JWT" token for a confirmed user fails when the user does not exist
     Given the user does not exist
     When Cognito issues a "JWT" token for a confirmed user
     Then the operation is rejected
 
-  @standard @negative @issue_token @lifecycle
+  @guard @negative @issue_token @lifecycle
   Scenario: Cognito issues a "JWT" token for a confirmed user fails when the user is not "CONFIRMED"
     Given the user exists
     And the user is not "CONFIRMED"
     When Cognito issues a "JWT" token for a confirmed user
     Then the operation is rejected
 
-  @standard @negative @issue_token @capacity
+  @guard @negative @internal @issue_token @capacity
   Scenario: Cognito issues a "JWT" token for a confirmed user fails when no token slot is available
     Given the user exists
     And the user is "CONFIRMED"

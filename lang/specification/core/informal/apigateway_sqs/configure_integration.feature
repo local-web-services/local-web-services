@@ -19,20 +19,20 @@ Feature: ApigatewaySqs - An Sqs Direct Integration Is Configured On The Rest Api
     And every "ACCEPTED" request references an "ACTIVE" "API"
     And every "AVAILABLE" message belongs to an "ACTIVE" queue
 
-  @standard @negative @configure_integration
+  @guard @negative @configure_integration
   Scenario: an "SQS" direct integration is configured on the "REST" "API" fails when the "API" does not exist
     Given the "API" does not exist
     When an "SQS" direct integration is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_integration @lifecycle
+  @guard @negative @configure_integration @lifecycle
   Scenario: an "SQS" direct integration is configured on the "REST" "API" fails when the "API" is not "ACTIVE"
     Given the "API" exists
     And the "API" is not "ACTIVE"
     When an "SQS" direct integration is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_integration
+  @guard @negative @configure_integration
   Scenario: an "SQS" direct integration is configured on the "REST" "API" fails when the "API" already has an integration configured
     Given the "API" exists
     And the "API" is "ACTIVE"
@@ -40,7 +40,7 @@ Feature: ApigatewaySqs - An Sqs Direct Integration Is Configured On The Rest Api
     When an "SQS" direct integration is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_integration
+  @guard @negative @configure_integration
   Scenario: an "SQS" direct integration is configured on the "REST" "API" fails when the queue does not exist
     Given the "API" exists
     And the "API" is "ACTIVE"
@@ -49,7 +49,7 @@ Feature: ApigatewaySqs - An Sqs Direct Integration Is Configured On The Rest Api
     When an "SQS" direct integration is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_integration @lifecycle
+  @guard @negative @configure_integration @lifecycle
   Scenario: an "SQS" direct integration is configured on the "REST" "API" fails when the queue is not "ACTIVE"
     Given the "API" exists
     And the "API" is "ACTIVE"

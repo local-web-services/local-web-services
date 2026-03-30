@@ -19,20 +19,20 @@ Feature: S3tables - A Table Bucket Is Deleted
     And snapshot count is never negative
     And schema version is always at least one
 
-  @standard @negative @delete_table_bucket
+  @guard @negative @delete_table_bucket
   Scenario: a table bucket is deleted fails when the bucket does not exist
     Given the bucket does not exist
     When a table bucket is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_table_bucket @lifecycle
+  @guard @negative @delete_table_bucket @lifecycle
   Scenario: a table bucket is deleted fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"
     When a table bucket is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_table_bucket
+  @guard @negative @delete_table_bucket
   Scenario: a table bucket is deleted fails when the bucket has active namespaces
     Given the bucket exists
     And the bucket is "ACTIVE"

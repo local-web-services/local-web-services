@@ -19,13 +19,13 @@ Feature: Stepfunctions - Executions For A State Machine Are Listed
     And synchronous executions only run on express state machines
     And every execution belongs to a known state machine
 
-  @standard @negative @list_executions
+  @guard @negative @list_executions
   Scenario: executions for a state machine are listed fails when the state machine does not exist
     Given the state machine does not exist
     When executions for a state machine are listed
     Then the operation is rejected
 
-  @standard @negative @list_executions @lifecycle
+  @guard @negative @list_executions @lifecycle
   Scenario: executions for a state machine are listed fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"

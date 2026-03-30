@@ -22,20 +22,20 @@ Feature: CognitoIdp - A Group Is Created In An Active User Pool
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @create_group
+  @guard @negative @create_group
   Scenario: a group is created in an active user pool fails when the user pool does not exist
     Given the user pool does not exist
     When a group is created in an active user pool
     Then the operation is rejected
 
-  @standard @negative @create_group
+  @guard @negative @create_group
   Scenario: a group is created in an active user pool fails when the user pool is not "ACTIVE"
     Given the user pool exists
     And the user pool is not "ACTIVE"
     When a group is created in an active user pool
     Then the operation is rejected
 
-  @standard @negative @create_group
+  @guard @negative @create_group
   Scenario: a group is created in an active user pool fails when the group already exists
     Given the user pool exists
     And the user pool is "ACTIVE"

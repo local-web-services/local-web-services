@@ -22,13 +22,13 @@ Feature: Events - An Eventbridge Rule Is Described
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @describe_rule
+  @guard @negative @describe_rule
   Scenario: an EventBridge rule is described fails when the rule does not exist
     Given the rule does not exist
     When an EventBridge rule is described
     Then the operation is rejected
 
-  @standard @negative @describe_rule
+  @guard @negative @describe_rule
   Scenario: an EventBridge rule is described fails when the rule is "DELETED"
     Given the rule exists
     And the rule is "DELETED"

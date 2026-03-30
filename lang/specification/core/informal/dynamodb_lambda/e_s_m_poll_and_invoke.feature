@@ -20,20 +20,20 @@ Feature: DynamodbLambda - The Event Source Mapping Polls The Stream And Invokes 
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "ENABLED" event source mapping references an "ACTIVE" table with streaming enabled
 
-  @standard @negative @e_s_m_poll_and_invoke @internal
+  @guard @negative @e_s_m_poll_and_invoke @internal
   Scenario: the event source mapping polls the stream and invokes the Lambda function with the record fails when the event source mapping does not exist
     Given the event source mapping does not exist
     When the event source mapping polls the stream and invokes the Lambda function with the record
     Then the operation is rejected
 
-  @standard @negative @e_s_m_poll_and_invoke @internal
+  @guard @negative @e_s_m_poll_and_invoke @internal
   Scenario: the event source mapping polls the stream and invokes the Lambda function with the record fails when the event source mapping is not "ENABLED"
     Given the event source mapping exists
     And the event source mapping is not "ENABLED"
     When the event source mapping polls the stream and invokes the Lambda function with the record
     Then the operation is rejected
 
-  @standard @negative @e_s_m_poll_and_invoke @internal
+  @guard @negative @e_s_m_poll_and_invoke @internal
   Scenario: the event source mapping polls the stream and invokes the Lambda function with the record fails when the mapped function is not "ACTIVE"
     Given the event source mapping exists
     And the event source mapping is "ENABLED"
@@ -41,7 +41,7 @@ Feature: DynamodbLambda - The Event Source Mapping Polls The Stream And Invokes 
     When the event source mapping polls the stream and invokes the Lambda function with the record
     Then the operation is rejected
 
-  @standard @negative @e_s_m_poll_and_invoke @internal
+  @guard @negative @e_s_m_poll_and_invoke @internal
   Scenario: the event source mapping polls the stream and invokes the Lambda function with the record fails when no "AVAILABLE" record exists in the mapped table's stream
     Given the event source mapping exists
     And the event source mapping is "ENABLED"
@@ -50,7 +50,7 @@ Feature: DynamodbLambda - The Event Source Mapping Polls The Stream And Invokes 
     When the event source mapping polls the stream and invokes the Lambda function with the record
     Then the operation is rejected
 
-  @standard @negative @e_s_m_poll_and_invoke @internal
+  @guard @negative @e_s_m_poll_and_invoke @internal
   Scenario: the event source mapping polls the stream and invokes the Lambda function with the record fails when no invocation slot is available
     Given the event source mapping exists
     And the event source mapping is "ENABLED"

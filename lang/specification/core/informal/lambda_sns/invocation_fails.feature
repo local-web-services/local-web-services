@@ -15,7 +15,7 @@ Feature: LambdaSns - The Lambda Invocation Fails
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And publishing requires an "ACTIVE" topic to be present
 
-  @standard @negative @invocation_fails @internal
+  @guard @negative @invocation_fails @internal
   Scenario: the Lambda invocation fails fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda invocation fails

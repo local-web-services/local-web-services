@@ -15,7 +15,7 @@ Feature: ElasticacheSns - An Elasticache Cluster Is Created
     And every "PUBLISHED" notification references a cluster that exists
     And every "PUBLISHED" notification references a topic that exists
 
-  @standard @negative @create_cluster
+  @guard @negative @create_cluster
   Scenario: an ElastiCache cluster is created fails when the cluster already exists
     Given the cluster already exists
     When an ElastiCache cluster is created

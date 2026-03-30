@@ -16,13 +16,13 @@ Feature: Fake - A Fake Server Is Deleted
     And every "ACTIVE" route belongs to an "ACTIVE" server
     And every server has a valid protocol
 
-  @standard @negative @delete_server
+  @guard @negative @delete_server
   Scenario: a fake server is deleted fails when the server does not exist
     Given the server does not exist
     When a fake server is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_server
+  @guard @negative @delete_server
   Scenario: a fake server is deleted fails when the server is not "ACTIVE"
     Given the server exists
     And the server is not "ACTIVE"

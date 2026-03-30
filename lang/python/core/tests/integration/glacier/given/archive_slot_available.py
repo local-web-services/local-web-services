@@ -1,0 +1,10 @@
+"""Given: the archive slot is available"""
+
+from __future__ import annotations
+
+from pytest_bdd import given
+
+
+@given("the archive slot is available")
+def archive_slot_available():
+    """No-op: archive slots are always available in isolated tests."""

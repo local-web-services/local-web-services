@@ -18,7 +18,7 @@ Feature: Glacier - A Vault Is Created
     And job output is only available for succeeded jobs
     And every archive retrieval job references a non-empty archive "ID"
 
-  @standard @negative @create_vault
+  @guard @negative @create_vault
   Scenario: a vault is created fails when the vault already exists
     Given the vault already exists
     When a vault is created

@@ -17,20 +17,20 @@ Feature: ApigatewaySns - A Direct Sns Integration Is Configured On The Api
     And every "PUBLISHED" message references a topic that exists
     And every successful request references an "API" that exists
 
-  @standard @negative @configure_direct_integration
+  @guard @negative @configure_direct_integration
   Scenario: a direct "SNS" integration is configured on the "API" fails when the "API" does not exist or is not "ACTIVE"
     Given the "API" does not exist or is not "ACTIVE"
     When a direct "SNS" integration is configured on the "API"
     Then the operation is rejected
 
-  @standard @negative @configure_direct_integration
+  @guard @negative @configure_direct_integration
   Scenario: a direct "SNS" integration is configured on the "API" fails when the "API" already has an "SNS" integration configured
     Given the "API" exists and is "ACTIVE"
     And the "API" already has an "SNS" integration configured
     When a direct "SNS" integration is configured on the "API"
     Then the operation is rejected
 
-  @standard @negative @configure_direct_integration
+  @guard @negative @configure_direct_integration
   Scenario: a direct "SNS" integration is configured on the "API" fails when the topic does not exist or is not "ACTIVE"
     Given the "API" exists and is "ACTIVE"
     And the "API" has no "SNS" integration configured

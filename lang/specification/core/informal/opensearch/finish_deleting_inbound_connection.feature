@@ -18,13 +18,13 @@ Feature: Opensearch - An Inbound Connection Finishes Deleting
     And an outbound connection that is "ACTIVE" cannot have a "REJECTED" inbound connection
     And a pending config change only exists on a domain that is "PROCESSING"
 
-  @standard @negative @finish_deleting_inbound_connection @internal
+  @guard @negative @finish_deleting_inbound_connection @internal
   Scenario: an inbound connection finishes deleting fails when the inbound connection does not exist
     Given the inbound connection does not exist
     When an inbound connection finishes deleting
     Then the operation is rejected
 
-  @standard @negative @finish_deleting_inbound_connection @internal
+  @guard @negative @finish_deleting_inbound_connection @internal
   Scenario: an inbound connection finishes deleting fails when the inbound connection is not "DELETING"
     Given the inbound connection exists
     And the inbound connection is not "DELETING"

@@ -16,13 +16,13 @@ Feature: ApigatewayS3api - The S3 Bucket Is Deleted
     And every existing object references a bucket that exists
     And every successful request references an "API" that exists
 
-  @standard @negative @delete_bucket
+  @guard @negative @delete_bucket
   Scenario: the S3 bucket is deleted fails when the bucket does not exist
     Given the bucket does not exist
     When the S3 bucket is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_bucket @lifecycle
+  @guard @negative @delete_bucket @lifecycle
   Scenario: the S3 bucket is deleted fails when the bucket is already "DELETED"
     Given the bucket exists
     And the bucket is already "DELETED"

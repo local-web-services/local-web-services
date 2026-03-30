@@ -22,13 +22,13 @@ Feature: Neptune - A Database Cluster Snapshot Deletion Completes
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @complete_snapshot_deletion @internal
+  @guard @negative @complete_snapshot_deletion @internal
   Scenario: a database cluster snapshot deletion completes fails when the snapshot does not exist
     Given the snapshot does not exist
     When a database cluster snapshot deletion completes
     Then the operation is rejected
 
-  @standard @negative @complete_snapshot_deletion @internal
+  @guard @negative @complete_snapshot_deletion @internal
   Scenario: a database cluster snapshot deletion completes fails when the snapshot is not "DELETING"
     Given the snapshot exists
     And the snapshot is not "DELETING"

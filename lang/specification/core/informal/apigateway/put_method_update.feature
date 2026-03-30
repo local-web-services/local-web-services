@@ -21,13 +21,13 @@ Feature: Apigateway - An Existing Method Is Updated
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @put_method_update
+  @guard @negative @put_method_update
   Scenario: an existing method is updated fails when the method does not exist
     Given the method does not exist
     When an existing method is updated
     Then the operation is rejected
 
-  @standard @negative @put_method_update
+  @guard @negative @put_method_update
   Scenario: an existing method is updated fails when the method does not exist
     Given the method exists
     And the method does not exist

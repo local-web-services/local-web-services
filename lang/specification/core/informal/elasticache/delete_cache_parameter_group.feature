@@ -19,13 +19,13 @@ Feature: Elasticache - A Cache Parameter Group Is Deleted
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @delete_cache_parameter_group
+  @guard @negative @delete_cache_parameter_group
   Scenario: a cache parameter group is deleted fails when the parameter group does not exist
     Given the parameter group does not exist
     When a cache parameter group is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_cache_parameter_group
+  @guard @negative @delete_cache_parameter_group
   Scenario: a cache parameter group is deleted fails when the parameter group is not present
     Given the parameter group exists
     And the parameter group is not present

@@ -16,13 +16,13 @@ Feature: Fake - A Route Is Removed From A Fake Server
     And every "ACTIVE" route belongs to an "ACTIVE" server
     And every server has a valid protocol
 
-  @standard @negative @remove_route
+  @guard @negative @remove_route
   Scenario: a route is removed from a fake server fails when the route does not exist
     Given the route does not exist
     When a route is removed from a fake server
     Then the operation is rejected
 
-  @standard @negative @remove_route
+  @guard @negative @remove_route
   Scenario: a route is removed from a fake server fails when the route is not "ACTIVE"
     Given the route exists
     And the route is not "ACTIVE"

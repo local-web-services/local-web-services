@@ -20,20 +20,20 @@ Feature: Glacier - A Multipart Upload Is Initiated For A Vault
     And job output is only available for succeeded jobs
     And every archive retrieval job references a non-empty archive "ID"
 
-  @standard @negative @initiate_multipart_upload
+  @guard @negative @initiate_multipart_upload
   Scenario: a multipart upload is initiated for a vault fails when the vault does not exist
     Given the vault does not exist
     When a multipart upload is initiated for a vault
     Then the operation is rejected
 
-  @standard @negative @initiate_multipart_upload @lifecycle
+  @guard @negative @initiate_multipart_upload @lifecycle
   Scenario: a multipart upload is initiated for a vault fails when the vault is not "ACTIVE"
     Given the vault exists
     And the vault is not "ACTIVE"
     When a multipart upload is initiated for a vault
     Then the operation is rejected
 
-  @standard @negative @initiate_multipart_upload
+  @guard @negative @initiate_multipart_upload
   Scenario: a multipart upload is initiated for a vault fails when the upload already exists
     Given the vault exists
     And the vault is "ACTIVE"

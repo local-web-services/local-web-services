@@ -16,13 +16,13 @@ Feature: StepfunctionsElasticsearch - A Domain Configuration Update Begins
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which domain it called
 
-  @standard @negative @domain_processing_begins
+  @guard @negative @domain_processing_begins
   Scenario: a domain configuration update begins fails when the domain does not exist
     Given the domain does not exist
     When a domain configuration update begins
     Then the operation is rejected
 
-  @standard @negative @domain_processing_begins @lifecycle
+  @guard @negative @domain_processing_begins @lifecycle
   Scenario: a domain configuration update begins fails when the domain is not "AVAILABLE"
     Given the domain exists
     And the domain is not "AVAILABLE"

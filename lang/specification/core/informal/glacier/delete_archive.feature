@@ -21,20 +21,20 @@ Feature: Glacier - An Archive Is Deleted From A Vault
     And job output is only available for succeeded jobs
     And every archive retrieval job references a non-empty archive "ID"
 
-  @standard @negative @delete_archive
+  @guard @negative @delete_archive
   Scenario: an archive is deleted from a vault fails when the vault does not exist
     Given the vault does not exist
     When an archive is deleted from a vault
     Then the operation is rejected
 
-  @standard @negative @delete_archive @lifecycle
+  @guard @negative @delete_archive @lifecycle
   Scenario: an archive is deleted from a vault fails when the vault is not "ACTIVE"
     Given the vault exists
     And the vault is not "ACTIVE"
     When an archive is deleted from a vault
     Then the operation is rejected
 
-  @standard @negative @delete_archive
+  @guard @negative @delete_archive
   Scenario: an archive is deleted from a vault fails when the archive does not exist
     Given the vault exists
     And the vault is "ACTIVE"
@@ -42,7 +42,7 @@ Feature: Glacier - An Archive Is Deleted From A Vault
     When an archive is deleted from a vault
     Then the operation is rejected
 
-  @standard @negative @delete_archive @lifecycle
+  @guard @negative @delete_archive @lifecycle
   Scenario: an archive is deleted from a vault fails when the archive is not "STORED"
     Given the vault exists
     And the vault is "ACTIVE"

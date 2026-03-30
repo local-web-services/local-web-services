@@ -16,7 +16,7 @@ Feature: Sqs - A Queue Is Created
     And every in-flight message belongs to an "ACTIVE" queue
     And every message has a non-negative receive count
 
-  @standard @negative @create_queue
+  @guard @negative @create_queue
   Scenario: a queue is created fails when the queue already exists
     Given the queue already exists
     When a queue is created

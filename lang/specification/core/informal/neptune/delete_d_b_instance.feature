@@ -22,13 +22,13 @@ Feature: Neptune - A Database Instance Is Deleted
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @delete_d_b_instance
+  @guard @negative @delete_d_b_instance
   Scenario: a database instance is deleted fails when the instance does not exist
     Given the instance does not exist
     When a database instance is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_d_b_instance @lifecycle
+  @guard @negative @delete_d_b_instance @lifecycle
   Scenario: a database instance is deleted fails when the instance is not "AVAILABLE"
     Given the instance exists
     And the instance is not "AVAILABLE"

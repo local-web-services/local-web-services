@@ -15,7 +15,7 @@ Feature: RdsLambda - An Rds Db Instance Is Created
     And every successful invocation references a "DB" instance that exists
     And every successful invocation recorded which function it invoked
 
-  @standard @negative @create_d_b_instance
+  @guard @negative @create_d_b_instance
   Scenario: an "RDS" "DB" instance is created fails when the "DB" instance already exists
     Given the "DB" instance already exists
     When an "RDS" "DB" instance is created

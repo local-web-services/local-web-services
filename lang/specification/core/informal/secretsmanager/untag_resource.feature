@@ -22,13 +22,13 @@ Feature: Secretsmanager - Tags Are Removed From An Active Secret
     And every deleted secret with an open recovery window can still be restored or expired
     And every active secret has a current version assigned
 
-  @standard @negative @untag_resource
+  @guard @negative @untag_resource
   Scenario: tags are removed from an active secret fails when the secret does not exist
     Given the secret does not exist
     When tags are removed from an active secret
     Then the operation is rejected
 
-  @standard @negative @untag_resource @lifecycle
+  @guard @negative @untag_resource @lifecycle
   Scenario: tags are removed from an active secret fails when the secret is not "ACTIVE"
     Given the secret exists
     And the secret is not "ACTIVE"

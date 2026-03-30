@@ -15,7 +15,7 @@ Feature: LambdaElasticsearch - An Elasticsearch Domain Is Created And Becomes Av
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing document references a domain that exists
 
-  @standard @negative @create_domain
+  @guard @negative @create_domain
   Scenario: an Elasticsearch domain is created and becomes "AVAILABLE" fails when the domain already exists
     Given the domain already exists
     When an Elasticsearch domain is created and becomes "AVAILABLE"

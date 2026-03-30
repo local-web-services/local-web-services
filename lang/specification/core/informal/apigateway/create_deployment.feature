@@ -25,20 +25,20 @@ Feature: Apigateway - An Api Deployment Is Created
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @create_deployment
+  @guard @negative @internal @create_deployment
   Scenario: an "API" deployment is created fails when the deployment slot is already in use
     Given the deployment slot is already in use
     When an "API" deployment is created
     Then the operation is rejected
 
-  @standard @negative @create_deployment
+  @guard @negative @create_deployment
   Scenario: an "API" deployment is created fails when the method does not have an integration
     Given the deployment slot is available
     And the method does not have an integration
     When an "API" deployment is created
     Then the operation is rejected
 
-  @standard @negative @create_deployment
+  @guard @negative @create_deployment
   Scenario: an "API" deployment is created fails when the integration does not exist
     Given the deployment slot is available
     And the method has an integration
@@ -46,7 +46,7 @@ Feature: Apigateway - An Api Deployment Is Created
     When an "API" deployment is created
     Then the operation is rejected
 
-  @standard @negative @create_deployment
+  @guard @negative @create_deployment
   Scenario: an "API" deployment is created fails when the method does not have an "API" association
     Given the deployment slot is available
     And the method has an integration
@@ -55,7 +55,7 @@ Feature: Apigateway - An Api Deployment Is Created
     When an "API" deployment is created
     Then the operation is rejected
 
-  @standard @negative @create_deployment
+  @guard @negative @create_deployment
   Scenario: an "API" deployment is created fails when the "API" does not exist
     Given the deployment slot is available
     And the method has an integration
@@ -65,7 +65,7 @@ Feature: Apigateway - An Api Deployment Is Created
     When an "API" deployment is created
     Then the operation is rejected
 
-  @standard @negative @create_deployment @lifecycle
+  @guard @negative @create_deployment @lifecycle
   Scenario: an "API" deployment is created fails when the "API" is not "ACTIVE"
     Given the deployment slot is available
     And the method has an integration

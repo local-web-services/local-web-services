@@ -16,13 +16,13 @@ Feature: EventsDynamodb - An Eventbridge Rule Is Enabled
     And every existing item references a table that exists
     And every matched event references a rule that exists
 
-  @standard @negative @enable_rule
+  @guard @negative @enable_rule
   Scenario: an EventBridge rule is enabled fails when the rule does not exist
     Given the rule does not exist
     When an EventBridge rule is enabled
     Then the operation is rejected
 
-  @standard @negative @enable_rule @lifecycle
+  @guard @negative @enable_rule @lifecycle
   Scenario: an EventBridge rule is enabled fails when the rule is already "ENABLED"
     Given the rule exists
     And the rule is already "ENABLED"

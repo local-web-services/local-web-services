@@ -19,20 +19,20 @@ Feature: Opensearch - A Blue-Green Deployment Completes
     And an outbound connection that is "ACTIVE" cannot have a "REJECTED" inbound connection
     And a pending config change only exists on a domain that is "PROCESSING"
 
-  @standard @negative @blue_green_complete @internal
+  @guard @negative @blue_green_complete @internal
   Scenario: a blue-green deployment completes fails when the domain does not exist
     Given the domain does not exist
     When a blue-green deployment completes
     Then the operation is rejected
 
-  @standard @negative @blue_green_complete @internal
+  @guard @negative @blue_green_complete @internal
   Scenario: a blue-green deployment completes fails when the domain is not "PROCESSING"
     Given the domain exists
     And the domain is not "PROCESSING"
     When a blue-green deployment completes
     Then the operation is rejected
 
-  @standard @negative @blue_green_complete @internal
+  @guard @negative @blue_green_complete @internal
   Scenario: a blue-green deployment completes fails when traffic has not been swapped to the new cluster
     Given the domain exists
     And the domain is "PROCESSING"

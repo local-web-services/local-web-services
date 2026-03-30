@@ -17,7 +17,7 @@ Feature: LambdaSqs - An Sqs Queue Is Created
     And every "AVAILABLE" or "IN_FLIGHT" message belongs to an "ACTIVE" queue
     And every "ENABLED" event source mapping references an "ACTIVE" queue
 
-  @standard @negative @create_queue
+  @guard @negative @create_queue
   Scenario: an "SQS" queue is created fails when the queue already exists
     Given the queue already exists
     When an "SQS" queue is created

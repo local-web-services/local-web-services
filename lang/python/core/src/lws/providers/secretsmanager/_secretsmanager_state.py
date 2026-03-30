@@ -43,6 +43,7 @@ class _Secret:
         self.versions: dict[str, _SecretVersion] = {}
         self.current_version_id: str | None = None
         self.deleted_date: float | None = None
+        self.rotation_lambda_arn: str | None = None
         self.created_date: float = time.time()
         self.last_changed_date: float = time.time()
 
@@ -106,19 +107,23 @@ def _format_secret_description(secret: _Secret) -> dict[str, Any]:
     return result
 
 
-def _rotate_secret_version(
-    secret: _Secret,
-    secret_string: str | None,
-    secret_binary: str | None,
-) -> str:
-    """Rotate the AWSCURRENT version and create a new one. Returns the new version_id."""
-    # Move AWSCURRENT from old version to AWSPREVIOUS
+def _demote_current_to_previous(secret: _Secret) -> None:
+    """Move the AWSCURRENT stage from the current version to AWSPREVIOUS."""
     if secret.current_version_id and secret.current_version_id in secret.versions:
         old = secret.versions[secret.current_version_id]
         if "AWSCURRENT" in old.stages:
             old.stages.remove("AWSCURRENT")
         if "AWSPREVIOUS" not in old.stages:
             old.stages.append("AWSPREVIOUS")
+
+
+def _rotate_secret_version(
+    secret: _Secret,
+    secret_string: str | None,
+    secret_binary: str | None,
+) -> str:
+    """Rotate the AWSCURRENT version and create a new one. Returns the new version_id."""
+    _demote_current_to_previous(secret)
 
     version_id = str(uuid.uuid4())
     version = _SecretVersion(

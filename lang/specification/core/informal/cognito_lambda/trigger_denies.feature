@@ -16,7 +16,7 @@ Feature: CognitoLambda - The Pre-Signup Lambda Denies The Signup
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
-  @standard @negative @trigger_denies @internal
+  @guard @negative @trigger_denies @internal
   Scenario: the pre-signup Lambda denies the signup fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the pre-signup Lambda denies the signup

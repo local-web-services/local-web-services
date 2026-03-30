@@ -16,13 +16,13 @@ Feature: LambdaMemorydb - The Lambda Function Fails To Write Because The Cluster
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a cluster that exists
 
-  @standard @negative @invocation_fails_cluster_updating @internal
+  @guard @negative @invocation_fails_cluster_updating @internal
   Scenario: the Lambda function fails to write because the cluster is updating fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda function fails to write because the cluster is updating
     Then the operation is rejected
 
-  @standard @negative @invocation_fails_cluster_updating @internal
+  @guard @negative @invocation_fails_cluster_updating @internal
   Scenario: the Lambda function fails to write because the cluster is updating fails when the cluster is not "UPDATING"
     Given an invocation is "IN_PROGRESS"
     And the cluster is not "UPDATING"

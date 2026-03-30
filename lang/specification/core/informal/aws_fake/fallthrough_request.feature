@@ -16,13 +16,13 @@ Feature: AwsFake - A Request For An Operation Not Covered By The Aws Fake Reache
     And every "ACTIVE" operation belongs to an "ACTIVE" "AWS" fake
     And every "AWS" fake is tied to a known service
 
-  @standard @negative @fallthrough_request
+  @guard @negative @fallthrough_request
   Scenario: a request for an operation not covered by the "AWS" fake reaches the provider fails when the "AWS" fake does not exist
     Given the "AWS" fake does not exist
     When a request for an operation not covered by the "AWS" fake reaches the provider
     Then the operation is rejected
 
-  @standard @negative @fallthrough_request
+  @guard @negative @fallthrough_request
   Scenario: a request for an operation not covered by the "AWS" fake reaches the provider fails when the "AWS" fake is not "ACTIVE"
     Given the "AWS" fake exists
     And the "AWS" fake is not "ACTIVE"

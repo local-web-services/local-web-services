@@ -20,20 +20,20 @@ Feature: Opensearch - Traffic Is Swapped To The New Cluster During A Blue-Green 
     And an outbound connection that is "ACTIVE" cannot have a "REJECTED" inbound connection
     And a pending config change only exists on a domain that is "PROCESSING"
 
-  @standard @negative @blue_green_swap_traffic @internal
+  @guard @negative @blue_green_swap_traffic @internal
   Scenario: traffic is swapped to the new cluster during a blue-green deployment fails when the domain does not exist
     Given the domain does not exist
     When traffic is swapped to the new cluster during a blue-green deployment
     Then the operation is rejected
 
-  @standard @negative @blue_green_swap_traffic @internal
+  @guard @negative @blue_green_swap_traffic @internal
   Scenario: traffic is swapped to the new cluster during a blue-green deployment fails when the domain is not "PROCESSING"
     Given the domain exists
     And the domain is not "PROCESSING"
     When traffic is swapped to the new cluster during a blue-green deployment
     Then the operation is rejected
 
-  @standard @negative @blue_green_swap_traffic @internal
+  @guard @negative @blue_green_swap_traffic @internal
   Scenario: traffic is swapped to the new cluster during a blue-green deployment fails when the new cluster is not ready
     Given the domain exists
     And the domain is "PROCESSING"
@@ -41,7 +41,7 @@ Feature: Opensearch - Traffic Is Swapped To The New Cluster During A Blue-Green 
     When traffic is swapped to the new cluster during a blue-green deployment
     Then the operation is rejected
 
-  @standard @negative @blue_green_swap_traffic @internal
+  @guard @negative @blue_green_swap_traffic @internal
   Scenario: traffic is swapped to the new cluster during a blue-green deployment fails when traffic has already been swapped
     Given the domain exists
     And the domain is "PROCESSING"

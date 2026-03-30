@@ -17,20 +17,20 @@ Feature: AwsFake - A Request Matching An Aws Fake Operation Is Intercepted
     And every "ACTIVE" operation belongs to an "ACTIVE" "AWS" fake
     And every "AWS" fake is tied to a known service
 
-  @standard @negative @intercept_request
+  @guard @negative @intercept_request
   Scenario: a request matching an "AWS" fake operation is intercepted fails when the operation does not exist
     Given the operation does not exist
     When a request matching an "AWS" fake operation is intercepted
     Then the operation is rejected
 
-  @standard @negative @intercept_request
+  @guard @negative @intercept_request
   Scenario: a request matching an "AWS" fake operation is intercepted fails when the operation is not "ACTIVE"
     Given the operation exists
     And the operation is not "ACTIVE"
     When a request matching an "AWS" fake operation is intercepted
     Then the operation is rejected
 
-  @standard @negative @intercept_request
+  @guard @negative @intercept_request
   Scenario: a request matching an "AWS" fake operation is intercepted fails when the operation has a header filter
     Given the operation exists
     And the operation is "ACTIVE"

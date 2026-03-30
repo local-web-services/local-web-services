@@ -18,20 +18,20 @@ Feature: Rds - A Multi-Az Failover Is Triggered On An Instance
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
 
-  @standard @negative @multi_a_z_failover @internal
+  @guard @negative @multi_a_z_failover @internal
   Scenario: a multi-"AZ" failover is triggered on an instance fails when the database instance does not exist
     Given the database instance does not exist
     When a multi-"AZ" failover is triggered on an instance
     Then the operation is rejected
 
-  @standard @negative @multi_a_z_failover @internal
+  @guard @negative @multi_a_z_failover @internal
   Scenario: a multi-"AZ" failover is triggered on an instance fails when the instance is not "AVAILABLE"
     Given the database instance exists
     And the instance is not "AVAILABLE"
     When a multi-"AZ" failover is triggered on an instance
     Then the operation is rejected
 
-  @standard @negative @multi_a_z_failover @internal
+  @guard @negative @multi_a_z_failover @internal
   Scenario: a multi-"AZ" failover is triggered on an instance fails when the instance does not have multi-"AZ" enabled
     Given the database instance exists
     And the instance is "AVAILABLE"

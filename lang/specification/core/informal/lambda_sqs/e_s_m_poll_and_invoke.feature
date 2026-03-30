@@ -21,20 +21,20 @@ Feature: LambdaSqs - The Event Source Mapping Polls The Queue And Invokes The La
     And every "AVAILABLE" or "IN_FLIGHT" message belongs to an "ACTIVE" queue
     And every "ENABLED" event source mapping references an "ACTIVE" queue
 
-  @standard @negative @e_s_m_poll_and_invoke @internal
+  @guard @negative @e_s_m_poll_and_invoke @internal
   Scenario: the event source mapping polls the queue and invokes the Lambda function fails when the event source mapping does not exist
     Given the event source mapping does not exist
     When the event source mapping polls the queue and invokes the Lambda function
     Then the operation is rejected
 
-  @standard @negative @e_s_m_poll_and_invoke @internal
+  @guard @negative @e_s_m_poll_and_invoke @internal
   Scenario: the event source mapping polls the queue and invokes the Lambda function fails when the event source mapping is not "ENABLED"
     Given the event source mapping exists
     And the event source mapping is not "ENABLED"
     When the event source mapping polls the queue and invokes the Lambda function
     Then the operation is rejected
 
-  @standard @negative @e_s_m_poll_and_invoke @internal
+  @guard @negative @e_s_m_poll_and_invoke @internal
   Scenario: the event source mapping polls the queue and invokes the Lambda function fails when the mapped function is not "ACTIVE"
     Given the event source mapping exists
     And the event source mapping is "ENABLED"
@@ -42,7 +42,7 @@ Feature: LambdaSqs - The Event Source Mapping Polls The Queue And Invokes The La
     When the event source mapping polls the queue and invokes the Lambda function
     Then the operation is rejected
 
-  @standard @negative @e_s_m_poll_and_invoke @internal
+  @guard @negative @e_s_m_poll_and_invoke @internal
   Scenario: the event source mapping polls the queue and invokes the Lambda function fails when no "AVAILABLE" message exists in the mapped queue
     Given the event source mapping exists
     And the event source mapping is "ENABLED"
@@ -51,7 +51,7 @@ Feature: LambdaSqs - The Event Source Mapping Polls The Queue And Invokes The La
     When the event source mapping polls the queue and invokes the Lambda function
     Then the operation is rejected
 
-  @standard @negative @e_s_m_poll_and_invoke @internal
+  @guard @negative @e_s_m_poll_and_invoke @internal
   Scenario: the event source mapping polls the queue and invokes the Lambda function fails when no invocation slot is available
     Given the event source mapping exists
     And the event source mapping is "ENABLED"

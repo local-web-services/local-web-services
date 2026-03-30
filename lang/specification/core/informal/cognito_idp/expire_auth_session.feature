@@ -21,13 +21,13 @@ Feature: CognitoIdp - An Authenticated Session Expires
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @expire_auth_session @internal
+  @guard @negative @expire_auth_session @internal
   Scenario: an authenticated session expires fails when the session does not exist
     Given the session does not exist
     When an authenticated session expires
     Then the operation is rejected
 
-  @standard @negative @expire_auth_session @internal
+  @guard @negative @expire_auth_session @internal
   Scenario: an authenticated session expires fails when the session is not "AUTHENTICATED"
     Given the session exists
     And the session is not "AUTHENTICATED"

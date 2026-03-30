@@ -15,7 +15,7 @@ endef
 gherkin-exhaustive:
 	$(call run_gherkin,exhaustive)
 
-# Default: standard tier
+# Default: exhaustive tier (happy path + guard violations + sequences)
 gherkin: gherkin-exhaustive
 
 # Run FizzBee model checker on all formal specs (skipped if fizz not in PATH)

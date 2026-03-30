@@ -15,7 +15,7 @@ Feature: LambdaSecretsmanager - A Secret Is Created In Secrets Manager
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
-  @standard @negative @create_secret
+  @guard @negative @create_secret
   Scenario: a secret is created in Secrets Manager fails when the secret already exists
     Given the secret already exists
     When a secret is created in Secrets Manager

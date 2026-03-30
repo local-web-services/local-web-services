@@ -16,7 +16,7 @@ Feature: SnsLambda - An Sns Topic Is Created
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation was triggered by a "CONFIRMED" subscription
 
-  @standard @negative @create_topic
+  @guard @negative @create_topic
   Scenario: an "SNS" topic is created fails when the topic already exists
     Given the topic already exists
     When an "SNS" topic is created

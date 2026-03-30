@@ -16,13 +16,13 @@ Feature: StepfunctionsElasticache - A Running Execution Reads From The Available
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it read
 
-  @standard @negative @read_cache_task_succeeds @internal
+  @guard @negative @read_cache_task_succeeds @internal
   Scenario: a running execution reads from the "AVAILABLE" ElastiCache cluster and succeeds fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution reads from the "AVAILABLE" ElastiCache cluster and succeeds
     Then the operation is rejected
 
-  @standard @negative @read_cache_task_succeeds @internal
+  @guard @negative @read_cache_task_succeeds @internal
   Scenario: a running execution reads from the "AVAILABLE" ElastiCache cluster and succeeds fails when the cluster is not "AVAILABLE"
     Given an execution is "RUNNING"
     And the cluster is not "AVAILABLE"

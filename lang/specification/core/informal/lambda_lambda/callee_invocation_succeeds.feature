@@ -16,13 +16,13 @@ Feature: LambdaLambda - The Caller Lambda Function Invokes The Active Callee And
     And every "IN_PROGRESS" invocation references an "ACTIVE" caller function
     And every successful invocation recorded which callee was invoked
 
-  @standard @negative @callee_invocation_succeeds @internal
+  @guard @negative @callee_invocation_succeeds @internal
   Scenario: the caller Lambda function invokes the "ACTIVE" callee and the call succeeds fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the caller Lambda function invokes the "ACTIVE" callee and the call succeeds
     Then the operation is rejected
 
-  @standard @negative @callee_invocation_succeeds @internal
+  @guard @negative @callee_invocation_succeeds @internal
   Scenario: the caller Lambda function invokes the "ACTIVE" callee and the call succeeds fails when the callee does not exist or is "DELETED"
     Given an invocation is "IN_PROGRESS"
     And the callee does not exist or is "DELETED"

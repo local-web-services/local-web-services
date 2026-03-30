@@ -17,20 +17,20 @@ Feature: LambdaElasticsearch - The Lambda Function Indexes A Document Into The A
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing document references a domain that exists
 
-  @standard @negative @index_document_task @internal
+  @guard @negative @index_document_task @internal
   Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
     Then the operation is rejected
 
-  @standard @negative @index_document_task @internal
+  @guard @negative @index_document_task @internal
   Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds fails when the domain is not "AVAILABLE"
     Given an invocation is "IN_PROGRESS"
     And the domain is not "AVAILABLE"
     When the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
     Then the operation is rejected
 
-  @standard @negative @index_document_task @internal
+  @guard @negative @index_document_task @internal
   Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds fails when no document slot is available
     Given an invocation is "IN_PROGRESS"
     And the domain is "AVAILABLE"

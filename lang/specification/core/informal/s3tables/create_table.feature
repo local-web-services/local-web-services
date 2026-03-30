@@ -21,20 +21,20 @@ Feature: S3tables - A Table Is Created In A Namespace
     And snapshot count is never negative
     And schema version is always at least one
 
-  @standard @negative @create_table
+  @guard @negative @create_table
   Scenario: a table is created in a namespace fails when the bucket does not exist
     Given the bucket does not exist
     When a table is created in a namespace
     Then the operation is rejected
 
-  @standard @negative @create_table @lifecycle
+  @guard @negative @create_table @lifecycle
   Scenario: a table is created in a namespace fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"
     When a table is created in a namespace
     Then the operation is rejected
 
-  @standard @negative @create_table
+  @guard @negative @create_table
   Scenario: a table is created in a namespace fails when the namespace does not exist
     Given the bucket exists
     And the bucket is "ACTIVE"
@@ -42,7 +42,7 @@ Feature: S3tables - A Table Is Created In A Namespace
     When a table is created in a namespace
     Then the operation is rejected
 
-  @standard @negative @create_table @lifecycle
+  @guard @negative @create_table @lifecycle
   Scenario: a table is created in a namespace fails when the namespace is not "ACTIVE"
     Given the bucket exists
     And the bucket is "ACTIVE"
@@ -51,7 +51,7 @@ Feature: S3tables - A Table Is Created In A Namespace
     When a table is created in a namespace
     Then the operation is rejected
 
-  @standard @negative @create_table
+  @guard @negative @create_table
   Scenario: a table is created in a namespace fails when the table already exists
     Given the bucket exists
     And the bucket is "ACTIVE"

@@ -17,13 +17,13 @@ Feature: Rds - A Database Instance Finishes Creating
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
 
-  @standard @negative @activate_d_b_instance @internal
+  @guard @negative @activate_d_b_instance @internal
   Scenario: a database instance finishes creating fails when the database instance does not exist
     Given the database instance does not exist
     When a database instance finishes creating
     Then the operation is rejected
 
-  @standard @negative @activate_d_b_instance @internal
+  @guard @negative @activate_d_b_instance @internal
   Scenario: a database instance finishes creating fails when the instance is not "CREATING"
     Given the database instance exists
     And the instance is not "CREATING"

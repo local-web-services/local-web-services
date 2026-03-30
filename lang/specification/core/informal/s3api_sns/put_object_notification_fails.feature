@@ -18,20 +18,20 @@ Feature: S3apiSns - An Object Is Uploaded But Notification Delivery Fails Becaus
     And every "PUBLISHED" notification references an object that exists
     And every "PUBLISHED" notification references a topic that exists
 
-  @standard @negative @put_object_notification_fails @lifecycle
+  @guard @negative @put_object_notification_fails @lifecycle
   Scenario: an object is uploaded but notification delivery fails because the topic has been deleted fails when the bucket is not "ACTIVE"
     Given the bucket is not "ACTIVE"
     When an object is uploaded but notification delivery fails because the topic has been deleted
     Then the operation is rejected
 
-  @standard @negative @put_object_notification_fails
+  @guard @negative @put_object_notification_fails
   Scenario: an object is uploaded but notification delivery fails because the topic has been deleted fails when the bucket has no notification configuration
     Given the bucket is "ACTIVE"
     And the bucket has no notification configuration
     When an object is uploaded but notification delivery fails because the topic has been deleted
     Then the operation is rejected
 
-  @standard @negative @put_object_notification_fails @lifecycle
+  @guard @negative @put_object_notification_fails @lifecycle
   Scenario: an object is uploaded but notification delivery fails because the topic has been deleted fails when the target topic is not "DELETED"
     Given the bucket is "ACTIVE"
     And the bucket has a notification configuration
@@ -39,7 +39,7 @@ Feature: S3apiSns - An Object Is Uploaded But Notification Delivery Fails Becaus
     When an object is uploaded but notification delivery fails because the topic has been deleted
     Then the operation is rejected
 
-  @standard @negative @put_object_notification_fails @capacity
+  @guard @negative @internal @put_object_notification_fails @capacity
   Scenario: an object is uploaded but notification delivery fails because the topic has been deleted fails when no object slot is available
     Given the bucket is "ACTIVE"
     And the bucket has a notification configuration

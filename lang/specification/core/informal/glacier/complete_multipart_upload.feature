@@ -22,20 +22,20 @@ Feature: Glacier - A Multipart Upload Is Completed
     And job output is only available for succeeded jobs
     And every archive retrieval job references a non-empty archive "ID"
 
-  @standard @negative @complete_multipart_upload
+  @guard @negative @complete_multipart_upload
   Scenario: a multipart upload is completed fails when the upload does not exist
     Given the upload does not exist
     When a multipart upload is completed
     Then the operation is rejected
 
-  @standard @negative @complete_multipart_upload @lifecycle
+  @guard @negative @complete_multipart_upload @lifecycle
   Scenario: a multipart upload is completed fails when the upload is not InProgress
     Given the upload exists
     And the upload is not InProgress
     When a multipart upload is completed
     Then the operation is rejected
 
-  @standard @negative @complete_multipart_upload
+  @guard @negative @complete_multipart_upload
   Scenario: a multipart upload is completed fails when the vault does not exist
     Given the upload exists
     And the upload is InProgress
@@ -43,7 +43,7 @@ Feature: Glacier - A Multipart Upload Is Completed
     When a multipart upload is completed
     Then the operation is rejected
 
-  @standard @negative @complete_multipart_upload @lifecycle
+  @guard @negative @complete_multipart_upload @lifecycle
   Scenario: a multipart upload is completed fails when the vault is not "ACTIVE"
     Given the upload exists
     And the upload is InProgress
@@ -52,7 +52,7 @@ Feature: Glacier - A Multipart Upload Is Completed
     When a multipart upload is completed
     Then the operation is rejected
 
-  @standard @negative @complete_multipart_upload @capacity
+  @guard @negative @internal @complete_multipart_upload @capacity
   Scenario: a multipart upload is completed fails when the archive slot is not available
     Given the upload exists
     And the upload is InProgress

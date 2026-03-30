@@ -17,20 +17,20 @@ Feature: LambdaEvents - The Lambda Function Publishes An Event To The Active Eve
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "PUBLISHED" event references a bus that exists
 
-  @standard @negative @publish_event_task @internal
+  @guard @negative @publish_event_task @internal
   Scenario: the Lambda function publishes an event to the "ACTIVE" event bus and succeeds fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda function publishes an event to the "ACTIVE" event bus and succeeds
     Then the operation is rejected
 
-  @standard @negative @publish_event_task @internal
+  @guard @negative @publish_event_task @internal
   Scenario: the Lambda function publishes an event to the "ACTIVE" event bus and succeeds fails when the bus does not exist or is "DELETED"
     Given an invocation is "IN_PROGRESS"
     And the bus does not exist or is "DELETED"
     When the Lambda function publishes an event to the "ACTIVE" event bus and succeeds
     Then the operation is rejected
 
-  @standard @negative @publish_event_task @internal
+  @guard @negative @publish_event_task @internal
   Scenario: the Lambda function publishes an event to the "ACTIVE" event bus and succeeds fails when no event slot is available
     Given an invocation is "IN_PROGRESS"
     And the bus is "ACTIVE"

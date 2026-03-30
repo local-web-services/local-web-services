@@ -24,20 +24,20 @@ Feature: Events - An Event Bus Is Deleted
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @delete_event_bus
+  @guard @negative @delete_event_bus
   Scenario: an event bus is deleted fails when the event bus is the default bus
     Given the event bus is the default bus
     When an event bus is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_event_bus
+  @guard @negative @delete_event_bus
   Scenario: an event bus is deleted fails when the event bus does not exist
     Given the event bus is not the default bus
     And the event bus does not exist
     When an event bus is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_event_bus @lifecycle
+  @guard @negative @delete_event_bus @lifecycle
   Scenario: an event bus is deleted fails when the event bus is not "ACTIVE"
     Given the event bus is not the default bus
     And the event bus exists
@@ -45,7 +45,7 @@ Feature: Events - An Event Bus Is Deleted
     When an event bus is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_event_bus
+  @guard @negative @delete_event_bus
   Scenario: an event bus is deleted fails when the event bus has rules
     Given the event bus is not the default bus
     And the event bus exists

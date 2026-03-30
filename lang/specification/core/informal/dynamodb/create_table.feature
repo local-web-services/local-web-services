@@ -19,7 +19,7 @@ Feature: Dynamodb - A Table Is Created
     And items only exist in non-deleted tables
     And deleted tables are never the target of a pending transaction
 
-  @standard @negative @create_table
+  @guard @negative @create_table
   Scenario: a table is created fails when the table already exists
     Given the table already exists
     When a table is created

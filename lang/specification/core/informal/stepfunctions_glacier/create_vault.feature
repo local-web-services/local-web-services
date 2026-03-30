@@ -15,7 +15,7 @@ Feature: StepfunctionsGlacier - A Glacier Vault Is Created
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which vault it called
 
-  @standard @negative @create_vault
+  @guard @negative @create_vault
   Scenario: a Glacier vault is created fails when the vault already exists
     Given the vault already exists
     When a Glacier vault is created

@@ -25,20 +25,20 @@ Feature: Lambda - A Function Is Invoked Synchronously Within Its Concurrency Lim
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @invoke_function_sync_with_concurrency
+  @guard @negative @invoke_function_sync_with_concurrency
   Scenario: a function is invoked synchronously within its concurrency limit fails when the function does not exist
     Given the function does not exist
     When a function is invoked synchronously within its concurrency limit
     Then the operation is rejected
 
-  @standard @negative @invoke_function_sync_with_concurrency @lifecycle
+  @guard @negative @invoke_function_sync_with_concurrency @lifecycle
   Scenario: a function is invoked synchronously within its concurrency limit fails when the function is not "ACTIVE"
     Given the function exists
     And the function is not "ACTIVE"
     When a function is invoked synchronously within its concurrency limit
     Then the operation is rejected
 
-  @standard @negative @invoke_function_sync_with_concurrency
+  @guard @negative @invoke_function_sync_with_concurrency
   Scenario: a function is invoked synchronously within its concurrency limit fails when the function does not have concurrency configured
     Given the function exists
     And the function is "ACTIVE"
@@ -46,7 +46,7 @@ Feature: Lambda - A Function Is Invoked Synchronously Within Its Concurrency Lim
     When a function is invoked synchronously within its concurrency limit
     Then the operation is rejected
 
-  @standard @negative @invoke_function_sync_with_concurrency @capacity
+  @guard @negative @invoke_function_sync_with_concurrency @capacity
   Scenario: a function is invoked synchronously within its concurrency limit fails when the function does not have a positive concurrency limit
     Given the function exists
     And the function is "ACTIVE"
@@ -55,7 +55,7 @@ Feature: Lambda - A Function Is Invoked Synchronously Within Its Concurrency Lim
     When a function is invoked synchronously within its concurrency limit
     Then the operation is rejected
 
-  @standard @negative @invoke_function_sync_with_concurrency
+  @guard @negative @invoke_function_sync_with_concurrency
   Scenario: a function is invoked synchronously within its concurrency limit fails when the function does not have active executions tracked
     Given the function exists
     And the function is "ACTIVE"
@@ -65,7 +65,7 @@ Feature: Lambda - A Function Is Invoked Synchronously Within Its Concurrency Lim
     When a function is invoked synchronously within its concurrency limit
     Then the operation is rejected
 
-  @standard @negative @invoke_function_sync_with_concurrency @capacity
+  @guard @negative @invoke_function_sync_with_concurrency @capacity
   Scenario: a function is invoked synchronously within its concurrency limit fails when the active executions are at or above the concurrency limit
     Given the function exists
     And the function is "ACTIVE"

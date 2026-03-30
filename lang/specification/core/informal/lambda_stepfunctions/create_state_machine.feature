@@ -15,7 +15,7 @@ Feature: LambdaStepfunctions - A Step Functions State Machine Is Created
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "RUNNING" execution references a state machine that exists
 
-  @standard @negative @create_state_machine
+  @guard @negative @create_state_machine
   Scenario: a Step Functions state machine is created fails when the state machine already exists
     Given the state machine already exists
     When a Step Functions state machine is created

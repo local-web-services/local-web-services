@@ -20,20 +20,20 @@ Feature: StepfunctionsLambda - A Lambda Task Is Configured On The State Machine
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation has a corresponding "RUNNING" execution
 
-  @standard @negative @configure_task
+  @guard @negative @configure_task
   Scenario: a Lambda task is configured on the state machine fails when the state machine does not exist
     Given the state machine does not exist
     When a Lambda task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_task @lifecycle
+  @guard @negative @configure_task @lifecycle
   Scenario: a Lambda task is configured on the state machine fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"
     When a Lambda task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_task
+  @guard @negative @configure_task
   Scenario: a Lambda task is configured on the state machine fails when the state machine already has a Lambda task configured
     Given the state machine exists
     And the state machine is "ACTIVE"
@@ -41,7 +41,7 @@ Feature: StepfunctionsLambda - A Lambda Task Is Configured On The State Machine
     When a Lambda task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_task
+  @guard @negative @configure_task
   Scenario: a Lambda task is configured on the state machine fails when the function does not exist
     Given the state machine exists
     And the state machine is "ACTIVE"
@@ -50,7 +50,7 @@ Feature: StepfunctionsLambda - A Lambda Task Is Configured On The State Machine
     When a Lambda task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_task @lifecycle
+  @guard @negative @configure_task @lifecycle
   Scenario: a Lambda task is configured on the state machine fails when the function is not "ACTIVE"
     Given the state machine exists
     And the state machine is "ACTIVE"

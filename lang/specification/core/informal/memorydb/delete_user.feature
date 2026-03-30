@@ -19,13 +19,13 @@ Feature: Memorydb - A User Is Deleted
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @delete_user
+  @guard @negative @delete_user
   Scenario: a user is deleted fails when the user does not exist
     Given the user does not exist
     When a user is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_user @lifecycle
+  @guard @negative @delete_user @lifecycle
   Scenario: a user is deleted fails when the user is not "ACTIVE"
     Given the user exists
     And the user is not "ACTIVE"

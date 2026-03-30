@@ -20,20 +20,20 @@ Feature: S3api - A Lifecycle Rule Expires An Object
     And every multipart upload has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
     And deleting a bucket requires it to be empty
 
-  @standard @negative @lifecycle_expire_object @internal
+  @guard @negative @lifecycle_expire_object @internal
   Scenario: a lifecycle rule expires an object fails when the bucket does not exist
     Given the bucket does not exist
     When a lifecycle rule expires an object
     Then the operation is rejected
 
-  @standard @negative @lifecycle_expire_object @internal
+  @guard @negative @lifecycle_expire_object @internal
   Scenario: a lifecycle rule expires an object fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"
     When a lifecycle rule expires an object
     Then the operation is rejected
 
-  @standard @negative @lifecycle_expire_object @internal
+  @guard @negative @lifecycle_expire_object @internal
   Scenario: a lifecycle rule expires an object fails when the object does not exist in the bucket
     Given the bucket exists
     And the bucket is "ACTIVE"
@@ -41,7 +41,7 @@ Feature: S3api - A Lifecycle Rule Expires An Object
     When a lifecycle rule expires an object
     Then the operation is rejected
 
-  @standard @negative @lifecycle_expire_object @internal
+  @guard @negative @lifecycle_expire_object @internal
   Scenario: a lifecycle rule expires an object fails when the object is deleted
     Given the bucket exists
     And the bucket is "ACTIVE"

@@ -16,13 +16,13 @@ Feature: StepfunctionsElasticsearch - A Running Execution Fails Because The Doma
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which domain it called
 
-  @standard @negative @search_task_fails @internal
+  @guard @negative @search_task_fails @internal
   Scenario: a running execution fails because the domain is processing a config update fails when no execution is "RUNNING"
     Given no execution is "RUNNING"
     When a running execution fails because the domain is processing a config update
     Then the operation is rejected
 
-  @standard @negative @search_task_fails @internal
+  @guard @negative @search_task_fails @internal
   Scenario: a running execution fails because the domain is processing a config update fails when the domain is not "PROCESSING"
     Given an execution is "RUNNING"
     And the domain is not "PROCESSING"

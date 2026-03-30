@@ -16,13 +16,13 @@ Feature: GlacierSns - A Glacier Archive Retrieval Job Is Initiated On The Vault
     And every "PUBLISHED" notification references a job that exists
     And every "PUBLISHED" notification references a topic that exists
 
-  @standard @negative @initiate_job
+  @guard @negative @initiate_job
   Scenario: a Glacier archive retrieval job is initiated on the vault fails when the vault does not exist
     Given the vault does not exist
     When a Glacier archive retrieval job is initiated on the vault
     Then the operation is rejected
 
-  @standard @negative @initiate_job @capacity
+  @guard @negative @internal @initiate_job @capacity
   Scenario: a Glacier archive retrieval job is initiated on the vault fails when no job slot is available
     Given the vault exists
     And no job slot is available

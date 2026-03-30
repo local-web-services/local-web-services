@@ -23,20 +23,20 @@ Feature: Dynamodb - An Existing Item Is Deleted From The Table
     And items only exist in non-deleted tables
     And deleted tables are never the target of a pending transaction
 
-  @standard @negative @delete_item
+  @guard @negative @delete_item
   Scenario: an existing item is deleted from the table fails when the table does not exist
     Given the table does not exist
     When an existing item is deleted from the table
     Then the operation is rejected
 
-  @standard @negative @delete_item @lifecycle
+  @guard @negative @delete_item @lifecycle
   Scenario: an existing item is deleted from the table fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"
     When an existing item is deleted from the table
     Then the operation is rejected
 
-  @standard @negative @delete_item @capacity
+  @guard @negative @delete_item @capacity
   Scenario: an existing item is deleted from the table fails when writes are throttled
     Given the table exists
     And the table is "ACTIVE"
@@ -44,7 +44,7 @@ Feature: Dynamodb - An Existing Item Is Deleted From The Table
     When an existing item is deleted from the table
     Then the operation is rejected
 
-  @standard @negative @delete_item
+  @guard @negative @delete_item
   Scenario: an existing item is deleted from the table fails when the item does not exist
     Given the table exists
     And the table is "ACTIVE"
@@ -53,7 +53,7 @@ Feature: Dynamodb - An Existing Item Is Deleted From The Table
     When an existing item is deleted from the table
     Then the operation is rejected
 
-  @standard @negative @delete_item
+  @guard @negative @delete_item
   Scenario: an existing item is deleted from the table fails when the item is not present
     Given the table exists
     And the table is "ACTIVE"

@@ -21,20 +21,20 @@ Feature: S3tables - A Namespace Is Deleted From A Table Bucket
     And snapshot count is never negative
     And schema version is always at least one
 
-  @standard @negative @delete_namespace
+  @guard @negative @delete_namespace
   Scenario: a namespace is deleted from a table bucket fails when the bucket does not exist
     Given the bucket does not exist
     When a namespace is deleted from a table bucket
     Then the operation is rejected
 
-  @standard @negative @delete_namespace @lifecycle
+  @guard @negative @delete_namespace @lifecycle
   Scenario: a namespace is deleted from a table bucket fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"
     When a namespace is deleted from a table bucket
     Then the operation is rejected
 
-  @standard @negative @delete_namespace
+  @guard @negative @delete_namespace
   Scenario: a namespace is deleted from a table bucket fails when the namespace does not exist
     Given the bucket exists
     And the bucket is "ACTIVE"
@@ -42,7 +42,7 @@ Feature: S3tables - A Namespace Is Deleted From A Table Bucket
     When a namespace is deleted from a table bucket
     Then the operation is rejected
 
-  @standard @negative @delete_namespace @lifecycle
+  @guard @negative @delete_namespace @lifecycle
   Scenario: a namespace is deleted from a table bucket fails when the namespace is not "ACTIVE"
     Given the bucket exists
     And the bucket is "ACTIVE"
@@ -51,7 +51,7 @@ Feature: S3tables - A Namespace Is Deleted From A Table Bucket
     When a namespace is deleted from a table bucket
     Then the operation is rejected
 
-  @standard @negative @delete_namespace
+  @guard @negative @delete_namespace
   Scenario: a namespace is deleted from a table bucket fails when the namespace has active tables
     Given the bucket exists
     And the bucket is "ACTIVE"

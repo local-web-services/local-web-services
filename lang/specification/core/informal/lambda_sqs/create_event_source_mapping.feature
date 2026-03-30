@@ -21,20 +21,20 @@ Feature: LambdaSqs - A Lambda Event Source Mapping Is Created Linking A Queue To
     And every "AVAILABLE" or "IN_FLIGHT" message belongs to an "ACTIVE" queue
     And every "ENABLED" event source mapping references an "ACTIVE" queue
 
-  @standard @negative @create_event_source_mapping
+  @guard @negative @create_event_source_mapping
   Scenario: a Lambda event source mapping is created linking a queue to a function fails when the function does not exist
     Given the function does not exist
     When a Lambda event source mapping is created linking a queue to a function
     Then the operation is rejected
 
-  @standard @negative @create_event_source_mapping @lifecycle
+  @guard @negative @create_event_source_mapping @lifecycle
   Scenario: a Lambda event source mapping is created linking a queue to a function fails when the function is not "ACTIVE"
     Given the function exists
     And the function is not "ACTIVE"
     When a Lambda event source mapping is created linking a queue to a function
     Then the operation is rejected
 
-  @standard @negative @create_event_source_mapping
+  @guard @negative @create_event_source_mapping
   Scenario: a Lambda event source mapping is created linking a queue to a function fails when the queue does not exist
     Given the function exists
     And the function is "ACTIVE"
@@ -42,7 +42,7 @@ Feature: LambdaSqs - A Lambda Event Source Mapping Is Created Linking A Queue To
     When a Lambda event source mapping is created linking a queue to a function
     Then the operation is rejected
 
-  @standard @negative @create_event_source_mapping @lifecycle
+  @guard @negative @create_event_source_mapping @lifecycle
   Scenario: a Lambda event source mapping is created linking a queue to a function fails when the queue is not "ACTIVE"
     Given the function exists
     And the function is "ACTIVE"
@@ -51,7 +51,7 @@ Feature: LambdaSqs - A Lambda Event Source Mapping Is Created Linking A Queue To
     When a Lambda event source mapping is created linking a queue to a function
     Then the operation is rejected
 
-  @standard @negative @create_event_source_mapping
+  @guard @negative @create_event_source_mapping
   Scenario: a Lambda event source mapping is created linking a queue to a function fails when the event source mapping already exists
     Given the function exists
     And the function is "ACTIVE"

@@ -18,13 +18,13 @@ Feature: S3tables - A Policy Is Attached To A Table
     And snapshot count is never negative
     And schema version is always at least one
 
-  @standard @negative @put_table_policy
+  @guard @negative @put_table_policy
   Scenario: a policy is attached to a table fails when the table does not exist
     Given the table does not exist
     When a policy is attached to a table
     Then the operation is rejected
 
-  @standard @negative @put_table_policy @lifecycle
+  @guard @negative @put_table_policy @lifecycle
   Scenario: a policy is attached to a table fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"

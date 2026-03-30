@@ -51,10 +51,13 @@ packages = ["src/lws"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
-addopts = "-m 'not internal'"
+addopts = "-m 'not internal and not lifecycle and not capacity' -qq --no-header --disable-warnings"
 markers = [
     "internal: scenarios tagged @internal in Gherkin (excluded from standard test runs)",
-    "capacity: scenarios tagged @capacity in Gherkin",
+    "lifecycle: scenarios tagged @lifecycle in Gherkin (require internal lifecycle control)",
+    "capacity: scenarios tagged @capacity in Gherkin (require internal capacity control)",
+    "guard: scenarios tagged @guard in Gherkin (guard violation / negative outcome)",
+    "sequence: scenarios tagged @sequence in Gherkin (multi-action chain)",
 ]
 
 [dependency-groups]

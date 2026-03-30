@@ -15,7 +15,7 @@ Feature: S3apiEvents - An S3 Bucket Is Created
     And every "DELIVERED" event references an object that exists
     And every "DELIVERED" event references a bus that exists
 
-  @standard @negative @create_bucket
+  @guard @negative @create_bucket
   Scenario: an S3 bucket is created fails when the bucket already exists
     Given the bucket already exists
     When an S3 bucket is created

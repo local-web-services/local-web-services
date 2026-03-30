@@ -18,20 +18,20 @@ Feature: Rds - A Database Snapshot Is Created From An Instance
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
 
-  @standard @negative @create_d_b_snapshot
+  @guard @negative @create_d_b_snapshot
   Scenario: a database snapshot is created from an instance fails when the database instance does not exist
     Given the database instance does not exist
     When a database snapshot is created from an instance
     Then the operation is rejected
 
-  @standard @negative @create_d_b_snapshot @lifecycle
+  @guard @negative @create_d_b_snapshot @lifecycle
   Scenario: a database snapshot is created from an instance fails when the instance is not "AVAILABLE"
     Given the database instance exists
     And the instance is not "AVAILABLE"
     When a database snapshot is created from an instance
     Then the operation is rejected
 
-  @standard @negative @create_d_b_snapshot
+  @guard @negative @internal @create_d_b_snapshot
   Scenario: a database snapshot is created from an instance fails when no snapshot slot is available
     Given the database instance exists
     And the instance is "AVAILABLE"

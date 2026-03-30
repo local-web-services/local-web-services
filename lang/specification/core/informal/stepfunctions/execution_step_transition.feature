@@ -19,13 +19,13 @@ Feature: Stepfunctions - A Running Execution Transitions To A Terminal State
     And synchronous executions only run on express state machines
     And every execution belongs to a known state machine
 
-  @standard @negative @execution_step_transition @internal
+  @guard @negative @execution_step_transition @internal
   Scenario: a running execution transitions to a terminal state fails when the execution does not exist
     Given the execution does not exist
     When a running execution transitions to a terminal state
     Then the operation is rejected
 
-  @standard @negative @execution_step_transition @internal
+  @guard @negative @execution_step_transition @internal
   Scenario: a running execution transitions to a terminal state fails when the execution is not "RUNNING"
     Given the execution exists
     And the execution is not "RUNNING"

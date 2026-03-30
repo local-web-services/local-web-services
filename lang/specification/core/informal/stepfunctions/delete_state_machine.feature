@@ -19,13 +19,13 @@ Feature: Stepfunctions - A State Machine Is Deleted
     And synchronous executions only run on express state machines
     And every execution belongs to a known state machine
 
-  @standard @negative @delete_state_machine
+  @guard @negative @delete_state_machine
   Scenario: a state machine is deleted fails when the state machine does not exist
     Given the state machine does not exist
     When a state machine is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_state_machine @lifecycle
+  @guard @negative @delete_state_machine @lifecycle
   Scenario: a state machine is deleted fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"

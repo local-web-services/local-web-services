@@ -21,13 +21,13 @@ Feature: Lambda - A Synchronous Function Invocation Completes
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @finish_invoke_function_sync @internal
+  @guard @negative @finish_invoke_function_sync @internal
   Scenario: a synchronous function invocation completes fails when the function does not have active execution tracking
     Given the function does not have active execution tracking
     When a synchronous function invocation completes
     Then the operation is rejected
 
-  @standard @negative @finish_invoke_function_sync @internal
+  @guard @negative @finish_invoke_function_sync @internal
   Scenario: a synchronous function invocation completes fails when the function has no active executions
     Given the function has active execution tracking
     And the function has no active executions

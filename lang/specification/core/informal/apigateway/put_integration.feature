@@ -21,13 +21,13 @@ Feature: Apigateway - A Backend Integration Is Attached To A Method
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @put_integration
+  @guard @negative @put_integration
   Scenario: a backend integration is attached to a method fails when the method does not exist
     Given the method does not exist
     When a backend integration is attached to a method
     Then the operation is rejected
 
-  @standard @negative @put_integration
+  @guard @negative @put_integration
   Scenario: a backend integration is attached to a method fails when the method does not exist
     Given the method exists
     And the method does not exist

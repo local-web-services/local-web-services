@@ -21,13 +21,13 @@ Feature: Docdb - A Database Cluster Snapshot Finishes Creating
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @complete_snapshot_creation @internal
+  @guard @negative @complete_snapshot_creation @internal
   Scenario: a database cluster snapshot finishes creating fails when the snapshot does not exist
     Given the snapshot does not exist
     When a database cluster snapshot finishes creating
     Then the operation is rejected
 
-  @standard @negative @complete_snapshot_creation @internal
+  @guard @negative @complete_snapshot_creation @internal
   Scenario: a database cluster snapshot finishes creating fails when the snapshot is not "CREATING"
     Given the snapshot exists
     And the snapshot is not "CREATING"

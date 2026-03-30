@@ -23,20 +23,20 @@ Feature: CognitoIdp - An Admin Initiates Authentication On Behalf Of A Confirmed
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @admin_initiate_auth
+  @guard @negative @admin_initiate_auth
   Scenario: an admin initiates authentication on behalf of a confirmed enabled user fails when the user does not exist
     Given the user does not exist
     When an admin initiates authentication on behalf of a confirmed enabled user
     Then the operation is rejected
 
-  @standard @negative @admin_initiate_auth
+  @guard @negative @admin_initiate_auth
   Scenario: an admin initiates authentication on behalf of a confirmed enabled user fails when the user is not "CONFIRMED"
     Given the user exists
     And the user is not "CONFIRMED"
     When an admin initiates authentication on behalf of a confirmed enabled user
     Then the operation is rejected
 
-  @standard @negative @admin_initiate_auth
+  @guard @negative @admin_initiate_auth
   Scenario: an admin initiates authentication on behalf of a confirmed enabled user fails when the user is not enabled
     Given the user exists
     And the user is "CONFIRMED"
@@ -44,7 +44,7 @@ Feature: CognitoIdp - An Admin Initiates Authentication On Behalf Of A Confirmed
     When an admin initiates authentication on behalf of a confirmed enabled user
     Then the operation is rejected
 
-  @standard @negative @admin_initiate_auth @capacity
+  @guard @negative @internal @admin_initiate_auth @capacity
   Scenario: an admin initiates authentication on behalf of a confirmed enabled user fails when the session slot is not available
     Given the user exists
     And the user is "CONFIRMED"

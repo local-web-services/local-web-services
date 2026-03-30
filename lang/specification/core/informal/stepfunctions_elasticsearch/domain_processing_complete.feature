@@ -15,7 +15,7 @@ Feature: StepfunctionsElasticsearch - The Domain Configuration Update Completes
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which domain it called
 
-  @standard @negative @domain_processing_complete @internal
+  @guard @negative @domain_processing_complete @internal
   Scenario: the domain configuration update completes fails when the domain is not "PROCESSING"
     Given the domain is not "PROCESSING"
     When the domain configuration update completes

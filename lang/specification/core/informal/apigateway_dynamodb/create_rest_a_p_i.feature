@@ -15,7 +15,7 @@ Feature: ApigatewayDynamodb - An Api Gateway Rest Api Is Created
     And every existing item references a table that exists
     And every successful request references an "API" that exists
 
-  @standard @negative @create_rest_a_p_i
+  @guard @negative @create_rest_a_p_i
   Scenario: an "API" Gateway "REST" "API" is created fails when the "API" already exists
     Given the "API" already exists
     When an "API" Gateway "REST" "API" is created

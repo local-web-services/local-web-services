@@ -21,20 +21,20 @@ Feature: Dynamodb - All Items In The Table Are Scanned
     And items only exist in non-deleted tables
     And deleted tables are never the target of a pending transaction
 
-  @standard @negative @scan
+  @guard @negative @scan
   Scenario: all items in the table are scanned fails when the table does not exist
     Given the table does not exist
     When all items in the table are scanned
     Then the operation is rejected
 
-  @standard @negative @scan @lifecycle
+  @guard @negative @scan @lifecycle
   Scenario: all items in the table are scanned fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"
     When all items in the table are scanned
     Then the operation is rejected
 
-  @standard @negative @scan @capacity
+  @guard @negative @scan @capacity
   Scenario: all items in the table are scanned fails when reads are throttled
     Given the table exists
     And the table is "ACTIVE"

@@ -15,7 +15,7 @@ Feature: LambdaS3api - The Lambda Invocation Fails
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing object belongs to an "ACTIVE" bucket
 
-  @standard @negative @invocation_fails @internal
+  @guard @negative @invocation_fails @internal
   Scenario: the Lambda invocation fails fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda invocation fails

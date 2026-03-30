@@ -15,7 +15,7 @@ Feature: StepfunctionsMemorydb - The Memorydb Cluster Update Completes
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
-  @standard @negative @cluster_update_complete @internal
+  @guard @negative @cluster_update_complete @internal
   Scenario: the MemoryDB cluster update completes fails when the cluster is not "UPDATING"
     Given the cluster is not "UPDATING"
     When the MemoryDB cluster update completes

@@ -15,7 +15,7 @@ Feature: LambdaElasticsearch - The Domain Configuration Update Completes
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing document references a domain that exists
 
-  @standard @negative @domain_processing_complete @internal
+  @guard @negative @domain_processing_complete @internal
   Scenario: the domain configuration update completes fails when the domain is not "PROCESSING"
     Given the domain is not "PROCESSING"
     When the domain configuration update completes

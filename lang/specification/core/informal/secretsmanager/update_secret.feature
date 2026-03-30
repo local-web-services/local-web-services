@@ -22,13 +22,13 @@ Feature: Secretsmanager - Metadata Or Description For An Active Secret Is Update
     And every deleted secret with an open recovery window can still be restored or expired
     And every active secret has a current version assigned
 
-  @standard @negative @update_secret
+  @guard @negative @update_secret
   Scenario: metadata or description for an active secret is updated fails when the secret does not exist
     Given the secret does not exist
     When metadata or description for an active secret is updated
     Then the operation is rejected
 
-  @standard @negative @update_secret @lifecycle
+  @guard @negative @update_secret @lifecycle
   Scenario: metadata or description for an active secret is updated fails when the secret is not "ACTIVE"
     Given the secret exists
     And the secret is not "ACTIVE"

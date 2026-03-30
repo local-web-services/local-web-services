@@ -18,13 +18,13 @@ Feature: Opensearch - Shards Are Rebalanced Across Nodes In An Active Domain
     And an outbound connection that is "ACTIVE" cannot have a "REJECTED" inbound connection
     And a pending config change only exists on a domain that is "PROCESSING"
 
-  @standard @negative @shard_rebalancing @internal
+  @guard @negative @shard_rebalancing @internal
   Scenario: shards are rebalanced across nodes in an active domain fails when the domain does not exist
     Given the domain does not exist
     When shards are rebalanced across nodes in an active domain
     Then the operation is rejected
 
-  @standard @negative @shard_rebalancing @internal
+  @guard @negative @shard_rebalancing @internal
   Scenario: shards are rebalanced across nodes in an active domain fails when the domain is not "ACTIVE"
     Given the domain exists
     And the domain is not "ACTIVE"

@@ -15,7 +15,7 @@ Feature: DocdbEvents - The Cluster Modification Completes
     And every "DELIVERED" event references a cluster that exists
     And every "DELIVERED" event references a bus that exists
 
-  @standard @negative @cluster_modify_complete @internal
+  @guard @negative @cluster_modify_complete @internal
   Scenario: the cluster modification completes fails when the cluster is not "MODIFYING"
     Given the cluster is not "MODIFYING"
     When the cluster modification completes

@@ -21,13 +21,13 @@ Feature: Lambda - A Function'S Configuration Is Updated
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @update_function_configuration
+  @guard @negative @update_function_configuration
   Scenario: a function's configuration is updated fails when the function does not exist
     Given the function does not exist
     When a function's configuration is updated
     Then the operation is rejected
 
-  @standard @negative @update_function_configuration @lifecycle
+  @guard @negative @update_function_configuration @lifecycle
   Scenario: a function's configuration is updated fails when the function is not "ACTIVE"
     Given the function exists
     And the function is not "ACTIVE"

@@ -39,6 +39,7 @@ def build_extended_service_apps(
     from lws.providers.rds.routes import create_rds_app
     from lws.providers.s3tables.routes import create_s3tables_app
 
+    _cap = capacity_configs or {}
     lambda_registry = LambdaRegistry()
 
     # Wire DynamoDB stream dispatcher into the DynamoDB provider and the Lambda
@@ -55,15 +56,22 @@ def build_extended_service_apps(
         shared_stream_dispatcher=stream_dispatcher,
     )
 
+    _lambda_tracker_ref: list = []
     lambda_app = create_lambda_management_app(
         registry=lambda_registry,
         lifecycle=lifecycle_configs["lambda"],
+        capacity=_cap.get("lambda"),
+        async_capacity=_cap.get("lambda-async"),
         event_source_manager=event_source_manager,
         dynamodb_provider=dynamo_provider,
         dynamodb_tracker_ref=dynamodb_tracker_ref,
+        tracker_ref=_lambda_tracker_ref,
     )
 
-    glacier_app, glacier_state = create_glacier_app(lifecycle=lifecycle_configs["glacier"])
+    glacier_app, glacier_state = create_glacier_app(
+        lifecycle=lifecycle_configs["glacier"],
+        capacity=_cap.get("glacier"),
+    )
     s3tables_app, s3tables_state = create_s3tables_app(lifecycle=lifecycle_configs["s3tables"])
     elasticsearch_app, elasticsearch_state = create_elasticsearch_app(
         lifecycle=lifecycle_configs["es"]
@@ -72,7 +80,15 @@ def build_extended_service_apps(
         lifecycle=lifecycle_configs["opensearch"]
     )
 
-    _cap = capacity_configs or {}
+    docdb_app, docdb_state = create_docdb_app(
+        lifecycle=lifecycle_configs["docdb"],
+        capacity=_cap.get("docdb"),
+    )
+    neptune_app, neptune_state = create_neptune_app(
+        lifecycle=lifecycle_configs["neptune"],
+        capacity=_cap.get("neptune"),
+    )
+
     apps = [
         (
             "cognito-idp",
@@ -82,8 +98,8 @@ def build_extended_service_apps(
                 capacity=_cap.get("cognito-idp"),
             ),
         ),
-        ("docdb", create_docdb_app(lifecycle=lifecycle_configs["docdb"])),
-        ("neptune", create_neptune_app(lifecycle=lifecycle_configs["neptune"])),
+        ("docdb", docdb_app),
+        ("neptune", neptune_app),
         ("rds", create_rds_app(lifecycle=lifecycle_configs["rds"])),
         ("elasticache", create_elasticache_app(lifecycle=lifecycle_configs["elasticache"])),
         ("memorydb", create_memorydb_app(lifecycle=lifecycle_configs["memorydb"])),
@@ -95,8 +111,11 @@ def build_extended_service_apps(
     ]
     return apps, {
         "lambda_registry": lambda_registry,
+        "lambda_tracker": _lambda_tracker_ref[0] if _lambda_tracker_ref else None,
         "glacier_state": glacier_state,
         "s3tables_state": s3tables_state,
         "elasticsearch_state": elasticsearch_state,
         "opensearch_state": opensearch_state,
+        "docdb_state": docdb_state,
+        "neptune_state": neptune_state,
     }

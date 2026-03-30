@@ -17,20 +17,20 @@ Feature: DocdbEvents - A Cluster Modification Begins And Documentdb Delivers The
     And every "DELIVERED" event references a cluster that exists
     And every "DELIVERED" event references a bus that exists
 
-  @standard @negative @cluster_modify_event_delivered @internal
+  @guard @negative @cluster_modify_event_delivered @internal
   Scenario: a cluster modification begins and DocumentDB delivers the event to the EventBridge bus fails when the cluster is not "AVAILABLE"
     Given the cluster is not "AVAILABLE"
     When a cluster modification begins and DocumentDB delivers the event to the EventBridge bus
     Then the operation is rejected
 
-  @standard @negative @cluster_modify_event_delivered @internal
+  @guard @negative @cluster_modify_event_delivered @internal
   Scenario: a cluster modification begins and DocumentDB delivers the event to the EventBridge bus fails when the bus is "DELETED"
     Given the cluster is "AVAILABLE"
     And the bus is "DELETED"
     When a cluster modification begins and DocumentDB delivers the event to the EventBridge bus
     Then the operation is rejected
 
-  @standard @negative @cluster_modify_event_delivered @internal
+  @guard @negative @cluster_modify_event_delivered @internal
   Scenario: a cluster modification begins and DocumentDB delivers the event to the EventBridge bus fails when no event slot is available
     Given the cluster is "AVAILABLE"
     And the bus is "ACTIVE"

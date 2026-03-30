@@ -15,7 +15,7 @@ Feature: StepfunctionsElasticsearch - An Elasticsearch Domain Is Created And Bec
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which domain it called
 
-  @standard @negative @create_domain
+  @guard @negative @create_domain
   Scenario: an Elasticsearch domain is created and becomes "AVAILABLE" fails when the domain already exists
     Given the domain already exists
     When an Elasticsearch domain is created and becomes "AVAILABLE"

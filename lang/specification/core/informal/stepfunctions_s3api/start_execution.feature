@@ -18,20 +18,20 @@ Feature: StepfunctionsS3api - An Execution Of The State Machine Is Started
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every existing object belongs to an "ACTIVE" bucket
 
-  @standard @negative @start_execution
+  @guard @negative @start_execution
   Scenario: an execution of the state machine is started fails when the state machine does not exist
     Given the state machine does not exist
     When an execution of the state machine is started
     Then the operation is rejected
 
-  @standard @negative @start_execution @lifecycle
+  @guard @negative @start_execution @lifecycle
   Scenario: an execution of the state machine is started fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"
     When an execution of the state machine is started
     Then the operation is rejected
 
-  @standard @negative @start_execution
+  @guard @negative @start_execution
   Scenario: an execution of the state machine is started fails when the state machine has no S3 task configured
     Given the state machine exists
     And the state machine is "ACTIVE"
@@ -39,7 +39,7 @@ Feature: StepfunctionsS3api - An Execution Of The State Machine Is Started
     When an execution of the state machine is started
     Then the operation is rejected
 
-  @standard @negative @start_execution @capacity
+  @guard @negative @internal @start_execution @capacity
   Scenario: an execution of the state machine is started fails when no execution slot is available
     Given the state machine exists
     And the state machine is "ACTIVE"

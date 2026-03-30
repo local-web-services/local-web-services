@@ -21,13 +21,13 @@ Feature: CognitoIdp - A User Pool Is Deleted
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @delete_user_pool
+  @guard @negative @delete_user_pool
   Scenario: a user pool is deleted fails when the user pool does not exist
     Given the user pool does not exist
     When a user pool is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_user_pool
+  @guard @negative @delete_user_pool
   Scenario: a user pool is deleted fails when the user pool is not "ACTIVE"
     Given the user pool exists
     And the user pool is not "ACTIVE"

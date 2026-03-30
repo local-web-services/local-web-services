@@ -18,20 +18,20 @@ Feature: StepfunctionsEvents - An Execution Starts But The Started Event Deliver
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every "DELIVERED" event references an execution that exists
 
-  @standard @negative @start_execution_event_fails @lifecycle
+  @guard @negative @start_execution_event_fails @lifecycle
   Scenario: an execution starts but the "STARTED" event delivery fails because the bus is deleted fails when the state machine does not exist or is not "ACTIVE"
     Given the state machine does not exist or is not "ACTIVE"
     When an execution starts but the "STARTED" event delivery fails because the bus is deleted
     Then the operation is rejected
 
-  @standard @negative @start_execution_event_fails
+  @guard @negative @start_execution_event_fails
   Scenario: an execution starts but the "STARTED" event delivery fails because the bus is deleted fails when the state machine has no EventBridge bus configured
     Given the state machine exists and is "ACTIVE"
     And the state machine has no EventBridge bus configured
     When an execution starts but the "STARTED" event delivery fails because the bus is deleted
     Then the operation is rejected
 
-  @standard @negative @start_execution_event_fails @lifecycle
+  @guard @negative @start_execution_event_fails @lifecycle
   Scenario: an execution starts but the "STARTED" event delivery fails because the bus is deleted fails when the bus is not "DELETED"
     Given the state machine exists and is "ACTIVE"
     And the state machine has an EventBridge bus configured
@@ -39,7 +39,7 @@ Feature: StepfunctionsEvents - An Execution Starts But The Started Event Deliver
     When an execution starts but the "STARTED" event delivery fails because the bus is deleted
     Then the operation is rejected
 
-  @standard @negative @start_execution_event_fails @capacity
+  @guard @negative @internal @start_execution_event_fails @capacity
   Scenario: an execution starts but the "STARTED" event delivery fails because the bus is deleted fails when no execution slot is available
     Given the state machine exists and is "ACTIVE"
     And the state machine has an EventBridge bus configured

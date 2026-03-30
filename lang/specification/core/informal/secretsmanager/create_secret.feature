@@ -21,7 +21,7 @@ Feature: Secretsmanager - A Secret Is Created
     And every deleted secret with an open recovery window can still be restored or expired
     And every active secret has a current version assigned
 
-  @standard @negative @create_secret
+  @guard @negative @create_secret
   Scenario: a secret is created fails when the secret already exists
     Given the secret already exists
     When a secret is created

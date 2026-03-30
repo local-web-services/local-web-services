@@ -24,20 +24,20 @@ Feature: Elasticache - An Automatic Failover Promotes A New Primary In A Replica
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @failover_replication_group @internal
+  @guard @negative @failover_replication_group @internal
   Scenario: an automatic failover promotes a new primary in a replication group fails when the replication group does not exist
     Given the replication group does not exist
     When an automatic failover promotes a new primary in a replication group
     Then the operation is rejected
 
-  @standard @negative @failover_replication_group @internal
+  @guard @negative @failover_replication_group @internal
   Scenario: an automatic failover promotes a new primary in a replication group fails when the replication group is not "AVAILABLE"
     Given the replication group exists
     And the replication group is not "AVAILABLE"
     When an automatic failover promotes a new primary in a replication group
     Then the operation is rejected
 
-  @standard @negative @failover_replication_group @internal
+  @guard @negative @failover_replication_group @internal
   Scenario: an automatic failover promotes a new primary in a replication group fails when automatic failover is not enabled
     Given the replication group exists
     And the replication group is "AVAILABLE"
@@ -45,7 +45,7 @@ Feature: Elasticache - An Automatic Failover Promotes A New Primary In A Replica
     When an automatic failover promotes a new primary in a replication group
     Then the operation is rejected
 
-  @standard @negative @failover_replication_group @internal
+  @guard @negative @failover_replication_group @internal
   Scenario: an automatic failover promotes a new primary in a replication group fails when no replica cluster exists
     Given the replication group exists
     And the replication group is "AVAILABLE"
@@ -54,7 +54,7 @@ Feature: Elasticache - An Automatic Failover Promotes A New Primary In A Replica
     When an automatic failover promotes a new primary in a replication group
     Then the operation is rejected
 
-  @standard @negative @failover_replication_group @internal
+  @guard @negative @failover_replication_group @internal
   Scenario: an automatic failover promotes a new primary in a replication group fails when the cluster is not part of this replication group
     Given the replication group exists
     And the replication group is "AVAILABLE"
@@ -64,7 +64,7 @@ Feature: Elasticache - An Automatic Failover Promotes A New Primary In A Replica
     When an automatic failover promotes a new primary in a replication group
     Then the operation is rejected
 
-  @standard @negative @failover_replication_group @internal
+  @guard @negative @failover_replication_group @internal
   Scenario: an automatic failover promotes a new primary in a replication group fails when the cluster is not "AVAILABLE"
     Given the replication group exists
     And the replication group is "AVAILABLE"
@@ -75,7 +75,7 @@ Feature: Elasticache - An Automatic Failover Promotes A New Primary In A Replica
     When an automatic failover promotes a new primary in a replication group
     Then the operation is rejected
 
-  @standard @negative @failover_replication_group @internal
+  @guard @negative @failover_replication_group @internal
   Scenario: an automatic failover promotes a new primary in a replication group fails when the cluster is already the primary
     Given the replication group exists
     And the replication group is "AVAILABLE"

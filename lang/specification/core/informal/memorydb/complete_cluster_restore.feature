@@ -19,13 +19,13 @@ Feature: Memorydb - A Cluster Restore From Snapshot Completes
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @complete_cluster_restore @internal
+  @guard @negative @complete_cluster_restore @internal
   Scenario: a cluster restore from snapshot completes fails when the cluster does not exist
     Given the cluster does not exist
     When a cluster restore from snapshot completes
     Then the operation is rejected
 
-  @standard @negative @complete_cluster_restore @internal
+  @guard @negative @complete_cluster_restore @internal
   Scenario: a cluster restore from snapshot completes fails when the cluster is not "RESTORING"
     Given the cluster exists
     And the cluster is not "RESTORING"

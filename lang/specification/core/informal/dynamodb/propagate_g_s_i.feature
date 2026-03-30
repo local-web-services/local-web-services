@@ -20,13 +20,13 @@ Feature: Dynamodb - A Gsi Catches Up With Pending Write Propagation
     And items only exist in non-deleted tables
     And deleted tables are never the target of a pending transaction
 
-  @standard @negative @propagate_g_s_i @internal
+  @guard @negative @propagate_g_s_i @internal
   Scenario: a "GSI" catches up with pending write propagation fails when the table does not have pending "GSI" propagation
     Given the table does not have pending "GSI" propagation
     When a "GSI" catches up with pending write propagation
     Then the operation is rejected
 
-  @standard @negative @propagate_g_s_i @internal
+  @guard @negative @propagate_g_s_i @internal
   Scenario: a "GSI" catches up with pending write propagation fails when there are no writes pending propagation to the "GSI"
     Given the table has pending "GSI" propagation
     And there are no writes pending propagation to the "GSI"

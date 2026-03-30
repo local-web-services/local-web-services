@@ -15,7 +15,7 @@ Feature: LambdaSsm - A Parameter Is Created In Ssm Parameter Store
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
-  @standard @negative @create_parameter
+  @guard @negative @create_parameter
   Scenario: a parameter is created in "SSM" Parameter Store fails when the parameter already exists
     Given the parameter already exists
     When a parameter is created in "SSM" Parameter Store

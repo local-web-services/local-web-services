@@ -19,20 +19,20 @@ Feature: Elasticsearch - Tags Are Removed From A Domain
     And every active tag belongs to an existing non-deleted domain
     And a pending config change only exists on a domain that is "PROCESSING"
 
-  @standard @negative @remove_tags
+  @guard @negative @remove_tags
   Scenario: tags are removed from a domain fails when the domain does not exist
     Given the domain does not exist
     When tags are removed from a domain
     Then the operation is rejected
 
-  @standard @negative @remove_tags @lifecycle
+  @guard @negative @remove_tags @lifecycle
   Scenario: tags are removed from a domain fails when the domain is being deleted
     Given the domain exists
     And the domain is being deleted
     When tags are removed from a domain
     Then the operation is rejected
 
-  @standard @negative @remove_tags
+  @guard @negative @remove_tags
   Scenario: tags are removed from a domain fails when the domain is deleted
     Given the domain exists
     And the domain is not being deleted
@@ -40,7 +40,7 @@ Feature: Elasticsearch - Tags Are Removed From A Domain
     When tags are removed from a domain
     Then the operation is rejected
 
-  @standard @negative @remove_tags
+  @guard @negative @remove_tags
   Scenario: tags are removed from a domain fails when the tag key does not exist
     Given the domain exists
     And the domain is not being deleted

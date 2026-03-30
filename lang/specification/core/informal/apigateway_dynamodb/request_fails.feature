@@ -18,20 +18,20 @@ Feature: ApigatewayDynamodb - A Request Is Received But The Dynamodb Write Fails
     And every existing item references a table that exists
     And every successful request references an "API" that exists
 
-  @standard @negative @request_fails @lifecycle
+  @guard @negative @request_fails @lifecycle
   Scenario: a request is received but the DynamoDB write fails because the table is being deleted fails when the "API" is not "ACTIVE"
     Given the "API" is not "ACTIVE"
     When a request is received but the DynamoDB write fails because the table is being deleted
     Then the operation is rejected
 
-  @standard @negative @request_fails
+  @guard @negative @request_fails
   Scenario: a request is received but the DynamoDB write fails because the table is being deleted fails when the "API" has no DynamoDB integration configured
     Given the "API" is "ACTIVE"
     And the "API" has no DynamoDB integration configured
     When a request is received but the DynamoDB write fails because the table is being deleted
     Then the operation is rejected
 
-  @standard @negative @request_fails @lifecycle
+  @guard @negative @request_fails @lifecycle
   Scenario: a request is received but the DynamoDB write fails because the table is being deleted fails when the target table is not "DELETING"
     Given the "API" is "ACTIVE"
     And the "API" has a DynamoDB integration configured
@@ -39,7 +39,7 @@ Feature: ApigatewayDynamodb - A Request Is Received But The Dynamodb Write Fails
     When a request is received but the DynamoDB write fails because the table is being deleted
     Then the operation is rejected
 
-  @standard @negative @request_fails @capacity
+  @guard @negative @internal @request_fails @capacity
   Scenario: a request is received but the DynamoDB write fails because the table is being deleted fails when no request slot is available
     Given the "API" is "ACTIVE"
     And the "API" has a DynamoDB integration configured

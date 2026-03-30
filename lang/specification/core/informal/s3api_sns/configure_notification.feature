@@ -17,20 +17,20 @@ Feature: S3apiSns - An Sns Notification Configuration Is Added To The Bucket
     And every "PUBLISHED" notification references an object that exists
     And every "PUBLISHED" notification references a topic that exists
 
-  @standard @negative @configure_notification
+  @guard @negative @configure_notification
   Scenario: an "SNS" notification configuration is added to the bucket fails when the bucket does not exist or is not "ACTIVE"
     Given the bucket does not exist or is not "ACTIVE"
     When an "SNS" notification configuration is added to the bucket
     Then the operation is rejected
 
-  @standard @negative @configure_notification
+  @guard @negative @configure_notification
   Scenario: an "SNS" notification configuration is added to the bucket fails when the bucket already has a notification configuration
     Given the bucket exists and is "ACTIVE"
     And the bucket already has a notification configuration
     When an "SNS" notification configuration is added to the bucket
     Then the operation is rejected
 
-  @standard @negative @configure_notification
+  @guard @negative @configure_notification
   Scenario: an "SNS" notification configuration is added to the bucket fails when the topic does not exist or is not "ACTIVE"
     Given the bucket exists and is "ACTIVE"
     And the bucket has no notification configuration

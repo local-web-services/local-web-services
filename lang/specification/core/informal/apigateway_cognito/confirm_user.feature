@@ -19,20 +19,20 @@ Feature: ApigatewayCognito - A User Is Confirmed In A Cognito User Pool
     And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
     And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
 
-  @standard @negative @confirm_user
+  @guard @negative @confirm_user
   Scenario: a user is confirmed in a Cognito User Pool fails when the pool does not exist
     Given the pool does not exist
     When a user is confirmed in a Cognito User Pool
     Then the operation is rejected
 
-  @standard @negative @confirm_user @lifecycle
+  @guard @negative @confirm_user @lifecycle
   Scenario: a user is confirmed in a Cognito User Pool fails when the pool is not "ACTIVE"
     Given the pool exists
     And the pool is not "ACTIVE"
     When a user is confirmed in a Cognito User Pool
     Then the operation is rejected
 
-  @standard @negative @confirm_user
+  @guard @negative @confirm_user
   Scenario: a user is confirmed in a Cognito User Pool fails when the user already exists
     Given the pool exists
     And the pool is "ACTIVE"

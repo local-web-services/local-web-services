@@ -19,13 +19,13 @@ Feature: Memorydb - A User Finishes Creating
     And no user in "DELETING" state is currently a member of an "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @complete_user_creation @internal
+  @guard @negative @complete_user_creation @internal
   Scenario: a user finishes creating fails when the user does not exist
     Given the user does not exist
     When a user finishes creating
     Then the operation is rejected
 
-  @standard @negative @complete_user_creation @internal
+  @guard @negative @complete_user_creation @internal
   Scenario: a user finishes creating fails when the user is not "CREATING"
     Given the user exists
     And the user is not "CREATING"

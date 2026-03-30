@@ -19,13 +19,13 @@ Feature: Stepfunctions - A State Machine Deletion Is Finalized
     And synchronous executions only run on express state machines
     And every execution belongs to a known state machine
 
-  @standard @negative @finalize_delete_state_machine @internal
+  @guard @negative @finalize_delete_state_machine @internal
   Scenario: a state machine deletion is finalized fails when the state machine does not exist
     Given the state machine does not exist
     When a state machine deletion is finalized
     Then the operation is rejected
 
-  @standard @negative @finalize_delete_state_machine @internal
+  @guard @negative @finalize_delete_state_machine @internal
   Scenario: a state machine deletion is finalized fails when the state machine is not "DELETING"
     Given the state machine exists
     And the state machine is not "DELETING"
