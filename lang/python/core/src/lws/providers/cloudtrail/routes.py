@@ -12,18 +12,12 @@ from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
-from lws.providers.cloudtrail._cloudtrail_handlers import (
-    _ACTION_HANDLERS,
-    _error_response,
-)
+from lws.providers._shared.request_helpers import action_dispatch as _action_dispatch
+from lws.providers.cloudtrail._cloudtrail_handlers import _ACTION_HANDLERS
+from lws.providers.cloudtrail._cloudtrail_helpers import _error_response
 from lws.providers.cloudtrail._cloudtrail_state import _CloudTrailState
 
 _logger = get_logger("ldk.cloudtrail")
-
-_TARGET_PREFIXES = (
-    "com.amazonaws.cloudtrail.v20131101.CloudTrail_20131101.",
-    "CloudTrail_20131101.",
-)
 
 
 def create_cloudtrail_app(
@@ -46,20 +40,8 @@ def create_cloudtrail_app(
     @app.post("/")
     async def dispatch(request: Request) -> Response:
         """Route a single CloudTrail request to the appropriate handler."""
-        target = request.headers.get("X-Amz-Target", "")
-        action = target
-        for prefix in _TARGET_PREFIXES:
-            if target.startswith(prefix):
-                action = target[len(prefix) :]
-                break
-        body = await request.json()
-        handler = _ACTION_HANDLERS.get(action)
-        if handler is None:
-            _logger.warning("Unknown CloudTrail action: %s", action)
-            return _error_response(
-                "InvalidAction",
-                f"lws: CloudTrail operation '{action}' is not yet implemented",
-            )
-        return await handler(state, body)
+        return await _action_dispatch(
+            request, state, None, _ACTION_HANDLERS, "CloudTrail", _logger, _error_response
+        )
 
     return app, state

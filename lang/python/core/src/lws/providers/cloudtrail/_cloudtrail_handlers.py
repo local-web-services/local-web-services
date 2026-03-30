@@ -10,7 +10,9 @@ from lws.providers.cloudtrail._cloudtrail_helpers import _error_response, _json_
 from lws.providers.cloudtrail._cloudtrail_state import _CloudTrailState, _trail_arn
 
 
-async def _handle_create_trail(state: _CloudTrailState, body: dict) -> Response:
+async def _handle_create_trail(
+    state: _CloudTrailState, body: dict, _tracker: object = None
+) -> Response:
     """Handle CreateTrail — create a new trail."""
     name = body.get("Name", "")
     s3_bucket = body.get("S3BucketName", "")
@@ -38,7 +40,9 @@ async def _handle_create_trail(state: _CloudTrailState, body: dict) -> Response:
     return _json_response(trail)
 
 
-async def _handle_delete_trail(state: _CloudTrailState, body: dict) -> Response:
+async def _handle_delete_trail(
+    state: _CloudTrailState, body: dict, _tracker: object = None
+) -> Response:
     """Handle DeleteTrail — remove a trail."""
     name = body.get("Name", "")
 
@@ -55,13 +59,17 @@ async def _handle_delete_trail(state: _CloudTrailState, body: dict) -> Response:
     return _json_response({})
 
 
-async def _handle_describe_trails(state: _CloudTrailState, _body: dict) -> Response:
+async def _handle_describe_trails(
+    state: _CloudTrailState, _body: dict, _tracker: object = None
+) -> Response:
     """Handle DescribeTrails — return all trails."""
     state.record_event("DescribeTrails")
     return _json_response({"trailList": list(state.trails.values())})
 
 
-async def _handle_get_trail(state: _CloudTrailState, body: dict) -> Response:
+async def _handle_get_trail(
+    state: _CloudTrailState, body: dict, _tracker: object = None
+) -> Response:
     """Handle GetTrail — return a single trail by name or ARN."""
     name = body.get("Name", "")
 
@@ -76,7 +84,9 @@ async def _handle_get_trail(state: _CloudTrailState, body: dict) -> Response:
     return _json_response({"Trail": trail})
 
 
-async def _handle_get_trail_status(state: _CloudTrailState, body: dict) -> Response:
+async def _handle_get_trail_status(
+    state: _CloudTrailState, body: dict, _tracker: object = None
+) -> Response:
     """Handle GetTrailStatus — return logging state for a trail."""
     name = body.get("Name", "")
 
@@ -96,7 +106,9 @@ async def _handle_get_trail_status(state: _CloudTrailState, body: dict) -> Respo
     )
 
 
-async def _handle_start_logging(state: _CloudTrailState, body: dict) -> Response:
+async def _handle_start_logging(
+    state: _CloudTrailState, body: dict, _tracker: object = None
+) -> Response:
     """Handle StartLogging — enable logging on a trail."""
     name = body.get("Name", "")
 
@@ -111,7 +123,9 @@ async def _handle_start_logging(state: _CloudTrailState, body: dict) -> Response
     return _json_response({})
 
 
-async def _handle_stop_logging(state: _CloudTrailState, body: dict) -> Response:
+async def _handle_stop_logging(
+    state: _CloudTrailState, body: dict, _tracker: object = None
+) -> Response:
     """Handle StopLogging — disable logging on a trail."""
     name = body.get("Name", "")
 
@@ -126,7 +140,9 @@ async def _handle_stop_logging(state: _CloudTrailState, body: dict) -> Response:
     return _json_response({})
 
 
-async def _handle_put_event_selectors(state: _CloudTrailState, body: dict) -> Response:
+async def _handle_put_event_selectors(
+    state: _CloudTrailState, body: dict, _tracker: object = None
+) -> Response:
     """Handle PutEventSelectors — store event selectors for a trail."""
     name = body.get("TrailName", "")
     selectors = body.get("EventSelectors", [])
@@ -148,7 +164,9 @@ async def _handle_put_event_selectors(state: _CloudTrailState, body: dict) -> Re
     )
 
 
-async def _handle_get_event_selectors(state: _CloudTrailState, body: dict) -> Response:
+async def _handle_get_event_selectors(
+    state: _CloudTrailState, body: dict, _tracker: object = None
+) -> Response:
     """Handle GetEventSelectors — return event selectors for a trail."""
     name = body.get("TrailName", "")
 
@@ -169,7 +187,9 @@ async def _handle_get_event_selectors(state: _CloudTrailState, body: dict) -> Re
     )
 
 
-async def _handle_lookup_events(state: _CloudTrailState, body: dict) -> Response:
+async def _handle_lookup_events(
+    state: _CloudTrailState, body: dict, _tracker: object = None
+) -> Response:
     """Handle LookupEvents — return filtered, paginated events."""
     lookup_attrs = body.get("LookupAttributes", [])
     max_results = body.get("MaxResults", None)

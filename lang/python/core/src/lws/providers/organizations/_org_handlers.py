@@ -30,7 +30,9 @@ from lws.providers.organizations._org_state import (
 )
 
 
-async def _handle_create_organization(state: _OrganizationsState, body: dict) -> Response:
+async def _handle_create_organization(
+    state: _OrganizationsState, body: dict, _tracker: object = None
+) -> Response:
     """Handle CreateOrganization — create a new org and root node."""
     if state.organization is not None:
         return _error_response(
@@ -67,7 +69,9 @@ async def _handle_create_organization(state: _OrganizationsState, body: dict) ->
     return _json_response({"Organization": org})
 
 
-async def _handle_describe_organization(state: _OrganizationsState, _body: dict) -> Response:
+async def _handle_describe_organization(
+    state: _OrganizationsState, _body: dict, _tracker: object = None
+) -> Response:
     """Handle DescribeOrganization — return the current org."""
     if state.organization is None:
         return _error_response(
@@ -77,13 +81,17 @@ async def _handle_describe_organization(state: _OrganizationsState, _body: dict)
     return _json_response({"Organization": state.organization})
 
 
-async def _handle_list_roots(state: _OrganizationsState, _body: dict) -> Response:
+async def _handle_list_roots(
+    state: _OrganizationsState, _body: dict, _tracker: object = None
+) -> Response:
     """Handle ListRoots — return the root node if the org exists."""
     roots = [state.root] if state.root is not None else []
     return _json_response({"Roots": roots})
 
 
-async def _handle_create_account(state: _OrganizationsState, body: dict) -> Response:
+async def _handle_create_account(
+    state: _OrganizationsState, body: dict, _tracker: object = None
+) -> Response:
     """Handle CreateAccount — add a new member account under the root."""
     if state.organization is None:
         return _error_response(
@@ -130,7 +138,9 @@ async def _handle_create_account(state: _OrganizationsState, body: dict) -> Resp
     )
 
 
-async def _handle_describe_account(state: _OrganizationsState, body: dict) -> Response:
+async def _handle_describe_account(
+    state: _OrganizationsState, body: dict, _tracker: object = None
+) -> Response:
     """Handle DescribeAccount — return a single account by ID."""
     account_id = body.get("AccountId", "")
     account = state.accounts.get(account_id)
@@ -142,12 +152,16 @@ async def _handle_describe_account(state: _OrganizationsState, body: dict) -> Re
     return _json_response({"Account": account})
 
 
-async def _handle_list_accounts(state: _OrganizationsState, _body: dict) -> Response:
+async def _handle_list_accounts(
+    state: _OrganizationsState, _body: dict, _tracker: object = None
+) -> Response:
     """Handle ListAccounts — return all accounts in the org."""
     return _json_response({"Accounts": list(state.accounts.values())})
 
 
-async def _handle_list_accounts_for_parent(state: _OrganizationsState, body: dict) -> Response:
+async def _handle_list_accounts_for_parent(
+    state: _OrganizationsState, body: dict, _tracker: object = None
+) -> Response:
     """Handle ListAccountsForParent — return accounts whose parent matches."""
     parent_id = body.get("ParentId", "")
     accounts = [
@@ -158,7 +172,9 @@ async def _handle_list_accounts_for_parent(state: _OrganizationsState, body: dic
     return _json_response({"Accounts": accounts})
 
 
-async def _handle_create_organizational_unit(state: _OrganizationsState, body: dict) -> Response:
+async def _handle_create_organizational_unit(
+    state: _OrganizationsState, body: dict, _tracker: object = None
+) -> Response:
     """Handle CreateOrganizationalUnit — add a new OU under a parent."""
     if state.organization is None:
         return _error_response(
@@ -196,7 +212,9 @@ async def _handle_create_organizational_unit(state: _OrganizationsState, body: d
     return _json_response({"OrganizationalUnit": ou})
 
 
-async def _handle_describe_organizational_unit(state: _OrganizationsState, body: dict) -> Response:
+async def _handle_describe_organizational_unit(
+    state: _OrganizationsState, body: dict, _tracker: object = None
+) -> Response:
     """Handle DescribeOrganizationalUnit — return a single OU by ID."""
     ou_id = body.get("OrganizationalUnitId", "")
     ou = state.ous.get(ou_id)
@@ -209,7 +227,7 @@ async def _handle_describe_organizational_unit(state: _OrganizationsState, body:
 
 
 async def _handle_list_organizational_units_for_parent(
-    state: _OrganizationsState, body: dict
+    state: _OrganizationsState, body: dict, _tracker: object = None
 ) -> Response:
     """Handle ListOrganizationalUnitsForParent — return OUs under a parent."""
     parent_id = body.get("ParentId", "")
@@ -217,7 +235,9 @@ async def _handle_list_organizational_units_for_parent(
     return _json_response({"OrganizationalUnits": ous})
 
 
-async def _handle_delete_organizational_unit(state: _OrganizationsState, body: dict) -> Response:
+async def _handle_delete_organizational_unit(
+    state: _OrganizationsState, body: dict, _tracker: object = None
+) -> Response:
     """Handle DeleteOrganizationalUnit — remove an OU if it is empty and policy-free."""
     ou_id = body.get("OrganizationalUnitId", "")
 
@@ -243,7 +263,9 @@ async def _handle_delete_organizational_unit(state: _OrganizationsState, body: d
     return _json_response({})
 
 
-async def _handle_move_account(state: _OrganizationsState, body: dict) -> Response:
+async def _handle_move_account(
+    state: _OrganizationsState, body: dict, _tracker: object = None
+) -> Response:
     """Handle MoveAccount — reparent an account from source to destination."""
     account_id = body.get("AccountId", "")
     source_parent_id = body.get("SourceParentId", "")
@@ -271,7 +293,9 @@ async def _handle_move_account(state: _OrganizationsState, body: dict) -> Respon
     return _json_response({})
 
 
-async def _handle_create_policy(state: _OrganizationsState, body: dict) -> Response:
+async def _handle_create_policy(
+    state: _OrganizationsState, body: dict, _tracker: object = None
+) -> Response:
     """Handle CreatePolicy — add a new policy to the org."""
     if state.organization is None:
         return _error_response(
@@ -311,7 +335,9 @@ async def _handle_create_policy(state: _OrganizationsState, body: dict) -> Respo
     return _json_response({"Policy": policy})
 
 
-async def _handle_describe_policy(state: _OrganizationsState, body: dict) -> Response:
+async def _handle_describe_policy(
+    state: _OrganizationsState, body: dict, _tracker: object = None
+) -> Response:
     """Handle DescribePolicy — return a single policy by ID."""
     policy_id = body.get("PolicyId", "")
     policy = state.policies.get(policy_id)
@@ -323,7 +349,9 @@ async def _handle_describe_policy(state: _OrganizationsState, body: dict) -> Res
     return _json_response({"Policy": policy})
 
 
-async def _handle_list_policies(state: _OrganizationsState, body: dict) -> Response:
+async def _handle_list_policies(
+    state: _OrganizationsState, body: dict, _tracker: object = None
+) -> Response:
     """Handle ListPolicies — return policies filtered by type."""
     policy_filter = body.get("Filter", "")
     policies = [
@@ -334,7 +362,9 @@ async def _handle_list_policies(state: _OrganizationsState, body: dict) -> Respo
     return _json_response({"Policies": policies})
 
 
-async def _handle_attach_policy(state: _OrganizationsState, body: dict) -> Response:
+async def _handle_attach_policy(
+    state: _OrganizationsState, body: dict, _tracker: object = None
+) -> Response:
     """Handle AttachPolicy — attach a policy to a target."""
     policy_id = body.get("PolicyId", "")
     target_id = body.get("TargetId", "")
@@ -363,7 +393,9 @@ async def _handle_attach_policy(state: _OrganizationsState, body: dict) -> Respo
     return _json_response({})
 
 
-async def _handle_detach_policy(state: _OrganizationsState, body: dict) -> Response:
+async def _handle_detach_policy(
+    state: _OrganizationsState, body: dict, _tracker: object = None
+) -> Response:
     """Handle DetachPolicy — remove a policy attachment from a target."""
     policy_id = body.get("PolicyId", "")
     target_id = body.get("TargetId", "")
@@ -379,7 +411,9 @@ async def _handle_detach_policy(state: _OrganizationsState, body: dict) -> Respo
     return _json_response({})
 
 
-async def _handle_list_policies_for_target(state: _OrganizationsState, body: dict) -> Response:
+async def _handle_list_policies_for_target(
+    state: _OrganizationsState, body: dict, _tracker: object = None
+) -> Response:
     """Handle ListPoliciesForTarget — return policies attached to a target."""
     target_id = body.get("TargetId", "")
     policy_filter = body.get("Filter", "")
@@ -399,7 +433,9 @@ async def _handle_list_policies_for_target(state: _OrganizationsState, body: dic
     return _json_response({"Policies": policies})
 
 
-async def _handle_list_targets_for_policy(state: _OrganizationsState, body: dict) -> Response:
+async def _handle_list_targets_for_policy(
+    state: _OrganizationsState, body: dict, _tracker: object = None
+) -> Response:
     """Handle ListTargetsForPolicy — return all targets a policy is attached to."""
     policy_id = body.get("PolicyId", "")
 

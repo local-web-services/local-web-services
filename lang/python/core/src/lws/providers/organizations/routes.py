@@ -12,18 +12,12 @@ from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
-from lws.providers.organizations._org_handlers import (
-    _ACTION_HANDLERS,
-    _error_response,
-)
+from lws.providers._shared.request_helpers import action_dispatch as _action_dispatch
+from lws.providers.organizations._org_handlers import _ACTION_HANDLERS
+from lws.providers.organizations._org_helpers import _error_response
 from lws.providers.organizations._org_state import _OrganizationsState
 
 _logger = get_logger("ldk.organizations")
-
-_TARGET_PREFIXES = (
-    "AmazonOrganizationsV20161128.",
-    "AWSOrganizationsV20161128.",
-)
 
 
 def create_organizations_app(
@@ -48,20 +42,8 @@ def create_organizations_app(
     @app.post("/")
     async def dispatch(request: Request) -> Response:
         """Route a single Organizations request to the appropriate handler."""
-        target = request.headers.get("X-Amz-Target", "")
-        action = target
-        for prefix in _TARGET_PREFIXES:
-            if target.startswith(prefix):
-                action = target[len(prefix) :]
-                break
-        body = await request.json()
-        handler = _ACTION_HANDLERS.get(action)
-        if handler is None:
-            _logger.warning("Unknown Organizations action: %s", action)
-            return _error_response(
-                "InvalidAction",
-                f"lws: Organizations operation '{action}' is not yet implemented",
-            )
-        return await handler(state, body)
+        return await _action_dispatch(
+            request, state, None, _ACTION_HANDLERS, "Organizations", _logger, _error_response
+        )
 
     return app, state
