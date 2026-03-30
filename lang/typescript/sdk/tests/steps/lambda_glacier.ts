@@ -176,7 +176,7 @@ Before({ tags: "@lambdaglacier" }, function (this: SdkWorld) {
 
 // 'the vault "EXISTS"' as Given — handled by the combined Then registration below.
 
-Given('the vault "EXISTS" (not already "DELETED")', async function (this: SdkWorld) {
+Given(/^the vault "EXISTS" \(not already "DELETED"\)$/, async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: fresh vault is not DELETED.
   assert.ok(this.session, "Expected session to be initialized");
 });

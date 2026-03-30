@@ -1258,18 +1258,7 @@ Then('the snapshot is "DELETED" and its tags are removed', async function (this:
 
 // "the resource remains tagged" is registered in elasticache.ts (dispatches via tagHelpers.assertResourceTagged).
 
-Then("the resource tag state is unchanged (no-op model)", async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected untag_resource to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+// "the resource tag state is unchanged (no-op model)" is registered in elasticache.ts.
 
 // ── Invariant catch-all steps ─────────────────────────────────────────────────
 

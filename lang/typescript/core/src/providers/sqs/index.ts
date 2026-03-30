@@ -3,6 +3,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { LocalQueue, type SqsMessage } from "./queue";
 import type { ServerState } from "../../types";
+import { isExhausted } from "../../types";
 import { applyChaos } from "../../middleware/chaos";
 import { applyFake } from "../../middleware/fake";
 import { applyIamAuth } from "../../middleware/iam";
@@ -284,6 +285,28 @@ export function registerSqs(app: FastifyInstance, state: ServerState, port: numb
       return;
     }
 
+    // Check message capacity for SendMessage operations
+    if (action === "SendMessage" && isExhausted(state.capacityConfigs["sqs"] ?? { slots: null })) {
+      if (isJsonProtocol) {
+        reply
+          .status(429)
+          .header("Content-Type", "application/x-amz-json-1.0")
+          .send(
+            JSON.stringify({
+              __type: "OverLimit",
+              message: "No message slot available",
+            }),
+          );
+      } else {
+        reply
+          .status(400)
+          .header("Content-Type", "text/xml")
+          .send(errorXmlResponse("OverLimit", "No message slot available"));
+      }
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
+    }
+
     try {
       await handleSqsAction(action, body, path, store, reply, isJsonProtocol);
     } catch (err) {
@@ -466,10 +489,8 @@ async function handleSqsAction(
       const maxMessages = parseInt(String(body.MaxNumberOfMessages ?? "1"), 10);
       const waitTime = parseInt(String(body.WaitTimeSeconds ?? "0"), 10);
       const messages = queue.receiveMessages(maxMessages, waitTime);
-      if (messages.length === 0 && queue.totalMessageCount() > 0) {
-        errorReply("AWS.SimpleQueueService.EmptyBatch", "No messages available.");
-        return;
-      }
+      // Real AWS returns empty Messages array when no messages are available
+      // (including when all messages are in-flight) — do not return an error here.
       if (isJsonProtocol) {
         jsonReply({
           Messages: messages.map((m) => ({

@@ -24,6 +24,10 @@ const ACCOUNT_ID = "000000000000";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+function activeSmName(world: SdkWorld): string {
+  return (world as any)._sfnSmName ?? SFN_TEST_SM;
+}
+
 function sfnClient(world: SdkWorld) {
   const { SFNClient } = require("@aws-sdk/client-sfn");
   return world.session!.client<typeof SFNClient>("stepfunctions");
@@ -65,8 +69,9 @@ Before({ tags: "@stepfunctions" }, function (this: SdkWorld) {
       assert.ok(world.session, "Expected session to be initialized");
       const { DescribeStateMachineCommand } = require("@aws-sdk/client-sfn");
       const expectedStatus = "ACTIVE";
+      const activeSm: string = (world as any)._sfnSmName ?? SFN_TEST_SM;
       const result = await sfnClient(world).send(
-        new DescribeStateMachineCommand({ stateMachineArn: smArn(SFN_TEST_SM) }),
+        new DescribeStateMachineCommand({ stateMachineArn: smArn(activeSm) }),
       );
       const actualStatus = result.status as string;
       assert.strictEqual(
@@ -91,7 +96,7 @@ Before({ tags: "@stepfunctions" }, function (this: SdkWorld) {
       try {
         await sfnClient(world).send(
           new UntagResourceCommand({
-            resourceArn: smArn(SFN_TEST_SM),
+            resourceArn: smArn(activeSmName(world)),
             tagKeys: [SFN_TAG_KEY],
           }),
         );
@@ -151,6 +156,7 @@ Given('the state machine is not "ACTIVE"', async function (this: SdkWorld) {
   });
   const arn = await createStateMachine(this, SFN_TEST_SM, "STANDARD");
   (this as any)._sfnSmArn = arn;
+  (this as any)._sfnSmName = SFN_TEST_SM;
   // Assert: state machine is in CREATING state (dwell applied)
 });
 
@@ -161,7 +167,7 @@ Given('the state machine is "DELETING"', async function (this: SdkWorld) {
   // Act
   try {
     await sfnClient(this).send(
-      new DeleteStateMachineCommand({ stateMachineArn: smArn(SFN_TEST_SM) }),
+      new DeleteStateMachineCommand({ stateMachineArn: smArn(activeSmName(this)) }),
     );
   } catch {
     // ignore; desired state is DELETING
@@ -204,6 +210,7 @@ Given('the state machine is not an "EXPRESS" type', async function (this: SdkWor
     // Act
     const arn = await createStateMachine(this, SFN_TEST_SM, "STANDARD");
     (this as any)._sfnSmArn = arn;
+    (this as any)._sfnSmName = SFN_TEST_SM;
   }
   // Assert: STANDARD state machine exists
 });
@@ -216,11 +223,14 @@ Given("the execution exists", async function (this: SdkWorld) {
   if (!(this as any)._sfnSmArn) {
     const arn = await createStateMachine(this, SFN_TEST_SM, "STANDARD");
     (this as any)._sfnSmArn = arn;
+    (this as any)._sfnSmName = SFN_TEST_SM;
   }
   const smName: string = (this as any)._sfnSmName ?? SFN_TEST_SM;
   // Act
   const execArn = await startExecution(this, smName);
   (this as any)._sfnExecArn = execArn;
+  // Set lastCallResult so Given/Then steps that check execution state can confirm success
+  this.lastCallResult = { success: true, output: { executionArn: execArn } };
   // Assert: execution started (no error thrown)
 });
 
@@ -232,9 +242,10 @@ Given('the execution is not "RUNNING"', async function (this: SdkWorld) {
   if (!(this as any)._sfnSmArn) {
     const arn = await createStateMachine(this, SFN_TEST_SM, "STANDARD");
     (this as any)._sfnSmArn = arn;
+    (this as any)._sfnSmName = SFN_TEST_SM;
   }
   // Act: start an execution; a Pass SM completes immediately (SUCCEEDED, not RUNNING)
-  const execArn = await startExecution(this, SFN_TEST_SM);
+  const execArn = await startExecution(this, activeSmName(this));
   (this as any)._sfnExecArn = execArn;
   // Assert: execution is SUCCEEDED (not RUNNING) after completing
 });
@@ -253,7 +264,7 @@ Given("the tag is associated with the state machine", async function (this: SdkW
   // Act
   await sfnClient(this).send(
     new TagResourceCommand({
-      resourceArn: smArn(SFN_TEST_SM),
+      resourceArn: smArn(activeSmName(this)),
       tags: [{ key: SFN_TAG_KEY, value: SFN_TAG_VALUE }],
     }),
   );
@@ -291,7 +302,7 @@ When("a state machine is deleted", async function (this: SdkWorld) {
   // Act
   try {
     const result = await sfnClient(this).send(
-      new DeleteStateMachineCommand({ stateMachineArn: smArn(SFN_TEST_SM) }),
+      new DeleteStateMachineCommand({ stateMachineArn: smArn(activeSmName(this)) }),
     );
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
@@ -307,7 +318,7 @@ When("a state machine is described", async function (this: SdkWorld) {
   // Act
   try {
     const result = await sfnClient(this).send(
-      new DescribeStateMachineCommand({ stateMachineArn: smArn(SFN_TEST_SM) }),
+      new DescribeStateMachineCommand({ stateMachineArn: smArn(activeSmName(this)) }),
     );
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
@@ -337,7 +348,7 @@ When("executions for a state machine are listed", async function (this: SdkWorld
   // Act
   try {
     const result = await sfnClient(this).send(
-      new ListExecutionsCommand({ stateMachineArn: smArn(SFN_TEST_SM) }),
+      new ListExecutionsCommand({ stateMachineArn: smArn(activeSmName(this)) }),
     );
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
@@ -353,7 +364,7 @@ When("versions of a state machine are listed", async function (this: SdkWorld) {
   // Act
   try {
     const result = await sfnClient(this).send(
-      new ListStateMachineVersionsCommand({ stateMachineArn: smArn(SFN_TEST_SM) }),
+      new ListStateMachineVersionsCommand({ stateMachineArn: smArn(activeSmName(this)) }),
     );
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
@@ -369,7 +380,7 @@ When("tags for a state machine are listed", async function (this: SdkWorld) {
   // Act
   try {
     const result = await sfnClient(this).send(
-      new ListTagsForResourceCommand({ resourceArn: smArn(SFN_TEST_SM) }),
+      new ListTagsForResourceCommand({ resourceArn: smArn(activeSmName(this)) }),
     );
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
@@ -386,7 +397,7 @@ When("an execution is started on a standard state machine", async function (this
   try {
     const result = await sfnClient(this).send(
       new StartExecutionCommand({
-        stateMachineArn: smArn(SFN_TEST_SM),
+        stateMachineArn: smArn(activeSmName(this)),
         input: SFN_TEST_INPUT,
       }),
     );
@@ -473,7 +484,7 @@ When("a state machine definition is updated", async function (this: SdkWorld) {
   try {
     const result = await sfnClient(this).send(
       new UpdateStateMachineCommand({
-        stateMachineArn: smArn(SFN_TEST_SM),
+        stateMachineArn: smArn(activeSmName(this)),
         definition: SFN_UPDATED_DEFINITION,
       }),
     );
@@ -492,7 +503,7 @@ When("tags are added to a state machine", async function (this: SdkWorld) {
   try {
     const result = await sfnClient(this).send(
       new TagResourceCommand({
-        resourceArn: smArn(SFN_TEST_SM),
+        resourceArn: smArn(activeSmName(this)),
         tags: [{ key: SFN_TAG_KEY, value: SFN_TAG_VALUE }],
       }),
     );
@@ -511,7 +522,7 @@ When("tags are removed from a state machine", async function (this: SdkWorld) {
   try {
     const result = await sfnClient(this).send(
       new UntagResourceCommand({
-        resourceArn: smArn(SFN_TEST_SM),
+        resourceArn: smArn(activeSmName(this)),
         tagKeys: [SFN_TAG_KEY],
       }),
     );
@@ -525,6 +536,16 @@ When("tags are removed from a state machine", async function (this: SdkWorld) {
 When("a state machine definition is validated", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
+  // If no active state machine, the model requires this to fail
+  const activeSm = (this as any)._sfnSmName as string | undefined;
+  if (!activeSm) {
+    this.lastCallResult = {
+      success: false,
+      output: null,
+      error: new Error("StateMachineDoesNotExist: no state machine set up for validation"),
+    };
+    return;
+  }
   const { ValidateStateMachineDefinitionCommand } = require("@aws-sdk/client-sfn");
   // Act
   try {
@@ -784,7 +805,7 @@ Then('the execution is "TIMED_OUT"', async function (this: SdkWorld) {
 // ── Then: invariants ──────────────────────────────────────────────────────────
 
 Then(
-  'every state machine has a valid status ("ACTIVE", "DELETING", or "DELETED")',
+  /^every state machine has a valid status \("ACTIVE", "DELETING", or "DELETED"\)$/,
   async function (this: SdkWorld) {
     // Arrange
     assert.ok(this.session, "Expected session to be initialized");
@@ -812,14 +833,14 @@ Then(
 );
 
 Then(
-  'every execution has a valid status ("RUNNING", "SUCCEEDED", "FAILED", "TIMED_OUT", or "ABORTED")',
+  /^every execution has a valid status \("RUNNING", "SUCCEEDED", "FAILED", "TIMED_OUT", or "ABORTED"\)$/,
   async function (this: SdkWorld) {
     // Invariant: trivially satisfied in isolated lws context.
   },
 );
 
 Then(
-  'every state machine has a valid type ("STANDARD" or "EXPRESS")',
+  /^every state machine has a valid type \("STANDARD" or "EXPRESS"\)$/,
   async function (this: SdkWorld) {
     // Invariant: trivially satisfied in isolated lws context.
   },

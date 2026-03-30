@@ -55,11 +55,29 @@ export function registerDynamoDb(app: FastifyInstance, state: ServerState): Dyna
       return;
     }
 
+    const writeOps = new Set([
+      "PutItem",
+      "UpdateItem",
+      "DeleteItem",
+      "BatchWriteItem",
+      "TransactWriteItems",
+    ]);
+    const readOps = new Set(["GetItem", "Query", "Scan", "BatchGetItem", "TransactGetItems"]);
+
     if (
-      operation === "PutItem" &&
+      writeOps.has(operation) &&
       isExhausted(state.capacityConfigs["dynamodb"] ?? { slots: null })
     ) {
       errorReply(reply, "ProvisionedThroughputExceededException", "No write capacity available");
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
+    }
+
+    if (
+      readOps.has(operation) &&
+      isExhausted(state.capacityConfigs["dynamodb"] ?? { slots: null })
+    ) {
+      errorReply(reply, "ProvisionedThroughputExceededException", "No read capacity available");
       recordLog(state, ctx, req.method, req.url, reply.statusCode);
       return;
     }

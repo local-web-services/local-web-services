@@ -12,6 +12,10 @@ const DYNAMODB_TEST_UPDATED_VAL = "attr-val-updated-1";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
+function activeTableName(world: SdkWorld): string {
+  return (world as any)._dynamodbActiveTable ?? DYNAMODB_TEST_TABLE;
+}
+
 function dynamodbClient(world: SdkWorld) {
   const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
   return world.session!.client<typeof DynamoDBClient>("dynamodb");
@@ -70,7 +74,7 @@ Before({ tags: "@dynamodb" }, function (this: SdkWorld) {
       // Act
       try {
         const result = await dynamodbClient(world).send(
-          new DeleteTableCommand({ TableName: DYNAMODB_TEST_TABLE }),
+          new DeleteTableCommand({ TableName: activeTableName(world) }),
         );
         world.lastCallResult = { success: true, output: result };
       } catch (err: unknown) {
@@ -84,7 +88,7 @@ Before({ tags: "@dynamodb" }, function (this: SdkWorld) {
       const { DescribeTableCommand } = require("@aws-sdk/client-dynamodb");
       // Act
       const result = await dynamodbClient(world).send(
-        new DescribeTableCommand({ TableName: DYNAMODB_TEST_TABLE }),
+        new DescribeTableCommand({ TableName: activeTableName(world) }),
       );
       // Assert
       const expectedStatuses = ["CREATING", "ACTIVE"];
@@ -152,7 +156,7 @@ Given("the item exists in the table", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   // Act
-  await putItem(this, DYNAMODB_TEST_TABLE);
+  await putItem(this, activeTableName(this));
   // Assert: item put
 });
 
@@ -165,7 +169,7 @@ Given("the item exists", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   // Act
-  await putItem(this, DYNAMODB_TEST_TABLE);
+  await putItem(this, activeTableName(this));
   // Assert: item put
 });
 
@@ -178,7 +182,7 @@ Given("the item is present", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   // Act
-  await putItem(this, DYNAMODB_TEST_TABLE);
+  await putItem(this, activeTableName(this));
   // Assert: item present
 });
 
@@ -186,7 +190,7 @@ Given("the item is not present", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   // Act: delete item to ensure it is not present
-  await deleteItem(this, DYNAMODB_TEST_TABLE);
+  await deleteItem(this, activeTableName(this));
   // Assert: item is absent
 });
 
@@ -201,7 +205,7 @@ Given("the condition is not satisfied", async function (this: SdkWorld) {
   // Arrange: put item so attribute_not_exists(id) fails
   assert.ok(this.session, "Expected session to be initialized");
   // Act
-  await putItem(this, DYNAMODB_TEST_TABLE);
+  await putItem(this, activeTableName(this));
   // Assert: item exists, condition not satisfied
 });
 
@@ -241,7 +245,7 @@ Given("the transaction's table exists", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   // Act
-  await createTable(this, DYNAMODB_TEST_TABLE);
+  await createTable(this, activeTableName(this));
   // Assert: table created
 });
 
@@ -257,16 +261,16 @@ Given("the transaction's table is {string}", async function (this: SdkWorld, sta
     return;
   }
   // For non-ACTIVE, simulate via lifecycle dwell.
-  await this.session!.lifecycle("dynamodb").createDwellMs(5000).apply();
-  await createTable(this, DYNAMODB_TEST_TABLE);
+  await this.session!.lifecycle("dynamodb").createDwellMs(200).apply();
+  await createTable(this, activeTableName(this));
 });
 
 Given("the transaction's table is not {string}", async function (this: SdkWorld, state: string) {
   assert.ok(this.session, "Expected session to be initialized");
   if (state === "ACTIVE") {
     // Arrange: enable lifecycle dwell and create table in CREATING state
-    await this.session!.lifecycle("dynamodb").createDwellMs(5000).apply();
-    await createTable(this, DYNAMODB_TEST_TABLE);
+    await this.session!.lifecycle("dynamodb").createDwellMs(200).apply();
+    await createTable(this, activeTableName(this));
     return;
   }
   // For other states, no-op.
@@ -309,7 +313,7 @@ When("a table is created", async function (this: SdkWorld) {
   try {
     const result = await dynamodbClient(this).send(
       new CreateTableCommand({
-        TableName: DYNAMODB_TEST_TABLE,
+        TableName: activeTableName(this),
         KeySchema: [{ AttributeName: DYNAMODB_TEST_PK, KeyType: "HASH" }],
         AttributeDefinitions: [{ AttributeName: DYNAMODB_TEST_PK, AttributeType: "S" }],
         BillingMode: "PAY_PER_REQUEST",
@@ -356,7 +360,7 @@ When("a table is described", async function (this: SdkWorld) {
   // Act
   try {
     const result = await dynamodbClient(this).send(
-      new DescribeTableCommand({ TableName: DYNAMODB_TEST_TABLE }),
+      new DescribeTableCommand({ TableName: activeTableName(this) }),
     );
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
@@ -387,7 +391,7 @@ When("an item is written to the table", async function (this: SdkWorld) {
   try {
     const result = await dynamodbClient(this).send(
       new PutItemCommand({
-        TableName: DYNAMODB_TEST_TABLE,
+        TableName: activeTableName(this),
         Item: {
           [DYNAMODB_TEST_PK]: { S: DYNAMODB_TEST_ITEM_KEY },
           data: { S: DYNAMODB_TEST_ATTR_VAL },
@@ -409,7 +413,7 @@ When("an item is conditionally written to the table", async function (this: SdkW
   try {
     const result = await dynamodbClient(this).send(
       new PutItemCommand({
-        TableName: DYNAMODB_TEST_TABLE,
+        TableName: activeTableName(this),
         Item: {
           [DYNAMODB_TEST_PK]: { S: DYNAMODB_TEST_ITEM_KEY },
           data: { S: DYNAMODB_TEST_ATTR_VAL },
@@ -432,7 +436,7 @@ When("an item is read from the table", async function (this: SdkWorld) {
   try {
     await dynamodbClient(this).send(
       new PutItemCommand({
-        TableName: DYNAMODB_TEST_TABLE,
+        TableName: activeTableName(this),
         Item: {
           [DYNAMODB_TEST_PK]: { S: DYNAMODB_TEST_ITEM_KEY },
           data: { S: DYNAMODB_TEST_ATTR_VAL },
@@ -446,7 +450,7 @@ When("an item is read from the table", async function (this: SdkWorld) {
   try {
     const result = await dynamodbClient(this).send(
       new GetItemCommand({
-        TableName: DYNAMODB_TEST_TABLE,
+        TableName: activeTableName(this),
         Key: { [DYNAMODB_TEST_PK]: { S: DYNAMODB_TEST_ITEM_KEY } },
       }),
     );
@@ -465,7 +469,7 @@ When("an existing item is updated in the table", async function (this: SdkWorld)
   try {
     const result = await dynamodbClient(this).send(
       new UpdateItemCommand({
-        TableName: DYNAMODB_TEST_TABLE,
+        TableName: activeTableName(this),
         Key: { [DYNAMODB_TEST_PK]: { S: DYNAMODB_TEST_ITEM_KEY } },
         UpdateExpression: "SET #d = :val",
         ConditionExpression: "attribute_exists(#pk)",
@@ -493,7 +497,7 @@ When("an existing item is deleted from the table", async function (this: SdkWorl
   try {
     const result = await dynamodbClient(this).send(
       new DeleteItemCommand({
-        TableName: DYNAMODB_TEST_TABLE,
+        TableName: activeTableName(this),
         Key: { [DYNAMODB_TEST_PK]: { S: DYNAMODB_TEST_ITEM_KEY } },
         ConditionExpression: "attribute_exists(#pk)",
         ExpressionAttributeNames: { "#pk": DYNAMODB_TEST_PK },
@@ -514,7 +518,7 @@ When("items are queried from the table by key", async function (this: SdkWorld) 
   try {
     const result = await dynamodbClient(this).send(
       new QueryCommand({
-        TableName: DYNAMODB_TEST_TABLE,
+        TableName: activeTableName(this),
         KeyConditionExpression: "#pk = :pk",
         ExpressionAttributeNames: { "#pk": DYNAMODB_TEST_PK },
         ExpressionAttributeValues: {
@@ -536,7 +540,7 @@ When("all items in the table are scanned", async function (this: SdkWorld) {
   // Act
   try {
     const result = await dynamodbClient(this).send(
-      new ScanCommand({ TableName: DYNAMODB_TEST_TABLE }),
+      new ScanCommand({ TableName: activeTableName(this) }),
     );
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
@@ -558,7 +562,7 @@ When(
           TransactItems: [
             {
               Put: {
-                TableName: DYNAMODB_TEST_TABLE,
+                TableName: activeTableName(this),
                 Item: {
                   [DYNAMODB_TEST_PK]: { S: DYNAMODB_TEST_ITEM_KEY },
                   data: { S: DYNAMODB_TEST_ATTR_VAL },
@@ -712,7 +716,7 @@ Then('the table is "ACTIVE" and ready for reads and writes', async function (thi
   const result = await dynamodbClient(this).send(new ListTablesCommand({}));
   const actualTableNames: string[] = result.TableNames ?? [];
   // Assert
-  const expectedTable = DYNAMODB_TEST_TABLE;
+  const expectedTable = activeTableName(this);
   assert.ok(
     actualTableNames.includes(expectedTable),
     `Expected table "${expectedTable}" to be ACTIVE but not found in: ${JSON.stringify(actualTableNames)}; expected_table="${expectedTable}"`,
@@ -729,7 +733,7 @@ Then("the table is deleted", async function (this: SdkWorld) {
   const result = await dynamodbClient(this).send(new ListTablesCommand({}));
   const actualTableNames: string[] = result.TableNames ?? [];
   // Assert
-  const expectedAbsent = DYNAMODB_TEST_TABLE;
+  const expectedAbsent = activeTableName(this);
   assert.ok(
     !actualTableNames.includes(expectedAbsent),
     `Expected table "${expectedAbsent}" to be deleted but found it; expected_absent="${expectedAbsent}"`,
@@ -753,7 +757,7 @@ Then(
     const { ListTablesCommand } = require("@aws-sdk/client-dynamodb");
     const listResult = await dynamodbClient(this).send(new ListTablesCommand({}));
     const actualTableNames: string[] = listResult.TableNames ?? [];
-    const expectedAbsent = DYNAMODB_TEST_TABLE;
+    const expectedAbsent = activeTableName(this);
     assert.ok(
       !actualTableNames.includes(expectedAbsent),
       `Expected table "${expectedAbsent}" to be removed but found it; expected_absent="${expectedAbsent}"`,
@@ -812,7 +816,7 @@ Then(
     // Act
     const result = await dynamodbClient(this).send(
       new GetItemCommand({
-        TableName: DYNAMODB_TEST_TABLE,
+        TableName: activeTableName(this),
         Key: { [DYNAMODB_TEST_PK]: { S: DYNAMODB_TEST_ITEM_KEY } },
       }),
     );
@@ -833,7 +837,7 @@ Then("the item does not exist in the table", async function (this: SdkWorld) {
   // Act
   const result = await dynamodbClient(this).send(
     new GetItemCommand({
-      TableName: DYNAMODB_TEST_TABLE,
+      TableName: activeTableName(this),
       Key: { [DYNAMODB_TEST_PK]: { S: DYNAMODB_TEST_ITEM_KEY } },
     }),
   );
@@ -859,14 +863,14 @@ Then("the item value is returned", async function (this: SdkWorld) {
   );
 });
 
-Then("the item is updated or unchanged (conditional update)", async function (this: SdkWorld) {
+Then(/^the item is updated or unchanged \(conditional update\)$/, async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { GetItemCommand } = require("@aws-sdk/client-dynamodb");
   // Act
   const result = await dynamodbClient(this).send(
     new GetItemCommand({
-      TableName: DYNAMODB_TEST_TABLE,
+      TableName: activeTableName(this),
       Key: { [DYNAMODB_TEST_PK]: { S: DYNAMODB_TEST_ITEM_KEY } },
     }),
   );
@@ -879,7 +883,7 @@ Then("the item is updated or unchanged (conditional update)", async function (th
   );
 });
 
-Then("the item is deleted or unchanged (conditional delete)", async function (this: SdkWorld) {
+Then(/^the item is deleted or unchanged \(conditional delete\)$/, async function (this: SdkWorld) {
   // Arrange: no additional setup required
   // Act: action performed in When step
   // Assert
@@ -985,7 +989,7 @@ Then("writes are throttled or unthrottled", async function (this: SdkWorld) {
 // ── Then: safety invariants ────────────────────────────────────────────────────
 
 Then(
-  'every table has a valid status ("CREATING", "ACTIVE", or "DELETED")',
+  /^every table has a valid status \("CREATING", "ACTIVE", or "DELETED"\)$/,
   async function (this: SdkWorld) {
     // Arrange
     assert.ok(this.session, "Expected session to be initialized");

@@ -160,6 +160,8 @@ Before({ tags: "@stepfunctionsglacier" }, function (this: SdkWorld) {
 
 // 'the vault is "DELETED"' is registered in glacier.ts (dispatches via vaultHelpers.assertVaultDeleted).
 
+// 'the vault "EXISTS" (not already "DELETED")' is registered in lambda_glacier.ts.
+
 Given('the vault is already "DELETED"', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");

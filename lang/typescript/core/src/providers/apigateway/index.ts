@@ -6,13 +6,40 @@ import { applyChaos } from "../../middleware/chaos";
 import { applyFake } from "../../middleware/fake";
 import { applyIamAuth } from "../../middleware/iam";
 import { createRequestContext, recordLog } from "../../middleware/logging";
+import { isExhausted } from "../../types";
 import { ApiGatewayStore } from "./store";
 
+function errorReply(reply: FastifyReply, msg: string): void {
+  // Parse error type from message prefix
+  if (msg.includes("ConflictException:")) {
+    reply
+      .status(409)
+      .header("Content-Type", "application/json")
+      .send({
+        __type: "ConflictException",
+        message: msg.replace("ConflictException: ", ""),
+      });
+  } else if (msg.includes("BadRequestException:")) {
+    reply
+      .status(400)
+      .header("Content-Type", "application/json")
+      .send({
+        __type: "BadRequestException",
+        message: msg.replace("BadRequestException: ", ""),
+      });
+  } else {
+    reply
+      .status(404)
+      .header("Content-Type", "application/json")
+      .send({
+        __type: "NotFoundException",
+        message: msg.replace("NotFoundException: ", ""),
+      });
+  }
+}
+
 function notFound(reply: FastifyReply, msg: string): void {
-  reply
-    .status(404)
-    .header("Content-Type", "application/json")
-    .send({ __type: "NotFoundException", message: msg });
+  errorReply(reply, msg);
 }
 
 function log(state: ServerState, op: string, req: FastifyRequest, reply: FastifyReply): void {
@@ -39,7 +66,29 @@ export function registerApiGateway(app: FastifyInstance, state: ServerState): Ap
       log(state, "CreateRestApi", req, reply);
       return;
     }
+    if (isExhausted(state.capacityConfigs["apigateway"] ?? { slots: null })) {
+      reply.status(429).header("Content-Type", "application/json").send({
+        __type: "LimitExceededException",
+        message: "Maximum number of rest APIs per account reached",
+      });
+      log(state, "CreateRestApi", req, reply);
+      return;
+    }
     const body = (req.body as Record<string, unknown>) ?? {};
+    // Check for duplicate name
+    const existingApis = store.listRestApis();
+    const requestedName = body.name as string;
+    if (existingApis.some((a) => a.name === requestedName)) {
+      reply
+        .status(409)
+        .header("Content-Type", "application/json")
+        .send({
+          __type: "ConflictException",
+          message: `REST API with name "${requestedName}" already exists`,
+        });
+      log(state, "CreateRestApi", req, reply);
+      return;
+    }
     const api = store.createRestApi(
       body.name as string,
       body.description as string,
@@ -50,7 +99,7 @@ export function registerApiGateway(app: FastifyInstance, state: ServerState): Ap
   });
 
   app.get("/restapis", async (req: FastifyRequest, reply: FastifyReply) => {
-    reply.header("Content-Type", "application/json").send({ items: store.listRestApis() });
+    reply.header("Content-Type", "application/json").send({ item: store.listRestApis() });
     log(state, "GetRestApis", req, reply);
   });
 
@@ -82,7 +131,7 @@ export function registerApiGateway(app: FastifyInstance, state: ServerState): Ap
   app.get("/restapis/:apiId/resources", async (req: FastifyRequest, reply: FastifyReply) => {
     const { apiId } = req.params as { apiId: string };
     try {
-      reply.header("Content-Type", "application/json").send({ items: store.getResources(apiId) });
+      reply.header("Content-Type", "application/json").send({ item: store.getResources(apiId) });
     } catch {
       notFound(reply, `Rest API ${apiId} not found`);
     }
@@ -311,9 +360,7 @@ export function registerApiGateway(app: FastifyInstance, state: ServerState): Ap
   app.get("/restapis/:apiId/deployments", async (req: FastifyRequest, reply: FastifyReply) => {
     const { apiId } = req.params as { apiId: string };
     try {
-      reply
-        .header("Content-Type", "application/json")
-        .send({ items: store.listDeployments(apiId) });
+      reply.header("Content-Type", "application/json").send({ item: store.listDeployments(apiId) });
     } catch (err) {
       notFound(reply, (err as Error).message);
     }
@@ -412,8 +459,20 @@ export function registerApiGateway(app: FastifyInstance, state: ServerState): Ap
     async (req: FastifyRequest, reply: FastifyReply) => {
       const { apiId, stageName } = req.params as { apiId: string; stageName: string };
       const body = (req.body as Record<string, unknown>) ?? {};
+      // Process patchOperations format: [{ op: "replace", path: "/fieldName", value: "..." }]
+      const patchOps =
+        (body.patchOperations as Array<{ op: string; path: string; value: string }>) ?? [];
+      const updates: Record<string, unknown> = {};
+      for (const op of patchOps) {
+        if (op.op === "replace" && op.path) {
+          const field = op.path.replace(/^\//, "");
+          updates[field] = op.value;
+        }
+      }
+      // Also allow direct field updates (for backwards compat)
+      const directUpdates = patchOps.length > 0 ? updates : (body as Record<string, unknown>);
       try {
-        const stage = store.updateStage(apiId, stageName, body as any);
+        const stage = store.updateStage(apiId, stageName, directUpdates as any);
         reply.header("Content-Type", "application/json").send(stage);
       } catch {
         notFound(reply, `Stage ${stageName} not found`);

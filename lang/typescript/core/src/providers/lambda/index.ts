@@ -185,6 +185,15 @@ export class LambdaStore {
     this.permissions.set(functionName, perms);
   }
 
+  removePermission(functionName: string, statementId: string): boolean {
+    const perms = this.permissions.get(functionName) ?? [];
+    const idx = perms.findIndex((s) => s.StatementId === statementId || s.Sid === statementId);
+    if (idx === -1) return false;
+    perms.splice(idx, 1);
+    this.permissions.set(functionName, perms);
+    return true;
+  }
+
   getPolicy(functionName: string): string {
     const perms = this.permissions.get(functionName) ?? [];
     return JSON.stringify({ Version: "2012-10-17", Statement: perms });
@@ -197,11 +206,14 @@ export class LambdaStore {
     }
   }
 
-  untagFunction(name: string, tagKeys: string[]): void {
+  untagFunction(name: string, tagKeys: string[]): boolean {
     const fn = this.functions.get(name);
-    if (fn) {
-      for (const key of tagKeys) delete fn.tags[key];
+    if (!fn) return false;
+    for (const key of tagKeys) {
+      if (!(key in fn.tags)) return false;
     }
+    for (const key of tagKeys) delete fn.tags[key];
+    return true;
   }
 }
 
@@ -272,9 +284,21 @@ export function registerLambda(app: FastifyInstance, state: ServerState): Lambda
     const body = (req.body as Record<string, unknown>) ?? {};
     const env = (body.Environment as Record<string, unknown>) ?? {};
     const envVars = (env.Variables as Record<string, string>) ?? {};
+    const functionName = body.FunctionName as string;
+    if (store.getFunction(functionName)) {
+      reply
+        .status(409)
+        .header("Content-Type", "application/json")
+        .send({
+          __type: "ResourceConflictException",
+          message: `Function already exist: ${functionName}`,
+        });
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
+    }
     try {
       const fn = store.createFunction(
-        body.FunctionName as string,
+        functionName,
         body.Runtime as string,
         body.Role as string,
         body.Handler as string,
@@ -335,6 +359,18 @@ export function registerLambda(app: FastifyInstance, state: ServerState): Lambda
     const { name } = req.params as { name: string };
     const ctx = createRequestContext("lambda", "DeleteFunction");
     if (await applyIamAuth(state, "lambda", "DeleteFunction", req, reply)) {
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
+    }
+    const injectedKey = `lambda:function:${name}`;
+    if (state.injectedStates.get(injectedKey) === "has_active_executions") {
+      reply
+        .status(400)
+        .header("Content-Type", "application/json")
+        .send({
+          __type: "ResourceConflictException",
+          message: `Function ${name} has active executions and cannot be deleted`,
+        });
       recordLog(state, ctx, req.method, req.url, reply.statusCode);
       return;
     }
@@ -562,10 +598,48 @@ export function registerLambda(app: FastifyInstance, state: ServerState): Lambda
     async (req: FastifyRequest, reply: FastifyReply) => {
       const { name } = req.params as { name: string };
       const ctx = createRequestContext("lambda", "AddPermission");
+      if (!store.getFunction(name)) {
+        reply
+          .status(404)
+          .header("Content-Type", "application/json")
+          .send({ __type: "ResourceNotFoundException", message: `Function ${name} not found` });
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
       const body = (req.body as Record<string, unknown>) ?? {};
       store.addPermission(name, body);
       const statement = JSON.stringify(body);
       reply.header("Content-Type", "application/json").send({ Statement: statement });
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
+
+  app.delete(
+    "/2015-03-31/functions/:name/policy/:statementId",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { name, statementId } = req.params as { name: string; statementId: string };
+      const ctx = createRequestContext("lambda", "RemovePermission");
+      if (!store.getFunction(name)) {
+        reply
+          .status(404)
+          .header("Content-Type", "application/json")
+          .send({ __type: "ResourceNotFoundException", message: `Function ${name} not found` });
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+      const removed = store.removePermission(name, statementId);
+      if (!removed) {
+        reply
+          .status(404)
+          .header("Content-Type", "application/json")
+          .send({
+            __type: "ResourceNotFoundException",
+            message: `Statement ${statementId} not found in resource policy`,
+          });
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+      reply.status(204).send();
       recordLog(state, ctx, req.method, req.url, reply.statusCode);
     },
   );
@@ -585,11 +659,80 @@ export function registerLambda(app: FastifyInstance, state: ServerState): Lambda
 
   // ── Tags ───────────────────────────────────────────────────────────────────
 
-  app.post("/2017-03-31/tags/:arn", async (_req: FastifyRequest, reply: FastifyReply) => {
+  app.get("/2017-03-31/tags/*", async (req: FastifyRequest, reply: FastifyReply) => {
+    // Extract function name from ARN in path: /2017-03-31/tags/arn:aws:lambda:...:function:name
+    const rawUrl = req.url;
+    const prefix = "/2017-03-31/tags/";
+    const encodedArn = rawUrl.startsWith(prefix) ? rawUrl.slice(prefix.length) : "";
+    const arn = decodeURIComponent(encodedArn.split("?")[0]);
+    const arnParts = arn.split(":");
+    const functionName = arnParts[arnParts.length - 1];
+    const fn = store.getFunction(functionName);
+    if (!fn) {
+      reply
+        .status(404)
+        .header("Content-Type", "application/json")
+        .send({
+          __type: "ResourceNotFoundException",
+          message: `Function ${functionName} not found`,
+        });
+      return;
+    }
+    reply.header("Content-Type", "application/json").send({ Tags: fn.tags });
+  });
+
+  app.post("/2017-03-31/tags/*", async (req: FastifyRequest, reply: FastifyReply) => {
+    // Extract function name from ARN in path: /2017-03-31/tags/arn:aws:lambda:...:function:name
+    const rawUrl = req.url;
+    const prefix = "/2017-03-31/tags/";
+    const encodedArn = rawUrl.startsWith(prefix) ? rawUrl.slice(prefix.length) : "";
+    const arn = decodeURIComponent(encodedArn.split("?")[0]);
+    const arnParts = arn.split(":");
+    const functionName = arnParts[arnParts.length - 1];
+    if (!store.getFunction(functionName)) {
+      reply
+        .status(404)
+        .header("Content-Type", "application/json")
+        .send({
+          __type: "ResourceNotFoundException",
+          message: `Function ${functionName} not found`,
+        });
+      return;
+    }
+    const body = (req.body as Record<string, unknown>) ?? {};
+    const tags = (body.Tags as Record<string, string>) ?? {};
+    store.tagFunction(functionName, tags);
     reply.status(204).send();
   });
 
-  app.delete("/2017-03-31/tags/:arn", async (_req: FastifyRequest, reply: FastifyReply) => {
+  app.delete("/2017-03-31/tags/*", async (req: FastifyRequest, reply: FastifyReply) => {
+    // Extract function name from ARN in path: /2017-03-31/tags/arn:aws:lambda:...:function:name
+    const rawUrl = req.url;
+    const prefix = "/2017-03-31/tags/";
+    const encodedArn = rawUrl.startsWith(prefix) ? rawUrl.slice(prefix.length) : "";
+    const arn = decodeURIComponent(encodedArn.split("?")[0]);
+    const arnParts = arn.split(":");
+    const functionName = arnParts[arnParts.length - 1];
+    if (!store.getFunction(functionName)) {
+      reply
+        .status(404)
+        .header("Content-Type", "application/json")
+        .send({
+          __type: "ResourceNotFoundException",
+          message: `Function ${functionName} not found`,
+        });
+      return;
+    }
+    const tagKeys = ((req.query as Record<string, unknown>).tagKeys ?? []) as string[];
+    const normalizedKeys = Array.isArray(tagKeys) ? tagKeys : [tagKeys];
+    const removed = store.untagFunction(functionName, normalizedKeys);
+    if (!removed) {
+      reply.status(400).header("Content-Type", "application/json").send({
+        __type: "InvalidParameterValueException",
+        message: `Tag key(s) not found on resource`,
+      });
+      return;
+    }
     reply.status(204).send();
   });
 
@@ -598,6 +741,14 @@ export function registerLambda(app: FastifyInstance, state: ServerState): Lambda
   app.put(
     "/2017-10-31/functions/:name/concurrency",
     async (req: FastifyRequest, reply: FastifyReply) => {
+      const { name } = req.params as { name: string };
+      if (!store.getFunction(name)) {
+        reply
+          .status(404)
+          .header("Content-Type", "application/json")
+          .send({ __type: "ResourceNotFoundException", message: `Function ${name} not found` });
+        return;
+      }
       const body = (req.body as Record<string, unknown>) ?? {};
       reply.header("Content-Type", "application/json").send({
         ReservedConcurrentExecutions: body.ReservedConcurrentExecutions ?? 0,

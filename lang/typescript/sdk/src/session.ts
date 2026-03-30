@@ -393,7 +393,12 @@ export class LwsSession {
       }
       case "stepfunctions": {
         const { SFNClient } = require("@aws-sdk/client-sfn");
-        return new SFNClient({ endpoint: endpointUrl, credentials, region }) as T;
+        return new SFNClient({
+          endpoint: endpointUrl,
+          credentials,
+          region,
+          disableHostPrefix: true,
+        }) as T;
       }
       case "cognitoidp": {
         const {

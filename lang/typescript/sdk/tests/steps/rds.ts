@@ -477,7 +477,7 @@ Then(
   },
 );
 
-Then("the instance tag state is unchanged (no-op model)", async function (this: SdkWorld) {
+Then(/^the instance tag state is unchanged \(no-op model\)$/, async function (this: SdkWorld) {
   // Arrange: no additional setup required
   // Act: action already performed in the When step
   // Assert

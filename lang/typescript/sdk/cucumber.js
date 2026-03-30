@@ -408,4 +408,16 @@ module.exports = {
     strict: false,
     exit: true,
   },
+  // Profile used by `make e2e-test-suite SUITE=<name>`.
+  // No `paths` here — the suite's feature files are passed as CLI positional
+  // arguments so they are not merged with the full `default` paths list.
+  suite: {
+    require: ["tests/support/world.ts", "tests/steps/**/*.ts"],
+    requireModule: ["ts-node/register"],
+    tags: "(@minimal or @standard) and (not @internal or @capacity) and not @lifecycle",
+    format: ["progress"],
+    timeout: 60000,
+    strict: false,
+    exit: true,
+  },
 };

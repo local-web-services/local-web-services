@@ -152,8 +152,10 @@ export class ApiGatewayStore {
   deleteResource(apiId: string, resourceId: string): void {
     const resourceMap = this.resources.get(apiId);
     if (!resourceMap) throw new Error(`NotFoundException: Rest API ${apiId} not found`);
-    if (!resourceMap.has(resourceId))
-      throw new Error(`NotFoundException: Resource ${resourceId} not found`);
+    const resource = resourceMap.get(resourceId);
+    if (!resource) throw new Error(`NotFoundException: Resource ${resourceId} not found`);
+    if (resource.path === "/" || resource.pathPart === "")
+      throw new Error(`BadRequestException: Cannot delete root resource`);
     resourceMap.delete(resourceId);
   }
 
@@ -186,6 +188,8 @@ export class ApiGatewayStore {
   deleteMethod(apiId: string, resourceId: string, httpMethod: string): void {
     const resource = this.getResource(apiId, resourceId);
     if (!resource) throw new Error(`NotFoundException: Resource ${resourceId} not found`);
+    if (!resource.resourceMethods[httpMethod])
+      throw new Error(`NotFoundException: Method ${httpMethod} not found`);
     delete resource.resourceMethods[httpMethod];
   }
 
@@ -237,6 +241,8 @@ export class ApiGatewayStore {
   deleteIntegration(apiId: string, resourceId: string, httpMethod: string): void {
     const method = this.getMethod(apiId, resourceId, httpMethod);
     if (!method) throw new Error(`NotFoundException: Method ${httpMethod} not found`);
+    if (!method.methodIntegration)
+      throw new Error(`NotFoundException: Integration not found for method ${httpMethod}`);
     delete method.methodIntegration;
   }
 
@@ -321,6 +327,8 @@ export class ApiGatewayStore {
   createStage(apiId: string, stageName: string, deploymentId: string, description: string): Stage {
     const stageMap = this.stages.get(apiId);
     if (!stageMap) throw new Error(`NotFoundException: Rest API ${apiId} not found`);
+    if (stageMap.has(stageName))
+      throw new Error(`ConflictException: Stage ${stageName} already exists`);
     return this.createOrUpdateStage(apiId, stageName, deploymentId, description);
   }
 

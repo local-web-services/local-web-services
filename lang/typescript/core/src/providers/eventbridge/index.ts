@@ -208,15 +208,21 @@ export class EventBridgeStore {
 
   /**
    * removeTargets — returns:
-   *   null on success
+   *   { failedIds: string[] } on partial/full success
    *   "rule_not_found" if the rule does not exist or is DELETED
    */
-  removeTargets(busName: string, ruleName: string, ids: string[]): null | "rule_not_found" {
+  removeTargets(
+    busName: string,
+    ruleName: string,
+    ids: string[],
+  ): { failedIds: string[] } | "rule_not_found" {
     const bus = this._getBusRaw(busName ?? "default");
     const rule = bus?.rules.find((r) => r.name === ruleName);
     if (!rule || rule.state === "DELETED") return "rule_not_found";
+    const existingIds = new Set(rule.targets.map((t) => t.Id));
+    const failedIds = ids.filter((id) => !existingIds.has(id));
     rule.targets = rule.targets.filter((t) => !ids.includes(t.Id));
-    return null;
+    return { failedIds };
   }
 
   /**
@@ -672,16 +678,24 @@ function handleOperation(
 
     case "RemoveTargets": {
       const rtBusName = (body.EventBusName as string) ?? "default";
-      const rtError = store.removeTargets(
+      const rtResult = store.removeTargets(
         rtBusName,
         body.Rule as string,
         (body.Ids as string[]) ?? [],
       );
-      if (rtError === "rule_not_found") {
+      if (rtResult === "rule_not_found") {
         jsonReply(reply, { __type: "ResourceNotFoundException", message: "Rule not found." }, 400);
         return;
       }
-      jsonReply(reply, { FailedEntryCount: 0, FailedEntries: [] });
+      const failedEntries = rtResult.failedIds.map((id: string) => ({
+        TargetId: id,
+        ErrorCode: "ResourceNotFoundException",
+        ErrorMessage: "Target not found",
+      }));
+      jsonReply(reply, {
+        FailedEntryCount: failedEntries.length,
+        FailedEntries: failedEntries,
+      });
       break;
     }
 

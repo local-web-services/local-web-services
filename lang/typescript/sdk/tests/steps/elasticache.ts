@@ -202,7 +202,7 @@ Given("cid not in cluster_status", async function (this: SdkWorld) {
 // "the cluster is not {string}" are registered in cluster_common.ts.
 
 Given(
-  "the cluster is standalone (not part of a replication group)",
+  /^the cluster is standalone \(not part of a replication group\)$/,
   async function (this: SdkWorld) {
     // Arrange / Act / Assert — no-op: clusters created without a replication group are standalone by default.
     assert.ok(this.session, "Expected session to be initialized");
@@ -910,7 +910,7 @@ Then("the resource remains tagged", async function (this: SdkWorld) {
   );
 });
 
-Then("the resource tag state is unchanged (no-op model)", async function (this: SdkWorld) {
+Then(/^the resource tag state is unchanged \(no-op model\)$/, async function (this: SdkWorld) {
   // Arrange: no additional setup required
   // Act: action already performed in the When step
   // Assert
@@ -919,7 +919,7 @@ Then("the resource tag state is unchanged (no-op model)", async function (this: 
   assert.strictEqual(
     actualSuccess,
     expectedSuccess,
-    `Expected remove_tags_from_resource to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+    `Expected the operation to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
 });
 

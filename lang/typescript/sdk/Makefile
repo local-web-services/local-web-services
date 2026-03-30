@@ -19,16 +19,10 @@ e2e-test: ## Run e2e tests (Cucumber BDD)
 
 e2e-test-suite: ## Run a single e2e suite: make e2e-test-suite SUITE=<service> or SUITE=sdk
 	@if [ "$(SUITE)" = "sdk" ]; then \
-		npx cucumber-js \
-			--require-module ts-node/register \
-			--require 'tests/support/world.ts' \
-			--require 'tests/steps/**/*.ts' \
+		npx cucumber-js --profile suite \
 			'../../../lang/specification/sdk/features/**/*.feature'; \
 	else \
-		npx cucumber-js \
-			--require-module ts-node/register \
-			--require 'tests/support/world.ts' \
-			--require 'tests/steps/**/*.ts' \
+		npx cucumber-js --profile suite \
 			"../../../lang/specification/core/informal/$(SUITE)/**/*.feature"; \
 	fi
 

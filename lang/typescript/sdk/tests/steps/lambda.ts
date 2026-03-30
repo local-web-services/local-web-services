@@ -134,8 +134,11 @@ Given("the function has no active executions", async function (this: SdkWorld) {
 });
 
 Given("the function has active executions", async function (this: SdkWorld) {
-  // @internal: Cannot inject active execution state into Lambda in lws.
+  // Arrange: inject active execution state so DeleteFunction is blocked
   assert.ok(this.session, "Expected session to be initialized");
+  // Act: inject state so the lambda provider rejects delete while "executing"
+  await this.session.injectState("lambda", "function", LAMBDA_TEST_FUNC, "has_active_executions");
+  // Assert: injected (no-throw means success)
 });
 
 // ── Given: resource policy ────────────────────────────────────────────────────
@@ -215,8 +218,17 @@ Given("the tag is set", async function (this: SdkWorld) {
 });
 
 Given("the tag is not set", async function (this: SdkWorld) {
-  // @internal: Cannot verify tag absence without prior tag removal step.
+  // Arrange: remove the tag so it is no longer set (precondition for negative test)
   assert.ok(this.session, "Expected session to be initialized");
+  const { UntagResourceCommand } = require("@aws-sdk/client-lambda");
+  // Act: remove the tag that was previously added
+  await lambdaClient(this).send(
+    new UntagResourceCommand({
+      Resource: lambdaFuncArn(),
+      TagKeys: [LAMBDA_TAG_KEY],
+    }),
+  );
+  // Assert: tag removed (no-throw means success)
 });
 
 // ── Given: concurrency ────────────────────────────────────────────────────────
@@ -416,13 +428,19 @@ When("an active function is deleted", async function (this: SdkWorld) {
 });
 
 When("a failed function is deleted", async function (this: SdkWorld) {
-  // @internal: Cannot delete a FAILED Lambda function in lws (cannot reach FAILED state).
+  // Arrange: in lws, functions are always ACTIVE (FAILED state is not modelled separately)
+  // so deleting proceeds the same way as a normal delete.
   assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot delete FAILED function: scenario is @internal"),
-  };
+  const { DeleteFunctionCommand } = require("@aws-sdk/client-lambda");
+  // Act
+  try {
+    const result = await lambdaClient(this).send(
+      new DeleteFunctionCommand({ FunctionName: LAMBDA_TEST_FUNC }),
+    );
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
   // Assert: captured in lastCallResult
 });
 

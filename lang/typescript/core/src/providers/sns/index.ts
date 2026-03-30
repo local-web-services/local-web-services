@@ -3,6 +3,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { v4 as uuidv4 } from "uuid";
 import type { ServerState } from "../../types";
+import { isExhausted } from "../../types";
 import { applyChaos } from "../../middleware/chaos";
 import { applyFake } from "../../middleware/fake";
 import { applyIamAuth } from "../../middleware/iam";
@@ -185,6 +186,28 @@ export function registerSns(app: FastifyInstance, state: ServerState): SnsStore 
       return;
     }
     if (await applyFake(state, "sns", action, req, reply)) {
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
+    }
+
+    // Check subscription capacity for Subscribe operations
+    if (action === "Subscribe" && isExhausted(state.capacityConfigs["sns"] ?? { slots: null })) {
+      xmlResponse(
+        `<ErrorResponse><Error><Code>SubscriptionLimitExceeded</Code><Message>No subscription slot available</Message></Error></ErrorResponse>`,
+        400,
+        reply,
+      );
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
+    }
+
+    // Check delivery capacity for Publish operations
+    if (action === "Publish" && isExhausted(state.capacityConfigs["sns"] ?? { slots: null })) {
+      xmlResponse(
+        `<ErrorResponse><Error><Code>KMSDisabledException</Code><Message>No delivery slot available</Message></Error></ErrorResponse>`,
+        400,
+        reply,
+      );
       recordLog(state, ctx, req.method, req.url, reply.statusCode);
       return;
     }

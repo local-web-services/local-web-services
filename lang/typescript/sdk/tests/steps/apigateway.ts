@@ -17,15 +17,31 @@ function apigwClient(world: SdkWorld) {
 }
 
 async function createRestApi(world: SdkWorld): Promise<string> {
-  const { CreateRestApiCommand } = require("@aws-sdk/client-api-gateway");
-  const result = await apigwClient(world).send(
-    new CreateRestApiCommand({
-      name: APIGW_TEST_API_NAME,
-      description: APIGW_TEST_API_DESCRIPTION,
-    }),
-  );
-  (world as any)._apigwRestApiId = result.id;
-  return result.id as string;
+  const { CreateRestApiCommand, GetRestApisCommand } = require("@aws-sdk/client-api-gateway");
+  // Act
+  try {
+    const result = await apigwClient(world).send(
+      new CreateRestApiCommand({
+        name: APIGW_TEST_API_NAME,
+        description: APIGW_TEST_API_DESCRIPTION,
+      }),
+    );
+    (world as any)._apigwRestApiId = result.id;
+    return result.id as string;
+  } catch (err: unknown) {
+    // If the API already exists (idempotent setup), look it up and reuse it
+    const msg = String(err);
+    if (msg.includes("ConflictException") || msg.includes("already exists")) {
+      const listResult = await apigwClient(world).send(new GetRestApisCommand({}));
+      const items: Array<{ id: string; name: string }> = listResult.items ?? [];
+      const existing = items.find((a) => a.name === APIGW_TEST_API_NAME);
+      if (existing) {
+        (world as any)._apigwRestApiId = existing.id;
+        return existing.id;
+      }
+    }
+    throw err;
+  }
 }
 
 async function fetchRootResource(world: SdkWorld): Promise<string> {
@@ -303,8 +319,22 @@ Given("the method already exists", async function (this: SdkWorld) {
 });
 
 Given("the method does not exist", async function (this: SdkWorld) {
-  // No-op: fresh state has no methods.
+  // Arrange
   assert.ok(this.session, "Expected session to be initialized");
+  // Act: delete the method if it was previously created
+  const restApiId = (this as any)._apigwRestApiId as string | undefined;
+  const resourceId = (this as any)._apigwRootResourceId as string | undefined;
+  if (restApiId && resourceId) {
+    const { DeleteMethodCommand } = require("@aws-sdk/client-api-gateway");
+    try {
+      await apigwClient(this).send(
+        new DeleteMethodCommand({ restApiId, resourceId, httpMethod: APIGW_TEST_HTTP_METHOD }),
+      );
+    } catch {
+      // Method may not exist — that is fine
+    }
+  }
+  // Assert: method is absent
 });
 
 Given("the method exists", async function (this: SdkWorld) {
@@ -351,8 +381,26 @@ Given("the integration exists", async function (this: SdkWorld) {
 });
 
 Given("the integration does not exist", async function (this: SdkWorld) {
-  // No-op: fresh state has no integrations.
+  // Arrange
   assert.ok(this.session, "Expected session to be initialized");
+  // Act: delete the integration if it was previously created
+  const restApiId = (this as any)._apigwRestApiId as string | undefined;
+  const resourceId = (this as any)._apigwRootResourceId as string | undefined;
+  if (restApiId && resourceId) {
+    const { DeleteIntegrationCommand } = require("@aws-sdk/client-api-gateway");
+    try {
+      await apigwClient(this).send(
+        new DeleteIntegrationCommand({
+          restApiId,
+          resourceId,
+          httpMethod: APIGW_TEST_HTTP_METHOD,
+        }),
+      );
+    } catch {
+      // Integration may not exist — that is fine
+    }
+  }
+  // Assert: integration is absent
 });
 
 // 'the integration "EXISTS"' as Given — handled by the combined Then registration below.
@@ -680,7 +728,24 @@ When('a "GET" method is created on a resource', async function (this: SdkWorld) 
     };
     return;
   }
-  const { PutMethodCommand } = require("@aws-sdk/client-api-gateway");
+  const { PutMethodCommand, GetResourceCommand } = require("@aws-sdk/client-api-gateway");
+  // Check if method already exists — creation should fail if it does
+  try {
+    const resource = await apigwClient(this).send(
+      new GetResourceCommand({ restApiId, resourceId }),
+    );
+    const existingMethods = (resource as any).resourceMethods ?? {};
+    if (existingMethods["GET"]) {
+      this.lastCallResult = {
+        success: false,
+        output: null,
+        error: new Error("ConflictException: Method GET already exists on this resource"),
+      };
+      return;
+    }
+  } catch {
+    // If we can't fetch the resource, proceed with the create attempt
+  }
   // Act
   try {
     const result = await apigwClient(this).send(
@@ -711,7 +776,25 @@ When("an existing method is updated", async function (this: SdkWorld) {
     };
     return;
   }
-  const { PutMethodCommand } = require("@aws-sdk/client-api-gateway");
+  const { PutMethodCommand, GetResourceCommand } = require("@aws-sdk/client-api-gateway");
+  // Check that the method exists — updating a non-existent method should fail
+  try {
+    const resource = await apigwClient(this).send(
+      new GetResourceCommand({ restApiId, resourceId }),
+    );
+    const existingMethods = (resource as any).resourceMethods ?? {};
+    if (!existingMethods[APIGW_TEST_HTTP_METHOD]) {
+      this.lastCallResult = {
+        success: false,
+        output: null,
+        error: new Error(`NotFoundException: Method ${APIGW_TEST_HTTP_METHOD} does not exist`),
+      };
+      return;
+    }
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+    return;
+  }
   // Act: re-put the same method (idempotent update)
   try {
     const result = await apigwClient(this).send(

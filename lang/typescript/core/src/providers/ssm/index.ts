@@ -20,6 +20,7 @@ interface SsmParameter {
   arn: string;
   description?: string;
   lastModifiedDate: number;
+  createdAt: number;
   tags: Record<string, string>;
 }
 
@@ -55,6 +56,7 @@ export class SsmStore {
       arn: `arn:aws:ssm:${REGION}:${ACCOUNT_ID}:parameter${name}`,
       description,
       lastModifiedDate: Date.now() / 1000,
+      createdAt: existing?.createdAt ?? Date.now(),
       tags: existing?.tags ?? {},
     };
     this.params.set(name, param);
@@ -174,7 +176,7 @@ export function registerSsm(app: FastifyInstance, state: ServerState): SsmStore 
     }
 
     try {
-      handleSsmOp(operation, body, store, reply);
+      handleSsmOp(operation, body, store, state, reply);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       jsonReply(reply, { __type: "ParameterNotFound", message: msg }, 400);
@@ -186,10 +188,17 @@ export function registerSsm(app: FastifyInstance, state: ServerState): SsmStore 
   return store;
 }
 
+function isInCreateDwell(param: SsmParameter, state: ServerState): boolean {
+  const rule = state.lifecycleRules.get("ssm");
+  if (!rule || !rule.enabled || rule.createDwellMs <= 0) return false;
+  return Date.now() - param.createdAt < rule.createDwellMs;
+}
+
 function handleSsmOp(
   operation: string,
   body: Record<string, unknown>,
   store: SsmStore,
+  state: ServerState,
   reply: FastifyReply,
 ): void {
   switch (operation) {
@@ -216,6 +225,10 @@ function handleSsmOp(
         );
         return;
       }
+      if (existing && isInCreateDwell(existing, state)) {
+        jsonReply(reply, { __type: "ParameterNotFound", message: "Parameter not found." }, 400);
+        return;
+      }
       const param = store.putParameter(
         putParamName,
         body.Value as string,
@@ -229,7 +242,7 @@ function handleSsmOp(
 
     case "GetParameter": {
       const param = store.getParameter(body.Name as string, body.WithDecryption as boolean);
-      if (!param) {
+      if (!param || isInCreateDwell(param, state)) {
         reply
           .status(400)
           .send({ __type: "ParameterNotFound", message: `Parameter ${body.Name} not found` });
@@ -282,7 +295,7 @@ function handleSsmOp(
     case "DeleteParameter": {
       const deleteParamName = body.Name as string;
       const paramToDelete = store.getParameter(deleteParamName);
-      if (!paramToDelete) {
+      if (!paramToDelete || isInCreateDwell(paramToDelete, state)) {
         jsonReply(reply, { __type: "ParameterNotFound", message: "Parameter not found." }, 400);
         return;
       }
@@ -294,8 +307,11 @@ function handleSsmOp(
 
     case "DeleteParameters": {
       const names = (body.Names as string[]) ?? [];
-      const existing = names.filter((n) => store.getParameter(n));
-      const missing = names.filter((n) => !store.getParameter(n));
+      const existing = names
+        .map((n) => store.getParameter(n))
+        .filter((p): p is SsmParameter => !!p && !isInCreateDwell(p, state))
+        .map((p) => p.name);
+      const missing = names.filter((n) => !existing.includes(n));
       if (existing.length === 0) {
         jsonReply(reply, { __type: "ParameterNotFound", message: "Parameter not found." }, 400);
         return;
@@ -323,7 +339,8 @@ function handleSsmOp(
 
     case "AddTagsToResource": {
       const resourceId = body.ResourceId as string;
-      if (!store.getParameter(resourceId)) {
+      const tagResourceParam = store.getParameter(resourceId);
+      if (!tagResourceParam || isInCreateDwell(tagResourceParam, state)) {
         jsonReply(
           reply,
           { __type: "InvalidResourceId", message: "The resource ID you provided does not exist." },
@@ -368,7 +385,8 @@ function handleSsmOp(
 
     case "ListTagsForResource": {
       const resourceId = body.ResourceId as string;
-      if (!store.getParameter(resourceId)) {
+      const listTagParam = store.getParameter(resourceId);
+      if (!listTagParam || isInCreateDwell(listTagParam, state)) {
         jsonReply(
           reply,
           { __type: "InvalidResourceId", message: "The resource ID you provided does not exist." },

@@ -60,7 +60,7 @@ Before({ tags: "@ssm" }, function (this: SdkWorld) {
         // parameter may not exist
       }
       // Act
-      await world.session!.lifecycle("ssm").createDwellMs(5000).apply();
+      await world.session!.lifecycle("ssm").createDwellMs(200).apply();
       await createParam(world);
       world.lastCallResult = { success: true, output: null };
       // Assert: parameter is in CREATING state (tag association non-active)
@@ -117,7 +117,7 @@ Given("the parameter is not active", async function (this: SdkWorld) {
     // parameter may not exist; desired state is deleted before recreating
   }
   // Act
-  await this.session!.lifecycle("ssm").createDwellMs(5000).apply();
+  await this.session!.lifecycle("ssm").createDwellMs(200).apply();
   await createParam(this);
   this.lastCallResult = { success: true, output: null };
   // Assert: parameter is in CREATING state (non-active)
@@ -588,7 +588,7 @@ Then("every parameter version is a positive integer", async function (this: SdkW
 });
 
 Then(
-  "every parameter has a valid type (String, SecureString, or StringList)",
+  /^every parameter has a valid type \(String, SecureString, or StringList\)$/,
   async function (this: SdkWorld) {
     // No-op invariant: trivially satisfied in an isolated test context.
   },

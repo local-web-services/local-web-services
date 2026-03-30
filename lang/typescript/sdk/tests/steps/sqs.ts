@@ -15,6 +15,10 @@ function sqsClient(world: SdkWorld) {
   return world.session!.client<typeof SQSClient>("sqs");
 }
 
+function activeQueueName(world: SdkWorld): string {
+  return (world as any)._sqsActiveQueue ?? SQS_TEST_QUEUE;
+}
+
 async function createQueue(world: SdkWorld, queueName: string): Promise<void> {
   const { CreateQueueCommand } = require("@aws-sdk/client-sqs");
   await sqsClient(world).send(new CreateQueueCommand({ QueueName: queueName }));
@@ -112,22 +116,33 @@ Given("the message is {string}", async function (this: SdkWorld, state: string) 
     return;
   }
   if (state === "IN_FLIGHT") {
-    // Arrange: receive the message to put it IN_FLIGHT
     (this as any)._sqsActiveQueue = SQS_TEST_QUEUE;
-    // Act
-    const { ReceiveMessageCommand } = require("@aws-sdk/client-sqs");
-    const result = await sqsClient(this).send(
-      new ReceiveMessageCommand({
-        QueueUrl: queueUrl(this, SQS_TEST_QUEUE),
-        MaxNumberOfMessages: 1,
-        VisibilityTimeout: 30,
-        WaitTimeSeconds: 0,
-      }),
-    );
-    const messages: Array<{ ReceiptHandle?: string }> = result.Messages ?? [];
-    if (messages.length > 0 && messages[0].ReceiptHandle) {
-      (this as any)._sqsReceiptHandle = messages[0].ReceiptHandle;
+    // When used as Given: receive the message to put it IN_FLIGHT
+    // When used as Then: assert the message was received (receipt handle was stored in When step)
+    if (!(this as any)._sqsReceiptHandle) {
+      // Arrange / Act: call ReceiveMessage to put it in-flight
+      const { ReceiveMessageCommand } = require("@aws-sdk/client-sqs");
+      const result = await sqsClient(this).send(
+        new ReceiveMessageCommand({
+          QueueUrl: queueUrl(this, SQS_TEST_QUEUE),
+          MaxNumberOfMessages: 1,
+          VisibilityTimeout: 30,
+          WaitTimeSeconds: 0,
+        }),
+      );
+      const messages: Array<{ ReceiptHandle?: string }> = result.Messages ?? [];
+      if (messages.length > 0 && messages[0].ReceiptHandle) {
+        (this as any)._sqsReceiptHandle = messages[0].ReceiptHandle;
+      }
     }
+    // Assert: receipt handle must be set, confirming the message is in-flight
+    const expectedInFlight = true;
+    const actualInFlight = !!(this as any)._sqsReceiptHandle;
+    assert.strictEqual(
+      actualInFlight,
+      expectedInFlight,
+      `Expected message to be IN_FLIGHT (receipt handle set) but it was not; expected_in_flight=${expectedInFlight} actual_in_flight=${actualInFlight}`,
+    );
     return;
   }
   if (state === "DELETED") {
@@ -308,13 +323,15 @@ Given("the dead-letter queue is not {string}", async function (this: SdkWorld, s
 When("a queue is created", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  (this as any)._sqsActiveQueue = SQS_TEST_QUEUE;
+  // Use the active queue name if already set by a Given step (e.g. "the queue already
+  // exists"), so that the create targets the same queue and triggers a conflict.
+  // Otherwise fall back to the service-specific test queue name.
+  const qName = activeQueueName(this);
+  (this as any)._sqsActiveQueue = qName;
   const { CreateQueueCommand } = require("@aws-sdk/client-sqs");
   // Act
   try {
-    const result = await sqsClient(this).send(
-      new CreateQueueCommand({ QueueName: SQS_TEST_QUEUE }),
-    );
+    const result = await sqsClient(this).send(new CreateQueueCommand({ QueueName: qName }));
     this.lastCallResult = { success: true, output: result };
   } catch (err: unknown) {
     this.lastCallResult = { success: false, output: null, error: err };
@@ -326,7 +343,7 @@ When("a queue is deleted", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { DeleteQueueCommand } = require("@aws-sdk/client-sqs");
-  const url = queueUrl(this, SQS_TEST_QUEUE);
+  const url = queueUrl(this, activeQueueName(this));
   // Act
   try {
     const result = await sqsClient(this).send(new DeleteQueueCommand({ QueueUrl: url }));
@@ -341,7 +358,7 @@ When("a message is sent to the queue", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { SendMessageCommand } = require("@aws-sdk/client-sqs");
-  const url = queueUrl(this, SQS_TEST_QUEUE);
+  const url = queueUrl(this, activeQueueName(this));
   // Act
   try {
     const result = await sqsClient(this).send(
@@ -358,7 +375,7 @@ When("a message is received from the queue", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { ReceiveMessageCommand } = require("@aws-sdk/client-sqs");
-  const url = queueUrl(this, SQS_TEST_QUEUE);
+  const url = queueUrl(this, activeQueueName(this));
   // Act
   try {
     const result = await sqsClient(this).send(
@@ -369,10 +386,19 @@ When("a message is received from the queue", async function (this: SdkWorld) {
         WaitTimeSeconds: 0,
       }),
     );
-    this.lastCallResult = { success: true, output: result };
     const messages: Array<{ ReceiptHandle?: string }> = result.Messages ?? [];
     if (messages.length > 0 && messages[0].ReceiptHandle) {
       (this as any)._sqsReceiptHandle = messages[0].ReceiptHandle;
+      // Message was received — operation succeeded
+      this.lastCallResult = { success: true, output: result };
+    } else {
+      // No messages returned — the model treats receiving an empty result as failure
+      // (no AVAILABLE message exists to receive)
+      this.lastCallResult = {
+        success: false,
+        output: null,
+        error: new Error("no message available to receive"),
+      };
     }
   } catch (err: unknown) {
     this.lastCallResult = { success: false, output: null, error: err };
@@ -384,7 +410,7 @@ When("an in-flight message is deleted", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { DeleteMessageCommand } = require("@aws-sdk/client-sqs");
-  const url = queueUrl(this, SQS_TEST_QUEUE);
+  const url = queueUrl(this, activeQueueName(this));
   const receiptHandle = (this as any)._sqsReceiptHandle as string;
   // Act
   try {
@@ -402,7 +428,7 @@ When("message visibility timeout is changed", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { ChangeMessageVisibilityCommand } = require("@aws-sdk/client-sqs");
-  const url = queueUrl(this, SQS_TEST_QUEUE);
+  const url = queueUrl(this, activeQueueName(this));
   const receiptHandle = (this as any)._sqsReceiptHandle as string;
   // Act
   try {
@@ -424,7 +450,7 @@ When("all messages in a queue are purged", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { PurgeQueueCommand } = require("@aws-sdk/client-sqs");
-  const url = queueUrl(this, SQS_TEST_QUEUE);
+  const url = queueUrl(this, activeQueueName(this));
   // Act
   try {
     const result = await sqsClient(this).send(new PurgeQueueCommand({ QueueUrl: url }));
@@ -439,7 +465,7 @@ When("queue attributes are retrieved", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { GetQueueAttributesCommand } = require("@aws-sdk/client-sqs");
-  const url = queueUrl(this, SQS_TEST_QUEUE);
+  const url = queueUrl(this, activeQueueName(this));
   // Act
   try {
     const result = await sqsClient(this).send(
@@ -456,7 +482,7 @@ When("a message visibility timeout expires", async function (this: SdkWorld) {
   // Arrange: simulate expiry by setting visibility timeout to 0
   assert.ok(this.session, "Expected session to be initialized");
   const { ChangeMessageVisibilityCommand } = require("@aws-sdk/client-sqs");
-  const url = queueUrl(this, SQS_TEST_QUEUE);
+  const url = queueUrl(this, activeQueueName(this));
   const receiptHandle = (this as any)._sqsReceiptHandle as string;
   // Act
   try {
@@ -500,18 +526,17 @@ Then(
   async function (this: SdkWorld, expectedState: string) {
     // Arrange
     assert.ok(this.session, "Expected session to be initialized");
+    const qName = activeQueueName(this);
     const { ListQueuesCommand } = require("@aws-sdk/client-sqs");
     // Act
-    const result = await sqsClient(this).send(
-      new ListQueuesCommand({ QueueNamePrefix: SQS_TEST_QUEUE }),
-    );
+    const result = await sqsClient(this).send(new ListQueuesCommand({ QueueNamePrefix: qName }));
     const actualUrls: string[] = result.QueueUrls ?? [];
     // Assert
     if (expectedState === "DELETED") {
-      const actualFound = actualUrls.some((u: string) => u.includes(`/${SQS_TEST_QUEUE}`));
+      const actualFound = actualUrls.some((u: string) => u.includes(`/${qName}`));
       assert.ok(
         !actualFound,
-        `Expected queue "${SQS_TEST_QUEUE}" to be ${expectedState} but found it in: ${JSON.stringify(actualUrls)}`,
+        `Expected queue "${qName}" to be ${expectedState} but found it in: ${JSON.stringify(actualUrls)}`,
       );
     }
   },
@@ -522,8 +547,9 @@ Then(
   async function (this: SdkWorld, expectedState: string) {
     // Arrange
     assert.ok(this.session, "Expected session to be initialized");
+    const qName = activeQueueName(this);
     // Act
-    const msg = await receiveMessage(this, SQS_TEST_QUEUE);
+    const msg = await receiveMessage(this, qName);
     // Assert
     if (expectedState === "AVAILABLE") {
       const expectedBody = SQS_TEST_MESSAGE;
@@ -580,7 +606,7 @@ Then(
     // Arrange
     assert.ok(this.session, "Expected session to be initialized");
     const { GetQueueAttributesCommand } = require("@aws-sdk/client-sqs");
-    const url = queueUrl(this, SQS_TEST_QUEUE);
+    const url = queueUrl(this, activeQueueName(this));
     // Act
     const result = await sqsClient(this).send(
       new GetQueueAttributesCommand({

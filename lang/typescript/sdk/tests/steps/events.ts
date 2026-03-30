@@ -17,12 +17,20 @@ function ebClient(world: SdkWorld) {
   return world.session!.client<typeof EventBridgeClient>("eventbridge");
 }
 
+function activeBusName(world: SdkWorld): string {
+  return (world as any)._activeEventBusName ?? EVENTS_TEST_BUS;
+}
+
+function activeRuleName(world: SdkWorld): string {
+  return (world as any)._activeRuleName ?? EVENTS_TEST_RULE;
+}
+
 async function createRule(world: SdkWorld): Promise<void> {
   const { PutRuleCommand } = require("@aws-sdk/client-eventbridge");
   await ebClient(world).send(
     new PutRuleCommand({
-      Name: EVENTS_TEST_RULE,
-      EventBusName: EVENTS_TEST_BUS,
+      Name: activeRuleName(world),
+      EventBusName: activeBusName(world),
       EventPattern: EVENTS_EVENT_PATTERN,
       State: "ENABLED",
     }),
@@ -33,8 +41,8 @@ async function putTarget(world: SdkWorld): Promise<void> {
   const { PutTargetsCommand } = require("@aws-sdk/client-eventbridge");
   await ebClient(world).send(
     new PutTargetsCommand({
-      Rule: EVENTS_TEST_RULE,
-      EventBusName: EVENTS_TEST_BUS,
+      Rule: activeRuleName(world),
+      EventBusName: activeBusName(world),
       Targets: [{ Id: EVENTS_TEST_TARGET_ID, Arn: EVENTS_TEST_TARGET_ARN }],
     }),
   );
@@ -230,11 +238,11 @@ When("an event bus is created", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { CreateEventBusCommand } = require("@aws-sdk/client-eventbridge");
+  const busName: string = (this as any)._activeEventBusName ?? EVENTS_TEST_BUS;
   // Act
   try {
-    const actualOutput = await ebClient(this).send(
-      new CreateEventBusCommand({ Name: EVENTS_TEST_BUS }),
-    );
+    const actualOutput = await ebClient(this).send(new CreateEventBusCommand({ Name: busName }));
+    (this as any)._activeEventBusName = busName;
     this.lastCallResult = { success: true, output: actualOutput };
   } catch (error) {
     this.lastCallResult = { success: false, output: null, error };
@@ -246,11 +254,10 @@ When("an event bus is deleted", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { DeleteEventBusCommand } = require("@aws-sdk/client-eventbridge");
+  const busName = activeBusName(this);
   // Act
   try {
-    const actualOutput = await ebClient(this).send(
-      new DeleteEventBusCommand({ Name: EVENTS_TEST_BUS }),
-    );
+    const actualOutput = await ebClient(this).send(new DeleteEventBusCommand({ Name: busName }));
     this.lastCallResult = { success: true, output: actualOutput };
   } catch (error) {
     this.lastCallResult = { success: false, output: null, error };
@@ -262,11 +269,10 @@ When("an event bus is described", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { DescribeEventBusCommand } = require("@aws-sdk/client-eventbridge");
+  const busName = activeBusName(this);
   // Act
   try {
-    const actualOutput = await ebClient(this).send(
-      new DescribeEventBusCommand({ Name: EVENTS_TEST_BUS }),
-    );
+    const actualOutput = await ebClient(this).send(new DescribeEventBusCommand({ Name: busName }));
     this.lastCallResult = { success: true, output: actualOutput };
   } catch (error) {
     this.lastCallResult = { success: false, output: null, error };
@@ -292,12 +298,14 @@ When("an EventBridge rule is created", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { PutRuleCommand } = require("@aws-sdk/client-eventbridge");
+  const busName = activeBusName(this);
+  const ruleName = activeRuleName(this);
   // Act
   try {
     const actualOutput = await ebClient(this).send(
       new PutRuleCommand({
-        Name: EVENTS_TEST_RULE,
-        EventBusName: EVENTS_TEST_BUS,
+        Name: ruleName,
+        EventBusName: busName,
         EventPattern: EVENTS_EVENT_PATTERN,
         State: "ENABLED",
       }),
@@ -313,10 +321,12 @@ When("an EventBridge rule is deleted", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { DeleteRuleCommand } = require("@aws-sdk/client-eventbridge");
+  const busName = activeBusName(this);
+  const ruleName = activeRuleName(this);
   // Act
   try {
     const actualOutput = await ebClient(this).send(
-      new DeleteRuleCommand({ Name: EVENTS_TEST_RULE, EventBusName: EVENTS_TEST_BUS }),
+      new DeleteRuleCommand({ Name: ruleName, EventBusName: busName }),
     );
     this.lastCallResult = { success: true, output: actualOutput };
   } catch (error) {
@@ -329,10 +339,12 @@ When("an EventBridge rule is described", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { DescribeRuleCommand } = require("@aws-sdk/client-eventbridge");
+  const busName = activeBusName(this);
+  const ruleName = activeRuleName(this);
   // Act
   try {
     const actualOutput = await ebClient(this).send(
-      new DescribeRuleCommand({ Name: EVENTS_TEST_RULE, EventBusName: EVENTS_TEST_BUS }),
+      new DescribeRuleCommand({ Name: ruleName, EventBusName: busName }),
     );
     this.lastCallResult = { success: true, output: actualOutput };
   } catch (error) {
@@ -345,11 +357,10 @@ When("all rules on an event bus are listed", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { ListRulesCommand } = require("@aws-sdk/client-eventbridge");
+  const busName = activeBusName(this);
   // Act
   try {
-    const actualOutput = await ebClient(this).send(
-      new ListRulesCommand({ EventBusName: EVENTS_TEST_BUS }),
-    );
+    const actualOutput = await ebClient(this).send(new ListRulesCommand({ EventBusName: busName }));
     this.lastCallResult = { success: true, output: actualOutput };
   } catch (error) {
     this.lastCallResult = { success: false, output: null, error };
@@ -361,10 +372,12 @@ When("a rule is disabled", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { DisableRuleCommand } = require("@aws-sdk/client-eventbridge");
+  const busName = activeBusName(this);
+  const ruleName = activeRuleName(this);
   // Act
   try {
     const actualOutput = await ebClient(this).send(
-      new DisableRuleCommand({ Name: EVENTS_TEST_RULE, EventBusName: EVENTS_TEST_BUS }),
+      new DisableRuleCommand({ Name: ruleName, EventBusName: busName }),
     );
     this.lastCallResult = { success: true, output: actualOutput };
   } catch (error) {
@@ -377,10 +390,12 @@ When("a rule is enabled", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { EnableRuleCommand } = require("@aws-sdk/client-eventbridge");
+  const busName = activeBusName(this);
+  const ruleName = activeRuleName(this);
   // Act
   try {
     const actualOutput = await ebClient(this).send(
-      new EnableRuleCommand({ Name: EVENTS_TEST_RULE, EventBusName: EVENTS_TEST_BUS }),
+      new EnableRuleCommand({ Name: ruleName, EventBusName: busName }),
     );
     this.lastCallResult = { success: true, output: actualOutput };
   } catch (error) {
@@ -393,12 +408,14 @@ When("targets are added to a rule", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { PutTargetsCommand } = require("@aws-sdk/client-eventbridge");
+  const busName = activeBusName(this);
+  const ruleName = activeRuleName(this);
   // Act
   try {
     const actualOutput = await ebClient(this).send(
       new PutTargetsCommand({
-        Rule: EVENTS_TEST_RULE,
-        EventBusName: EVENTS_TEST_BUS,
+        Rule: ruleName,
+        EventBusName: busName,
         Targets: [{ Id: EVENTS_TEST_TARGET_ID, Arn: EVENTS_TEST_TARGET_ARN }],
       }),
     );
@@ -413,10 +430,12 @@ When("targets for a rule are listed", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { ListTargetsByRuleCommand } = require("@aws-sdk/client-eventbridge");
+  const busName = activeBusName(this);
+  const ruleName = activeRuleName(this);
   // Act
   try {
     const actualOutput = await ebClient(this).send(
-      new ListTargetsByRuleCommand({ Rule: EVENTS_TEST_RULE, EventBusName: EVENTS_TEST_BUS }),
+      new ListTargetsByRuleCommand({ Rule: ruleName, EventBusName: busName }),
     );
     this.lastCallResult = { success: true, output: actualOutput };
   } catch (error) {
@@ -429,16 +448,28 @@ When("targets are removed from a rule", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { RemoveTargetsCommand } = require("@aws-sdk/client-eventbridge");
+  const busName = activeBusName(this);
+  const ruleName = activeRuleName(this);
   // Act
   try {
     const actualOutput = await ebClient(this).send(
       new RemoveTargetsCommand({
-        Rule: EVENTS_TEST_RULE,
-        EventBusName: EVENTS_TEST_BUS,
+        Rule: ruleName,
+        EventBusName: busName,
         Ids: [EVENTS_TEST_TARGET_ID],
       }),
     );
-    this.lastCallResult = { success: true, output: actualOutput };
+    // Treat partial failures as overall failure (FailedEntries indicates issues)
+    const actualFailedCount = (actualOutput as any).FailedEntryCount ?? 0;
+    if (actualFailedCount > 0) {
+      this.lastCallResult = {
+        success: false,
+        output: actualOutput,
+        error: new Error(`RemoveTargets failed: ${actualFailedCount} entries failed`),
+      };
+    } else {
+      this.lastCallResult = { success: true, output: actualOutput };
+    }
   } catch (error) {
     this.lastCallResult = { success: false, output: null, error };
   }
@@ -449,13 +480,14 @@ When("events are published to an event bus", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { PutEventsCommand } = require("@aws-sdk/client-eventbridge");
+  const busName = activeBusName(this);
   // Act
   try {
     const actualOutput = await ebClient(this).send(
       new PutEventsCommand({
         Entries: [
           {
-            EventBusName: EVENTS_TEST_BUS,
+            EventBusName: busName,
             Source: "test.source",
             DetailType: "TestEvent",
             Detail: JSON.stringify({ key: "value" }),
@@ -506,18 +538,21 @@ Then("the list of event buses is returned", async function (this: SdkWorld) {
   );
 });
 
-Then('every event bus has a valid status ("ACTIVE" or "DELETED")', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  const actualResult = await ebClient(this).send(new ListEventBusesCommand({}));
-  // Assert: buses present in the list are always ACTIVE (deleted buses are absent)
-  assert.ok(actualResult, "Expected list_event_buses to return a result");
-});
+Then(
+  /^every event bus has a valid status \("ACTIVE" or "DELETED"\)$/,
+  async function (this: SdkWorld) {
+    // Arrange
+    assert.ok(this.session, "Expected session to be initialized");
+    const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
+    // Act
+    const actualResult = await ebClient(this).send(new ListEventBusesCommand({}));
+    // Assert: buses present in the list are always ACTIVE (deleted buses are absent)
+    assert.ok(actualResult, "Expected list_event_buses to return a result");
+  },
+);
 
 Then(
-  'every rule has a valid status ("ENABLED", "DISABLED", or "DELETED")',
+  /^every rule has a valid status \("ENABLED", "DISABLED", or "DELETED"\)$/,
   async function (this: SdkWorld) {
     // Arrange
     assert.ok(this.session, "Expected session to be initialized");
@@ -548,7 +583,7 @@ Then(
 );
 
 Then(
-  'every rule has a valid pattern type ("EVENT_PATTERN" or "SCHEDULE")',
+  /^every rule has a valid pattern type \("EVENT_PATTERN" or "SCHEDULE"\)$/,
   async function (this: SdkWorld) {
     // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied.
     assert.ok(this.session, "Expected session to be initialized");

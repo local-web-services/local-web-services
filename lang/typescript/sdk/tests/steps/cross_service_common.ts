@@ -101,6 +101,8 @@ Given("the topic exists", async function (this: SdkWorld) {
   } catch {
     // May already exist
   }
+  // Track the active topic ARN so service-specific When/Then steps can reference it
+  (this as any)._snsTopicArn = `arn:aws:sns:${REGION}:${ACCOUNT_ID}:${SNS_TOPIC}`;
   // Assert: no error means topic is available
 });
 
@@ -212,6 +214,7 @@ Given("the target topic is not {string}", async function (this: SdkWorld, state:
 Given("the queue does not already exist", function (this: SdkWorld) {
   // Arrange + Act: no-op — fresh session has no queues
   // Assert: nothing to assert
+  (this as any)._sqsActiveQueue = SQS_QUEUE;
 });
 
 Given("the queue already exists", async function (this: SdkWorld) {
@@ -221,6 +224,7 @@ Given("the queue already exists", async function (this: SdkWorld) {
   const client = this.session!.client<typeof SQSClient>("sqs");
   // Act
   await client.send(new CreateQueueCommand({ QueueName: SQS_QUEUE }));
+  (this as any)._sqsActiveQueue = SQS_QUEUE;
   // Assert: no error means queue was created
 });
 
@@ -235,6 +239,7 @@ Given("the queue exists", async function (this: SdkWorld) {
   } catch {
     // May already exist
   }
+  (this as any)._sqsActiveQueue = SQS_QUEUE;
   // Assert: no error means queue is available
 });
 
@@ -681,6 +686,7 @@ Given("the event bus does not already exist", async function (this: SdkWorld) {
   // Arrange + Act: fresh session has only the default bus
   // Assert: session is running
   assert.ok(this.session, "No session running");
+  (this as any)._activeEventBusName = EB_BUS;
 });
 
 Given("the event bus already exists", async function (this: SdkWorld) {
@@ -689,6 +695,7 @@ Given("the event bus already exists", async function (this: SdkWorld) {
   const port = this.session!.portFor("eventbridge");
   // Act
   await ebCall(port, "CreateEventBus", { Name: EB_BUS });
+  (this as any)._activeEventBusName = EB_BUS;
   // Assert: no error thrown
 });
 
@@ -698,6 +705,7 @@ Given("the event bus exists", async function (this: SdkWorld) {
   const port = this.session!.portFor("eventbridge");
   // Act
   await ebCall(port, "CreateEventBus", { Name: EB_BUS });
+  (this as any)._activeEventBusName = EB_BUS;
   // Assert: no error thrown
 });
 
@@ -802,6 +810,7 @@ Given(
 
 Given("the rule does not already exist", async function (this: SdkWorld) {
   // Arrange + Act: no-op — fresh bus has no rules
+  (this as any)._activeRuleName = EB_RULE;
   // Assert: nothing to assert
 });
 
@@ -810,6 +819,8 @@ Given("the rule already exists", async function (this: SdkWorld) {
   assert.ok(this.session, "No session running");
   // Act: flag for When step detection; lws EventBridge PutRule is idempotent
   (this as any)._ruleAlreadyExists = true;
+  (this as any)._activeEventBusName = EB_BUS;
+  (this as any)._activeRuleName = EB_RULE;
   const port = this.session!.portFor("eventbridge");
   await ebCall(port, "PutRule", {
     Name: EB_RULE,
@@ -824,6 +835,8 @@ Given("the rule exists", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "No session running");
   const port = this.session!.portFor("eventbridge");
+  (this as any)._activeEventBusName = EB_BUS;
+  (this as any)._activeRuleName = EB_RULE;
   // Act: ensure bus exists then create rule
   try {
     await ebCall(port, "CreateEventBus", { Name: EB_BUS });
@@ -852,7 +865,12 @@ Given("the rule is {string}", async function (this: SdkWorld, state: string) {
   // Dual-purpose: Given (setup) and Then (assertion)
   if (this.lastCallResult.output !== null || this.lastCallResult.success) {
     // Used as Then — assert rule state via DescribeRule
-    const result = await ebCall(port, "DescribeRule", { Name: EB_RULE, EventBusName: EB_BUS });
+    const activeRule = (this as any)._activeRuleName ?? EB_RULE;
+    const activeBus = (this as any)._activeEventBusName ?? EB_BUS;
+    const result = await ebCall(port, "DescribeRule", {
+      Name: activeRule,
+      EventBusName: activeBus,
+    });
     if (state === "DELETED") {
       // For DELETED, check that lastCallResult.success is true (delete succeeded)
       const expectedSuccess = true;
@@ -875,8 +893,13 @@ Given("the rule is {string}", async function (this: SdkWorld, state: string) {
     return;
   }
   // Act: used as Given — set rule to the requested state (rule must already exist)
+  const activeRuleForGiven = (this as any)._activeRuleName ?? EB_RULE;
+  const activeBusForGiven = (this as any)._activeEventBusName ?? EB_BUS;
   if (state === "DISABLED") {
-    await ebCall(port, "DisableRule", { Name: EB_RULE, EventBusName: EB_BUS });
+    await ebCall(port, "DisableRule", {
+      Name: activeRuleForGiven,
+      EventBusName: activeBusForGiven,
+    });
   } else if (state === "DELETED") {
     const { DeleteRuleCommand } = require("@aws-sdk/client-eventbridge");
     const ebPort = this.session!.portFor("eventbridge");
@@ -903,6 +926,10 @@ Given("the rule is already {string}", async function (this: SdkWorld, state: str
   } else if (state === "ENABLED") {
     // ENABLED is the default — mark the flag so When can detect the duplicate
     (this as any)._ruleAlreadyEnabled = true;
+  } else if (state === "DELETED") {
+    // Delete the rule so it is in the DELETED state
+    await ebCall(port, "DeleteRule", { Name: EB_RULE, EventBusName: EB_BUS });
+    (this as any)._ruleAlreadyDeleted = true;
   }
   // Assert: no error thrown
 });
@@ -943,6 +970,7 @@ Given("the state machine already exists", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "No session running");
   const sfnPort = this.session!.portFor("stepfunctions");
+  (this as any)._sfnSmName = SFN_SM;
   // Act: create a basic state machine
   await fetch(`http://127.0.0.1:${sfnPort}`, {
     method: "POST",
@@ -968,6 +996,7 @@ Given("the state machine exists", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "No session running");
   const sfnPort = this.session!.portFor("stepfunctions");
+  (this as any)._sfnSmName = SFN_SM;
   // Act
   await fetch(`http://127.0.0.1:${sfnPort}`, {
     method: "POST",
@@ -1307,6 +1336,7 @@ Given(
 
 Given("the table does not already exist", async function (this: SdkWorld) {
   // Arrange + Act: no-op — fresh session has no tables
+  (this as any)._dynamodbActiveTable = DDB_TABLE;
   // Assert: nothing to assert
 });
 
@@ -1315,6 +1345,7 @@ Given("the table already exists", async function (this: SdkWorld) {
   assert.ok(this.session, "No session running");
   const { DynamoDBClient, CreateTableCommand } = require("@aws-sdk/client-dynamodb");
   const client = this.session!.client<typeof DynamoDBClient>("dynamodb");
+  (this as any)._dynamodbActiveTable = DDB_TABLE;
   // Act
   await client.send(
     new CreateTableCommand({
@@ -1332,6 +1363,7 @@ Given("the table exists", async function (this: SdkWorld) {
   assert.ok(this.session, "No session running");
   const { DynamoDBClient, CreateTableCommand } = require("@aws-sdk/client-dynamodb");
   const client = this.session!.client<typeof DynamoDBClient>("dynamodb");
+  (this as any)._dynamodbActiveTable = DDB_TABLE;
   // Act
   try {
     await client.send(
@@ -1353,6 +1385,7 @@ Given("the table exists and is {string}", async function (this: SdkWorld, _state
   assert.ok(this.session, "No session running");
   const { DynamoDBClient, CreateTableCommand } = require("@aws-sdk/client-dynamodb");
   const client = this.session!.client<typeof DynamoDBClient>("dynamodb");
+  (this as any)._dynamodbActiveTable = DDB_TABLE;
   // Act
   try {
     await client.send(
@@ -1576,6 +1609,7 @@ Given("an {string} message exists in the queue", async function (this: SdkWorld,
   } catch {
     // May already exist
   }
+  (this as any)._sqsActiveQueue = SQS_QUEUE;
   const urlResult = await client.send(new GetQueueUrlCommand({ QueueName: SQS_QUEUE }));
   const queueUrl = urlResult.QueueUrl as string;
   await client.send(new SendMessageCommand({ QueueUrl: queueUrl, MessageBody: "test message" }));
@@ -1743,6 +1777,7 @@ When("a Step Functions state machine is created", async function (this: SdkWorld
   // Arrange
   assert.ok(this.session, "No session running");
   const sfnPort = this.session!.portFor("stepfunctions");
+  const smName: string = (this as any)._sfnSmName ?? SFN_SM;
   // Act
   const response = await fetch(`http://127.0.0.1:${sfnPort}`, {
     method: "POST",
@@ -1751,7 +1786,7 @@ When("a Step Functions state machine is created", async function (this: SdkWorld
       "X-Amz-Target": "AWSStepFunctions.CreateStateMachine",
     },
     body: JSON.stringify({
-      name: SFN_SM,
+      name: smName,
       definition: JSON.stringify({
         Comment: "test",
         StartAt: "Pass",
@@ -1763,6 +1798,7 @@ When("a Step Functions state machine is created", async function (this: SdkWorld
   });
   const data = await response.json();
   if (response.ok) {
+    (this as any)._sfnSmName = smName;
     this.lastCallResult = { success: true, output: data };
   } else {
     this.lastCallResult = { success: false, output: null, error: data };
@@ -1775,6 +1811,7 @@ When("a DynamoDB table is created", async function (this: SdkWorld) {
   assert.ok(this.session, "No session running");
   const { DynamoDBClient, CreateTableCommand } = require("@aws-sdk/client-dynamodb");
   const client = this.session!.client<typeof DynamoDBClient>("dynamodb");
+  (this as any)._dynamodbActiveTable = DDB_TABLE;
   // Act
   try {
     const result = await client.send(
@@ -1874,32 +1911,34 @@ Then("the topic is {string}", async function (this: SdkWorld, expectedState: str
 Then("the queue is {string}", async function (this: SdkWorld, expectedState: string) {
   // Arrange
   assert.ok(this.session, "No session running");
+  const activeQueue: string = (this as any)._sqsActiveQueue ?? SQS_QUEUE;
   const { SQSClient, ListQueuesCommand } = require("@aws-sdk/client-sqs");
   const client = this.session!.client<typeof SQSClient>("sqs");
   // Act
   const result = await client.send(new ListQueuesCommand({}));
   const queueUrls: string[] = result.QueueUrls ?? [];
-  const actualExists = queueUrls.some((u) => u.endsWith(`/${SQS_QUEUE}`));
+  const actualExists = queueUrls.some((u) => u.endsWith(`/${activeQueue}`));
   // Assert
   if (expectedState === "ACTIVE") {
-    assert.ok(actualExists, `Expected queue "${SQS_QUEUE}" to be ACTIVE but it was not found`);
+    assert.ok(actualExists, `Expected queue "${activeQueue}" to be ACTIVE but it was not found`);
   } else if (expectedState === "DELETED") {
-    assert.ok(!actualExists, `Expected queue "${SQS_QUEUE}" to be DELETED but it still exists`);
+    assert.ok(!actualExists, `Expected queue "${activeQueue}" to be DELETED but it still exists`);
   }
 });
 
 Then("the event bus is {string}", async function (this: SdkWorld, expectedState: string) {
   // Arrange
   assert.ok(this.session, "No session running");
+  const activeBus: string = (this as any)._activeEventBusName ?? EB_BUS;
   const port = this.session!.portFor("eventbridge");
   // Act
   const result = await ebCall(port, "ListEventBuses", {});
   const buses: Array<{ Name?: string }> =
     (result.data as { EventBuses?: Array<{ Name?: string }> }).EventBuses ?? [];
-  const actualExists = buses.some((b) => b.Name === EB_BUS);
+  const actualExists = buses.some((b) => b.Name === activeBus);
   // Assert
   if (expectedState === "ACTIVE") {
-    assert.ok(actualExists, `Expected event bus "${EB_BUS}" to be ACTIVE but not found`);
+    assert.ok(actualExists, `Expected event bus "${activeBus}" to be ACTIVE but not found`);
   }
 });
 
@@ -1987,9 +2026,10 @@ Then("the table is {string}", async function (this: SdkWorld, expectedState: str
     // Act
     const result = await client.send(new ListTablesCommand({}));
     const tableNames: string[] = result.TableNames ?? [];
-    const actualExists = tableNames.includes(DDB_TABLE);
+    const activeTable = (this as any)._dynamodbActiveTable ?? DDB_TABLE;
+    const actualExists = tableNames.includes(activeTable);
     // Assert
-    assert.ok(actualExists, `Expected table "${DDB_TABLE}" to be ACTIVE but it was not found`);
+    assert.ok(actualExists, `Expected table "${activeTable}" to be ACTIVE but it was not found`);
     return;
   }
   // For other states: no-op
@@ -2224,9 +2264,11 @@ Given("the secret exists", async function (this: SdkWorld) {
   assert.ok(this.session, "No session running");
   const { SecretsManagerClient, CreateSecretCommand } = require("@aws-sdk/client-secrets-manager");
   const client = this.session!.client<typeof SecretsManagerClient>("secretsmanager");
-  // Act
+  // Act: use the same value secretsmanager step definitions expect for value assertions
   try {
-    await client.send(new CreateSecretCommand({ Name: SM_SECRET, SecretString: "test-value" }));
+    await client.send(
+      new CreateSecretCommand({ Name: SM_SECRET, SecretString: "test-secret-value-1" }),
+    );
   } catch {
     // May already exist
   }
@@ -2248,9 +2290,11 @@ Given("the secret is {string}", async function (this: SdkWorld, state: string) {
     DeleteSecretCommand,
   } = require("@aws-sdk/client-secrets-manager");
   const client = this.session!.client<typeof SecretsManagerClient>("secretsmanager");
-  // Act: ensure secret exists first
+  // Act: ensure secret exists first with canonical test value
   try {
-    await client.send(new CreateSecretCommand({ Name: SM_SECRET, SecretString: "test-value" }));
+    await client.send(
+      new CreateSecretCommand({ Name: SM_SECRET, SecretString: "test-secret-value-1" }),
+    );
   } catch {
     // May already exist
   }
@@ -2271,9 +2315,11 @@ Given("the secret exists and is {string}", async function (this: SdkWorld, _stat
   assert.ok(this.session, "No session running");
   const { SecretsManagerClient, CreateSecretCommand } = require("@aws-sdk/client-secrets-manager");
   const client = this.session!.client<typeof SecretsManagerClient>("secretsmanager");
-  // Act
+  // Act: use canonical test value for value assertions
   try {
-    await client.send(new CreateSecretCommand({ Name: SM_SECRET, SecretString: "test-value" }));
+    await client.send(
+      new CreateSecretCommand({ Name: SM_SECRET, SecretString: "test-secret-value-1" }),
+    );
   } catch {
     // May already exist
   }

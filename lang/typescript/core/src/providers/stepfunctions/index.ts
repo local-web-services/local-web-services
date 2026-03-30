@@ -504,7 +504,7 @@ export function registerStepFunctions(
     }
 
     if (
-      operation === "StartExecution" &&
+      (operation === "StartExecution" || operation === "StartSyncExecution") &&
       isExhausted(state.capacityConfigs["stepfunctions"] ?? { slots: null })
     ) {
       jsonReply(
@@ -618,8 +618,21 @@ async function handleOperation(
     }
 
     case "StartExecution": {
+      const smArnForStart = body.stateMachineArn as string;
+      const smForStart = store.describeStateMachine(smArnForStart);
+      if (smForStart && smForStart.type !== "STANDARD") {
+        jsonReply(
+          reply,
+          {
+            __type: "InvalidArn",
+            message: `StartExecution is not supported for ${smForStart.type} state machines. Use StartSyncExecution instead.`,
+          },
+          400,
+        );
+        return;
+      }
       const execution = await store.startExecution(
-        body.stateMachineArn as string,
+        smArnForStart,
         (body.input as string) ?? "{}",
         body.name as string | undefined,
       );
@@ -863,6 +876,12 @@ async function handleOperation(
           cause: msg,
         });
       }
+      break;
+    }
+
+    case "ValidateStateMachineDefinition": {
+      // Always return valid for lws — no actual ASL validation is performed
+      jsonReply(reply, { result: "OK", validationErrors: [] });
       break;
     }
 
