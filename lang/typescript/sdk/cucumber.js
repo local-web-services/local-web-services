@@ -379,6 +379,7 @@ module.exports = {
       "../../../lang/specification/core/informal/stepfunctions_s3tables/*.feature",
       // Group D — Misc
       "../../../lang/specification/core/informal/aws_fake/*.feature",
+      "../../../lang/specification/core/informal/chaos/*.feature",
       // cognito_idp service feature paths
       "../../../lang/specification/core/informal/cognito_idp/create_user_pool.feature",
       "../../../lang/specification/core/informal/cognito_idp/delete_user_pool.feature",
@@ -401,7 +402,7 @@ module.exports = {
       "../../../lang/specification/core/informal/cognito_idp/admin_add_user_to_group.feature",
       "../../../lang/specification/core/informal/cognito_idp/admin_remove_user_from_group.feature",
     ],
-    tags: "(@minimal or @standard) and not @internal and not @lifecycle",
+    tags: "(@minimal or @standard) and (not @internal or @capacity) and not @lifecycle",
     format: ["progress"],
     timeout: 60000,
     strict: false,
