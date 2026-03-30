@@ -109,6 +109,7 @@ func registerAllSteps(sc *godog.ScenarioContext, world *World) {
 	registerStepFunctionsS3TablesSteps(sc, world)
 	// Group D — Misc
 	registerAWSFakeSteps(sc, world)
+	registerChaosManagementSteps(sc, world)
 	// Sequence steps registered last so service-specific steps take priority
 	// when both register the same pattern (service steps use sc.When which only
 	// matches the When keyword, but because godog uses first-registered semantics

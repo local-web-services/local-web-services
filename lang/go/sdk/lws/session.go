@@ -535,8 +535,8 @@ func (s *Session) Iam() *IamBuilder {
 // SetChaos configures per-service chaos injection via the management API.
 func (s *Session) SetChaos(service string, errorRate float64, latencyMs int) error {
 	payload := map[string]interface{}{
-		"error_rate":  errorRate,
-		"latency_ms":  latencyMs,
+		"error_rate": errorRate,
+		"latency_ms": latencyMs,
 	}
 	data, err := json.Marshal(payload)
 	if err != nil {

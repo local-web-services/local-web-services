@@ -29,7 +29,7 @@ func TestMain(m *testing.M) {
 
 	opts := godog.Options{
 		Format: "pretty",
-		Tags:   "@minimal,@standard&&~@internal&&~@lifecycle",
+		Tags:   "@minimal,@standard&&~@internal,@capacity&&~@lifecycle",
 		Paths: []string{
 			"../../../../lang/specification/sdk/features",
 			"../../../../lang/specification/core/informal/sns_sqs/sequences.feature",
@@ -302,6 +302,7 @@ func TestMain(m *testing.M) {
 			"../../../../lang/specification/core/informal/stepfunctions_s3tables/",
 			// Group D — Misc
 			"../../../../lang/specification/core/informal/aws_fake/",
+			"../../../../lang/specification/core/informal/chaos/",
 			// cognito_idp service feature files
 			"../../../../lang/specification/core/informal/cognito_idp/create_user_pool.feature",
 			"../../../../lang/specification/core/informal/cognito_idp/delete_user_pool.feature",
