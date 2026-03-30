@@ -2,10 +2,12 @@
 
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld, ApiStepHelpers, PoolStepHelpers } from "../support/world";
+import type { SdkWorld, ApiStepHelpers, PoolStepHelpers, UserStepHelpers } from "../support/world";
 
 const APIGW_COGNITO_TEST_API_NAME = "e2e-test-api-1";
 const APIGW_COGNITO_TEST_POOL_NAME = "e2e-test-pool-1";
+const APIGW_COGNITO_TEST_USERNAME = "e2e-test-user-1";
+const APIGW_COGNITO_TEST_TEMP_PASSWORD = "TempPass1!";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -86,6 +88,30 @@ Before({ tags: "@apigatewaycognito" }, function (this: SdkWorld) {
     },
   };
   this.poolHelpers = poolHelpersImpl;
+  const userHelpersImpl: UserStepHelpers = {
+    createUser: async (world: SdkWorld) => {
+      // Arrange: ensure pool exists first
+      if (!(world as any)._apigwCognitoPoolId) {
+        (world as any)._apigwCognitoPoolId = await createPool(world);
+      }
+      const { AdminCreateUserCommand } = require("@aws-sdk/client-cognito-identity-provider");
+      // Act
+      try {
+        await cognitoClient(world).send(
+          new AdminCreateUserCommand({
+            UserPoolId: (world as any)._apigwCognitoPoolId as string,
+            Username: APIGW_COGNITO_TEST_USERNAME,
+            TemporaryPassword: APIGW_COGNITO_TEST_TEMP_PASSWORD,
+          }),
+        );
+      } catch {
+        // user may already exist
+      }
+      // Assert: username recorded
+      (world as any)._apigwCognitoUsername = APIGW_COGNITO_TEST_USERNAME;
+    },
+  };
+  this.userHelpers = userHelpersImpl;
 });
 
 // ── Given: cross-service API authorizer state ──────────────────────────────────

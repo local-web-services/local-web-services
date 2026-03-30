@@ -34,9 +34,39 @@
 //   every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function → events_lambda.ts
 //   every "AVAILABLE" message belongs to an "ACTIVE" queue    → apigateway_sqs.ts
 
-import { When, Then } from "@cucumber/cucumber";
+import { Before, When, Then } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, FunctionStepHelpers } from "../support/world";
+
+const LAMBDA_SQS_PRODUCER_TEST_FUNC = "e2e-test-func-1";
+const LAMBDA_SQS_PRODUCER_ROLE_ARN = "arn:aws:iam::000000000000:role/test";
+
+// ── Before hook: register functionHelpers for @lambdasqsproducer scenarios ────
+
+Before({ tags: "@lambdasqsproducer" }, function (this: SdkWorld) {
+  const functionHelpersImpl: FunctionStepHelpers = {
+    functionName: LAMBDA_SQS_PRODUCER_TEST_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      const { LambdaClient, CreateFunctionCommand } = require("@aws-sdk/client-lambda");
+      const client = world.session!.client<typeof LambdaClient>("lambda");
+      try {
+        const result = await client.send(
+          new CreateFunctionCommand({
+            FunctionName: LAMBDA_SQS_PRODUCER_TEST_FUNC,
+            Runtime: "python3.12",
+            Role: LAMBDA_SQS_PRODUCER_ROLE_ARN,
+            Handler: "index.handler",
+            Code: { ZipFile: Buffer.from("fake") },
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+  };
+  this.functionHelpers = functionHelpersImpl;
+});
 
 // ── When: actions unique to lambda_sqs_producer ───────────────────────────────
 

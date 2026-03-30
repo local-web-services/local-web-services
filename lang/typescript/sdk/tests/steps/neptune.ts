@@ -227,6 +227,7 @@ Before({ tags: "@neptune" }, function (this: SdkWorld) {
     assertSnapshotInStateLinkedToCluster: async (world: SdkWorld, expectedStatus: string) => {
       // Arrange
       assert.ok(world.session, "Expected session to be initialized");
+      const expectedStatusLower = expectedStatus.toLowerCase();
       // Act: verify operation succeeded
       const expectedSuccess = true;
       const actualSuccess = world.lastCallResult.success;
@@ -244,8 +245,8 @@ Before({ tags: "@neptune" }, function (this: SdkWorld) {
         const actualStatus = outputSnap.Status;
         assert.strictEqual(
           actualStatus,
-          expectedStatus,
-          `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+          expectedStatusLower,
+          `Expected snapshot status "${expectedStatusLower}" but got "${actualStatus}"; expected_status=${expectedStatusLower} actual_status=${actualStatus}`,
         );
         return;
       }
@@ -265,8 +266,8 @@ Before({ tags: "@neptune" }, function (this: SdkWorld) {
       const actualStatus = snapshots[0].Status;
       assert.strictEqual(
         actualStatus,
-        expectedStatus,
-        `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+        expectedStatusLower,
+        `Expected snapshot status "${expectedStatusLower}" but got "${actualStatus}"; expected_status=${expectedStatusLower} actual_status=${actualStatus}`,
       );
     },
     assertRestoredClusterInState: async (world: SdkWorld, _expectedStatus: string) => {

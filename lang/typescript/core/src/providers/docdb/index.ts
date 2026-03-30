@@ -182,7 +182,7 @@ export function registerDocDb(app: FastifyInstance, state: ServerState): void {
         }
         const cluster: DBCluster = {
           DBClusterIdentifier: id,
-          Status: "creating",
+          Status: "available",
           Engine: params.get("Engine") ?? "docdb",
           Endpoint: `${id}.cluster.docdb.localhost`,
           ReaderEndpoint: `${id}.cluster-ro.docdb.localhost`,
@@ -192,12 +192,14 @@ export function registerDocDb(app: FastifyInstance, state: ServerState): void {
           DBClusterMembers: [],
         };
         clusters.set(id, cluster);
+        // Return "creating" in the response to model the transitional state the client sees
+        const responseCluster = { ...cluster, Status: "creating" };
         xmlReply(
           reply,
           xmlWrap(
             `<CreateDBClusterResponse xmlns="${DOCDB_NS}">
   <CreateDBClusterResult>
-    ${clusterXml(cluster)}
+    ${clusterXml(responseCluster)}
   </CreateDBClusterResult>
 ${responseMeta()}
 </CreateDBClusterResponse>`,
@@ -334,7 +336,7 @@ ${responseMeta()}
           DBClusterIdentifier: clusterId,
           DBInstanceClass: params.get("DBInstanceClass") ?? "db.r5.large",
           Engine: params.get("Engine") ?? "docdb",
-          DBInstanceStatus: "creating",
+          DBInstanceStatus: "available",
           Endpoint: { Address: `${id}.docdb.localhost`, Port: 27017 },
           DBInstanceArn: `arn:aws:rds:${REGION}:${ACCOUNT_ID}:db:${id}`,
         };
@@ -347,12 +349,14 @@ ${responseMeta()}
             DBClusterParameterGroupStatus: "in-sync",
           });
         }
+        // Return "creating" in the response to model the transitional state
+        const responseInstance = { ...instance, DBInstanceStatus: "creating" };
         xmlReply(
           reply,
           xmlWrap(
             `<CreateDBInstanceResponse xmlns="${DOCDB_NS}">
   <CreateDBInstanceResult>
-    ${instanceXml(instance)}
+    ${instanceXml(responseInstance)}
   </CreateDBInstanceResult>
 ${responseMeta()}
 </CreateDBInstanceResponse>`,
@@ -450,17 +454,19 @@ ${responseMeta()}
         const snap: DBClusterSnapshot = {
           DBClusterSnapshotIdentifier: snapId,
           DBClusterIdentifier: clusterId,
-          Status: "creating",
+          Status: "available",
           Engine: cluster?.Engine ?? "docdb",
           SnapshotCreateTime: new Date().toISOString(),
         };
         snapshots.set(snapId, snap);
+        // Return "creating" in the response to model the transitional state
+        const responseSnap = { ...snap, Status: "creating" };
         xmlReply(
           reply,
           xmlWrap(
             `<CreateDBClusterSnapshotResponse xmlns="${DOCDB_NS}">
   <CreateDBClusterSnapshotResult>
-    ${snapshotXml(snap)}
+    ${snapshotXml(responseSnap)}
   </CreateDBClusterSnapshotResult>
 ${responseMeta()}
 </CreateDBClusterSnapshotResponse>`,

@@ -2,15 +2,22 @@
 
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld, ApiStepHelpers } from "../support/world";
+import type { SdkWorld, ApiStepHelpers, FunctionStepHelpers } from "../support/world";
 
 const APIGW_LAMBDA_TEST_API_NAME = "e2e-test-api-1";
+const APIGW_LAMBDA_TEST_FUNC = "e2e-test-func-1";
+const APIGW_LAMBDA_ROLE_ARN = "arn:aws:iam::000000000000:role/test";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 function apigwLambdaApigwClient(world: SdkWorld) {
   const { APIGatewayClient } = require("@aws-sdk/client-api-gateway");
   return world.session!.client<typeof APIGatewayClient>("apigateway");
+}
+
+function apigwLambdaLambdaClient(world: SdkWorld) {
+  const { LambdaClient } = require("@aws-sdk/client-lambda");
+  return world.session!.client<typeof LambdaClient>("lambda");
 }
 
 // ── Before hook: register API helpers for @apigatewaylambda scenarios ─────────
@@ -34,6 +41,27 @@ Before({ tags: "@apigatewaylambda" }, function (this: SdkWorld) {
     },
   };
   this.apiHelpers = apiHelpersImpl;
+  const functionHelpersImpl: FunctionStepHelpers = {
+    functionName: APIGW_LAMBDA_TEST_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
+      try {
+        const result = await apigwLambdaLambdaClient(world).send(
+          new CreateFunctionCommand({
+            FunctionName: APIGW_LAMBDA_TEST_FUNC,
+            Runtime: "python3.12",
+            Role: APIGW_LAMBDA_ROLE_ARN,
+            Handler: "index.handler",
+            Code: { ZipFile: Buffer.from("fake") },
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+  };
+  this.functionHelpers = functionHelpersImpl;
 });
 
 // ── Given: API integration state ──────────────────────────────────────────────

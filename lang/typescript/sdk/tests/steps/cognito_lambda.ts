@@ -25,7 +25,7 @@
 
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld, PoolStepHelpers } from "../support/world";
+import type { SdkWorld, PoolStepHelpers, FunctionStepHelpers } from "../support/world";
 
 const CL_TEST_POOL_NAME = "e2e-test-pool-1";
 const CL_TEST_FUNC = "e2e-test-func-1";
@@ -37,6 +37,11 @@ const CL_TEST_USERNAME = "e2e-test-user-1";
 function cognitoClient(world: SdkWorld) {
   const { CognitoIdentityProviderClient } = require("@aws-sdk/client-cognito-identity-provider");
   return world.session!.client<typeof CognitoIdentityProviderClient>("cognitoidp");
+}
+
+function clLambdaClient(world: SdkWorld) {
+  const { LambdaClient } = require("@aws-sdk/client-lambda");
+  return world.session!.client<typeof LambdaClient>("lambda");
 }
 
 async function findPoolId(world: SdkWorld): Promise<string | null> {
@@ -76,6 +81,27 @@ Before({ tags: "@cognitolambda" }, function (this: SdkWorld) {
     },
   };
   this.poolHelpers = poolHelpersImpl;
+  const functionHelpersImpl: FunctionStepHelpers = {
+    functionName: CL_TEST_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      const { CreateFunctionCommand } = require("@aws-sdk/client-lambda");
+      try {
+        const result = await clLambdaClient(world).send(
+          new CreateFunctionCommand({
+            FunctionName: CL_TEST_FUNC,
+            Runtime: "python3.12",
+            Role: CL_TEST_ROLE_ARN,
+            Handler: "index.handler",
+            Code: { ZipFile: Buffer.from("fake") },
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+  };
+  this.functionHelpers = functionHelpersImpl;
 });
 
 // ── Given: trigger configuration ──────────────────────────────────────────────

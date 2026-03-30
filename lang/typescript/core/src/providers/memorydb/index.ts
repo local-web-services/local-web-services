@@ -120,7 +120,7 @@ export function registerMemoryDb(app: FastifyInstance, state: ServerState): void
         const arn = `arn:aws:memorydb:${REGION}:${ACCOUNT_ID}:cluster/${name}`;
         const cluster: Cluster = {
           Name: name,
-          Status: "creating",
+          Status: "available",
           NumberOfShards: (body.NumShards as number) ?? 1,
           AvailabilityMode: "MultiAZ",
           ClusterEndpoint: { Address: `clustercfg.${name}.memorydb.localhost`, Port: 6379 },
@@ -134,7 +134,8 @@ export function registerMemoryDb(app: FastifyInstance, state: ServerState): void
         if (incomingTags.length > 0) {
           tags.set(arn, incomingTags);
         }
-        jsonReply(reply, { Cluster: cluster });
+        // Return "creating" in the response to model the transitional state the client sees
+        jsonReply(reply, { Cluster: { ...cluster, Status: "creating" } });
         break;
       }
 

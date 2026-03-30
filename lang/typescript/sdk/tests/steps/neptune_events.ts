@@ -63,10 +63,11 @@ Before({ tags: "@neptuneevents" }, function (this: SdkWorld) {
         `Expected cluster "${NEPTUNE_EVENTS_TEST_CLUSTER}" to exist but not found`,
       );
       const actualStatus = clusters[0].Status;
+      const expectedStatusLower = expectedState.toLowerCase();
       assert.strictEqual(
         actualStatus,
-        expectedState,
-        `Expected cluster status "${expectedState}" but got "${actualStatus}"; expected_status=${expectedState} actual_status=${actualStatus}`,
+        expectedStatusLower,
+        `Expected cluster status "${expectedStatusLower}" but got "${actualStatus}"; expected_status=${expectedStatusLower} actual_status=${actualStatus}`,
       );
     },
   };

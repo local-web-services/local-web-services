@@ -1,8 +1,8 @@
 /** Step definitions: sns_lambda cross-service scenarios — unique steps only */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, FunctionStepHelpers } from "../support/world";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -39,6 +39,33 @@ const SNS_LAMBDA_ROLE_ARN = "arn:aws:iam::000000000000:role/test";
 //   - "the invocation is {string}" (Then)          — lambda_sns.ts
 //   - 'every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function' (Then)
 //                                                  — lambda_sqs.ts, lambda_sns.ts, etc.
+
+// ── Before hook: register functionHelpers for @snslambda scenarios ────────────
+
+Before({ tags: "@snslambda" }, function (this: SdkWorld) {
+  const functionHelpersImpl: FunctionStepHelpers = {
+    functionName: SNS_LAMBDA_TEST_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      const { LambdaClient, CreateFunctionCommand } = require("@aws-sdk/client-lambda");
+      const client = world.session!.client<typeof LambdaClient>("lambda");
+      try {
+        const result = await client.send(
+          new CreateFunctionCommand({
+            FunctionName: SNS_LAMBDA_TEST_FUNC,
+            Runtime: "python3.12",
+            Role: SNS_LAMBDA_ROLE_ARN,
+            Handler: "index.handler",
+            Code: { ZipFile: Buffer.from("fake") },
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+  };
+  this.functionHelpers = functionHelpersImpl;
+});
 
 // ── Given: subscribed function state ─────────────────────────────────────────
 
