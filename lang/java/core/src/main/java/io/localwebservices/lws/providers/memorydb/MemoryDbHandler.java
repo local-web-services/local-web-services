@@ -16,11 +16,15 @@ public class MemoryDbHandler implements HttpHandler {
   private static final ObjectMapper MAPPER = new ObjectMapper();
   private static final String TARGET_PREFIX = "AmazonMemoryDB.";
 
+  private static final String REGION = "us-east-1";
+  private static final String ACCOUNT = "000000000000";
+
   private final ServerState state;
   private final Map<String, Map<String, Object>> clusters = new ConcurrentHashMap<>();
   private final Map<String, Map<String, Object>> users = new ConcurrentHashMap<>();
   private final Map<String, Map<String, Object>> acls = new ConcurrentHashMap<>();
   private final Map<String, Map<String, Object>> snapshots = new ConcurrentHashMap<>();
+  private final Map<String, List<Map<String, Object>>> resourceTags = new ConcurrentHashMap<>();
 
   public MemoryDbHandler(ServerState state) {
     this.state = state;
@@ -32,6 +36,7 @@ public class MemoryDbHandler implements HttpHandler {
     users.clear();
     acls.clear();
     snapshots.clear();
+    resourceTags.clear();
   }
 
   @Override
@@ -226,6 +231,103 @@ public class MemoryDbHandler implements HttpHandler {
             list.addAll(snapshots.values());
           }
           sendJson(exchange, 200, Map.of("Snapshots", list));
+          break;
+        }
+      case "UpdateCluster":
+        {
+          String name = (String) body.get("ClusterName");
+          Map<String, Object> cluster = clusters.get(name);
+          if (cluster == null) {
+            sendJson(
+                exchange,
+                400,
+                Map.of(
+                    "__type", "ClusterNotFoundFault", "message", "Cluster not found: " + name));
+            return;
+          }
+          if (body.containsKey("Description")) cluster.put("Description", body.get("Description"));
+          if (body.containsKey("NodeType")) cluster.put("NodeType", body.get("NodeType"));
+          if (body.containsKey("SnapshotRetentionLimit"))
+            cluster.put("SnapshotRetentionLimit", body.get("SnapshotRetentionLimit"));
+          sendJson(exchange, 200, Map.of("Cluster", cluster));
+          break;
+        }
+      case "UpdateUser":
+        {
+          String name = (String) body.get("UserName");
+          Map<String, Object> user = users.get(name);
+          if (user == null) {
+            sendJson(
+                exchange,
+                400,
+                Map.of("__type", "UserNotFoundFault", "message", "User not found: " + name));
+            return;
+          }
+          if (body.containsKey("AccessString")) user.put("AccessString", body.get("AccessString"));
+          if (body.containsKey("AuthenticationMode"))
+            user.put("AuthenticationMode", body.get("AuthenticationMode"));
+          sendJson(exchange, 200, Map.of("User", user));
+          break;
+        }
+      case "UpdateACL":
+        {
+          String name = (String) body.get("ACLName");
+          Map<String, Object> acl = acls.get(name);
+          if (acl == null) {
+            sendJson(
+                exchange,
+                400,
+                Map.of("__type", "ACLNotFoundFault", "message", "ACL not found: " + name));
+            return;
+          }
+          List<String> userNames =
+              acl.containsKey("UserNames")
+                  ? new ArrayList<>((List<String>) acl.get("UserNames"))
+                  : new ArrayList<>();
+          if (body.containsKey("UserNamesToAdd")) {
+            List<String> toAdd = (List<String>) body.get("UserNamesToAdd");
+            for (String u : toAdd) {
+              if (!userNames.contains(u)) userNames.add(u);
+            }
+          }
+          if (body.containsKey("UserNamesToRemove")) {
+            List<String> toRemove = (List<String>) body.get("UserNamesToRemove");
+            userNames.removeAll(toRemove);
+          }
+          acl.put("UserNames", userNames);
+          sendJson(exchange, 200, Map.of("ACL", acl));
+          break;
+        }
+      case "TagResource":
+        {
+          String arn = (String) body.get("ResourceArn");
+          List<Map<String, Object>> existingTags =
+              resourceTags.computeIfAbsent(arn, k -> new ArrayList<>());
+          if (body.containsKey("Tags")) {
+            List<Map<String, Object>> newTags = (List<Map<String, Object>>) body.get("Tags");
+            existingTags.addAll(newTags);
+          }
+          sendJson(exchange, 200, Map.of("TagList", existingTags));
+          break;
+        }
+      case "UntagResource":
+        {
+          String arn = (String) body.get("ResourceArn");
+          List<Map<String, Object>> existingTags =
+              resourceTags.getOrDefault(arn, new ArrayList<>());
+          if (body.containsKey("TagKeys")) {
+            List<String> keysToRemove = (List<String>) body.get("TagKeys");
+            existingTags.removeIf(tag -> keysToRemove.contains(tag.get("Key")));
+            resourceTags.put(arn, existingTags);
+          }
+          sendJson(exchange, 200, Map.of("TagList", existingTags));
+          break;
+        }
+      case "ListTags":
+        {
+          String arn = (String) body.get("ResourceArn");
+          List<Map<String, Object>> tags = resourceTags.getOrDefault(arn, List.of());
+          sendJson(exchange, 200, Map.of("TagList", tags));
           break;
         }
       default:

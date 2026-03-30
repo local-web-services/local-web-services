@@ -140,6 +140,15 @@ public class LambdaHandler implements HttpHandler {
       return;
     }
 
+    // DELETE /2015-03-31/functions/:name/policy/:statementId
+    if ("DELETE".equals(method) && path.matches("/2015-03-31/functions/[^/]+/policy/[^/]+$")) {
+      String[] parts = path.split("/");
+      String name = parts[4];
+      String statementId = parts[6];
+      handleRemovePermission(name, statementId, exchange);
+      return;
+    }
+
     // POST /2015-03-31/event-source-mappings
     if ("POST".equals(method) && "/2015-03-31/event-source-mappings".equals(path)) {
       esmHandler.handleCreate(body, exchange);
@@ -178,12 +187,9 @@ public class LambdaHandler implements HttpHandler {
 
     // Concurrency endpoints
     if (path.matches("/2017-10-31/functions/[^/]+/concurrency$")) {
+      String name = path.split("/")[4];
       if ("PUT".equals(method)) {
-        int reserved =
-            body.containsKey("ReservedConcurrentExecutions")
-                ? ((Number) body.get("ReservedConcurrentExecutions")).intValue()
-                : 0;
-        sendJson(exchange, 200, Map.of("ReservedConcurrentExecutions", reserved));
+        handlePutFunctionConcurrency(name, body, exchange);
       } else if ("DELETE".equals(method)) {
         sendEmpty(exchange, 204);
       } else {
@@ -193,8 +199,17 @@ public class LambdaHandler implements HttpHandler {
     }
 
     // Tags endpoints
-    if (path.matches("/2017-03-31/tags/.*")) {
-      sendEmpty(exchange, 204);
+    if (path.startsWith("/2017-03-31/tags/")) {
+      String arn = path.substring("/2017-03-31/tags/".length());
+      if ("POST".equals(method)) {
+        handleTagResource(arn, body, exchange);
+      } else if ("GET".equals(method)) {
+        handleListTags(arn, exchange);
+      } else if ("DELETE".equals(method)) {
+        handleUntagResource(arn, exchange);
+      } else {
+        sendEmpty(exchange, 204);
+      }
       return;
     }
 
@@ -386,6 +401,155 @@ public class LambdaHandler implements HttpHandler {
     List<Map<String, Object>> perms = store.permissions.getOrDefault(name, List.of());
     String policy = MAPPER.writeValueAsString(Map.of("Version", "2012-10-17", "Statement", perms));
     sendJson(exchange, 200, Map.of("Policy", policy, "RevisionId", UUID.randomUUID().toString()));
+  }
+
+  private void handleRemovePermission(String name, String statementId, HttpExchange exchange)
+      throws IOException {
+    if (!store.functions.containsKey(name)) {
+      sendJson(
+          exchange,
+          404,
+          Map.of(
+              "__type", "ResourceNotFoundException", "message", "Function " + name + " not found"));
+      return;
+    }
+    List<Map<String, Object>> perms = store.permissions.getOrDefault(name, List.of());
+    if (perms.isEmpty()) {
+      sendJson(
+          exchange,
+          404,
+          Map.of(
+              "__type",
+              "ResourceNotFoundException",
+              "message",
+              "Function " + name + " has no resource policy"));
+      return;
+    }
+    List<Map<String, Object>> updated = new ArrayList<>();
+    boolean found = false;
+    for (Map<String, Object> p : perms) {
+      String sid = (String) p.get("StatementId");
+      if (statementId.equals(sid)) {
+        found = true;
+      } else {
+        updated.add(p);
+      }
+    }
+    if (!found) {
+      sendJson(
+          exchange,
+          404,
+          Map.of(
+              "__type",
+              "ResourceNotFoundException",
+              "message",
+              "Statement " + statementId + " not found in resource policy"));
+      return;
+    }
+    store.permissions.put(name, updated);
+    sendEmpty(exchange, 204);
+  }
+
+  // ── Tag operations ─────────────────────────────────────────────────────────
+
+  private String arnToFunctionName(String arn) {
+    // arn:aws:lambda:us-east-1:000000000000:function:{name}
+    String[] parts = arn.split(":");
+    if (parts.length >= 7 && "function".equals(parts[5])) {
+      return parts[6];
+    }
+    return arn;
+  }
+
+  @SuppressWarnings("unchecked")
+  private void handleTagResource(String arn, Map<String, Object> body, HttpExchange exchange)
+      throws IOException {
+    String name = arnToFunctionName(arn);
+    Map<String, Object> fn = store.functions.get(name);
+    if (fn == null) {
+      sendJson(
+          exchange,
+          404,
+          Map.of(
+              "__type", "ResourceNotFoundException", "message", "Function " + name + " not found"));
+      return;
+    }
+    Map<String, Object> tags =
+        (Map<String, Object>)
+            fn.computeIfAbsent("_tags", k -> new LinkedHashMap<String, Object>());
+    if (body.containsKey("Tags")) {
+      Map<String, Object> newTags = (Map<String, Object>) body.get("Tags");
+      tags.putAll(newTags);
+    }
+    sendEmpty(exchange, 204);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void handleListTags(String arn, HttpExchange exchange) throws IOException {
+    String name = arnToFunctionName(arn);
+    Map<String, Object> fn = store.functions.get(name);
+    if (fn == null) {
+      sendJson(
+          exchange,
+          404,
+          Map.of(
+              "__type", "ResourceNotFoundException", "message", "Function " + name + " not found"));
+      return;
+    }
+    Map<String, Object> tags =
+        fn.containsKey("_tags") ? (Map<String, Object>) fn.get("_tags") : Map.of();
+    sendJson(exchange, 200, Map.of("Tags", tags));
+  }
+
+  @SuppressWarnings("unchecked")
+  private void handleUntagResource(String arn, HttpExchange exchange) throws IOException {
+    String name = arnToFunctionName(arn);
+    Map<String, Object> fn = store.functions.get(name);
+    if (fn == null) {
+      sendJson(
+          exchange,
+          404,
+          Map.of(
+              "__type", "ResourceNotFoundException", "message", "Function " + name + " not found"));
+      return;
+    }
+    String query = exchange.getRequestURI().getQuery();
+    List<String> tagKeys = new ArrayList<>();
+    if (query != null) {
+      for (String part : query.split("&")) {
+        String[] kv = part.split("=", 2);
+        if (kv.length == 2 && "tagKeys".equals(kv[0])) {
+          tagKeys.add(kv[1]);
+        }
+      }
+    }
+    if (!tagKeys.isEmpty()) {
+      Map<String, Object> tags =
+          fn.containsKey("_tags") ? (Map<String, Object>) fn.get("_tags") : new LinkedHashMap<>();
+      for (String key : tagKeys) {
+        tags.remove(key);
+      }
+    }
+    sendEmpty(exchange, 204);
+  }
+
+  // ── Concurrency ────────────────────────────────────────────────────────────
+
+  private void handlePutFunctionConcurrency(
+      String name, Map<String, Object> body, HttpExchange exchange) throws IOException {
+    if (!store.functions.containsKey(name)) {
+      sendJson(
+          exchange,
+          404,
+          Map.of(
+              "__type", "ResourceNotFoundException", "message", "Function " + name + " not found"));
+      return;
+    }
+    int reserved =
+        body.containsKey("ReservedConcurrentExecutions")
+            ? ((Number) body.get("ReservedConcurrentExecutions")).intValue()
+            : 0;
+    sendJson(exchange, 200, Map.of("ReservedConcurrentExecutions", reserved));
   }
 
   // ── Event source mappings ──────────────────────────────────────────────────
