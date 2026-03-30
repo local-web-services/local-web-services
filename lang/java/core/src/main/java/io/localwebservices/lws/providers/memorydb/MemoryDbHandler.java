@@ -16,9 +16,6 @@ public class MemoryDbHandler implements HttpHandler {
   private static final ObjectMapper MAPPER = new ObjectMapper();
   private static final String TARGET_PREFIX = "AmazonMemoryDB.";
 
-  private static final String REGION = "us-east-1";
-  private static final String ACCOUNT = "000000000000";
-
   private final ServerState state;
   private final Map<String, Map<String, Object>> clusters = new ConcurrentHashMap<>();
   private final Map<String, Map<String, Object>> users = new ConcurrentHashMap<>();
