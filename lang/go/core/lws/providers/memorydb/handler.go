@@ -369,8 +369,8 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		name := getString(body, "ClusterName")
 		h.store.mu.Lock()
 		cluster := h.store.clusters[name]
-		h.store.mu.Unlock()
 		if cluster == nil {
+			h.store.mu.Unlock()
 			writeErr(w, "ClusterNotFoundFault", "Cluster not found: "+name)
 			return
 		}
@@ -380,31 +380,63 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		if v := getString(body, "NodeType"); v != "" {
 			cluster.NodeType = v
 		}
+		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{"Cluster": clusterDesc(cluster)})
 
 	case "UpdateUser":
 		name := getString(body, "UserName")
 		h.store.mu.Lock()
 		user := h.store.users[name]
-		h.store.mu.Unlock()
 		if user == nil {
+			h.store.mu.Unlock()
 			writeErr(w, "UserNotFoundFault", "User not found: "+name)
 			return
 		}
 		if v := getString(body, "AccessString"); v != "" {
 			user.AccessString = v
 		}
+		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{"User": userDesc(user)})
 
 	case "UpdateACL":
 		name := getString(body, "ACLName")
 		h.store.mu.Lock()
 		acl := h.store.acls[name]
-		h.store.mu.Unlock()
 		if acl == nil {
+			h.store.mu.Unlock()
 			writeErr(w, "ACLNotFoundFault", "ACL not found: "+name)
 			return
 		}
+		// Process UserNamesToAdd
+		if toAdd, ok := body["UserNamesToAdd"].([]interface{}); ok {
+			existing := make(map[string]bool, len(acl.UserNames))
+			for _, u := range acl.UserNames {
+				existing[u] = true
+			}
+			for _, v := range toAdd {
+				if uname, ok := v.(string); ok && !existing[uname] {
+					acl.UserNames = append(acl.UserNames, uname)
+					existing[uname] = true
+				}
+			}
+		}
+		// Process UserNamesToRemove
+		if toRemove, ok := body["UserNamesToRemove"].([]interface{}); ok {
+			removeSet := make(map[string]bool, len(toRemove))
+			for _, v := range toRemove {
+				if uname, ok := v.(string); ok {
+					removeSet[uname] = true
+				}
+			}
+			filtered := acl.UserNames[:0]
+			for _, u := range acl.UserNames {
+				if !removeSet[u] {
+					filtered = append(filtered, u)
+				}
+			}
+			acl.UserNames = filtered
+		}
+		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{"ACL": aclDesc(acl)})
 
 	case "ListTags", "TagResource", "UntagResource":

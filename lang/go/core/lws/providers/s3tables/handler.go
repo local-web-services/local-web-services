@@ -357,12 +357,13 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation, path
 		bucketARN := rest
 		h.store.mu.Lock()
 		bucket := h.store.buckets[bucketARN]
-		delete(h.store.buckets, bucketARN)
-		h.store.mu.Unlock()
 		if bucket == nil {
+			h.store.mu.Unlock()
 			sendError(w, 404, "NotFoundException", "Table bucket not found: "+bucketARN)
 			return
 		}
+		delete(h.store.buckets, bucketARN)
+		h.store.mu.Unlock()
 		w.WriteHeader(204)
 
 	case "CreateNamespace":
@@ -417,6 +418,11 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation, path
 		bucketARN, nsName, _ := extractBucketARNAndRest(rest)
 		key := bucketARN + "/" + nsName
 		h.store.mu.Lock()
+		if h.store.namespaces[key] == nil {
+			h.store.mu.Unlock()
+			sendError(w, 404, "NotFoundException", "Namespace not found: "+nsName)
+			return
+		}
 		delete(h.store.namespaces, key)
 		h.store.mu.Unlock()
 		w.WriteHeader(204)
@@ -497,6 +503,11 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation, path
 		bucketARN, nsName, tableName := extractBucketARNAndRest(rest)
 		key := bucketARN + "/" + nsName + "/" + tableName
 		h.store.mu.Lock()
+		if h.store.tables[key] == nil {
+			h.store.mu.Unlock()
+			sendError(w, 404, "NotFoundException", "Table not found: "+tableName)
+			return
+		}
 		delete(h.store.tables, key)
 		h.store.mu.Unlock()
 		w.WriteHeader(204)

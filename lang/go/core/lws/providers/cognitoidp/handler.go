@@ -379,11 +379,6 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			jsonErr(w, "UserNotFoundException", "User "+username+" not found")
 			return
 		}
-		// Only allow setting password when user is in RESET_REQUIRED state.
-		if user.Status != StatusResetRequired {
-			jsonErr(w, "NotAuthorizedException", "User "+username+" cannot set password in state "+string(user.Status))
-			return
-		}
 		user.Password = password
 		if permanent {
 			user.Status = StatusConfirmed
@@ -403,11 +398,6 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			jsonErr(w, "UserNotFoundException", "User "+username+" not found")
 			return
 		}
-		// Only CONFIRMED users can have their password reset.
-		if user.Status != StatusConfirmed {
-			jsonErr(w, "NotAuthorizedException", "User "+username+" cannot reset password in state "+string(user.Status))
-			return
-		}
 		user.Status = StatusResetRequired
 		user.TempPassword = ""
 		user.LastModifiedDate = nowSeconds()
@@ -419,11 +409,6 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		user, ok := h.store.users[poolID][username]
 		if !ok {
 			jsonErr(w, "UserNotFoundException", "User "+username+" not found")
-			return
-		}
-		// Only CONFIRMED users can have attributes updated.
-		if user.Status != StatusConfirmed {
-			jsonErr(w, "NotAuthorizedException", "User "+username+" cannot update attributes in state "+string(user.Status))
 			return
 		}
 		newAttrs := parseAttrs(body["UserAttributes"])

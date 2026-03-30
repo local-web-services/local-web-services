@@ -22,7 +22,7 @@ Feature: AwsFake - An Aws Fake Is Deleted
     When an "AWS" fake is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_aws_fake
+  @standard @negative @internal @delete_aws_fake
   Scenario: an "AWS" fake is deleted fails when the "AWS" fake is not "ACTIVE"
     Given the "AWS" fake exists
     And the "AWS" fake is not "ACTIVE"
