@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.Runtime;
@@ -157,6 +158,7 @@ public class LambdaSsmSteps {
   @Then("the invocation is \"FAILED\" with a ParameterNotFound error")
   public void theInvocationIsFailedWithAParameterNotFoundError() {
     // @internal: Cannot observe Lambda invocation failure in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda invocation failure in lws.");
   }
 
   // "every successful invocation recorded which parameter it read" → CrossServiceSteps (catch-all

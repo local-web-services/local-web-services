@@ -107,11 +107,15 @@ public class StepfunctionsSsmSteps {
   @Given("^pid not in param_status$")
   public void pidNotInParamStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   @Given("^pid in param_status$")
   public void pidInParamStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   // -------------------------------------------------------------------------

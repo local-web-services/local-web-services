@@ -52,10 +52,24 @@ public class ChaosManagementSteps {
   @Given("chaos is enabled for the service")
   public void chaosIsEnabledForTheService() throws Exception {
     // Arrange
-    // Act: enable chaos for the test service
+    // Act: enable chaos for the test service (idempotent — also used as a Then assertion)
     world.session.chaos(TEST_SERVICE).apply();
-    // Assert: record state
     chaosEnabled = true;
+    // Assert: verify chaos is enabled via management API
+    Map<String, Object> result = getChaosStatus();
+    boolean expectedEnabled = true;
+    boolean actualEnabled = Boolean.TRUE.equals(result.get("enabled"));
+    assertEquals(
+        expectedEnabled,
+        actualEnabled,
+        "Expected chaos enabled="
+            + expectedEnabled
+            + " for service \""
+            + TEST_SERVICE
+            + "\" but got enabled="
+            + actualEnabled
+            + "; result="
+            + result);
   }
 
   @Given("chaos is not enabled for the service")
@@ -234,27 +248,6 @@ public class ChaosManagementSteps {
 
   // ── Then: chaos assertions ────────────────────────────────────────────────────
 
-  @Then("chaos is enabled for the service")
-  public void thenChaosIsEnabledForTheService() throws Exception {
-    // Arrange
-    // Act: get current chaos status
-    Map<String, Object> result = getChaosStatus();
-    // Assert
-    boolean expectedEnabled = true;
-    boolean actualEnabled = Boolean.TRUE.equals(result.get("enabled"));
-    assertEquals(
-        expectedEnabled,
-        actualEnabled,
-        "Expected chaos enabled="
-            + expectedEnabled
-            + " for service \""
-            + TEST_SERVICE
-            + "\" but got enabled="
-            + actualEnabled
-            + "; result="
-            + result);
-  }
-
   @Then("chaos is disabled for the service")
   public void thenChaosIsDisabledForTheService() throws Exception {
     // Arrange
@@ -367,14 +360,16 @@ public class ChaosManagementSteps {
 
   @SuppressWarnings("unchecked")
   private Map<String, Object> getChaosStatus() throws Exception {
-    // Derive management port from the SQS port (known offset: 2) to avoid package-private API.
+    // Use the global GET /_ldk/chaos endpoint which includes the "enabled" field per service.
     int sqsPort = world.session.portFor(TEST_SERVICE);
     int basePort = sqsPort - 2; // SQS SERVICE_OFFSET is 2
-    URI uri = URI.create("http://127.0.0.1:" + basePort + "/_ldk/chaos/" + TEST_SERVICE);
+    URI uri = URI.create("http://127.0.0.1:" + basePort + "/_ldk/chaos");
     HttpRequest request = HttpRequest.newBuilder(uri).GET().timeout(Duration.ofSeconds(10)).build();
     HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
     assertNotNull(response.body(), "Expected chaos status response body to be non-null");
-    return (Map<String, Object>) MAPPER.readValue(response.body(), Map.class);
+    Map<String, Object> all = (Map<String, Object>) MAPPER.readValue(response.body(), Map.class);
+    Map<String, Object> svcEntry = (Map<String, Object>) all.get(TEST_SERVICE);
+    return svcEntry != null ? svcEntry : Map.of();
   }
 
   private static double toDouble(Object value) {

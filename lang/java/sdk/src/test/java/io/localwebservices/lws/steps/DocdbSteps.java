@@ -9,6 +9,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.docdb.DocDbClient;
 import software.amazon.awssdk.services.docdb.model.DBCluster;
 import software.amazon.awssdk.services.docdb.model.DescribeDbClustersResponse;
@@ -135,51 +136,61 @@ public class DocdbSteps {
   @Given("the instance is the primary")
   public void theInstanceIsThePrimary() {
     // @internal: Primary instance state is set internally.
+    Assumptions.assumeTrue(false, "Primary instance state is set internally.");
   }
 
   @Given("the instance is not the primary")
   public void theInstanceIsNotThePrimary() {
     // @internal: Cannot control primary assignment via public API.
+    Assumptions.assumeTrue(false, "Cannot control primary assignment via public API.");
   }
 
   @Given("the instance is the primary of the cluster")
   public void theInstanceIsThePrimaryOfTheCluster() {
     // @internal: Primary instance state is set internally.
+    Assumptions.assumeTrue(false, "Primary instance state is set internally.");
   }
 
   @Given("the instance is not the primary of the cluster")
   public void theInstanceIsNotThePrimaryOfTheCluster() {
     // @internal: Cannot control primary assignment via public API.
+    Assumptions.assumeTrue(false, "Cannot control primary assignment via public API.");
   }
 
   @Given("the new primary instance exists")
   public void theNewPrimaryInstanceExists() {
     // @internal: Failover requires internal state manipulation.
+    Assumptions.assumeTrue(false, "Failover requires internal state manipulation.");
   }
 
   @Given("the new primary instance does not exist")
   public void theNewPrimaryInstanceDoesNotExist() {
     // @internal: Failover requires internal state manipulation.
+    Assumptions.assumeTrue(false, "Failover requires internal state manipulation.");
   }
 
   @Given("the instance belongs to this cluster")
   public void theInstanceBelongsToThisCluster() {
     // @internal: Cluster membership is an internal property.
+    Assumptions.assumeTrue(false, "Cluster membership is an internal property.");
   }
 
   @Given("the instance does not belong to this cluster")
   public void theInstanceDoesNotBelongToThisCluster() {
     // @internal: Cluster membership is an internal property.
+    Assumptions.assumeTrue(false, "Cluster membership is an internal property.");
   }
 
   @Given("the instance is already the primary")
   public void theInstanceIsAlreadyThePrimary() {
     // @internal: Primary assignment is an internal property.
+    Assumptions.assumeTrue(false, "Primary assignment is an internal property.");
   }
 
   @Given("the instance is not already the primary")
   public void theInstanceIsNotAlreadyThePrimary() {
     // @internal: Primary assignment is an internal property.
+    Assumptions.assumeTrue(false, "Primary assignment is an internal property.");
   }
 
   // ── Given: snapshot state setup ────────────────────────────────────────────
@@ -215,11 +226,15 @@ public class DocdbSteps {
   @Given("the snapshot is {string}")
   public void theSnapshotIs(String status) {
     // @internal: Cannot place snapshot into arbitrary lifecycle state via public API.
+    Assumptions.assumeTrue(
+        false, "Cannot place snapshot into arbitrary lifecycle state via public API.");
   }
 
   @Given("the snapshot is not {string}")
   public void theSnapshotIsNot(String status) {
     // @internal: Cannot enforce snapshot is NOT in a given lifecycle state via public API.
+    Assumptions.assumeTrue(
+        false, "Cannot enforce snapshot is NOT in a given lifecycle state via public API.");
   }
 
   @Given("the target cluster slot is available")
@@ -607,31 +622,37 @@ public class DocdbSteps {
   @Then("the cluster returns to {string} state")
   public void theClusterReturnsToState(String status) {
     // @internal: model-level invariant; trivially satisfied.
+    Assumptions.assumeTrue(false, "model-level invariant; trivially satisfied.");
   }
 
   @Then("the cluster is in \"FAILED\" state")
   public void theClusterIsInFailedState() {
     // @internal: model-level invariant; trivially satisfied.
+    Assumptions.assumeTrue(false, "model-level invariant; trivially satisfied.");
   }
 
   @Then("the instance is {string} and the cluster primary is updated if applicable")
   public void theInstanceIsAndClusterPrimaryUpdated(String status) {
     // @internal: model-level invariant; trivially satisfied.
+    Assumptions.assumeTrue(false, "model-level invariant; trivially satisfied.");
   }
 
   @Then("the instance is {string} and the cluster primary is cleared if applicable")
   public void theInstanceIsAndClusterPrimaryCleared(String status) {
     // @internal: model-level invariant; trivially satisfied.
+    Assumptions.assumeTrue(false, "model-level invariant; trivially satisfied.");
   }
 
   @Then("the instance returns to {string} state")
   public void theInstanceReturnsToState(String status) {
     // @internal: model-level invariant; trivially satisfied.
+    Assumptions.assumeTrue(false, "model-level invariant; trivially satisfied.");
   }
 
   @Then("the cluster has a new primary instance")
   public void theClusterHasANewPrimaryInstance() {
     // @internal: model-level invariant; trivially satisfied.
+    Assumptions.assumeTrue(false, "model-level invariant; trivially satisfied.");
   }
 
   // ── Then: model invariants (no-ops) ───────────────────────────────────────
@@ -643,16 +664,22 @@ public class DocdbSteps {
   @Then("a deleted cluster has no non-deleted instances")
   public void aDeletedClusterHasNoNonDeletedInstances() {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(
+        false, "No-op: model-level invariant; trivially satisfied in isolated lws context.");
   }
 
   @Then("a failed cluster has no available instances")
   public void aFailedClusterHasNoAvailableInstances() {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(
+        false, "No-op: model-level invariant; trivially satisfied in isolated lws context.");
   }
 
   @Then("a deleting cluster receives no new instances")
   public void aDeletingClusterReceivesNoNewInstances() {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(
+        false, "No-op: model-level invariant; trivially satisfied in isolated lws context.");
   }
 
   // "every creating snapshot references a cluster that has not been deleted" → CrossServiceSteps

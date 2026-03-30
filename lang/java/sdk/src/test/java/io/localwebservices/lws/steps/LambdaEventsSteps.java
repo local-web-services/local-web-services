@@ -6,6 +6,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 import software.amazon.awssdk.services.eventbridge.model.EventBus;
@@ -121,11 +122,13 @@ public class LambdaEventsSteps {
   @Then("the invocation is \"FAILED\" with a ResourceNotFoundException")
   public void theInvocationIsFailedWithAResourceNotFoundException() {
     // @internal: Cannot observe Lambda invocation failure in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda invocation failure in lws.");
   }
 
   @Then("the event is \"PUBLISHED\" and the invocation is \"SUCCESS\"")
   public void theEventIsPublishedAndTheInvocationIsSuccess() {
     // @internal: Cannot observe Lambda invocation result in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda invocation result in lws.");
   }
 
   // "every {string} event references a bus that exists" → CrossServiceSteps (catch-all @And("^every

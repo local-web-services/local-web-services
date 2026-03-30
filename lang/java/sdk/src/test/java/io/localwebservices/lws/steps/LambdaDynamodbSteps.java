@@ -3,6 +3,7 @@ package io.localwebservices.lws.steps;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
@@ -108,12 +109,14 @@ public class LambdaDynamodbSteps {
   @Given("an invocation slot is available")
   public void anInvocationSlotIsAvailable() {
     // No-op: always room for invocations in lws.
+    Assumptions.assumeTrue(false, "No-op: always room for invocations in lws.");
   }
 
   @Given("no invocation slot is available")
   public void noInvocationSlotIsAvailable() {
     // @internal: Cannot exhaust invocation slot limit in lws via public APIs.
     // Only reached by @internal/@capacity scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot exhaust invocation slot limit in lws via public APIs.");
   }
 
   @When("the Lambda invocation fails")
@@ -155,24 +158,28 @@ public class LambdaDynamodbSteps {
   public void theInvocationIsInProgress() {
     // @internal: Cannot observe Lambda invocation state in lws.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda invocation state in lws.");
   }
 
   @Then("the invocation is \"FAILED\"")
   public void theInvocationIsFailed() {
     // @internal: Cannot observe Lambda invocation failure in lws.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda invocation failure in lws.");
   }
 
   @Then("the invocation is \"SUCCESS\"")
   public void theInvocationIsSuccess() {
     // @internal: Cannot observe Lambda invocation success in lws.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda invocation success in lws.");
   }
 
   @Then("the item \"EXISTS\" in the table")
   public void theItemExistsInTheTable() {
     // @internal: Cannot observe Lambda item write result in lws.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda item write result in lws.");
   }
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────

@@ -11,6 +11,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
 import software.amazon.awssdk.services.apigateway.model.CreateDeploymentResponse;
 import software.amazon.awssdk.services.apigateway.model.CreateRestApiResponse;
@@ -356,6 +357,8 @@ public class ApigatewayStepfunctionsSteps {
   public void theRequestAndExecutionAreBothInProgressAndRunning() {
     // Arrange / Act / Assert — cannot inspect in-progress execution state via API Gateway.
     // Invariant: trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — cannot inspect in-progress execution state via API Gate");
   }
 
   @Then("the execution is \"SUCCEEDED\" and the request is \"SUCCESS\"")
@@ -375,6 +378,8 @@ public class ApigatewayStepfunctionsSteps {
   public void theExecutionIsFailedAndRequestIsFailed() {
     // Arrange / Act / Assert — cannot simulate Step Functions execution failure via API Gateway.
     // Invariant: trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — cannot simulate Step Functions execution failure via AP");
   }
 
   // "every \"RUNNING\" execution references an \"ACTIVE\" state machine" → CrossServiceSteps

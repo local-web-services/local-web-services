@@ -56,11 +56,15 @@ public class CrossServiceEventBusSteps {
   @Given("^busid not in bus_status$")
   public void busidNotInBusStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   @Given("^busid in bus_status$")
   public void busidInBusStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   // -------------------------------------------------------------------------

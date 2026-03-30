@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.GetFunctionResponse;
@@ -196,6 +197,8 @@ public class LambdaLambdaSteps {
   public void theCalleeIsDeleted() {
     // @internal: No public API puts a callee in DELETED state without deleting it.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(
+        false, "No public API puts a callee in DELETED state without deleting it.");
   }
 
   @Given("the callee is not \"DELETED\"")

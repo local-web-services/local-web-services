@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.Runtime;
@@ -108,6 +109,8 @@ public class LambdaS3tablesSteps {
   @Given("the table bucket is not \"ACTIVE\"")
   public void theTableBucketIsNotActive() {
     // @internal: Cannot force a bucket into a non-ACTIVE state via public API in lws.
+    Assumptions.assumeTrue(
+        false, "Cannot force a bucket into a non-ACTIVE state via public API in lws.");
   }
 
   @Given("a table is \"ACTIVE\"")
@@ -193,6 +196,7 @@ public class LambdaS3tablesSteps {
   public void theRecordExistsAndTheInvocationIsSuccess() {
     // @internal: Cannot observe Lambda record write result in lws.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda record write result in lws.");
   }
 
   // "every existing record references a table that exists" → CrossServiceSteps (catch-all

@@ -3,6 +3,7 @@ package io.localwebservices.lws.steps;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.memorydb.MemoryDbClient;
 
 /**
@@ -54,6 +55,8 @@ public class StepfunctionsMemorydbSteps {
   public void theClusterIsUpdating() {
     // @internal: Cannot force a MemoryDB cluster into UPDATING state via public API.
     // Arrange / Act / Assert — no-op: treat as precondition satisfied.
+    Assumptions.assumeTrue(
+        false, "Cannot force a MemoryDB cluster into UPDATING state via public API.");
   }
 
   @Given("the cluster is not \"UPDATING\"")
@@ -88,5 +91,6 @@ public class StepfunctionsMemorydbSteps {
   public void theClusterIsUpdatingAndConnectionsMayBeRefused() {
     // @internal: Cannot observe UPDATING cluster state via public API in lws.
     // Arrange / Act / Assert — no-op: invariant trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(false, "Cannot observe UPDATING cluster state via public API in lws.");
   }
 }

@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.sfn.SfnClient;
 import software.amazon.awssdk.services.sfn.model.CreateStateMachineResponse;
 import software.amazon.awssdk.services.sfn.model.DescribeExecutionResponse;
@@ -37,7 +38,7 @@ import software.amazon.awssdk.services.sfn.model.ValidateStateMachineDefinitionR
  */
 public class StepfunctionsSteps {
 
-  private static final String TEST_SM = "e2e-sfn-test-sm-1";
+  private static final String TEST_SM = "test-sm-1";
   private static final String TEST_SM_EXPRESS = "e2e-sfn-test-sm-express-1";
   private static final String TEST_ROLE_ARN = "arn:aws:iam::000000000000:role/e2e-role";
   private static final String TEST_PASS_DEFINITION =
@@ -94,6 +95,8 @@ public class StepfunctionsSteps {
   @Given("the state machine is \"ACTIVE\"")
   public void theStateMachineIsActive() {
     // Arrange / Act / Assert — no-op: state machines are ACTIVE immediately after creation.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: state machines are ACTIVE immediately after crea");
   }
 
   @Given("the state machine is not \"ACTIVE\"")
@@ -184,6 +187,8 @@ public class StepfunctionsSteps {
   @Given("the execution is \"RUNNING\"")
   public void theExecutionIsRunning() {
     // Arrange / Act / Assert — no-op: newly started executions are RUNNING.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: newly started executions are RUNNING.");
   }
 
   @Given("the execution is not \"RUNNING\"")

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.docdb.DocDbClient;
 
 /**
@@ -100,16 +101,19 @@ public class DocdbEventsSteps {
   @Then("the cluster is \"AVAILABLE\" again")
   public void theClusterIsAvailableAgain() {
     // @internal: model-level invariant; trivially satisfied.
+    Assumptions.assumeTrue(false, "model-level invariant; trivially satisfied.");
   }
 
   @Then("the cluster is \"MODIFYING\" and the \"MODIFIED\" event is \"DELIVERED\"")
   public void theClusterIsModifyingAndTheModifiedEventIsDelivered() {
     // @internal: model-level invariant; trivially satisfied.
+    Assumptions.assumeTrue(false, "model-level invariant; trivially satisfied.");
   }
 
   @Then("the cluster is \"MODIFYING\" but no event is delivered")
   public void theClusterIsModifyingButNoEventIsDelivered() {
     // @internal: model-level invariant; trivially satisfied.
+    Assumptions.assumeTrue(false, "model-level invariant; trivially satisfied.");
   }
 
   // ── Then: model invariants (no-ops) ───────────────────────────────────────

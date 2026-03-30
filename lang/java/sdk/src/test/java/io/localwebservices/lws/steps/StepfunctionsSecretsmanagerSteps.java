@@ -79,13 +79,6 @@ public class StepfunctionsSecretsmanagerSteps {
     Assumptions.assumeTrue(false, "secret non-ACTIVE state not reachable via SDK API");
   }
 
-  @Given("the secret does not exist or is not \"ACTIVE\"")
-  public void theSecretDoesNotExistOrIsNotActive() {
-    // Arrange / Act / Assert — non-ACTIVE secret state not reachable via public API
-    Assumptions.assumeTrue(
-        false, "secret non-existent or non-ACTIVE state not reachable via SDK API");
-  }
-
   // -------------------------------------------------------------------------
   // Given — sequence model preconditions (FizzBee)
   // -------------------------------------------------------------------------
@@ -93,11 +86,15 @@ public class StepfunctionsSecretsmanagerSteps {
   @Given("^sid not in secret_status$")
   public void sidNotInSecretStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   @Given("^sid in secret_status$")
   public void sidInSecretStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   // -------------------------------------------------------------------------

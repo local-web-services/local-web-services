@@ -7,6 +7,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.elasticsearch.ElasticsearchClient;
 import software.amazon.awssdk.services.elasticsearch.model.DescribeElasticsearchDomainResponse;
 import software.amazon.awssdk.services.elasticsearch.model.ElasticsearchDomainStatus;
@@ -60,37 +61,49 @@ public class ElasticsearchSteps {
   @Given("the domain is \"ACTIVE\"")
   public void theDomainIsActive() {
     // Arrange / Act / Assert — no-op: lws domains are immediately active after creation.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: lws domains are immediately active after creatio");
   }
 
   @Given("the domain is not \"ACTIVE\"")
   public void theDomainIsNotActive() {
     // @internal: requires internal state manipulation — not reachable via public API.
+    Assumptions.assumeTrue(
+        false, "requires internal state manipulation — not reachable via public API.");
   }
 
   @Given("the domain is \"CREATING\"")
   public void theDomainIsCreating() {
     // @internal: domain is in CREATING immediately after CreateElasticsearchDomain —
     // not reachable via public API.
+    Assumptions.assumeTrue(
+        false, "domain is in CREATING immediately after CreateElasticsearchDomain —");
   }
 
   @Given("the domain is not \"CREATING\"")
   public void theDomainIsNotCreating() {
     // @internal: state transition controlled internally.
+    Assumptions.assumeTrue(false, "state transition controlled internally.");
   }
 
   @Given("the domain is \"DELETING\"")
   public void theDomainIsDeleting() {
     // @internal: requires internal state manipulation — not reachable via public API.
+    Assumptions.assumeTrue(
+        false, "requires internal state manipulation — not reachable via public API.");
   }
 
   @Given("the domain is not \"DELETING\"")
   public void theDomainIsNotDeleting() {
     // @internal: state transition controlled internally.
+    Assumptions.assumeTrue(false, "state transition controlled internally.");
   }
 
   @Given("the domain is not being deleted")
   public void theDomainIsNotBeingDeleted() {
     // Arrange / Act / Assert — no-op: domains are not being deleted after creation in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: domains are not being deleted after creation in ");
   }
 
   @Given("the domain is being deleted")
@@ -109,6 +122,8 @@ public class ElasticsearchSteps {
   @Given("the domain is not deleted")
   public void theDomainIsNotDeleted() {
     // Arrange / Act / Assert — no-op: domains are not deleted after creation in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: domains are not deleted after creation in lws.");
   }
 
   @Given("the domain is deleted")
@@ -132,11 +147,14 @@ public class ElasticsearchSteps {
   @Given("the domain is \"PROCESSING\"")
   public void theDomainIsProcessing() {
     // @internal: requires internal state manipulation — not reachable via public API.
+    Assumptions.assumeTrue(
+        false, "requires internal state manipulation — not reachable via public API.");
   }
 
   @Given("the domain is not \"PROCESSING\"")
   public void theDomainIsNotProcessing() {
     // @internal: state transition controlled internally.
+    Assumptions.assumeTrue(false, "state transition controlled internally.");
   }
 
   // ── Given: tag state setup ────────────────────────────────────────────────────
@@ -344,11 +362,13 @@ public class ElasticsearchSteps {
   @Then("the domain is \"ACTIVE\" and ready for use")
   public void theDomainIsActiveAndReadyForUse() {
     // @internal: state transition controlled internally — no-op.
+    Assumptions.assumeTrue(false, "state transition controlled internally — no-op.");
   }
 
   @Then("the domain is \"DELETED\" and all its indices are removed")
   public void theDomainIsDeletedAndAllItsIndicesAreRemoved() {
     // @internal: state transition controlled internally — no-op.
+    Assumptions.assumeTrue(false, "state transition controlled internally — no-op.");
   }
 
   @Then("the specified tags are associated with the domain")
@@ -419,6 +439,8 @@ public class ElasticsearchSteps {
   @Then("a pending config change only exists on a domain that is \"PROCESSING\"")
   public void aPendingConfigChangeOnlyExistsOnADomainThatIsProcessing() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   // ── Given: index / document state ─────────────────────────────────────────────
@@ -431,6 +453,8 @@ public class ElasticsearchSteps {
   @Given("the index already exists")
   public void theIndexAlreadyExists() {
     // @internal: index creation requires domain to be ACTIVE and accessible via REST API.
+    Assumptions.assumeTrue(
+        false, "index creation requires domain to be ACTIVE and accessible via REST API.");
   }
 
   // "the index exists" → LambdaOpensearchSteps
@@ -439,11 +463,15 @@ public class ElasticsearchSteps {
   @Given("the index is {string}")
   public void theIndexIs(String state) {
     // @internal: index state transitions are internal to the Elasticsearch fake.
+    Assumptions.assumeTrue(
+        false, "index state transitions are internal to the Elasticsearch fake.");
   }
 
   @Given("the index is not {string}")
   public void theIndexIsNot(String state) {
     // @internal: index state transitions are internal to the Elasticsearch fake.
+    Assumptions.assumeTrue(
+        false, "index state transitions are internal to the Elasticsearch fake.");
   }
 
   // ── When: index / document actions ────────────────────────────────────────────

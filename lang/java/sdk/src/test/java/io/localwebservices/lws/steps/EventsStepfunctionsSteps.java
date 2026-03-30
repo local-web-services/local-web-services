@@ -213,6 +213,8 @@ public class EventsStepfunctionsSteps {
   public void theExecutionIsFailed() {
     // Arrange / Act / Assert — lws does not implement Fail state; execution failure not
     // reachable via SDK API. The When step skips via Assumptions; this step is never reached.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — lws does not implement Fail state; execution failure no");
   }
 
   @Then("the rule is \"ENABLED\" and will trigger an execution when matching events are published")

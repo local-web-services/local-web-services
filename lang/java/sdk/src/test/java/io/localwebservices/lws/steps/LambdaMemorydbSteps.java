@@ -2,6 +2,7 @@ package io.localwebservices.lws.steps;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.memorydb.MemoryDbClient;
@@ -106,18 +107,21 @@ public class LambdaMemorydbSteps {
   public void theClusterIsUpdatingAndWriteOperationsMayFail() {
     // @internal: Cannot observe cluster UPDATING state in lws.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot observe cluster UPDATING state in lws.");
   }
 
   @Then("the invocation is \"FAILED\" with a connection refused error")
   public void theInvocationIsFailedWithAConnectionRefusedError() {
     // @internal: Cannot observe Lambda invocation failure in lws.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda invocation failure in lws.");
   }
 
   @Then("the record \"EXISTS\" in the cluster and the invocation is \"SUCCESS\"")
   public void theRecordExistsInTheClusterAndTheInvocationIsSuccess() {
     // @internal: Cannot observe Lambda record write result in lws.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda record write result in lws.");
   }
 
   // "every existing record references a cluster that exists" → CrossServiceSteps (catch-all

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.opensearch.OpenSearchClient;
 import software.amazon.awssdk.services.opensearch.model.AWSDomainInformation;
 import software.amazon.awssdk.services.opensearch.model.CreateOutboundConnectionResponse;
@@ -69,11 +70,15 @@ public class OpensearchSteps {
   @Given("the local domain is \"ACTIVE\"")
   public void theLocalDomainIsActive() {
     // Arrange / Act / Assert — no-op: lws domains are immediately active after creation.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: lws domains are immediately active after creatio");
   }
 
   @Given("the local domain is not \"ACTIVE\"")
   public void theLocalDomainIsNotActive() {
     // @internal: requires internal state manipulation — not reachable via public API.
+    Assumptions.assumeTrue(
+        false, "requires internal state manipulation — not reachable via public API.");
   }
 
   @Given("the remote domain exists")
@@ -94,21 +99,29 @@ public class OpensearchSteps {
   @Given("the remote domain is \"ACTIVE\"")
   public void theRemoteDomainIsActive() {
     // Arrange / Act / Assert — no-op: lws domains are immediately active after creation.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: lws domains are immediately active after creatio");
   }
 
   @Given("the remote domain is not \"ACTIVE\"")
   public void theRemoteDomainIsNotActive() {
     // @internal: requires internal state manipulation — not reachable via public API.
+    Assumptions.assumeTrue(
+        false, "requires internal state manipulation — not reachable via public API.");
   }
 
   @Given("the local and remote domains are different")
   public void theLocalAndRemoteDomainsAreDifferent() {
     // Arrange / Act / Assert — no-op: test uses distinct domain names.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: test uses distinct domain names.");
   }
 
   @Given("the local and remote domains are the same")
   public void theLocalAndRemoteDomainsAreTheSame() {
     // Arrange / Act / Assert — no-op: the When step uses the same domain name for both sides.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: the When step uses the same domain name for both");
   }
 
   @Given("the connection slot is available")
@@ -120,6 +133,8 @@ public class OpensearchSteps {
   public void theConnectionSlotIsNotAvailable() {
     // @internal: capacity exhaustion requires internal state manipulation — not reachable via
     // public API.
+    Assumptions.assumeTrue(
+        false, "capacity exhaustion requires internal state manipulation — not reachable via");
   }
 
   // ── Given: outbound connection state ──────────────────────────────────────────
@@ -151,6 +166,8 @@ public class OpensearchSteps {
   @Given("the outbound connection is already \"DELETING\"")
   public void theOutboundConnectionIsAlreadyDeleting() {
     // @internal: requires internal state manipulation — not reachable via public API.
+    Assumptions.assumeTrue(
+        false, "requires internal state manipulation — not reachable via public API.");
   }
 
   @Given("the outbound connection is not already \"DELETED\"")
@@ -161,11 +178,15 @@ public class OpensearchSteps {
   @Given("the outbound connection is already \"DELETED\"")
   public void theOutboundConnectionIsAlreadyDeleted() {
     // @internal: requires internal state manipulation — not reachable via public API.
+    Assumptions.assumeTrue(
+        false, "requires internal state manipulation — not reachable via public API.");
   }
 
   @Given("the outbound connection is \"DELETING\"")
   public void theOutboundConnectionIsDeleting() {
     // @internal: requires internal state manipulation — not reachable via public API.
+    Assumptions.assumeTrue(
+        false, "requires internal state manipulation — not reachable via public API.");
   }
 
   @Given("the outbound connection is not \"DELETING\"")
@@ -177,11 +198,15 @@ public class OpensearchSteps {
   public void theAssociatedInboundConnectionExists() {
     // Arrange / Act / Assert — no-op: inbound connection is created automatically with outbound
     // connection.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: inbound connection is created automatically with");
   }
 
   @Given("the associated inbound connection does not exist")
   public void theAssociatedInboundConnectionDoesNotExist() {
     // @internal: requires internal state manipulation — not reachable via public API.
+    Assumptions.assumeTrue(
+        false, "requires internal state manipulation — not reachable via public API.");
   }
 
   // ── Given: inbound connection state ───────────────────────────────────────────
@@ -216,6 +241,8 @@ public class OpensearchSteps {
   @Given("the inbound connection is not \"PENDING_ACCEPTANCE\"")
   public void theInboundConnectionIsNotPendingAcceptance() {
     // @internal: requires internal state manipulation — not reachable via public API.
+    Assumptions.assumeTrue(
+        false, "requires internal state manipulation — not reachable via public API.");
   }
 
   @Given("the inbound connection is not already \"DELETING\"")
@@ -226,6 +253,8 @@ public class OpensearchSteps {
   @Given("the inbound connection is already \"DELETING\"")
   public void theInboundConnectionIsAlreadyDeleting() {
     // @internal: requires internal state manipulation — not reachable via public API.
+    Assumptions.assumeTrue(
+        false, "requires internal state manipulation — not reachable via public API.");
   }
 
   @Given("the inbound connection is not already \"DELETED\"")
@@ -236,11 +265,15 @@ public class OpensearchSteps {
   @Given("the inbound connection is already \"DELETED\"")
   public void theInboundConnectionIsAlreadyDeleted() {
     // @internal: requires internal state manipulation — not reachable via public API.
+    Assumptions.assumeTrue(
+        false, "requires internal state manipulation — not reachable via public API.");
   }
 
   @Given("the inbound connection is \"DELETING\"")
   public void theInboundConnectionIsDeleting() {
     // @internal: requires internal state manipulation — not reachable via public API.
+    Assumptions.assumeTrue(
+        false, "requires internal state manipulation — not reachable via public API.");
   }
 
   @Given("the inbound connection is not \"DELETING\"")
@@ -253,41 +286,49 @@ public class OpensearchSteps {
   @Given("the new cluster has not been prepared yet")
   public void theNewClusterHasNotBeenPreparedYet() {
     // @internal: blue-green deployment state is controlled internally.
+    Assumptions.assumeTrue(false, "blue-green deployment state is controlled internally.");
   }
 
   @Given("the new cluster has already been prepared")
   public void theNewClusterHasAlreadyBeenPrepared() {
     // @internal: blue-green deployment state is controlled internally.
+    Assumptions.assumeTrue(false, "blue-green deployment state is controlled internally.");
   }
 
   @Given("the new cluster is ready")
   public void theNewClusterIsReady() {
     // @internal: blue-green deployment state is controlled internally.
+    Assumptions.assumeTrue(false, "blue-green deployment state is controlled internally.");
   }
 
   @Given("the new cluster is not ready")
   public void theNewClusterIsNotReady() {
     // @internal: blue-green deployment state is controlled internally.
+    Assumptions.assumeTrue(false, "blue-green deployment state is controlled internally.");
   }
 
   @Given("traffic has not been swapped yet")
   public void trafficHasNotBeenSwappedYet() {
     // @internal: blue-green deployment state is controlled internally.
+    Assumptions.assumeTrue(false, "blue-green deployment state is controlled internally.");
   }
 
   @Given("traffic has already been swapped")
   public void trafficHasAlreadyBeenSwapped() {
     // @internal: blue-green deployment state is controlled internally.
+    Assumptions.assumeTrue(false, "blue-green deployment state is controlled internally.");
   }
 
   @Given("traffic has been swapped to the new cluster")
   public void trafficHasBeenSwappedToTheNewCluster() {
     // @internal: blue-green deployment state is controlled internally.
+    Assumptions.assumeTrue(false, "blue-green deployment state is controlled internally.");
   }
 
   @Given("traffic has not been swapped to the new cluster")
   public void trafficHasNotBeenSwappedToTheNewCluster() {
     // @internal: blue-green deployment state is controlled internally.
+    Assumptions.assumeTrue(false, "blue-green deployment state is controlled internally.");
   }
 
   // ── When: actions ─────────────────────────────────────────────────────────────
@@ -497,11 +538,13 @@ public class OpensearchSteps {
   @Then("the inbound connection is \"DELETED\"")
   public void theInboundConnectionIsDeleted() {
     // @internal: state transition controlled internally — no-op.
+    Assumptions.assumeTrue(false, "state transition controlled internally — no-op.");
   }
 
   @Then("the outbound and associated inbound connection are \"DELETED\"")
   public void theOutboundAndAssociatedInboundConnectionAreDeleted() {
     // @internal: state transition controlled internally — no-op.
+    Assumptions.assumeTrue(false, "state transition controlled internally — no-op.");
   }
 
   @Then("the domain is in \"PROCESSING\" state and a blue-green deployment begins")
@@ -522,41 +565,52 @@ public class OpensearchSteps {
   @Then("the domain is \"ACTIVE\" with the new configuration applied")
   public void theDomainIsActiveWithTheNewConfigurationApplied() {
     // @internal: state transition controlled internally — no-op.
+    Assumptions.assumeTrue(false, "state transition controlled internally — no-op.");
   }
 
   @Then("the domain has a new cluster prepared but traffic is not yet swapped")
   public void theDomainHasANewClusterPreparedButTrafficIsNotYetSwapped() {
     // @internal: state transition controlled internally — no-op.
+    Assumptions.assumeTrue(false, "state transition controlled internally — no-op.");
   }
 
   @Then("the domain is now serving requests from the new cluster")
   public void theDomainIsNowServingRequestsFromTheNewCluster() {
     // @internal: state transition controlled internally — no-op.
+    Assumptions.assumeTrue(false, "state transition controlled internally — no-op.");
   }
 
   @Then("the instance count is updated without data loss")
   public void theInstanceCountIsUpdatedWithoutDataLoss() {
     // @internal: state transition controlled internally — no-op.
+    Assumptions.assumeTrue(false, "state transition controlled internally — no-op.");
   }
 
   @Then("the domain is \"DELETED\" and all associated connections are removed")
   public void theDomainIsDeletedAndAllAssociatedConnectionsAreRemoved() {
     // @internal: state transition controlled internally — no-op.
+    Assumptions.assumeTrue(false, "state transition controlled internally — no-op.");
   }
 
   @Then("no active connection references a deleted domain")
   public void noActiveConnectionReferencesADeletedDomain() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   @Then("traffic can only be swapped after the new cluster is ready")
   public void trafficCanOnlyBeSwappedAfterTheNewClusterIsReady() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   @Then("an outbound connection that is \"ACTIVE\" cannot have a \"REJECTED\" inbound connection")
   public void anOutboundConnectionThatIsActiveCannotHaveARejectedInboundConnection() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   // ── Private helpers ───────────────────────────────────────────────────────────

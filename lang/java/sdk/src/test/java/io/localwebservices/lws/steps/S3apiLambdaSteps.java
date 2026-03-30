@@ -8,6 +8,7 @@ import io.cucumber.java.en.When;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.lambda.LambdaClient;
@@ -167,6 +168,8 @@ public class S3apiLambdaSteps {
   public void theNotificationTargetFunctionIsNot(String state) {
     // @internal: Cannot place Lambda notification target function in a non-ACTIVE state
     // while it is already configured as a bucket notification target in lws.
+    Assumptions.assumeTrue(
+        false, "Cannot place Lambda notification target function in a non-ACTIVE state");
   }
 
   @When("an S3 event notification is configured to invoke a Lambda function on object \"PUT\"")

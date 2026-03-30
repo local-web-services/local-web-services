@@ -2,6 +2,7 @@ package io.localwebservices.lws.steps;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.opensearch.OpenSearchClient;
 
 /**
@@ -80,5 +81,6 @@ public class StepfunctionsOpensearchSteps {
   public void theDomainIsActiveAgain() {
     // @internal: Cannot observe internal domain ACTIVE recovery in lws.
     // Arrange / Act / Assert — no-op: invariant trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(false, "Cannot observe internal domain ACTIVE recovery in lws.");
   }
 }

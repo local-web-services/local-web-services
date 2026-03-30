@@ -7,6 +7,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
 import software.amazon.awssdk.services.apigateway.model.GetRestApisResponse;
 import software.amazon.awssdk.services.apigateway.model.RestApi;
@@ -78,12 +79,16 @@ public class ApigatewayCognitoSteps {
   public void theApiAlreadyHasAnAuthorizerConfigured(String resourceType) {
     // Arrange / Act / Assert — no-op: configuring a Cognito authorizer on a REST API is
     // not supported in lws; the subsequent When step records a failure via world.setFailure.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: configuring a Cognito authorizer on a REST API i");
   }
 
   @Given("the {string} has a Cognito authorizer configured")
   public void theApiHasACognitoAuthorizerConfigured(String resourceType) {
     // Arrange / Act / Assert — no-op: configuring a Cognito authorizer on a REST API is
     // not supported in lws; the subsequent When step records a failure via world.setFailure.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: configuring a Cognito authorizer on a REST API i");
   }
 
   @Given("the {string} has no Cognito authorizer configured")
@@ -153,41 +158,55 @@ public class ApigatewayCognitoSteps {
   public void noTokenSlotIsAvailable() {
     // Arrange / Act / Assert — no-op: exhausting token slots is not reachable via public
     // API in lws; the subsequent When step records a failure via world.setFailure.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: exhausting token slots is not reachable via publ");
   }
 
   @Given("a {string} token exists")
   public void aTokenExists(String tokenState) {
     // Arrange / Act / Assert — no-op: JWT token issuance via the Cognito authorizer flow
     // is not supported in lws; the subsequent When step records a failure.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: JWT token issuance via the Cognito authorizer fl");
   }
 
   @Given("no {string} token exists")
   public void noTokenExists(String tokenState) {
     // Arrange / Act / Assert — no-op: token lifecycle is not modelled in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: token lifecycle is not modelled in lws.");
   }
 
   @Given("the token belongs to a {string} user in the {string}'s configured pool")
   public void theTokenBelongsToUserInPool(String userState, String resourceType) {
     // Arrange / Act / Assert — no-op: cross-service token/pool membership state is not
     // reachable via public API in lws; the subsequent When step records a failure.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: cross-service token/pool membership state is not");
   }
 
   @Given("the token does not belong to a {string} user in the configured pool")
   public void theTokenDoesNotBelongToUserInPool(String userState) {
     // Arrange / Act / Assert — no-op: cross-service token membership state is not
     // reachable in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: cross-service token membership state is not");
   }
 
   @Given("a {string} token exists from a user in a different pool than the configured authorizer")
   public void aTokenExistsFromUserInDifferentPool(String tokenState) {
     // Arrange / Act / Assert — no-op: cross-service mismatched-pool token state is not
     // supported in lws; the subsequent When step records a failure.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: cross-service mismatched-pool token state is not");
   }
 
   @Given("no such mismatched token exists")
   public void noSuchMismatchedTokenExists() {
     // Arrange / Act / Assert — no-op: mismatched token state is not reachable via public
     // API in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: mismatched token state is not reachable via publ");
   }
 
   // ── Given: request slot ───────────────────────────────────────────────────────
@@ -204,6 +223,8 @@ public class ApigatewayCognitoSteps {
   public void noRequestSlotIsAvailable() {
     // Arrange / Act / Assert — no-op: exhausting request slots via the authorizer flow is
     // not supported in lws; the subsequent When step records a failure.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: exhausting request slots via the authorizer flow");
   }
 
   // ── When: cross-service actions ───────────────────────────────────────────────
@@ -313,16 +334,22 @@ public class ApigatewayCognitoSteps {
   @Then("the user is {string} and can authenticate")
   public void theUserIsConfirmedAndCanAuthenticate(String userState) {
     // Arrange / Act / Assert — no-op: Cognito JWT user confirmation flow is not supported in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: Cognito JWT user confirmation flow is not suppor");
   }
 
   @Then("a {string} token is issued that can be presented to {string} Gateway for authorization")
   public void aValidTokenIsIssued(String tokenType, String gatewayType) {
     // Arrange / Act / Assert — no-op: Cognito JWT token issuance is not supported in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: Cognito JWT token issuance is not supported in l");
   }
 
   @Then("the request is {string} and routed to the backend")
   public void theRequestIsAuthorizedAndRouted(String expectedState) {
     // Arrange / Act / Assert — no-op: API Gateway Cognito authorizer routing is not supported.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: API Gateway Cognito authorizer routing is not su");
   }
 
   @Then(

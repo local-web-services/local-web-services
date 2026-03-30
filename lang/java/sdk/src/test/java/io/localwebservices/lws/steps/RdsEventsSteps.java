@@ -3,6 +3,7 @@ package io.localwebservices.lws.steps;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.rds.RdsClient;
 
 /**
@@ -53,18 +54,22 @@ public class RdsEventsSteps {
   public void theDbInstanceIsNotAvailable() {
     // @internal: Cannot force a DB instance into a non-AVAILABLE state via public API.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(
+        false, "Cannot force a DB instance into a non-AVAILABLE state via public API.");
   }
 
   @Given("the \"DB\" instance is \"STOPPING\"")
   public void theDbInstanceIsStopping() {
     // @internal: Cannot force a DB instance into STOPPING state via public API.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot force a DB instance into STOPPING state via public API.");
   }
 
   @Given("the \"DB\" instance is not \"STOPPING\"")
   public void theDbInstanceIsNotStopping() {
     // @internal: DB stop state not reachable via public API.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "DB stop state not reachable via public API.");
   }
 
   // ── When: actions ─────────────────────────────────────────────────────────────
@@ -118,18 +123,22 @@ public class RdsEventsSteps {
   public void theDbInstanceIsStopped() {
     // @internal: d_b_stop_complete outcome not observable via public API.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "d_b_stop_complete outcome not observable via public API.");
   }
 
   @Then("the \"DB\" instance is \"STOPPING\" and the event is \"DELIVERED\"")
   public void theDbInstanceIsStoppingAndTheEventIsDelivered() {
     // @internal: d_b_stop_event_delivered outcome not observable via public API.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(
+        false, "d_b_stop_event_delivered outcome not observable via public API.");
   }
 
   @Then("the \"DB\" instance is \"STOPPING\" but no event is delivered")
   public void theDbInstanceIsStoppingButNoEventIsDelivered() {
     // @internal: d_b_stop_event_fails outcome not observable via public API.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "d_b_stop_event_fails outcome not observable via public API.");
   }
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────

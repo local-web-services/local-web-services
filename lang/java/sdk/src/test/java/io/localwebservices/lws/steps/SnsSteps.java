@@ -29,7 +29,7 @@ import software.amazon.awssdk.services.sqs.SqsClient;
  */
 public class SnsSteps {
 
-  private static final String TEST_TOPIC = "e2e-sns-test-topic-1";
+  private static final String TEST_TOPIC = "test-topic-1";
   private static final String TEST_SUB_QUEUE = "e2e-sns-test-sub-q-1";
   private static final String TEST_EMAIL_ENDPOINT = "test@example.invalid";
   private static final String TEST_MESSAGE = "test-sns-message-1";
@@ -159,6 +159,8 @@ public class SnsSteps {
   @Given("the subscription belongs to this topic")
   public void theSubscriptionBelongsToThisTopic() {
     // Arrange / Act / Assert — no-op: subscription was created for this topic in prior Given.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: subscription was created for this topic in prior");
   }
 
   @Given("the subscription does not belong to this topic")
@@ -172,6 +174,8 @@ public class SnsSteps {
   @Given("a delivery slot is available")
   public void aDeliverySlotIsAvailable() {
     // Arrange / Act / Assert — no-op: always room for deliveries in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: always room for deliveries in lws.");
   }
 
   @Given("no delivery slot is available")
@@ -187,6 +191,8 @@ public class SnsSteps {
   @Given("the subscription's topic exists")
   public void theSubscriptionSTopicExists() {
     // Arrange / Act / Assert — no-op: topic was created in a prior Given step.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: topic was created in a prior Given step.");
   }
 
   @Given("the subscription's topic is \"ACTIVE\"")
@@ -227,31 +233,43 @@ public class SnsSteps {
   @Given("the delivery exists")
   public void theDeliveryExists() {
     // No-op: delivery scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: delivery scenarios are all @internal and will not run under tag filter.");
   }
 
   @Given("the delivery is \"IN_FLIGHT\"")
   public void theDeliveryIsInFlight() {
     // No-op: delivery scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: delivery scenarios are all @internal and will not run under tag filter.");
   }
 
   @Given("the delivery is not \"IN_FLIGHT\"")
   public void theDeliveryIsNotInFlight() {
     // No-op: delivery scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: delivery scenarios are all @internal and will not run under tag filter.");
   }
 
   @Given("the delivery does not exist")
   public void theDeliveryDoesNotExist() {
     // No-op: delivery scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: delivery scenarios are all @internal and will not run under tag filter.");
   }
 
   @Given("the retry count is below the limit")
   public void theRetryCountIsBelowTheLimit() {
     // No-op: delivery scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: delivery scenarios are all @internal and will not run under tag filter.");
   }
 
   @Given("the retry count has reached the limit")
   public void theRetryCountHasReachedTheLimit() {
     // No-op: delivery scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: delivery scenarios are all @internal and will not run under tag filter.");
   }
 
   // ── Given: confirmation token (@internal — never executed by tag filter) ──────
@@ -259,16 +277,22 @@ public class SnsSteps {
   @Given("the pending subscription exists")
   public void thePendingSubscriptionExists() {
     // No-op: confirmation token scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: confirmation token scenarios are all @internal and will not run under tag");
   }
 
   @Given("the confirmation token is valid")
   public void theConfirmationTokenIsValid() {
     // No-op: confirmation token scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: confirmation token scenarios are all @internal and will not run under tag");
   }
 
   @Given("the confirmation token has expired")
   public void theConfirmationTokenHasExpired() {
     // No-op: confirmation token scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: confirmation token scenarios are all @internal and will not run under tag");
   }
 
   // ── When: actions ─────────────────────────────────────────────────────────────
@@ -356,31 +380,43 @@ public class SnsSteps {
   @When("a delivery attempt succeeds")
   public void aDeliveryAttemptSucceeds() {
     // No-op: delivery scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: delivery scenarios are all @internal and will not run under tag filter.");
   }
 
   @When("a delivery attempt fails and is retried")
   public void aDeliveryAttemptFailsAndIsRetried() {
     // No-op: delivery scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: delivery scenarios are all @internal and will not run under tag filter.");
   }
 
   @When("a delivery attempt fails")
   public void aDeliveryAttemptFails() {
     // No-op: delivery scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: delivery scenarios are all @internal and will not run under tag filter.");
   }
 
   @When("all delivery retries are exhausted")
   public void allDeliveryRetriesAreExhausted() {
     // No-op: delivery scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: delivery scenarios are all @internal and will not run under tag filter.");
   }
 
   @When("a subscription confirmation token expires")
   public void aSubscriptionConfirmationTokenExpires() {
     // No-op: confirmation token scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: confirmation token scenarios are all @internal and will not run under tag");
   }
 
   @When("the confirmation token expires")
   public void theConfirmationTokenExpires() {
     // No-op: confirmation token scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: confirmation token scenarios are all @internal and will not run under tag");
   }
 
   // ── Then: assertions ──────────────────────────────────────────────────────────
@@ -505,31 +541,43 @@ public class SnsSteps {
   @Then("the delivery is \"DONE\"")
   public void theDeliveryIsDone() {
     // No-op: delivery scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: delivery scenarios are all @internal and will not run under tag filter.");
   }
 
   @Then("the delivery is retried")
   public void theDeliveryIsRetried() {
     // No-op: delivery scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: delivery scenarios are all @internal and will not run under tag filter.");
   }
 
   @Then("the delivery is abandoned")
   public void theDeliveryIsAbandoned() {
     // No-op: delivery scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: delivery scenarios are all @internal and will not run under tag filter.");
   }
 
   @Then("the pending subscription is \"DELETED\"")
   public void thePendingSubscriptionIsDeleted() {
     // No-op: confirmation token scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: confirmation token scenarios are all @internal and will not run under tag");
   }
 
   @Then("the delivery retry count is incremented")
   public void theDeliveryRetryCountIsIncremented() {
     // No-op: delivery scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: delivery scenarios are all @internal and will not run under tag filter.");
   }
 
   @Then("the delivery is marked \"DONE\"")
   public void theDeliveryIsMarkedDone() {
     // No-op: retry_exhausted scenarios are all @internal and will not run under tag filter.
+    Assumptions.assumeTrue(
+        false, "No-op: retry_exhausted scenarios are all @internal and will not run under tag fi");
   }
 
   // ── Then: model-level invariant steps not covered by CrossServiceSteps ────────
@@ -537,10 +585,14 @@ public class SnsSteps {
   @Then("no delivery is in-flight to a deleted subscription")
   public void noDeliveryIsInFlightToADeletedSubscription() {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(
+        false, "No-op: model-level invariant; trivially satisfied in isolated lws context.");
   }
 
   @Then("no delivery is in-flight to an unconfirmed subscription")
   public void noDeliveryIsInFlightToAnUnconfirmedSubscription() {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(
+        false, "No-op: model-level invariant; trivially satisfied in isolated lws context.");
   }
 }

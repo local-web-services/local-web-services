@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.Runtime;
@@ -95,11 +96,15 @@ public class LambdaRdsSteps {
   @Given("the instance is not \"AVAILABLE\"")
   public void theInstanceIsNotAvailable() {
     // @internal: Cannot force a DB instance into a non-AVAILABLE state via public API.
+    Assumptions.assumeTrue(
+        false, "Cannot force a DB instance into a non-AVAILABLE state via public API.");
   }
 
   @Given("the instance is \"FAILING_OVER\"")
   public void theInstanceIsFailingOver() {
     // @internal: FAILING_OVER state requires a Multi-AZ failover, not reachable via public API.
+    Assumptions.assumeTrue(
+        false, "FAILING_OVER state requires a Multi-AZ failover, not reachable via public API.");
   }
 
   @Given("the instance is not \"FAILING_OVER\"")
@@ -121,11 +126,14 @@ public class LambdaRdsSteps {
   @Given("the database instance is not \"AVAILABLE\"")
   public void theDatabaseInstanceIsNotAvailable() {
     // @internal: Cannot force a DB instance into a non-AVAILABLE state via public API.
+    Assumptions.assumeTrue(
+        false, "Cannot force a DB instance into a non-AVAILABLE state via public API.");
   }
 
   @Given("the database instance is \"FAILING_OVER\"")
   public void theDatabaseInstanceIsFailingOver() {
     // @internal: FAILING_OVER state requires a Multi-AZ failover.
+    Assumptions.assumeTrue(false, "FAILING_OVER state requires a Multi-AZ failover.");
   }
 
   @Given("the database instance is not \"FAILING_OVER\"")
@@ -215,6 +223,7 @@ public class LambdaRdsSteps {
   public void theInstanceIsAvailableAgain() {
     // @internal: failover completion not observable via public API.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "failover completion not observable via public API.");
   }
 
   // "every successful invocation recorded which database it queried" → CrossServiceSteps (catch-all

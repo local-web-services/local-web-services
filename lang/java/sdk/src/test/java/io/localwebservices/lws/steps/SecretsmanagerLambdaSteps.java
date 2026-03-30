@@ -78,6 +78,8 @@ public class SecretsmanagerLambdaSteps {
   public void theFunctionDoesNotExistOrIsNot(String state) {
     // Arrange / Act / Assert — no-op: fresh state has no Lambda functions.
     // Non-ACTIVE function state is not reachable via public API in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: fresh state has no Lambda functions.");
   }
 
   // ── Given: rotation configuration state ───────────────────────────────────────
@@ -107,11 +109,15 @@ public class SecretsmanagerLambdaSteps {
   public void theRotationFunctionIs(String state) {
     // Arrange / Act / Assert — @internal: Cannot configure rotation function state in lws.
     // Scenarios using this step are tagged @internal and excluded by the tag filter.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — @internal: Cannot configure rotation function state in ");
   }
 
   @Given("the rotation function is not {string}")
   public void theRotationFunctionIsNot(String state) {
     // Arrange / Act / Assert — @internal: Cannot configure rotation function state in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — @internal: Cannot configure rotation function state in ");
   }
 
   @Given("the function is already {string}")
@@ -201,6 +207,7 @@ public class SecretsmanagerLambdaSteps {
   public void theSecretIsRotatingAndSecretsManagerInvokesTheLambdaRotationFunction() {
     // Cannot trigger SecretsManager->Lambda rotation in lws.
     // No-op: scenarios reaching this assertion are excluded.
+    Assumptions.assumeTrue(false, "Cannot trigger SecretsManager->Lambda rotation in lws.");
   }
 
   @Then("the function is \"DELETED\" and rotation will fail")
@@ -234,12 +241,14 @@ public class SecretsmanagerLambdaSteps {
   public void theInvocationIsSuccessAndTheSecretIsActiveWithANewVersion() {
     // @internal: Cannot trigger SecretsManager->Lambda invocation in lws.
     // No-op: invariant assertion for excluded @internal scenarios.
+    Assumptions.assumeTrue(false, "Cannot trigger SecretsManager->Lambda invocation in lws.");
   }
 
   @Then("the invocation is \"FAILED\" and the secret remains \"ACTIVE\" with the old version")
   public void theInvocationIsFailedAndTheSecretRemainsActiveWithTheOldVersion() {
     // @internal: Cannot trigger SecretsManager->Lambda invocation in lws.
     // No-op: invariant assertion for excluded @internal scenarios.
+    Assumptions.assumeTrue(false, "Cannot trigger SecretsManager->Lambda invocation in lws.");
   }
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────

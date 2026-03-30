@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolDescriptionType;
 
@@ -128,6 +129,8 @@ public class StepfunctionsCognitoSteps {
   public void theExecutionIsFailedWithResourceNotFoundException() {
     // @internal scenario: cannot observe internal execution Cognito task failure in lws.
     // No-op: invariant trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(
+        false, "scenario: cannot observe internal execution Cognito task failure in lws.");
   }
 
   // "every succeeded execution recorded which pool it called" → CrossServiceSteps (catch-all

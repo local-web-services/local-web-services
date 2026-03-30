@@ -6,6 +6,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.MessageActionType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolDescriptionType;
@@ -81,6 +82,8 @@ public class CognitoLambdaSteps {
   @Given("the pool already has a trigger configured")
   public void thePoolAlreadyHasATriggerConfigured() {
     // @internal: Cannot configure Lambda triggers for Cognito in lws via public APIs.
+    Assumptions.assumeTrue(
+        false, "Cannot configure Lambda triggers for Cognito in lws via public APIs.");
   }
 
   @Given("the pool has no pre-signup trigger configured")
@@ -91,16 +94,20 @@ public class CognitoLambdaSteps {
   @Given("the pool has a pre-signup trigger configured")
   public void thePoolHasAPreSignupTriggerConfigured() {
     // @internal: Cannot configure Lambda triggers for Cognito in lws via public APIs.
+    Assumptions.assumeTrue(
+        false, "Cannot configure Lambda triggers for Cognito in lws via public APIs.");
   }
 
   @Given("the trigger function is {string}")
   public void theTriggerFunctionIs(String state) {
     // @internal: Cannot configure Lambda triggers for Cognito in lws.
+    Assumptions.assumeTrue(false, "Cannot configure Lambda triggers for Cognito in lws.");
   }
 
   @Given("the trigger function is not {string}")
   public void theTriggerFunctionIsNot(String state) {
     // @internal: Cannot configure Lambda triggers for Cognito in lws.
+    Assumptions.assumeTrue(false, "Cannot configure Lambda triggers for Cognito in lws.");
   }
 
   // ── Given: capacity slots ──────────────────────────────────────────────────────
@@ -196,11 +203,13 @@ public class CognitoLambdaSteps {
   @Then("all subsequent signups will synchronously invoke the function before confirming")
   public void allSubsequentSignupsWillSynchronouslyInvokeFunctionBeforeConfirming() {
     // @internal: Cannot configure Lambda triggers for Cognito in lws.
+    Assumptions.assumeTrue(false, "Cannot configure Lambda triggers for Cognito in lws.");
   }
 
   @Then("the user is {string} and the trigger Lambda is invoked synchronously")
   public void theUserIsAndTheTriggerLambdaIsInvokedSynchronously(String state) {
     // @internal: Cannot trigger Cognito->Lambda invocation in lws.
+    Assumptions.assumeTrue(false, "Cannot trigger Cognito->Lambda invocation in lws.");
   }
 
   @Then("the user is immediately {string}")
@@ -223,6 +232,7 @@ public class CognitoLambdaSteps {
   @Then("the invocation is {string} and the user is {string}")
   public void theInvocationIsAndTheUserIs(String invState, String userState) {
     // @internal: Cannot trigger Cognito->Lambda invocation in lws.
+    Assumptions.assumeTrue(false, "Cannot trigger Cognito->Lambda invocation in lws.");
   }
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────

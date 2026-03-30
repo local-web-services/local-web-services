@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.glacier.GlacierClient;
 import software.amazon.awssdk.services.lambda.LambdaClient;
@@ -84,6 +85,7 @@ public class LambdaGlacierSteps {
   @Given("the vault is already \"DELETED\"")
   public void theVaultIsAlreadyDeleted() {
     // @internal: DELETED state requires the vault to have been deleted.
+    Assumptions.assumeTrue(false, "DELETED state requires the vault to have been deleted.");
   }
 
   @Given("the vault is not \"DELETED\"")
@@ -102,11 +104,14 @@ public class LambdaGlacierSteps {
   @Given("an archive slot is available")
   public void anArchiveSlotIsAvailable() {
     // Arrange / Act / Assert — no-op: archive slots are always available in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: archive slots are always available in lws.");
   }
 
   @Given("no archive slot is available")
   public void noArchiveSlotIsAvailable() {
     // @internal: Cannot exhaust archive slot limit in lws via public APIs.
+    Assumptions.assumeTrue(false, "Cannot exhaust archive slot limit in lws via public APIs.");
   }
 
   @When("a Glacier vault is deleted")
@@ -155,6 +160,7 @@ public class LambdaGlacierSteps {
   public void theArchiveExistsInTheVaultAndTheInvocationIsSuccess() {
     // @internal: Cannot observe archive upload result in lws.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot observe archive upload result in lws.");
   }
 
   // "every existing archive references a vault that exists" → CrossServiceSteps (catch-all

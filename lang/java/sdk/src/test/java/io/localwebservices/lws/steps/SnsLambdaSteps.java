@@ -3,6 +3,7 @@ package io.localwebservices.lws.steps;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.Runtime;
@@ -116,6 +117,8 @@ public class SnsLambdaSteps {
   public void theSubscriptionIsConfirmedAndTheFunctionWillBeInvokedOnPublishedMessages() {
     // @internal: Cannot verify SNS->Lambda subscription via the public API in lws.
     // Scenarios using this step are all tagged @internal and excluded by the tag filter.
+    Assumptions.assumeTrue(
+        false, "Cannot verify SNS->Lambda subscription via the public API in lws.");
   }
 
   // ── Invariant Then steps ────────────────────────────────────────────────────────

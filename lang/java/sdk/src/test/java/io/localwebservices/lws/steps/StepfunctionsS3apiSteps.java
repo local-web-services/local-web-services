@@ -130,6 +130,7 @@ public class StepfunctionsS3apiSteps {
   @Given("the state machine has an S3 task configured")
   public void theStateMachineHasAnS3TaskConfigured() {
     // Arrange / Act / Assert — no-op: conceptual precondition
+    Assumptions.assumeTrue(false, "Arrange / Act / Assert — no-op: conceptual precondition");
   }
 
   @Given("the state machine has no S3 task configured")

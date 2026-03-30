@@ -6,6 +6,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
 import software.amazon.awssdk.services.apigateway.model.GetRestApisResponse;
 import software.amazon.awssdk.services.apigateway.model.RestApi;
@@ -45,11 +46,13 @@ public class ApigatewayLambdaSteps {
   @Given("the \"API\" already has an integration configured")
   public void theApiAlreadyHasAnIntegrationConfigured() {
     // @internal: Cannot configure Lambda integration on REST API in lws.
+    Assumptions.assumeTrue(false, "Cannot configure Lambda integration on REST API in lws.");
   }
 
   @Given("the \"API\" has a Lambda integration configured")
   public void theApiHasALambdaIntegrationConfigured() {
     // @internal: Cannot configure Lambda integration on REST API in lws.
+    Assumptions.assumeTrue(false, "Cannot configure Lambda integration on REST API in lws.");
   }
 
   @Given("the \"API\" has no Lambda integration configured")
@@ -63,11 +66,13 @@ public class ApigatewayLambdaSteps {
   public void theIntegratedFunctionIsActive() {
     // @internal: Requires a Lambda integration to be configured first, which is
     // not supported via public APIs in lws.
+    Assumptions.assumeTrue(false, "Requires a Lambda integration to be configured first, which is");
   }
 
   @Given("the integrated function is not \"ACTIVE\"")
   public void theIntegratedFunctionIsNotActive() {
     // @internal: Requires a Lambda integration and lifecycle manipulation.
+    Assumptions.assumeTrue(false, "Requires a Lambda integration and lifecycle manipulation.");
   }
 
   // ── When: actions ──────────────────────────────────────────────────────────────
@@ -132,21 +137,26 @@ public class ApigatewayLambdaSteps {
   @Then("the \"API\" will synchronously invoke the function when a request arrives")
   public void theApiWillSynchronouslyInvokeTheFunctionWhenARequestArrives() {
     // @internal: Cannot verify Lambda integration behaviour in lws.
+    Assumptions.assumeTrue(false, "Cannot verify Lambda integration behaviour in lws.");
   }
 
   @Then("the request and invocation are both \"IN_PROGRESS\"")
   public void theRequestAndInvocationAreBothInProgress() {
     // @internal: Cannot observe in-progress request and invocation state in lws.
+    Assumptions.assumeTrue(
+        false, "Cannot observe in-progress request and invocation state in lws.");
   }
 
   @Then("the invocation is \"SUCCESS\" and the request is \"SUCCESS\"")
   public void theInvocationIsSuccessAndTheRequestIsSuccess() {
     // @internal: Cannot observe invocation and request success state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe invocation and request success state in lws.");
   }
 
   @Then("the invocation is \"FAILED\" and the request is \"FAILED\"")
   public void theInvocationIsFailedAndTheRequestIsFailed() {
     // @internal: Cannot observe invocation and request failure state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe invocation and request failure state in lws.");
   }
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────

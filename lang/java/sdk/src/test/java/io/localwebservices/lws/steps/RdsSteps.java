@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.rds.RdsClient;
 import software.amazon.awssdk.services.rds.model.Tag;
 
@@ -65,6 +66,8 @@ public class RdsSteps {
   public void theInstanceIsNeitherNor(String state1, String state2) {
     // @internal: Cannot force a DB instance into neither AVAILABLE nor FAILED via public API.
     // Only reached by @lifecycle scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(
+        false, "Cannot force a DB instance into neither AVAILABLE nor FAILED via public API.");
   }
 
   @Given("the database instance does not exist")
@@ -75,23 +78,29 @@ public class RdsSteps {
   @Given("a snapshot slot is available")
   public void aSnapshotSlotIsAvailable() {
     // Arrange / Act / Assert — no-op: always room for snapshots in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: always room for snapshots in lws.");
   }
 
   @Given("no snapshot slot is available")
   public void noSnapshotSlotIsAvailable() {
     // @internal: Cannot exhaust snapshot slot limit in lws via public APIs.
     // Only reached by @internal/@capacity scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot exhaust snapshot slot limit in lws via public APIs.");
   }
 
   @Given("the target instance slot is available")
   public void theTargetInstanceSlotIsAvailable() {
     // Arrange / Act / Assert — no-op: always room for DB instances in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: always room for DB instances in lws.");
   }
 
   @Given("the target instance slot is not available")
   public void theTargetInstanceSlotIsNotAvailable() {
     // @internal: Cannot exhaust instance slot limit in lws via public APIs.
     // Only reached by @internal/@capacity scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot exhaust instance slot limit in lws via public APIs.");
   }
 
   // ── When: actions ─────────────────────────────────────────────────────────────

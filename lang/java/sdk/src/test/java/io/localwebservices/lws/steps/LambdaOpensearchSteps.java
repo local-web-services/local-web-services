@@ -3,6 +3,7 @@ package io.localwebservices.lws.steps;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.opensearch.OpenSearchClient;
@@ -72,6 +73,8 @@ public class LambdaOpensearchSteps {
   @Given("the index exists")
   public void theIndexExists() {
     // No-op: index existence is managed via the OpenSearch domain; handled by OpensearchSteps.
+    Assumptions.assumeTrue(
+        false, "No-op: index existence is managed via the OpenSearch domain; handled by Opensear");
   }
 
   @Given("the index's domain is \"ACTIVE\"")
@@ -86,6 +89,7 @@ public class LambdaOpensearchSteps {
   public void theIndexsDomainIsNotActive() {
     // @internal: Cannot force a domain into a non-ACTIVE state via public APIs.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot force a domain into a non-ACTIVE state via public APIs.");
   }
 
   @Given("the index does not exist")
@@ -127,12 +131,14 @@ public class LambdaOpensearchSteps {
   public void theIndexExistsAndIsReadyToReceiveDocuments() {
     // @internal: Cannot verify index existence via management API alone.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot verify index existence via management API alone.");
   }
 
   @Then("the document is \"INDEXED\"")
   public void theDocumentIsIndexed() {
     // @internal: Cannot observe Lambda document indexing result in lws.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda document indexing result in lws.");
   }
 
   // "every indexed document belongs to an existing index" → CrossServiceSteps (catch-all

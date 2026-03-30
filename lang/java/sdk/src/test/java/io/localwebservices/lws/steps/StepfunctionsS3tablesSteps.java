@@ -3,6 +3,7 @@ package io.localwebservices.lws.steps;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.s3tables.S3TablesClient;
 import software.amazon.awssdk.services.s3tables.model.OpenTableFormat;
 
@@ -110,6 +111,7 @@ public class StepfunctionsS3tablesSteps {
   public void theTableIsDeletingAndSdkTaskCallsTargetingItWillFail() {
     // @internal: Cannot observe internal table DELETING state in lws.
     // Arrange / Act / Assert — no-op: invariant trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(false, "Cannot observe internal table DELETING state in lws.");
   }
 
   // "every succeeded execution recorded which table it called" → CrossServiceSteps (catch-all

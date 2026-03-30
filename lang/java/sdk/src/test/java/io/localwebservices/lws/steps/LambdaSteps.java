@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.GetFunctionResponse;
@@ -144,6 +145,7 @@ public class LambdaSteps {
   @Given("the function has active executions")
   public void theFunctionHasActiveExecutions() {
     // @internal: Cannot inject active execution state into Lambda in lws.
+    Assumptions.assumeTrue(false, "Cannot inject active execution state into Lambda in lws.");
   }
 
   // ── Given: resource policy ────────────────────────────────────────────────────
@@ -209,6 +211,8 @@ public class LambdaSteps {
   public void theTagDoesNotExistOnTheFunction() {
     // @internal: Cannot verify that untag_resource fails for non-existent tags in lws.
     // Desired precondition: function exists but without the tag.
+    Assumptions.assumeTrue(
+        false, "Cannot verify that untag_resource fails for non-existent tags in lws.");
   }
 
   @Given("the tag is set")
@@ -219,6 +223,7 @@ public class LambdaSteps {
   @Given("the tag is not set")
   public void theTagIsNotSet() {
     // @internal: Cannot verify tag absence without prior tag removal step.
+    Assumptions.assumeTrue(false, "Cannot verify tag absence without prior tag removal step.");
   }
 
   // ── Given: concurrency ────────────────────────────────────────────────────────
@@ -226,51 +231,61 @@ public class LambdaSteps {
   @Given("the function has concurrency configured")
   public void theFunctionHasConcurrencyConfigured() {
     // @internal: Cannot trigger Lambda concurrency-based invocation in lws.
+    Assumptions.assumeTrue(false, "Cannot trigger Lambda concurrency-based invocation in lws.");
   }
 
   @Given("the function does not have concurrency configured")
   public void theFunctionDoesNotHaveConcurrencyConfigured() {
     // @internal: Cannot trigger Lambda concurrency-based invocation in lws.
+    Assumptions.assumeTrue(false, "Cannot trigger Lambda concurrency-based invocation in lws.");
   }
 
   @Given("the function has a positive concurrency limit")
   public void theFunctionHasAPositiveConcurrencyLimit() {
     // @internal: Cannot trigger Lambda concurrency-based invocation in lws.
+    Assumptions.assumeTrue(false, "Cannot trigger Lambda concurrency-based invocation in lws.");
   }
 
   @Given("the function does not have a positive concurrency limit")
   public void theFunctionDoesNotHaveAPositiveConcurrencyLimit() {
     // @internal: Cannot trigger Lambda concurrency-based invocation in lws.
+    Assumptions.assumeTrue(false, "Cannot trigger Lambda concurrency-based invocation in lws.");
   }
 
   @Given("the function has unreserved concurrency")
   public void theFunctionHasUnreservedConcurrency() {
     // @internal: Cannot trigger Lambda concurrency-based invocation in lws.
+    Assumptions.assumeTrue(false, "Cannot trigger Lambda concurrency-based invocation in lws.");
   }
 
   @Given("the function does not have unreserved concurrency")
   public void theFunctionDoesNotHaveUnreservedConcurrency() {
     // @internal: Cannot trigger Lambda concurrency-based invocation in lws.
+    Assumptions.assumeTrue(false, "Cannot trigger Lambda concurrency-based invocation in lws.");
   }
 
   @Given("the function has active executions tracked")
   public void theFunctionHasActiveExecutionsTracked() {
     // @internal: Cannot trigger Lambda concurrency-based invocation in lws.
+    Assumptions.assumeTrue(false, "Cannot trigger Lambda concurrency-based invocation in lws.");
   }
 
   @Given("the function does not have active executions tracked")
   public void theFunctionDoesNotHaveActiveExecutionsTracked() {
     // @internal: Cannot trigger Lambda concurrency-based invocation in lws.
+    Assumptions.assumeTrue(false, "Cannot trigger Lambda concurrency-based invocation in lws.");
   }
 
   @Given("the active executions are below the concurrency limit")
   public void theActiveExecutionsAreBelowTheConcurrencyLimit() {
     // @internal: Cannot trigger Lambda concurrency-based invocation in lws.
+    Assumptions.assumeTrue(false, "Cannot trigger Lambda concurrency-based invocation in lws.");
   }
 
   @Given("the active executions are at or above the concurrency limit")
   public void theActiveExecutionsAreAtOrAboveTheConcurrencyLimit() {
     // @internal: Cannot trigger Lambda concurrency-based invocation in lws.
+    Assumptions.assumeTrue(false, "Cannot trigger Lambda concurrency-based invocation in lws.");
   }
 
   // ── Given: event source mapping ───────────────────────────────────────────────
@@ -283,11 +298,13 @@ public class LambdaSteps {
   @Given("the event source mapping already exists")
   public void theEventSourceMappingAlreadyExists() {
     // @internal: Cannot create ESM in lws without a real event source ARN.
+    Assumptions.assumeTrue(false, "Cannot create ESM in lws without a real event source ARN.");
   }
 
   @Given("the event source mapping exists")
   public void theEventSourceMappingExists() {
     // @internal: Cannot create ESM in lws without a real event source ARN.
+    Assumptions.assumeTrue(false, "Cannot create ESM in lws without a real event source ARN.");
   }
 
   @Given("the event source mapping does not exist")
@@ -298,11 +315,15 @@ public class LambdaSteps {
   @Given("the mapping is {string}")
   public void theMappingIs(String state) {
     // @internal: Cannot observe ESM state transitions in lws without a real event source.
+    Assumptions.assumeTrue(
+        false, "Cannot observe ESM state transitions in lws without a real event source.");
   }
 
   @Given("the mapping is not {string}")
   public void theMappingIsNot(String state) {
     // @internal: Cannot observe ESM state transitions in lws without a real event source.
+    Assumptions.assumeTrue(
+        false, "Cannot observe ESM state transitions in lws without a real event source.");
   }
 
   // ── Given: async slots ────────────────────────────────────────────────────────
@@ -310,51 +331,61 @@ public class LambdaSteps {
   @Given("an async slot is available")
   public void anAsyncSlotIsAvailable() {
     // @internal: Cannot trigger Lambda async invocation in lws.
+    Assumptions.assumeTrue(false, "Cannot trigger Lambda async invocation in lws.");
   }
 
   @Given("no async slot is available")
   public void noAsyncSlotIsAvailable() {
     // @internal: Cannot exhaust Lambda async slot limit in lws.
+    Assumptions.assumeTrue(false, "Cannot exhaust Lambda async slot limit in lws.");
   }
 
   @Given("the async slot is occupied")
   public void theAsyncSlotIsOccupied() {
     // @internal: Cannot observe Lambda async slot state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda async slot state in lws.");
   }
 
   @Given("the async slot is empty")
   public void theAsyncSlotIsEmpty() {
     // @internal: Cannot observe Lambda async slot state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda async slot state in lws.");
   }
 
   @Given("the async slot has a function assigned")
   public void theAsyncSlotHasAFunctionAssigned() {
     // @internal: Cannot observe Lambda async slot state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda async slot state in lws.");
   }
 
   @Given("the async slot does not have a function assigned")
   public void theAsyncSlotDoesNotHaveAFunctionAssigned() {
     // @internal: Cannot observe Lambda async slot state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda async slot state in lws.");
   }
 
   @Given("retry tracking is available for the slot")
   public void retryTrackingIsAvailableForTheSlot() {
     // @internal: Cannot observe Lambda async retry state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda async retry state in lws.");
   }
 
   @Given("retry tracking is not available for the slot")
   public void retryTrackingIsNotAvailableForTheSlot() {
     // @internal: Cannot observe Lambda async retry state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda async retry state in lws.");
   }
 
   @Given("the retry count has been exhausted")
   public void theRetryCountHasBeenExhausted() {
     // @internal: Cannot observe Lambda async retry exhaustion in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda async retry exhaustion in lws.");
   }
 
   @Given("the retry count has not been exhausted")
   public void theRetryCountHasNotBeenExhausted() {
     // @internal: Cannot observe Lambda async retry state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda async retry state in lws.");
   }
 
   // ── Given: execution tracking ─────────────────────────────────────────────────
@@ -362,16 +393,19 @@ public class LambdaSteps {
   @Given("the function has active execution tracking")
   public void theFunctionHasActiveExecutionTracking() {
     // @internal: Cannot observe Lambda execution tracking state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda execution tracking state in lws.");
   }
 
   @Given("the function does not have active execution tracking")
   public void theFunctionDoesNotHaveActiveExecutionTracking() {
     // @internal: Cannot observe Lambda execution tracking state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda execution tracking state in lws.");
   }
 
   @Given("the function has at least one active execution")
   public void theFunctionHasAtLeastOneActiveExecution() {
     // @internal: Cannot observe Lambda execution tracking state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda execution tracking state in lws.");
   }
 
   // ── When: actions ─────────────────────────────────────────────────────────────
@@ -654,6 +688,7 @@ public class LambdaSteps {
   @Then("the function becomes {string} or {string} non-deterministically")
   public void theFunctionBecomesOrNonDeterministically(String stateA, String stateB) {
     // @internal: Cannot observe Lambda PENDING resolution in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda PENDING resolution in lws.");
   }
 
   @Then("the function enters {string} state")
@@ -747,51 +782,61 @@ public class LambdaSteps {
   @Then("the mapping is in {string} state and linked to a function")
   public void theMappingIsInStateAndLinkedToAFunction(String expectedState) {
     // @internal: Cannot observe ESM CREATING state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe ESM CREATING state in lws.");
   }
 
   @Then("the mapping is {string} and inactive")
   public void theMappingIsAndInactive(String expectedState) {
     // @internal: Cannot observe ESM DISABLED state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe ESM DISABLED state in lws.");
   }
 
   @Then("the mapping is {string} and active")
   public void theMappingIsAndActive(String expectedState) {
     // @internal: Cannot observe ESM ENABLED state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe ESM ENABLED state in lws.");
   }
 
   @Then("the mapping enters {string} state")
   public void theMappingEntersState(String expectedState) {
     // @internal: Cannot observe ESM DELETING state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe ESM DELETING state in lws.");
   }
 
   @Then("the event is queued in an async slot")
   public void theEventIsQueuedInAnAsyncSlot() {
     // @internal: Cannot observe Lambda async slot state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda async slot state in lws.");
   }
 
   @Then("the active execution count increases")
   public void theActiveExecutionCountIncreases() {
     // @internal: Cannot observe Lambda execution count changes in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda execution count changes in lws.");
   }
 
   @Then("the active execution count decreases")
   public void theActiveExecutionCountDecreases() {
     // @internal: Cannot observe Lambda execution count changes in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda execution count changes in lws.");
   }
 
   @Then("the retry count increases")
   public void theRetryCountIncreases() {
     // @internal: Cannot observe Lambda async retry count in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda async retry count in lws.");
   }
 
   @Then("the event is dropped and the slot is freed")
   public void theEventIsDroppedAndTheSlotIsFreed() {
     // @internal: Cannot observe Lambda async slot state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda async slot state in lws.");
   }
 
   @Then("the async slot is freed")
   public void theAsyncSlotIsFreed() {
     // @internal: Cannot observe Lambda async slot state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda async slot state in lws.");
   }
 
   @Then("the function configuration is updated while remaining {string}")
@@ -842,16 +887,22 @@ public class LambdaSteps {
   @Then("no function in {string} state has active executions")
   public void noFunctionInStateHasActiveExecutions(String state) {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(
+        false, "No-op: model-level invariant; trivially satisfied in isolated lws context.");
   }
 
   @Then("active execution count never exceeds reserved concurrency when set")
   public void activeExecutionCountNeverExceedsReservedConcurrencyWhenSet() {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(
+        false, "No-op: model-level invariant; trivially satisfied in isolated lws context.");
   }
 
   @Then("async retry count never exceeds two")
   public void asyncRetryCountNeverExceedsTwo() {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(
+        false, "No-op: model-level invariant; trivially satisfied in isolated lws context.");
   }
 
   // "every event source mapping has a valid status" → CrossServiceSteps (catch-all @And("^every
@@ -861,5 +912,7 @@ public class LambdaSteps {
   @Then("all async slots reference known function IDs or are empty")
   public void allAsyncSlotsReferenceKnownFunctionIDsOrAreEmpty() {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(
+        false, "No-op: model-level invariant; trivially satisfied in isolated lws context.");
   }
 }

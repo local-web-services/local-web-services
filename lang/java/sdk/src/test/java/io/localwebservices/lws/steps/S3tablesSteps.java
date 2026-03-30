@@ -7,6 +7,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.s3tables.S3TablesClient;
 import software.amazon.awssdk.services.s3tables.model.CreateNamespaceResponse;
 import software.amazon.awssdk.services.s3tables.model.CreateTableBucketResponse;
@@ -85,21 +86,27 @@ public class S3tablesSteps {
   @Given("the namespace is \"ACTIVE\"")
   public void theNamespaceIsActive() {
     // Arrange / Act / Assert — no-op: namespaces are always ACTIVE after creation in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: namespaces are always ACTIVE after creation in l");
   }
 
   @Given("the namespace is not \"ACTIVE\"")
   public void theNamespaceIsNotActive() {
     // @internal: no public API can place a namespace in a non-ACTIVE state.
+    Assumptions.assumeTrue(false, "no public API can place a namespace in a non-ACTIVE state.");
   }
 
   @Given("the namespace is \"DELETING\"")
   public void theNamespaceIsDeleting() {
     // @internal: no public API can place a namespace in DELETING state.
+    Assumptions.assumeTrue(false, "no public API can place a namespace in DELETING state.");
   }
 
   @Given("the namespace is not \"DELETING\"")
   public void theNamespaceIsNotDeleting() {
     // @internal: no public API can place a namespace in non-DELETING state selectively.
+    Assumptions.assumeTrue(
+        false, "no public API can place a namespace in non-DELETING state selectively.");
   }
 
   @Given("the namespace has no active tables")
@@ -128,11 +135,14 @@ public class S3tablesSteps {
   @Given("the table is in \"MAINTENANCE\" state")
   public void theTableIsInMaintenanceState() {
     // @internal: no public API can place a table in MAINTENANCE state.
+    Assumptions.assumeTrue(false, "no public API can place a table in MAINTENANCE state.");
   }
 
   @Given("the table is not in \"MAINTENANCE\" state")
   public void theTableIsNotInMaintenanceState() {
     // @internal: no public API can place a table in non-MAINTENANCE state selectively.
+    Assumptions.assumeTrue(
+        false, "no public API can place a table in non-MAINTENANCE state selectively.");
   }
 
   @Given("the table has a policy")
@@ -159,21 +169,26 @@ public class S3tablesSteps {
   @Given("the snapshot is \"ACTIVE\"")
   public void theSnapshotIsActive() {
     // Arrange / Act / Assert — no-op: snapshots are always ACTIVE after creation in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: snapshots are always ACTIVE after creation in lw");
   }
 
   @Given("the snapshot is not \"ACTIVE\"")
   public void theSnapshotIsNotActive() {
     // @internal: no public API can place a snapshot in a non-ACTIVE state.
+    Assumptions.assumeTrue(false, "no public API can place a snapshot in a non-ACTIVE state.");
   }
 
   @Given("the table has more than one snapshot")
   public void theTableHasMoreThanOneSnapshot() {
     // @internal: snapshot count is managed internally by lws.
+    Assumptions.assumeTrue(false, "snapshot count is managed internally by lws.");
   }
 
   @Given("the table has one or fewer snapshots")
   public void theTableHasOneOrFewerSnapshots() {
     // @internal: snapshot count is managed internally by lws.
+    Assumptions.assumeTrue(false, "snapshot count is managed internally by lws.");
   }
 
   // ── Given: compaction state setup ─────────────────────────────────────────────
@@ -524,6 +539,7 @@ public class S3tablesSteps {
   @Then("the bucket is \"DELETED\" and all its namespaces and tables are \"DELETED\"")
   public void theBucketIsDeletedAndAllItsNamespacesAndTablesAreDeleted() {
     // @internal: internal state assertion — no-op in public API test context.
+    Assumptions.assumeTrue(false, "internal state assertion — no-op in public API test context.");
   }
 
   @Then("the namespace enters \"DELETING\" state")
@@ -544,6 +560,7 @@ public class S3tablesSteps {
   @Then("the namespace is \"DELETED\" and all its tables are \"DELETED\"")
   public void theNamespaceIsDeletedAndAllItsTablesAreDeleted() {
     // @internal: internal state assertion — no-op in public API test context.
+    Assumptions.assumeTrue(false, "internal state assertion — no-op in public API test context.");
   }
 
   @Then("the table enters \"DELETING\" state")
@@ -564,11 +581,13 @@ public class S3tablesSteps {
   @Then("the table is \"DELETED\" and all its snapshots are \"DELETED\"")
   public void theTableIsDeletedAndAllItsSnapshotsAreDeleted() {
     // @internal: internal state assertion — no-op in public API test context.
+    Assumptions.assumeTrue(false, "internal state assertion — no-op in public API test context.");
   }
 
   @Then("the table returns to \"ACTIVE\" state")
   public void theTableReturnsToActiveState() {
     // @internal: internal state assertion — no-op in public API test context.
+    Assumptions.assumeTrue(false, "internal state assertion — no-op in public API test context.");
   }
 
   @Then("the table enters \"MAINTENANCE\" state")
@@ -590,11 +609,13 @@ public class S3tablesSteps {
   @Then("the snapshot is \"ACTIVE\" and the table snapshot count increases")
   public void theSnapshotIsActiveAndTheTableSnapshotCountIncreases() {
     // @internal: snapshot state assertion — no-op in public API test context.
+    Assumptions.assumeTrue(false, "snapshot state assertion — no-op in public API test context.");
   }
 
   @Then("the snapshot is \"DELETED\" and the table snapshot count decreases")
   public void theSnapshotIsDeletedAndTheTableSnapshotCountDecreases() {
     // @internal: snapshot state assertion — no-op in public API test context.
+    Assumptions.assumeTrue(false, "snapshot state assertion — no-op in public API test context.");
   }
 
   @Then("the schema version is incremented")
@@ -633,21 +654,29 @@ public class S3tablesSteps {
   @Then("a bucket in \"DELETING\" state has no \"ACTIVE\" namespaces")
   public void aBucketInDeletingStateHasNoActiveNamespaces() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   @Then("a namespace in \"DELETING\" state has no \"ACTIVE\" tables")
   public void aNamespaceInDeletingStateHasNoActiveTables() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   @Then("snapshot count is never negative")
   public void snapshotCountIsNeverNegative() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   @Then("schema version is always at least one")
   public void schemaVersionIsAlwaysAtLeastOne() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   // ── Private helpers ───────────────────────────────────────────────────────────

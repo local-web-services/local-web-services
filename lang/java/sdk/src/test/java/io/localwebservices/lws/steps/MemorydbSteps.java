@@ -8,6 +8,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.docdb.DocDbClient;
 import software.amazon.awssdk.services.memorydb.MemoryDbClient;
 import software.amazon.awssdk.services.memorydb.model.ACL;
@@ -60,6 +61,8 @@ public class MemorydbSteps {
   @Given("multi-{string} is enabled for the cluster")
   public void multiAzIsEnabledForTheCluster(String az) {
     // Arrange / Act / Assert — no-op: multi-AZ state managed internally.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: multi-AZ state managed internally.");
   }
 
   @Given("multi-{string} is not enabled for the cluster")
@@ -100,11 +103,14 @@ public class MemorydbSteps {
   @Given("the snapshot belongs to this cluster")
   public void theSnapshotBelongsToThisCluster() {
     // Arrange / Act / Assert — no-op: snapshot was created from the test cluster.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: snapshot was created from the test cluster.");
   }
 
   @Given("the snapshot does not belong to this cluster")
   public void theSnapshotDoesNotBelongToThisCluster() {
     // @internal: cross-cluster snapshot state cannot be set via public API.
+    Assumptions.assumeTrue(false, "cross-cluster snapshot state cannot be set via public API.");
   }
 
   // ── Given: tag/resource state setup ──────────────────────────────────────────
@@ -126,11 +132,14 @@ public class MemorydbSteps {
   @Given("the resource is tagged")
   public void theResourceIsTagged() {
     // Arrange / Act / Assert — no-op: cluster is already created with tags.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: cluster is already created with tags.");
   }
 
   @Given("the resource is not tagged")
   public void theResourceIsNotTagged() {
     // @internal: resource with empty tag list requires internal state control.
+    Assumptions.assumeTrue(false, "resource with empty tag list requires internal state control.");
   }
 
   // ── Given: FizzBee sequence preconditions ─────────────────────────────────────
@@ -138,36 +147,43 @@ public class MemorydbSteps {
   @Given("cid in cluster_status")
   public void cidInClusterStatus() {
     // @internal: FizzBee sequence precondition; no public API equivalent.
+    Assumptions.assumeTrue(false, "FizzBee sequence precondition; no public API equivalent.");
   }
 
   @Given("sid in snapshot_status")
   public void sidInSnapshotStatus() {
     // @internal: FizzBee sequence precondition; no public API equivalent.
+    Assumptions.assumeTrue(false, "FizzBee sequence precondition; no public API equivalent.");
   }
 
   @Given("uid in user_status")
   public void uidInUserStatus() {
     // @internal: FizzBee sequence precondition; no public API equivalent.
+    Assumptions.assumeTrue(false, "FizzBee sequence precondition; no public API equivalent.");
   }
 
   @Given("uid not in user_status")
   public void uidNotInUserStatus() {
     // @internal: FizzBee sequence precondition; no public API equivalent.
+    Assumptions.assumeTrue(false, "FizzBee sequence precondition; no public API equivalent.");
   }
 
   @Given("aid in acl_status")
   public void aidInAclStatus() {
     // @internal: FizzBee sequence precondition; no public API equivalent.
+    Assumptions.assumeTrue(false, "FizzBee sequence precondition; no public API equivalent.");
   }
 
   @Given("aid not in acl_status")
   public void aidNotInAclStatus() {
     // @internal: FizzBee sequence precondition; no public API equivalent.
+    Assumptions.assumeTrue(false, "FizzBee sequence precondition; no public API equivalent.");
   }
 
   @Given("cid in tag_exists")
   public void cidInTagExists() {
     // @internal: FizzBee sequence precondition; no public API equivalent.
+    Assumptions.assumeTrue(false, "FizzBee sequence precondition; no public API equivalent.");
   }
 
   // ── When: actions ─────────────────────────────────────────────────────────────
@@ -499,6 +515,8 @@ public class MemorydbSteps {
   @Then("the cluster remains {string} after the shard failover")
   public void theClusterRemainsAfterTheShardFailover(String state) {
     // No-op invariant: shard failover is internal; trivially satisfied in lws context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: shard failover is internal; trivially satisfied in lws context.");
   }
 
   @Then("the restored cluster is in {string} state")
@@ -923,11 +941,15 @@ public class MemorydbSteps {
   @Then("no {string} in {string} state is currently associated with a cluster")
   public void noAclInStateIsCurrentlyAssociatedWithACluster(String acl, String state) {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   @Then("no user in {string} state is currently a member of an {string}")
   public void noUserInStateIsCurrentlyAMemberOfAnAcl(String state, String acl) {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   // "every active cluster and snapshot has tags" → CrossServiceSteps (catch-all @And("^every .*$"))

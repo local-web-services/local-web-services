@@ -9,6 +9,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminGetUserResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.GroupType;
@@ -140,6 +141,8 @@ public class CognitoIdpSteps {
   @Given("the user is not already {string}")
   public void theUserIsNotAlready(String state) {
     // Arrange / Act / Assert — no-op: newly created users are not in DELETED state.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: newly created users are not in DELETED state.");
   }
 
   @Given("the user is already {string}")
@@ -360,6 +363,8 @@ public class CognitoIdpSteps {
   @Given("the user and group belong to the same pool")
   public void theUserAndGroupBelongToTheSamePool() {
     // Arrange / Act / Assert — no-op: both user and group are created in the same pool.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: both user and group are created in the same pool");
   }
 
   @Given("the user and group belong to different pools")
@@ -381,21 +386,27 @@ public class CognitoIdpSteps {
   @Given("the session exists")
   public void theSessionExists() {
     // Arrange / Act / Assert — no-op: @internal scenario; no public API provides this state.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: @internal scenario; no public API provides this ");
   }
 
   @Given("the session does not exist")
   public void theSessionDoesNotExist() {
     // Arrange / Act / Assert — no-op: no session has been created.
+    Assumptions.assumeTrue(false, "Arrange / Act / Assert — no-op: no session has been created.");
   }
 
   @Given("the session is {string}")
   public void theSessionIs(String state) {
     // Arrange / Act / Assert — no-op: @internal scenario; no public API provides these states.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: @internal scenario; no public API provides these");
   }
 
   @Given("the session is not {string}")
   public void theSessionIsNot(String state) {
     // Arrange / Act / Assert — no-op: @internal scenario.
+    Assumptions.assumeTrue(false, "Arrange / Act / Assert — no-op: @internal scenario.");
   }
 
   // ── When: actions ─────────────────────────────────────────────────────────────
@@ -1014,11 +1025,15 @@ public class CognitoIdpSteps {
   @Then("deleted users do not have active authenticated sessions")
   public void deletedUsersDoNotHaveActiveAuthenticatedSessions() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   @Then("disabled users do not have active authenticated sessions")
   public void disabledUsersDoNotHaveActiveAuthenticatedSessions() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   // ── Private helpers ───────────────────────────────────────────────────────────

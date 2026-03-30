@@ -2,6 +2,7 @@ package io.localwebservices.lws.steps;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.Runtime;
@@ -70,10 +71,13 @@ public class LambdaSnsSteps {
   public void theMessageIsPublishedToTheTopic() {
     // @internal: Cannot observe Lambda SNS publish result in lws.
     // Scenarios requiring this step are @internal and will not run under the tag filter.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda SNS publish result in lws.");
   }
 
   @Then("publishing requires an \"ACTIVE\" topic to be present")
   public void publishingRequiresAnActiveTopicToBePresent() {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(
+        false, "No-op: model-level invariant; trivially satisfied in isolated lws context.");
   }
 }

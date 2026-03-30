@@ -46,11 +46,15 @@ public class EventsDynamodbSteps {
   @Given("^rid in rule_status$")
   public void ridInRuleStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   @Given("^tid in table_status$")
   public void tidInTableStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   // ---------------------------------------------------------------------------

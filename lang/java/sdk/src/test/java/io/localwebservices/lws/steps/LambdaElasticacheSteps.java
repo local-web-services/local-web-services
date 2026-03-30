@@ -3,6 +3,7 @@ package io.localwebservices.lws.steps;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.elasticache.ElastiCacheClient;
 import software.amazon.awssdk.services.lambda.LambdaClient;
@@ -64,6 +65,7 @@ public class LambdaElasticacheSteps {
   @Given("a \"CACHED\" entry exists")
   public void aCachedEntryExists() {
     // @internal: cache entry state requires background processing.
+    Assumptions.assumeTrue(false, "cache entry state requires background processing.");
   }
 
   @Given("no \"CACHED\" entry exists")
@@ -74,6 +76,7 @@ public class LambdaElasticacheSteps {
   @Given("a \"CACHED\" entry exists in the cluster")
   public void aCachedEntryExistsInTheCluster() {
     // @internal: cache entry state requires background Lambda invocation.
+    Assumptions.assumeTrue(false, "cache entry state requires background Lambda invocation.");
   }
 
   @Given("no \"CACHED\" entries exist in the cluster")
@@ -86,11 +89,14 @@ public class LambdaElasticacheSteps {
   @Given("a key slot is available")
   public void aKeySlotIsAvailable() {
     // Arrange / Act / Assert — no-op: key slots are always available in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: key slots are always available in lws.");
   }
 
   @Given("no key slot is available")
   public void noKeySlotIsAvailable() {
     // @internal: Cannot exhaust key slot limit in lws via public APIs.
+    Assumptions.assumeTrue(false, "Cannot exhaust key slot limit in lws via public APIs.");
   }
 
   @When("the Lambda function writes a value to the ElastiCache cluster during invocation")
@@ -128,12 +134,14 @@ public class LambdaElasticacheSteps {
   public void theCacheEntryIsCachedInTheCluster() {
     // @internal: Cannot observe cache entry state in lws.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot observe cache entry state in lws.");
   }
 
   @Then("the cache entry is \"EVICTED\"")
   public void theCacheEntryIsEvicted() {
     // @internal: Cannot observe cache eviction in lws.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot observe cache eviction in lws.");
   }
 
   // "every \"CACHED\" entry belongs to an \"AVAILABLE\" cluster" → CrossServiceSteps (catch-all

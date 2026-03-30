@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.elasticsearch.ElasticsearchClient;
 import software.amazon.awssdk.services.lambda.LambdaClient;
@@ -72,6 +73,8 @@ public class LambdaElasticsearchSteps {
   @Given("the domain is not \"AVAILABLE\"")
   public void theDomainIsNotAvailable() {
     // @internal: Cannot force a domain into a non-AVAILABLE state via public API in lws.
+    Assumptions.assumeTrue(
+        false, "Cannot force a domain into a non-AVAILABLE state via public API in lws.");
   }
 
   // ── When: actions ──────────────────────────────────────────────────────────────
@@ -143,6 +146,7 @@ public class LambdaElasticsearchSteps {
   public void theDomainIsAvailableAgain() {
     // @internal: domain config update completion not observable via public API.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "domain config update completion not observable via public API.");
   }
 
   // "every existing document references a domain that exists" → CrossServiceSteps (catch-all

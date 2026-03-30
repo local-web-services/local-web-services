@@ -7,6 +7,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.Map;
+import org.junit.jupiter.api.Assumptions;
 
 /**
  * Step definitions for the aws_fake informal specification feature files.
@@ -85,6 +86,8 @@ public class AwsFakeSteps {
   public void theAwsFakeIsNotStatus(String fakeType, String status) {
     // @internal: there is no public API to deactivate a fake without deleting it.
     // Arrange / Act / Assert — no-op.
+    Assumptions.assumeTrue(
+        false, "there is no public API to deactivate a fake without deleting it.");
   }
 
   // ── Given: operation state setup ─────────────────────────────────────────────
@@ -97,6 +100,8 @@ public class AwsFakeSteps {
   @Given("no operation slot is available")
   public void noOperationSlotIsAvailable() {
     // @internal: capacity limits are not controllable via the public management API.
+    Assumptions.assumeTrue(
+        false, "capacity limits are not controllable via the public management API.");
   }
 
   @Given("the operation exists")
@@ -131,6 +136,8 @@ public class AwsFakeSteps {
   public void theOperationIsNot(String status) {
     // @internal: there is no public API to deactivate an operation without removing it.
     // Arrange / Act / Assert — no-op.
+    Assumptions.assumeTrue(
+        false, "there is no public API to deactivate an operation without removing it.");
   }
 
   @Given("the operation has no header filter")
@@ -142,6 +149,8 @@ public class AwsFakeSteps {
   public void theOperationHasAHeaderFilter() {
     // @internal: setting up a header-filtered operation in a precondition requires
     // internal access; the public API adds filters via withHeader in the builder chain.
+    Assumptions.assumeTrue(
+        false, "setting up a header-filtered operation in a precondition requires");
   }
 
   @Given("the operation does not have a header filter")

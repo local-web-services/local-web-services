@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.elasticache.ElastiCacheClient;
 import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sns.model.CreateTopicResponse;
@@ -82,6 +83,7 @@ public class ElasticacheSnsSteps {
   @Given("the cluster is \"MODIFYING\"")
   public void theClusterIsModifying() {
     // @internal: MODIFYING state is not reachable via public API in lws.
+    Assumptions.assumeTrue(false, "MODIFYING state is not reachable via public API in lws.");
   }
 
   @Given("the cluster is not \"MODIFYING\"")
@@ -113,6 +115,7 @@ public class ElasticacheSnsSteps {
   public void theClusterHasAnSnsNotificationConfigured() {
     // @internal: cluster SNS notification state requires background processing.
     // No-op — this given is only used in @internal scenarios.
+    Assumptions.assumeTrue(false, "cluster SNS notification state requires background processing.");
   }
 
   @Given("the topic exists and is \"ACTIVE\"")
@@ -126,11 +129,14 @@ public class ElasticacheSnsSteps {
   @Given("the topic is \"ACTIVE\"")
   public void theTopicIsActive() {
     // Arrange / Act / Assert — no-op: topics are ACTIVE immediately after creation in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: topics are ACTIVE immediately after creation in ");
   }
 
   @Given("the topic is \"DELETED\"")
   public void theTopicIsDeleted() {
     // @internal: topic lifecycle transitions require background processing.
+    Assumptions.assumeTrue(false, "topic lifecycle transitions require background processing.");
   }
 
   @Given("the topic is not \"DELETED\"")
@@ -141,6 +147,7 @@ public class ElasticacheSnsSteps {
   @Given("the topic already is \"DELETED\"")
   public void theTopicIsAlreadyDeleted() {
     // @internal: topic lifecycle transitions require background processing.
+    Assumptions.assumeTrue(false, "topic lifecycle transitions require background processing.");
   }
 
   @Given("the topic does not exist or is not \"ACTIVE\"")
@@ -249,12 +256,16 @@ public class ElasticacheSnsSteps {
   public void theClusterIsModifyingAndTheNotificationIsPublishedToTheTopic() {
     // @internal: cluster event notification delivery requires background processing.
     // No assertion performed.
+    Assumptions.assumeTrue(
+        false, "cluster event notification delivery requires background processing.");
   }
 
   @Then("the cluster is \"MODIFYING\" but no notification is published")
   public void theClusterIsModifyingButNoNotificationIsPublished() {
     // @internal: cluster event notification failure requires background processing.
     // No assertion performed.
+    Assumptions.assumeTrue(
+        false, "cluster event notification failure requires background processing.");
   }
 
   // ── Safety invariant Then steps ───────────────────────────────────────────────

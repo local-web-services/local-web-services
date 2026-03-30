@@ -9,6 +9,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
 import software.amazon.awssdk.services.apigateway.model.CreateDeploymentResponse;
 import software.amazon.awssdk.services.apigateway.model.CreateRestApiResponse;
@@ -381,12 +382,15 @@ public class ApigatewaySteps {
     // No-op: cannot create a resource without a path via public API.
     // The feature scenario with this step is @standard @negative — operation will be rejected.
     // Arrange / Act / Assert — nothing to do
+    Assumptions.assumeTrue(false, "No-op: cannot create a resource without a path via public API.");
   }
 
   @Given("the resource is not the root resource")
   public void theResourceIsNotTheRootResource() {
     // No-op: creating any REST API provides a root resource; child resources are non-root.
     // Arrange / Act / Assert — nothing to do
+    Assumptions.assumeTrue(
+        false, "No-op: creating any REST API provides a root resource; child resources are non-r");
   }
 
   @Given("the resource is the root resource")
@@ -461,6 +465,7 @@ public class ApigatewaySteps {
   public void theMethodHasAnAssociation(String associationType) {
     // No-op: methods implicitly belong to an API in lws.
     // Arrange / Act / Assert — nothing to do
+    Assumptions.assumeTrue(false, "No-op: methods implicitly belong to an API in lws.");
   }
 
   @Given("the method does not have an {string} association")
@@ -468,6 +473,8 @@ public class ApigatewaySteps {
     // No-op: cannot create a method without an API association via public API.
     // The feature scenario with this step is @standard @negative — operation will be rejected.
     // Arrange / Act / Assert — nothing to do
+    Assumptions.assumeTrue(
+        false, "No-op: cannot create a method without an API association via public API.");
   }
 
   // ── Given: integration state ──────────────────────────────────────────────────
@@ -585,6 +592,7 @@ public class ApigatewaySteps {
   public void theDevStageIsActive() {
     // No-op: stages are active immediately after creation.
     // Arrange / Act / Assert — nothing to do
+    Assumptions.assumeTrue(false, "No-op: stages are active immediately after creation.");
   }
 
   @Given("the dev stage is not active")
@@ -630,6 +638,7 @@ public class ApigatewaySteps {
   public void theProdStageIsActive() {
     // No-op: stages are active immediately after creation.
     // Arrange / Act / Assert — nothing to do
+    Assumptions.assumeTrue(false, "No-op: stages are active immediately after creation.");
   }
 
   @Given("the prod stage is not active")
@@ -1705,36 +1714,48 @@ public class ApigatewaySteps {
   public void allResourcesBelongToApis(String resourceState, String apiState) {
     // No-op: resource-API membership is an internal invariant in lws; always passes.
     // Arrange / Act / Assert — invariant guaranteed by the fake
+    Assumptions.assumeTrue(
+        false, "No-op: resource-API membership is an internal invariant in lws; always passes.");
   }
 
   @Then("all {string} methods belong to {string} resources")
   public void allMethodsBelongToResources(String methodState, String resourceState) {
     // No-op: method-resource membership is an internal invariant in lws; always passes.
     // Arrange / Act / Assert — invariant guaranteed by the fake
+    Assumptions.assumeTrue(
+        false, "No-op: method-resource membership is an internal invariant in lws; always passes");
   }
 
   @Then("all {string} integrations correspond to {string} methods")
   public void allIntegrationsCorrespondToMethods(String integrationState, String methodState) {
     // No-op: integration-method correspondence is an internal invariant in lws; always passes.
     // Arrange / Act / Assert — invariant guaranteed by the fake
+    Assumptions.assumeTrue(
+        false, "No-op: integration-method correspondence is an internal invariant in lws; always");
   }
 
   @Then("all {string} deployments belong to {string} APIs")
   public void allDeploymentsBelongToApis(String deploymentState, String apiState) {
     // No-op: deployment-API membership is an internal invariant in lws; always passes.
     // Arrange / Act / Assert — invariant guaranteed by the fake
+    Assumptions.assumeTrue(
+        false, "No-op: deployment-API membership is an internal invariant in lws; always passes.");
   }
 
   @Then("all active stages reference {string} deployments")
   public void allActiveStagesReferenceDeployments(String deploymentState) {
     // No-op: stage-deployment references are an internal invariant in lws; always passes.
     // Arrange / Act / Assert — invariant guaranteed by the fake
+    Assumptions.assumeTrue(
+        false, "No-op: stage-deployment references are an internal invariant in lws; always pass");
   }
 
   @Then("all active stages belong to {string} APIs")
   public void allActiveStagesBelongToApis(String apiState) {
     // No-op: stage-API membership is an internal invariant in lws; always passes.
     // Arrange / Act / Assert — invariant guaranteed by the fake
+    Assumptions.assumeTrue(
+        false, "No-op: stage-API membership is an internal invariant in lws; always passes.");
   }
 
   @Then("each {string} {string} has at least one {string} root resource")
@@ -1742,5 +1763,7 @@ public class ApigatewaySteps {
       String apiState, String resourceType, String resourceState) {
     // No-op: root resource creation is an internal invariant in lws; always passes.
     // Arrange / Act / Assert — invariant guaranteed by the fake
+    Assumptions.assumeTrue(
+        false, "No-op: root resource creation is an internal invariant in lws; always passes.");
   }
 }

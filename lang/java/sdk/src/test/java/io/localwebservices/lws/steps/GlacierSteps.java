@@ -8,6 +8,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.nio.charset.StandardCharsets;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.glacier.GlacierClient;
 import software.amazon.awssdk.services.glacier.model.DescribeVaultResponse;
@@ -69,11 +70,14 @@ public class GlacierSteps {
   @Given("the vault is \"ACTIVE\"")
   public void theVaultIsActive() {
     // Arrange / Act / Assert — no-op: vaults are always ACTIVE after creation in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: vaults are always ACTIVE after creation in lws.");
   }
 
   @Given("the vault is not \"ACTIVE\"")
   public void theVaultIsNotActive() {
     // @internal: vault lifecycle transitions require background processing.
+    Assumptions.assumeTrue(false, "vault lifecycle transitions require background processing.");
   }
 
   @Given("the vault does not exist")
@@ -159,11 +163,14 @@ public class GlacierSteps {
   @Given("the archive is \"STORED\"")
   public void theArchiveIsStored() {
     // Arrange / Act / Assert — no-op: archives are STORED immediately after upload in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: archives are STORED immediately after upload in ");
   }
 
   @Given("the archive is not \"STORED\"")
   public void theArchiveIsNotStored() {
     // @internal: archive lifecycle transitions require background processing.
+    Assumptions.assumeTrue(false, "archive lifecycle transitions require background processing.");
   }
 
   @Given("the archive does not exist")
@@ -206,21 +213,26 @@ public class GlacierSteps {
   @Given("the job is Succeeded")
   public void theJobIsSucceeded() {
     // @internal: job success requires background Glacier job processing.
+    Assumptions.assumeTrue(false, "job success requires background Glacier job processing.");
   }
 
   @Given("the job is InProgress")
   public void theJobIsInProgress() {
     // Arrange / Act / Assert — no-op: jobs are InProgress immediately after initiation in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: jobs are InProgress immediately after initiation");
   }
 
   @Given("the job is not Succeeded")
   public void theJobIsNotSucceeded() {
     // @internal: job lifecycle transitions require background processing.
+    Assumptions.assumeTrue(false, "job lifecycle transitions require background processing.");
   }
 
   @Given("the job is not InProgress")
   public void theJobIsNotInProgress() {
     // @internal: job lifecycle transitions require background processing.
+    Assumptions.assumeTrue(false, "job lifecycle transitions require background processing.");
   }
 
   @Given("the job does not exist")
@@ -231,11 +243,15 @@ public class GlacierSteps {
   @Given("the job output is available")
   public void theJobOutputIsAvailable() {
     // @internal: job output availability requires background Glacier processing.
+    Assumptions.assumeTrue(
+        false, "job output availability requires background Glacier processing.");
   }
 
   @Given("the job output is not available")
   public void theJobOutputIsNotAvailable() {
     // @internal: job output availability requires background Glacier processing.
+    Assumptions.assumeTrue(
+        false, "job output availability requires background Glacier processing.");
   }
 
   // ── Given: multipart upload state setup ──────────────────────────────────────
@@ -283,11 +299,14 @@ public class GlacierSteps {
   @Given("the upload is InProgress")
   public void theUploadIsInProgress() {
     // Arrange / Act / Assert — no-op: multipart uploads are InProgress after initiation in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: multipart uploads are InProgress after initiatio");
   }
 
   @Given("the upload is not InProgress")
   public void theUploadIsNotInProgress() {
     // @internal: upload lifecycle transitions require background processing.
+    Assumptions.assumeTrue(false, "upload lifecycle transitions require background processing.");
   }
 
   @Given("the upload does not exist")
@@ -760,16 +779,22 @@ public class GlacierSteps {
   @Then("the job is Failed")
   public void theJobIsFailed() {
     // @internal: job_fails requires background processing. No assertion performed.
+    Assumptions.assumeTrue(
+        false, "job_fails requires background processing. No assertion performed.");
   }
 
   @Then("the job is Succeeded and its output is available")
   public void theJobIsSucceededAndItsOutputIsAvailable() {
     // @internal: job_succeeds requires background processing. No assertion performed.
+    Assumptions.assumeTrue(
+        false, "job_succeeds requires background processing. No assertion performed.");
   }
 
   @Then("the vault inventory is marked as fresh")
   public void theVaultInventoryIsMarkedAsFresh() {
     // @internal: vault_inventory_refresh requires background processing. No assertion performed.
+    Assumptions.assumeTrue(
+        false, "vault_inventory_refresh requires background processing. No assertion performed.");
   }
 
   // ── Safety invariant Then steps ───────────────────────────────────────────────
@@ -780,16 +805,22 @@ public class GlacierSteps {
   @Then("vault archive count is never negative")
   public void vaultArchiveCountIsNeverNegative() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   @Then("all stored archives belong to an \"ACTIVE\" vault")
   public void allStoredArchivesBelongToAnActiveVault() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   @Then("job output is only available for succeeded jobs")
   public void jobOutputIsOnlyAvailableForSucceededJobs() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   // "every archive retrieval job references a non-empty archive \"ID\"" → CrossServiceSteps

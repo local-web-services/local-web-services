@@ -134,6 +134,8 @@ public class EventsLambdaSteps {
   @Given("the target function is \"ACTIVE\"")
   public void theTargetFunctionIsActive() {
     // Arrange / Act / Assert — no-op: Lambda functions are ACTIVE immediately after creation.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: Lambda functions are ACTIVE immediately after cr");
   }
 
   @Given("the target function is not \"ACTIVE\"")

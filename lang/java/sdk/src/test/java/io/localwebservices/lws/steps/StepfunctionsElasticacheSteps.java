@@ -2,6 +2,7 @@ package io.localwebservices.lws.steps;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.elasticache.ElastiCacheClient;
 
 /**
@@ -103,6 +104,7 @@ public class StepfunctionsElasticacheSteps {
   public void theClusterIsModifyingAndConnectionsMayBeRefused() {
     // @internal: Cannot observe MODIFYING cluster state via public API in lws.
     // No-op: treat as invariant satisfied.
+    Assumptions.assumeTrue(false, "Cannot observe MODIFYING cluster state via public API in lws.");
   }
 
   // "every succeeded execution recorded which cluster it read" → CrossServiceSteps (catch-all

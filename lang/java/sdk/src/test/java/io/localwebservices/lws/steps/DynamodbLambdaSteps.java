@@ -162,6 +162,8 @@ public class DynamodbLambdaSteps {
   public void theTableDoesNotHaveAStreamEnabled() {
     // Arrange / Act / Assert — lws does not reject put_item when the table has no stream enabled;
     // this step is a no-op and the scenario will pass trivially.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — lws does not reject put_item when the table has no stre");
   }
 
   // ── Given: stream record availability ─────────────────────────────────────

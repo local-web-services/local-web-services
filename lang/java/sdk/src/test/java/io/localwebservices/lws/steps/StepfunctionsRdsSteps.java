@@ -3,6 +3,7 @@ package io.localwebservices.lws.steps;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.rds.RdsClient;
 import software.amazon.awssdk.services.rds.model.DBInstance;
 
@@ -76,6 +77,8 @@ public class StepfunctionsRdsSteps {
   public void theDbInstanceIsFailingOver() {
     // @internal: Cannot force a DB instance into FAILING_OVER state via public API.
     // Arrange / Act / Assert — no-op: treat as precondition satisfied.
+    Assumptions.assumeTrue(
+        false, "Cannot force a DB instance into FAILING_OVER state via public API.");
   }
 
   @Given("the \"DB\" instance is not \"FAILING_OVER\"")
@@ -134,12 +137,14 @@ public class StepfunctionsRdsSteps {
   public void theDbInstanceIsAvailableAgain() {
     // @internal: Cannot observe internal DB instance failover recovery in lws.
     // Arrange / Act / Assert — no-op: invariant trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(false, "Cannot observe internal DB instance failover recovery in lws.");
   }
 
   @Then("the \"DB\" instance is \"FAILING_OVER\" and queries will be rejected")
   public void theDbInstanceIsFailingOverAndQueriesWillBeRejected() {
     // @internal: Cannot observe internal DB instance FAILING_OVER state in lws.
     // Arrange / Act / Assert — no-op: invariant trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(false, "Cannot observe internal DB instance FAILING_OVER state in lws.");
   }
 
   // "every succeeded execution recorded which \"DB\" instance it queried" → CrossServiceSteps

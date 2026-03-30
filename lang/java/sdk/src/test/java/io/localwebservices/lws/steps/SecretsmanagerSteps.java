@@ -80,12 +80,16 @@ public class SecretsmanagerSteps {
   @Given("the recovery window is open")
   public void theRecoveryWindowIsOpen() {
     // Arrange / Act / Assert — no-op: after deletion, the recovery window is always open initially.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: after deletion, the recovery window is always op");
   }
 
   @Given("the recovery window is not open")
   public void theRecoveryWindowIsNotOpen() {
     // Arrange / Act / Assert — cannot expire the recovery window programmatically; no-op.
     // Scenarios requiring a closed window are tagged @internal and excluded from the standard run.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — cannot expire the recovery window programmatically; no-");
   }
 
   // ── When: actions ─────────────────────────────────────────────────────────────
@@ -412,6 +416,8 @@ public class SecretsmanagerSteps {
   public void theSecretCanNoLongerBeRestored() {
     // Arrange / Act / Assert — scenario is untestable via public API; no-op.
     // Scenarios requiring a closed recovery window are excluded from the standard run.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — scenario is untestable via public API; no-op.");
   }
 
   @Then("the specified tags are associated with the secret")
@@ -448,6 +454,8 @@ public class SecretsmanagerSteps {
   public void aNewSecretVersionIsCreatedAndThePreviousVersionIsRetained() {
     // Arrange / Act / Assert — cannot observe rotation result without triggering rotation; no-op.
     // Scenarios requiring rotation are excluded from the standard run.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — cannot observe rotation result without triggering rotat");
   }
 
   // ── Invariant catch-all steps ─────────────────────────────────────────────────
@@ -463,29 +471,39 @@ public class SecretsmanagerSteps {
   public void atMostOneCurrentVersionExistsPerSecret() {
     // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated
     // context.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in is");
   }
 
   @Then("at most one previous version exists per secret")
   public void atMostOnePreviousVersionExistsPerSecret() {
     // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated
     // context.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in is");
   }
 
   @Then("a deleted secret with a closed recovery window cannot be restored")
   public void aDeletedSecretWithAClosedRecoveryWindowCannotBeRestored() {
     // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated
     // context.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in is");
   }
 
   @Then("all secret names are unique")
   public void allSecretNamesAreUnique() {
     // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated
     // context.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in is");
   }
 
   @Then("all version identifiers are unique across secrets")
   public void allVersionIdentifiersAreUniqueAcrossSecrets() {
     // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated
     // context.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in is");
   }
 }

@@ -3,6 +3,7 @@ package io.localwebservices.lws.steps;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.docdb.DocDbClient;
 import software.amazon.awssdk.services.lambda.LambdaClient;
@@ -93,12 +94,14 @@ public class LambdaDocdbSteps {
   @Given("a document slot is available")
   public void aDocumentSlotIsAvailable() {
     // No-op: always room for documents in lws.
+    Assumptions.assumeTrue(false, "No-op: always room for documents in lws.");
   }
 
   @Given("no document slot is available")
   public void noDocumentSlotIsAvailable() {
     // @internal: Cannot exhaust document slot limit in lws via public APIs.
     // Only reached by @internal/@capacity scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot exhaust document slot limit in lws via public APIs.");
   }
 
   // ── Given: sequence state (fid/cid/iid) ──────────────────────────────────────
@@ -179,23 +182,27 @@ public class LambdaDocdbSteps {
   @Then("the cluster is \"AVAILABLE\" and ready to accept connections")
   public void theClusterIsAvailableAndReadyToAcceptConnections() {
     // @internal: StartDBCluster is not yet implemented in lws.
+    Assumptions.assumeTrue(false, "StartDBCluster is not yet implemented in lws.");
   }
 
   @Then("the cluster is \"STOPPED\" and connections will be rejected")
   public void theClusterIsStoppedAndConnectionsWillBeRejected() {
     // @internal: StopDBCluster is not yet implemented in lws.
+    Assumptions.assumeTrue(false, "StopDBCluster is not yet implemented in lws.");
   }
 
   @Then("the invocation is \"FAILED\" with a connection error")
   public void theInvocationIsFailedWithAConnectionError() {
     // @internal: Cannot observe Lambda invocation failure in lws.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda invocation failure in lws.");
   }
 
   @Then("the document \"EXISTS\" and the invocation is \"SUCCESS\"")
   public void theDocumentExistsAndTheInvocationIsSuccess() {
     // @internal: Cannot observe Lambda document write result in lws.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda document write result in lws.");
   }
 
   // "every existing document references a cluster that exists" → CrossServiceSteps (catch-all

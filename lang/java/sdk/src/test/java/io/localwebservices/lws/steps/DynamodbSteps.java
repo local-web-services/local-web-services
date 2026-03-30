@@ -9,6 +9,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -37,7 +38,7 @@ import software.amazon.awssdk.services.dynamodb.model.TransactWriteItem;
  */
 public class DynamodbSteps {
 
-  private static final String TEST_TABLE = "e2e-dynamodb-test-table-1";
+  private static final String TEST_TABLE = "test-table-1";
   private static final String TEST_PK = "id";
   private static final String TEST_ITEM_KEY = "e2e-item-key-1";
   private static final String TEST_ATTR_VAL = "attr-val-1";
@@ -155,11 +156,14 @@ public class DynamodbSteps {
   @Given("a transaction is currently in progress")
   public void aTransactionIsCurrentlyInProgress() {
     // No-op: @internal scenarios that require an in-progress transaction are excluded.
+    Assumptions.assumeTrue(
+        false, "No-op: @internal scenarios that require an in-progress transaction are excluded.");
   }
 
   @Given("a transaction is {string}")
   public void aTransactionIs(String state) {
     // No-op: @internal scenarios are excluded from the test run.
+    Assumptions.assumeTrue(false, "No-op: @internal scenarios are excluded from the test run.");
   }
 
   @Given("no transaction is {string}")
@@ -176,11 +180,13 @@ public class DynamodbSteps {
   @Given("the transaction is not \"COMMITTED\"")
   public void theTransactionIsNotCommitted() {
     // @internal: default state has no committed transaction.
+    Assumptions.assumeTrue(false, "default state has no committed transaction.");
   }
 
   @Given("the transaction is not \"ROLLED_BACK\"")
   public void theTransactionIsNotRolledBack() {
     // @internal: default state has no rolled-back transaction.
+    Assumptions.assumeTrue(false, "default state has no rolled-back transaction.");
   }
 
   @Given("the transaction's table exists")
@@ -233,11 +239,15 @@ public class DynamodbSteps {
   @Given("the \"GSI\" exists")
   public void theGsiExists() {
     // No-op: GSI scenarios are tagged @internal and excluded from the test run.
+    Assumptions.assumeTrue(
+        false, "No-op: GSI scenarios are tagged @internal and excluded from the test run.");
   }
 
   @Given("the table has pending \"GSI\" propagation")
   public void theTableHasPendingGsiPropagation() {
     // No-op: GSI propagation scenarios are tagged @internal and excluded.
+    Assumptions.assumeTrue(
+        false, "No-op: GSI propagation scenarios are tagged @internal and excluded.");
   }
 
   @Given("the table does not have pending \"GSI\" propagation")
@@ -248,6 +258,8 @@ public class DynamodbSteps {
   @Given("there are writes pending propagation to the \"GSI\"")
   public void thereAreWritesPendingPropagationToTheGsi() {
     // No-op: GSI propagation scenarios are tagged @internal and excluded.
+    Assumptions.assumeTrue(
+        false, "No-op: GSI propagation scenarios are tagged @internal and excluded.");
   }
 
   @Given("there are no writes pending propagation to the \"GSI\"")
@@ -947,31 +959,43 @@ public class DynamodbSteps {
   @Then("the transaction is \"COMMITTED\" or \"ROLLED_BACK\"")
   public void theTransactionIsCommittedOrRolledBack() {
     // No-op: @internal — cannot observe non-deterministic transaction resolution.
+    Assumptions.assumeTrue(
+        false, "No-op: @internal — cannot observe non-deterministic transaction resolution.");
   }
 
   @Then("the transaction is \"ROLLED_BACK\"")
   public void theTransactionIsRolledBack() {
     // No-op: @internal — cannot observe ROLLED_BACK state via public API.
+    Assumptions.assumeTrue(
+        false, "No-op: @internal — cannot observe ROLLED_BACK state via public API.");
   }
 
   @Then("the transaction is cleared")
   public void theTransactionIsCleared() {
     // No-op: @internal — cannot observe transaction clearing via public API.
+    Assumptions.assumeTrue(
+        false, "No-op: @internal — cannot observe transaction clearing via public API.");
   }
 
   @Then("the transaction slot is free")
   public void theTransactionSlotIsFree() {
     // No-op: @internal — cannot observe transaction slot state via public API.
+    Assumptions.assumeTrue(
+        false, "No-op: @internal — cannot observe transaction slot state via public API.");
   }
 
   @Then("reads are throttled or unthrottled")
   public void readsAreThrottledOrUnthrottled() {
     // No-op: set_throttle_reads uses internal admin API; always passes.
+    Assumptions.assumeTrue(
+        false, "No-op: set_throttle_reads uses internal admin API; always passes.");
   }
 
   @Then("writes are throttled or unthrottled")
   public void writesAreThrottledOrUnthrottled() {
     // No-op: set_throttle_writes uses internal admin API; always passes.
+    Assumptions.assumeTrue(
+        false, "No-op: set_throttle_writes uses internal admin API; always passes.");
   }
 
   // ── Then: safety invariants ────────────────────────────────────────────────────
@@ -1009,31 +1033,43 @@ public class DynamodbSteps {
   @Then("\"GSI\" pending write count is never negative")
   public void gsiPendingWriteCountIsNeverNegative() {
     // No-op: GSI pending write counts are internal state; always passes.
+    Assumptions.assumeTrue(
+        false, "No-op: GSI pending write counts are internal state; always passes.");
   }
 
   @Then("transaction status is always a valid value")
   public void transactionStatusIsAlwaysAValidValue() {
     // No-op: transaction status validity is an internal invariant; always passes.
+    Assumptions.assumeTrue(
+        false, "No-op: transaction status validity is an internal invariant; always passes.");
   }
 
   @Then("a pending transaction always references an existing table")
   public void aPendingTransactionAlwaysReferencesAnExistingTable() {
     // No-op: transaction-table reference integrity is an internal invariant; always passes.
+    Assumptions.assumeTrue(
+        false, "No-op: transaction-table reference integrity is an internal invariant; always pa");
   }
 
   @Then("items only exist in non-deleted tables")
   public void itemsOnlyExistInNonDeletedTables() {
     // No-op: item-table consistency is an internal invariant; always passes.
+    Assumptions.assumeTrue(
+        false, "No-op: item-table consistency is an internal invariant; always passes.");
   }
 
   @Then("deleted tables are never the target of a pending transaction")
   public void deletedTablesAreNeverTheTargetOfAPendingTransaction() {
     // No-op: deleted-table transaction safety is an internal invariant; always passes.
+    Assumptions.assumeTrue(
+        false, "No-op: deleted-table transaction safety is an internal invariant; always passes.");
   }
 
   @Then("the \"GSI\" is consistent with the table")
   public void theGsiIsConsistentWithTheTable() {
     // No-op: @internal — cannot verify GSI consistency via public API.
+    Assumptions.assumeTrue(
+        false, "No-op: @internal — cannot verify GSI consistency via public API.");
   }
 
   // ── Private helpers ────────────────────────────────────────────────────────────

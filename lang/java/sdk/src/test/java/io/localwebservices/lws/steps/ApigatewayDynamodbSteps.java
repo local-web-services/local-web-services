@@ -13,6 +13,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
 import software.amazon.awssdk.services.apigateway.model.CreateDeploymentResponse;
 import software.amazon.awssdk.services.apigateway.model.CreateRestApiResponse;
@@ -197,6 +198,8 @@ public class ApigatewayDynamodbSteps {
   public void theApiAlreadyHasDynamoDbIntegrationConfigured() {
     // Arrange / Act / Assert — no-op: cannot simulate pre-configured integration conflict in lws;
     // @internal excluded.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: cannot simulate pre-configured integration confl");
   }
 
   @Given("the \"API\" has a DynamoDB integration configured")
@@ -236,12 +239,16 @@ public class ApigatewayDynamodbSteps {
   public void theTargetTableIsNotActive() {
     // Arrange / Act / Assert — no-op: cannot simulate non-ACTIVE target table in lws; @internal
     // excluded.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: cannot simulate non-ACTIVE target table in lws; ");
   }
 
   @Given("the target table is \"DELETING\"")
   public void theTargetTableIsDeleting() {
     // Arrange / Act / Assert — no-op: cannot simulate DELETING table state in lws; @internal
     // excluded.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: cannot simulate DELETING table state in lws; @in");
   }
 
   @Given("the target table is not \"DELETING\"")
@@ -392,6 +399,8 @@ public class ApigatewayDynamodbSteps {
   public void theRequestIsFailedAndNoItemIsWritten() {
     // Arrange / Act / Assert — no-op: cannot simulate DynamoDB write failure via API Gateway in
     // lws; @internal excluded.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: cannot simulate DynamoDB write failure via API G");
   }
 
   @Then("the table is \"DELETING\" and \"API\" requests targeting it will fail")

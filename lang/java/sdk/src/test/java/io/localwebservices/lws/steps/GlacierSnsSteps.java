@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.glacier.GlacierClient;
 import software.amazon.awssdk.services.glacier.model.DescribeVaultResponse;
 import software.amazon.awssdk.services.glacier.model.InitiateJobResponse;
@@ -66,6 +67,8 @@ public class GlacierSnsSteps {
   public void theVaultHasAnSnsNotificationConfigured() {
     // @internal: vault notification + job completion requires background processing.
     // No-op — this given is only used in @internal scenarios.
+    Assumptions.assumeTrue(
+        false, "vault notification + job completion requires background processing.");
   }
 
   @Given("the topic is already \"DELETED\"")
@@ -95,6 +98,7 @@ public class GlacierSnsSteps {
   @Given("a job is \"IN_PROGRESS\"")
   public void aJobIsInProgress() {
     // @internal: IN_PROGRESS job state requires background Glacier processing.
+    Assumptions.assumeTrue(false, "IN_PROGRESS job state requires background Glacier processing.");
   }
 
   @Given("no job is \"IN_PROGRESS\"")
@@ -105,16 +109,19 @@ public class GlacierSnsSteps {
   @Given("the configured topic is \"ACTIVE\"")
   public void theConfiguredTopicIsActive() {
     // @internal: this given is only used in @internal scenarios.
+    Assumptions.assumeTrue(false, "this given is only used in @internal scenarios.");
   }
 
   @Given("the configured topic is \"DELETED\"")
   public void theConfiguredTopicIsDeleted() {
     // @internal: this given is only used in @internal scenarios.
+    Assumptions.assumeTrue(false, "this given is only used in @internal scenarios.");
   }
 
   @Given("the configured topic is not \"DELETED\"")
   public void theConfiguredTopicIsNotDeleted() {
     // @internal: this given is only used in @internal scenarios.
+    Assumptions.assumeTrue(false, "this given is only used in @internal scenarios.");
   }
 
   // ── Given: model-level precondition steps (sequences.feature) ─────────────────
@@ -132,6 +139,7 @@ public class GlacierSnsSteps {
   @Given("jid in job_status")
   public void jidInJobStatus() {
     // @internal: job state requires background Glacier processing.
+    Assumptions.assumeTrue(false, "job state requires background Glacier processing.");
   }
 
   // ── When: actions ─────────────────────────────────────────────────────────────
@@ -291,12 +299,16 @@ public class GlacierSnsSteps {
   public void theJobIsSucceededAndTheNotificationIsPublished() {
     // @internal: job_completed_notification_delivered requires background processing.
     // No assertion performed.
+    Assumptions.assumeTrue(
+        false, "job_completed_notification_delivered requires background processing.");
   }
 
   @Then("the job is \"SUCCEEDED\" but no notification is published")
   public void theJobIsSucceededButNoNotificationIsPublished() {
     // @internal: job_completed_notification_fails requires background processing.
     // No assertion performed.
+    Assumptions.assumeTrue(
+        false, "job_completed_notification_fails requires background processing.");
   }
 
   // ── Safety invariant Then steps ───────────────────────────────────────────────

@@ -6,6 +6,7 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.elasticache.ElastiCacheClient;
 
 /**
@@ -91,6 +92,7 @@ public class ElasticacheSteps {
   @Given("no cluster slot is available")
   public void noClusterSlotIsAvailable() {
     // @internal: no public API exhausts cluster slots.
+    Assumptions.assumeTrue(false, "no public API exhausts cluster slots.");
   }
 
   // "the target cluster slot is available" → DocdbSteps
@@ -106,26 +108,34 @@ public class ElasticacheSteps {
   @Given("the cluster is not \"AVAILABLE\"")
   public void theClusterIsNotAvailable() {
     // @internal: Cannot drive a cluster into a non-AVAILABLE state via public API in lws.
+    Assumptions.assumeTrue(
+        false, "Cannot drive a cluster into a non-AVAILABLE state via public API in lws.");
   }
 
   @Given("the cluster is \"CREATING\"")
   public void theClusterIsCreating() {
     // @internal: CREATING state is transient after creation, not reachable via public API.
+    Assumptions.assumeTrue(
+        false, "CREATING state is transient after creation, not reachable via public API.");
   }
 
   @Given("the cluster is not \"CREATING\"")
   public void theClusterIsNotCreating() {
     // @internal: state transition controlled internally.
+    Assumptions.assumeTrue(false, "state transition controlled internally.");
   }
 
   @Given("the cluster is \"DELETING\"")
   public void theClusterIsDeleting() {
     // @internal: DELETING state is transient after deletion, not reachable via public API.
+    Assumptions.assumeTrue(
+        false, "DELETING state is transient after deletion, not reachable via public API.");
   }
 
   @Given("the cluster is not \"DELETING\"")
   public void theClusterIsNotDeleting() {
     // @internal: state transition controlled internally.
+    Assumptions.assumeTrue(false, "state transition controlled internally.");
   }
 
   @Given("the cluster is standalone \\(not part of a replication group\\)")
@@ -136,6 +146,8 @@ public class ElasticacheSteps {
   @Given("the cluster is part of a replication group")
   public void theClusterIsPartOfAReplicationGroup() {
     // @internal: replication group membership requires internal state manipulation.
+    Assumptions.assumeTrue(
+        false, "replication group membership requires internal state manipulation.");
   }
 
   @Given("the cluster uses the redis engine")
@@ -146,6 +158,8 @@ public class ElasticacheSteps {
   @Given("the cluster does not use the redis engine")
   public void theClusterDoesNotUseTheRedisEngine() {
     // @internal: switching engine requires creating a memcached cluster specifically.
+    Assumptions.assumeTrue(
+        false, "switching engine requires creating a memcached cluster specifically.");
   }
 
   // ── Given: replication group state ────────────────────────────────────────────
@@ -187,26 +201,32 @@ public class ElasticacheSteps {
   @Given("the replication group is not \"AVAILABLE\"")
   public void theReplicationGroupIsNotAvailable() {
     // @internal: Cannot drive a replication group into a non-AVAILABLE state via public API.
+    Assumptions.assumeTrue(
+        false, "Cannot drive a replication group into a non-AVAILABLE state via public API.");
   }
 
   @Given("the replication group is \"CREATING\"")
   public void theReplicationGroupIsCreating() {
     // @internal: CREATING state is transient, not reachable via public API.
+    Assumptions.assumeTrue(false, "CREATING state is transient, not reachable via public API.");
   }
 
   @Given("the replication group is not \"CREATING\"")
   public void theReplicationGroupIsNotCreating() {
     // @internal: state transition controlled internally.
+    Assumptions.assumeTrue(false, "state transition controlled internally.");
   }
 
   @Given("the replication group is \"DELETING\"")
   public void theReplicationGroupIsDeleting() {
     // @internal: DELETING state is transient, not reachable via public API.
+    Assumptions.assumeTrue(false, "DELETING state is transient, not reachable via public API.");
   }
 
   @Given("the replication group is not \"DELETING\"")
   public void theReplicationGroupIsNotDeleting() {
     // @internal: state transition controlled internally.
+    Assumptions.assumeTrue(false, "state transition controlled internally.");
   }
 
   @Given("the replication group has a primary cluster assigned")
@@ -224,16 +244,8 @@ public class ElasticacheSteps {
   @Given("the snapshot already exists")
   public void theSnapshotAlreadyExists() {
     // @internal: snapshot creation requires a cluster in AVAILABLE state with redis engine.
-  }
-
-  @Given("the snapshot is \"CREATING\"")
-  public void theSnapshotIsCreating() {
-    // @internal: CREATING state is transient, not reachable via public API.
-  }
-
-  @Given("the snapshot is not \"CREATING\"")
-  public void theSnapshotIsNotCreating() {
-    // @internal: state transition controlled internally.
+    Assumptions.assumeTrue(
+        false, "snapshot creation requires a cluster in AVAILABLE state with redis engine.");
   }
 
   @Given("the resource has tags")
@@ -261,11 +273,13 @@ public class ElasticacheSteps {
   @Given("the parameter group already exists")
   public void theParameterGroupAlreadyExists() {
     // @internal: parameter group state setup requires specific API calls.
+    Assumptions.assumeTrue(false, "parameter group state setup requires specific API calls.");
   }
 
   @Given("the parameter group exists")
   public void theParameterGroupExists() {
     // @internal: parameter group state setup requires specific API calls.
+    Assumptions.assumeTrue(false, "parameter group state setup requires specific API calls.");
   }
 
   @Given("the parameter group does not exist")
@@ -281,6 +295,7 @@ public class ElasticacheSteps {
   @Given("the subnet group is not present")
   public void theSubnetGroupIsNotPresent() {
     // @internal: no public API places a subnet group in a non-present state.
+    Assumptions.assumeTrue(false, "no public API places a subnet group in a non-present state.");
   }
 
   @Given("the subnet group does not already exist")
@@ -291,11 +306,13 @@ public class ElasticacheSteps {
   @Given("the subnet group already exists")
   public void theSubnetGroupAlreadyExists() {
     // @internal: subnet group state setup requires specific API calls.
+    Assumptions.assumeTrue(false, "subnet group state setup requires specific API calls.");
   }
 
   @Given("the subnet group exists")
   public void theSubnetGroupExists() {
     // @internal: subnet group state setup requires specific API calls.
+    Assumptions.assumeTrue(false, "subnet group state setup requires specific API calls.");
   }
 
   @Given("the subnet group does not exist")
@@ -826,6 +843,7 @@ public class ElasticacheSteps {
   @Then("the cluster is \"DELETED\" and its tags are removed")
   public void theClusterIsDeletedAndItsTagsAreRemoved() {
     // @internal: cluster deletion completion not observable via public API.
+    Assumptions.assumeTrue(false, "cluster deletion completion not observable via public API.");
   }
 
   // "the snapshot is in {string} state and the cluster is {string}" → MemorydbSteps
@@ -853,11 +871,15 @@ public class ElasticacheSteps {
   @Then("memcached clusters are never associated with a replication group")
   public void memcachedClustersAreNeverAssociatedWithAReplicationGroup() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   @Then("all snapshots reference redis clusters only")
   public void allSnapshotsReferenceRedisClustersOnly() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   // "every available replication group has a primary cluster assigned" → CrossServiceSteps

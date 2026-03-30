@@ -8,6 +8,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.organizations.OrganizationsClient;
 import software.amazon.awssdk.services.organizations.model.Account;
 import software.amazon.awssdk.services.organizations.model.DescribeAccountResponse;
@@ -124,6 +125,7 @@ public class OrganizationsSteps {
   @Given("the account does not already exist")
   public void theAccountDoesNotAlreadyExist() {
     // No-op: org context established by preceding organization step.
+    Assumptions.assumeTrue(false, "No-op: org context established by preceding organization step.");
   }
 
   @Given("the account already exists")
@@ -155,6 +157,8 @@ public class OrganizationsSteps {
   @Given("the parent exists and is \"ACTIVE\"")
   public void theParentExistsAndIsActive() {
     // No-op: root is always the default parent; already stored in rootId.
+    Assumptions.assumeTrue(
+        false, "No-op: root is always the default parent; already stored in rootId.");
   }
 
   @Given("the parent does not exist or is not \"ACTIVE\"")
@@ -270,6 +274,7 @@ public class OrganizationsSteps {
   @Given("the target exists and is \"ACTIVE\"")
   public void theTargetExistsAndIsActive() {
     // No-op: root is the target; already stored in targetId.
+    Assumptions.assumeTrue(false, "No-op: root is the target; already stored in targetId.");
   }
 
   @Given("the target does not exist or is not \"ACTIVE\"")
@@ -713,6 +718,8 @@ public class OrganizationsSteps {
   @Then("no active node is a child of a deleted organizational unit")
   public void noActiveNodeIsAChildOfADeletedOrganizationalUnit() {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
+    Assumptions.assumeTrue(
+        false, "No-op: model-level invariant; trivially satisfied in isolated lws context.");
   }
 
   // "every active policy attachment targets an \"ACTIVE\" node" → CrossServiceSteps (catch-all

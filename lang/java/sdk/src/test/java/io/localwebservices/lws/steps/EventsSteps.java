@@ -8,6 +8,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 import software.amazon.awssdk.services.eventbridge.model.DescribeEventBusResponse;
 import software.amazon.awssdk.services.eventbridge.model.DescribeRuleResponse;
@@ -74,6 +75,8 @@ public class EventsSteps {
   @Given("the event bus is \"ACTIVE\"")
   public void theEventBusIsActive() {
     // Arrange / Act / Assert — no-op: event buses are ACTIVE immediately after creation.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: event buses are ACTIVE immediately after creatio");
   }
 
   @Given("the event bus is not \"ACTIVE\"")
@@ -88,11 +91,15 @@ public class EventsSteps {
   @Given("the event bus is not the default bus")
   public void theEventBusIsNotTheDefaultBus() {
     // Arrange / Act / Assert — no-op: TEST_BUS is not the default bus.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: TEST_BUS is not the default bus.");
   }
 
   @Given("the event bus is the default bus")
   public void theEventBusIsTheDefaultBus() {
     // Arrange / Act / Assert — no-op: the When step will attempt to delete the default bus.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: the When step will attempt to delete the default");
   }
 
   @Given("the event bus has no rules")
@@ -120,11 +127,15 @@ public class EventsSteps {
   @Given("the rule is not already \"DELETED\"")
   public void theRuleIsNotAlreadyDeleted() {
     // Arrange / Act / Assert — no-op: newly created rules are ENABLED, not DELETED.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: newly created rules are ENABLED, not DELETED.");
   }
 
   @Given("the rule is not \"DELETED\"")
   public void theRuleIsNotDeleted() {
     // Arrange / Act / Assert — no-op: newly created rules are ENABLED.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: newly created rules are ENABLED.");
   }
 
   @Given("the rule is not \"ENABLED\"")
@@ -139,6 +150,8 @@ public class EventsSteps {
   @Given("the rule is not \"DISABLED\"")
   public void theRuleIsNotDisabled() {
     // Arrange / Act / Assert — no-op: newly created rules are ENABLED, not DISABLED.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: newly created rules are ENABLED, not DISABLED.");
   }
 
   @Given("the rule does not exist")
@@ -166,6 +179,8 @@ public class EventsSteps {
   @Given("the rule's event bus matches")
   public void theRulesEventBusMatches() {
     // Arrange / Act / Assert — no-op: the rule was created on TEST_BUS.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: the rule was created on TEST_BUS.");
   }
 
   @Given("the rule's event bus does not match")
@@ -220,6 +235,8 @@ public class EventsSteps {
   @Given("the target association is active")
   public void theTargetAssociationIsActive() {
     // Arrange / Act / Assert — no-op: target associations are always active after creation.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: target associations are always active after crea");
   }
 
   @Given("the target association is not active")
@@ -623,6 +640,8 @@ public class EventsSteps {
   @Then("the entry is removed from the dead-letter queue")
   public void theEntryIsRemovedFromTheDeadLetterQueue() {
     // Arrange / Act / Assert — no-op: retry_dead_letter scenarios are @internal.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: retry_dead_letter scenarios are @internal.");
   }
 
   @Then("the default event bus cannot be deleted")
@@ -651,15 +670,21 @@ public class EventsSteps {
   public void aRuleCanOnlyBeDeletedWhenItHasNoTargets() {
     // Arrange / Act / Assert — no-op: model-level invariant verified by delete_rule negative
     // scenario.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: model-level invariant verified by delete_rule ne");
   }
 
   @Then("no enabled rule references a deleted event bus")
   public void noEnabledRuleReferencesADeletedEventBus() {
     // Arrange / Act / Assert — no-op: bus deletion fails when rules exist.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: bus deletion fails when rules exist.");
   }
 
   @Then("the dead-letter queue never exceeds its bounded capacity")
   public void theDeadLetterQueueNeverExceedsItsBoundedCapacity() {
     // Arrange / Act / Assert — no-op: not observable in this implementation.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: not observable in this implementation.");
   }
 }

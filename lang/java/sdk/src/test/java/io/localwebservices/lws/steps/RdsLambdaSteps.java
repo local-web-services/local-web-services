@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.Runtime;
@@ -91,11 +92,15 @@ public class RdsLambdaSteps {
   @Given("the \"DB\" instance already has a Lambda integration configured")
   public void theDbInstanceAlreadyHasALambdaIntegrationConfigured() {
     // @internal: Lambda integration state requires specific RDS configuration API calls.
+    Assumptions.assumeTrue(
+        false, "Lambda integration state requires specific RDS configuration API calls.");
   }
 
   @Given("the \"DB\" instance has a Lambda integration configured")
   public void theDbInstanceHasALambdaIntegrationConfigured() {
     // @internal: Lambda integration state requires specific RDS configuration API calls.
+    Assumptions.assumeTrue(
+        false, "Lambda integration state requires specific RDS configuration API calls.");
   }
 
   // "the function exists and is {string}" → SecretsmanagerLambdaSteps
@@ -114,11 +119,14 @@ public class RdsLambdaSteps {
   @Given("the Lambda function is not \"ACTIVE\"")
   public void theLambdaFunctionIsNotActive() {
     // @internal: cannot force a function into a non-ACTIVE state via public API in lws.
+    Assumptions.assumeTrue(
+        false, "cannot force a function into a non-ACTIVE state via public API in lws.");
   }
 
   @Given("the Lambda function is \"DELETED\"")
   public void theLambdaFunctionIsDeleted() {
     // @internal: DELETED state requires the function to have been deleted.
+    Assumptions.assumeTrue(false, "DELETED state requires the function to have been deleted.");
   }
 
   @Given("the Lambda function is not \"DELETED\"")
@@ -132,6 +140,7 @@ public class RdsLambdaSteps {
   @Given("the function is already \"DELETED\"")
   public void theFunctionIsAlreadyDeleted() {
     // @internal: DELETED state requires the function to have been deleted.
+    Assumptions.assumeTrue(false, "DELETED state requires the function to have been deleted.");
   }
 
   // ── When: actions ──────────────────────────────────────────────────────────────
@@ -215,12 +224,14 @@ public class RdsLambdaSteps {
   public void storedProceduresOnTheDbCanInvokeTheLambdaFunction() {
     // @internal: Lambda integration not observable via public API.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "Lambda integration not observable via public API.");
   }
 
   @Then("the invocation is \"FAILED\" with a function not found error")
   public void theInvocationIsFailedWithAFunctionNotFoundError() {
     // @internal: invocation failure not observable via public API.
     // Only reached by @internal scenarios excluded by the tag filter.
+    Assumptions.assumeTrue(false, "invocation failure not observable via public API.");
   }
 
   @Then("the function is \"DELETED\" and stored procedure invocations targeting it will fail")

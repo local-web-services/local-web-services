@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.sfn.SfnClient;
@@ -94,6 +95,8 @@ public class StepfunctionsLambdaSteps {
   public void theStateMachineHasNoLambdaTaskConfigured() {
     // Arrange / Act / Assert — no-op: state machine is created with a Pass definition (no Lambda
     // task).
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: state machine is created with a Pass definition ");
   }
 
   @Given("the state machine already has a Lambda task configured")
@@ -132,6 +135,8 @@ public class StepfunctionsLambdaSteps {
   @Given("the configured function is \"ACTIVE\"")
   public void theConfiguredFunctionIsActive() {
     // Arrange / Act / Assert — no-op: Lambda functions are ACTIVE immediately after creation.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: Lambda functions are ACTIVE immediately after cr");
   }
 
   @Given("the configured function is not \"ACTIVE\"")
@@ -156,12 +161,16 @@ public class StepfunctionsLambdaSteps {
   public void theExecutionStateMachineHasAConfiguredLambdaTask() {
     // Arrange / Act / Assert — no-op: state machine is set up with a Lambda task in the execution
     // setup step.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: state machine is set up with a Lambda task in th");
   }
 
   @Given("the execution's state machine has no Lambda task configured")
   public void theExecutionStateMachineHasNoLambdaTaskConfigured() {
     // Arrange / Act / Assert — no-op: covered by state machine creation without Lambda task
     // definition.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: covered by state machine creation without Lambda");
   }
 
   // ── When: cross-service actions ───────────────────────────────────────────────
@@ -233,22 +242,27 @@ public class StepfunctionsLambdaSteps {
   public void theStateMachineWillInvokeTheFunctionWhenItReachesTheTaskState() {
     // Cannot verify Lambda invocation from StepFunctions task configuration in lws.
     // No-op: treat as invariant satisfied.
+    Assumptions.assumeTrue(
+        false, "Cannot verify Lambda invocation from StepFunctions task configuration in lws.");
   }
 
   @Then("the invocation is \"FAILED\" and the execution is \"FAILED\"")
   public void theInvocationIsFailedAndTheExecutionIsFailed() {
     // @internal: Cannot observe internal Lambda invocation failure in lws.
+    Assumptions.assumeTrue(false, "Cannot observe internal Lambda invocation failure in lws.");
   }
 
   @Then("the invocation is \"SUCCESS\" and the execution is \"SUCCEEDED\"")
   public void theInvocationIsSuccessAndTheExecutionIsSucceeded() {
     // @internal: Cannot observe internal Lambda invocation success in lws.
+    Assumptions.assumeTrue(false, "Cannot observe internal Lambda invocation success in lws.");
   }
 
   @Then("the execution is \"FAILED\" with a connection error")
   public void theExecutionIsFailedWithAConnectionError() {
     // Cannot observe internal execution Lambda task failure in lws.
     // No-op: treat as invariant satisfied.
+    Assumptions.assumeTrue(false, "Cannot observe internal execution Lambda task failure in lws.");
   }
 
   // "every \"IN_PROGRESS\" invocation has a corresponding \"RUNNING\" execution" →

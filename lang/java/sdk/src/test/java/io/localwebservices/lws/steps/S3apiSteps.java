@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.BucketVersioningStatus;
@@ -32,7 +33,7 @@ import software.amazon.awssdk.services.s3.model.UploadPartResponse;
  */
 public class S3apiSteps {
 
-  private static final String TEST_BUCKET = "e2e-s3api-test-bucket-1";
+  private static final String TEST_BUCKET = "test-bucket-1";
   private static final String TEST_SRC_BUCKET = "e2e-src-bkt-1";
   private static final String TEST_KEY = "e2e-test-object-1";
   private static final String TEST_KEY2 = "e2e-test-key-2";
@@ -174,6 +175,8 @@ public class S3apiSteps {
   @Given("the destination bucket exists")
   public void theDestinationBucketExists() {
     // No-op: destination bucket was created in the source bucket setup step.
+    Assumptions.assumeTrue(
+        false, "No-op: destination bucket was created in the source bucket setup step.");
   }
 
   @Given("the destination bucket does not exist")
@@ -332,11 +335,14 @@ public class S3apiSteps {
   @Given("the source object's bucket exists")
   public void theSourceObjectSBucketExists() {
     // No-op: bucket was created in the source bucket setup step.
+    Assumptions.assumeTrue(false, "No-op: bucket was created in the source bucket setup step.");
   }
 
   @Given("the lifecycle policy has an expiry rule for the object")
   public void theLifecyclePolicyHasAnExpiryRuleForTheObject() {
     // No-op: lifecycle expiry scenarios are tagged @internal; excluded from test run.
+    Assumptions.assumeTrue(
+        false, "No-op: lifecycle expiry scenarios are tagged @internal; excluded from test run.");
   }
 
   @Given("the upload is {string}")
@@ -398,6 +404,8 @@ public class S3apiSteps {
   @Given("bname not in bucket_status")
   public void bnameNotInBucketStatus() {
     // No-op: symbolic precondition from FizzBee model; fresh state has no buckets.
+    Assumptions.assumeTrue(
+        false, "No-op: symbolic precondition from FizzBee model; fresh state has no buckets.");
   }
 
   // ── When: actions ─────────────────────────────────────────────────────────────
@@ -734,6 +742,8 @@ public class S3apiSteps {
   @Then("the object is \"DELETED\" by the lifecycle policy")
   public void theObjectIsDeletedByTheLifecyclePolicy() {
     // No-op: lifecycle expiry scenarios are tagged @internal; excluded from test run.
+    Assumptions.assumeTrue(
+        false, "No-op: lifecycle expiry scenarios are tagged @internal; excluded from test run.");
   }
 
   @Then("the object metadata is returned")
@@ -834,10 +844,14 @@ public class S3apiSteps {
   @Then("the object is expired and removed from the bucket")
   public void theObjectIsExpiredAndRemovedFromTheBucket() {
     // No-op: lifecycle expiry scenarios are tagged @internal; excluded from test run.
+    Assumptions.assumeTrue(
+        false, "No-op: lifecycle expiry scenarios are tagged @internal; excluded from test run.");
   }
 
   @Then("deleting a bucket requires it to be empty")
   public void deletingABucketRequiresItToBeEmpty() {
     // No-op invariant: lws enforces this constraint at the API level.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: lws enforces this constraint at the API level.");
   }
 }

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.Runtime;
@@ -186,16 +187,22 @@ public class LambdaStepfunctionsSteps {
   @Then("the execution is \"SUCCEEDED\"")
   public void theExecutionIsSucceeded() {
     // @internal: Cannot observe internal execution completion via public API in lws.
+    Assumptions.assumeTrue(
+        false, "Cannot observe internal execution completion via public API in lws.");
   }
 
   @Then("the execution is \"RUNNING\" and the invocation is \"SUCCESS\"")
   public void theExecutionIsRunningAndInvocationIsSuccess() {
     // @internal: Cannot observe Lambda invocation result or execution state via public API in lws.
+    Assumptions.assumeTrue(
+        false, "Cannot observe Lambda invocation result or execution state via public API in lws");
   }
 
   @Then("the invocation is \"FAILED\" with a StateMachineDoesNotExist error")
   public void theInvocationIsFailedWithStateMachineDoesNotExist() {
     // @internal: Cannot observe Lambda invocation failure via public API in lws.
+    Assumptions.assumeTrue(
+        false, "Cannot observe Lambda invocation failure via public API in lws.");
   }
 
   // "every \"RUNNING\" execution references a state machine that exists" → CrossServiceSteps

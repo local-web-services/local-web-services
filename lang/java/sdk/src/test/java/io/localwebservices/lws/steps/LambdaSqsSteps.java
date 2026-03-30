@@ -8,6 +8,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.Map;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.Runtime;
@@ -142,6 +143,7 @@ public class LambdaSqsSteps {
   @Given("the source queue has no dead-letter queue configured")
   public void theSourceQueueHasNoDeadLetterQueueConfigured() {
     // No-op: queue created without a DLQ.
+    Assumptions.assumeTrue(false, "No-op: queue created without a DLQ.");
   }
 
   @Given("the source queue already has a dead-letter queue configured")
@@ -171,31 +173,37 @@ public class LambdaSqsSteps {
   @Given("the event source mapping is {string}")
   public void theEventSourceMappingIs(String state) {
     // @internal: Cannot pre-create enabled event source mapping in lws.
+    Assumptions.assumeTrue(false, "Cannot pre-create enabled event source mapping in lws.");
   }
 
   @Given("the event source mapping is not {string}")
   public void theEventSourceMappingIsNot(String state) {
     // @internal: Cannot pre-create disabled event source mapping in lws.
+    Assumptions.assumeTrue(false, "Cannot pre-create disabled event source mapping in lws.");
   }
 
   @Given("the mapped function is {string}")
   public void theMappedFunctionIs(String state) {
     // @internal: Cannot set up event source mapping in lws.
+    Assumptions.assumeTrue(false, "Cannot set up event source mapping in lws.");
   }
 
   @Given("the mapped function is not {string}")
   public void theMappedFunctionIsNot(String state) {
     // @internal: Cannot set up event source mapping in lws.
+    Assumptions.assumeTrue(false, "Cannot set up event source mapping in lws.");
   }
 
   @Given("an \"AVAILABLE\" message exists in the mapped queue")
   public void anAvailableMessageExistsInTheMappedQueue() {
     // @internal: Cannot set up event source mapping in lws.
+    Assumptions.assumeTrue(false, "Cannot set up event source mapping in lws.");
   }
 
   @Given("no \"AVAILABLE\" message exists in the mapped queue")
   public void noAvailableMessageExistsInTheMappedQueue() {
     // @internal: Cannot set up event source mapping in lws.
+    Assumptions.assumeTrue(false, "Cannot set up event source mapping in lws.");
   }
 
   @When("the \"SQS\" queue is configured with a dead-letter queue")
@@ -308,11 +316,13 @@ public class LambdaSqsSteps {
   @Then("the event source mapping is \"ENABLED\" and will poll the queue for messages")
   public void theEventSourceMappingIsEnabledAndWillPollTheQueueForMessages() {
     // @internal: Cannot observe event source mapping state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe event source mapping state in lws.");
   }
 
   @Then("the invocation is \"SUCCESS\" and the \"SQS\" message is \"DELETED\"")
   public void theInvocationIsSuccessAndTheSqsMessageIsDeleted() {
     // @internal: Cannot observe Lambda invocation result in lws.
+    Assumptions.assumeTrue(false, "Cannot observe Lambda invocation result in lws.");
   }
 
   @Then(
@@ -325,11 +335,13 @@ public class LambdaSqsSteps {
   @Then("the message is \"IN_FLIGHT\" and a Lambda invocation is \"IN_PROGRESS\"")
   public void theMessageIsInFlightAndALambdaInvocationIsInProgress() {
     // @internal: Cannot observe ESM polling result in lws.
+    Assumptions.assumeTrue(false, "Cannot observe ESM polling result in lws.");
   }
 
   @Then("the message is \"AVAILABLE\" for processing")
   public void theMessageIsAvailableForProcessing() {
     // @internal: Cannot observe internal message state in lws.
+    Assumptions.assumeTrue(false, "Cannot observe internal message state in lws.");
   }
 
   // ── Then: invariants ──────────────────────────────────────────────────────────

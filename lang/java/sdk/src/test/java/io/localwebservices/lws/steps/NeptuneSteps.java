@@ -8,6 +8,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.docdb.DocDbClient;
 import software.amazon.awssdk.services.neptune.NeptuneClient;
 import software.amazon.awssdk.services.neptune.model.DBClusterSnapshot;
@@ -91,11 +92,14 @@ public class NeptuneSteps {
   @Given("multi-\"AZ\" is enabled for the cluster")
   public void multiAzIsEnabledForTheCluster() {
     // Arrange / Act / Assert — no-op: multi-AZ is modelled as an external precondition.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: multi-AZ is modelled as an external precondition");
   }
 
   @Given("multi-\"AZ\" is not enabled for the cluster")
   public void multiAzIsNotEnabledForTheCluster() {
     // @internal: multi-AZ flag state requires specific cluster configuration.
+    Assumptions.assumeTrue(false, "multi-AZ flag state requires specific cluster configuration.");
   }
 
   // ── When: failover actions ─────────────────────────────────────────────────────
@@ -457,21 +461,29 @@ public class NeptuneSteps {
   @Then("a snapshot is {string} and the cluster is in {string} state")
   public void aSnapshotIsAndTheClusterIsInState(String snapshotStatus, String clusterStatus) {
     // No-op invariant: @internal automated_backup_window — trivially satisfied.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: @internal automated_backup_window — trivially satisfied.");
   }
 
   @Then("a stopped cluster has no available instances")
   public void aStoppedClusterHasNoAvailableInstances() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   @Then("instances on a stopped or stopping cluster are not in \"MODIFYING\" state")
   public void instancesOnAStoppedOrStoppingClusterAreNotInModifyingState() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   @Then("a deleted cluster has no available instances")
   public void aDeletedClusterHasNoAvailableInstances() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   // "every backing-up cluster has a corresponding in-progress snapshot" → CrossServiceSteps

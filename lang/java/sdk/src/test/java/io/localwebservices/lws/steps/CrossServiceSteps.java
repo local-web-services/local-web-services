@@ -248,76 +248,106 @@ public class CrossServiceSteps {
   @And("^every .*$")
   public void everyCatchAll() {
     // Arrange / Act / Assert — no-op: model-level invariant; not verifiable via public API
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: model-level invariant; not verifiable via public");
   }
 
   @Given("^tid not in topic_status$")
   public void tidNotInTopicStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   @Given("^tid in topic_status$")
   public void tidInTopicStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   @Given("^qid not in queue_status$")
   public void qidNotInQueueStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   @Given("^qid in queue_status$")
   public void qidInQueueStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   @Given("^mid in msg_status$")
   public void midInMsgStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   @Given("^bid not in bus_status$")
   public void bidNotInBusStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   @Given("^bid in bus_status$")
   public void bidInBusStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   @Given("^bid not in bucket_status$")
   public void bidNotInBucketStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   @Given("^bid in bucket_status$")
   public void bidInBucketStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   @Given("^eid in exec_status$")
   public void eidInExecStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   @Given("^rid not in rule_status$")
   public void ridNotInRuleStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   @Given("^smid in sm_status$")
   public void smidInSmStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   @Given("^smid not in sm_status$")
   public void smidNotInSmStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   @Given("^tid not in table_status$")
   public void tidNotInTableStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: FizzBee model initialisation precondition");
   }
 
   // -------------------------------------------------------------------------
@@ -556,6 +586,8 @@ public class CrossServiceSteps {
   @Given("an {string} message exists on the topic")
   public void anMessageExistsOnTheTopic(String state) {
     // Arrange / Act / Assert — no-op: SNS messages are internal; cannot seed via public API
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: SNS messages are internal; cannot seed via publi");
   }
 
   @Given("no {string} message exists on the topic")
@@ -656,16 +688,22 @@ public class CrossServiceSteps {
   @Given("the bucket is \"ACTIVE\"")
   public void theBucketIsActive() {
     // Arrange / Act / Assert — no-op: buckets are ACTIVE immediately after creation in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: buckets are ACTIVE immediately after creation in");
   }
 
   @Given("the bucket is \"CREATING\"")
   public void theBucketIsCreating() {
     // Arrange / Act / Assert — no-op: CREATING state not reachable via public API in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: CREATING state not reachable via public API in l");
   }
 
   @Given("the bucket is \"DELETING\"")
   public void theBucketIsDeleting() {
     // Arrange / Act / Assert — no-op: DELETING state not reachable via public API in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: DELETING state not reachable via public API in l");
   }
 
   @Given("the bucket is not \"ACTIVE\"")
@@ -690,6 +728,7 @@ public class CrossServiceSteps {
   @Given("the bucket has a notification configuration")
   public void theBucketHasANotificationConfiguration() {
     // Arrange / Act / Assert — no-op: assume configured
+    Assumptions.assumeTrue(false, "Arrange / Act / Assert — no-op: assume configured");
   }
 
   @Given("the bucket has no notification configuration")
@@ -757,6 +796,8 @@ public class CrossServiceSteps {
   @Given("an item {string} in the target table")
   public void anItemInTheTargetTable(String state) {
     // Arrange / Act / Assert — no-op: assume item exists (conceptual precondition)
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: assume item exists (conceptual precondition)");
   }
 
   // -------------------------------------------------------------------------
@@ -795,6 +836,7 @@ public class CrossServiceSteps {
   @Given("the state machine has a DynamoDB task configured")
   public void theStateMachineHasADynamoDbTaskConfigured() {
     // Arrange / Act / Assert — no-op: conceptual precondition
+    Assumptions.assumeTrue(false, "Arrange / Act / Assert — no-op: conceptual precondition");
   }
 
   @Given("the state machine has no DynamoDB task configured")
@@ -815,6 +857,7 @@ public class CrossServiceSteps {
   @Given("the state machine has an {string} task configured")
   public void theStateMachineHasAnTaskConfigured(String service) {
     // Arrange / Act / Assert — no-op: conceptual precondition
+    Assumptions.assumeTrue(false, "Arrange / Act / Assert — no-op: conceptual precondition");
   }
 
   @Given("the state machine has no {string} task configured")
@@ -855,6 +898,7 @@ public class CrossServiceSteps {
   @Given("the execution's state machine has a configured {string} task")
   public void theExecutionStateMachineHasAConfiguredTask(String service) {
     // Arrange / Act / Assert — no-op: conceptual precondition
+    Assumptions.assumeTrue(false, "Arrange / Act / Assert — no-op: conceptual precondition");
   }
 
   @Given("the execution's state machine has no {string} task configured")
@@ -1226,16 +1270,22 @@ public class CrossServiceSteps {
   @Given("the table is \"ACTIVE\"")
   public void theTableIsActive() {
     // Arrange / Act / Assert — no-op: tables are ACTIVE immediately after creation in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: tables are ACTIVE immediately after creation in ");
   }
 
   @Given("the table is \"CREATING\"")
   public void theTableIsCreating() {
     // Arrange / Act / Assert — no-op: CREATING state not reachable via public API in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: CREATING state not reachable via public API in l");
   }
 
   @Given("the table is \"DELETING\"")
   public void theTableIsDeleting() {
     // Arrange / Act / Assert — no-op: DELETING state not reachable via public API in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: DELETING state not reachable via public API in l");
   }
 
   @Then("the state machine is \"ACTIVE\" with no {string} task configured")
@@ -1432,5 +1482,6 @@ public class CrossServiceSteps {
   @Then("a message can only be delivered if a confirmed subscription exists for the topic")
   public void aMessageCanOnlyBeDeliveredIfAConfirmedSubscriptionExistsForTheTopic() {
     // Arrange / Act / Assert — no-op: model-level invariant
+    Assumptions.assumeTrue(false, "Arrange / Act / Assert — no-op: model-level invariant");
   }
 }

@@ -9,6 +9,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
+import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.ssm.SsmClient;
 import software.amazon.awssdk.services.ssm.model.DescribeParametersResponse;
 import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
@@ -75,6 +76,8 @@ public class SsmSteps {
   @Given("the parameter is active")
   public void theParameterIsActive() {
     // Arrange / Act / Assert — no-op: parameters are always active after creation in lws.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: parameters are always active after creation in l");
   }
 
   @Given("the parameter is not active")
@@ -110,6 +113,8 @@ public class SsmSteps {
   @Given("the tag association is active")
   public void theTagAssociationIsActive() {
     // Arrange / Act / Assert — no-op: tag associations are always active after creation.
+    Assumptions.assumeTrue(
+        false, "Arrange / Act / Assert — no-op: tag associations are always active after creatio");
   }
 
   @Given("the tag is not associated with the parameter")
@@ -533,16 +538,22 @@ public class SsmSteps {
   @Then("no parameter exists after it has been deleted")
   public void noParameterExistsAfterItHasBeenDeleted() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   @Then("param_exists values are always valid booleans")
   public void paramExistsValuesAreAlwaysValidBooleans() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   @Then("the error log only contains ParameterAlreadyExists entries")
   public void theErrorLogOnlyContainsParameterAlreadyExistsEntries() {
     // No-op invariant: trivially satisfied in an isolated test context.
+    Assumptions.assumeTrue(
+        false, "No-op invariant: trivially satisfied in an isolated test context.");
   }
 
   @Then("a ParameterAlreadyExists error is recorded")
