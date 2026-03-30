@@ -147,6 +147,10 @@ func registerAWSFakeSteps(sc *godog.ScenarioContext, world *World) {
 
 	sc.When(`^an "AWS" fake is created for a service$`, func() error {
 		// Arrange
+		if st.fakeConfigured {
+			setResult(world, nil, fmt.Errorf("fake already exists"))
+			return nil
+		}
 		sess := managementSession()
 		// Act
 		_, err := sess.Fake(awsFakeTestService).Operation(awsFakeTestOperation).Respond(200, awsFakeTestBody)
@@ -162,6 +166,10 @@ func registerAWSFakeSteps(sc *godog.ScenarioContext, world *World) {
 
 	sc.When(`^an operation is added to an "AWS" fake$`, func() error {
 		// Arrange
+		if !st.fakeConfigured {
+			setResult(world, nil, fmt.Errorf("fake does not exist"))
+			return nil
+		}
 		sess := managementSession()
 		// Act
 		_, err := sess.Fake(awsFakeTestService).Operation(awsFakeTestOperation).Respond(200, awsFakeTestBody)
@@ -178,6 +186,10 @@ func registerAWSFakeSteps(sc *godog.ScenarioContext, world *World) {
 
 	sc.When(`^an "AWS" fake is deleted$`, func() error {
 		// Arrange
+		if !st.fakeConfigured {
+			setResult(world, nil, fmt.Errorf("fake does not exist"))
+			return nil
+		}
 		sess := managementSession()
 		// Act
 		err := sess.Fake(awsFakeTestService).Clear()
@@ -192,6 +204,10 @@ func registerAWSFakeSteps(sc *godog.ScenarioContext, world *World) {
 
 	sc.When(`^an operation is removed from an "AWS" fake$`, func() error {
 		// Arrange
+		if !st.operationAdded {
+			setResult(world, nil, fmt.Errorf("operation does not exist"))
+			return nil
+		}
 		sess := managementSession()
 		// Act: clearing the fake removes all operations from it
 		err := sess.Fake(awsFakeTestService).Clear()
@@ -229,6 +245,10 @@ func registerAWSFakeSteps(sc *godog.ScenarioContext, world *World) {
 
 	sc.When(`^a request matching a header-filtered operation is intercepted$`, func() error {
 		// Arrange
+		if !st.fakeConfigured {
+			setResult(world, nil, fmt.Errorf("fake does not exist"))
+			return nil
+		}
 		sess := managementSession()
 		// Act: configure a header-filtered fake operation and record the result
 		_, err := sess.Fake(awsFakeTestService).Operation(awsFakeTestOperation).

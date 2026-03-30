@@ -621,20 +621,14 @@ func registerAPIGatewaySteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.When(`^a "REST" "API" is deleted$`, func() error {
-		// Arrange: find the first REST API
+		// Arrange: use the stored REST API ID from the Given step
+		if st.restApiID == "" {
+			setResult(world, nil, fmt.Errorf("no REST API ID available to delete"))
+			return nil
+		}
 		// Act
-		apis, err := world.APIGatewayClient().GetRestApis(context.Background(), &apigateway.GetRestApisInput{})
-		if err != nil {
-			setResult(world, nil, err)
-			return nil
-		}
-		if len(apis.Items) == 0 {
-			setResult(world, nil, fmt.Errorf("no REST API found to delete"))
-			return nil
-		}
-		apiID := aws.ToString(apis.Items[0].Id)
 		result, err := world.APIGatewayClient().DeleteRestApi(context.Background(), &apigateway.DeleteRestApiInput{
-			RestApiId: aws.String(apiID),
+			RestApiId: aws.String(st.restApiID),
 		})
 		// Assert: store result
 		setResult(world, result, err)
@@ -1094,12 +1088,13 @@ func registerAPIGatewaySteps(sc *godog.ScenarioContext, world *World) {
 		if err != nil {
 			return fmt.Errorf("get REST APIs: %w", err)
 		}
-		// Assert
-		expectedCount := 0
-		actualCount := len(apis.Items)
-		if actualCount != expectedCount {
-			return fmt.Errorf("expected %d REST APIs after deletion but found %d",
-				expectedCount, actualCount)
+		// Assert: the primary test API must no longer exist
+		expectedDeletedName := apigwTestApiName
+		for _, item := range apis.Items {
+			if aws.ToString(item.Name) == expectedDeletedName {
+				return fmt.Errorf("expected REST API %q to be deleted but it still exists; expected_deleted_name=%s",
+					expectedDeletedName, expectedDeletedName)
+			}
 		}
 		return nil
 	})

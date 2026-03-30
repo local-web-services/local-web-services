@@ -288,11 +288,12 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		id := params.Get("CacheClusterId")
 		h.store.mu.Lock()
 		cluster := h.store.clusters[id]
-		h.store.mu.Unlock()
 		if cluster == nil {
+			h.store.mu.Unlock()
 			sendError(w, 404, "CacheClusterNotFound", "Cache cluster not found: "+id)
 			return
 		}
+		h.store.mu.Unlock()
 		type modifyCacheClusterResp struct {
 			XMLName xml.Name        `xml:"ModifyCacheClusterResponse"`
 			Result  xmlCacheCluster `xml:"ModifyCacheClusterResult>CacheCluster"`
@@ -362,11 +363,12 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		id := params.Get("ReplicationGroupId")
 		h.store.mu.Lock()
 		rg := h.store.replicationGroups[id]
-		h.store.mu.Unlock()
 		if rg == nil {
+			h.store.mu.Unlock()
 			sendError(w, 404, "ReplicationGroupNotFoundFault", "Replication group not found: "+id)
 			return
 		}
+		h.store.mu.Unlock()
 		if h.state.GetCapacityRule("elasticache").IsExhausted() {
 			sendError(w, 400, "ServiceLinkedRoleNotFoundFault", "No cluster slot is available")
 			return
@@ -403,12 +405,13 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		name := params.Get("CacheSubnetGroupName")
 		h.store.mu.Lock()
 		sg := h.store.subnetGroups[name]
-		delete(h.store.subnetGroups, name)
-		h.store.mu.Unlock()
 		if sg == nil {
+			h.store.mu.Unlock()
 			sendError(w, 404, "CacheSubnetGroupNotFoundFault", "Cache subnet group not found: "+name)
 			return
 		}
+		delete(h.store.subnetGroups, name)
+		h.store.mu.Unlock()
 		type deleteSGResp struct {
 			XMLName xml.Name `xml:"DeleteCacheSubnetGroupResponse"`
 		}
@@ -506,15 +509,24 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		}
 		sendXML(w, 200, describeSnapsResp{Snapshots: snaps})
 
-	case "AddTagsToResource", "RemoveTagsFromResource":
-		type tagsResp struct {
+	case "AddTagsToResource":
+		type addTagsResp struct {
 			XMLName xml.Name `xml:"AddTagsToResourceResponse"`
+			TagList []struct{} `xml:"AddTagsToResourceResult>TagList>Tag"`
 		}
-		sendXML(w, 200, tagsResp{})
+		sendXML(w, 200, addTagsResp{})
+
+	case "RemoveTagsFromResource":
+		type removeTagsResp struct {
+			XMLName xml.Name `xml:"RemoveTagsFromResourceResponse"`
+			TagList []struct{} `xml:"RemoveTagsFromResourceResult>TagList>Tag"`
+		}
+		sendXML(w, 200, removeTagsResp{})
 
 	case "ListTagsForResource":
 		type listTagsResp struct {
 			XMLName xml.Name `xml:"ListTagsForResourceResponse"`
+			TagList []struct{} `xml:"ListTagsForResourceResult>TagList>Tag"`
 		}
 		sendXML(w, 200, listTagsResp{})
 

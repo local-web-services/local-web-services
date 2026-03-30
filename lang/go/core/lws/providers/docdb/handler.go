@@ -379,12 +379,13 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		id := params.Get("DBClusterIdentifier")
 		h.store.mu.Lock()
 		cluster := h.store.clusters[id]
-		h.store.mu.Unlock()
 		if cluster == nil {
+			h.store.mu.Unlock()
 			sendError(w, 404, "DBClusterNotFoundFault", "DB cluster not found: "+id)
 			return
 		}
 		cluster.Status = "modifying"
+		h.store.mu.Unlock()
 		type resp struct {
 			XMLName xml.Name     `xml:"ModifyDBClusterResponse"`
 			Result  xmlDBCluster `xml:"ModifyDBClusterResult>DBCluster"`
@@ -395,8 +396,8 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		id := params.Get("DBInstanceIdentifier")
 		h.store.mu.Lock()
 		inst := h.store.instances[id]
-		h.store.mu.Unlock()
 		if inst == nil {
+			h.store.mu.Unlock()
 			sendError(w, 404, "DBInstanceNotFound", "DB instance not found: "+id)
 			return
 		}
@@ -404,6 +405,7 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		if v := params.Get("DBInstanceClass"); v != "" {
 			inst.DBInstanceClass = v
 		}
+		h.store.mu.Unlock()
 		type resp struct {
 			XMLName xml.Name      `xml:"ModifyDBInstanceResponse"`
 			Result  xmlDBInstance `xml:"ModifyDBInstanceResult>DBInstance"`
@@ -412,6 +414,14 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 
 	case "RestoreDBClusterFromSnapshot":
 		id := params.Get("DBClusterIdentifier")
+		snapID := params.Get("SnapshotIdentifier")
+		h.store.mu.RLock()
+		snap := h.store.snapshots[snapID]
+		h.store.mu.RUnlock()
+		if snap == nil {
+			sendError(w, 404, "DBClusterSnapshotNotFoundFault", "DB cluster snapshot not found: "+snapID)
+			return
+		}
 		engine := params.Get("Engine")
 		if engine == "" {
 			engine = "docdb"

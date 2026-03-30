@@ -22,7 +22,7 @@ Feature: AwsFake - An Operation Is Removed From An Aws Fake
     When an operation is removed from an "AWS" fake
     Then the operation is rejected
 
-  @standard @negative @remove_operation
+  @standard @negative @internal @remove_operation
   Scenario: an operation is removed from an "AWS" fake fails when the operation is not "ACTIVE"
     Given the operation exists
     And the operation is not "ACTIVE"

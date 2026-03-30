@@ -450,6 +450,11 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation strin
 	case "CompleteMultipartUpload":
 		uploadID := parts[4]
 		h.store.mu.Lock()
+		if h.store.vaults[vaultName] == nil {
+			h.store.mu.Unlock()
+			sendError(w, 404, "ResourceNotFoundException", "Vault not found: "+vaultName)
+			return
+		}
 		archiveID := h.store.nextID()
 		delete(h.store.multipartUploads, uploadID)
 		h.store.mu.Unlock()
@@ -484,13 +489,6 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation strin
 		sendJSON(w, 200, map[string]interface{}{"UploadsList": uploads, "Marker": nil})
 
 	case "SetVaultNotifications":
-		h.store.mu.Lock()
-		vault := h.store.vaults[vaultName]
-		h.store.mu.Unlock()
-		if vault == nil {
-			sendError(w, 404, "ResourceNotFoundException", "Vault not found: "+vaultName)
-			return
-		}
 		var notifBody map[string]interface{}
 		json.NewDecoder(r.Body).Decode(&notifBody) //nolint:errcheck
 		if notifBody == nil {
@@ -513,6 +511,11 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation strin
 			Events:   events,
 		}
 		h.store.mu.Lock()
+		if h.store.vaults[vaultName] == nil {
+			h.store.mu.Unlock()
+			sendError(w, 404, "ResourceNotFoundException", "Vault not found: "+vaultName)
+			return
+		}
 		h.store.vaultNotifications[vaultName] = notif
 		h.store.mu.Unlock()
 		w.WriteHeader(204)

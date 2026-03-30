@@ -22,7 +22,7 @@ Feature: AwsFake - A Request For An Operation Not Covered By The Aws Fake Reache
     When a request for an operation not covered by the "AWS" fake reaches the provider
     Then the operation is rejected
 
-  @standard @negative @fallthrough_request
+  @standard @negative @internal @fallthrough_request
   Scenario: a request for an operation not covered by the "AWS" fake reaches the provider fails when the "AWS" fake is not "ACTIVE"
     Given the "AWS" fake exists
     And the "AWS" fake is not "ACTIVE"

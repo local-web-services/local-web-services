@@ -229,8 +229,8 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		id := params.Get("DBInstanceIdentifier")
 		h.store.mu.Lock()
 		inst := h.store.instances[id]
-		h.store.mu.Unlock()
 		if inst == nil {
+			h.store.mu.Unlock()
 			sendError(w, 404, "DBInstanceNotFound", "DB instance not found: "+id)
 			return
 		}
@@ -240,6 +240,8 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		if v := params.Get("MultiAZ"); v == "true" {
 			inst.MultiAZ = true
 		}
+		inst.DBInstanceStatus = "modifying"
+		h.store.mu.Unlock()
 		type resp struct {
 			XMLName xml.Name      `xml:"ModifyDBInstanceResponse"`
 			Result  xmlDBInstance `xml:"ModifyDBInstanceResult>DBInstance"`
@@ -271,10 +273,12 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 			return
 		}
 		inst := h.store.instances[dbID]
-		engine := "mysql"
-		if inst != nil {
-			engine = inst.Engine
+		if inst == nil {
+			h.store.mu.Unlock()
+			sendError(w, 404, "DBInstanceNotFound", "DB instance not found: "+dbID)
+			return
 		}
+		engine := inst.Engine
 		snap := &DBSnapshot{
 			DBSnapshotIdentifier: snapID,
 			DBInstanceIdentifier: dbID,
@@ -327,6 +331,19 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		sendXML(w, 200, resp{Snapshots: snaps})
 
 	case "AddTagsToResource":
+		resourceName := params.Get("ResourceName")
+		// Extract instance ID from ARN: arn:aws:rds:<region>:<account>:db:<id>
+		parts := strings.Split(resourceName, ":")
+		if len(parts) >= 7 && parts[5] == "db" {
+			instID := parts[6]
+			h.store.mu.RLock()
+			inst := h.store.instances[instID]
+			h.store.mu.RUnlock()
+			if inst == nil {
+				sendError(w, 404, "DBInstanceNotFound", "DB instance not found: "+instID)
+				return
+			}
+		}
 		type resp struct {
 			XMLName xml.Name `xml:"AddTagsToResourceResponse"`
 		}
@@ -338,10 +355,11 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		h.store.mu.RLock()
 		snap := h.store.snapshots[snapID]
 		h.store.mu.RUnlock()
-		engine := "mysql"
-		if snap != nil {
-			engine = snap.Engine
+		if snap == nil {
+			sendError(w, 404, "DBSnapshotNotFound", "DB snapshot not found: "+snapID)
+			return
 		}
+		engine := snap.Engine
 		inst := &DBInstance{
 			DBInstanceIdentifier: id,
 			DBInstanceClass:      params.Get("DBInstanceClass"),
