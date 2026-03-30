@@ -31,11 +31,7 @@ class CognitoIdpPoolOps {
             helpers.sendJson(
                 exchange,
                 400,
-                Map.of(
-                    "__type",
-                    "ResourceConflictException",
-                    "message",
-                    "Pool already exists"));
+                Map.of("__type", "ResourceConflictException", "message", "Pool already exists"));
             return true;
           }
           String id = REGION + "_" + CognitoIdpHelpers.uuid9();

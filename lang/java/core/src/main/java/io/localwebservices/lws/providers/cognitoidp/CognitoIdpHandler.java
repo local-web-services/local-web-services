@@ -330,10 +330,7 @@ public class CognitoIdpHandler implements HttpHandler {
           exchange,
           400,
           Map.of(
-              "__type",
-              "ResourceNotFoundException",
-              "message",
-              "User " + username + " not found"));
+              "__type", "ResourceNotFoundException", "message", "User " + username + " not found"));
       return;
     }
     Map<String, Object> user = helpers.requireUser(poolId, username);

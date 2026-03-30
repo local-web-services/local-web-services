@@ -97,9 +97,10 @@ import org.junit.platform.suite.api.*;
 @SelectClasspathResource("stepfunctions_rds")
 @SelectClasspathResource("stepfunctions_s3tables")
 @SelectClasspathResource("aws_fake")
+@SelectClasspathResource("chaos")
 @ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "io.localwebservices.lws.steps")
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "progress")
 @ConfigurationParameter(
     key = FILTER_TAGS_PROPERTY_NAME,
-    value = "(@minimal or @standard) and not @internal and not @lifecycle")
+    value = "(@minimal or @standard) and (not @internal or @capacity) and not @lifecycle")
 public class CucumberRunnerTest {}

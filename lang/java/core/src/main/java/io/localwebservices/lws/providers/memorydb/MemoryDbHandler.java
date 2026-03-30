@@ -241,8 +241,7 @@ public class MemoryDbHandler implements HttpHandler {
             sendJson(
                 exchange,
                 400,
-                Map.of(
-                    "__type", "ClusterNotFoundFault", "message", "Cluster not found: " + name));
+                Map.of("__type", "ClusterNotFoundFault", "message", "Cluster not found: " + name));
             return;
           }
           if (body.containsKey("Description")) cluster.put("Description", body.get("Description"));

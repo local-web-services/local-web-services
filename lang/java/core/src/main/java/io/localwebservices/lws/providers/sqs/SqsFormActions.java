@@ -238,7 +238,8 @@ class SqsFormActions {
     Map<String, String> qAttrs = new LinkedHashMap<>();
     qAttrs.put("QueueArn", "arn:aws:sqs:us-east-1:" + ACCOUNT_ID + ":" + q.name);
     qAttrs.put("ApproximateNumberOfMessages", String.valueOf(q.approximateMessageCount()));
-    qAttrs.put("ApproximateNumberOfMessagesNotVisible", String.valueOf(q.approximateNotVisibleCount()));
+    qAttrs.put(
+        "ApproximateNumberOfMessagesNotVisible", String.valueOf(q.approximateNotVisibleCount()));
     qAttrs.put("VisibilityTimeout", String.valueOf(q.visibilityTimeout));
     qAttrs.put("CreatedTimestamp", String.valueOf(System.currentTimeMillis() / 1000));
     qAttrs.put("LastModifiedTimestamp", String.valueOf(System.currentTimeMillis() / 1000));

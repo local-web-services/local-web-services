@@ -285,8 +285,10 @@ public class ManagementHandler implements HttpHandler {
     String service = path.substring("/_ldk/chaos/".length());
     if ("PUT".equalsIgnoreCase(method) || "POST".equalsIgnoreCase(method)) {
       Map<String, Object> body = readJson(exchange);
-      state.chaosRules.computeIfAbsent(
-          service, k -> Collections.synchronizedMap(new LinkedHashMap<>())).put("*", body);
+      state
+          .chaosRules
+          .computeIfAbsent(service, k -> Collections.synchronizedMap(new LinkedHashMap<>()))
+          .put("*", body);
       sendJson(exchange, 200, Map.of("status", "ok"));
     } else if ("DELETE".equalsIgnoreCase(method)) {
       state.chaosRules.remove(service);
@@ -327,7 +329,10 @@ public class ManagementHandler implements HttpHandler {
       throws IOException {
     String[] parts = path.substring("/_ldk/state/".length()).split("/", 3);
     if (parts.length < 3) {
-      sendJson(exchange, 400, Map.of("error", "path must be /_ldk/state/{service}/{resourceType}/{resourceId}"));
+      sendJson(
+          exchange,
+          400,
+          Map.of("error", "path must be /_ldk/state/{service}/{resourceType}/{resourceId}"));
       return;
     }
     String service = parts[0];

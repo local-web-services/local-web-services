@@ -73,8 +73,7 @@ public class DynamoDbStore {
     }
     if (t.streamEnabled) {
       desc.put(
-          "StreamSpecification",
-          Map.of("StreamEnabled", true, "StreamViewType", t.streamViewType));
+          "StreamSpecification", Map.of("StreamEnabled", true, "StreamViewType", t.streamViewType));
       desc.put("LatestStreamArn", t.latestStreamArn);
     }
     return desc;

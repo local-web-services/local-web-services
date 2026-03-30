@@ -174,7 +174,9 @@ public class LwsCli {
   public static void injectState(
       int port, String service, String resourceType, String resourceId, String stateValue)
       throws IOException {
-    put(port, "/_ldk/state/" + service + "/" + resourceType + "/" + resourceId,
+    put(
+        port,
+        "/_ldk/state/" + service + "/" + resourceType + "/" + resourceId,
         Map.of("state", stateValue));
   }
 

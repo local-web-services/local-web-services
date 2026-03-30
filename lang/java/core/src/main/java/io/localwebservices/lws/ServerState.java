@@ -130,10 +130,8 @@ public class ServerState {
     injectedStates.remove(service + ":" + resourceType + ":" + resourceId);
   }
 
-  public Optional<String> getInjectedState(
-      String service, String resourceType, String resourceId) {
-    return Optional.ofNullable(
-        injectedStates.get(service + ":" + resourceType + ":" + resourceId));
+  public Optional<String> getInjectedState(String service, String resourceType, String resourceId) {
+    return Optional.ofNullable(injectedStates.get(service + ":" + resourceType + ":" + resourceId));
   }
 
   public LifecycleRule getLifecycleRule(String service) {
