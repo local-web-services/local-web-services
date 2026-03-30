@@ -1,7 +1,14 @@
 /** Management API — /_ldk/* endpoints. */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import type { ServerState, ChaosRule, FakeRule, IamPolicy, CapacityConfig, LifecycleRule } from "../types";
+import type {
+  ServerState,
+  ChaosRule,
+  FakeRule,
+  IamPolicy,
+  CapacityConfig,
+  LifecycleRule,
+} from "../types";
 import { defaultCapacityConfigs } from "../types";
 import { WebSocketServer, type WebSocket } from "ws";
 
@@ -296,7 +303,10 @@ export function registerManagementApi(
   app.put(
     "/_ldk/chaos/:service",
     async (
-      req: FastifyRequest<{ Params: { service: string }; Body: { error_rate?: number; latency_ms?: number } }>,
+      req: FastifyRequest<{
+        Params: { service: string };
+        Body: { error_rate?: number; latency_ms?: number };
+      }>,
       reply: FastifyReply,
     ) => {
       const { service } = req.params;
