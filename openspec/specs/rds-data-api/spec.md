@@ -1,5 +1,8 @@
-## ADDED Requirements
+# rds-data-api Specification
 
+## Purpose
+TBD - created by archiving change add-cross-service-dispatch-phase2. Update Purpose after archive.
+## Requirements
 ### Requirement: RDS Data API Execute Statement
 The system SHALL implement the RDS Data API `ExecuteStatement` endpoint (`POST /execute`) that executes SQL against a per-cluster SQLite backend and returns results in the RDS Data API response format.
 
@@ -53,3 +56,4 @@ The system SHALL create a dedicated SQLite database for each RDS cluster and mai
 - **GIVEN** two RDS clusters exist
 - **WHEN** DDL is executed against one cluster
 - **THEN** the schema change is not visible through the other cluster's Data API endpoint
+

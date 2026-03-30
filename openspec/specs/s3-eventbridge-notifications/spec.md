@@ -1,5 +1,8 @@
-## ADDED Requirements
+# s3-eventbridge-notifications Specification
 
+## Purpose
+TBD - created by archiving change add-cross-service-dispatch-phase2. Update Purpose after archive.
+## Requirements
 ### Requirement: S3 EventBridge Notification SDK Configuration
 The SDK step definitions SHALL support configuring an S3 bucket to send notification events to EventBridge by calling `put_bucket_notification_configuration()` with an `EventBridgeConfiguration: {}` block.
 
@@ -20,3 +23,4 @@ The system SHALL return a descriptive error when an object is PUT into a bucket 
 - **GIVEN** a bucket has an EventBridge notification configured for a custom bus
 - **WHEN** the target bus is deleted and an object is then PUT into the bucket
 - **THEN** the PUT request succeeds (S3 does not fail on notification delivery errors) and the notification delivery failure is recorded
+

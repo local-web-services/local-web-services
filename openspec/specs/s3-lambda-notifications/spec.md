@@ -1,5 +1,8 @@
-## ADDED Requirements
+# s3-lambda-notifications Specification
 
+## Purpose
+TBD - created by archiving change add-cross-service-dispatch-phase2. Update Purpose after archive.
+## Requirements
 ### Requirement: S3 Lambda Notification Configuration
 The system SHALL accept `LambdaFunctionConfigurations` blocks in `put_bucket_notification_configuration` and validate that the referenced Lambda function exists before storing the configuration.
 
@@ -43,3 +46,4 @@ The system SHALL validate that the Lambda function referenced in a `LambdaFuncti
 - **GIVEN** a Lambda function exists but is not in ACTIVE status
 - **WHEN** `put_bucket_notification_configuration` is called referencing that function
 - **THEN** HTTP 400 is returned
+

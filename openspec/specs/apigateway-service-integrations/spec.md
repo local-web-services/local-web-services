@@ -1,5 +1,8 @@
-## ADDED Requirements
+# apigateway-service-integrations Specification
 
+## Purpose
+TBD - created by archiving change add-cross-service-dispatch-phase2. Update Purpose after archive.
+## Requirements
 ### Requirement: API Gateway AWS Service Integration Execution
 The system SHALL execute AWS service integrations configured on a REST API method, translating the inbound API Gateway request into the target service call and mapping the response back to the HTTP response.
 
@@ -57,3 +60,4 @@ The system SHALL support API Gateway integrations that start Step Functions exec
 - **GIVEN** a method integration targets a Step Functions state machine
 - **WHEN** the API endpoint is invoked
 - **THEN** a new Step Functions execution is started and the execution ARN is returned in the response
+

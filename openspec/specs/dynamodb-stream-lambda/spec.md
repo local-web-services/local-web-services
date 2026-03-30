@@ -1,5 +1,8 @@
-## ADDED Requirements
+# dynamodb-stream-lambda Specification
 
+## Purpose
+TBD - created by archiving change add-cross-service-dispatch-phase2. Update Purpose after archive.
+## Requirements
 ### Requirement: DynamoDB Stream Lambda Event Source Mapping
 The system SHALL support creating a Lambda event source mapping from a DynamoDB stream, and SHALL invoke the configured Lambda function when items are written to the mapped table.
 
@@ -38,3 +41,4 @@ The system SHALL track the lifecycle of a DynamoDB stream-triggered Lambda invoc
 - **GIVEN** a DynamoDB item write triggers a Lambda invocation
 - **WHEN** the Lambda function throws an unhandled exception
 - **THEN** the invocation state transitions from `IN_PROGRESS` to `FAILED`
+

@@ -1,5 +1,8 @@
-## ADDED Requirements
+# stepfunctions-guard-validation Specification
 
+## Purpose
+TBD - created by archiving change add-cross-service-dispatch-phase2. Update Purpose after archive.
+## Requirements
 ### Requirement: StepFunctions State Machine Lifecycle Enforcement
 The system SHALL reject `start_execution` when the target state machine is not in `ACTIVE` status.
 
@@ -49,3 +52,4 @@ The system SHALL reject service task dispatch when the target service's capacity
 - **AND** that service's capacity has been exhausted via `lws_session.capacity(service).exhaust().apply()`
 - **WHEN** the service task is executed
 - **THEN** the task fails with a `ServiceUnavailableException`
+

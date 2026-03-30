@@ -1,5 +1,8 @@
-## ADDED Requirements
+# lambda-invocation-observability Specification
 
+## Purpose
+TBD - created by archiving change add-cross-service-dispatch-phase2. Update Purpose after archive.
+## Requirements
 ### Requirement: Lambda Asynchronous Invocation Mode
 The system SHALL support asynchronous Lambda invocation by respecting the `X-Invocation-Type: Event` request header, dispatching the function asynchronously, and returning HTTP 202 immediately.
 
@@ -43,3 +46,4 @@ The system SHALL record and expose the invocation lifecycle for Lambda functions
 - **GIVEN** a Lambda function was triggered by SNS
 - **WHEN** the invocation record is retrieved
 - **THEN** the record identifies the trigger source as SNS
+
