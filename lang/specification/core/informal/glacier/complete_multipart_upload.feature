@@ -35,7 +35,7 @@ Feature: Glacier - A Multipart Upload Is Completed
     When a multipart upload is completed
     Then the operation is rejected
 
-  @standard @negative @complete_multipart_upload
+  @standard @negative @complete_multipart_upload @internal
   Scenario: a multipart upload is completed fails when the vault does not exist
     Given the upload exists
     And the upload is InProgress

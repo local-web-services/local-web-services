@@ -8,6 +8,7 @@ package tests
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -37,12 +38,21 @@ func memorydbCreateCluster(world *World) error {
 	return err
 }
 
-// memorydbCreateACL creates the test MemoryDB ACL.
+// memorydbCreateACL creates the test MemoryDB ACL. It is idempotent: if the ACL
+// already exists (ACLAlreadyExistsFault) it returns nil so that setup steps
+// composing multiple Given preconditions do not fail when the ACL was already
+// created by an earlier step (e.g. the cluster exists step).
 func memorydbCreateACL(world *World) error {
 	_, err := world.MemoryDBClient().CreateACL(context.Background(), &memorydb.CreateACLInput{
 		ACLName: aws.String(memorydbTestACLName),
 		Tags:    []memorydbtypes.Tag{{Key: aws.String(memorydbTestTagKey), Value: aws.String(memorydbTestTagValue)}},
 	})
+	if err != nil {
+		var alreadyExists *memorydbtypes.ACLAlreadyExistsFault
+		if errors.As(err, &alreadyExists) {
+			return nil
+		}
+	}
 	return err
 }
 

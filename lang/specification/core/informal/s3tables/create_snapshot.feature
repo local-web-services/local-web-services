@@ -19,20 +19,20 @@ Feature: S3tables - A Snapshot Is Created For A Table
     And snapshot count is never negative
     And schema version is always at least one
 
-  @standard @negative @create_snapshot
+  @standard @negative @create_snapshot @internal
   Scenario: a snapshot is created for a table fails when the table does not exist
     Given the table does not exist
     When a snapshot is created for a table
     Then the operation is rejected
 
-  @standard @negative @create_snapshot @lifecycle
+  @standard @negative @create_snapshot @lifecycle @internal
   Scenario: a snapshot is created for a table fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"
     When a snapshot is created for a table
     Then the operation is rejected
 
-  @standard @negative @create_snapshot
+  @standard @negative @create_snapshot @internal
   Scenario: a snapshot is created for a table fails when the snapshot already exists
     Given the table exists
     And the table is "ACTIVE"

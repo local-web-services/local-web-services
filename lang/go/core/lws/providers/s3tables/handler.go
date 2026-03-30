@@ -41,6 +41,7 @@ type Store struct {
 	buckets    map[string]*TableBucket // key: bucketARN
 	namespaces map[string]*Namespace   // key: bucketARN/namespaceName
 	tables     map[string]*Table       // key: bucketARN/namespace/tableName
+	policies   map[string]string       // key: bucketARN/namespace/tableName, value: policy JSON
 }
 
 func NewStore() *Store {
@@ -48,6 +49,7 @@ func NewStore() *Store {
 		buckets:    make(map[string]*TableBucket),
 		namespaces: make(map[string]*Namespace),
 		tables:     make(map[string]*Table),
+		policies:   make(map[string]string),
 	}
 }
 
@@ -57,6 +59,7 @@ func (s *Store) Reset() {
 	s.buckets = make(map[string]*TableBucket)
 	s.namespaces = make(map[string]*Namespace)
 	s.tables = make(map[string]*Table)
+	s.policies = make(map[string]string)
 }
 
 type Handler struct {
@@ -310,6 +313,20 @@ func restAfterFirstSegment(path string) string {
 	return path[idx+1:]
 }
 
+// tableKeyAndSubResource extracts (bucketARN/namespace/table, subResource) from
+// the rest portion of a sub-resource path: arnPrefix/bucketName/namespace/table/subResource.
+func tableKeyAndSubResource(rest string) (tableKey, subResource string) {
+	// Split into at most 5 parts: arnPrefix, bucketName, namespace, tableName, subResource
+	parts := strings.SplitN(rest, "/", 5)
+	if len(parts) < 5 {
+		return "", ""
+	}
+	bucketARN := parts[0] + "/" + parts[1]
+	tableKey = bucketARN + "/" + parts[2] + "/" + parts[3]
+	subResource = parts[4]
+	return
+}
+
 func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation, path string, body map[string]interface{}) {
 	switch operation {
 	case "CreateTableBucket":
@@ -318,12 +335,17 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation, path
 			name = getString(body, "Name")
 		}
 		arn := fmt.Sprintf("arn:aws:s3tables:%s:%s:bucket/%s", region, accountID, name)
+		h.store.mu.Lock()
+		if _, exists := h.store.buckets[arn]; exists {
+			h.store.mu.Unlock()
+			sendError(w, 409, "ConflictException", "Table bucket already exists: "+name)
+			return
+		}
 		bucket := &TableBucket{
 			Name:      name,
 			ARN:       arn,
 			CreatedAt: time.Now(),
 		}
-		h.store.mu.Lock()
 		h.store.buckets[arn] = bucket
 		h.store.mu.Unlock()
 		sendJSON(w, 200, bucketDesc(bucket))
@@ -362,6 +384,15 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation, path
 			sendError(w, 404, "NotFoundException", "Table bucket not found: "+bucketARN)
 			return
 		}
+		// Reject if bucket has active namespaces.
+		prefix := bucketARN + "/"
+		for key := range h.store.namespaces {
+			if strings.HasPrefix(key, prefix) {
+				h.store.mu.Unlock()
+				sendError(w, 409, "ConflictException", "Table bucket has active namespaces and cannot be deleted")
+				return
+			}
+		}
 		delete(h.store.buckets, bucketARN)
 		h.store.mu.Unlock()
 		w.WriteHeader(204)
@@ -369,13 +400,6 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation, path
 	case "CreateNamespace":
 		rest := restAfterFirstSegment(path)
 		bucketARN, _, _ := extractBucketARNAndRest(rest)
-		h.store.mu.RLock()
-		bucket := h.store.buckets[bucketARN]
-		h.store.mu.RUnlock()
-		if bucket == nil {
-			sendError(w, 404, "NotFoundException", "Table bucket not found: "+bucketARN)
-			return
-		}
 		name := ""
 		if nsArr, ok := body["namespace"].([]interface{}); ok && len(nsArr) > 0 {
 			if s, ok := nsArr[0].(string); ok {
@@ -386,12 +410,22 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation, path
 			name = getString(body, "namespace")
 		}
 		key := bucketARN + "/" + name
+		h.store.mu.Lock()
+		if h.store.buckets[bucketARN] == nil {
+			h.store.mu.Unlock()
+			sendError(w, 404, "NotFoundException", "Table bucket not found: "+bucketARN)
+			return
+		}
+		if _, exists := h.store.namespaces[key]; exists {
+			h.store.mu.Unlock()
+			sendError(w, 409, "ConflictException", "Namespace already exists: "+name)
+			return
+		}
 		ns := &Namespace{
 			Name:      name,
 			BucketARN: bucketARN,
 			CreatedAt: time.Now(),
 		}
-		h.store.mu.Lock()
 		h.store.namespaces[key] = ns
 		h.store.mu.Unlock()
 		sendJSON(w, 200, nsDesc(ns))
@@ -423,6 +457,15 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation, path
 			sendError(w, 404, "NotFoundException", "Namespace not found: "+nsName)
 			return
 		}
+		// Reject if namespace has active tables.
+		tablePrefix := key + "/"
+		for tableKey := range h.store.tables {
+			if strings.HasPrefix(tableKey, tablePrefix) {
+				h.store.mu.Unlock()
+				sendError(w, 409, "ConflictException", "Namespace has active tables and cannot be deleted")
+				return
+			}
+		}
 		delete(h.store.namespaces, key)
 		h.store.mu.Unlock()
 		w.WriteHeader(204)
@@ -430,18 +473,28 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation, path
 	case "CreateTable":
 		rest := restAfterFirstSegment(path)
 		bucketARN, nsName, _ := extractBucketARNAndRest(rest)
-		h.store.mu.RLock()
-		bucket := h.store.buckets[bucketARN]
-		h.store.mu.RUnlock()
-		if bucket == nil {
-			sendError(w, 404, "NotFoundException", "Table bucket not found: "+bucketARN)
-			return
-		}
 		name := getString(body, "name")
 		if name == "" {
 			name = getString(body, "Name")
 		}
-		key := bucketARN + "/" + nsName + "/" + name
+		nsKey := bucketARN + "/" + nsName
+		tableKey := bucketARN + "/" + nsName + "/" + name
+		h.store.mu.Lock()
+		if h.store.buckets[bucketARN] == nil {
+			h.store.mu.Unlock()
+			sendError(w, 404, "NotFoundException", "Table bucket not found: "+bucketARN)
+			return
+		}
+		if h.store.namespaces[nsKey] == nil {
+			h.store.mu.Unlock()
+			sendError(w, 404, "NotFoundException", "Namespace not found: "+nsName)
+			return
+		}
+		if _, exists := h.store.tables[tableKey]; exists {
+			h.store.mu.Unlock()
+			sendError(w, 409, "ConflictException", "Table already exists: "+name)
+			return
+		}
 		arn := fmt.Sprintf("%s/table/%s/%s", bucketARN, nsName, name)
 		tbl := &Table{
 			Name:      name,
@@ -451,8 +504,7 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation, path
 			TableType: "customer",
 			CreatedAt: time.Now(),
 		}
-		h.store.mu.Lock()
-		h.store.tables[key] = tbl
+		h.store.tables[tableKey] = tbl
 		h.store.mu.Unlock()
 		sendJSON(w, 200, tableDesc(tbl))
 
@@ -513,15 +565,45 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation, path
 		w.WriteHeader(204)
 
 	case "GetTableSubResource":
-		// No-op: return empty response for policy, maintenance-job-status, etc.
+		rest := restAfterFirstSegment(path)
+		tableKey, subResource := tableKeyAndSubResource(rest)
+		if subResource == "policy" {
+			h.store.mu.RLock()
+			policy, exists := h.store.policies[tableKey]
+			h.store.mu.RUnlock()
+			if !exists {
+				sendError(w, 404, "NotFoundException", "Table policy not found")
+				return
+			}
+			sendJSON(w, 200, map[string]string{"resourcePolicy": policy})
+			return
+		}
 		sendJSON(w, 200, map[string]interface{}{})
 
 	case "PutTableSubResource":
-		// No-op: accept and ignore sub-resource PUT (policy, maintenance config, etc.)
+		rest := restAfterFirstSegment(path)
+		tableKey, subResource := tableKeyAndSubResource(rest)
+		if subResource == "policy" {
+			policyJSON, _ := json.Marshal(body)
+			h.store.mu.Lock()
+			h.store.policies[tableKey] = string(policyJSON)
+			h.store.mu.Unlock()
+		}
 		w.WriteHeader(204)
 
 	case "DeleteTableSubResource":
-		// No-op: accept and ignore sub-resource DELETE (policy, etc.)
+		rest := restAfterFirstSegment(path)
+		tableKey, subResource := tableKeyAndSubResource(rest)
+		if subResource == "policy" {
+			h.store.mu.Lock()
+			if _, exists := h.store.policies[tableKey]; !exists {
+				h.store.mu.Unlock()
+				sendError(w, 404, "NotFoundException", "Table policy not found")
+				return
+			}
+			delete(h.store.policies, tableKey)
+			h.store.mu.Unlock()
+		}
 		w.WriteHeader(204)
 
 	default:

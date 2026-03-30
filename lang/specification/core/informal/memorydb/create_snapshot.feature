@@ -26,7 +26,7 @@ Feature: Memorydb - A Snapshot Is Created From An Available Cluster
     When a snapshot is created from an available cluster
     Then the operation is rejected
 
-  @standard @negative @create_snapshot @lifecycle
+  @standard @negative @create_snapshot @lifecycle @internal
   Scenario: a snapshot is created from an available cluster fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"

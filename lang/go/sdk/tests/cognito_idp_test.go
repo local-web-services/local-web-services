@@ -232,13 +232,16 @@ func registerCognitoIDPSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Given(`^the user is "CONFIRMED"$`, func() error {
-		// Arrange: transition user from FORCE_CHANGE_PASSWORD → CONFIRMED via AdminConfirmSignUp
-		// AdminConfirmSignUp works from FORCE_CHANGE_PASSWORD state directly.
-		_, err := world.CognitoIDPClient().AdminConfirmSignUp(context.Background(), &cognitoidentityprovider.AdminConfirmSignUpInput{
+		// Arrange: set a permanent password via AdminSetUserPassword so the user is CONFIRMED
+		// and can authenticate with cognitoTestPassword in subsequent When steps.
+		// Act
+		_, err := world.CognitoIDPClient().AdminSetUserPassword(context.Background(), &cognitoidentityprovider.AdminSetUserPasswordInput{
 			UserPoolId: aws.String(st.poolID),
 			Username:   aws.String(st.username),
+			Password:   aws.String(cognitoTestPassword),
+			Permanent:  true,
 		})
-		// Assert: user is now CONFIRMED
+		// Assert: user is now CONFIRMED with permanent password set
 		return err
 	})
 

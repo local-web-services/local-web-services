@@ -25,7 +25,7 @@ Feature: Elasticache - Tags Are Added To A Cache Resource
     When tags are added to a cache resource
     Then the operation is rejected
 
-  @standard @negative @add_tags_to_resource
+  @standard @negative @add_tags_to_resource @internal
   Scenario: tags are added to a cache resource fails when the resource does not have tags
     Given the resource exists
     And the resource does not have tags

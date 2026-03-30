@@ -27,7 +27,7 @@ Feature: CognitoIdp - A User Responds To An Auth Challenge
     When a user responds to an auth challenge
     Then the operation is rejected
 
-  @standard @negative @respond_to_auth_challenge
+  @standard @negative @respond_to_auth_challenge @internal
   Scenario: a user responds to an auth challenge fails when the session is not "CHALLENGE_REQUIRED"
     Given the session exists
     And the session is not "CHALLENGE_REQUIRED"

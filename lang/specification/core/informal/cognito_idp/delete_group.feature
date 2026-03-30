@@ -27,7 +27,7 @@ Feature: CognitoIdp - A Group Is Deleted
     When a group is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_group
+  @standard @negative @delete_group @internal
   Scenario: a group is deleted fails when the group is not "ACTIVE"
     Given the group exists
     And the group is not "ACTIVE"

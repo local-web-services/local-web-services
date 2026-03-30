@@ -510,23 +510,32 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 		sendXML(w, 200, describeSnapsResp{Snapshots: snaps})
 
 	case "AddTagsToResource":
+		type tagListResult struct {
+			TagList struct{} `xml:"TagList"`
+		}
 		type addTagsResp struct {
-			XMLName xml.Name `xml:"AddTagsToResourceResponse"`
-			TagList []struct{} `xml:"AddTagsToResourceResult>TagList>Tag"`
+			XMLName xml.Name      `xml:"AddTagsToResourceResponse"`
+			Result  tagListResult `xml:"AddTagsToResourceResult"`
 		}
 		sendXML(w, 200, addTagsResp{})
 
 	case "RemoveTagsFromResource":
+		type tagListResult struct {
+			TagList struct{} `xml:"TagList"`
+		}
 		type removeTagsResp struct {
-			XMLName xml.Name `xml:"RemoveTagsFromResourceResponse"`
-			TagList []struct{} `xml:"RemoveTagsFromResourceResult>TagList>Tag"`
+			XMLName xml.Name      `xml:"RemoveTagsFromResourceResponse"`
+			Result  tagListResult `xml:"RemoveTagsFromResourceResult"`
 		}
 		sendXML(w, 200, removeTagsResp{})
 
 	case "ListTagsForResource":
+		type tagListResult struct {
+			TagList struct{} `xml:"TagList"`
+		}
 		type listTagsResp struct {
-			XMLName xml.Name `xml:"ListTagsForResourceResponse"`
-			TagList []struct{} `xml:"ListTagsForResourceResult>TagList>Tag"`
+			XMLName xml.Name      `xml:"ListTagsForResourceResponse"`
+			Result  tagListResult `xml:"ListTagsForResourceResult"`
 		}
 		sendXML(w, 200, listTagsResp{})
 

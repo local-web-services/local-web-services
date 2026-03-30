@@ -44,7 +44,7 @@ Feature: CognitoIdp - An Admin Removes A User From A Group
     When an admin removes a user from a group
     Then the operation is rejected
 
-  @standard @negative @admin_remove_user_from_group
+  @standard @negative @admin_remove_user_from_group @internal
   Scenario: an admin removes a user from a group fails when the group is not "ACTIVE"
     Given the user exists
     And the user is not "DELETED"

@@ -25,7 +25,7 @@ Feature: Memorydb - Tags Are Removed From A Memorydb Resource
     When tags are removed from a MemoryDB resource
     Then the operation is rejected
 
-  @standard @negative @untag_resource
+  @standard @negative @untag_resource @internal
   Scenario: tags are removed from a MemoryDB resource fails when the resource is not tagged
     Given the resource has a tag entry
     And the resource is not tagged

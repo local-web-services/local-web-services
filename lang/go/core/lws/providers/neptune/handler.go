@@ -448,14 +448,15 @@ func (h *Handler) handle(w http.ResponseWriter, action string, params url.Values
 
 	case "RebootDBInstance":
 		id := params.Get("DBInstanceIdentifier")
-		h.store.mu.RLock()
+		h.store.mu.Lock()
 		inst := h.store.instances[id]
-		h.store.mu.RUnlock()
 		if inst == nil {
+			h.store.mu.Unlock()
 			sendError(w, 404, "DBInstanceNotFound", "DB instance not found: "+id)
 			return
 		}
 		inst.DBInstanceStatus = "REBOOTING"
+		h.store.mu.Unlock()
 		type resp struct {
 			XMLName xml.Name      `xml:"RebootDBInstanceResponse"`
 			Result  xmlDBInstance `xml:"RebootDBInstanceResult>DBInstance"`

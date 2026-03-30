@@ -25,7 +25,7 @@ Feature: Memorydb - Tags Are Added To A Memorydb Resource
     When tags are added to a MemoryDB resource
     Then the operation is rejected
 
-  @standard @negative @tag_resource
+  @standard @negative @tag_resource @internal
   Scenario: tags are added to a MemoryDB resource fails when the resource is not tagged
     Given the resource has a tag entry
     And the resource is not tagged

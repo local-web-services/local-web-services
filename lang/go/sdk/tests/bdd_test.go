@@ -29,7 +29,7 @@ func TestMain(m *testing.M) {
 
 	opts := godog.Options{
 		Format: "pretty",
-		Tags:   "@minimal,@standard&&~@internal,@capacity&&~@lifecycle",
+		Tags:   "@minimal,@standard&&~@internal,@capacity&&~@lifecycle&&~@internal",
 		Paths: []string{
 			"../../../../lang/specification/sdk/features",
 			"../../../../lang/specification/core/informal/sns_sqs/sequences.feature",

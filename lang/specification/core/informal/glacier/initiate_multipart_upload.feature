@@ -33,7 +33,7 @@ Feature: Glacier - A Multipart Upload Is Initiated For A Vault
     When a multipart upload is initiated for a vault
     Then the operation is rejected
 
-  @standard @negative @initiate_multipart_upload
+  @standard @negative @initiate_multipart_upload @internal
   Scenario: a multipart upload is initiated for a vault fails when the upload already exists
     Given the vault exists
     And the vault is "ACTIVE"

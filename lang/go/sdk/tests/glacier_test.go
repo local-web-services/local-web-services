@@ -60,7 +60,10 @@ func glacierUploadArchive(world *World) (string, error) {
 }
 
 // glacierInitiateMultipartUpload is a helper that initiates a multipart upload.
+// It creates the vault first if it does not already exist (idempotent).
 func glacierInitiateMultipartUpload(world *World) (string, error) {
+	// Ensure the vault exists; ignore "already exists" errors (idempotent).
+	_ = glacierCreateVault(world)
 	resp, err := world.GlacierClient().InitiateMultipartUpload(context.Background(), &glacier.InitiateMultipartUploadInput{
 		AccountId: aws.String(glacierTestAccountID),
 		VaultName: aws.String(glacierTestVaultName),

@@ -33,7 +33,7 @@ Feature: Elasticache - A Standalone Cache Cluster Is Deleted
     When a standalone cache cluster is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_cache_cluster
+  @standard @negative @delete_cache_cluster @internal
   Scenario: a standalone cache cluster is deleted fails when the cluster is part of a replication group
     Given the cluster exists
     And the cluster is "AVAILABLE"

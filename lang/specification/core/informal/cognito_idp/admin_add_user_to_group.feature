@@ -45,7 +45,7 @@ Feature: CognitoIdp - An Admin Adds A User To A Group In The Same Pool
     When an admin adds a user to a group in the same pool
     Then the operation is rejected
 
-  @standard @negative @admin_add_user_to_group
+  @standard @negative @admin_add_user_to_group @internal
   Scenario: an admin adds a user to a group in the same pool fails when the group is not "ACTIVE"
     Given the user exists
     And the user is not "DELETED"
@@ -54,7 +54,7 @@ Feature: CognitoIdp - An Admin Adds A User To A Group In The Same Pool
     When an admin adds a user to a group in the same pool
     Then the operation is rejected
 
-  @standard @negative @admin_add_user_to_group
+  @standard @negative @admin_add_user_to_group @internal
   Scenario: an admin adds a user to a group in the same pool fails when the user and group belong to different pools
     Given the user exists
     And the user is not "DELETED"

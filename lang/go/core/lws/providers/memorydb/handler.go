@@ -20,6 +20,7 @@ type Cluster struct {
 	NodeType    string
 	Engine      string
 	Description string
+	ACLName     string
 	CreatedAt   time.Time
 }
 
@@ -50,6 +51,7 @@ type Store struct {
 	users     map[string]*User
 	acls      map[string]*ACL
 	snapshots map[string]*Snapshot
+	tags      map[string]map[string]string // ARN → key → value
 }
 
 func NewStore() *Store {
@@ -58,6 +60,7 @@ func NewStore() *Store {
 		users:     make(map[string]*User),
 		acls:      make(map[string]*ACL),
 		snapshots: make(map[string]*Snapshot),
+		tags:      make(map[string]map[string]string),
 	}
 }
 
@@ -68,6 +71,7 @@ func (s *Store) Reset() {
 	s.users = make(map[string]*User)
 	s.acls = make(map[string]*ACL)
 	s.snapshots = make(map[string]*Snapshot)
+	s.tags = make(map[string]map[string]string)
 }
 
 type Handler struct {
@@ -121,6 +125,42 @@ func writeErr(w http.ResponseWriter, code, msg string) {
 	fmt.Fprintf(w, `{"__type":%q,"message":%q}`+"\n", code, msg)
 }
 
+// arnExists checks if a MemoryDB resource ARN references an active resource.
+// ARN format: arn:aws:memorydb:region:account:resource_type/name
+func (h *Handler) arnExists(arn string) bool {
+	if arn == "" {
+		return false
+	}
+	parts := strings.SplitN(arn, ":", 6)
+	if len(parts) < 6 {
+		return false
+	}
+	resourcePart := parts[5]
+	slashIdx := strings.Index(resourcePart, "/")
+	if slashIdx < 0 {
+		return false
+	}
+	resourceType := resourcePart[:slashIdx]
+	resourceName := resourcePart[slashIdx+1:]
+	h.store.mu.RLock()
+	defer h.store.mu.RUnlock()
+	switch resourceType {
+	case "cluster":
+		c := h.store.clusters[resourceName]
+		return c != nil && c.Status != "deleting"
+	case "user":
+		u := h.store.users[resourceName]
+		return u != nil && u.Status != "deleting"
+	case "acl":
+		a := h.store.acls[resourceName]
+		return a != nil && a.Status != "deleting"
+	case "snapshot":
+		s := h.store.snapshots[resourceName]
+		return s != nil && s.Status != "deleting"
+	}
+	return false
+}
+
 func getString(m map[string]interface{}, key string) string {
 	if v, ok := m[key]; ok {
 		if s, ok := v.(string); ok {
@@ -137,6 +177,7 @@ func clusterDesc(c *Cluster) map[string]interface{} {
 		"NodeType":      c.NodeType,
 		"EngineVersion": c.Engine,
 		"Description":   c.Description,
+		"ACLName":       c.ACLName,
 		"ARN":           fmt.Sprintf("arn:aws:memorydb:%s:%s:cluster/%s", region, accountID, c.Name),
 	}
 }
@@ -180,10 +221,11 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		}
 		cluster := &Cluster{
 			Name:        name,
-			Status:      "available",
+			Status:      "creating",
 			NodeType:    getString(body, "NodeType"),
 			Engine:      getString(body, "EngineVersion"),
 			Description: getString(body, "Description"),
+			ACLName:     getString(body, "ACLName"),
 			CreatedAt:   time.Now(),
 		}
 		h.store.clusters[name] = cluster
@@ -328,7 +370,7 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		snap := &Snapshot{
 			Name:        name,
 			ClusterName: clusterName,
-			Status:      "available",
+			Status:      "creating",
 			CreatedAt:   time.Now(),
 		}
 		h.store.snapshots[name] = snap
@@ -380,6 +422,15 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		if v := getString(body, "NodeType"); v != "" {
 			cluster.NodeType = v
 		}
+		if v := getString(body, "ACLName"); v != "" {
+			acl := h.store.acls[v]
+			if acl == nil || acl.Status == "deleting" {
+				h.store.mu.Unlock()
+				writeErr(w, "ACLNotFoundFault", "ACL not found: "+v)
+				return
+			}
+			cluster.ACLName = v
+		}
 		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{"Cluster": clusterDesc(cluster)})
 
@@ -414,17 +465,42 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 				existing[u] = true
 			}
 			for _, v := range toAdd {
-				if uname, ok := v.(string); ok && !existing[uname] {
-					acl.UserNames = append(acl.UserNames, uname)
-					existing[uname] = true
+				uname, ok := v.(string)
+				if !ok {
+					continue
 				}
+				// Validate user exists
+				user := h.store.users[uname]
+				if user == nil || user.Status == "deleting" {
+					h.store.mu.Unlock()
+					writeErr(w, "UserNotFoundFault", "User not found: "+uname)
+					return
+				}
+				// Reject if user is already a member
+				if existing[uname] {
+					h.store.mu.Unlock()
+					writeErr(w, "DuplicateUserNameFault", "User already in ACL: "+uname)
+					return
+				}
+				acl.UserNames = append(acl.UserNames, uname)
+				existing[uname] = true
 			}
 		}
 		// Process UserNamesToRemove
 		if toRemove, ok := body["UserNamesToRemove"].([]interface{}); ok {
+			memberSet := make(map[string]bool, len(acl.UserNames))
+			for _, u := range acl.UserNames {
+				memberSet[u] = true
+			}
 			removeSet := make(map[string]bool, len(toRemove))
 			for _, v := range toRemove {
 				if uname, ok := v.(string); ok {
+					// Reject if user is not a member
+					if !memberSet[uname] {
+						h.store.mu.Unlock()
+						writeErr(w, "UserNotFoundFault", "User not in ACL: "+uname)
+						return
+					}
 					removeSet[uname] = true
 				}
 			}
@@ -439,8 +515,64 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{"ACL": aclDesc(acl)})
 
-	case "ListTags", "TagResource", "UntagResource":
+	case "TagResource":
+		arn := getString(body, "ResourceArn")
+		if !h.arnExists(arn) {
+			writeErr(w, "ResourceNotFoundException", "Resource not found: "+arn)
+			return
+		}
+		h.store.mu.Lock()
+		if h.store.tags[arn] == nil {
+			h.store.tags[arn] = make(map[string]string)
+		}
+		if tags, ok := body["Tags"].([]interface{}); ok {
+			for _, t := range tags {
+				if tm, ok := t.(map[string]interface{}); ok {
+					k, _ := tm["Key"].(string)
+					v, _ := tm["Value"].(string)
+					if k != "" {
+						h.store.tags[arn][k] = v
+					}
+				}
+			}
+		}
+		h.store.mu.Unlock()
 		writeOK(w, map[string]interface{}{"TagList": []interface{}{}})
+
+	case "UntagResource":
+		arn := getString(body, "ResourceArn")
+		if !h.arnExists(arn) {
+			writeErr(w, "ResourceNotFoundException", "Resource not found: "+arn)
+			return
+		}
+		h.store.mu.Lock()
+		if keys, ok := body["TagKeys"].([]interface{}); ok && h.store.tags[arn] != nil {
+			for _, k := range keys {
+				if ks, ok := k.(string); ok {
+					delete(h.store.tags[arn], ks)
+				}
+			}
+		}
+		h.store.mu.Unlock()
+		writeOK(w, map[string]interface{}{"TagList": []interface{}{}})
+
+	case "ListTags":
+		arn := getString(body, "ResourceArn")
+		if !h.arnExists(arn) {
+			writeErr(w, "ResourceNotFoundException", "Resource not found: "+arn)
+			return
+		}
+		h.store.mu.RLock()
+		tagMap := h.store.tags[arn]
+		var tagList []map[string]interface{}
+		for k, v := range tagMap {
+			tagList = append(tagList, map[string]interface{}{"Key": k, "Value": v})
+		}
+		h.store.mu.RUnlock()
+		if tagList == nil {
+			tagList = []map[string]interface{}{}
+		}
+		writeOK(w, map[string]interface{}{"TagList": tagList})
 
 	default:
 		writeErr(w, "InvalidAction", "Unknown operation: "+operation)
