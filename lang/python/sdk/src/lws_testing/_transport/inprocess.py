@@ -232,11 +232,10 @@ def _build_service_apps(
 ) -> tuple[list[tuple[str, Any]], dict[str, Any]]:
     """Build FastAPI apps for all services.
 
-    Returns a tuple of:
-    - list of (service_name, app) pairs for server startup
-    - dict of extra providers (ssm, secretsmanager state wrappers) for reset support
+    Returns (service_app_pairs, extra_providers_dict).
     """
     from lws.providers.apigateway.routes import create_apigateway_management_app
+    from lws.providers.cloudtrail.routes import create_cloudtrail_app
     from lws.providers.dynamodb.routes import create_dynamodb_app
     from lws.providers.eventbridge.routes import create_eventbridge_app
     from lws.providers.organizations.routes import create_organizations_app
@@ -367,14 +366,11 @@ def _build_service_apps(
         chaos=chaos_configs["organizations"],
         aws_fake=fake_configs["organizations"],
     )
-    service_apps.append(("organizations", organizations_app))
-
-    from lws.providers.cloudtrail.routes import create_cloudtrail_app  # pylint: disable=import-outside-toplevel
     cloudtrail_app, cloudtrail_state = create_cloudtrail_app(
         chaos=chaos_configs["cloudtrail"],
         aws_fake=fake_configs["cloudtrail"],
     )
-    service_apps.append(("cloudtrail", cloudtrail_app))
+    service_apps += [("organizations", organizations_app), ("cloudtrail", cloudtrail_app)]
 
     extra_providers = {
         "ssm": _SsmStateProvider(ssm_state),
@@ -444,10 +440,7 @@ async def start_services(
 ) -> tuple[Any, dict[str, int], int, list[Any]]:
     """Start all LWS services in-process.
 
-    Returns:
-        Tuple of (log_handler, service_ports, management_port, servers_list).
-        ``servers_list`` is a list of ``(Server, Task)`` pairs that can be
-        passed directly to :func:`stop_services`.
+    Returns (log_handler, service_ports, management_port, servers_list).
     """
     from lws.providers._shared.aws_capacity import AwsCapacityConfig
     from lws.providers._shared.aws_chaos import AwsChaosConfig
@@ -501,8 +494,7 @@ async def start_services(
 
 
 async def stop_services(servers: list[Any]) -> None:
-    """Gracefully stop all servers started by :func:`start_services`."""
+    """Gracefully stop all servers started by :func:`stop_services`."""
     from lws.providers.fakeserver.provider import stop_uvicorn_server
-
     for server, task in reversed(servers):
         await stop_uvicorn_server(server, task)

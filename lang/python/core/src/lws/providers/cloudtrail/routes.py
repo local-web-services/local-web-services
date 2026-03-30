@@ -20,7 +20,10 @@ from lws.providers.cloudtrail._cloudtrail_state import _CloudTrailState
 
 _logger = get_logger("ldk.cloudtrail")
 
-_TARGET_PREFIX = "CloudTrail_20131101."
+_TARGET_PREFIXES = (
+    "com.amazonaws.cloudtrail.v20131101.CloudTrail_20131101.",
+    "CloudTrail_20131101.",
+)
 
 
 def create_cloudtrail_app(
@@ -45,8 +48,10 @@ def create_cloudtrail_app(
         """Route a single CloudTrail request to the appropriate handler."""
         target = request.headers.get("X-Amz-Target", "")
         action = target
-        if target.startswith(_TARGET_PREFIX):
-            action = target[len(_TARGET_PREFIX) :]
+        for prefix in _TARGET_PREFIXES:
+            if target.startswith(prefix):
+                action = target[len(prefix) :]
+                break
         body = await request.json()
         handler = _ACTION_HANDLERS.get(action)
         if handler is None:
