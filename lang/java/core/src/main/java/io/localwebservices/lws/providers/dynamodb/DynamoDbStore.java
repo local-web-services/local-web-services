@@ -71,6 +71,12 @@ public class DynamoDbStore {
     if (!t.gsis.isEmpty()) {
       desc.put("GlobalSecondaryIndexes", t.gsis);
     }
+    if (t.streamEnabled) {
+      desc.put(
+          "StreamSpecification",
+          Map.of("StreamEnabled", true, "StreamViewType", t.streamViewType));
+      desc.put("LatestStreamArn", t.latestStreamArn);
+    }
     return desc;
   }
 

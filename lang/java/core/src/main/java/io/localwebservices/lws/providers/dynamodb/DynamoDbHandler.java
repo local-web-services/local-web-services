@@ -164,7 +164,27 @@ public class DynamoDbHandler implements HttpHandler {
             gsiDef.put("IndexStatus", "ACTIVE");
             gsiDefs.add(gsiDef);
           }
-          store.createTable(tableName, pkName, pkType, skName, skType, gsiDefs);
+          TableDef newTable = store.createTable(tableName, pkName, pkType, skName, skType, gsiDefs);
+          // Parse StreamSpecification if provided
+          @SuppressWarnings("unchecked")
+          Map<String, Object> streamSpec =
+              (Map<String, Object>) body.get("StreamSpecification");
+          if (streamSpec != null) {
+            Object streamEnabledVal = streamSpec.get("StreamEnabled");
+            if (Boolean.TRUE.equals(streamEnabledVal)) {
+              String viewType =
+                  streamSpec.get("StreamViewType") != null
+                      ? (String) streamSpec.get("StreamViewType")
+                      : "NEW_AND_OLD_IMAGES";
+              newTable.streamEnabled = true;
+              newTable.streamViewType = viewType;
+              newTable.latestStreamArn =
+                  "arn:aws:dynamodb:us-east-1:000000000000:table/"
+                      + tableName
+                      + "/stream/"
+                      + java.time.Instant.now().toString();
+            }
+          }
           sendJson(exchange, 200, Map.of("TableDescription", store.describeTable(tableName)));
           break;
         }
@@ -194,6 +214,31 @@ public class DynamoDbHandler implements HttpHandler {
       case "UpdateTable":
         {
           String tableName = (String) body.get("TableName");
+          // Apply stream specification update if provided
+          @SuppressWarnings("unchecked")
+          Map<String, Object> updateStreamSpec =
+              (Map<String, Object>) body.get("StreamSpecification");
+          if (updateStreamSpec != null) {
+            TableDef existingTable = store.getTable(tableName);
+            Object streamEnabledVal = updateStreamSpec.get("StreamEnabled");
+            if (Boolean.TRUE.equals(streamEnabledVal)) {
+              String viewType =
+                  updateStreamSpec.get("StreamViewType") != null
+                      ? (String) updateStreamSpec.get("StreamViewType")
+                      : "NEW_AND_OLD_IMAGES";
+              existingTable.streamEnabled = true;
+              existingTable.streamViewType = viewType;
+              existingTable.latestStreamArn =
+                  "arn:aws:dynamodb:us-east-1:000000000000:table/"
+                      + tableName
+                      + "/stream/"
+                      + java.time.Instant.now().toString();
+            } else if (Boolean.FALSE.equals(streamEnabledVal)) {
+              existingTable.streamEnabled = false;
+              existingTable.streamViewType = null;
+              existingTable.latestStreamArn = null;
+            }
+          }
           Map<String, Object> desc = store.describeTable(tableName);
           sendJson(exchange, 200, Map.of("TableDescription", desc));
           break;
@@ -219,6 +264,17 @@ public class DynamoDbHandler implements HttpHandler {
         }
       case "GetItem":
         {
+          if (state.getCapacityConfig("dynamodb").isExhausted()) {
+            sendJson(
+                exchange,
+                400,
+                Map.of(
+                    "__type",
+                    "ProvisionedThroughputExceededException",
+                    "message",
+                    "Service capacity exhausted"));
+            break;
+          }
           String tableName = (String) body.get("TableName");
           Map<String, Object> key = (Map<String, Object>) body.get("Key");
           Map<String, Object> item = store.getItem(tableName, key);
@@ -231,6 +287,17 @@ public class DynamoDbHandler implements HttpHandler {
         }
       case "DeleteItem":
         {
+          if (state.getCapacityConfig("dynamodb").isExhausted()) {
+            sendJson(
+                exchange,
+                400,
+                Map.of(
+                    "__type",
+                    "ProvisionedThroughputExceededException",
+                    "message",
+                    "Service capacity exhausted"));
+            break;
+          }
           String tableName = (String) body.get("TableName");
           Map<String, Object> key = (Map<String, Object>) body.get("Key");
           Map<String, Object> existingForDelete = store.getItem(tableName, key);
@@ -251,6 +318,17 @@ public class DynamoDbHandler implements HttpHandler {
         }
       case "UpdateItem":
         {
+          if (state.getCapacityConfig("dynamodb").isExhausted()) {
+            sendJson(
+                exchange,
+                400,
+                Map.of(
+                    "__type",
+                    "ProvisionedThroughputExceededException",
+                    "message",
+                    "Service capacity exhausted"));
+            break;
+          }
           String tableName = (String) body.get("TableName");
           Map<String, Object> key = (Map<String, Object>) body.get("Key");
           Map<String, Object> existingForUpdate = store.getItem(tableName, key);
@@ -277,6 +355,17 @@ public class DynamoDbHandler implements HttpHandler {
         }
       case "Query":
         {
+          if (state.getCapacityConfig("dynamodb").isExhausted()) {
+            sendJson(
+                exchange,
+                400,
+                Map.of(
+                    "__type",
+                    "ProvisionedThroughputExceededException",
+                    "message",
+                    "Service capacity exhausted"));
+            break;
+          }
           String tableName = (String) body.get("TableName");
           String kce = (String) body.get("KeyConditionExpression");
           Map<String, String> exprNames =
@@ -308,6 +397,17 @@ public class DynamoDbHandler implements HttpHandler {
         }
       case "Scan":
         {
+          if (state.getCapacityConfig("dynamodb").isExhausted()) {
+            sendJson(
+                exchange,
+                400,
+                Map.of(
+                    "__type",
+                    "ProvisionedThroughputExceededException",
+                    "message",
+                    "Service capacity exhausted"));
+            break;
+          }
           String tableName = (String) body.get("TableName");
           String filterExpr = (String) body.get("FilterExpression");
           Map<String, String> exprNames =

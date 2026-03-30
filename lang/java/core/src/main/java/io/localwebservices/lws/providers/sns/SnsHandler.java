@@ -353,6 +353,13 @@ public class SnsHandler implements HttpHandler {
     }
   }
 
+  // TODO: Add EventBridge dispatch for subscriptions with protocol "events" or endpoint ARN
+  // containing ":event-bus/". When such a subscription is found, make an HTTP PUT to
+  // http://127.0.0.1:{eventBridgePort}/events with the SNS message wrapped in EventBridge format.
+  // The EventBridge port should be obtained from state in the same way the SQS port is obtained.
+  // The Go reference (parity-check/lang/go/core/lws/providers/sns/handler.go) does not currently
+  // implement EventBridge dispatch either, so this is deferred for a future parity pass.
+
   private void deliverToSqsSubscriptions(
       String topicArn, String message, String msgId, Map<String, Object> messageAttributes) {
     if (sqsHandler == null) return;

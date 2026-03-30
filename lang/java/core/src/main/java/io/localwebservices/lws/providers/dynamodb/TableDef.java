@@ -14,6 +14,11 @@ public class TableDef {
   public final Map<String, Map<String, Object>> items = new LinkedHashMap<>();
   public final long createdAt = System.currentTimeMillis();
 
+  // Stream metadata
+  public boolean streamEnabled = false;
+  public String streamViewType = null;
+  public String latestStreamArn = null;
+
   public TableDef(
       String name,
       String pkName,
