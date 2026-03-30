@@ -118,9 +118,7 @@ def put_event_selectors(lws_session, world):
     trail_name = world.get("trail_name", TEST_TRAIL_NAME)
     selectors = [{"ReadWriteType": "All", "IncludeManagementEvents": True}]
     try:
-        resp = _ct(lws_session).put_event_selectors(
-            TrailName=trail_name, EventSelectors=selectors
-        )
+        resp = _ct(lws_session).put_event_selectors(TrailName=trail_name, EventSelectors=selectors)
         world["result"] = resp
         world["error"] = None
     except (ClientError, Exception) as exc:
@@ -144,9 +142,7 @@ def lookup_events(lws_session, world):
 
 @then("the trail exists and is active")
 def trail_exists_and_active(lws_session, world):
-    assert (
-        world["error"] is None
-    ), f"Expected CreateTrail to succeed but got: {world['error']}"
+    assert world["error"] is None, f"Expected CreateTrail to succeed but got: {world['error']}"
     resp = _ct(lws_session).describe_trails()
     actual_trail_names = [t["Name"] for t in resp.get("trailList", [])]
     expected_name = TEST_TRAIL_NAME
@@ -157,9 +153,7 @@ def trail_exists_and_active(lws_session, world):
 
 @then("the trail no longer exists")
 def trail_no_longer_exists(lws_session, world):
-    assert (
-        world["error"] is None
-    ), f"Expected DeleteTrail to succeed but got: {world['error']}"
+    assert world["error"] is None, f"Expected DeleteTrail to succeed but got: {world['error']}"
     trail_name = world.get("trail_name", TEST_TRAIL_NAME)
     resp = _ct(lws_session).describe_trails()
     actual_trail_names = [t["Name"] for t in resp.get("trailList", [])]
@@ -170,9 +164,7 @@ def trail_no_longer_exists(lws_session, world):
 
 @then("the trail has logging enabled")
 def trail_has_logging_enabled(lws_session, world):
-    assert (
-        world["error"] is None
-    ), f"Expected StartLogging to succeed but got: {world['error']}"
+    assert world["error"] is None, f"Expected StartLogging to succeed but got: {world['error']}"
     trail_name = world.get("trail_name", TEST_TRAIL_NAME)
     resp = _ct(lws_session).get_trail_status(Name=trail_name)
     actual_logging = resp.get("IsLogging")
@@ -184,9 +176,7 @@ def trail_has_logging_enabled(lws_session, world):
 
 @then("the trail has logging disabled")
 def trail_has_logging_disabled(lws_session, world):
-    assert (
-        world["error"] is None
-    ), f"Expected StopLogging to succeed but got: {world['error']}"
+    assert world["error"] is None, f"Expected StopLogging to succeed but got: {world['error']}"
     trail_name = world.get("trail_name", TEST_TRAIL_NAME)
     resp = _ct(lws_session).get_trail_status(Name=trail_name)
     actual_logging = resp.get("IsLogging")
@@ -211,13 +201,9 @@ def event_selectors_returned(lws_session, world):
 
 @then("the response contains recorded events")
 def response_contains_recorded_events(world):
-    assert (
-        world["error"] is None
-    ), f"Expected LookupEvents to succeed but got: {world['error']}"
+    assert world["error"] is None, f"Expected LookupEvents to succeed but got: {world['error']}"
     actual_events = world.get("result", {}).get("Events", [])
-    assert (
-        len(actual_events) > 0
-    ), f"Expected at least one recorded event but got: {actual_events}"
+    assert len(actual_events) > 0, f"Expected at least one recorded event but got: {actual_events}"
 
 
 @then("logging is only enabled for active trails")

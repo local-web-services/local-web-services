@@ -496,5 +496,6 @@ async def start_services(
 async def stop_services(servers: list[Any]) -> None:
     """Gracefully stop all servers started by :func:`stop_services`."""
     from lws.providers.fakeserver.provider import stop_uvicorn_server
+
     for server, task in reversed(servers):
         await stop_uvicorn_server(server, task)
