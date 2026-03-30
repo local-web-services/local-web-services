@@ -57,7 +57,7 @@ public class SsmEventsSteps {
   // Given — parameter preconditions
   // -------------------------------------------------------------------------
 
-  @Given("the parameter {string} (not already {string})")
+  @Given("the parameter {string} \\(not already {string}\\)")
   public void theParameterNotAlready(String paramState, String notState) {
     // @internal: SSM parameter state transitions not reachable via public API.
     Assumptions.assumeTrue(false, "SSM parameter state transitions not reachable via public API.");
