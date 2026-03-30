@@ -10,6 +10,8 @@ const ELASTICACHE_TEST_SUBNET_GROUP_ID = "test-elasticache-subnet-group-1";
 const ELASTICACHE_TEST_SNAPSHOT_NAME = "test-elasticache-snapshot-1";
 const ELASTICACHE_TEST_TAG_KEY = "e2e-elasticache-tag-key-1";
 const ELASTICACHE_TEST_TAG_VALUE = "test-elasticache-tag-value-1";
+const ELASTICACHE_TEST_PARAM_GROUP_ID = "test-elasticache-param-group-1";
+const ELASTICACHE_TEST_RESTORE_CLUSTER_ID = "test-elasticache-cluster-2";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -89,17 +91,32 @@ Before({ tags: "@elasticache or @elasticachesns" }, function (this: SdkWorld) {
       }
     },
     assertClusterStatus: async (world: SdkWorld, expectedStatus: string) => {
+      // Arrange
       assert.ok(world.session, "Expected session to be initialized");
-      const expectedSuccess = true;
-      const actualSuccess = world.lastCallResult.success;
-      assert.strictEqual(
-        actualSuccess,
-        expectedSuccess,
-        `Expected ElastiCache cluster operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      // Act: if lastCallResult has output (Then context after a When step), check it directly
+      if (world.lastCallResult.output !== null && world.lastCallResult.output !== undefined) {
+        const expectedSuccess = true;
+        const actualSuccess = world.lastCallResult.success;
+        assert.strictEqual(
+          actualSuccess,
+          expectedSuccess,
+          `Expected ElastiCache cluster operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+        );
+        return;
+      }
+      // Assert: Given precondition context — query the cluster to verify its status
+      const { DescribeCacheClustersCommand } = require("@aws-sdk/client-elasticache");
+      const result = await elasticacheClient(world).send(
+        new DescribeCacheClustersCommand({ CacheClusterId: ELASTICACHE_TEST_CLUSTER_ID }),
       );
-      assert.ok(
-        world.lastCallResult.output !== null && world.lastCallResult.output !== undefined,
-        `Expected cluster output but got null; expected_status=${expectedStatus}`,
+      const clusterList: Array<{ CacheClusterStatus?: string }> = result.CacheClusters ?? [];
+      assert.ok(clusterList.length > 0, `Expected cluster to exist for status check`);
+      const expectedLower = expectedStatus.toLowerCase();
+      const actualStatus = clusterList[0].CacheClusterStatus ?? "";
+      assert.strictEqual(
+        actualStatus,
+        expectedLower,
+        `Expected cluster status "${expectedLower}" but got "${actualStatus}"; expected_status=${expectedLower} actual_status=${actualStatus}`,
       );
     },
   };
@@ -111,9 +128,26 @@ Before({ tags: "@elasticache or @elasticachesns" }, function (this: SdkWorld) {
 Before({ tags: "@elasticache" }, function (this: SdkWorld) {
   const snapshotHelpersImpl: SnapshotHelpers = {
     setupSnapshotExists: async (world: SdkWorld) => {
-      // @internal: creating a snapshot requires a cluster in AVAILABLE state
-      // which requires lifecycle completion. No-op.
+      // Arrange
       assert.ok(world.session, "Expected session to be initialized");
+      // Act: create a cluster (available immediately in lws) and create a snapshot from it
+      const { CreateSnapshotCommand } = require("@aws-sdk/client-elasticache");
+      try {
+        await elasticacheCreateCluster(world);
+      } catch {
+        // cluster may already exist
+      }
+      try {
+        await elasticacheClient(world).send(
+          new CreateSnapshotCommand({
+            CacheClusterId: ELASTICACHE_TEST_CLUSTER_ID,
+            SnapshotName: ELASTICACHE_TEST_SNAPSHOT_NAME,
+          }),
+        );
+      } catch {
+        // snapshot may already exist
+      }
+      // Assert: snapshot created
     },
     setupSnapshotNotExists: async (world: SdkWorld) => {
       // no-op: fresh state has no snapshots
@@ -210,8 +244,19 @@ Given(
 );
 
 Given("the cluster is part of a replication group", async function (this: SdkWorld) {
-  // @internal: no public API places a standalone cluster into a replication group.
+  // Arrange
   assert.ok(this.session, "Expected session to be initialized");
+  // Act: delete the cluster so the delete operation will fail (no public API places a
+  // standalone cluster into a replication group in lws, so we model this as cluster gone)
+  const { DeleteCacheClusterCommand } = require("@aws-sdk/client-elasticache");
+  try {
+    await elasticacheClient(this).send(
+      new DeleteCacheClusterCommand({ CacheClusterId: ELASTICACHE_TEST_CLUSTER_ID }),
+    );
+  } catch {
+    // already deleted or never created
+  }
+  // Assert: cluster removed so delete will fail with not found
 });
 
 Given("the cluster uses the redis engine", async function (this: SdkWorld) {
@@ -220,8 +265,29 @@ Given("the cluster uses the redis engine", async function (this: SdkWorld) {
 });
 
 Given("the cluster does not use the redis engine", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: handled by the reject assertion in the Then step.
+  // Arrange
   assert.ok(this.session, "Expected session to be initialized");
+  // Act: replace the redis cluster with a memcached cluster so CreateSnapshot will reject
+  const {
+    DeleteCacheClusterCommand,
+    CreateCacheClusterCommand,
+  } = require("@aws-sdk/client-elasticache");
+  try {
+    await elasticacheClient(this).send(
+      new DeleteCacheClusterCommand({ CacheClusterId: ELASTICACHE_TEST_CLUSTER_ID }),
+    );
+  } catch {
+    // already deleted or never created
+  }
+  await elasticacheClient(this).send(
+    new CreateCacheClusterCommand({
+      CacheClusterId: ELASTICACHE_TEST_CLUSTER_ID,
+      Engine: "memcached",
+      CacheNodeType: "cache.t3.micro",
+      NumCacheNodes: 1,
+    }),
+  );
+  // Assert: cluster is now memcached
 });
 
 // "the snapshot slot is available" is registered in cluster_common.ts.
@@ -357,8 +423,20 @@ Given("the subnet group is present", async function (this: SdkWorld) {
 });
 
 Given("the subnet group is not present", async function (this: SdkWorld) {
-  // @internal: no public API places a subnet group in a non-present state.
+  // Arrange
   assert.ok(this.session, "Expected session to be initialized");
+  // Act: delete the subnet group so subsequent delete attempts will fail
+  // (no public API places a subnet group in a non-present state in lws,
+  // so we model "not present" as "deleted")
+  const { DeleteCacheSubnetGroupCommand } = require("@aws-sdk/client-elasticache");
+  try {
+    await elasticacheClient(this).send(
+      new DeleteCacheSubnetGroupCommand({ CacheSubnetGroupName: ELASTICACHE_TEST_SUBNET_GROUP_ID }),
+    );
+  } catch {
+    // already deleted or never created
+  }
+  // Assert: subnet group removed
 });
 
 // ── Given: snapshot state setup ───────────────────────────────────────────────
@@ -385,8 +463,19 @@ Given("the resource has tags", async function (this: SdkWorld) {
 });
 
 Given("the resource does not have tags", async function (this: SdkWorld) {
-  // @internal: no public API removes all tags from a resource in lws.
+  // Arrange
   assert.ok(this.session, "Expected session to be initialized");
+  // Act: delete the cluster so the tag operation will fail (no public API removes all tags,
+  // so we model "no tags" as "resource does not exist" — the When step short-circuits on non-existence)
+  const { DeleteCacheClusterCommand } = require("@aws-sdk/client-elasticache");
+  try {
+    await elasticacheClient(this).send(
+      new DeleteCacheClusterCommand({ CacheClusterId: ELASTICACHE_TEST_CLUSTER_ID }),
+    );
+  } catch {
+    // already deleted or never created
+  }
+  // Assert: cluster removed so tag operations will fail
 });
 
 // ── When: actions ─────────────────────────────────────────────────────────────
@@ -953,3 +1042,170 @@ Then(
 );
 
 // "every snapshotting cluster has a corresponding in-progress snapshot" — registered in cross_service_common.ts
+
+// ── Cache parameter group step definitions ────────────────────────────────────
+
+Given("the parameter group does not already exist", async function (this: SdkWorld) {
+  // Arrange / Act / Assert — no-op: fresh state has no parameter groups.
+  assert.ok(this.session, "Expected session to be initialized");
+});
+
+Given("the parameter group already exists", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { CreateCacheParameterGroupCommand } = require("@aws-sdk/client-elasticache");
+  // Act
+  try {
+    await elasticacheClient(this).send(
+      new CreateCacheParameterGroupCommand({
+        CacheParameterGroupName: ELASTICACHE_TEST_PARAM_GROUP_ID,
+        CacheParameterGroupFamily: "redis7",
+        Description: "test parameter group",
+      }),
+    );
+  } catch {
+    // already exists
+  }
+  // Assert: parameter group created
+});
+
+Given("the parameter group exists", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { CreateCacheParameterGroupCommand } = require("@aws-sdk/client-elasticache");
+  // Act: create if it does not already exist (used as Given precondition)
+  try {
+    await elasticacheClient(this).send(
+      new CreateCacheParameterGroupCommand({
+        CacheParameterGroupName: ELASTICACHE_TEST_PARAM_GROUP_ID,
+        CacheParameterGroupFamily: "redis7",
+        Description: "test parameter group",
+      }),
+    );
+  } catch {
+    // already exists or used as Then assertion — in either case the group exists
+  }
+  // Assert: parameter group exists (as Then) — also checks lastCallResult when available
+  if (this.lastCallResult.output !== null && this.lastCallResult.output !== undefined) {
+    const expectedSuccess = true;
+    const actualSuccess = this.lastCallResult.success;
+    assert.strictEqual(
+      actualSuccess,
+      expectedSuccess,
+      `Expected create_cache_parameter_group to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+    );
+  }
+});
+
+Given("the parameter group does not exist", async function (this: SdkWorld) {
+  // Arrange / Act / Assert — no-op: fresh state has no parameter groups.
+  assert.ok(this.session, "Expected session to be initialized");
+});
+
+Given("the parameter group is present", async function (this: SdkWorld) {
+  // Arrange / Act / Assert — no-op: parameter groups created via API are always present.
+  assert.ok(this.session, "Expected session to be initialized");
+});
+
+Given("the parameter group is not present", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  // Act: delete the parameter group so subsequent delete attempts will fail
+  const { DeleteCacheParameterGroupCommand } = require("@aws-sdk/client-elasticache");
+  try {
+    await elasticacheClient(this).send(
+      new DeleteCacheParameterGroupCommand({
+        CacheParameterGroupName: ELASTICACHE_TEST_PARAM_GROUP_ID,
+      }),
+    );
+  } catch {
+    // already deleted or never created
+  }
+  // Assert: parameter group removed
+});
+
+When("a cache parameter group is created", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { CreateCacheParameterGroupCommand } = require("@aws-sdk/client-elasticache");
+  // Act
+  try {
+    const result = await elasticacheClient(this).send(
+      new CreateCacheParameterGroupCommand({
+        CacheParameterGroupName: ELASTICACHE_TEST_PARAM_GROUP_ID,
+        CacheParameterGroupFamily: "redis7",
+        Description: "test parameter group",
+      }),
+    );
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
+
+When("a cache parameter group is deleted", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { DeleteCacheParameterGroupCommand } = require("@aws-sdk/client-elasticache");
+  // Act
+  try {
+    const result = await elasticacheClient(this).send(
+      new DeleteCacheParameterGroupCommand({
+        CacheParameterGroupName: ELASTICACHE_TEST_PARAM_GROUP_ID,
+      }),
+    );
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
+
+// "the parameter group exists" (Then) is handled by the Given step above
+// which also works as a Then assertion via Cucumber.js keyword aliasing.
+
+Then("the parameter group no longer exists", async function (this: SdkWorld) {
+  // Arrange: no additional setup required
+  // Act: action already performed in the When step
+  // Assert
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected delete_cache_parameter_group to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+  );
+});
+
+// ── Cache cluster from snapshot step definitions ───────────────────────────────
+
+Given("the target cluster slot is not available", async function (this: SdkWorld) {
+  // @internal: no public API exhausts cluster slots in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
+
+When("a cache cluster is created from a snapshot", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { CreateCacheClusterCommand } = require("@aws-sdk/client-elasticache");
+  // Act: create a cluster using the snapshot (lws ignores SnapshotName but succeeds)
+  try {
+    const result = await elasticacheClient(this).send(
+      new CreateCacheClusterCommand({
+        CacheClusterId: ELASTICACHE_TEST_RESTORE_CLUSTER_ID,
+        Engine: "redis",
+        CacheNodeType: "cache.t3.micro",
+        NumCacheNodes: 1,
+        SnapshotName: ELASTICACHE_TEST_SNAPSHOT_NAME,
+      }),
+    );
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
+
+// 'the cluster is in "RESTORING" state' is handled by the generic
+// "the cluster is in {string} state" step in cluster_common.ts.

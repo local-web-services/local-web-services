@@ -33,6 +33,8 @@ async function createACL(world: SdkWorld): Promise<void> {
         Tags: [{ Key: MEMORYDB_TAG_KEY, Value: MEMORYDB_TAG_VALUE }],
       }),
     );
+    // Inject active state so precondition assertions see ACTIVE status
+    await world.session!.injectState("memorydb", "acl", MEMORYDB_ACL_NAME, "active");
   } catch {
     // ACL may already exist
   }
@@ -79,8 +81,12 @@ async function createSnapshot(world: SdkWorld): Promise<void> {
 Before({ tags: "@memorydb" }, function (this: SdkWorld) {
   this.clusterHelpers = {
     createCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
       try {
         await createCluster(world);
+        // Act: inject available state so precondition assertions see AVAILABLE status
+        await world.session!.injectState("memorydb", "cluster", MEMORYDB_CLUSTER_NAME, "available");
       } catch {
         // cluster may already exist
       }
@@ -88,15 +94,17 @@ Before({ tags: "@memorydb" }, function (this: SdkWorld) {
     assertClusterStatus: async (world: SdkWorld, expectedStatus: string) => {
       // Arrange
       assert.ok(world.session, "Expected session to be initialized");
-      // Act: check that the last cluster operation succeeded
-      const expectedSuccess = true;
-      const actualSuccess = world.lastCallResult.success;
-      // Assert
-      assert.strictEqual(
-        actualSuccess,
-        expectedSuccess,
-        `Expected cluster operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-      );
+      // Act: only check lastCallResult.success when a When step has set a result
+      if (world.lastCallResult.output !== null || world.lastCallResult.error !== undefined) {
+        const expectedSuccess = true;
+        const actualSuccess = world.lastCallResult.success;
+        // Assert
+        assert.strictEqual(
+          actualSuccess,
+          expectedSuccess,
+          `Expected cluster operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+        );
+      }
       const { DescribeClustersCommand } = require("@aws-sdk/client-memorydb");
       const result = await memorydbClient(world).send(
         new DescribeClustersCommand({ ClusterName: MEMORYDB_CLUSTER_NAME }),
@@ -115,8 +123,12 @@ Before({ tags: "@memorydb" }, function (this: SdkWorld) {
   };
   this.userHelpers = {
     createUser: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
       try {
         await createUser(world);
+        // Act: inject active state so precondition assertions see ACTIVE status
+        await world.session!.injectState("memorydb", "user", MEMORYDB_USER_NAME, "active");
       } catch {
         // user may already exist
       }
@@ -149,15 +161,17 @@ Before({ tags: "@memorydb" }, function (this: SdkWorld) {
         }
         return;
       }
-      // For other statuses check lastCallResult
-      const expectedSuccess = true;
-      const actualSuccess = world.lastCallResult.success;
-      // Assert
-      assert.strictEqual(
-        actualSuccess,
-        expectedSuccess,
-        `Expected user operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_status=${expectedStatus} expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-      );
+      // Act: only check lastCallResult.success when a When step has set a result
+      if (world.lastCallResult.output !== null || world.lastCallResult.error !== undefined) {
+        const expectedSuccess = true;
+        const actualSuccess = world.lastCallResult.success;
+        // Assert
+        assert.strictEqual(
+          actualSuccess,
+          expectedSuccess,
+          `Expected user operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_status=${expectedStatus} expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+        );
+      }
     },
   };
 
@@ -280,8 +294,21 @@ Before({ tags: "@memorydb" }, function (this: SdkWorld) {
       assert.ok(world.session, "Expected session to be initialized");
     },
     setupTagAssociationNotActive: async (world: SdkWorld) => {
-      // No-op: removing tags from resources is not supported via this path in lws.
+      // Arrange
       assert.ok(world.session, "Expected session to be initialized");
+      const { UntagResourceCommand } = require("@aws-sdk/client-memorydb");
+      // Act: remove the tag to simulate a non-active tag association
+      try {
+        await memorydbClient(world).send(
+          new UntagResourceCommand({
+            ResourceArn: MEMORYDB_ARN,
+            TagKeys: [MEMORYDB_TAG_KEY],
+          }),
+        );
+      } catch {
+        // tag may not exist
+      }
+      // Assert: tag removed
     },
     assertResourceTagged: async (world: SdkWorld) => {
       // Arrange: no additional setup required
@@ -364,7 +391,8 @@ Given("the user membership entry exists", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
   const { UpdateACLCommand } = require("@aws-sdk/client-memorydb");
-  // Act
+  // Act: ensure user exists before adding to ACL
+  await createUser(this);
   await memorydbClient(this).send(
     new UpdateACLCommand({
       ACLName: MEMORYDB_ACL_NAME,
@@ -471,8 +499,21 @@ Given("the resource is tagged", async function (this: SdkWorld) {
 });
 
 Given("the resource is not tagged", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — @internal: resource with empty tag list requires internal control.
+  // Arrange
   assert.ok(this.session, "Expected session to be initialized");
+  const { UntagResourceCommand } = require("@aws-sdk/client-memorydb");
+  // Act: remove the tag to put the resource in "not tagged" state
+  try {
+    await memorydbClient(this).send(
+      new UntagResourceCommand({
+        ResourceArn: MEMORYDB_ARN,
+        TagKeys: [MEMORYDB_TAG_KEY],
+      }),
+    );
+  } catch {
+    // tag may not exist
+  }
+  // Assert: tag removed
 });
 
 // ── Given: FizzBee sequence preconditions ─────────────────────────────────────

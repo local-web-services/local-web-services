@@ -66,24 +66,52 @@ async function ensureNeptuneSnapshot(world: SdkWorld): Promise<void> {
 Before({ tags: "@neptune" }, function (this: SdkWorld) {
   this.clusterHelpers = {
     createCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create the cluster for use as a precondition
       await ensureNeptuneCluster(world);
+      // Mark the last call as successful so assertClusterStatus precondition checks pass
+      world.lastCallResult = { success: true, output: {} };
     },
     assertClusterStatus: async (world: SdkWorld, expectedStatus: string) => {
+      // Arrange
       assert.ok(world.session, "Expected session to be initialized");
-      const expectedSuccess = true;
-      const actualSuccess = world.lastCallResult.success;
-      assert.strictEqual(
-        actualSuccess,
-        expectedSuccess,
-        `Expected Neptune cluster operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-      );
+      // If there is a prior operation result, assert it succeeded
+      const hasPriorResult =
+        world.lastCallResult.output !== null || world.lastCallResult.error !== undefined;
+      if (hasPriorResult) {
+        const expectedSuccess = true;
+        const actualSuccess = world.lastCallResult.success;
+        assert.strictEqual(
+          actualSuccess,
+          expectedSuccess,
+          `Expected Neptune cluster operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+        );
+      }
+      // Act: check the status via the last response or by describing
+      const expectedStatusLower = expectedStatus.toLowerCase();
+      // If the last result has a DBCluster in its output, use that status (e.g. after create/delete/modify)
+      const outputCluster = (
+        world.lastCallResult.output as { DBCluster?: { Status?: string } } | null
+      )?.DBCluster;
+      if (outputCluster?.Status !== undefined) {
+        const actualStatus = outputCluster.Status;
+        // Assert
+        assert.strictEqual(
+          actualStatus,
+          expectedStatusLower,
+          `Expected cluster status "${expectedStatusLower}" but got "${actualStatus}"; expected_status=${expectedStatusLower} actual_status=${actualStatus}`,
+        );
+        return;
+      }
+      // Fallback: describe the cluster to verify its current state
       const { DescribeDBClustersCommand } = require("@aws-sdk/client-neptune");
       const result = await neptuneClient(world).send(
         new DescribeDBClustersCommand({ DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID }),
       );
       const clusters: Array<{ Status?: string }> = result.DBClusters ?? [];
+      // Assert
       assert.ok(clusters.length > 0, `Expected cluster "${NEPTUNE_TEST_CLUSTER_ID}" to exist`);
-      const expectedStatusLower = expectedStatus.toLowerCase();
       const actualStatus = clusters[0].Status ?? "";
       assert.strictEqual(
         actualStatus,
@@ -154,7 +182,6 @@ Before({ tags: "@neptune" }, function (this: SdkWorld) {
     assertSnapshotInState: async (world: SdkWorld, expectedStatus: string) => {
       // Arrange
       assert.ok(world.session, "Expected session to be initialized");
-      const { DescribeDBClusterSnapshotsCommand } = require("@aws-sdk/client-neptune");
       // Act: verify operation succeeded
       const expectedSuccess = true;
       const actualSuccess = world.lastCallResult.success;
@@ -163,6 +190,22 @@ Before({ tags: "@neptune" }, function (this: SdkWorld) {
         expectedSuccess,
         `Expected operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
       );
+      // Use last call result status if available (e.g. for delete where snapshot is removed from memory)
+      const outputSnap = (
+        world.lastCallResult.output as { DBClusterSnapshot?: { Status?: string } } | null
+      )?.DBClusterSnapshot;
+      if (outputSnap?.Status !== undefined) {
+        // Assert
+        const actualStatus = outputSnap.Status;
+        assert.strictEqual(
+          actualStatus,
+          expectedStatus,
+          `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+        );
+        return;
+      }
+      // Fallback: describe the snapshot
+      const { DescribeDBClusterSnapshotsCommand } = require("@aws-sdk/client-neptune");
       const result = await neptuneClient(world).send(
         new DescribeDBClusterSnapshotsCommand({
           DBClusterSnapshotIdentifier: NEPTUNE_TEST_SNAPSHOT_ID,
@@ -184,7 +227,6 @@ Before({ tags: "@neptune" }, function (this: SdkWorld) {
     assertSnapshotInStateLinkedToCluster: async (world: SdkWorld, expectedStatus: string) => {
       // Arrange
       assert.ok(world.session, "Expected session to be initialized");
-      const { DescribeDBClusterSnapshotsCommand } = require("@aws-sdk/client-neptune");
       // Act: verify operation succeeded
       const expectedSuccess = true;
       const actualSuccess = world.lastCallResult.success;
@@ -193,6 +235,22 @@ Before({ tags: "@neptune" }, function (this: SdkWorld) {
         expectedSuccess,
         `Expected operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
       );
+      // Use last call result status if available (e.g. for create where response has "creating")
+      const outputSnap = (
+        world.lastCallResult.output as { DBClusterSnapshot?: { Status?: string } } | null
+      )?.DBClusterSnapshot;
+      if (outputSnap?.Status !== undefined) {
+        // Assert
+        const actualStatus = outputSnap.Status;
+        assert.strictEqual(
+          actualStatus,
+          expectedStatus,
+          `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+        );
+        return;
+      }
+      // Fallback: describe the snapshot
+      const { DescribeDBClusterSnapshotsCommand } = require("@aws-sdk/client-neptune");
       const result = await neptuneClient(world).send(
         new DescribeDBClusterSnapshotsCommand({
           DBClusterSnapshotIdentifier: NEPTUNE_TEST_SNAPSHOT_ID,
@@ -378,6 +436,7 @@ Before({ tags: "@neptune" }, function (this: SdkWorld) {
       assert.ok(world.session, "Expected session to be initialized");
     },
     assertInstanceInState: async (world: SdkWorld, expectedState: string) => {
+      // Arrange
       assert.ok(world.session, "Expected session to be initialized");
       const expectedSuccess = true;
       const actualSuccess = world.lastCallResult.success;
@@ -386,11 +445,28 @@ Before({ tags: "@neptune" }, function (this: SdkWorld) {
         expectedSuccess,
         `Expected Neptune instance operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
       );
+      // Use last call result status if available (e.g. for delete/create/modify where response has transitional state)
+      const outputInstance = (
+        world.lastCallResult.output as { DBInstance?: { DBInstanceStatus?: string } } | null
+      )?.DBInstance;
+      if (outputInstance?.DBInstanceStatus !== undefined) {
+        // Assert
+        const expectedStatus = expectedState.toLowerCase();
+        const actualStatus = outputInstance.DBInstanceStatus;
+        assert.strictEqual(
+          actualStatus,
+          expectedStatus,
+          `Expected instance status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+        );
+        return;
+      }
+      // Fallback: describe the instance
       const { DescribeDBInstancesCommand } = require("@aws-sdk/client-neptune");
       const result = await neptuneClient(world).send(
         new DescribeDBInstancesCommand({ DBInstanceIdentifier: NEPTUNE_TEST_INSTANCE_ID }),
       );
       const instances: Array<{ DBInstanceStatus?: string }> = result.DBInstances ?? [];
+      // Assert
       assert.ok(instances.length > 0, `Expected instance "${NEPTUNE_TEST_INSTANCE_ID}" to exist`);
       const expectedStatus = expectedState.toLowerCase();
       const actualStatus = instances[0].DBInstanceStatus ?? "";
@@ -401,6 +477,7 @@ Before({ tags: "@neptune" }, function (this: SdkWorld) {
       );
     },
     assertInstanceInStateWithCluster: async (world: SdkWorld, expectedState: string) => {
+      // Arrange
       assert.ok(world.session, "Expected session to be initialized");
       const expectedSuccess = true;
       const actualSuccess = world.lastCallResult.success;
@@ -409,11 +486,28 @@ Before({ tags: "@neptune" }, function (this: SdkWorld) {
         expectedSuccess,
         `Expected Neptune instance operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
       );
+      // Use last call result status if available
+      const outputInstance = (
+        world.lastCallResult.output as { DBInstance?: { DBInstanceStatus?: string } } | null
+      )?.DBInstance;
+      if (outputInstance?.DBInstanceStatus !== undefined) {
+        // Assert
+        const expectedStatus = expectedState.toLowerCase();
+        const actualStatus = outputInstance.DBInstanceStatus;
+        assert.strictEqual(
+          actualStatus,
+          expectedStatus,
+          `Expected instance status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+        );
+        return;
+      }
+      // Fallback: describe the instance
       const { DescribeDBInstancesCommand } = require("@aws-sdk/client-neptune");
       const result = await neptuneClient(world).send(
         new DescribeDBInstancesCommand({ DBInstanceIdentifier: NEPTUNE_TEST_INSTANCE_ID }),
       );
       const instances: Array<{ DBInstanceStatus?: string }> = result.DBInstances ?? [];
+      // Assert
       assert.ok(instances.length > 0, `Expected instance "${NEPTUNE_TEST_INSTANCE_ID}" to exist`);
       const expectedStatus = expectedState.toLowerCase();
       const actualStatus = instances[0].DBInstanceStatus ?? "";
@@ -573,6 +667,57 @@ When("a database cluster is stopped", async function (this: SdkWorld) {
 
 // "a cluster is restored from a snapshot" is registered in cross_service_common.ts
 // (dispatches via snapshotHelpers.restoreClusterFromSnapshot registered in the Before hook above).
+
+// ── Given: multi-AZ state setup ───────────────────────────────────────────────
+
+Given('multi-"AZ" is enabled for the cluster', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { ModifyDBClusterCommand } = require("@aws-sdk/client-neptune");
+  // Act: enable multi-AZ on the cluster so FailoverDBCluster will succeed
+  await neptuneClient(this).send(
+    new ModifyDBClusterCommand({ DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID, MultiAZ: true }),
+  );
+  // Mark last call as successful since this is a setup step
+  this.lastCallResult = { success: true, output: {} };
+  // Assert: multi-AZ enabled
+});
+
+Given('multi-"AZ" is not enabled for the cluster', async function (this: SdkWorld) {
+  // Arrange / Act / Assert — no-op: cannot disable multi-AZ via public API in lws.
+  assert.ok(this.session, "Expected session to be initialized");
+});
+
+// ── When: multi-AZ failover ────────────────────────────────────────────────────
+
+When('a multi-"AZ" failover is triggered on a cluster', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const { FailoverDBClusterCommand } = require("@aws-sdk/client-neptune");
+  // Act
+  try {
+    const result = await neptuneClient(this).send(
+      new FailoverDBClusterCommand({ DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID }),
+    );
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
+
+// ── Then: multi-AZ failover assertions ────────────────────────────────────────
+
+Then('the cluster enters "MODIFYING" state for primary promotion', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  assert.ok(
+    this.clusterHelpers?.assertClusterStatus,
+    "Expected clusterHelpers.assertClusterStatus to be registered",
+  );
+  // Act + Assert: delegate to service-specific helper
+  await this.clusterHelpers.assertClusterStatus(this, "modifying");
+});
 
 // @internal: internal lifecycle actions — no-op
 

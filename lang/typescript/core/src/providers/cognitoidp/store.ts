@@ -9,8 +9,10 @@ export type UserStatus =
   | "UNCONFIRMED"
   | "CONFIRMED"
   | "FORCE_CHANGE_PASSWORD"
+  | "RESET_REQUIRED"
   | "DISABLED"
-  | "COMPROMISED";
+  | "COMPROMISED"
+  | "DELETED";
 
 export interface UserAttribute {
   Name: string;
@@ -157,6 +159,9 @@ export class CognitoStore {
   // ── User Pools ──────────────────────────────────────────────────────────────
 
   createUserPool(name: string, policies?: Record<string, unknown>): UserPool {
+    if (this.poolsByName.has(name)) {
+      throw new Error(`InvalidParameterException: User pool ${name} already exists`);
+    }
     const id = `${REGION}_${uuidv4().replace(/-/g, "").slice(0, 9)}`;
     const now = Date.now() / 1000;
     const pool: UserPool = {
@@ -276,20 +281,24 @@ export class CognitoStore {
 
   adminGetUser(poolId: string, username: string): CognitoUser {
     const user = this.poolUsers(poolId).get(username);
-    if (!user) throw new Error(`UserNotFoundException: User ${username} not found`);
+    if (!user || user.status === "DELETED")
+      throw new Error(`UserNotFoundException: User ${username} not found`);
     return user;
   }
 
   adminDeleteUser(poolId: string, username: string): void {
     const poolUsers = this.poolUsers(poolId);
-    if (!poolUsers.has(username))
+    const user = poolUsers.get(username);
+    if (!user) throw new Error(`UserNotFoundException: User ${username} not found`);
+    if (user.status === "DELETED")
       throw new Error(`UserNotFoundException: User ${username} not found`);
-    poolUsers.delete(username);
+    user.status = "DELETED";
+    user.lastModifiedDate = Date.now() / 1000;
   }
 
   listUsers(poolId: string, filter?: string, limit?: number): CognitoUser[] {
     const poolUsers = this.poolUsers(poolId);
-    let users = Array.from(poolUsers.values());
+    let users = Array.from(poolUsers.values()).filter((u) => u.status !== "DELETED");
     if (filter) {
       // Simple attribute filter: e.g. `email = "user@example.com"`
       const match = filter.match(/^(\w+)\s*=\s*"(.*)"\s*$/);
@@ -306,18 +315,29 @@ export class CognitoStore {
 
   adminConfirmSignUp(poolId: string, username: string): void {
     const user = this.adminGetUser(poolId, username);
+    if (user.status !== "UNCONFIRMED") {
+      throw new Error(
+        `NotAuthorizedException: User cannot be confirmed. Current status is ${user.status}`,
+      );
+    }
     user.status = "CONFIRMED";
     user.lastModifiedDate = Date.now() / 1000;
   }
 
   adminDisableUser(poolId: string, username: string): void {
     const user = this.adminGetUser(poolId, username);
+    if (!user.enabled) {
+      throw new Error(`NotAuthorizedException: User is already disabled`);
+    }
     user.enabled = false;
     user.lastModifiedDate = Date.now() / 1000;
   }
 
   adminEnableUser(poolId: string, username: string): void {
     const user = this.adminGetUser(poolId, username);
+    if (user.enabled) {
+      throw new Error(`NotAuthorizedException: User is not disabled`);
+    }
     user.enabled = true;
     user.lastModifiedDate = Date.now() / 1000;
   }
@@ -329,6 +349,16 @@ export class CognitoStore {
     permanent: boolean,
   ): void {
     const user = this.adminGetUser(poolId, username);
+    if (user.status !== "RESET_REQUIRED" && user.status !== "FORCE_CHANGE_PASSWORD") {
+      throw new Error(
+        `NotAuthorizedException: User cannot set password. Current status is ${user.status}`,
+      );
+    }
+    if (permanent && user.status !== "RESET_REQUIRED") {
+      throw new Error(
+        `NotAuthorizedException: User must be in RESET_REQUIRED state to set a permanent password`,
+      );
+    }
     user.password = password;
     if (permanent) {
       user.status = "CONFIRMED";
@@ -342,13 +372,23 @@ export class CognitoStore {
 
   adminResetUserPassword(poolId: string, username: string): void {
     const user = this.adminGetUser(poolId, username);
-    user.status = "FORCE_CHANGE_PASSWORD";
+    if (user.status !== "CONFIRMED") {
+      throw new Error(
+        `NotAuthorizedException: User password cannot be reset. Current status is ${user.status}`,
+      );
+    }
+    user.status = "RESET_REQUIRED";
     user.temporaryPassword = undefined;
     user.lastModifiedDate = Date.now() / 1000;
   }
 
   adminUpdateUserAttributes(poolId: string, username: string, attributes: UserAttribute[]): void {
     const user = this.adminGetUser(poolId, username);
+    if (user.status !== "CONFIRMED") {
+      throw new Error(
+        `NotAuthorizedException: User cannot update attributes. Current status is ${user.status}`,
+      );
+    }
     for (const attr of attributes) {
       const existing = user.attributes.find((a) => a.Name === attr.Name);
       if (existing) {
@@ -422,12 +462,18 @@ export class CognitoStore {
   }
 
   adminAddUserToGroup(poolId: string, username: string, groupName: string): void {
+    // Validates user exists and is not DELETED
     this.adminGetUser(poolId, username);
+    // Validates group exists in the same pool
     this.getGroup(poolId, groupName);
     this.poolGroupMembers(poolId).get(groupName)!.add(username);
   }
 
   adminRemoveUserFromGroup(poolId: string, username: string, groupName: string): void {
+    // Validates user exists and is not DELETED
+    this.adminGetUser(poolId, username);
+    // Validates group exists in the same pool
+    this.getGroup(poolId, groupName);
     this.poolGroupMembers(poolId).get(groupName)?.delete(username);
   }
 
@@ -490,6 +536,31 @@ export class CognitoStore {
           session,
           challengeParameters: { USER_ID_FOR_SRP: username },
         };
+      }
+      if (user.status !== "CONFIRMED") {
+        throw new Error(
+          `NotAuthorizedException: User is not in a valid state for authentication. Current status is ${user.status}`,
+        );
+      }
+      return { tokens: makeTokens(poolId, username, user.attributes) };
+    }
+    if (authFlow === "ADMIN_NO_SRP_AUTH") {
+      const username = authParameters["USERNAME"];
+      const password = authParameters["PASSWORD"];
+      const user = this.adminGetUser(poolId, username);
+      if (!user.enabled) throw new Error(`NotAuthorizedException: User is disabled`);
+      if (user.status === "COMPROMISED") throw new Error(`UserNotFoundException: User not found`);
+      if (user.status !== "CONFIRMED") {
+        throw new Error(
+          `NotAuthorizedException: User is not confirmed. Current status is ${user.status}`,
+        );
+      }
+      if (
+        password !== undefined &&
+        user.password !== password &&
+        user.temporaryPassword !== password
+      ) {
+        throw new Error(`NotAuthorizedException: Incorrect username or password`);
       }
       return { tokens: makeTokens(poolId, username, user.attributes) };
     }

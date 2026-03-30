@@ -6,7 +6,7 @@ import { applyChaos } from "../../middleware/chaos";
 import { applyFake } from "../../middleware/fake";
 import { applyIamAuth } from "../../middleware/iam";
 import { createRequestContext, recordLog } from "../../middleware/logging";
-import { CognitoStore, type UserAttribute } from "./store";
+import { CognitoStore, type UserAttribute, type UserPool } from "./store";
 
 const TARGET_PREFIX = "AWSCognitoIdentityProviderService.";
 
@@ -79,7 +79,7 @@ export function registerCognitoIdp(app: FastifyInstance, state: ServerState): Co
     const body = (req.body as Record<string, unknown>) ?? {};
 
     try {
-      handleOperation(rawOperation, body, store, reply);
+      handleOperation(rawOperation, body, store, state, reply);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       if (msg.includes("UserNotFoundException")) {
@@ -105,10 +105,17 @@ export function registerCognitoIdp(app: FastifyInstance, state: ServerState): Co
   return store;
 }
 
+function isPoolInCreateDwell(pool: UserPool, state: ServerState): boolean {
+  const rule = state.lifecycleRules.get("cognitoidp");
+  if (!rule || !rule.enabled || rule.createDwellMs <= 0) return false;
+  return Date.now() - pool.createdDate * 1000 < rule.createDwellMs;
+}
+
 function handleOperation(
   operation: string,
   body: Record<string, unknown>,
   store: CognitoStore,
+  state: ServerState,
   reply: FastifyReply,
 ): void {
   switch (operation) {
@@ -234,9 +241,27 @@ function handleOperation(
     // ── Users ─────────────────────────────────────────────────────────────────
 
     case "AdminCreateUser": {
+      const adminCreatePoolId = body.UserPoolId as string;
+      const adminCreatePool = store.getPool(adminCreatePoolId);
+      if (!adminCreatePool) {
+        errorReply(
+          reply,
+          "ResourceNotFoundException",
+          `ResourceNotFoundException: User pool ${adminCreatePoolId} not found`,
+        );
+        break;
+      }
+      if (isPoolInCreateDwell(adminCreatePool, state)) {
+        errorReply(
+          reply,
+          "ResourceNotFoundException",
+          `ResourceNotFoundException: User pool ${adminCreatePoolId} is not active`,
+        );
+        break;
+      }
       const attrs = (body.UserAttributes as UserAttribute[]) ?? [];
       const user = store.adminCreateUser(
-        body.UserPoolId as string,
+        adminCreatePoolId,
         body.Username as string,
         attrs,
         body.TemporaryPassword as string | undefined,
@@ -334,8 +359,26 @@ function handleOperation(
     // ── Groups ────────────────────────────────────────────────────────────────
 
     case "CreateGroup": {
+      const createGroupPoolId = body.UserPoolId as string;
+      const createGroupPool = store.getPool(createGroupPoolId);
+      if (!createGroupPool) {
+        errorReply(
+          reply,
+          "ResourceNotFoundException",
+          `ResourceNotFoundException: User pool ${createGroupPoolId} not found`,
+        );
+        break;
+      }
+      if (isPoolInCreateDwell(createGroupPool, state)) {
+        errorReply(
+          reply,
+          "ResourceNotFoundException",
+          `ResourceNotFoundException: User pool ${createGroupPoolId} is not active`,
+        );
+        break;
+      }
       const group = store.createGroup(
-        body.UserPoolId as string,
+        createGroupPoolId,
         body.GroupName as string,
         body.Description as string | undefined,
         body.Precedence as number | undefined,

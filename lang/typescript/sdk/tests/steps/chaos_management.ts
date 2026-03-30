@@ -21,11 +21,9 @@ let callElapsedMs = 0;
 Given("chaos is enabled for the service", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "No session");
-  // Act: enable chaos for the test service (no-op if already enabled)
-  if (!chaosEnabled) {
-    await this.session!.chaos(CHAOS_MGMT_TEST_SERVICE).apply();
-    chaosEnabled = true;
-  }
+  // Act: enable chaos for the test service (always apply — each scenario uses a fresh server)
+  await this.session!.chaos(CHAOS_MGMT_TEST_SERVICE).apply();
+  chaosEnabled = true;
   // Assert: verify chaos is enabled
   const result = await this.session!.getChaosStatus(CHAOS_MGMT_TEST_SERVICE);
   const expectedEnabled = true;

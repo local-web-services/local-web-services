@@ -3,6 +3,7 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
+import * as snsSubscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as lambdaNodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as lambdaEvents from 'aws-cdk-lib/aws-lambda-event-sources';
@@ -51,6 +52,12 @@ export class OrderProcessingStack extends cdk.Stack {
     const notificationTopic = new sns.Topic(this, 'OrderNotifications', {
       topicName: 'order-notifications',
     });
+
+    // SQS Queue for SNS notifications (required: SNS publish needs at least one confirmed subscriber)
+    const notificationQueue = new sqs.Queue(this, 'NotificationQueue', {
+      queueName: 'order-notification-queue',
+    });
+    notificationTopic.addSubscription(new snsSubscriptions.SqsSubscription(notificationQueue));
 
     // SSM Parameter Store
     const appConfigParam = new ssm.StringParameter(this, 'AppConfigParam', {

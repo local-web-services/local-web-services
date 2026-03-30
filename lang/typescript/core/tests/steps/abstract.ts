@@ -537,7 +537,9 @@ When("a message is received from the queue", async function (this: LwsWorld) {
       new ReceiveMessageCommand({ QueueUrl: queueUrl, MaxNumberOfMessages: 1, WaitTimeSeconds: 0 }),
     );
     this.lastReceiptHandle = (result.Messages ?? [])[0]?.ReceiptHandle;
-    this.lastResult = { success: true, output: result };
+    // Treat empty result as failure: no available message (e.g. message is IN_FLIGHT)
+    const gotMessage = (result.Messages ?? []).length > 0;
+    this.lastResult = { success: gotMessage, output: result };
   } catch (err) {
     this.lastResult = { success: false, output: err, error: err };
   }
@@ -3314,6 +3316,15 @@ When("a state machine definition is updated", async function (this: LwsWorld) {
 });
 
 When("a state machine definition is validated", async function (this: LwsWorld) {
+  // Fail immediately if no state machine exists (matches FizzBee model precondition)
+  if (!this.lastStateMachineArn) {
+    this.lastResult = {
+      success: false,
+      output: { __type: "StateMachineDoesNotExist", message: "State machine does not exist" },
+      error: new Error("State machine does not exist"),
+    };
+    return;
+  }
   const client = this.sfnClient();
   try {
     const result = await client.send(

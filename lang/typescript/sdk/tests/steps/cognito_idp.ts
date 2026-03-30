@@ -161,23 +161,43 @@ Before({ tags: "@cognitoidp" }, function (this: SdkWorld) {
       const username = (world as any)._cognitoUsername as string;
       if (state === "CONFIRMED") {
         if (!poolId || !username) return;
-        // Act: set a permanent password to confirm the user
+        // Act: confirm the user via AdminInitiateAuth challenge + RespondToAuthChallenge.
+        // User starts in FORCE_CHANGE_PASSWORD (created with TemporaryPassword).
         const {
-          AdminSetUserPasswordCommand,
+          AdminInitiateAuthCommand,
+          RespondToAuthChallengeCommand,
         } = require("@aws-sdk/client-cognito-identity-provider");
-        await cognitoClient(world).send(
-          new AdminSetUserPasswordCommand({
+        const authResult = await cognitoClient(world).send(
+          new AdminInitiateAuthCommand({
             UserPoolId: poolId,
-            Username: username,
-            Password: COGNITO_TEST_PASSWORD,
-            Permanent: true,
+            ClientId: "setup-client-id",
+            AuthFlow: "ADMIN_USER_PASSWORD_AUTH",
+            AuthParameters: { USERNAME: username, PASSWORD: COGNITO_TEST_TEMP_PASSWORD },
           }),
         );
+        if (authResult.ChallengeName === "NEW_PASSWORD_REQUIRED") {
+          await cognitoClient(world).send(
+            new RespondToAuthChallengeCommand({
+              ClientId: "setup-client-id",
+              ChallengeName: "NEW_PASSWORD_REQUIRED",
+              Session: authResult.Session,
+              ChallengeResponses: { USERNAME: username, NEW_PASSWORD: COGNITO_TEST_PASSWORD },
+            }),
+          );
+        }
         // Assert: user is now CONFIRMED
         return;
       }
       if (state === "DELETED") {
-        // Set username so the When step can reference it
+        // Act: delete the user so it is in DELETED state
+        const { AdminDeleteUserCommand } = require("@aws-sdk/client-cognito-identity-provider");
+        try {
+          await cognitoClient(world).send(
+            new AdminDeleteUserCommand({ UserPoolId: poolId, Username: username }),
+          );
+        } catch {
+          // user may already be deleted
+        }
         (world as any)._cognitoUsername = COGNITO_TEST_USERNAME;
         return;
       }
@@ -357,8 +377,20 @@ Given("the group is {string}", async function (this: SdkWorld, state: string) {
 });
 
 Given("the group is not {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange / Act / Assert — no public API to put a group into a non-ACTIVE state.
-  (this as any)._cognitoGroupName = COGNITO_TEST_GROUP_NAME;
+  // Arrange: delete the group so it is no longer ACTIVE (groups have no intermediate state)
+  const poolId = (this as any)._cognitoPoolId as string;
+  const groupName = COGNITO_TEST_GROUP_NAME;
+  const { DeleteGroupCommand } = require("@aws-sdk/client-cognito-identity-provider");
+  // Act: delete the group to simulate non-ACTIVE state
+  try {
+    await cognitoClient(this).send(
+      new DeleteGroupCommand({ UserPoolId: poolId, GroupName: groupName }),
+    );
+  } catch {
+    // group may already be deleted
+  }
+  // Assert: group name stored for subsequent steps
+  (this as any)._cognitoGroupName = groupName;
 });
 
 Given("the user and group belong to the same pool", async function (this: SdkWorld) {
@@ -367,12 +399,22 @@ Given("the user and group belong to the same pool", async function (this: SdkWor
 });
 
 Given("the user and group belong to different pools", async function (this: SdkWorld) {
-  // Arrange: create a second pool and a group in it (simulating cross-pool scenario)
-  // Act
+  // Arrange: remove the group from the first pool so it only exists in the second pool
+  const firstPoolId = (this as any)._cognitoPoolId as string;
   const {
     CreateUserPoolCommand,
     CreateGroupCommand,
+    DeleteGroupCommand,
   } = require("@aws-sdk/client-cognito-identity-provider");
+  // Remove group from first pool if it exists there
+  try {
+    await cognitoClient(this).send(
+      new DeleteGroupCommand({ UserPoolId: firstPoolId, GroupName: COGNITO_TEST_GROUP_NAME }),
+    );
+  } catch {
+    // group may not be in first pool
+  }
+  // Act: create a second pool and a group in it (simulating cross-pool scenario)
   const poolResult = await cognitoClient(this).send(
     new CreateUserPoolCommand({ PoolName: "e2e-cognito-test-pool-2" }),
   );
@@ -380,7 +422,7 @@ Given("the user and group belong to different pools", async function (this: SdkW
   await cognitoClient(this).send(
     new CreateGroupCommand({ UserPoolId: secondPoolId, GroupName: COGNITO_TEST_GROUP_NAME }),
   );
-  // Assert: group name stored, but it belongs to a different pool
+  // Assert: group name stored, but it belongs to a different pool (not _cognitoPoolId)
   (this as any)._cognitoGroupName = COGNITO_TEST_GROUP_NAME;
 });
 
@@ -906,8 +948,30 @@ Then("the user is in {string} state", async function (this: SdkWorld, expectedSt
   if (this.lastCallResult.output === null && !this.lastCallResult.success) {
     if (expectedStatus === "RESET_REQUIRED") {
       const {
+        AdminInitiateAuthCommand,
+        RespondToAuthChallengeCommand,
         AdminResetUserPasswordCommand,
       } = require("@aws-sdk/client-cognito-identity-provider");
+      // First confirm the user via auth challenge (user starts in FORCE_CHANGE_PASSWORD)
+      const authResult = await cognitoClient(this).send(
+        new AdminInitiateAuthCommand({
+          UserPoolId: poolId,
+          ClientId: "setup-client-id",
+          AuthFlow: "ADMIN_USER_PASSWORD_AUTH",
+          AuthParameters: { USERNAME: username, PASSWORD: COGNITO_TEST_TEMP_PASSWORD },
+        }),
+      );
+      if (authResult.ChallengeName === "NEW_PASSWORD_REQUIRED") {
+        await cognitoClient(this).send(
+          new RespondToAuthChallengeCommand({
+            ClientId: "setup-client-id",
+            ChallengeName: "NEW_PASSWORD_REQUIRED",
+            Session: authResult.Session,
+            ChallengeResponses: { USERNAME: username, NEW_PASSWORD: COGNITO_TEST_PASSWORD },
+          }),
+        );
+      }
+      // Then reset to RESET_REQUIRED
       await cognitoClient(this).send(
         new AdminResetUserPasswordCommand({ UserPoolId: poolId, Username: username }),
       );
