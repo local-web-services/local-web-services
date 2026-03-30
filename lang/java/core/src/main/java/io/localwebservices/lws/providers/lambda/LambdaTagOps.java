@@ -78,9 +78,9 @@ class LambdaTagOps {
         }
       }
     }
-    if (!tagKeys.isEmpty()) {
-      Map<String, Object> tags =
-          fn.containsKey("_tags") ? (Map<String, Object>) fn.get("_tags") : new LinkedHashMap<>();
+    if (!tagKeys.isEmpty() && fn.containsKey("_tags")) {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> tags = (Map<String, Object>) fn.get("_tags");
       for (String key : tagKeys) {
         tags.remove(key);
       }
