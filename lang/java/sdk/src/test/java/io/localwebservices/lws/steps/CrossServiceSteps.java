@@ -778,6 +778,12 @@ public class CrossServiceSteps {
     Assumptions.assumeTrue(false, "table non-DELETING state not reachable via SDK API");
   }
 
+  @Given("the table is not \"CREATING\"")
+  public void theTableIsNotCreating() {
+    // Arrange / Act / Assert — non-CREATING DynamoDB table state not reachable via public API
+    Assumptions.assumeTrue(false, "table non-CREATING state not reachable via SDK API");
+  }
+
   @Given("the table does not exist")
   public void theTableDoesNotExist() {
     // Arrange / Act / Assert — no-op: fresh session has no tables

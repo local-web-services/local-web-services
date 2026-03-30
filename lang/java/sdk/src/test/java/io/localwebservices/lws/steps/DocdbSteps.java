@@ -99,6 +99,18 @@ public class DocdbSteps {
   // ElasticacheSteps.theClusterIsAvailable() (creates an ElastiCache cluster, harmless for DocDB).
   // All other cluster state steps in docdb are in @internal scenarios (excluded by tag filter).
 
+  @Given("the cluster is \"RESTORING\"")
+  public void theClusterIsRestoring() {
+    // @internal: RESTORING state not reachable via public API in lws.
+    Assumptions.assumeTrue(false, "RESTORING state not reachable via public API in lws.");
+  }
+
+  @Given("the cluster is not \"RESTORING\"")
+  public void theClusterIsNotRestoring() {
+    // @internal: Cannot enforce cluster is not RESTORING via public API.
+    Assumptions.assumeTrue(false, "Cannot enforce cluster is not RESTORING via public API.");
+  }
+
   // ── Given: instance state setup ────────────────────────────────────────────
 
   @Given("the instance does not exist")

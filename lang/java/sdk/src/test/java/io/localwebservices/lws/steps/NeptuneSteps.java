@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
@@ -85,21 +84,6 @@ public class NeptuneSteps {
         throw e;
       }
     }
-  }
-
-  // ── Given: cluster state ──────────────────────────────────────────────────────
-
-  @Given("multi-\"AZ\" is enabled for the cluster")
-  public void multiAzIsEnabledForTheCluster() {
-    // Arrange / Act / Assert — no-op: multi-AZ is modelled as an external precondition.
-    Assumptions.assumeTrue(
-        false, "Arrange / Act / Assert — no-op: multi-AZ is modelled as an external precondition");
-  }
-
-  @Given("multi-\"AZ\" is not enabled for the cluster")
-  public void multiAzIsNotEnabledForTheCluster() {
-    // @internal: multi-AZ flag state requires specific cluster configuration.
-    Assumptions.assumeTrue(false, "multi-AZ flag state requires specific cluster configuration.");
   }
 
   // ── When: failover actions ─────────────────────────────────────────────────────

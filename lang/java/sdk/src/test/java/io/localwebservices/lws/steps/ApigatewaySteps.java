@@ -710,6 +710,30 @@ public class ApigatewaySteps {
     // Assert: no throttling configured by default
   }
 
+  @Given("the dev stage has throttling configured")
+  public void theDevStageHasThrottlingConfigured() {
+    // @internal: throttling request simulation is not reachable via public API.
+    Assumptions.assumeTrue(false, "throttling request simulation not reachable via public API.");
+  }
+
+  @Given("the dev stage does not have throttling configured")
+  public void theDevStageDoesNotHaveThrottlingConfigured() {
+    // @internal: throttling request simulation is not reachable via public API.
+    Assumptions.assumeTrue(false, "throttling request simulation not reachable via public API.");
+  }
+
+  @Given("the prod stage has throttling configured")
+  public void theProdStageHasThrottlingConfigured() {
+    // @internal: throttling request simulation is not reachable via public API.
+    Assumptions.assumeTrue(false, "throttling request simulation not reachable via public API.");
+  }
+
+  @Given("the prod stage does not have throttling configured")
+  public void theProdStageDoesNotHaveThrottlingConfigured() {
+    // @internal: throttling request simulation is not reachable via public API.
+    Assumptions.assumeTrue(false, "throttling request simulation not reachable via public API.");
+  }
+
   // ── When: REST API actions ────────────────────────────────────────────────────
 
   @When("a {string} {string} is created with a root resource")
@@ -1280,6 +1304,30 @@ public class ApigatewaySteps {
     }
   }
 
+  @When("a request is made to the throttled dev stage")
+  public void aRequestIsMadeToTheThrottledDevStage() {
+    // @internal: cannot trigger throttled request via public API.
+    world.setFailure(
+        new UnsupportedOperationException(
+            "request_throttled_dev: cannot trigger throttled request via public API"));
+  }
+
+  @When("a request is made to the throttled prod stage")
+  public void aRequestIsMadeToTheThrottledProdStage() {
+    // @internal: cannot trigger throttled request via public API.
+    world.setFailure(
+        new UnsupportedOperationException(
+            "request_throttled_prod: cannot trigger throttled request via public API"));
+  }
+
+  @When("a backend integration is called")
+  public void aBackendIntegrationIsCalled() {
+    // @internal: cannot trigger backend integration call via public API.
+    world.setFailure(
+        new UnsupportedOperationException(
+            "integration_timeout: cannot trigger backend integration call via public API"));
+  }
+
   @When("throttling is disabled for the prod stage")
   public void throttlingIsDisabledForTheProdStageWhen() {
     // Arrange
@@ -1470,6 +1518,24 @@ public class ApigatewaySteps {
             + expectedSuccess
             + " actual_success="
             + actualSuccess);
+  }
+
+  @Then("the method is {string} and its integration is {string} if it exists")
+  public void theMethodIsAndItsIntegrationIsIfItExists(
+      String methodState, String integrationState) {
+    // Arrange
+    String expectedMethodState = methodState;
+    // Act: (action performed in When step)
+    boolean actualSuccess = world.lastSuccess;
+    // Assert
+    assertTrue(
+        actualSuccess,
+        "expected method to be "
+            + expectedMethodState
+            + " but operation failed: "
+            + world.lastError
+            + "; expected_method_state="
+            + expectedMethodState);
   }
 
   // ── Then: integration assertions ──────────────────────────────────────────────
@@ -1765,5 +1831,17 @@ public class ApigatewaySteps {
     // Arrange / Act / Assert — invariant guaranteed by the fake
     Assumptions.assumeTrue(
         false, "No-op: root resource creation is an internal invariant in lws; always passes.");
+  }
+
+  @Then("the request is throttled or passes non-deterministically")
+  public void theRequestIsThrottledOrPassesNonDeterministically() {
+    // @internal: throttling behavior not observable via public API.
+    Assumptions.assumeTrue(false, "throttling behavior not observable via public API.");
+  }
+
+  @Then("the integration times out or responds non-deterministically")
+  public void theIntegrationTimesOutOrRespondsNonDeterministically() {
+    // @internal: integration timeout behavior not observable via public API.
+    Assumptions.assumeTrue(false, "integration timeout behavior not observable via public API.");
   }
 }

@@ -2,7 +2,6 @@ package io.localwebservices.lws.steps;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
@@ -72,11 +71,6 @@ public class LambdaEventsSteps {
         throw e;
       }
     }
-  }
-
-  @Given("the bus does not exist or is \"DELETED\"")
-  public void theBusDoesNotExistOrIsDeleted() {
-    // No-op: fresh state after reset has no event buses (simulates deleted bus).
   }
 
   @When("the Lambda function fails to publish because the event bus has been deleted")

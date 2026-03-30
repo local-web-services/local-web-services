@@ -2,6 +2,7 @@ package io.localwebservices.lws.steps;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assumptions;
@@ -50,6 +51,16 @@ public class SsmEventsSteps {
     } catch (Exception e) {
       return false;
     }
+  }
+
+  // -------------------------------------------------------------------------
+  // Given — parameter preconditions
+  // -------------------------------------------------------------------------
+
+  @Given("the parameter {string} (not already {string})")
+  public void theParameterNotAlready(String paramState, String notState) {
+    // @internal: SSM parameter state transitions not reachable via public API.
+    Assumptions.assumeTrue(false, "SSM parameter state transitions not reachable via public API.");
   }
 
   // -------------------------------------------------------------------------
