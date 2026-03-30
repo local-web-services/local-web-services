@@ -387,8 +387,31 @@ jobs:
       - name: Run e2e suite
         env:
           SUITE: ${{ matrix.suite }}
-        run: uv run pytest "tests/e2e/$SUITE" -v
+        run: uv run pytest "tests/e2e/$SUITE" -v --junitxml=test-results/junit.xml
         working-directory: lang/python/sdk
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: python-sdk-e2e-results-${{ matrix.suite }}
+          path: lang/python/sdk/test-results/junit.xml
+
+  python-sdk-e2e-summary:
+    needs: [python-sdk-e2e-test]
+    if: always() && needs.python-sdk-e2e-test.result != 'skipped'
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: python-sdk-e2e-results-*
+          merge-multiple: true
+          path: all-results/
+      - uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: all-results/**/*.xml
+          check_name: Python SDK E2E Tests
 
   # ── TypeScript Core ─────────────────────────────────────────────────────────
   typescript-core-lint:
