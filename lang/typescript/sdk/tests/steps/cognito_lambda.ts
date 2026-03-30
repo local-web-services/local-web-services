@@ -23,9 +23,9 @@
 // Only the NEW unique cross-service steps absent from all constituent files are
 // defined here.
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, PoolStepHelpers } from "../support/world";
 
 const CL_TEST_POOL_NAME = "e2e-test-pool-1";
 const CL_TEST_FUNC = "e2e-test-func-1";
@@ -46,6 +46,37 @@ async function findPoolId(world: SdkWorld): Promise<string | null> {
   const found = pools.find((p) => p.Name === CL_TEST_POOL_NAME);
   return found ? found.Id : null;
 }
+
+// ── Before hook: register poolHelpers for cognitolambda scenarios ──────────────
+
+Before({ tags: "@cognitolambda" }, function (this: SdkWorld) {
+  const poolHelpersImpl: PoolStepHelpers = {
+    setupPoolExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateUserPoolCommand } = require("@aws-sdk/client-cognito-identity-provider");
+      // Act
+      await cognitoClient(world).send(new CreateUserPoolCommand({ PoolName: CL_TEST_POOL_NAME }));
+      // Assert: pool created
+    },
+    createNamedUserPool: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateUserPoolCommand } = require("@aws-sdk/client-cognito-identity-provider");
+      // Act
+      try {
+        const result = await cognitoClient(world).send(
+          new CreateUserPoolCommand({ PoolName: CL_TEST_POOL_NAME }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+  };
+  this.poolHelpers = poolHelpersImpl;
+});
 
 // ── Given: trigger configuration ──────────────────────────────────────────────
 
@@ -102,17 +133,13 @@ Given("no user slot is available", async function (this: SdkWorld) {
 When("a Cognito User Pool is created", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { CreateUserPoolCommand } = require("@aws-sdk/client-cognito-identity-provider");
+  assert.ok(
+    this.poolHelpers?.createNamedUserPool,
+    "Expected poolHelpers.createNamedUserPool to be registered",
+  );
   // Act
-  try {
-    const result = await cognitoClient(this).send(
-      new CreateUserPoolCommand({ PoolName: CL_TEST_POOL_NAME }),
-    );
-    // Assert: store result
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
+  await this.poolHelpers.createNamedUserPool(this);
+  // Assert: captured in lastCallResult
 });
 
 When(

@@ -75,31 +75,11 @@ Before({ tags: "@lambdasecretsmanager" }, function (this: SdkWorld) {
 
 // ── Given: secret state unique to cross-service scenarios ─────────────────────
 
-Given('the secret exists and is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create the secret
-  await createLsSecret(this);
-  // Assert: secret is ACTIVE immediately after creation in lws
-});
+// 'the secret exists and is "ACTIVE"' is registered via the generic
+// 'the secret exists and is {string}' in cross_service_common.ts.
 
-Given('the secret is "PENDING_DELETION"', async function (this: SdkWorld) {
-  // Arrange: create and then soft-delete the secret so it is PENDING_DELETION
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateSecretCommand, DeleteSecretCommand } = require("@aws-sdk/client-secrets-manager");
-  // Act
-  try {
-    await smClient(this).send(
-      new CreateSecretCommand({ Name: LS_TEST_SECRET, SecretString: LS_TEST_SECRET_VALUE }),
-    );
-  } catch {
-    // Secret may already exist
-  }
-  await smClient(this).send(
-    new DeleteSecretCommand({ SecretId: LS_TEST_SECRET, RecoveryWindowInDays: 7 }),
-  );
-  // Assert: secret is now PENDING_DELETION
-});
+// 'the secret is "PENDING_DELETION"' is registered via the generic
+// 'the secret is {string}' in cross_service_common.ts.
 
 Given("the secret is not pending deletion", async function (this: SdkWorld) {
   // Arrange: create the secret (not pending deletion)
@@ -180,13 +160,7 @@ Then(
   },
 );
 
-Then(
-  'the invocation is "FAILED" with a ResourceNotFoundException',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe Lambda invocation failure in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+// 'the invocation is "FAILED" with a ResourceNotFoundException' is registered in lambda_common.ts.
 
 // ── Invariant catch-all steps ─────────────────────────────────────────────────
 

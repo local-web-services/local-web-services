@@ -4,7 +4,7 @@
 // conflict.  All other lambda-side invocation steps follow the same pattern as
 // lambda_secretsmanager.ts.
 
-import { Given, When, Then, Before } from "@cucumber/cucumber";
+import { When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -77,6 +77,43 @@ Before({ tags: "@lambdamemorydb" }, function (this: SdkWorld) {
         `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
       );
     },
+    createNamedCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "No session running");
+      const { CreateClusterCommand } = require("@aws-sdk/client-memorydb");
+      // Act
+      try {
+        const result = await lambdaMemorydbMemoryDbClient(world).send(
+          new CreateClusterCommand({
+            ClusterName: LAMBDA_MEMORYDB_TEST_CLUSTER,
+            NodeType: "db.t4g.small",
+            ACLName: "open-access",
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    beginClusterUpdate: async (world: SdkWorld) => {
+      // @internal: Cannot force a cluster into UPDATING state via public APIs.
+      assert.ok(world.session, "Expected session to be initialized");
+      world.lastCallResult = {
+        success: false,
+        output: null,
+        error: new Error("cannot force cluster update: scenario is @internal"),
+      };
+    },
+    completeClusterUpdate: async (world: SdkWorld) => {
+      // @internal: Cannot force cluster update completion via public APIs.
+      assert.ok(world.session, "Expected session to be initialized");
+      world.lastCallResult = {
+        success: false,
+        output: null,
+        error: new Error("cannot force cluster update completion: scenario is @internal"),
+      };
+    },
   };
   this.functionHelpers = {
     functionName: LAMBDA_MEMORYDB_TEST_FUNC,
@@ -113,57 +150,17 @@ Before({ tags: "@lambdamemorydb" }, function (this: SdkWorld) {
 // "an invocation is {string}" — registered in capacity.ts (dispatches via functionHelpers)
 // "no invocation is {string}" — registered in capacity.ts
 
-Given("a record slot is available", async function (this: SdkWorld) {
-  // No-op: always room for records in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("no record slot is available", async function (this: SdkWorld) {
-  // @internal: Cannot exhaust record slot limit in lws via public APIs.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "a record slot is available" and "no record slot is available"
+// — registered in cross_service_common.ts.
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When("a MemoryDB cluster is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { CreateClusterCommand } = require("@aws-sdk/client-memorydb");
-  // Act
-  try {
-    const result = await lambdaMemorydbMemoryDbClient(this).send(
-      new CreateClusterCommand({
-        ClusterName: LAMBDA_MEMORYDB_TEST_CLUSTER,
-        NodeType: "db.t4g.small",
-        ACLName: "open-access",
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("a MemoryDB cluster update begins", async function (this: SdkWorld) {
-  // @internal: Cannot force a cluster into UPDATING state via public APIs.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot force cluster update: scenario is @internal"),
-  };
-});
-
-When("the MemoryDB cluster update completes", async function (this: SdkWorld) {
-  // @internal: Cannot force cluster update completion via public APIs.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot force cluster update completion: scenario is @internal"),
-  };
-});
+// "a MemoryDB cluster is created" is registered in memorydb.ts
+// (dispatches via clusterHelpers.createNamedCluster registered in the Before hook above).
+// "a MemoryDB cluster update begins" is registered in memorydb.ts
+// (dispatches via clusterHelpers.beginClusterUpdate registered in the Before hook above).
+// "the MemoryDB cluster update completes" is registered in memorydb.ts
+// (dispatches via clusterHelpers.completeClusterUpdate registered in the Before hook above).
 
 When(
   "the Lambda function fails to write because the cluster is updating",
@@ -202,10 +199,7 @@ Then('the cluster is "UPDATING" and write operations may fail', async function (
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then('the cluster is "AVAILABLE" again', async function (this: SdkWorld) {
-  // @internal: Cannot observe cluster AVAILABLE-again state in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the cluster is \"AVAILABLE\" again" is registered in cluster_common.ts.
 
 // "the invocation is {string}" — registered in lambda_common.ts (literal versions for IN_PROGRESS/SUCCESS/FAILED)
 

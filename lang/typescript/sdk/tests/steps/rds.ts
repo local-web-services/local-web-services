@@ -1,8 +1,8 @@
 /** Step definitions: rds service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, SnapshotHelpers, DatabaseStepHelpers } from "../support/world";
 
 const RDS_TEST_DB_INSTANCE_ID = "test-rds-db-1";
 const RDS_TEST_SNAPSHOT_ID = "test-rds-snapshot-1";
@@ -54,6 +54,126 @@ async function rdsCreateSnapshot(world: SdkWorld): Promise<void> {
     }
   }
 }
+
+// ── Before hook: register snapshot helpers for @rds scenarios ────────────────
+
+Before({ tags: "@rds" }, function (this: SdkWorld) {
+  const snapshotHelpersImpl: SnapshotHelpers = {
+    setupSnapshotExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create DB instance then snapshot
+      await rdsCreateDBInstance(world);
+      await rdsCreateSnapshot(world);
+      // Assert: snapshot created
+    },
+    setupSnapshotNotExists: async (world: SdkWorld) => {
+      // Arrange / Act / Assert — no-op: fresh state after session reset has no snapshots.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    assertSnapshotInState: async (world: SdkWorld, _state: string) => {
+      // Arrange: no additional setup required
+      // Act: action already performed in the When step
+      // Assert
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected delete_db_snapshot to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+    },
+  };
+  this.snapshotHelpers = snapshotHelpersImpl;
+
+  const databaseHelpersImpl: DatabaseStepHelpers = {
+    createCluster: async (_world: SdkWorld) => {
+      // RDS does not have clusters in the same sense as DocDB/Neptune — no-op.
+    },
+    deleteCluster: async (_world: SdkWorld) => {
+      // RDS does not have clusters in the same sense as DocDB/Neptune — no-op.
+    },
+    modifyCluster: async (_world: SdkWorld) => {
+      // RDS does not have clusters in the same sense as DocDB/Neptune — no-op.
+    },
+    createInstance: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      await rdsCreateDBInstance(world);
+    },
+    deleteInstance: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DeleteDBInstanceCommand } = require("@aws-sdk/client-rds");
+      try {
+        const result = await rdsClient(world).send(
+          new DeleteDBInstanceCommand({
+            DBInstanceIdentifier: RDS_TEST_DB_INSTANCE_ID,
+            SkipFinalSnapshot: true,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    modifyInstance: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { ModifyDBInstanceCommand } = require("@aws-sdk/client-rds");
+      try {
+        const result = await rdsClient(world).send(
+          new ModifyDBInstanceCommand({
+            DBInstanceIdentifier: RDS_TEST_DB_INSTANCE_ID,
+            DBInstanceClass: "db.t3.small",
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    rebootInstance: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { RebootDBInstanceCommand } = require("@aws-sdk/client-rds");
+      try {
+        const result = await rdsClient(world).send(
+          new RebootDBInstanceCommand({ DBInstanceIdentifier: RDS_TEST_DB_INSTANCE_ID }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    createSnapshot: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      await rdsCreateSnapshot(world);
+    },
+    deleteSnapshot: async (_world: SdkWorld) => {
+      // RDS uses DB snapshots (not cluster snapshots) — no-op for this path.
+    },
+    assertInstanceInState: async (world: SdkWorld, _expectedState: string) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected RDS DB operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      assert.ok(
+        world.lastCallResult.output !== null && world.lastCallResult.output !== undefined,
+        `Expected output for state "${_expectedState}" but got null`,
+      );
+    },
+    setupInstanceExists: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      await rdsCreateDBInstance(world);
+    },
+    setupInstanceNotExists: async (world: SdkWorld) => {
+      // no-op: fresh state after session reset has no instances.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+  };
+  this.databaseHelpers = databaseHelpersImpl;
+});
 
 // ── Background ────────────────────────────────────────────────────────────────
 
@@ -119,24 +239,9 @@ Given("no snapshot slot is available", async function (this: SdkWorld) {
 
 // ── Given: snapshot state setup ───────────────────────────────────────────────
 
-Given("the snapshot exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create DB instance then snapshot
-  await rdsCreateDBInstance(this);
-  await rdsCreateSnapshot(this);
-  // Assert: snapshot created
-});
-
-Given("the snapshot does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no snapshots.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the snapshot is {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange / Act / Assert — no-op: snapshots in lws are available after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the snapshot exists" is registered in cross_service_common.ts (dispatches via snapshotHelpers).
+// "the snapshot does not exist" is registered in cross_service_common.ts (dispatches via snapshotHelpers).
+// "the snapshot is {string}" is registered in cross_service_common.ts (dispatches via snapshotHelpers).
 
 Given("the snapshot is not {string}", async function (this: SdkWorld, _state: string) {
   // @internal: Cannot force a snapshot into a non-AVAILABLE state via public API.
@@ -217,42 +322,8 @@ When("a database instance is deleted with a final snapshot", async function (thi
   // Assert: captured in lastCallResult
 });
 
-When("a database instance configuration is modified", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ModifyDBInstanceCommand } = require("@aws-sdk/client-rds");
-  // Act
-  try {
-    const result = await rdsClient(this).send(
-      new ModifyDBInstanceCommand({
-        DBInstanceIdentifier: RDS_TEST_DB_INSTANCE_ID,
-        DBInstanceClass: "db.t3.small",
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("a database instance is rebooted", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { RebootDBInstanceCommand } = require("@aws-sdk/client-rds");
-  // Act
-  try {
-    const result = await rdsClient(this).send(
-      new RebootDBInstanceCommand({
-        DBInstanceIdentifier: RDS_TEST_DB_INSTANCE_ID,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a database instance configuration is modified" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+// "a database instance is rebooted" is registered in cross_service_common.ts (dispatches via databaseHelpers).
 
 When("a database snapshot is created from an instance", async function (this: SdkWorld) {
   // Arrange
@@ -353,22 +424,7 @@ When("a database instance is restored from a snapshot", async function (this: Sd
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then("the instance is in {string} state", async function (this: SdkWorld, expectedState: string) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected RDS DB operation to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  assert.ok(
-    this.lastCallResult.output !== null && this.lastCallResult.output !== undefined,
-    `Expected output for state "${expectedState}" but got null`,
-  );
-});
+// "the instance is in {string} state" is registered in cross_service_common.ts (dispatches via databaseHelpers).
 
 Then(
   "the instance is in {string} state and a snapshot is {string}",
@@ -402,18 +458,8 @@ Then(
   },
 );
 
-Then("the snapshot is in {string} state", async function (this: SdkWorld, _state: string) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected delete_db_snapshot to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+// "the snapshot is in {string} state" is registered in cross_service_common.ts
+// (dispatches via snapshotHelpers.assertSnapshotInState registered in the Before hook above).
 
 Then(
   "the instance is configured for multi-{string} deployment",
@@ -457,12 +503,8 @@ Then("the restored instance is in {string} state", async function (this: SdkWorl
   );
 });
 
-Then(
-  "the instance is {string} or {string}",
-  async function (this: SdkWorld, _state1: string, _state2: string) {
-    // @internal: activate_d_b_instance outcome not observable via public API.
-  },
-);
+// "the instance is {string} or {string}" as Then — handled by the
+// Given registration above (both are no-ops).
 
 // ── Invariant Then steps ──────────────────────────────────────────────────────
 

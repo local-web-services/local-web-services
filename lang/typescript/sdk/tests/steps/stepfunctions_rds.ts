@@ -2,8 +2,7 @@
 
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
-import type { ExecutionStepHelpers } from "../support/world";
+import type { SdkWorld, ExecutionStepHelpers, InstanceStepHelpers } from "../support/world";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -85,26 +84,78 @@ Before({ tags: "@stepfunctionsrds" }, function (this: SdkWorld) {
     },
   };
   this.executionHelpers = executionHelpersImpl;
+
+  const instanceHelpersImpl: InstanceStepHelpers = {
+    setupInstanceNotExists: async (world: SdkWorld) => {
+      // Arrange / Act / Assert — no-op: fresh state after session reset has no RDS DB instances.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    setupInstanceExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act
+      const expectedDBInstanceID = await sfnRdsCreateDBInstance(this);
+      // Assert: DB instance created
+      (world as any)._sfnRdsDBInstanceID = expectedDBInstanceID;
+      assert.ok(expectedDBInstanceID, "Expected DB instance ID to be defined");
+    },
+    setupInstanceAvailable: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create DB instance so it is AVAILABLE
+      const expectedDBInstanceID = await sfnRdsCreateDBInstance(this);
+      // Assert: DB instance created
+      (world as any)._sfnRdsDBInstanceID = expectedDBInstanceID;
+    },
+    assertInstanceAvailable: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const expectedDBInstanceID = SFN_RDS_TEST_DB_INSTANCE_ID;
+      const { DescribeDBInstancesCommand } = require("@aws-sdk/client-rds");
+      // Act
+      const result = await sfnRdsRdsClient(this).send(
+        new DescribeDBInstancesCommand({ DBInstanceIdentifier: expectedDBInstanceID }),
+      );
+      const instances: Array<{ DBInstanceIdentifier: string; DBInstanceStatus?: string }> =
+        result.DBInstances ?? [];
+      // Assert
+      const actualInstance = instances.find((i) => i.DBInstanceIdentifier === expectedDBInstanceID);
+      assert.ok(
+        actualInstance,
+        `Expected DB instance "${expectedDBInstanceID}" to be AVAILABLE but it was not found; expected_db_instance_id=${expectedDBInstanceID}`,
+      );
+    },
+    createDbInstance: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateDBInstanceCommand } = require("@aws-sdk/client-rds");
+      // Act
+      try {
+        const result = await sfnRdsRdsClient(this).send(
+          new CreateDBInstanceCommand({
+            DBInstanceIdentifier: SFN_RDS_TEST_DB_INSTANCE_ID,
+            DBInstanceClass: "db.t3.micro",
+            Engine: "mysql",
+            MasterUsername: "admin",
+            MasterUserPassword: "password",
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+  };
+  this.instanceHelpers = instanceHelpersImpl;
 });
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
 // ── Given: DB instance existence ─────────────────────────────────────────────
 
-Given('the "DB" instance does not already exist', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no RDS DB instances.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given('the "DB" instance already exists', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const expectedDBInstanceID = await sfnRdsCreateDBInstance(this);
-  // Assert: DB instance created
-  (this as any)._sfnRdsDBInstanceID = expectedDBInstanceID;
-  assert.ok(expectedDBInstanceID, "Expected DB instance ID to be defined");
-});
+// "the "DB" instance does not already exist" is registered in rds_lambda.ts (dispatches via instanceHelpers.setupInstanceNotExists).
+// "the "DB" instance already exists" is registered in rds_lambda.ts (dispatches via instanceHelpers.setupInstanceExists).
 
 Given('the "DB" instance exists', async function (this: SdkWorld) {
   // Arrange
@@ -123,14 +174,7 @@ Given('the "DB" instance does not exist', async function (this: SdkWorld) {
 
 // ── Given: DB instance status ─────────────────────────────────────────────────
 
-Given('the "DB" instance is "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create DB instance so it is AVAILABLE
-  const expectedDBInstanceID = await sfnRdsCreateDBInstance(this);
-  // Assert: DB instance created
-  (this as any)._sfnRdsDBInstanceID = expectedDBInstanceID;
-});
+// "the "DB" instance is "AVAILABLE"" (Given) is registered in rds_lambda.ts (dispatches via instanceHelpers.setupInstanceAvailable).
 
 Given('the "DB" instance is not "AVAILABLE"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: fresh state has no DB instance (simulates unavailable instance).
@@ -169,27 +213,7 @@ Given('the "DB" instance is not "FAILING_OVER"', async function (this: SdkWorld)
 // "a Step Functions state machine is created" is registered in stepfunctions.ts.
 // "an execution of the state machine is started" is registered in stepfunctions.ts.
 
-When('an "RDS" "DB" instance is created', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateDBInstanceCommand } = require("@aws-sdk/client-rds");
-  // Act
-  try {
-    const result = await sfnRdsRdsClient(this).send(
-      new CreateDBInstanceCommand({
-        DBInstanceIdentifier: SFN_RDS_TEST_DB_INSTANCE_ID,
-        DBInstanceClass: "db.t3.micro",
-        Engine: "mysql",
-        MasterUsername: "admin",
-        MasterUserPassword: "password",
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// 'an "RDS" "DB" instance is created' is registered in rds_lambda.ts (dispatches via instanceHelpers.createDbInstance).
 
 When('a Multi-"AZ" failover begins on the "DB" instance', async function (this: SdkWorld) {
   // Arrange
@@ -251,24 +275,7 @@ When(
 
 // ── Then: cross-service assertions ────────────────────────────────────────────
 
-Then('the "DB" instance is "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const expectedDBInstanceID = SFN_RDS_TEST_DB_INSTANCE_ID;
-  const { DescribeDBInstancesCommand } = require("@aws-sdk/client-rds");
-  // Act
-  const result = await sfnRdsRdsClient(this).send(
-    new DescribeDBInstancesCommand({ DBInstanceIdentifier: expectedDBInstanceID }),
-  );
-  const instances: Array<{ DBInstanceIdentifier: string; DBInstanceStatus?: string }> =
-    result.DBInstances ?? [];
-  // Assert
-  const actualInstance = instances.find((i) => i.DBInstanceIdentifier === expectedDBInstanceID);
-  assert.ok(
-    actualInstance,
-    `Expected DB instance "${expectedDBInstanceID}" to be AVAILABLE but it was not found; expected_db_instance_id=${expectedDBInstanceID}`,
-  );
-});
+// 'the "DB" instance is "AVAILABLE"' (Then) is registered in rds_lambda.ts (dispatches via instanceHelpers.assertInstanceAvailable).
 
 Then('the "DB" instance is "AVAILABLE" again', async function (this: SdkWorld) {
   // @internal: Cannot observe internal DB instance failover recovery in lws.
@@ -285,11 +292,8 @@ Then(
   },
 );
 
-Then(`the execution is "SUCCEEDED"`, async function (this: SdkWorld) {
-  // @internal: Cannot observe internal execution RDS task success in lws.
-  // No-op: invariant trivially satisfied in isolated lws context.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the execution is SUCCEEDED" — handled by the canonical
+// Then("the execution is {string}", ...) in stepfunctions_sqs.ts.
 
 Then(`the execution is "FAILED" with a connection error`, async function (this: SdkWorld) {
   // @internal: Cannot observe internal execution RDS task failure in lws.

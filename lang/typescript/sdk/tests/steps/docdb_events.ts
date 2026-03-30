@@ -75,10 +75,7 @@ Before({ tags: "@docdbevents" }, function (this: SdkWorld) {
 
 // "the bus exists" is registered in cross_service_common.ts.
 
-Given("the bus does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no event buses.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the bus does not exist" — registered in cross_service_common.ts.
 
 // "the bus is {string}" (Given and Then) — registered in cross_service_common.ts (dispatches via busHelpers)
 
@@ -200,10 +197,7 @@ Then(
 
 // ── Then: @internal state assertions (no-ops) ─────────────────────────────────
 
-Then('the cluster is "AVAILABLE" again', async function (this: SdkWorld) {
-  // @internal: model-level invariant; trivially satisfied.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the cluster is \"AVAILABLE\" again" is registered in cluster_common.ts.
 
 Then(
   'the cluster is "MODIFYING" and the "MODIFIED" event is "DELIVERED"',
@@ -220,8 +214,6 @@ Then('the cluster is "MODIFYING" but no event is delivered', async function (thi
 
 // ── Then: model invariants (no-ops) ───────────────────────────────────────────
 
-Then('every "DELIVERED" event references a cluster that exists', async function (this: SdkWorld) {
-  // No-op invariant: trivially satisfied in an isolated test context.
-});
+// 'every "DELIVERED" event references a cluster that exists' is registered in cross_service_common.ts.
 
 // 'every "DELIVERED" event references a bus that exists' — registered in cross_service_common.ts

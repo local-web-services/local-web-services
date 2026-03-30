@@ -21,10 +21,20 @@ let callElapsedMs = 0;
 Given("chaos is enabled for the service", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "No session");
-  // Act: enable chaos for the test service
-  await this.session!.chaos(CHAOS_MGMT_TEST_SERVICE).apply();
-  // Assert: record state
-  chaosEnabled = true;
+  // Act: enable chaos for the test service (no-op if already enabled)
+  if (!chaosEnabled) {
+    await this.session!.chaos(CHAOS_MGMT_TEST_SERVICE).apply();
+    chaosEnabled = true;
+  }
+  // Assert: verify chaos is enabled
+  const result = await this.session!.getChaosStatus(CHAOS_MGMT_TEST_SERVICE);
+  const expectedEnabled = true;
+  const actualEnabled = result["enabled"] as boolean;
+  assert.strictEqual(
+    actualEnabled,
+    expectedEnabled,
+    `Expected chaos enabled=${expectedEnabled} for service "${CHAOS_MGMT_TEST_SERVICE}" but got enabled=${actualEnabled}; result=${JSON.stringify(result)}`,
+  );
 });
 
 Given("chaos is not enabled for the service", function (this: SdkWorld) {
@@ -229,20 +239,8 @@ When("a service call is delayed by chaos latency injection", async function (thi
 
 // ── Then: chaos assertions ─────────────────────────────────────────────────────
 
-Then("chaos is enabled for the service", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session");
-  // Act: get current chaos status
-  const result = await this.session!.getChaosStatus(CHAOS_MGMT_TEST_SERVICE);
-  // Assert
-  const expectedEnabled = true;
-  const actualEnabled = result["enabled"] as boolean;
-  assert.strictEqual(
-    actualEnabled,
-    expectedEnabled,
-    `Expected chaos enabled=${expectedEnabled} for service "${CHAOS_MGMT_TEST_SERVICE}" but got enabled=${actualEnabled}; result=${JSON.stringify(result)}`,
-  );
-});
+// "chaos is enabled for the service" as Then — handled by the combined
+// Given registration above (enables and asserts in one step).
 
 Then("chaos is disabled for the service", async function (this: SdkWorld) {
   // Arrange

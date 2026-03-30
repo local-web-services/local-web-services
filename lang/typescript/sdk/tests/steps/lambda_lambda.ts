@@ -364,14 +364,7 @@ Then(
   },
 );
 
-Then(
-  'the invocation is "FAILED" with a ResourceNotFoundException',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe Lambda invocation failure in lws.
-    // Only reached by @internal scenarios excluded by the tag filter.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+// 'the invocation is "FAILED" with a ResourceNotFoundException' is registered in lambda_common.ts.
 
 // ── Invariant catch-all steps ─────────────────────────────────────────────────
 

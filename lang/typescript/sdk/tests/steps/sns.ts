@@ -89,10 +89,33 @@ Given("the subscription does not exist", async function (this: SdkWorld) {
   (this as any)._snsSubscriptionArn = "";
 });
 
-// ── Given: subscription lifecycle state ──────────────────────────────────────
+// ── Given/Then: subscription lifecycle state ─────────────────────────────────
 
 Given("the subscription is {string}", async function (this: SdkWorld, state: string) {
   assert.ok(this.session, "Expected session to be initialized");
+  // When used as Then (assertion context), check lastCallResult
+  if (this.lastCallResult.output !== null || this.lastCallResult.success) {
+    if (state === "DELETED") {
+      // Arrange
+      // Act: (action performed in When step)
+      // Assert
+      const expectedSuccess = true;
+      const actualSuccess = this.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected subscription removal to succeed but it failed; actual_error=${this.lastCallResult.error}`,
+      );
+      return;
+    }
+    if (state === "CONFIRMED") {
+      // Cannot verify CONFIRMED state without the confirmation flow — no-op.
+      return;
+    }
+    // For other states in Then context, no-op.
+    return;
+  }
+  // Given (setup) context
   if (state === "PENDING_CONFIRMATION") {
     // No-op: email subscriptions are PENDING_CONFIRMATION by default.
     return;
@@ -459,28 +482,7 @@ Then("the subscription is deleted", async function (this: SdkWorld) {
   );
 });
 
-Then("the subscription is {string}", async function (this: SdkWorld, expectedState: string) {
-  if (expectedState === "DELETED") {
-    // Arrange
-    // Act: (action performed in When step)
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected subscription removal to succeed but it failed; actual_error=${this.lastCallResult.error}`,
-    );
-    return;
-  }
-  if (expectedState === "CONFIRMED") {
-    // Cannot verify CONFIRMED state without the confirmation flow — no-op.
-    assert.ok(this.session, "Expected session to be initialized");
-    return;
-  }
-  // For other states, no-op.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the subscription is {string}" is registered above as a dual-purpose Given/Then.
 
 Then("the message is delivered to confirmed subscriptions", async function (this: SdkWorld) {
   // Arrange

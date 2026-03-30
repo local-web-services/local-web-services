@@ -78,6 +78,25 @@ Before({ tags: "@stepfunctionss3tables" }, function (this: SdkWorld) {
         // table may already exist
       }
     },
+    deleteTable: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DeleteTableCommand } = require("@aws-sdk/client-s3tables");
+      // Act
+      try {
+        const result = await sfnS3TablesS3TablesClient(world).send(
+          new DeleteTableCommand({
+            tableBucketARN: SFN_S3TABLES_TEST_TABLE_BUCKET_ARN,
+            namespace: SFN_S3TABLES_TEST_NAMESPACE,
+            name: SFN_S3TABLES_TEST_TABLE_NAME,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
   };
   this.tableHelpers = tableHelpersImpl;
 
@@ -126,11 +145,7 @@ Given("the table does not exist or is {string}", async function (this: SdkWorld,
 
 // "the table is {string}" is registered in cross_service_common.ts (dispatches via tableHelpers).
 
-Given('the table is "DELETING"', async function (this: SdkWorld) {
-  // @internal: Cannot force a table into DELETING state via public API.
-  // No-op: treat as precondition satisfied.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the table is "DELETING"' is handled by the generic 'the table is {string}' in cross_service_common.ts.
 
 Given('the table is not "DELETING"', async function (this: SdkWorld) {
   // Arrange
@@ -185,25 +200,8 @@ When("an S3 Tables table is created", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When("a table deletion is initiated", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteTableCommand } = require("@aws-sdk/client-s3tables");
-  // Act
-  try {
-    const result = await sfnS3TablesS3TablesClient(this).send(
-      new DeleteTableCommand({
-        tableBucketARN: SFN_S3TABLES_TEST_TABLE_BUCKET_ARN,
-        namespace: SFN_S3TABLES_TEST_NAMESPACE,
-        name: SFN_S3TABLES_TEST_TABLE_NAME,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a table deletion is initiated" is registered in cross_service_common.ts
+// (dispatches via tableHelpers.deleteTable registered in the Before hook above).
 
 When(
   "a running execution fails because the S3 Tables table is being deleted",
@@ -246,11 +244,8 @@ Then(
   },
 );
 
-Then(`the execution is "SUCCEEDED"`, async function (this: SdkWorld) {
-  // @internal: Cannot observe internal execution S3 Tables task success in lws.
-  // No-op: invariant trivially satisfied in isolated lws context.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the execution is SUCCEEDED" — handled by the canonical
+// Then("the execution is {string}", ...) in stepfunctions_sqs.ts.
 
 Then(`the execution is "FAILED" with a ResourceNotFoundException`, async function (this: SdkWorld) {
   // @internal: Cannot observe internal execution S3 Tables task failure in lws.

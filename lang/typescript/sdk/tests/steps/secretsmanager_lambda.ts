@@ -1,8 +1,8 @@
 /** Step definitions: secretsmanager_lambda cross-service scenarios — unique steps only */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, FunctionStepHelpers } from "../support/world";
 
 // Constants local to secretsmanager_lambda scenarios
 const SM_LAMBDA_SECRET = "e2e-test-secret-1";
@@ -74,23 +74,44 @@ async function smLambdaEnsureFunction(world: SdkWorld): Promise<void> {
 //   - "an invocation is {string}"                    — sns_lambda.ts
 //   - "no invocation is {string}"                    — sns_lambda.ts
 
-// ── Given: function cross-service preconditions ───────────────────────────────
+// ── Before hook: register functionHelpers for secretsmanagerlambda scenarios ──
 
-Given("the function exists and is {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: ensure the function exists; lws resolves functions to ACTIVE immediately
-  await smLambdaEnsureFunction(this);
-  // Assert: function is available
+Before({ tags: "@secretsmanagerlambda" }, function (this: SdkWorld) {
+  const functionHelpersImpl: FunctionStepHelpers = {
+    functionName: SM_LAMBDA_FUNC,
+    deployFunction: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: ensure the function exists in lws
+      await smLambdaEnsureFunction(world);
+    },
+    assertFunctionActive: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: verify function exists and is active
+      const { GetFunctionCommand } = require("@aws-sdk/client-lambda");
+      const result = await smLambdaLambdaClient(world).send(
+        new GetFunctionCommand({ FunctionName: SM_LAMBDA_FUNC }),
+      );
+      // Assert
+      const expectedState = "Active";
+      const actualState = result.Configuration?.State ?? "";
+      assert.strictEqual(
+        actualState,
+        expectedState,
+        `Expected function state "${expectedState}" but got "${actualState}"; expected_state=${expectedState} actual_state=${actualState}`,
+      );
+    },
+  };
+  this.functionHelpers = functionHelpersImpl;
 });
 
-Given(
-  "the function does not exist or is not {string}",
-  async function (this: SdkWorld, _state: string) {
-    // No-op: fresh state has no Lambda functions; satisfies "does not exist" precondition.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+// ── Given: function cross-service preconditions ───────────────────────────────
+
+// "the function exists and is {string}" is registered in cross_service_common.ts
+// (dispatches via functionHelpers.deployFunction when set).
+
+// "the function does not exist or is not {string}" is registered in cross_service_common.ts.
 
 Given("the function is already {string}", async function (this: SdkWorld, _state: string) {
   // @internal: Cannot observe Lambda lifecycle transition states in lws.
@@ -231,34 +252,11 @@ When(
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then('the secret is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeSecretCommand } = require("@aws-sdk/client-secrets-manager");
-  // Act
-  const result = await smLambdaSmClient(this).send(
-    new DescribeSecretCommand({ SecretId: SM_LAMBDA_SECRET }),
-  );
-  // Assert
-  const expectedName = SM_LAMBDA_SECRET;
-  const actualName = result.Name ?? "";
-  assert.strictEqual(
-    actualName,
-    expectedName,
-    `Expected secret name "${expectedName}" but got "${actualName}"; expected_name=${expectedName} actual_name=${actualName}`,
-  );
-  assert.ok(
-    !result.DeletedDate,
-    `Expected secret to be ACTIVE but got DeletedDate: ${String(result.DeletedDate)}`,
-  );
-});
+// 'the secret is "ACTIVE"' is registered via the generic
+// 'the secret is {string}' in cross_service_common.ts.
 
-Then("the secret has a rotation function configured", async function (this: SdkWorld) {
-  // Cannot verify rotation function configuration in lws.
-  // Scenarios requiring this assertion also require rotation configuration which is
-  // not available via public API; no-op for excluded scenarios.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the secret has a rotation function configured" as Then — handled by the
+// Given registration above (both return "pending" as rotation is not supported).
 
 Then(
   'the secret is "ROTATING" and Secrets Manager invokes the Lambda rotation function',

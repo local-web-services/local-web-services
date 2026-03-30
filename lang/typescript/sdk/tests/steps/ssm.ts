@@ -1,8 +1,9 @@
 /** Step definitions: ssm service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
+import type { TagStepHelpers } from "../support/world";
 
 const SSM_TEST_PARAM = "/e2e/ssm/test-param-1";
 const SSM_TEST_VALUE = "test-value-1";
@@ -40,6 +41,49 @@ async function describeParam(world: SdkWorld): Promise<boolean> {
   const parameters: unknown[] = result.Parameters ?? [];
   return parameters.length > 0;
 }
+
+// ── Before hook: register tag helpers for @ssm scenarios ──────────────────────
+
+Before({ tags: "@ssm" }, function (this: SdkWorld) {
+  const tagHelpersImpl: TagStepHelpers = {
+    setupTagAssociationActive: async (world: SdkWorld) => {
+      // Arrange / Act / Assert — no-op: tag associations are always active after creation.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    setupTagAssociationNotActive: async (world: SdkWorld) => {
+      // Arrange: delete parameter and recreate via lifecycle dwell so tag association is non-active
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DeleteParameterCommand } = require("@aws-sdk/client-ssm");
+      try {
+        await ssmClient(world).send(new DeleteParameterCommand({ Name: SSM_TEST_PARAM }));
+      } catch {
+        // parameter may not exist
+      }
+      // Act
+      await world.session!.lifecycle("ssm").createDwellMs(5000).apply();
+      await createParam(world);
+      world.lastCallResult = { success: true, output: null };
+      // Assert: parameter is in CREATING state (tag association non-active)
+    },
+    assertListTagsResult: async (world: SdkWorld) => {
+      // Arrange: no additional setup required
+      // Act: action already performed in the When step
+      // Assert
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected list_tags_for_resource to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      assert.ok(
+        world.lastCallResult.output !== null && world.lastCallResult.output !== undefined,
+        "Expected ListTagsForResourceOutput but got null",
+      );
+    },
+  };
+  this.tagHelpers = tagHelpersImpl;
+});
 
 // ── Background ────────────────────────────────────────────────────────────────
 
@@ -98,31 +142,14 @@ Given("the tag is associated with the parameter", async function (this: SdkWorld
   // Assert: tags added
 });
 
-Given("the tag association is active", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: tag associations are always active after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the tag association is active" is registered in cross_service_common.ts (dispatches via tagHelpers).
 
 Given("the tag is not associated with the parameter", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: fresh state has no tags associated with the parameter.
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("the tag association is not active", async function (this: SdkWorld) {
-  // Arrange: delete parameter and recreate via lifecycle dwell so tag association is non-active
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteParameterCommand } = require("@aws-sdk/client-ssm");
-  try {
-    await ssmClient(this).send(new DeleteParameterCommand({ Name: SSM_TEST_PARAM }));
-  } catch {
-    // parameter may not exist
-  }
-  // Act
-  await this.session!.lifecycle("ssm").createDwellMs(5000).apply();
-  await createParam(this);
-  this.lastCallResult = { success: true, output: null };
-  // Assert: parameter is in CREATING state (tag association non-active)
-});
+// "the tag association is not active" is registered in cross_service_common.ts (dispatches via tagHelpers).
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
@@ -525,22 +552,7 @@ Then("the tags are associated with the parameter", async function (this: SdkWorl
   );
 });
 
-Then("the list of tags is returned", async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected list_tags_for_resource to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  assert.ok(
-    this.lastCallResult.output !== null && this.lastCallResult.output !== undefined,
-    "Expected ListTagsForResourceOutput but got null",
-  );
-});
+// "the list of tags is returned" is registered in cross_service_common.ts (dispatches via tagHelpers).
 
 Then("the tags are disassociated from the parameter", async function (this: SdkWorld) {
   // Arrange: no additional setup required

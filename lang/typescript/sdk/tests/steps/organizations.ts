@@ -304,7 +304,33 @@ Given("the policy is already attached to the target", async function (this: SdkW
 Given("the policy is attached to the target", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  // Act: create org, root, policy, and attach
+  // When used as Then (assertion context), check lastCallResult
+  if (this.lastCallResult.output !== null || this.lastCallResult.success) {
+    const { ListTargetsForPolicyCommand } = require("@aws-sdk/client-organizations");
+    const policyId: string = (this as any)._orgsPolicyId;
+    const targetId: string = (this as any)._orgsTargetId;
+    const expectedSuccess = true;
+    const actualSuccess = this.lastCallResult.success;
+    // Act
+    assert.strictEqual(
+      actualSuccess,
+      expectedSuccess,
+      `Expected AttachPolicy to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+    );
+    const listResp = await orgsClient(this).send(
+      new ListTargetsForPolicyCommand({ PolicyId: policyId }),
+    );
+    const actualTargetIds: string[] = (listResp.Targets ?? []).map(
+      (t: { TargetId: string }) => t.TargetId,
+    );
+    // Assert
+    assert.ok(
+      actualTargetIds.includes(targetId),
+      `Expected target '${targetId}' in policy targets but found: ${JSON.stringify(actualTargetIds)}`,
+    );
+    return;
+  }
+  // Given (setup) context: create org, root, policy, and attach
   const { orgId, rootId } = await createOrg(this);
   (this as any)._orgsOrgId = orgId;
   (this as any)._orgsRootId = rootId;
@@ -667,32 +693,7 @@ Then('the organizational unit is "DELETED"', async function (this: SdkWorld) {
   );
 });
 
-Then("the policy is attached to the target", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ListTargetsForPolicyCommand } = require("@aws-sdk/client-organizations");
-  const policyId: string = (this as any)._orgsPolicyId;
-  const targetId: string = (this as any)._orgsTargetId;
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  // Act
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected AttachPolicy to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  const listResp = await orgsClient(this).send(
-    new ListTargetsForPolicyCommand({ PolicyId: policyId }),
-  );
-  const actualTargetIds: string[] = (listResp.Targets ?? []).map(
-    (t: { TargetId: string }) => t.TargetId,
-  );
-  // Assert
-  assert.ok(
-    actualTargetIds.includes(targetId),
-    `Expected target '${targetId}' in policy targets but found: ${JSON.stringify(actualTargetIds)}`,
-  );
-});
+// "the policy is attached to the target" (Then) is handled by the dual-purpose Given above.
 
 Then("the policy is no longer attached to the target", async function (this: SdkWorld) {
   // Arrange

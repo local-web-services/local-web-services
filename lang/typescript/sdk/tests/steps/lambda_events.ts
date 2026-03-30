@@ -123,20 +123,14 @@ Given('the bus is already "DELETED"', async function (this: SdkWorld) {
   // Assert: desired state is absence
 });
 
-Given("the bus does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after reset has no event buses.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the bus does not exist" — registered in cross_service_common.ts.
 
 Given('the bus does not exist or is "DELETED"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: fresh state after reset has no event buses (simulates deleted bus).
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given('the bus is "DELETED"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after reset has no event buses (simulates deleted bus).
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the bus is "DELETED"' — handled by 'the bus is {string}' in cross_service_common.ts.
 
 Given('the bus is not "DELETED"', async function (this: SdkWorld) {
   // Arrange
@@ -188,21 +182,7 @@ When(
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then('the bus is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  const result = await ebClient(this).send(new ListEventBusesCommand({}));
-  const buses: Array<{ Name?: string }> = result.EventBuses ?? [];
-  const expectedBus = LE_TEST_BUS;
-  const actualFound = buses.some((b) => b.Name === expectedBus);
-  // Assert
-  assert.ok(
-    actualFound,
-    `Expected event bus "${expectedBus}" to be ACTIVE but not found; expected_bus="${expectedBus}"`,
-  );
-});
+// 'the bus is "ACTIVE"' — handled by 'the bus is {string}' in cross_service_common.ts.
 
 Then(
   'the bus is "DELETED" and Lambda PutEvents calls targeting it will fail',
@@ -223,13 +203,7 @@ Then(
   },
 );
 
-Then(
-  'the invocation is "FAILED" with a ResourceNotFoundException',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe Lambda invocation failure in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+// 'the invocation is "FAILED" with a ResourceNotFoundException' is registered in lambda_common.ts.
 
 Then('the event is "PUBLISHED" and the invocation is "SUCCESS"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda invocation result in lws.
@@ -240,7 +214,5 @@ Then('the event is "PUBLISHED" and the invocation is "SUCCESS"', async function 
 
 // "every {string} invocation references an {string} Lambda function" is registered in cross_service_common.ts.
 
-Then('every "PUBLISHED" event references a bus that exists', async function (this: SdkWorld) {
-  // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'every "PUBLISHED" event references a bus that exists' is registered via the generic
+// 'every {string} event references a bus that exists' in cross_service_common.ts.

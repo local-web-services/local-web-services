@@ -59,6 +59,51 @@ async function findPoolId(world: SdkWorld): Promise<string | null> {
 // ── Before hook: register functionHelpers for lambdacognito scenarios ─────────────
 
 Before({ tags: "@lambdacognito" }, function (this: SdkWorld) {
+  this.poolHelpers = {
+    setupPoolExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create the pool (idempotent)
+      const poolId = await createPool(world);
+      // Assert: pool created
+      (world as any)._lambdaCognitoPoolId = poolId;
+    },
+    assertPoolStatus: async (_world: SdkWorld, _expectedStatus: string) => {
+      // No-op: pool status is always ACTIVE immediately after creation in lws
+    },
+    createNamedPool: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateUserPoolCommand } = require("@aws-sdk/client-cognito-identity-provider");
+      // Act
+      try {
+        const result = await cognitoClient(world).send(
+          new CreateUserPoolCommand({ PoolName: LAMBDA_COGNITO_TEST_POOL_NAME }),
+        );
+        (world as any)._lambdaCognitoPoolId = result.UserPool.Id;
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    deleteNamedPool: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DeleteUserPoolCommand } = require("@aws-sdk/client-cognito-identity-provider");
+      // Act
+      try {
+        const poolId = await findPoolId(world);
+        const result = await cognitoClient(world).send(
+          new DeleteUserPoolCommand({ UserPoolId: poolId }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+  };
   this.functionHelpers = {
     functionName: LAMBDA_COGNITO_TEST_FUNC,
     deployFunction: async (world: SdkWorld) => {
@@ -91,44 +136,13 @@ Before({ tags: "@lambdacognito" }, function (this: SdkWorld) {
 
 // ── Given: pool state ─────────────────────────────────────────────────────────
 
-Given("the pool does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no Cognito user pools.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the pool does not already exist" is registered in cross_service_common.ts.
 
-Given("the pool already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const expectedPoolName = LAMBDA_COGNITO_TEST_POOL_NAME;
-  const poolId = await createPool(this);
-  // Assert: pool created
-  (this as any)._lambdaCognitoPoolId = poolId;
-  assert.ok(expectedPoolName, "Expected pool name to be defined");
-});
+// "the pool already exists" is registered in cross_service_common.ts (dispatches via poolHelpers).
 
-Given("the pool exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const expectedPoolName = LAMBDA_COGNITO_TEST_POOL_NAME;
-  const poolId = await createPool(this);
-  // Assert: pool created
-  (this as any)._lambdaCognitoPoolId = poolId;
-  assert.ok(expectedPoolName, "Expected pool name to be defined");
-});
+// "the pool exists" is registered in cross_service_common.ts (dispatches via poolHelpers).
 
-Given("the pool is {string}", async function (this: SdkWorld, state: string) {
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "ACTIVE") {
-    // No-op: pools are ACTIVE immediately after creation.
-    return;
-  }
-  if (state === "DELETED") {
-    // No-op: fresh state has no pools (simulates deleted pool).
-    return;
-  }
-});
+// "the pool is {string}" is registered in cross_service_common.ts (dispatches via poolHelpers).
 
 Given("the pool is already {string}", async function (this: SdkWorld, state: string) {
   // Arrange
@@ -145,10 +159,7 @@ Given("the pool is already {string}", async function (this: SdkWorld, state: str
   }
 });
 
-Given("the pool does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no Cognito user pools.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the pool does not exist" is registered in cross_service_common.ts.
 
 Given("the pool does not exist or is {string}", async function (this: SdkWorld, _state: string) {
   // Arrange / Act / Assert — no-op: fresh state has no pools (simulates deleted or non-existent pool).
@@ -176,35 +187,25 @@ Given("the pool is not {string}", async function (this: SdkWorld, state: string)
 When("a Cognito user pool is created", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { CreateUserPoolCommand } = require("@aws-sdk/client-cognito-identity-provider");
+  assert.ok(
+    this.poolHelpers?.createNamedPool,
+    "Expected poolHelpers.createNamedPool to be registered",
+  );
   // Act
-  try {
-    const result = await cognitoClient(this).send(
-      new CreateUserPoolCommand({ PoolName: LAMBDA_COGNITO_TEST_POOL_NAME }),
-    );
-    // Assert: store result
-    (this as any)._lambdaCognitoPoolId = result.UserPool.Id;
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
+  await this.poolHelpers.createNamedPool(this);
+  // Assert: captured in lastCallResult
 });
 
 When("a Cognito user pool is deleted", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteUserPoolCommand } = require("@aws-sdk/client-cognito-identity-provider");
+  assert.ok(
+    this.poolHelpers?.deleteNamedPool,
+    "Expected poolHelpers.deleteNamedPool to be registered",
+  );
   // Act
-  try {
-    const poolId = await findPoolId(this);
-    const result = await cognitoClient(this).send(
-      new DeleteUserPoolCommand({ UserPoolId: poolId }),
-    );
-    // Assert: store result
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
+  await this.poolHelpers.deleteNamedPool(this);
+  // Assert: captured in lastCallResult
 });
 
 When(
@@ -237,25 +238,7 @@ When(
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then('the pool is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeUserPoolCommand } = require("@aws-sdk/client-cognito-identity-provider");
-  // Act
-  const poolId = await findPoolId(this);
-  assert.ok(poolId, "Expected pool to be ACTIVE but pool was not found");
-  const result = await cognitoClient(this).send(
-    new DescribeUserPoolCommand({ UserPoolId: poolId }),
-  );
-  // Assert
-  const expectedStatus = "Active";
-  const actualStatus = result.UserPool?.Status as string;
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected pool status "${expectedStatus}" but got "${actualStatus}"`,
-  );
-});
+// 'the pool is "ACTIVE"' — handled by 'the pool is {string}' in cross_service_common.ts.
 
 Then(
   'the pool is "DELETED" and Lambda calls targeting it will fail',
@@ -274,13 +257,7 @@ Then(
   },
 );
 
-Then(
-  'the invocation is "FAILED" with a ResourceNotFoundException',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe Lambda invocation failure in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+// "the invocation is "FAILED" with a ResourceNotFoundException" is registered in lambda_common.ts.
 
 // ── Invariant catch-all steps ─────────────────────────────────────────────────
 

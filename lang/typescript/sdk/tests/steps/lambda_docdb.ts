@@ -7,7 +7,7 @@
 // capacity.ts, cross_service_common.ts ("the system is initialized"), and
 // sqs.ts ("the operation is rejected") are NOT re-registered here.
 
-import { Given, When, Then, Before } from "@cucumber/cucumber";
+import { When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
@@ -87,6 +87,44 @@ Before({ tags: "@lambdadocdb" }, function (this: SdkWorld) {
         `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
       );
     },
+    createNamedCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "No session running");
+      const { CreateDBClusterCommand } = require("@aws-sdk/client-docdb");
+      // Act
+      try {
+        const result = await lambdaDocdbDocdbClient(world).send(
+          new CreateDBClusterCommand({
+            DBClusterIdentifier: LAMBDA_DOCDB_TEST_CLUSTER,
+            Engine: "docdb",
+            MasterUsername: "admin",
+            MasterUserPassword: "pass1234",
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    stopCluster: async (world: SdkWorld) => {
+      // @internal: StopDBCluster is not yet implemented in lws.
+      assert.ok(world.session, "Expected session to be initialized");
+      world.lastCallResult = {
+        success: false,
+        output: null,
+        error: new Error("cannot stop DocumentDB cluster: StopDBCluster not implemented in lws"),
+      };
+    },
+    startCluster: async (world: SdkWorld) => {
+      // @internal: StartDBCluster is not yet implemented in lws.
+      assert.ok(world.session, "Expected session to be initialized");
+      world.lastCallResult = {
+        success: false,
+        output: null,
+        error: new Error("cannot start DocumentDB cluster: StartDBCluster not implemented in lws"),
+      };
+    },
   };
   this.functionHelpers = {
     functionName: LAMBDA_DOCDB_TEST_FUNC,
@@ -125,58 +163,14 @@ Before({ tags: "@lambdadocdb" }, function (this: SdkWorld) {
 
 // ── Given: slot state ─────────────────────────────────────────────────────────
 
-Given("a document slot is available", async function (this: SdkWorld) {
-  // No-op: always room for documents in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("no document slot is available", async function (this: SdkWorld) {
-  // @internal: Cannot exhaust document slot limit in lws via public APIs.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "a document slot is available" and "no document slot is available"
+// — registered in cross_service_common.ts.
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When("a DocumentDB cluster is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { CreateDBClusterCommand } = require("@aws-sdk/client-docdb");
-  // Act
-  try {
-    const result = await lambdaDocdbDocdbClient(this).send(
-      new CreateDBClusterCommand({
-        DBClusterIdentifier: LAMBDA_DOCDB_TEST_CLUSTER,
-        Engine: "docdb",
-        MasterUsername: "admin",
-        MasterUserPassword: "pass1234",
-      }),
-    );
-    // Assert: store result
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-});
-
-When("the DocumentDB cluster is stopped", async function (this: SdkWorld) {
-  // @internal: StopDBCluster is not yet implemented in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot stop DocumentDB cluster: StopDBCluster not implemented in lws"),
-  };
-});
-
-When("the DocumentDB cluster is started", async function (this: SdkWorld) {
-  // @internal: StartDBCluster is not yet implemented in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot start DocumentDB cluster: StartDBCluster not implemented in lws"),
-  };
-});
+// "a DocumentDB cluster is created" is registered in docdb.ts (dispatches via clusterHelpers.createNamedCluster).
+// "the DocumentDB cluster is stopped" is registered in docdb.ts (dispatches via clusterHelpers.stopCluster).
+// "the DocumentDB cluster is started" is registered in docdb.ts (dispatches via clusterHelpers.startCluster).
 
 When(
   "the Lambda function fails to connect because the DocumentDB cluster is stopped",
@@ -208,15 +202,8 @@ When(
 
 // "the cluster is {string}" is registered in cluster_common.ts (dispatches to assertClusterStatus).
 
-Then('the cluster is "AVAILABLE" and ready to accept connections', async function (this: SdkWorld) {
-  // @internal: StartDBCluster is not yet implemented in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Then('the cluster is "STOPPED" and connections will be rejected', async function (this: SdkWorld) {
-  // @internal: StopDBCluster is not yet implemented in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the cluster is \"AVAILABLE\" and ready to accept connections" is registered in cluster_common.ts.
+// "the cluster is \"STOPPED\" and connections will be rejected" is registered in cluster_common.ts.
 
 // "the invocation is FAILED with a connection error" — registered in lambda_common.ts
 

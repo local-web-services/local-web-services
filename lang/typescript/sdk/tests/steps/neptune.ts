@@ -2,7 +2,7 @@
 
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, SnapshotHelpers, DatabaseStepHelpers } from "../support/world";
 
 const NEPTUNE_TEST_CLUSTER_ID = "test-neptune-cluster-1";
 const NEPTUNE_TEST_INSTANCE_ID = "test-neptune-instance-1";
@@ -68,7 +68,363 @@ Before({ tags: "@neptune" }, function (this: SdkWorld) {
     createCluster: async (world: SdkWorld) => {
       await ensureNeptuneCluster(world);
     },
+    assertClusterStatus: async (world: SdkWorld, expectedStatus: string) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected Neptune cluster operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      const { DescribeDBClustersCommand } = require("@aws-sdk/client-neptune");
+      const result = await neptuneClient(world).send(
+        new DescribeDBClustersCommand({ DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID }),
+      );
+      const clusters: Array<{ Status?: string }> = result.DBClusters ?? [];
+      assert.ok(clusters.length > 0, `Expected cluster "${NEPTUNE_TEST_CLUSTER_ID}" to exist`);
+      const expectedStatusLower = expectedStatus.toLowerCase();
+      const actualStatus = clusters[0].Status ?? "";
+      assert.strictEqual(
+        actualStatus,
+        expectedStatusLower,
+        `Expected cluster status "${expectedStatusLower}" but got "${actualStatus}"; expected_status=${expectedStatusLower} actual_status=${actualStatus}`,
+      );
+    },
+    createNamedCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateDBClusterCommand } = require("@aws-sdk/client-neptune");
+      // Act
+      try {
+        const result = await neptuneClient(world).send(
+          new CreateDBClusterCommand({
+            DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID,
+            Engine: NEPTUNE_TEST_ENGINE,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    stopCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { StopDBClusterCommand } = require("@aws-sdk/client-neptune");
+      // Act
+      try {
+        const result = await neptuneClient(world).send(
+          new StopDBClusterCommand({ DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    startCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { StartDBClusterCommand } = require("@aws-sdk/client-neptune");
+      // Act
+      try {
+        const result = await neptuneClient(world).send(
+          new StartDBClusterCommand({ DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
   };
+
+  const snapshotHelpersImpl: SnapshotHelpers = {
+    setupSnapshotExists: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      await ensureNeptuneCluster(world);
+      await ensureNeptuneSnapshot(world);
+    },
+    setupSnapshotNotExists: async (world: SdkWorld) => {
+      // Arrange / Act / Assert — no-op: fresh state after reset has no snapshots.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    assertSnapshotInState: async (world: SdkWorld, expectedStatus: string) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DescribeDBClusterSnapshotsCommand } = require("@aws-sdk/client-neptune");
+      // Act: verify operation succeeded
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      const result = await neptuneClient(world).send(
+        new DescribeDBClusterSnapshotsCommand({
+          DBClusterSnapshotIdentifier: NEPTUNE_TEST_SNAPSHOT_ID,
+        }),
+      );
+      const snapshots: Array<{ Status?: string }> = result.DBClusterSnapshots ?? [];
+      // Assert
+      assert.ok(
+        snapshots.length > 0,
+        `Expected snapshot "${NEPTUNE_TEST_SNAPSHOT_ID}" to exist but not found`,
+      );
+      const actualStatus = snapshots[0].Status;
+      assert.strictEqual(
+        actualStatus,
+        expectedStatus,
+        `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+      );
+    },
+    assertSnapshotInStateLinkedToCluster: async (world: SdkWorld, expectedStatus: string) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DescribeDBClusterSnapshotsCommand } = require("@aws-sdk/client-neptune");
+      // Act: verify operation succeeded
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      const result = await neptuneClient(world).send(
+        new DescribeDBClusterSnapshotsCommand({
+          DBClusterSnapshotIdentifier: NEPTUNE_TEST_SNAPSHOT_ID,
+        }),
+      );
+      const snapshots: Array<{ Status?: string }> = result.DBClusterSnapshots ?? [];
+      // Assert
+      assert.ok(
+        snapshots.length > 0,
+        `Expected snapshot "${NEPTUNE_TEST_SNAPSHOT_ID}" to exist but not found`,
+      );
+      const actualStatus = snapshots[0].Status;
+      assert.strictEqual(
+        actualStatus,
+        expectedStatus,
+        `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+      );
+    },
+    assertRestoredClusterInState: async (world: SdkWorld, _expectedStatus: string) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: verify operation succeeded
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      // Assert
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected restore_d_b_cluster_from_snapshot to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+    },
+    restoreClusterFromSnapshot: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { RestoreDBClusterFromSnapshotCommand } = require("@aws-sdk/client-neptune");
+      // Act
+      try {
+        const result = await neptuneClient(world).send(
+          new RestoreDBClusterFromSnapshotCommand({
+            DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID + "-restored",
+            SnapshotIdentifier: NEPTUNE_TEST_SNAPSHOT_ID,
+            Engine: NEPTUNE_TEST_ENGINE,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+  };
+  this.snapshotHelpers = snapshotHelpersImpl;
+
+  const databaseHelpersImpl: DatabaseStepHelpers = {
+    createCluster: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateDBClusterCommand } = require("@aws-sdk/client-neptune");
+      try {
+        const result = await neptuneClient(world).send(
+          new CreateDBClusterCommand({
+            DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID,
+            Engine: NEPTUNE_TEST_ENGINE,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    deleteCluster: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DeleteDBClusterCommand } = require("@aws-sdk/client-neptune");
+      try {
+        const result = await neptuneClient(world).send(
+          new DeleteDBClusterCommand({ DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    modifyCluster: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { ModifyDBClusterCommand } = require("@aws-sdk/client-neptune");
+      try {
+        const result = await neptuneClient(world).send(
+          new ModifyDBClusterCommand({ DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    createInstance: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateDBInstanceCommand } = require("@aws-sdk/client-neptune");
+      try {
+        const result = await neptuneClient(world).send(
+          new CreateDBInstanceCommand({
+            DBInstanceIdentifier: NEPTUNE_TEST_INSTANCE_ID,
+            DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID,
+            DBInstanceClass: NEPTUNE_TEST_DB_CLASS,
+            Engine: NEPTUNE_TEST_ENGINE,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    deleteInstance: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DeleteDBInstanceCommand } = require("@aws-sdk/client-neptune");
+      try {
+        const result = await neptuneClient(world).send(
+          new DeleteDBInstanceCommand({ DBInstanceIdentifier: NEPTUNE_TEST_INSTANCE_ID }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    modifyInstance: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { ModifyDBInstanceCommand } = require("@aws-sdk/client-neptune");
+      try {
+        const result = await neptuneClient(world).send(
+          new ModifyDBInstanceCommand({ DBInstanceIdentifier: NEPTUNE_TEST_INSTANCE_ID }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    rebootInstance: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { RebootDBInstanceCommand } = require("@aws-sdk/client-neptune");
+      try {
+        const result = await neptuneClient(world).send(
+          new RebootDBInstanceCommand({ DBInstanceIdentifier: NEPTUNE_TEST_INSTANCE_ID }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    createSnapshot: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateDBClusterSnapshotCommand } = require("@aws-sdk/client-neptune");
+      try {
+        const result = await neptuneClient(world).send(
+          new CreateDBClusterSnapshotCommand({
+            DBClusterSnapshotIdentifier: NEPTUNE_TEST_SNAPSHOT_ID,
+            DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    deleteSnapshot: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DeleteDBClusterSnapshotCommand } = require("@aws-sdk/client-neptune");
+      try {
+        const result = await neptuneClient(world).send(
+          new DeleteDBClusterSnapshotCommand({
+            DBClusterSnapshotIdentifier: NEPTUNE_TEST_SNAPSHOT_ID,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    setupInstanceExists: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      await ensureNeptuneCluster(world);
+      await ensureNeptuneInstance(world);
+    },
+    setupInstanceNotExists: async (world: SdkWorld) => {
+      // no-op: fresh state after session reset has no instances.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    assertInstanceInState: async (world: SdkWorld, expectedState: string) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected Neptune instance operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      const { DescribeDBInstancesCommand } = require("@aws-sdk/client-neptune");
+      const result = await neptuneClient(world).send(
+        new DescribeDBInstancesCommand({ DBInstanceIdentifier: NEPTUNE_TEST_INSTANCE_ID }),
+      );
+      const instances: Array<{ DBInstanceStatus?: string }> = result.DBInstances ?? [];
+      assert.ok(instances.length > 0, `Expected instance "${NEPTUNE_TEST_INSTANCE_ID}" to exist`);
+      const expectedStatus = expectedState.toLowerCase();
+      const actualStatus = instances[0].DBInstanceStatus ?? "";
+      assert.strictEqual(
+        actualStatus,
+        expectedStatus,
+        `Expected instance status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+      );
+    },
+    assertInstanceInStateWithCluster: async (world: SdkWorld, expectedState: string) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected Neptune instance operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      const { DescribeDBInstancesCommand } = require("@aws-sdk/client-neptune");
+      const result = await neptuneClient(world).send(
+        new DescribeDBInstancesCommand({ DBInstanceIdentifier: NEPTUNE_TEST_INSTANCE_ID }),
+      );
+      const instances: Array<{ DBInstanceStatus?: string }> = result.DBInstances ?? [];
+      assert.ok(instances.length > 0, `Expected instance "${NEPTUNE_TEST_INSTANCE_ID}" to exist`);
+      const expectedStatus = expectedState.toLowerCase();
+      const actualStatus = instances[0].DBInstanceStatus ?? "";
+      assert.strictEqual(
+        actualStatus,
+        expectedStatus,
+        `Expected instance status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+      );
+    },
+  };
+  this.databaseHelpers = databaseHelpersImpl;
 });
 
 // ── Background ────────────────────────────────────────────────────────────────
@@ -81,10 +437,7 @@ Before({ tags: "@neptune" }, function (this: SdkWorld) {
 // "the cluster exists", "the cluster does not exist", "the cluster is {string}",
 // "the cluster is not {string}" are registered in cluster_common.ts.
 
-Given("the cluster has no non-deleted instances", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after reset has no instances.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the cluster has no non-deleted instances" is registered in cluster_common.ts.
 
 Given("the cluster has non-deleted instances", async function (this: SdkWorld) {
   // Arrange
@@ -96,73 +449,37 @@ Given("the cluster has non-deleted instances", async function (this: SdkWorld) {
 
 // ── Given: instance state setup ────────────────────────────────────────────────
 
-Given("the instance slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: always room for instances.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the instance slot is available" is registered in cluster_common.ts.
 
 Given("the instance slot is not available", async function (this: SdkWorld) {
   // Arrange / Act / Assert — skip: cannot exhaust instance slot limit.
   return "pending";
 });
 
-Given("the instance exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await ensureNeptuneCluster(this);
-  await ensureNeptuneInstance(this);
-  // Assert: cluster and instance created
-});
-
+// "the instance exists" is registered in cross_service_common.ts (dispatches via databaseHelpers).
 // "the instance is {string}" is registered in cross_service_common.ts.
 // "the instance is not {string}" is registered in cross_service_common.ts.
-
-Given("the instance does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after reset has no instances.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the instance does not exist" is registered in cross_service_common.ts (dispatches via databaseHelpers).
 
 // ── Given: snapshot state setup ────────────────────────────────────────────────
 
-Given("the snapshot slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: always room for snapshots.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the snapshot slot is available" is registered in cluster_common.ts.
 
 Given("the snapshot slot is not available", async function (this: SdkWorld) {
   // Arrange / Act / Assert — skip: cannot exhaust snapshot slot limit.
   return "pending";
 });
 
-Given("the snapshot exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await ensureNeptuneCluster(this);
-  await ensureNeptuneSnapshot(this);
-  // Assert: cluster and snapshot created
-});
-
-Given(/^the snapshot is "([^"]*)"$/, async function (this: SdkWorld, _status: string) {
-  // Arrange / Act / Assert — no-op: lws sets snapshots to AVAILABLE by default after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the snapshot exists" is registered in cross_service_common.ts (dispatches via snapshotHelpers).
+// "the snapshot is {string}" is registered in cross_service_common.ts (dispatches via snapshotHelpers).
+// "the snapshot does not exist" is registered in cross_service_common.ts (dispatches via snapshotHelpers).
 
 Given(/^the snapshot is not "([^"]*)"$/, async function (this: SdkWorld, _status: string) {
   // Arrange / Act / Assert — skip: cannot force a snapshot into a non-AVAILABLE state via public API.
   return "pending";
 });
 
-Given("the snapshot does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after reset has no snapshots.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the target cluster slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: always room for restored clusters.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the target cluster slot is available" is registered in cluster_common.ts.
 
 Given("the target cluster slot is not available", async function (this: SdkWorld) {
   // Arrange / Act / Assert — skip: cannot exhaust cluster slot limit.
@@ -171,116 +488,46 @@ Given("the target cluster slot is not available", async function (this: SdkWorld
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When("a database cluster is created", async function (this: SdkWorld) {
+// "a database cluster is created" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+// "a database cluster is deleted" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+// "a database instance is created in an available cluster" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+// "a database instance is deleted" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+// "a database cluster snapshot is created" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+// "a database cluster snapshot is deleted" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+
+When("a Neptune cluster is created", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { CreateDBClusterCommand } = require("@aws-sdk/client-neptune");
+  assert.ok(
+    this.clusterHelpers?.createNamedCluster,
+    "Expected clusterHelpers.createNamedCluster to be registered",
+  );
   // Act
-  try {
-    const result = await neptuneClient(this).send(
-      new CreateDBClusterCommand({
-        DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID,
-        Engine: NEPTUNE_TEST_ENGINE,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
+  await this.clusterHelpers.createNamedCluster(this);
   // Assert: captured in lastCallResult
 });
 
-When("a database cluster is deleted", async function (this: SdkWorld) {
+When("the Neptune cluster is stopped", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteDBClusterCommand } = require("@aws-sdk/client-neptune");
+  assert.ok(
+    this.clusterHelpers?.stopCluster,
+    "Expected clusterHelpers.stopCluster to be registered",
+  );
   // Act
-  try {
-    const result = await neptuneClient(this).send(
-      new DeleteDBClusterCommand({
-        DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
+  await this.clusterHelpers.stopCluster(this);
   // Assert: captured in lastCallResult
 });
 
-When("a database instance is created in an available cluster", async function (this: SdkWorld) {
+When("the Neptune cluster is started", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { CreateDBInstanceCommand } = require("@aws-sdk/client-neptune");
+  assert.ok(
+    this.clusterHelpers?.startCluster,
+    "Expected clusterHelpers.startCluster to be registered",
+  );
   // Act
-  try {
-    const result = await neptuneClient(this).send(
-      new CreateDBInstanceCommand({
-        DBInstanceIdentifier: NEPTUNE_TEST_INSTANCE_ID,
-        DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID,
-        DBInstanceClass: NEPTUNE_TEST_DB_CLASS,
-        Engine: NEPTUNE_TEST_ENGINE,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("a database instance is deleted", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteDBInstanceCommand } = require("@aws-sdk/client-neptune");
-  // Act
-  try {
-    const result = await neptuneClient(this).send(
-      new DeleteDBInstanceCommand({
-        DBInstanceIdentifier: NEPTUNE_TEST_INSTANCE_ID,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("a database cluster snapshot is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateDBClusterSnapshotCommand } = require("@aws-sdk/client-neptune");
-  // Act
-  try {
-    const result = await neptuneClient(this).send(
-      new CreateDBClusterSnapshotCommand({
-        DBClusterSnapshotIdentifier: NEPTUNE_TEST_SNAPSHOT_ID,
-        DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("a database cluster snapshot is deleted", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteDBClusterSnapshotCommand } = require("@aws-sdk/client-neptune");
-  // Act
-  try {
-    const result = await neptuneClient(this).send(
-      new DeleteDBClusterSnapshotCommand({
-        DBClusterSnapshotIdentifier: NEPTUNE_TEST_SNAPSHOT_ID,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
+  await this.clusterHelpers.startCluster(this);
   // Assert: captured in lastCallResult
 });
 
@@ -320,79 +567,12 @@ When("a database cluster is stopped", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When("a database cluster configuration is modified", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ModifyDBClusterCommand } = require("@aws-sdk/client-neptune");
-  // Act
-  try {
-    const result = await neptuneClient(this).send(
-      new ModifyDBClusterCommand({
-        DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a database cluster configuration is modified" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+// "a database instance configuration is modified" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+// "a database instance is rebooted" is registered in cross_service_common.ts (dispatches via databaseHelpers).
 
-When("a database instance configuration is modified", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ModifyDBInstanceCommand } = require("@aws-sdk/client-neptune");
-  // Act
-  try {
-    const result = await neptuneClient(this).send(
-      new ModifyDBInstanceCommand({
-        DBInstanceIdentifier: NEPTUNE_TEST_INSTANCE_ID,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("a database instance is rebooted", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { RebootDBInstanceCommand } = require("@aws-sdk/client-neptune");
-  // Act
-  try {
-    const result = await neptuneClient(this).send(
-      new RebootDBInstanceCommand({
-        DBInstanceIdentifier: NEPTUNE_TEST_INSTANCE_ID,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("a cluster is restored from a snapshot", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { RestoreDBClusterFromSnapshotCommand } = require("@aws-sdk/client-neptune");
-  // Act
-  try {
-    const result = await neptuneClient(this).send(
-      new RestoreDBClusterFromSnapshotCommand({
-        DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID + "-restored",
-        SnapshotIdentifier: NEPTUNE_TEST_SNAPSHOT_ID,
-        Engine: NEPTUNE_TEST_ENGINE,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a cluster is restored from a snapshot" is registered in cross_service_common.ts
+// (dispatches via snapshotHelpers.restoreClusterFromSnapshot registered in the Before hook above).
 
 // @internal: internal lifecycle actions — no-op
 
@@ -473,186 +653,17 @@ When("an automated backup window runs on an available cluster", async function (
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then(
-  /^the cluster is in "([^"]*)" state$/,
-  async function (this: SdkWorld, expectedStatus: string) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { DescribeDBClustersCommand } = require("@aws-sdk/client-neptune");
-    // Act: verify operation succeeded
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected operation to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-    const result = await neptuneClient(this).send(
-      new DescribeDBClustersCommand({ DBClusterIdentifier: NEPTUNE_TEST_CLUSTER_ID }),
-    );
-    const clusters: Array<{ Status?: string }> = result.DBClusters ?? [];
-    // Assert
-    assert.ok(
-      clusters.length > 0,
-      `Expected cluster "${NEPTUNE_TEST_CLUSTER_ID}" to exist but not found`,
-    );
-    const actualStatus = clusters[0].Status;
-    assert.strictEqual(
-      actualStatus,
-      expectedStatus,
-      `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-    );
-  },
-);
+// "the cluster is in {string} state" is registered in cluster_common.ts (dispatches via clusterHelpers.assertClusterStatus).
 
-Then(
-  /^the instance is in "([^"]*)" state and associated with the cluster$/,
-  async function (this: SdkWorld, expectedStatus: string) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { DescribeDBInstancesCommand } = require("@aws-sdk/client-neptune");
-    // Act: verify operation succeeded
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected operation to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-    const result = await neptuneClient(this).send(
-      new DescribeDBInstancesCommand({ DBInstanceIdentifier: NEPTUNE_TEST_INSTANCE_ID }),
-    );
-    const instances: Array<{ DBInstanceStatus?: string }> = result.DBInstances ?? [];
-    // Assert
-    assert.ok(
-      instances.length > 0,
-      `Expected instance "${NEPTUNE_TEST_INSTANCE_ID}" to exist but not found`,
-    );
-    const actualStatus = instances[0].DBInstanceStatus;
-    assert.strictEqual(
-      actualStatus,
-      expectedStatus,
-      `Expected instance status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-    );
-  },
-);
+// "the instance is in {string} state and associated with the cluster" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+// "the instance is in {string} state" is registered in cross_service_common.ts (dispatches via databaseHelpers).
 
-Then(
-  /^the instance is in "([^"]*)" state$/,
-  async function (this: SdkWorld, expectedStatus: string) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { DescribeDBInstancesCommand } = require("@aws-sdk/client-neptune");
-    // Act: verify operation succeeded
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected operation to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-    const result = await neptuneClient(this).send(
-      new DescribeDBInstancesCommand({ DBInstanceIdentifier: NEPTUNE_TEST_INSTANCE_ID }),
-    );
-    const instances: Array<{ DBInstanceStatus?: string }> = result.DBInstances ?? [];
-    // Assert
-    assert.ok(
-      instances.length > 0,
-      `Expected instance "${NEPTUNE_TEST_INSTANCE_ID}" to exist but not found`,
-    );
-    const actualStatus = instances[0].DBInstanceStatus;
-    assert.strictEqual(
-      actualStatus,
-      expectedStatus,
-      `Expected instance status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-    );
-  },
-);
-
-Then(
-  /^the snapshot is in "([^"]*)" state and linked to the cluster$/,
-  async function (this: SdkWorld, expectedStatus: string) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { DescribeDBClusterSnapshotsCommand } = require("@aws-sdk/client-neptune");
-    // Act: verify operation succeeded
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected operation to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-    const result = await neptuneClient(this).send(
-      new DescribeDBClusterSnapshotsCommand({
-        DBClusterSnapshotIdentifier: NEPTUNE_TEST_SNAPSHOT_ID,
-      }),
-    );
-    const snapshots: Array<{ Status?: string }> = result.DBClusterSnapshots ?? [];
-    // Assert
-    assert.ok(
-      snapshots.length > 0,
-      `Expected snapshot "${NEPTUNE_TEST_SNAPSHOT_ID}" to exist but not found`,
-    );
-    const actualStatus = snapshots[0].Status;
-    assert.strictEqual(
-      actualStatus,
-      expectedStatus,
-      `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-    );
-  },
-);
-
-Then(
-  /^the snapshot is in "([^"]*)" state$/,
-  async function (this: SdkWorld, expectedStatus: string) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { DescribeDBClusterSnapshotsCommand } = require("@aws-sdk/client-neptune");
-    // Act: verify operation succeeded
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected operation to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-    const result = await neptuneClient(this).send(
-      new DescribeDBClusterSnapshotsCommand({
-        DBClusterSnapshotIdentifier: NEPTUNE_TEST_SNAPSHOT_ID,
-      }),
-    );
-    const snapshots: Array<{ Status?: string }> = result.DBClusterSnapshots ?? [];
-    // Assert
-    assert.ok(
-      snapshots.length > 0,
-      `Expected snapshot "${NEPTUNE_TEST_SNAPSHOT_ID}" to exist but not found`,
-    );
-    const actualStatus = snapshots[0].Status;
-    assert.strictEqual(
-      actualStatus,
-      expectedStatus,
-      `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-    );
-  },
-);
-
-Then(
-  /^the restored cluster is in "([^"]*)" state$/,
-  async function (this: SdkWorld, _expectedStatus: string) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    // Act: verify operation succeeded
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    // Assert
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected restore_d_b_cluster_from_snapshot to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-  },
-);
+// 'the snapshot is in {string} state and linked to the cluster' is registered in cross_service_common.ts
+// (dispatches via snapshotHelpers.assertSnapshotInStateLinkedToCluster).
+// 'the snapshot is in {string} state' is registered in cross_service_common.ts
+// (dispatches via snapshotHelpers.assertSnapshotInState).
+// 'the restored cluster is in {string} state' is registered in cross_service_common.ts
+// (dispatches via snapshotHelpers.assertRestoredClusterInState).
 
 Then(
   /^a snapshot is "([^"]*)" and the cluster is in "([^"]*)" state$/,

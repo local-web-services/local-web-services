@@ -2,8 +2,7 @@
 
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
-import type { SnapshotHelpers } from "../support/world";
+import type { SdkWorld, SnapshotHelpers, TagStepHelpers } from "../support/world";
 
 const ELASTICACHE_TEST_CLUSTER_ID = "test-elasticache-cluster-1";
 const ELASTICACHE_TEST_RG_ID = "test-elasticache-rg-1";
@@ -89,6 +88,20 @@ Before({ tags: "@elasticache or @elasticachesns" }, function (this: SdkWorld) {
         // cluster may already exist
       }
     },
+    assertClusterStatus: async (world: SdkWorld, expectedStatus: string) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected ElastiCache cluster operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      assert.ok(
+        world.lastCallResult.output !== null && world.lastCallResult.output !== undefined,
+        `Expected cluster output but got null; expected_status=${expectedStatus}`,
+      );
+    },
   };
 });
 
@@ -106,8 +119,71 @@ Before({ tags: "@elasticache" }, function (this: SdkWorld) {
       // no-op: fresh state has no snapshots
       void world;
     },
+    assertSnapshotInStateWithCluster: async (
+      world: SdkWorld,
+      snapState: string,
+      clusterState: string,
+    ) => {
+      // Arrange: no additional setup required
+      // Act: action already performed in the When step
+      // Assert
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected create_snapshot to succeed but got error: ${String(world.lastCallResult.error)}; expected_snap_state=${snapState} expected_cluster_state=${clusterState}`,
+      );
+    },
+    assertSnapshotInState: async (world: SdkWorld, expectedState: string) => {
+      // Arrange: no additional setup required
+      // Act: action already performed in the When step
+      // Assert
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected delete_snapshot to succeed but got error: ${String(world.lastCallResult.error)}; expected_state=${expectedState}`,
+      );
+    },
   };
   this.snapshotHelpers = snapshotHelpersImpl;
+
+  const tagHelpersImpl: TagStepHelpers = {
+    setupTagAssociationActive: async (world: SdkWorld) => {
+      // No-op: resources are created with tags in lws; tag is already active.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    setupTagAssociationNotActive: async (world: SdkWorld) => {
+      // No-op: removing tags from resources is not supported via this path in lws.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    setupResourceExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create the cluster as the representative resource
+      await elasticacheCreateCluster(world);
+      // Assert: resource created
+    },
+    setupResourceNotExists: async (world: SdkWorld) => {
+      // Arrange / Act / Assert — no-op: fresh state has no resources.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    assertResourceTagged: async (world: SdkWorld) => {
+      // Arrange: no additional setup required
+      // Act: action already performed in the When step
+      // Assert
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected add_tags_to_resource to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+    },
+  };
+  this.tagHelpers = tagHelpersImpl;
 });
 
 // "the system is initialized" is registered in cross_service_common.ts.
@@ -148,10 +224,7 @@ Given("the cluster does not use the redis engine", async function (this: SdkWorl
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("the snapshot slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: snapshot slots are available in a fresh session.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the snapshot slot is available" is registered in cluster_common.ts.
 
 Given("the snapshot slot is not available", async function (this: SdkWorld) {
   // @internal: no public API exhausts snapshot slots.
@@ -271,13 +344,7 @@ Given("the subnet group already exists", async function (this: SdkWorld) {
   // Assert: subnet group created
 });
 
-Given("the subnet group exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await elasticacheCreateSubnetGroup(this);
-  // Assert: subnet group exists
-});
+// "the subnet group exists" as Given — handled by the combined Then registration below.
 
 Given("the subnet group does not exist", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: fresh state has no subnet groups.
@@ -309,18 +376,8 @@ Given(/^the snapshot is not "([^"]*)"$/, async function (this: SdkWorld, _state:
 
 // ── Given: tag / resource state setup ─────────────────────────────────────────
 
-Given("the resource exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create the cluster as the representative resource
-  await elasticacheCreateCluster(this);
-  // Assert: resource created
-});
-
-Given("the resource does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no resources.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the resource exists" and "the resource does not exist" are registered in apigateway.ts
+// (dispatches via tagHelpers.setupResourceExists / setupResourceNotExists for @elasticache scenarios).
 
 Given("the resource has tags", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: resources are created with default tags in lws.
@@ -333,6 +390,18 @@ Given("the resource does not have tags", async function (this: SdkWorld) {
 });
 
 // ── When: actions ─────────────────────────────────────────────────────────────
+
+When("an ElastiCache cluster is created", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  assert.ok(
+    this.clusterHelpers?.createNamedCluster,
+    "Expected clusterHelpers.createNamedCluster to be registered",
+  );
+  // Act
+  await this.clusterHelpers.createNamedCluster(this);
+  // Assert: captured in lastCallResult
+});
 
 When("a redis cache cluster is created", async function (this: SdkWorld) {
   // Arrange
@@ -659,42 +728,8 @@ When("tags are removed from a cache resource", async function (this: SdkWorld) {
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then(/^the cluster is in "([^"]*)" state$/, async function (this: SdkWorld, expectedState: string) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected create_cache_cluster to succeed but got error: ${String(this.lastCallResult.error)}; expected_state=${expectedState} expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  assert.ok(
-    this.lastCallResult.output !== null && this.lastCallResult.output !== undefined,
-    `Expected CreateCacheClusterOutput but got null; expected_state=${expectedState}`,
-  );
-});
-
-Then(
-  /^the cluster is in "([^"]*)" state with the memcached engine$/,
-  async function (this: SdkWorld, expectedState: string) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected create_cache_cluster (memcached) to succeed but got error: ${String(this.lastCallResult.error)}; expected_state=${expectedState} expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-    assert.ok(
-      this.lastCallResult.output !== null && this.lastCallResult.output !== undefined,
-      `Expected CreateCacheClusterOutput but got null; expected_state=${expectedState}`,
-    );
-  },
-);
+// "the cluster is in {string} state" is registered in cluster_common.ts (dispatches via clusterHelpers.assertClusterStatus).
+// "the cluster is in {string} state with the memcached engine" is registered in cluster_common.ts.
 
 // "the cluster is {string}" is registered in cluster_common.ts.
 
@@ -714,25 +749,9 @@ Then(
   },
 );
 
-Then(/^the cluster is "([^"]*)" again$/, async function (this: SdkWorld, _expectedState: string) {
-  // @internal: no-op invariant.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the cluster is "AVAILABLE" again' is registered in cluster_common.ts.
 
 Then('the cluster is "DELETING" state', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected delete_cache_cluster to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
-
-Then('the cluster is in "DELETING" state', async function (this: SdkWorld) {
   // Arrange: no additional setup required
   // Act: action already performed in the When step
   // Assert
@@ -835,10 +854,15 @@ Then(
 
 Then("the subnet group exists", async function (this: SdkWorld) {
   // Arrange: no additional setup required
-  // Act
+  // Act: if used as Given precondition, create the subnet group; otherwise assert
   assert.ok(this.session, "Expected session to be initialized");
   const actualExists = await elasticacheSubnetGroupExists(this);
-  // Assert
+  if (!actualExists) {
+    // Used as Given/And precondition — create the subnet group
+    await elasticacheCreateSubnetGroup(this);
+    return;
+  }
+  // Assert: already exists
   const expectedExists = true;
   assert.strictEqual(
     actualExists,
@@ -861,40 +885,20 @@ Then("the subnet group no longer exists", async function (this: SdkWorld) {
   );
 });
 
-Then(
-  /^the snapshot is in "([^"]*)" state and the cluster is "([^"]*)"$/,
-  async function (this: SdkWorld, snapState: string, clusterState: string) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected create_snapshot to succeed but got error: ${String(this.lastCallResult.error)}; expected_snap_state=${snapState} expected_cluster_state=${clusterState}`,
-    );
-  },
-);
-
-Then(
-  /^the snapshot is in "([^"]*)" state$/,
-  async function (this: SdkWorld, expectedState: string) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected delete_snapshot to succeed but got error: ${String(this.lastCallResult.error)}; expected_state=${expectedState}`,
-    );
-  },
-);
+// 'the snapshot is in {string} state and the cluster is {string}' is registered in cross_service_common.ts
+// (dispatches via snapshotHelpers.assertSnapshotInStateWithCluster).
+// 'the snapshot is in {string} state' is registered in cross_service_common.ts
+// (dispatches via snapshotHelpers.assertSnapshotInState).
 
 Then("the resource remains tagged", async function (this: SdkWorld) {
   // Arrange: no additional setup required
+  // Dispatch via tagHelpers when available (e.g. @memorydb scenarios)
+  if (this.tagHelpers?.assertResourceTagged) {
+    // Act
+    await this.tagHelpers.assertResourceTagged(this);
+    // Assert: handled by assertResourceTagged
+    return;
+  }
   // Act: action already performed in the When step
   // Assert
   const expectedSuccess = true;

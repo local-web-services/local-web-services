@@ -92,6 +92,82 @@ Before({ tags: "@stepfunctionselasticsearch" }, function (this: SdkWorld) {
       }
       // Assert: domain exists
     },
+    setupDomainNotAlreadyExists: async (world: SdkWorld) => {
+      // Arrange / Act / Assert — no-op: fresh state after session reset has no domains.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    setupDomainAlreadyExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create domain (ignore if already exists)
+      try {
+        await sfnElasticsearchCreateDomain(this);
+      } catch {
+        // domain may already exist; desired state is that it exists
+      }
+      // Assert: domain exists
+    },
+    createElasticsearchDomain: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch-service");
+      // Act
+      try {
+        const result = await sfnElasticsearchClient(this).send(
+          new CreateElasticsearchDomainCommand({ DomainName: SFN_ELASTICSEARCH_TEST_DOMAIN }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    beginDomainConfigUpdate: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const {
+        UpdateElasticsearchDomainConfigCommand,
+      } = require("@aws-sdk/client-elasticsearch-service");
+      // Act
+      try {
+        const result = await sfnElasticsearchClient(this).send(
+          new UpdateElasticsearchDomainConfigCommand({ DomainName: SFN_ELASTICSEARCH_TEST_DOMAIN }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    assertDomainProcessing: async (world: SdkWorld) => {
+      // @internal: Cannot observe PROCESSING domain state via public API in lws.
+      // No-op: treat as invariant satisfied.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    assertDomainStatus: async (world: SdkWorld, expectedStatus: string) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      if (expectedStatus !== "AVAILABLE") return;
+      const {
+        DescribeElasticsearchDomainCommand,
+      } = require("@aws-sdk/client-elasticsearch-service");
+      const expectedDomainName = SFN_ELASTICSEARCH_TEST_DOMAIN;
+      // Act
+      const result = await sfnElasticsearchClient(this).send(
+        new DescribeElasticsearchDomainCommand({ DomainName: expectedDomainName }),
+      );
+      const actualDomainName = result.DomainStatus?.DomainName as string;
+      // Assert
+      assert.ok(
+        result.DomainStatus != null,
+        `Expected domain "${expectedDomainName}" to exist but describe returned no status; expected_domain_name=${expectedDomainName}`,
+      );
+      assert.strictEqual(
+        actualDomainName,
+        expectedDomainName,
+        `Expected domain name "${expectedDomainName}" but got "${actualDomainName}"; expected_domain_name=${expectedDomainName} actual_domain_name=${actualDomainName}`,
+      );
+    },
   };
   this.domainHelpers = domainHelpersImpl;
 });
@@ -100,22 +176,9 @@ Before({ tags: "@stepfunctionselasticsearch" }, function (this: SdkWorld) {
 
 // ── Given: domain existence ───────────────────────────────────────────────────
 
-Given("the domain does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no domains.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the domain does not already exist" is registered in elasticsearch.ts (dispatches via domainHelpers.setupDomainNotAlreadyExists).
 
-Given("the domain already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create domain (ignore if already exists)
-  try {
-    await sfnElasticsearchCreateDomain(this);
-  } catch {
-    // domain may already exist; desired state is that it exists
-  }
-  // Assert: domain exists
-});
+// "the domain already exists" is registered in elasticsearch.ts (dispatches via domainHelpers.setupDomainAlreadyExists).
 
 // "the domain exists" is registered in cross_service_common.ts (dispatches via domainHelpers).
 
@@ -123,22 +186,10 @@ Given("the domain already exists", async function (this: SdkWorld) {
 
 // ── Given: domain status ───────────────────────────────────────────────────────
 
-Given('the domain is "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: ensure domain exists; fresh domains start AVAILABLE
-  try {
-    await sfnElasticsearchCreateDomain(this);
-  } catch {
-    // domain may already exist
-  }
-  // Assert: domain is AVAILABLE
-});
+// "the domain is "AVAILABLE"" (Given) is registered via the generic "the domain is {string}"
+// in cross_service_common.ts (dispatches via domainHelpers.assertDomainStatus).
 
-Given('the domain is "PROCESSING"', async function (this: SdkWorld) {
-  // No-op: cannot drive a domain into PROCESSING state via public API in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the domain is "PROCESSING"' is handled by the generic 'the domain is {string}' in cross_service_common.ts.
 
 Given('the domain is not "PROCESSING"', async function (this: SdkWorld) {
   // Arrange
@@ -174,39 +225,11 @@ Given('the domain is not "AVAILABLE"', async function (this: SdkWorld) {
 // "a Step Functions state machine is created" is registered in stepfunctions.ts.
 // "an execution of the state machine is started" is registered in stepfunctions.ts.
 
-When('an Elasticsearch domain is created and becomes "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch-service");
-  // Act
-  try {
-    const result = await sfnElasticsearchClient(this).send(
-      new CreateElasticsearchDomainCommand({ DomainName: SFN_ELASTICSEARCH_TEST_DOMAIN }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// 'an Elasticsearch domain is created and becomes "AVAILABLE"' is registered in elasticsearch.ts
+// (dispatches via domainHelpers.createElasticsearchDomain).
 
-When("a domain configuration update begins", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const {
-    UpdateElasticsearchDomainConfigCommand,
-  } = require("@aws-sdk/client-elasticsearch-service");
-  // Act
-  try {
-    const result = await sfnElasticsearchClient(this).send(
-      new UpdateElasticsearchDomainConfigCommand({ DomainName: SFN_ELASTICSEARCH_TEST_DOMAIN }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// 'a domain configuration update begins' is registered in elasticsearch.ts
+// (dispatches via domainHelpers.beginDomainConfigUpdate).
 
 When("the domain configuration update completes", async function (this: SdkWorld) {
   // @internal: Cannot drive domain configuration update to completion via public API in lws.
@@ -259,33 +282,11 @@ When(
 // "the execution is "RUNNING"" is registered in stepfunctions.ts.
 // "the operation is rejected" is registered in cross_service_common.ts.
 
-Then('the domain is "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeElasticsearchDomainCommand } = require("@aws-sdk/client-elasticsearch-service");
-  const expectedDomainName = SFN_ELASTICSEARCH_TEST_DOMAIN;
-  // Act
-  const result = await sfnElasticsearchClient(this).send(
-    new DescribeElasticsearchDomainCommand({ DomainName: expectedDomainName }),
-  );
-  const actualDomainName = result.DomainStatus?.DomainName as string;
-  // Assert
-  assert.ok(
-    result.DomainStatus != null,
-    `Expected domain "${expectedDomainName}" to exist but describe returned no status; expected_domain_name=${expectedDomainName}`,
-  );
-  assert.strictEqual(
-    actualDomainName,
-    expectedDomainName,
-    `Expected domain name "${expectedDomainName}" but got "${actualDomainName}"; expected_domain_name=${expectedDomainName} actual_domain_name=${actualDomainName}`,
-  );
-});
+// 'the domain is "AVAILABLE"' (Then) is registered via the generic "the domain is {string}"
+// in cross_service_common.ts (dispatches via domainHelpers.assertDomainStatus).
 
-Then('the domain is "PROCESSING" and "API" calls may fail', async function (this: SdkWorld) {
-  // @internal: Cannot observe PROCESSING domain state via public API in lws.
-  // No-op: treat as invariant satisfied.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the domain is "PROCESSING" and "API" calls may fail' is registered in elasticsearch.ts
+// (dispatches via domainHelpers.assertDomainProcessing).
 
 Then('the domain is "AVAILABLE" again', async function (this: SdkWorld) {
   // @internal: Cannot observe domain returning to AVAILABLE after update via public API in lws.
@@ -293,11 +294,8 @@ Then('the domain is "AVAILABLE" again', async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then('the execution is "SUCCEEDED"', async function (this: SdkWorld) {
-  // @internal: Cannot observe internal execution Elasticsearch task success in lws.
-  // No-op: treat as invariant satisfied.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the execution is SUCCEEDED" — handled by the canonical
+// Then("the execution is {string}", ...) in stepfunctions_sqs.ts.
 
 Then('the execution is "FAILED" with a connection error', async function (this: SdkWorld) {
   // @internal: Cannot observe internal execution Elasticsearch task failure in lws.

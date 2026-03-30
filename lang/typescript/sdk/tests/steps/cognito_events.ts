@@ -1,8 +1,8 @@
 /** Step definitions: cognito_events cross-service scenarios — unique When/Then steps only */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, PoolStepHelpers } from "../support/world";
 
 const COGNITO_EVENTS_TEST_POOL = "e2e-test-pool-1";
 const COGNITO_EVENTS_TEST_BUS = "e2e-test-bus-1";
@@ -41,6 +41,38 @@ async function ensureCognitoEventsPool(world: SdkWorld): Promise<void> {
   }
 }
 
+// ── Before hook: register poolHelpers for cognitoevents scenarios ─────────────
+
+Before({ tags: "@cognitoevents" }, function (this: SdkWorld) {
+  const poolHelpersImpl: PoolStepHelpers = {
+    setupPoolExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create the pool (idempotent)
+      await ensureCognitoEventsPool(world);
+    },
+    assertPoolStatus: async (_world: SdkWorld, _expectedStatus: string) => {
+      // No-op: pool status is always ACTIVE immediately after creation in lws
+    },
+    createNamedPool: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateUserPoolCommand } = require("@aws-sdk/client-cognito-identity-provider");
+      // Act
+      try {
+        const result = await cognitoEventsIdpClient(world).send(
+          new CreateUserPoolCommand({ PoolName: COGNITO_EVENTS_TEST_POOL }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+  };
+  this.poolHelpers = poolHelpersImpl;
+});
+
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
@@ -57,23 +89,13 @@ async function ensureCognitoEventsPool(world: SdkWorld): Promise<void> {
 
 // "the bus exists" is registered in cross_service_common.ts.
 
-Given('the bus exists and is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await ensureCognitoEventsBus(this);
-  // Assert: bus created and ACTIVE by default
-});
+// 'the bus exists and is "ACTIVE"' is registered via the generic
+// 'the bus exists and is {string}' in cross_service_common.ts.
 
-Given('the bus is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: buses are ACTIVE by default after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the bus is "ACTIVE"' is registered via the generic
+// 'the bus is {string}' in cross_service_common.ts.
 
-Given('the bus is "DELETED"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — skip: lws does not reject Cognito operations when the event bus is deleted.
-  return "pending";
-});
+// 'the bus is "DELETED"' — handled by 'the bus is {string}' in cross_service_common.ts.
 
 Given('the bus is not "DELETED"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — skip: lws does not enforce event delivery failure when the bus is not deleted.
@@ -96,30 +118,16 @@ Given('the bus is already "DELETED"', async function (this: SdkWorld) {
   // Assert: bus is gone
 });
 
-Given("the bus does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no buses.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the bus does not exist" — registered in cross_service_common.ts.
 
-Given('the bus does not exist or is not "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — skip: lws does not reject enable_event_publishing when the bus does not exist or is not ACTIVE.
-  return "pending";
-});
+// 'the bus does not exist or is not "ACTIVE"' is registered via the generic
+// 'the bus does not exist or is not {string}' in cross_service_common.ts.
 
 // ── Given: pool state setup ────────────────────────────────────────────────────
 
-Given("the pool does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no user pools.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the pool does not already exist" is registered in cross_service_common.ts.
 
-Given("the pool already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await ensureCognitoEventsPool(this);
-  // Assert: pool created
-});
+// "the pool already exists" is registered in cross_service_common.ts (dispatches via poolHelpers).
 
 Given('the pool exists and is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange
@@ -161,21 +169,7 @@ Given("the pool already has an EventBridge configuration", async function (this:
 
 // "the EventBridge event bus is deleted" is registered in cross_service_common.ts.
 
-When("a Cognito user pool is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateUserPoolCommand } = require("@aws-sdk/client-cognito-identity-provider");
-  // Act
-  try {
-    const result = await cognitoEventsIdpClient(this).send(
-      new CreateUserPoolCommand({ PoolName: COGNITO_EVENTS_TEST_POOL }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a Cognito user pool is created" is registered in lambda_cognito.ts (dispatches via poolHelpers.createNamedPool).
 
 When("EventBridge publishing is enabled on the user pool", async function (this: SdkWorld) {
   // Arrange / Act / Assert — skip: cannot trigger internal EventBridge publishing configuration in lws.
@@ -202,18 +196,8 @@ When(
 
 // "the operation is rejected" is registered in sqs.ts.
 
-Then('the bus is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  const result = await cognitoEventsEbClient(this).send(new ListEventBusesCommand({}));
-  const buses: Array<{ Name?: string }> = result.EventBuses ?? [];
-  // Assert
-  const expectedBusName = COGNITO_EVENTS_TEST_BUS;
-  const actualFound = buses.some((b) => b.Name === expectedBusName);
-  assert.ok(actualFound, `Expected event bus "${expectedBusName}" to be ACTIVE but not found`);
-});
+// 'the bus is "ACTIVE"' (Then) is registered via the generic
+// 'the bus is {string}' in cross_service_common.ts.
 
 Then('the bus is "DELETED" and Cognito event delivery will fail', async function (this: SdkWorld) {
   // Arrange

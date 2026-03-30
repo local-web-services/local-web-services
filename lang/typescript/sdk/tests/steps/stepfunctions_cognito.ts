@@ -2,8 +2,7 @@
 
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
-import type { ExecutionStepHelpers } from "../support/world";
+import type { SdkWorld, ExecutionStepHelpers } from "../support/world";
 
 const SFN_COGNITO_TEST_SM = "test-sm-1";
 const SFN_COGNITO_TEST_POOL_NAME = "e2e-test-pool-1";
@@ -87,41 +86,67 @@ Before({ tags: "@stepfunctionscognito" }, function (this: SdkWorld) {
     },
   };
   this.executionHelpers = executionHelpersImpl;
+  this.poolHelpers = {
+    setupPoolExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create the pool (idempotent)
+      const expectedPoolId = await sfnCognitoCreatePool(world);
+      // Assert: pool created
+      (world as any)._sfnCognitoPoolId = expectedPoolId;
+      assert.ok(expectedPoolId, "Expected pool ID to be defined");
+    },
+    assertPoolStatus: async (_world: SdkWorld, _expectedStatus: string) => {
+      // No-op: pool status is always ACTIVE immediately after creation in lws
+    },
+    createNamedPool: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateUserPoolCommand } = require("@aws-sdk/client-cognito-identity-provider");
+      // Act
+      try {
+        const result = await sfnCognitoCognitoClient(world).send(
+          new CreateUserPoolCommand({ PoolName: SFN_COGNITO_TEST_POOL_NAME }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    deleteNamedPool: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DeleteUserPoolCommand } = require("@aws-sdk/client-cognito-identity-provider");
+      // Act
+      try {
+        const actualPoolId = await sfnCognitoGetPoolId(world);
+        if (actualPoolId === null) {
+          throw new Error("ResourceNotFoundException: pool not found");
+        }
+        const result = await sfnCognitoCognitoClient(world).send(
+          new DeleteUserPoolCommand({ UserPoolId: actualPoolId }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+  };
 });
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
 // ── Given: pool existence ─────────────────────────────────────────────────────
 
-Given("the pool does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no user pools.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the pool does not already exist" is registered in cross_service_common.ts.
 
-Given("the pool already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const expectedPoolId = await sfnCognitoCreatePool(this);
-  // Assert: pool created
-  (this as any)._sfnCognitoPoolId = expectedPoolId;
-  assert.ok(expectedPoolId, "Expected pool ID to be defined");
-});
+// "the pool already exists" is registered in cross_service_common.ts (dispatches via poolHelpers).
 
-Given("the pool exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const expectedPoolId = await sfnCognitoCreatePool(this);
-  // Assert: pool created
-  (this as any)._sfnCognitoPoolId = expectedPoolId;
-  assert.ok(expectedPoolId, "Expected pool ID to be defined");
-});
+// "the pool exists" is registered in cross_service_common.ts (dispatches via poolHelpers).
 
-Given("the pool does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no user pools.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the pool does not exist" — registered in cross_service_common.ts.
 
 Given("the pool does not exist or is {string}", async function (this: SdkWorld, _state: string) {
   // Arrange / Act / Assert — no-op: fresh state after session reset has no user pools.
@@ -130,22 +155,7 @@ Given("the pool does not exist or is {string}", async function (this: SdkWorld, 
 
 // ── Given: pool status ────────────────────────────────────────────────────────
 
-Given("the pool is {string}", async function (this: SdkWorld, state: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  if (state === "ACTIVE") {
-    // No-op: Cognito user pools are ACTIVE immediately after creation.
-    return;
-  }
-  if (state === "DELETED") {
-    // No-op: fresh state has no user pools (simulates deleted pool).
-    return;
-  }
-  // Act: create pool for any other expected state
-  const expectedPoolId = await sfnCognitoCreatePool(this);
-  // Assert: pool created
-  (this as any)._sfnCognitoPoolId = expectedPoolId;
-});
+// "the pool is {string}" as Given — handled by cross_service_common.ts (dispatches via poolHelpers).
 
 Given("the pool is not {string}", async function (this: SdkWorld, state: string) {
   // Arrange
@@ -199,41 +209,8 @@ Given("the pool is already {string}", async function (this: SdkWorld, state: str
 // "a Step Functions state machine is created" is registered in stepfunctions.ts.
 // "an execution of the state machine is started" is registered in stepfunctions.ts.
 
-When("a Cognito user pool is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateUserPoolCommand } = require("@aws-sdk/client-cognito-identity-provider");
-  // Act
-  try {
-    const result = await sfnCognitoCognitoClient(this).send(
-      new CreateUserPoolCommand({ PoolName: SFN_COGNITO_TEST_POOL_NAME }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("a Cognito user pool is deleted", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteUserPoolCommand } = require("@aws-sdk/client-cognito-identity-provider");
-  try {
-    const actualPoolId = await sfnCognitoGetPoolId(this);
-    if (actualPoolId === null) {
-      throw new Error("ResourceNotFoundException: pool not found");
-    }
-    // Act
-    const result = await sfnCognitoCognitoClient(this).send(
-      new DeleteUserPoolCommand({ UserPoolId: actualPoolId }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a Cognito user pool is created" is registered in lambda_cognito.ts (dispatches via poolHelpers.createNamedPool).
+// "a Cognito user pool is deleted" is registered in lambda_cognito.ts (dispatches via poolHelpers.deleteNamedPool).
 
 When(
   `a running execution calls an "ACTIVE" Cognito user pool and the task succeeds`,
@@ -273,24 +250,7 @@ When(
 // "the execution is "RUNNING"" is registered in stepfunctions_sqs.ts.
 // "the operation is rejected" is registered in sqs.ts.
 
-Then("the pool is {string}", async function (this: SdkWorld, expectedState: string) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ListUserPoolsCommand } = require("@aws-sdk/client-cognito-identity-provider");
-  // Act
-  const result = await sfnCognitoCognitoClient(this).send(
-    new ListUserPoolsCommand({ MaxResults: 60 }),
-  );
-  const pools: Array<{ Name: string; Id: string }> = result.UserPools ?? [];
-  const actualExists = pools.some((p) => p.Name === SFN_COGNITO_TEST_POOL_NAME);
-  // Assert
-  if (expectedState === "ACTIVE") {
-    assert.ok(
-      actualExists,
-      `Expected pool "${SFN_COGNITO_TEST_POOL_NAME}" to be ACTIVE but it was not found; expected_state=${expectedState}`,
-    );
-  }
-});
+// "the pool is {string}" as Then — handled by cross_service_common.ts (dispatches via poolHelpers).
 
 Then(
   `the pool is "DELETED" and "SDK" task calls targeting it will fail`,
@@ -313,11 +273,8 @@ Then(
   },
 );
 
-Then(`the execution is "SUCCEEDED"`, async function (this: SdkWorld) {
-  // @internal scenario: cannot observe internal execution Cognito task success in lws.
-  // No-op: invariant trivially satisfied in isolated lws context.
-  return "pending";
-});
+// "the execution is SUCCEEDED" — handled by the canonical
+// Then("the execution is {string}", ...) in stepfunctions_sqs.ts.
 
 Then(`the execution is "FAILED" with a ResourceNotFoundException`, async function (this: SdkWorld) {
   // @internal scenario: cannot observe internal execution Cognito task failure in lws.

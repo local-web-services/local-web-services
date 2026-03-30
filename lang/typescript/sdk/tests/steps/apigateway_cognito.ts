@@ -1,8 +1,8 @@
 /** Step definitions: apigateway_cognito cross-service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, ApiStepHelpers, PoolStepHelpers } from "../support/world";
 
 const APIGW_COGNITO_TEST_API_NAME = "e2e-test-api-1";
 const APIGW_COGNITO_TEST_POOL_NAME = "e2e-test-pool-1";
@@ -45,6 +45,49 @@ async function createPool(world: SdkWorld): Promise<string> {
 
 // "the operation is rejected" is registered in sqs.ts; NOT re-registered here.
 
+// ── Before hook: register poolHelpers for apigatewaycognito scenarios ────────────
+
+Before({ tags: "@apigatewaycognito" }, function (this: SdkWorld) {
+  const apiHelpersImpl: ApiStepHelpers = {
+    createApi: async (world: SdkWorld) => {
+      const apiId = await createRestApi(world);
+      world.lastCallResult = { success: true, output: apiId };
+      return apiId;
+    },
+    createApiWithRoot: async (world: SdkWorld) => {
+      const apiId = await createRestApi(world);
+      world.lastCallResult = { success: true, output: apiId };
+    },
+  };
+  this.apiHelpers = apiHelpersImpl;
+  const poolHelpersImpl: PoolStepHelpers = {
+    setupPoolExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create the pool (idempotent)
+      const poolId = await createPool(world);
+      // Assert: pool created
+      assert.ok(poolId, `Expected user pool "${APIGW_COGNITO_TEST_POOL_NAME}" to be created`);
+    },
+    assertPoolStatus: async (_world: SdkWorld, _expectedStatus: string) => {
+      // No-op: pool status is always ACTIVE immediately after creation in lws
+    },
+    createNamedUserPool: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act
+      try {
+        const poolId = await createPool(world);
+        world.lastCallResult = { success: true, output: poolId };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+  };
+  this.poolHelpers = poolHelpersImpl;
+});
+
 // ── Given: cross-service API authorizer state ──────────────────────────────────
 
 // Note: 'the "API" does not already exist', 'the "API" already exists',
@@ -79,35 +122,14 @@ Given('the "API" has no Cognito authorizer configured', async function (this: Sd
 // apigateway_cognito feature files use the shorter "pool" phrasing — these are
 // distinct step patterns that are not re-registered here.
 
-Given("the pool does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no user pools.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the pool does not already exist" is registered in cross_service_common.ts.
 
-Given("the pool already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const expectedPoolName = APIGW_COGNITO_TEST_POOL_NAME;
-  const poolId = await createPool(this);
-  // Assert: pool created
-  assert.ok(poolId, `Expected user pool "${expectedPoolName}" to be created`);
-});
+// "the pool already exists" is registered in cross_service_common.ts (dispatches via poolHelpers).
 
-Given("the pool exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const expectedPoolName = APIGW_COGNITO_TEST_POOL_NAME;
-  const poolId = await createPool(this);
-  // Assert: pool created
-  assert.ok(poolId, `Expected user pool "${expectedPoolName}" to be created`);
-});
+// "the pool exists" is registered in cross_service_common.ts (dispatches via poolHelpers).
 
-Given('the pool is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: Cognito user pools are ACTIVE immediately after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the pool is "ACTIVE"' is registered via the generic
+// 'the pool is {string}' in cross_service_common.ts.
 
 Given('the pool is not "ACTIVE"', async function (this: SdkWorld) {
   // Arrange
@@ -120,10 +142,7 @@ Given('the pool is not "ACTIVE"', async function (this: SdkWorld) {
   assert.ok(poolId, `Expected user pool "${expectedPoolName}" to be created`);
 });
 
-Given("the pool does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no user pools.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the pool does not exist" is registered in cross_service_common.ts.
 
 // ── Given: token state ────────────────────────────────────────────────────────
 
@@ -193,31 +212,9 @@ Given("no such mismatched token exists", async function (this: SdkWorld) {
 
 // ── When: cross-service actions ───────────────────────────────────────────────
 
-When('a "REST" "API" is created', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  try {
-    const apiId = await createRestApi(this);
-    this.lastCallResult = { success: true, output: apiId };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a \"REST\" \"API\" is created" is registered in apigateway.ts (dispatches via apiHelpers.createApi).
 
-When("a Cognito User Pool is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  try {
-    const poolId = await createPool(this);
-    this.lastCallResult = { success: true, output: poolId };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a Cognito User Pool is created" is registered in cognito_lambda.ts (dispatches via poolHelpers.createNamedUserPool).
 
 When(
   'a Cognito User Pool authorizer is configured on the "REST" "API"',
@@ -289,21 +286,8 @@ Then(
   },
 );
 
-Then('the pool is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ListUserPoolsCommand } = require("@aws-sdk/client-cognito-identity-provider");
-  // Act
-  const result = await cognitoClient(this).send(new ListUserPoolsCommand({ MaxResults: 60 }));
-  const pools: Array<{ Name: string }> = result.UserPools ?? [];
-  const actualExists = pools.some((p) => p.Name === APIGW_COGNITO_TEST_POOL_NAME);
-  // Assert
-  const expectedPoolName = APIGW_COGNITO_TEST_POOL_NAME;
-  assert.ok(
-    actualExists,
-    `Expected user pool "${expectedPoolName}" to be ACTIVE but it was not found`,
-  );
-});
+// 'the pool is "ACTIVE"' (Then) is registered via the generic
+// 'the pool is {string}' in cross_service_common.ts.
 
 Then(
   'the "API" will validate "JWT" tokens against the configured pool before routing requests',

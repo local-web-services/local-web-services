@@ -1,8 +1,8 @@
 /** Step definitions: apigateway_lambda cross-service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, ApiStepHelpers } from "../support/world";
 
 const APIGW_LAMBDA_TEST_API_NAME = "e2e-test-api-1";
 
@@ -13,17 +13,33 @@ function apigwLambdaApigwClient(world: SdkWorld) {
   return world.session!.client<typeof APIGatewayClient>("apigateway");
 }
 
+// ── Before hook: register API helpers for @apigatewaylambda scenarios ─────────
+
+Before({ tags: "@apigatewaylambda" }, function (this: SdkWorld) {
+  const apiHelpersImpl: ApiStepHelpers = {
+    createApi: async (world: SdkWorld) => {
+      const { CreateRestApiCommand } = require("@aws-sdk/client-api-gateway");
+      const result = await apigwLambdaApigwClient(world).send(
+        new CreateRestApiCommand({ name: APIGW_LAMBDA_TEST_API_NAME }),
+      );
+      world.lastCallResult = { success: true, output: result };
+      return result.id as string;
+    },
+    createApiWithRoot: async (world: SdkWorld) => {
+      const { CreateRestApiCommand } = require("@aws-sdk/client-api-gateway");
+      const result = await apigwLambdaApigwClient(world).send(
+        new CreateRestApiCommand({ name: APIGW_LAMBDA_TEST_API_NAME }),
+      );
+      world.lastCallResult = { success: true, output: result };
+    },
+  };
+  this.apiHelpers = apiHelpersImpl;
+});
+
 // ── Given: API integration state ──────────────────────────────────────────────
 
-Given('the "API" has no integration configured', async function (this: SdkWorld) {
-  // No-op: APIs have no integration configured by default after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given('the "API" already has an integration configured', async function (this: SdkWorld) {
-  // @internal: Cannot configure Lambda integration on REST API in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the "API" has no integration configured' and 'the "API" already has an integration configured'
+// — registered in cross_service_common.ts.
 
 Given('the "API" has a Lambda integration configured', async function (this: SdkWorld) {
   // @internal: Cannot configure Lambda integration on REST API in lws.
@@ -55,21 +71,7 @@ Given('the integrated function is not "ACTIVE"', async function (this: SdkWorld)
 
 // ── When: actions ──────────────────────────────────────────────────────────────
 
-When('a "REST" "API" is created', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateRestApiCommand } = require("@aws-sdk/client-api-gateway");
-  // Act
-  try {
-    const result = await apigwLambdaApigwClient(this).send(
-      new CreateRestApiCommand({ name: APIGW_LAMBDA_TEST_API_NAME }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a \"REST\" \"API\" is created" is registered in apigateway.ts (dispatches via apiHelpers.createApi).
 
 When('a Lambda integration is configured on the "REST" "API"', async function (this: SdkWorld) {
   // @internal: Cannot configure Lambda integration on REST API in lws.
@@ -176,10 +178,8 @@ Then('the invocation is "FAILED" and the request is "FAILED"', async function (t
 
 // ── Invariant catch-all steps ──────────────────────────────────────────────────
 
-Then('every "IN_PROGRESS" request references an "ACTIVE" "API"', async function (this: SdkWorld) {
-  // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'every "IN_PROGRESS" request references an "ACTIVE" "API"'
+// — registered in cross_service_common.ts.
 
 Then(
   'every "IN_PROGRESS" invocation has a corresponding "IN_PROGRESS" request',

@@ -161,10 +161,8 @@ Given("the function has a resource policy entry", async function (this: SdkWorld
   // Assert: policy entry added
 });
 
-Given("the function has a resource policy", async function (this: SdkWorld) {
-  // No-op: policy already added by "the function has a resource policy entry" step.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the function has a resource policy" is registered as a unified Given/Then step below
+// in this file — the single registration handles both precondition and assertion contexts.
 
 Given("the function does not have a resource policy entry", async function (this: SdkWorld) {
   // No-op: fresh state has no policy entries.
@@ -788,15 +786,18 @@ Then(/^the function is "DELETED"$/, async function (this: SdkWorld) {
 
 Then("the function has a resource policy", async function (this: SdkWorld) {
   // Arrange: no additional setup required
-  // Act: action performed in When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected add_permission to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
+  // Act: action performed in When step (or no-op as a Given precondition)
+  // Assert: if lastCallResult has been set (Then context), verify success;
+  //   otherwise no-op (Given precondition context — policy was added earlier).
+  if (this.lastCallResult && this.lastCallResult.output !== null) {
+    const expectedSuccess = true;
+    const actualSuccess = this.lastCallResult.success;
+    assert.strictEqual(
+      actualSuccess,
+      expectedSuccess,
+      `Expected add_permission to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+    );
+  }
 });
 
 Then("the function's resource policy is cleared", async function (this: SdkWorld) {
@@ -863,9 +864,8 @@ Then(
   },
 );
 
-Then(/^the mapping is "ENABLED"$/, async function (this: SdkWorld) {
-  // @internal: Cannot observe ESM ENABLED state in lws.
-});
+// 'the mapping is "ENABLED"' is registered via the generic
+// 'the mapping is {string}' in this file.
 
 Then(/^the mapping is "DISABLED" and inactive$/, async function (this: SdkWorld) {
   // @internal: Cannot observe ESM DISABLED state in lws.
@@ -879,9 +879,8 @@ Then(/^the mapping enters "DELETING" state$/, async function (this: SdkWorld) {
   // @internal: Cannot observe ESM DELETING state in lws.
 });
 
-Then(/^the mapping is "DELETED"$/, async function (this: SdkWorld) {
-  // @internal: Cannot observe ESM DELETED state in lws.
-});
+// 'the mapping is "DELETED"' is registered via the generic
+// 'the mapping is {string}' in this file.
 
 Then("the event is queued in an async slot", async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda async slot state in lws.

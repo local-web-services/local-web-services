@@ -101,44 +101,87 @@ Before({ tags: "@lambdaglacier" }, function (this: SdkWorld) {
       await lambdaGlacierCreateVault(this);
       // Assert: vault created
     },
+    createVault: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateVaultCommand } = require("@aws-sdk/client-glacier");
+      // Act
+      try {
+        const result = await lambdaGlacierGlacierClient(this).send(
+          new CreateVaultCommand({
+            accountId: LAMBDA_GLACIER_ACCOUNT_ID,
+            vaultName: LAMBDA_GLACIER_TEST_VAULT,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    deleteVault: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DeleteVaultCommand } = require("@aws-sdk/client-glacier");
+      // Act
+      try {
+        const result = await lambdaGlacierGlacierClient(this).send(
+          new DeleteVaultCommand({
+            accountId: LAMBDA_GLACIER_ACCOUNT_ID,
+            vaultName: LAMBDA_GLACIER_TEST_VAULT,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    assertVaultState: async (world: SdkWorld, expectedState: string) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      if (expectedState !== "EXISTS") return;
+      const { DescribeVaultCommand } = require("@aws-sdk/client-glacier");
+      const expectedVaultName = LAMBDA_GLACIER_TEST_VAULT;
+      // Act
+      const result = await lambdaGlacierGlacierClient(this).send(
+        new DescribeVaultCommand({
+          accountId: LAMBDA_GLACIER_ACCOUNT_ID,
+          vaultName: expectedVaultName,
+        }),
+      );
+      const actualVaultName = result.VaultName ?? "";
+      // Assert
+      assert.strictEqual(
+        actualVaultName,
+        expectedVaultName,
+        `Expected vault name "${expectedVaultName}" but got "${actualVaultName}"; expected_vault_name=${expectedVaultName} actual_vault_name=${actualVaultName}`,
+      );
+    },
+    assertVaultDeleted: async (world: SdkWorld) => {
+      // @internal: vault DELETED state cannot be forced via public API without prior creation.
+      // No-op for lambda_glacier scenarios.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
   };
   this.vaultHelpers = vaultHelpersImpl;
 });
 
 // ── Given: vault state ────────────────────────────────────────────────────────
 
-Given("the vault does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after reset has no vaults.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the vault already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await lambdaGlacierCreateVault(this);
-  // Assert: vault created
-});
+// "the vault does not already exist" is registered in cross_service_common.ts.
+// "the vault already exists" is registered in cross_service_common.ts (dispatches via vaultHelpers).
 
 // "the vault exists" is registered in cross_service_common.ts (dispatches via helpers).
 
-Given('the vault "EXISTS"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await lambdaGlacierCreateVault(this);
-  // Assert: vault created
-});
+// 'the vault "EXISTS"' as Given — handled by the combined Then registration below.
 
 Given('the vault "EXISTS" (not already "DELETED")', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: fresh vault is not DELETED.
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given('the vault is "DELETED"', async function (this: SdkWorld) {
-  // @internal: vault DELETED state cannot be forced via public API without prior creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the vault is "DELETED"' is registered in glacier.ts (dispatches via vaultHelpers.assertVaultDeleted).
 
 Given('the vault is already "DELETED"', async function (this: SdkWorld) {
   // @internal: vault DELETED state requires prior deletion via public API.
@@ -221,43 +264,9 @@ Given("iid in inv_status", async function (this: SdkWorld) {
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When("a Glacier vault is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { CreateVaultCommand } = require("@aws-sdk/client-glacier");
-  // Act
-  try {
-    const result = await lambdaGlacierGlacierClient(this).send(
-      new CreateVaultCommand({
-        accountId: LAMBDA_GLACIER_ACCOUNT_ID,
-        vaultName: LAMBDA_GLACIER_TEST_VAULT,
-      }),
-    );
-    // Assert: store result
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-});
+// "a Glacier vault is created" is registered in glacier_sns.ts (dispatches via vaultHelpers.createVault).
 
-When("a Glacier vault is deleted", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { DeleteVaultCommand } = require("@aws-sdk/client-glacier");
-  // Act
-  try {
-    const result = await lambdaGlacierGlacierClient(this).send(
-      new DeleteVaultCommand({
-        accountId: LAMBDA_GLACIER_ACCOUNT_ID,
-        vaultName: LAMBDA_GLACIER_TEST_VAULT,
-      }),
-    );
-    // Assert: store result
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-});
+// "a Glacier vault is deleted" is registered in stepfunctions_glacier.ts (dispatches via vaultHelpers.deleteVault).
 
 When(
   "the Lambda function uploads an archive to an existing vault and succeeds",
@@ -287,26 +296,8 @@ When(
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then('the vault "EXISTS"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeVaultCommand } = require("@aws-sdk/client-glacier");
-  // Act
-  const result = await lambdaGlacierGlacierClient(this).send(
-    new DescribeVaultCommand({
-      accountId: LAMBDA_GLACIER_ACCOUNT_ID,
-      vaultName: LAMBDA_GLACIER_TEST_VAULT,
-    }),
-  );
-  // Assert
-  const expectedVaultName = LAMBDA_GLACIER_TEST_VAULT;
-  const actualVaultName = result.VaultName ?? "";
-  assert.strictEqual(
-    actualVaultName,
-    expectedVaultName,
-    `Expected vault name "${expectedVaultName}" but got "${actualVaultName}"; expected_vault_name=${expectedVaultName} actual_vault_name=${actualVaultName}`,
-  );
-});
+// 'the vault "EXISTS"' is handled by the generic 'the vault {string}' in stepfunctions_glacier.ts
+// (dispatches via vaultHelpers.assertVaultState).
 
 Then('the vault is "DELETED" and archive uploads will fail', async function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -321,13 +312,7 @@ Then('the vault is "DELETED" and archive uploads will fail', async function (thi
   );
 });
 
-Then(
-  'the invocation is "FAILED" with a ResourceNotFoundException',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe Lambda invocation failure in lws.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+// 'the invocation is "FAILED" with a ResourceNotFoundException' is registered in lambda_common.ts.
 
 Then(
   'the archive "EXISTS" in the vault and the invocation is "SUCCESS"',

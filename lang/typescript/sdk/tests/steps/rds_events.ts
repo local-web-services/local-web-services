@@ -2,7 +2,7 @@
 
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld, BusStepHelpers } from "../support/world";
+import type { SdkWorld, BusStepHelpers, InstanceStepHelpers } from "../support/world";
 
 const RDS_EVENTS_TEST_DB_INSTANCE_ID = "test-rds-db-1";
 const RDS_EVENTS_TEST_BUS_NAME = "e2e-test-bus-1";
@@ -87,6 +87,65 @@ Before({ tags: "@rdsevents" }, function (this: SdkWorld) {
     },
   };
   this.busHelpers = busHelpers;
+
+  const instanceHelpersImpl: InstanceStepHelpers = {
+    setupInstanceNotExists: async (world: SdkWorld) => {
+      // Arrange / Act / Assert — no-op: fresh state after session reset has no DB instances.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    setupInstanceExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act
+      await rdsEventsCreateDBInstance(world);
+      // Assert: DB instance created
+    },
+    setupInstanceAvailable: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create the DB instance (lws instances are AVAILABLE after creation)
+      await rdsEventsCreateDBInstance(world);
+      // Assert: DB instance created
+    },
+    assertInstanceAvailable: async (world: SdkWorld) => {
+      // Arrange: no additional setup required
+      // Act: action already performed in the When step
+      // Assert
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected RDS DB instance creation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      assert.ok(
+        world.lastCallResult.output !== null && world.lastCallResult.output !== undefined,
+        "Expected output from RDS DB instance creation but got null",
+      );
+    },
+    createDbInstance: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateDBInstanceCommand } = require("@aws-sdk/client-rds");
+      // Act
+      try {
+        const result = await rdsEventsRdsClient(world).send(
+          new CreateDBInstanceCommand({
+            DBInstanceIdentifier: RDS_EVENTS_TEST_DB_INSTANCE_ID,
+            DBInstanceClass: RDS_EVENTS_TEST_DB_CLASS,
+            Engine: RDS_EVENTS_TEST_DB_ENGINE,
+            MasterUsername: "admin",
+            MasterUserPassword: "password123",
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+  };
+  this.instanceHelpers = instanceHelpersImpl;
 });
 
 // ── Background ────────────────────────────────────────────────────────────────
@@ -95,26 +154,10 @@ Before({ tags: "@rdsevents" }, function (this: SdkWorld) {
 
 // ── Given: DB instance state setup ───────────────────────────────────────────
 
-Given('the "DB" instance does not already exist', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no DB instances.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given('the "DB" instance already exists', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await rdsEventsCreateDBInstance(this);
-  // Assert: DB instance created
-});
-
-Given('the "DB" instance is "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create the DB instance (lws instances are AVAILABLE after creation)
-  await rdsEventsCreateDBInstance(this);
-  // Assert: DB instance created
-});
+// "the "DB" instance does not already exist" is registered in rds_lambda.ts (dispatches via instanceHelpers.setupInstanceNotExists).
+// "the "DB" instance already exists" is registered in rds_lambda.ts (dispatches via instanceHelpers.setupInstanceExists).
+// "the "DB" instance is "AVAILABLE"" (Given) is registered in rds_lambda.ts (dispatches via instanceHelpers.setupInstanceAvailable).
+// "the "DB" instance is "AVAILABLE"" (Then) is registered in rds_lambda.ts (dispatches via instanceHelpers.assertInstanceAvailable).
 
 Given('the "DB" instance is not "AVAILABLE"', async function (this: SdkWorld) {
   // @internal: Cannot force a DB instance into a non-AVAILABLE state via public API.
@@ -158,10 +201,7 @@ Given('the bus is already "DELETED"', async function (this: SdkWorld) {
   // Assert: bus is absent (DELETED state)
 });
 
-Given("the bus does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no event buses.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the bus does not exist" — registered in cross_service_common.ts.
 
 Given('the bus is not "DELETED"', async function (this: SdkWorld) {
   // Arrange
@@ -243,40 +283,13 @@ When(
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then('the "DB" instance is "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected RDS DB instance creation to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  assert.ok(
-    this.lastCallResult.output !== null && this.lastCallResult.output !== undefined,
-    "Expected output from RDS DB instance creation but got null",
-  );
-});
+// 'the "DB" instance is "AVAILABLE"' as Then — handled by the combined
+// Given registration above (creates instance if Given, asserts if Then).
 
 // "the bus is {string}" (Then) — registered in cross_service_common.ts (dispatches via busHelpers)
 
-Then('the bus is "DELETED" and "RDS" event delivery will fail', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  const result = await rdsEventsEventBridgeClient(this).send(new ListEventBusesCommand({}));
-  const buses: Array<{ Name?: string }> = result.EventBuses ?? [];
-  // Assert
-  const expectedBus = RDS_EVENTS_TEST_BUS_NAME;
-  const actualFound = buses.some((b) => b.Name === expectedBus);
-  assert.ok(
-    !actualFound,
-    `Expected event bus "${expectedBus}" to be DELETED but found it; expected_bus=${expectedBus} actual_found=${actualFound}`,
-  );
-});
+// 'the bus is "DELETED" and "RDS" event delivery will fail' matches the generic
+// Then("the bus is {string} and {string} event delivery will fail", ...) in ssm_events.ts.
 
 Then('the "DB" instance is "STOPPED"', async function (this: SdkWorld) {
   // @internal: d_b_stop_complete outcome not observable via public API.

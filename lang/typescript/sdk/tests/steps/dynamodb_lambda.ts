@@ -170,21 +170,8 @@ Given(
 
 // ── Given: record capacity slots ─────────────────────────────────────────────
 
-Given("a record slot is available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: ensure dynamodb capacity is unlimited
-  await this.session!.capacity("dynamodb").unlimited().apply();
-  // Assert: capacity restored
-});
-
-Given("no record slot is available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: exhaust dynamodb capacity
-  await this.session!.capacity("dynamodb").exhaust().apply();
-  // Assert: capacity exhausted
-});
+// "a record slot is available" and "no record slot is available"
+// — registered in cross_service_common.ts (handles dynamodb capacity exhaustion).
 
 // ── When: cross-service actions ───────────────────────────────────────────────
 

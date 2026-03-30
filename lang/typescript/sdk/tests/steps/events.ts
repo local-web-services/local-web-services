@@ -17,11 +17,6 @@ function ebClient(world: SdkWorld) {
   return world.session!.client<typeof EventBridgeClient>("eventbridge");
 }
 
-async function createBus(world: SdkWorld): Promise<void> {
-  const { CreateEventBusCommand } = require("@aws-sdk/client-eventbridge");
-  await ebClient(world).send(new CreateEventBusCommand({ Name: EVENTS_TEST_BUS }));
-}
-
 async function createRule(world: SdkWorld): Promise<void> {
   const { PutRuleCommand } = require("@aws-sdk/client-eventbridge");
   await ebClient(world).send(
@@ -63,20 +58,8 @@ async function putTarget(world: SdkWorld): Promise<void> {
 
 // "the event bus is {string}" is registered in cross_service_common.ts.
 
-Given('the event bus is not "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteEventBusCommand } = require("@aws-sdk/client-eventbridge");
-  try {
-    await ebClient(this).send(new DeleteEventBusCommand({ Name: EVENTS_TEST_BUS }));
-  } catch {
-    // bus may not exist
-  }
-  // Act: apply lifecycle dwell so recreated bus starts in a non-ACTIVE state
-  await this.session!.lifecycle("eventbridge").createDwellMs(5000).apply();
-  await createBus(this);
-  // Assert: bus recreated in non-ACTIVE state
-});
+// 'the event bus is not "ACTIVE"' is registered via the generic
+// 'the event bus is not {string}' in cross_service_common.ts.
 
 // "the event bus does not exist" is registered in cross_service_common.ts.
 
@@ -116,37 +99,18 @@ Given('the rule is not already "DELETED"', async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given('the rule is already "DELETED"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteRuleCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  await ebClient(this).send(
-    new DeleteRuleCommand({ Name: EVENTS_TEST_RULE, EventBusName: EVENTS_TEST_BUS }),
-  );
-  // Assert: rule deleted
-});
+// 'the rule is already "DELETED"' is registered via the generic
+// 'the rule is already {string}' in cross_service_common.ts.
 
 Given('the rule is not "DELETED"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: newly created rules are ENABLED.
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given('the rule is "DELETED"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteRuleCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  await ebClient(this).send(
-    new DeleteRuleCommand({ Name: EVENTS_TEST_RULE, EventBusName: EVENTS_TEST_BUS }),
-  );
-  // Assert: rule deleted
-});
+// 'the rule is "DELETED"' as Given — handled by 'the rule is {string}' in cross_service_common.ts.
 
-Given('the rule is "ENABLED"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: rules are ENABLED by default when created.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the rule is "ENABLED"' is registered via the generic
+// 'the rule is {string}' in cross_service_common.ts.
 
 Given('the rule is not "ENABLED"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — skip: put_events does not fail when the matching rule
@@ -155,16 +119,8 @@ Given('the rule is not "ENABLED"', async function (this: SdkWorld) {
   return "pending";
 });
 
-Given('the rule is "DISABLED"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DisableRuleCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  await ebClient(this).send(
-    new DisableRuleCommand({ Name: EVENTS_TEST_RULE, EventBusName: EVENTS_TEST_BUS }),
-  );
-  // Assert: rule disabled
-});
+// 'the rule is "DISABLED"' is registered via the generic
+// 'the rule is {string}' in cross_service_common.ts.
 
 Given('the rule is not "DISABLED"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: newly created rules are ENABLED, not DISABLED.
@@ -640,54 +596,8 @@ Then("the dead-letter queue never exceeds its bounded capacity", async function 
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then('the rule is "ENABLED"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeRuleCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  const actualResult = await ebClient(this).send(
-    new DescribeRuleCommand({ Name: EVENTS_TEST_RULE, EventBusName: EVENTS_TEST_BUS }),
-  );
-  // Assert
-  const expectedState = "ENABLED";
-  const actualState = actualResult.State;
-  assert.strictEqual(
-    actualState,
-    expectedState,
-    `Expected rule state '${expectedState}' but got '${actualState}'; expected_state=${expectedState} actual_state=${actualState}`,
-  );
-});
-
-Then('the rule is "DISABLED"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeRuleCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  const actualResult = await ebClient(this).send(
-    new DescribeRuleCommand({ Name: EVENTS_TEST_RULE, EventBusName: EVENTS_TEST_BUS }),
-  );
-  // Assert
-  const expectedState = "DISABLED";
-  const actualState = actualResult.State;
-  assert.strictEqual(
-    actualState,
-    expectedState,
-    `Expected rule state '${expectedState}' but got '${actualState}'; expected_state=${expectedState} actual_state=${actualState}`,
-  );
-});
-
-Then('the rule is "DELETED"', async function (this: SdkWorld) {
-  // Arrange: action performed in When step
-  // Act: (no-op)
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected delete_rule to succeed but got error: ${this.lastCallResult.error}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+// 'the rule is "ENABLED"', 'the rule is "DISABLED"', 'the rule is "DELETED"' as Then —
+// handled by 'the rule is {string}' in cross_service_common.ts (asserts rule state).
 
 Then("the rule details are returned", async function (this: SdkWorld) {
   // Arrange: action performed in When step

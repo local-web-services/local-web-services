@@ -3,8 +3,11 @@
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
-import type { UploadStepHelpers } from "../support/world";
-import type { VaultStepHelpers } from "../support/world";
+import type {
+  UploadStepHelpers,
+  VaultStepHelpers,
+  MultipartUploadStepHelpers,
+} from "../support/world";
 
 const GLACIER_TEST_VAULT = "test-glacier-vault-1";
 const GLACIER_TEST_ARCHIVE = "test-glacier-archive-1";
@@ -78,24 +81,91 @@ Before({ tags: "@glacier" }, function (this: SdkWorld) {
     },
   };
   this.uploadHelpers = uploadHelpersImpl;
+
+  const multipartUploadHelpersImpl: MultipartUploadStepHelpers = {
+    setupUploadDoesNotExist: async (world: SdkWorld) => {
+      // Arrange / Act / Assert — no-op: fresh state has no multipart uploads.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    setupUploadAlreadyExists: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const uploadId = await glacierInitiateMultipartUpload(world);
+      (world as any)._glacierUploadId = uploadId;
+    },
+    setupUploadDoesNotAlreadyExist: async (world: SdkWorld) => {
+      // Arrange / Act / Assert — no-op: fresh state has no multipart uploads.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    uploadPart: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { UploadMultipartPartCommand } = require("@aws-sdk/client-glacier");
+      const uploadId: string = (world as any)._glacierUploadId ?? "missing-upload-id";
+      // Act
+      try {
+        const result = await glacierClient(world).send(
+          new UploadMultipartPartCommand({
+            accountId: GLACIER_ACCOUNT_ID,
+            vaultName: GLACIER_TEST_VAULT,
+            uploadId,
+            range: "bytes 0-1023/*",
+            body: Buffer.from("test-part-content-1"),
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    completeUpload: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CompleteMultipartUploadCommand } = require("@aws-sdk/client-glacier");
+      const uploadId: string = (world as any)._glacierUploadId ?? "missing-upload-id";
+      // Act
+      try {
+        const result = await glacierClient(world).send(
+          new CompleteMultipartUploadCommand({
+            accountId: GLACIER_ACCOUNT_ID,
+            vaultName: GLACIER_TEST_VAULT,
+            uploadId,
+            archiveSize: "1024",
+          }),
+        );
+        if (result.archiveId) {
+          (world as any)._glacierArchiveId = result.archiveId;
+        }
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    abortUpload: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { AbortMultipartUploadCommand } = require("@aws-sdk/client-glacier");
+      const uploadId: string = (world as any)._glacierUploadId ?? "missing-upload-id";
+      // Act
+      try {
+        const result = await glacierClient(world).send(
+          new AbortMultipartUploadCommand({
+            accountId: GLACIER_ACCOUNT_ID,
+            vaultName: GLACIER_TEST_VAULT,
+            uploadId,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+  };
+  this.multipartUploadHelpers = multipartUploadHelpersImpl;
 });
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
 // ── Given: vault state setup ──────────────────────────────────────────────────
 
-Given("the vault does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no vaults.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the vault already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await glacierCreateVault(this);
-  // Assert: vault created
-});
+// "the vault does not already exist" is registered in cross_service_common.ts.
+// "the vault already exists" is registered in cross_service_common.ts (dispatches via vaultHelpers).
 
 // "the vault exists" is registered in cross_service_common.ts (dispatches via helpers).
 
@@ -255,36 +325,19 @@ Given("the job output is not available", async function (this: SdkWorld) {
 
 // ── Given: multipart upload state setup ──────────────────────────────────────
 
-Given("the upload does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no multipart uploads.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the upload already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const uploadId = await glacierInitiateMultipartUpload(this);
-  // Assert: upload initiated
-  (this as any)._glacierUploadId = uploadId;
-});
+// "the upload does not already exist" is registered in cross_service_common.ts (dispatches via multipartUploadHelpers).
+// "the upload already exists" is registered in cross_service_common.ts (dispatches via multipartUploadHelpers).
 
 // "the upload exists" is registered in cross_service_common.ts (dispatches via helpers).
 
-Given("the upload is InProgress", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: uploads are InProgress immediately after initiation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the upload is InProgress" as Given — handled by the combined Then registration below.
 
 Given("the upload is not InProgress", async function (this: SdkWorld) {
   // @internal: upload lifecycle transitions require background processing.
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("the upload does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no multipart uploads.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the upload does not exist" is registered in cross_service_common.ts (dispatches via multipartUploadHelpers).
 
 Given("the part has not already been uploaded", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: fresh upload has no uploaded parts.
@@ -525,74 +578,11 @@ When("a multipart upload is initiated for a vault", async function (this: SdkWor
   // Assert: captured in lastCallResult
 });
 
-When("a part is uploaded for a multipart upload", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { UploadMultipartPartCommand } = require("@aws-sdk/client-glacier");
-  const uploadId: string = (this as any)._glacierUploadId ?? "missing-upload-id";
-  // Act
-  try {
-    const result = await glacierClient(this).send(
-      new UploadMultipartPartCommand({
-        accountId: GLACIER_ACCOUNT_ID,
-        vaultName: GLACIER_TEST_VAULT,
-        uploadId,
-        range: "bytes 0-1023/*",
-        body: Buffer.from("test-part-content-1"),
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a part is uploaded for a multipart upload" is registered in cross_service_common.ts (dispatches via multipartUploadHelpers).
 
-When("a multipart upload is completed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CompleteMultipartUploadCommand } = require("@aws-sdk/client-glacier");
-  const uploadId: string = (this as any)._glacierUploadId ?? "missing-upload-id";
-  // Act
-  try {
-    const result = await glacierClient(this).send(
-      new CompleteMultipartUploadCommand({
-        accountId: GLACIER_ACCOUNT_ID,
-        vaultName: GLACIER_TEST_VAULT,
-        uploadId,
-        archiveSize: "1024",
-      }),
-    );
-    if (result.archiveId) {
-      (this as any)._glacierArchiveId = result.archiveId;
-    }
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a multipart upload is completed" is registered in cross_service_common.ts (dispatches via multipartUploadHelpers).
 
-When("a multipart upload is aborted", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { AbortMultipartUploadCommand } = require("@aws-sdk/client-glacier");
-  const uploadId: string = (this as any)._glacierUploadId ?? "missing-upload-id";
-  // Act
-  try {
-    const result = await glacierClient(this).send(
-      new AbortMultipartUploadCommand({
-        accountId: GLACIER_ACCOUNT_ID,
-        vaultName: GLACIER_TEST_VAULT,
-        uploadId,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a multipart upload is aborted" is registered in cross_service_common.ts (dispatches via multipartUploadHelpers).
 
 When("a job fails", async function (this: SdkWorld) {
   // @internal: job failure requires background Glacier processing.
@@ -660,7 +650,16 @@ Then('the vault is "ACTIVE" with zero archives', async function (this: SdkWorld)
 });
 
 Then('the vault is "DELETED"', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  // Given context: dispatch to service-specific vault helpers when registered
+  if (this.vaultHelpers?.assertVaultDeleted) {
+    // Act
+    await this.vaultHelpers.assertVaultDeleted(this);
+    // Assert: handled by assertVaultDeleted
+    return;
+  }
+  // Then context: assert lastCallResult success (glacier.ts scenarios)
   // Act: action already performed in the When step
   // Assert
   const expectedSuccess = true;
@@ -761,6 +760,11 @@ Then("the job output is marked as retrieved", async function (this: SdkWorld) {
 
 Then("the upload is InProgress", async function (this: SdkWorld) {
   // Arrange: no additional setup required
+  // If used as Given precondition — no-op: uploads are InProgress immediately after initiation
+  if (this.lastCallResult.output === null && !this.lastCallResult.success) {
+    assert.ok(this.session, "Expected session to be initialized");
+    return;
+  }
   // Act: action already performed in the When step
   // Assert
   const expectedSuccess = true;

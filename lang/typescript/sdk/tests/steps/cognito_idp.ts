@@ -85,10 +85,37 @@ Given("the user pool exists", async function (this: SdkWorld) {
 
 Given("the user pool is {string}", async function (this: SdkWorld, state: string) {
   // Arrange: no additional setup
-  // Act: (no-op for ACTIVE — user pools are ACTIVE immediately after creation)
-  // Assert
-  if (state === "ACTIVE") {
+  // Dual-purpose: used as Given (setup) and Then (assert).
+  // If lastCallResult has output, assert pool state; otherwise set it up.
+  if (this.lastCallResult.output !== null || this.lastCallResult.success) {
+    // Used as Then — assert pool state
+    const { ListUserPoolsCommand } = require("@aws-sdk/client-cognito-identity-provider");
+    const result = await cognitoClient(this).send(new ListUserPoolsCommand({ MaxResults: 10 }));
+    const actualPools: Array<{ Name?: string }> = result.UserPools ?? [];
+    const actualPoolNames = actualPools.map((p) => p.Name);
+    if (state === "ACTIVE") {
+      const expectedPoolName = COGNITO_TEST_POOL_NAME;
+      const actualFound = actualPoolNames.includes(expectedPoolName);
+      assert.strictEqual(
+        actualFound,
+        true,
+        `Expected pool '${expectedPoolName}' to be ACTIVE but not found; actual_pools=${JSON.stringify(actualPoolNames)}`,
+      );
+    }
+    if (state === "DELETED") {
+      const expectedPoolName = COGNITO_TEST_POOL_NAME;
+      const actualFound = actualPoolNames.includes(expectedPoolName);
+      assert.strictEqual(
+        actualFound,
+        false,
+        `Expected pool '${expectedPoolName}' to be DELETED but found; actual_pools=${JSON.stringify(actualPoolNames)}`,
+      );
+    }
     return;
+  }
+  // Act: used as Given — set up pool state
+  if (state === "ACTIVE") {
+    return; // No-op: user pools are ACTIVE immediately after creation
   }
   // For non-ACTIVE states, use lifecycle API
   await this.session!.lifecycle("cognitoidp").createDwellMs(5000).apply();
@@ -203,24 +230,7 @@ Given("the user is already {string}", async function (this: SdkWorld, state: str
 // "the user is {string}" (Given) is registered in user_common.ts and dispatches to setupUserStatus.
 // "the user is not {string}" (Given) is registered in user_common.ts.
 
-Given("the user is in {string} state", async function (this: SdkWorld, state: string) {
-  // Arrange
-  const poolId = (this as any)._cognitoPoolId as string;
-  const username = (this as any)._cognitoUsername as string;
-  if (state === "RESET_REQUIRED") {
-    // Act: reset user password to put them in RESET_REQUIRED
-    const { AdminResetUserPasswordCommand } = require("@aws-sdk/client-cognito-identity-provider");
-    await cognitoClient(this).send(
-      new AdminResetUserPasswordCommand({ UserPoolId: poolId, Username: username }),
-    );
-    // Assert: user is now RESET_REQUIRED
-    return;
-  }
-  if (state === "FORCE_CHANGE_PASSWORD") {
-    // No-op: users created via AdminCreateUser start in FORCE_CHANGE_PASSWORD by default.
-    return;
-  }
-});
+// "the user is in {string} state" as Given — handled by the combined Then registration below.
 
 Given("the user is not in {string} state", async function (this: SdkWorld, state: string) {
   // Arrange
@@ -265,10 +275,7 @@ Given("the user does not have an enabled flag", async function (this: SdkWorld) 
   (this as any)._cognitoUsername = COGNITO_TEST_USERNAME;
 });
 
-Given("the user is enabled", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: newly created users are enabled by default.
-  return;
-});
+// "the user is enabled" as Given — handled by the combined Then registration below.
 
 Given("the user is not enabled", async function (this: SdkWorld) {
   // Arrange
@@ -282,17 +289,7 @@ Given("the user is not enabled", async function (this: SdkWorld) {
   // Assert: user is now disabled
 });
 
-Given("the user is disabled", async function (this: SdkWorld) {
-  // Arrange
-  const poolId = (this as any)._cognitoPoolId as string;
-  const username = (this as any)._cognitoUsername as string;
-  // Act: disable the user
-  const { AdminDisableUserCommand } = require("@aws-sdk/client-cognito-identity-provider");
-  await cognitoClient(this).send(
-    new AdminDisableUserCommand({ UserPoolId: poolId, Username: username }),
-  );
-  // Assert: user is now disabled
-});
+// "the user is disabled" as Given — handled by the combined Then registration below.
 
 Given("the user is not disabled", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: newly created users are enabled (not disabled) by default.
@@ -777,33 +774,8 @@ When("an admin removes a user from a group", async function (this: SdkWorld) {
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then("the user pool is {string}", async function (this: SdkWorld, expectedState: string) {
-  // Arrange
-  const { ListUserPoolsCommand } = require("@aws-sdk/client-cognito-identity-provider");
-  // Act
-  const result = await cognitoClient(this).send(new ListUserPoolsCommand({ MaxResults: 10 }));
-  const actualPools: Array<{ Name?: string }> = result.UserPools ?? [];
-  const actualPoolNames = actualPools.map((p) => p.Name);
-  // Assert
-  if (expectedState === "ACTIVE") {
-    const expectedPoolName = COGNITO_TEST_POOL_NAME;
-    const actualFound = actualPoolNames.includes(expectedPoolName);
-    assert.strictEqual(
-      actualFound,
-      true,
-      `Expected pool '${expectedPoolName}' to be ACTIVE but not found; actual_pools=${JSON.stringify(actualPoolNames)}`,
-    );
-  }
-  if (expectedState === "DELETED") {
-    const expectedPoolName = COGNITO_TEST_POOL_NAME;
-    const actualFound = actualPoolNames.includes(expectedPoolName);
-    assert.strictEqual(
-      actualFound,
-      false,
-      `Expected pool '${expectedPoolName}' to be DELETED but found; actual_pools=${JSON.stringify(actualPoolNames)}`,
-    );
-  }
-});
+// "the user pool is {string}" as Then — handled by the combined
+// Given registration above (asserts pool state when used as Then).
 
 Then(
   "the user pool is {string} along with all its users and groups",
@@ -873,6 +845,14 @@ Then("the user is disabled", async function (this: SdkWorld) {
   // Arrange
   const poolId = (this as any)._cognitoPoolId as string;
   const username = (this as any)._cognitoUsername as string;
+  // If used as Given precondition — disable the user
+  if (this.lastCallResult.output === null && !this.lastCallResult.success) {
+    const { AdminDisableUserCommand } = require("@aws-sdk/client-cognito-identity-provider");
+    await cognitoClient(this).send(
+      new AdminDisableUserCommand({ UserPoolId: poolId, Username: username }),
+    );
+    return;
+  }
   const { AdminGetUserCommand } = require("@aws-sdk/client-cognito-identity-provider");
   // Act
   const result = await cognitoClient(this).send(
@@ -892,6 +872,10 @@ Then("the user is enabled", async function (this: SdkWorld) {
   // Arrange
   const poolId = (this as any)._cognitoPoolId as string;
   const username = (this as any)._cognitoUsername as string;
+  // If used as Given precondition — no-op, newly created users are enabled by default
+  if (this.lastCallResult.output === null && !this.lastCallResult.success) {
+    return;
+  }
   const { AdminGetUserCommand } = require("@aws-sdk/client-cognito-identity-provider");
   // Act
   const result = await cognitoClient(this).send(
@@ -909,8 +893,28 @@ Then("the user is enabled", async function (this: SdkWorld) {
 
 Then("the user is in {string} state", async function (this: SdkWorld, expectedStatus: string) {
   // Arrange
+  // Dispatch via userHelpers when available (e.g. @memorydb scenarios)
+  if (this.userHelpers?.assertUserStatus) {
+    // Act
+    await this.userHelpers.assertUserStatus(this, expectedStatus);
+    // Assert: handled by assertUserStatus
+    return;
+  }
   const poolId = (this as any)._cognitoPoolId as string;
   const username = (this as any)._cognitoUsername as string;
+  // If used as Given precondition — set up the user state
+  if (this.lastCallResult.output === null && !this.lastCallResult.success) {
+    if (expectedStatus === "RESET_REQUIRED") {
+      const {
+        AdminResetUserPasswordCommand,
+      } = require("@aws-sdk/client-cognito-identity-provider");
+      await cognitoClient(this).send(
+        new AdminResetUserPasswordCommand({ UserPoolId: poolId, Username: username }),
+      );
+    }
+    // FORCE_CHANGE_PASSWORD is the default state — no-op
+    return;
+  }
   const { AdminGetUserCommand } = require("@aws-sdk/client-cognito-identity-provider");
   // Act
   const result = await cognitoClient(this).send(

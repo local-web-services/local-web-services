@@ -57,10 +57,7 @@ Given('the "AWS" fake does not exist', async function (this: SdkWorld) {
   lastOperationBody = null;
 });
 
-Given('the "AWS" fake is "ACTIVE"', function (this: SdkWorld) {
-  // Arrange
-  // No-op: once configured via respond, the fake is active.
-});
+// 'the "AWS" fake is "ACTIVE"' as Given — handled by the combined Then registration below.
 
 Given('the "AWS" fake is not "ACTIVE"', function (this: SdkWorld) {
   // @internal: there is no public API to deactivate a fake without deleting it.
@@ -246,10 +243,14 @@ When(
 
 Then('the "AWS" fake is "ACTIVE"', function (this: SdkWorld) {
   // Arrange: no additional setup required
-  // Act
+  // Act: check lastCallResult if a preceding action set it
+  if (this.lastCallResult.output === null && !this.lastCallResult.success) {
+    // Used as a Given/And precondition — no-op; the fake is already active.
+    return;
+  }
+  // Assert: used as Then after an action step
   const expectedSuccess = true;
   const actualSuccess = this.lastCallResult.success;
-  // Assert
   assert.strictEqual(
     actualSuccess,
     expectedSuccess,

@@ -2,8 +2,7 @@
 
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
-import type { SnapshotHelpers } from "../support/world";
+import type { SdkWorld, SnapshotHelpers, DatabaseStepHelpers } from "../support/world";
 
 const DOCDB_CLUSTER_ID = "test-docdb-cluster-1";
 const DOCDB_INSTANCE_ID = "test-docdb-instance-1";
@@ -61,6 +60,78 @@ Before({ tags: "@docdb or @docdbevents" }, function (this: SdkWorld) {
         // cluster may already exist
       }
     },
+    assertClusterStatus: async (world: SdkWorld, expectedStatus: string) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected DocDB cluster operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      const { DescribeDBClustersCommand } = require("@aws-sdk/client-docdb");
+      const result = await docdbClient(world).send(
+        new DescribeDBClustersCommand({ DBClusterIdentifier: DOCDB_CLUSTER_ID }),
+      );
+      const clusters: Array<{ Status?: string }> = result.DBClusters ?? [];
+      const expectedStatusLower = expectedStatus.toLowerCase();
+      const actualStatus = clusters[0]?.Status ?? "";
+      assert.strictEqual(
+        actualStatus,
+        expectedStatusLower,
+        `Expected cluster status "${expectedStatusLower}" but got "${actualStatus}"; expected_status=${expectedStatusLower} actual_status=${actualStatus}`,
+      );
+    },
+    createNamedCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateDBClusterCommand } = require("@aws-sdk/client-docdb");
+      // Act
+      try {
+        const result = await docdbClient(world).send(
+          new CreateDBClusterCommand({
+            DBClusterIdentifier: DOCDB_CLUSTER_ID,
+            Engine: DOCDB_ENGINE,
+            MasterUsername: "admin",
+            MasterUserPassword: "pass1234",
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    stopCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { StopDBClusterCommand } = require("@aws-sdk/client-docdb");
+      // Act
+      try {
+        const result = await docdbClient(world).send(
+          new StopDBClusterCommand({ DBClusterIdentifier: DOCDB_CLUSTER_ID }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    startCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { StartDBClusterCommand } = require("@aws-sdk/client-docdb");
+      // Act
+      try {
+        const result = await docdbClient(world).send(
+          new StartDBClusterCommand({ DBClusterIdentifier: DOCDB_CLUSTER_ID }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
   };
 });
 
@@ -72,17 +143,242 @@ Before({ tags: "@docdb" }, function (this: SdkWorld) {
     setupSnapshotExists: async (world: SdkWorld) => {
       // Arrange
       assert.ok(world.session, "Expected session to be initialized");
-      await docdbCreateCluster(this);
+      await docdbCreateCluster(world);
       // Act
-      await docdbCreateSnapshot(this);
+      await docdbCreateSnapshot(world);
       // Assert: snapshot created
     },
     setupSnapshotNotExists: async (world: SdkWorld) => {
       // no-op: fresh state has no snapshots
       void world;
     },
+    assertSnapshotInStateLinkedToCluster: async (world: SdkWorld, _expectedState: string) => {
+      // Arrange: no additional setup required
+      // Act: action already performed in the When step
+      // Assert
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected CreateDBClusterSnapshot to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      const { DescribeDBClusterSnapshotsCommand } = require("@aws-sdk/client-docdb");
+      const actualResult = await docdbClient(world).send(
+        new DescribeDBClusterSnapshotsCommand({
+          DBClusterSnapshotIdentifier: DOCDB_SNAPSHOT_ID,
+        }),
+      );
+      const actualSnapshots: Array<{ Status?: string }> = actualResult.DBClusterSnapshots ?? [];
+      const expectedStatus = "creating";
+      const actualStatus = actualSnapshots[0]?.Status ?? "";
+      assert.strictEqual(
+        actualStatus,
+        expectedStatus,
+        `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+      );
+    },
+    assertSnapshotInState: async (world: SdkWorld, _expectedState: string) => {
+      // Arrange: no additional setup required
+      // Act: action already performed in the When step
+      // Assert
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected DeleteDBClusterSnapshot to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      const { DescribeDBClusterSnapshotsCommand } = require("@aws-sdk/client-docdb");
+      const actualResult = await docdbClient(world).send(
+        new DescribeDBClusterSnapshotsCommand({
+          DBClusterSnapshotIdentifier: DOCDB_SNAPSHOT_ID,
+        }),
+      );
+      const actualSnapshots: Array<{ Status?: string }> = actualResult.DBClusterSnapshots ?? [];
+      const expectedStatus = "deleting";
+      const actualStatus = actualSnapshots[0]?.Status ?? "";
+      assert.strictEqual(
+        actualStatus,
+        expectedStatus,
+        `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+      );
+    },
+    assertRestoredClusterInState: async (world: SdkWorld, _expectedState: string) => {
+      // Arrange: no additional setup required
+      // Act: action already performed in the When step
+      // Assert
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected RestoreDBClusterFromSnapshot to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+    },
+    restoreClusterFromSnapshot: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { RestoreDBClusterFromSnapshotCommand } = require("@aws-sdk/client-docdb");
+      // Act
+      try {
+        const result = await docdbClient(world).send(
+          new RestoreDBClusterFromSnapshotCommand({
+            DBClusterIdentifier: DOCDB_CLUSTER_ID + "-restored",
+            SnapshotIdentifier: DOCDB_SNAPSHOT_ID,
+            Engine: DOCDB_ENGINE,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
   };
   this.snapshotHelpers = snapshotHelpersImpl;
+
+  const databaseHelpersImpl: DatabaseStepHelpers = {
+    createCluster: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateDBClusterCommand } = require("@aws-sdk/client-docdb");
+      try {
+        const result = await docdbClient(world).send(
+          new CreateDBClusterCommand({
+            DBClusterIdentifier: DOCDB_CLUSTER_ID,
+            Engine: DOCDB_ENGINE,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    deleteCluster: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DeleteDBClusterCommand } = require("@aws-sdk/client-docdb");
+      try {
+        const result = await docdbClient(world).send(
+          new DeleteDBClusterCommand({ DBClusterIdentifier: DOCDB_CLUSTER_ID }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    modifyCluster: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { ModifyDBClusterCommand } = require("@aws-sdk/client-docdb");
+      try {
+        const result = await docdbClient(world).send(
+          new ModifyDBClusterCommand({ DBClusterIdentifier: DOCDB_CLUSTER_ID }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    createInstance: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateDBInstanceCommand } = require("@aws-sdk/client-docdb");
+      try {
+        const result = await docdbClient(world).send(
+          new CreateDBInstanceCommand({
+            DBInstanceIdentifier: DOCDB_INSTANCE_ID,
+            DBClusterIdentifier: DOCDB_CLUSTER_ID,
+            DBInstanceClass: DOCDB_INSTANCE_CLASS,
+            Engine: DOCDB_ENGINE,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    deleteInstance: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DeleteDBInstanceCommand } = require("@aws-sdk/client-docdb");
+      try {
+        const result = await docdbClient(world).send(
+          new DeleteDBInstanceCommand({ DBInstanceIdentifier: DOCDB_INSTANCE_ID }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    modifyInstance: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { ModifyDBInstanceCommand } = require("@aws-sdk/client-docdb");
+      try {
+        const result = await docdbClient(world).send(
+          new ModifyDBInstanceCommand({ DBInstanceIdentifier: DOCDB_INSTANCE_ID }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    createSnapshot: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateDBClusterSnapshotCommand } = require("@aws-sdk/client-docdb");
+      try {
+        const result = await docdbClient(world).send(
+          new CreateDBClusterSnapshotCommand({
+            DBClusterSnapshotIdentifier: DOCDB_SNAPSHOT_ID,
+            DBClusterIdentifier: DOCDB_CLUSTER_ID,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    deleteSnapshot: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DeleteDBClusterSnapshotCommand } = require("@aws-sdk/client-docdb");
+      try {
+        const result = await docdbClient(world).send(
+          new DeleteDBClusterSnapshotCommand({ DBClusterSnapshotIdentifier: DOCDB_SNAPSHOT_ID }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    setupInstanceExists: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      await docdbCreateCluster(world);
+      await docdbCreateInstance(world);
+    },
+    setupInstanceNotExists: async (world: SdkWorld) => {
+      // no-op: fresh state after session reset has no instances.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    assertInstanceInState: async (world: SdkWorld, expectedState: string) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected DocDB instance operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      const { DescribeDBInstancesCommand } = require("@aws-sdk/client-docdb");
+      const actualResult = await docdbClient(world).send(
+        new DescribeDBInstancesCommand({ DBInstanceIdentifier: DOCDB_INSTANCE_ID }),
+      );
+      const actualInstances: Array<{ DBInstanceStatus?: string }> = actualResult.DBInstances ?? [];
+      const expectedStatus = expectedState.toLowerCase();
+      const actualStatus = actualInstances[0]?.DBInstanceStatus ?? "";
+      assert.strictEqual(
+        actualStatus,
+        expectedStatus,
+        `Expected instance status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+      );
+    },
+  };
+  this.databaseHelpers = databaseHelpersImpl;
 });
 
 // "the system is initialized" is registered in cross_service_common.ts.
@@ -93,10 +389,7 @@ Before({ tags: "@docdb" }, function (this: SdkWorld) {
 // "the cluster exists", "the cluster does not exist", "the cluster is {string}",
 // "the cluster is not {string}" are registered in cluster_common.ts.
 
-Given("the cluster has no non-deleted instances", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh cluster has no instances.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the cluster has no non-deleted instances" is registered in cluster_common.ts.
 
 Given("the cluster has non-deleted instances", async function (this: SdkWorld) {
   // Arrange
@@ -109,24 +402,10 @@ Given("the cluster has non-deleted instances", async function (this: SdkWorld) {
 
 // ── Given: instance state setup ───────────────────────────────────────────────
 
-Given("the instance does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no instances.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the instance does not exist" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+// "the instance exists" is registered in cross_service_common.ts (dispatches via databaseHelpers).
 
-Given("the instance exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  await docdbCreateCluster(this);
-  // Act
-  await docdbCreateInstance(this);
-  // Assert: instance created
-});
-
-Given("the instance slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no instances.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the instance slot is available" is registered in cluster_common.ts.
 
 Given("the instance slot is not available", async function (this: SdkWorld) {
   // Arrange
@@ -196,10 +475,7 @@ Given("the instance is not already the primary", async function (this: SdkWorld)
 
 // "the snapshot exists" is registered in cross_service_common.ts (dispatches via helpers).
 
-Given("the snapshot slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no snapshots.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the snapshot slot is available" is registered in cluster_common.ts.
 
 Given("the snapshot slot is not available", async function (this: SdkWorld) {
   // Arrange
@@ -217,10 +493,7 @@ Given(/^the snapshot is not "([^"]*)"$/, async function (this: SdkWorld, _status
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("the target cluster slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no clusters at restore target.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the target cluster slot is available" is registered in cluster_common.ts.
 
 Given("the target cluster slot is not available", async function (this: SdkWorld) {
   // Arrange
@@ -238,164 +511,51 @@ Given("cid not in cluster_status", async function (this: SdkWorld) {
 
 // ── When: public API actions ───────────────────────────────────────────────────
 
-When("a database cluster is created", async function (this: SdkWorld) {
+// "a database cluster is created" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+// "a database cluster is deleted" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+// "a database cluster configuration is modified" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+// "a database instance is created in an available cluster" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+// "a database instance is deleted" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+// "a database instance configuration is modified" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+// "a database cluster snapshot is created" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+// "a database cluster snapshot is deleted" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+
+// "a cluster is restored from a snapshot" is registered in cross_service_common.ts
+// (dispatches via snapshotHelpers.restoreClusterFromSnapshot registered in the Before hook above).
+
+When("a DocumentDB cluster is created", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { CreateDBClusterCommand } = require("@aws-sdk/client-docdb");
+  assert.ok(
+    this.clusterHelpers?.createNamedCluster,
+    "Expected clusterHelpers.createNamedCluster to be registered",
+  );
   // Act
-  try {
-    const result = await docdbClient(this).send(
-      new CreateDBClusterCommand({
-        DBClusterIdentifier: DOCDB_CLUSTER_ID,
-        Engine: DOCDB_ENGINE,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
+  await this.clusterHelpers.createNamedCluster(this);
   // Assert: captured in lastCallResult
 });
 
-When("a database cluster is deleted", async function (this: SdkWorld) {
+When("the DocumentDB cluster is stopped", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteDBClusterCommand } = require("@aws-sdk/client-docdb");
+  assert.ok(
+    this.clusterHelpers?.stopCluster,
+    "Expected clusterHelpers.stopCluster to be registered",
+  );
   // Act
-  try {
-    const result = await docdbClient(this).send(
-      new DeleteDBClusterCommand({ DBClusterIdentifier: DOCDB_CLUSTER_ID }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
+  await this.clusterHelpers.stopCluster(this);
   // Assert: captured in lastCallResult
 });
 
-When("a database cluster configuration is modified", async function (this: SdkWorld) {
+When("the DocumentDB cluster is started", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { ModifyDBClusterCommand } = require("@aws-sdk/client-docdb");
+  assert.ok(
+    this.clusterHelpers?.startCluster,
+    "Expected clusterHelpers.startCluster to be registered",
+  );
   // Act
-  try {
-    const result = await docdbClient(this).send(
-      new ModifyDBClusterCommand({ DBClusterIdentifier: DOCDB_CLUSTER_ID }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("a database instance is created in an available cluster", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateDBInstanceCommand } = require("@aws-sdk/client-docdb");
-  // Act
-  try {
-    const result = await docdbClient(this).send(
-      new CreateDBInstanceCommand({
-        DBInstanceIdentifier: DOCDB_INSTANCE_ID,
-        DBClusterIdentifier: DOCDB_CLUSTER_ID,
-        DBInstanceClass: DOCDB_INSTANCE_CLASS,
-        Engine: DOCDB_ENGINE,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("a database instance is deleted", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteDBInstanceCommand } = require("@aws-sdk/client-docdb");
-  // Act
-  try {
-    const result = await docdbClient(this).send(
-      new DeleteDBInstanceCommand({ DBInstanceIdentifier: DOCDB_INSTANCE_ID }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("a database instance configuration is modified", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ModifyDBInstanceCommand } = require("@aws-sdk/client-docdb");
-  // Act
-  try {
-    const result = await docdbClient(this).send(
-      new ModifyDBInstanceCommand({ DBInstanceIdentifier: DOCDB_INSTANCE_ID }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("a database cluster snapshot is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateDBClusterSnapshotCommand } = require("@aws-sdk/client-docdb");
-  // Act
-  try {
-    const result = await docdbClient(this).send(
-      new CreateDBClusterSnapshotCommand({
-        DBClusterSnapshotIdentifier: DOCDB_SNAPSHOT_ID,
-        DBClusterIdentifier: DOCDB_CLUSTER_ID,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("a database cluster snapshot is deleted", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteDBClusterSnapshotCommand } = require("@aws-sdk/client-docdb");
-  // Act
-  try {
-    const result = await docdbClient(this).send(
-      new DeleteDBClusterSnapshotCommand({
-        DBClusterSnapshotIdentifier: DOCDB_SNAPSHOT_ID,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("a cluster is restored from a snapshot", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { RestoreDBClusterFromSnapshotCommand } = require("@aws-sdk/client-docdb");
-  // Act
-  try {
-    const result = await docdbClient(this).send(
-      new RestoreDBClusterFromSnapshotCommand({
-        DBClusterIdentifier: DOCDB_CLUSTER_ID + "-restored",
-        SnapshotIdentifier: DOCDB_SNAPSHOT_ID,
-        Engine: DOCDB_ENGINE,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
+  await this.clusterHelpers.startCluster(this);
   // Assert: captured in lastCallResult
 });
 
@@ -516,228 +676,17 @@ When(
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then('the cluster is in "CREATING" state', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected CreateDBCluster to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  const { DescribeDBClustersCommand } = require("@aws-sdk/client-docdb");
-  const actualResult = await docdbClient(this).send(
-    new DescribeDBClustersCommand({ DBClusterIdentifier: DOCDB_CLUSTER_ID }),
-  );
-  const actualClusters: Array<{ Status?: string }> = actualResult.DBClusters ?? [];
-  const expectedStatus = "creating";
-  const actualStatus = actualClusters[0]?.Status ?? "";
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
+// "the cluster is in {string} state" is registered in cluster_common.ts (dispatches via clusterHelpers.assertClusterStatus).
 
-Then('the cluster is in "DELETING" state', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected DeleteDBCluster to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  const { DescribeDBClustersCommand } = require("@aws-sdk/client-docdb");
-  const actualResult = await docdbClient(this).send(
-    new DescribeDBClustersCommand({ DBClusterIdentifier: DOCDB_CLUSTER_ID }),
-  );
-  const actualClusters: Array<{ Status?: string }> = actualResult.DBClusters ?? [];
-  const expectedStatus = "deleting";
-  const actualStatus = actualClusters[0]?.Status ?? "";
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
+// "the instance is in {string} state and associated with the cluster" is registered in cross_service_common.ts (dispatches via databaseHelpers).
+// "the instance is in {string} state" is registered in cross_service_common.ts (dispatches via databaseHelpers).
 
-Then('the cluster is in "MODIFYING" state', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected ModifyDBCluster to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  const { DescribeDBClustersCommand } = require("@aws-sdk/client-docdb");
-  const actualResult = await docdbClient(this).send(
-    new DescribeDBClustersCommand({ DBClusterIdentifier: DOCDB_CLUSTER_ID }),
-  );
-  const actualClusters: Array<{ Status?: string }> = actualResult.DBClusters ?? [];
-  const expectedStatus = "modifying";
-  const actualStatus = actualClusters[0]?.Status ?? "";
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
-
-Then(
-  'the instance is in "CREATING" state and associated with the cluster',
-  async function (this: SdkWorld) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected CreateDBInstance to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-    const { DescribeDBInstancesCommand } = require("@aws-sdk/client-docdb");
-    const actualResult = await docdbClient(this).send(
-      new DescribeDBInstancesCommand({ DBInstanceIdentifier: DOCDB_INSTANCE_ID }),
-    );
-    const actualInstances: Array<{ DBInstanceStatus?: string }> = actualResult.DBInstances ?? [];
-    const expectedStatus = "creating";
-    const actualStatus = actualInstances[0]?.DBInstanceStatus ?? "";
-    assert.strictEqual(
-      actualStatus,
-      expectedStatus,
-      `Expected instance status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-    );
-  },
-);
-
-Then('the instance is in "DELETING" state', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected DeleteDBInstance to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  const { DescribeDBInstancesCommand } = require("@aws-sdk/client-docdb");
-  const actualResult = await docdbClient(this).send(
-    new DescribeDBInstancesCommand({ DBInstanceIdentifier: DOCDB_INSTANCE_ID }),
-  );
-  const actualInstances: Array<{ DBInstanceStatus?: string }> = actualResult.DBInstances ?? [];
-  const expectedStatus = "deleting";
-  const actualStatus = actualInstances[0]?.DBInstanceStatus ?? "";
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected instance status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
-
-Then('the instance is in "MODIFYING" state', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected ModifyDBInstance to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  const { DescribeDBInstancesCommand } = require("@aws-sdk/client-docdb");
-  const actualResult = await docdbClient(this).send(
-    new DescribeDBInstancesCommand({ DBInstanceIdentifier: DOCDB_INSTANCE_ID }),
-  );
-  const actualInstances: Array<{ DBInstanceStatus?: string }> = actualResult.DBInstances ?? [];
-  const expectedStatus = "modifying";
-  const actualStatus = actualInstances[0]?.DBInstanceStatus ?? "";
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected instance status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
-
-Then(
-  'the snapshot is in "CREATING" state and linked to the cluster',
-  async function (this: SdkWorld) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected CreateDBClusterSnapshot to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-    const { DescribeDBClusterSnapshotsCommand } = require("@aws-sdk/client-docdb");
-    const actualResult = await docdbClient(this).send(
-      new DescribeDBClusterSnapshotsCommand({
-        DBClusterSnapshotIdentifier: DOCDB_SNAPSHOT_ID,
-      }),
-    );
-    const actualSnapshots: Array<{ Status?: string }> = actualResult.DBClusterSnapshots ?? [];
-    const expectedStatus = "creating";
-    const actualStatus = actualSnapshots[0]?.Status ?? "";
-    assert.strictEqual(
-      actualStatus,
-      expectedStatus,
-      `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-    );
-  },
-);
-
-Then('the snapshot is in "DELETING" state', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected DeleteDBClusterSnapshot to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  const { DescribeDBClusterSnapshotsCommand } = require("@aws-sdk/client-docdb");
-  const actualResult = await docdbClient(this).send(
-    new DescribeDBClusterSnapshotsCommand({
-      DBClusterSnapshotIdentifier: DOCDB_SNAPSHOT_ID,
-    }),
-  );
-  const actualSnapshots: Array<{ Status?: string }> = actualResult.DBClusterSnapshots ?? [];
-  const expectedStatus = "deleting";
-  const actualStatus = actualSnapshots[0]?.Status ?? "";
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
-
-Then('the restored cluster is in "RESTORING" state', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected RestoreDBClusterFromSnapshot to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+// 'the snapshot is in "CREATING" state and linked to the cluster' is registered in cross_service_common.ts
+// (dispatches via snapshotHelpers.assertSnapshotInStateLinkedToCluster).
+// 'the snapshot is in "DELETING" state' is registered in cross_service_common.ts
+// (dispatches via snapshotHelpers.assertSnapshotInState).
+// 'the restored cluster is in "RESTORING" state' is registered in cross_service_common.ts
+// (dispatches via snapshotHelpers.assertRestoredClusterInState).
 
 // ── Then: @internal state assertions (no-ops) ─────────────────────────────────
 

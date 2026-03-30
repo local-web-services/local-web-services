@@ -160,6 +160,21 @@ Before({ tags: "@apigatewaydynamodb" }, function (this: SdkWorld) {
         // May already exist
       }
     },
+    deleteTable: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "No session running");
+      const { DeleteTableCommand } = require("@aws-sdk/client-dynamodb");
+      // Act
+      try {
+        const result = await apigwDdbDynamoClient(world).send(
+          new DeleteTableCommand({ TableName: APIGW_DYNAMODB_TABLE }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
   };
   this.tableHelpers = tableHelpersImpl;
 });
@@ -216,17 +231,11 @@ Given('the "API" has a DynamoDB integration configured', async function (this: S
 
 // "the table already exists" is registered in cross_service_common.ts.
 
-Given('the table exists and is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  // Act
-  await apigwDdbCreateTable(this);
-  // Assert: table is immediately ACTIVE in lws
-});
+// 'the table exists and is "ACTIVE"' is registered via the generic
+// 'the table exists and is {string}' in cross_service_common.ts.
 
-Given('the table does not exist or is not "ACTIVE"', async function (this: SdkWorld) {
-  // No-op: cannot simulate non-ACTIVE DynamoDB table in lws; @internal excluded.
-});
+// 'the table does not exist or is not "ACTIVE"' is registered via the generic
+// 'the table does not exist or is not {string}' in cross_service_common.ts.
 
 // "the table exists" is registered in cross_service_common.ts.
 
@@ -238,9 +247,9 @@ Given('the target table is not "ACTIVE"', async function (this: SdkWorld) {
   // No-op: cannot simulate non-ACTIVE target table in lws; @internal excluded.
 });
 
-Given('the target table is "DELETING"', async function (this: SdkWorld) {
-  // No-op: cannot simulate DELETING table state in lws; @internal excluded.
-});
+// 'the target table is "DELETING"' is registered via the generic
+// 'the target table is {string}' (dispatches via tableHelpers.handleTargetTableActive)
+// and the {string} form is registered in cross_service_common.ts.
 
 Given('the target table is not "DELETING"', async function (this: SdkWorld) {
   // No-op: tables are not DELETING by default.
@@ -261,18 +270,7 @@ Given('the table is already "DELETING"', async function (this: SdkWorld) {
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When('an "API" Gateway "REST" "API" is created', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  // Act
-  try {
-    const apiId = await apigwDdbCreateApi(this);
-    this.lastCallResult = { success: true, output: { id: apiId } };
-  } catch (err) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "an \"API\" Gateway \"REST\" \"API\" is created" is registered in apigateway.ts (dispatches via apiHelpers.createApiWithRoot).
 
 // "a DynamoDB table is created" is registered in cross_service_common.ts.
 
@@ -347,21 +345,7 @@ When(
   },
 );
 
-When("a table deletion is initiated", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { DeleteTableCommand } = require("@aws-sdk/client-dynamodb");
-  // Act
-  try {
-    const result = await apigwDdbDynamoClient(this).send(
-      new DeleteTableCommand({ TableName: APIGW_DYNAMODB_TABLE }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a table deletion is initiated" is registered in cross_service_common.ts (dispatches via tableHelpers.deleteTable).
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 

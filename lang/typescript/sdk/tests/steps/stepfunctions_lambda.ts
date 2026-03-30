@@ -337,11 +337,8 @@ Then(
   },
 );
 
-Then('the execution is "SUCCEEDED"', async function (this: SdkWorld) {
-  // Cannot observe internal execution Lambda task success in lws.
-  // No-op: treat as invariant satisfied.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the execution is SUCCEEDED" — handled by the canonical
+// Then("the execution is {string}", ...) in stepfunctions_sqs.ts.
 
 Then('the execution is "FAILED" with a connection error', async function (this: SdkWorld) {
   // Cannot observe internal execution Lambda task failure in lws.

@@ -61,6 +61,69 @@ async function lambdaS3TablesCreateTable(world: SdkWorld): Promise<void> {
 // ── Before hook: register functionHelpers for lambdas3tables scenarios ─────────────
 
 Before({ tags: "@lambdas3tables" }, function (this: SdkWorld) {
+  this.tableHelpers = {
+    handleTableActive: async (world: SdkWorld) => {
+      // Arrange: ensure bucket and table exist in ACTIVE state
+      assert.ok(world.session, "Expected session to be initialized");
+      try {
+        await lambdaS3TablesCreateBucket(world);
+      } catch {
+        // bucket may already exist
+      }
+      try {
+        await lambdaS3TablesCreateTable(world);
+      } catch {
+        // table may already exist
+      }
+    },
+    handleTableStatus: async (world: SdkWorld, status: string) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      if (status === "DELETING") {
+        const { DeleteTableCommand } = require("@aws-sdk/client-s3tables");
+        try {
+          await lambdaS3TablesCreateBucket(world);
+        } catch {
+          // bucket may already exist
+        }
+        try {
+          await lambdaS3TablesCreateTable(world);
+        } catch {
+          // table may already exist
+        }
+        // Act: delete the table to put it in DELETING state
+        await lambdaS3TablesS3TablesClient(world).send(
+          new DeleteTableCommand({
+            TableBucketARN: LAMBDA_S3TABLES_TEST_BUCKET,
+            Namespace: LAMBDA_S3TABLES_TEST_NAMESPACE,
+            Name: LAMBDA_S3TABLES_TEST_TABLE,
+          }),
+        );
+        // Assert: table is now DELETING
+        return;
+      }
+      // For other states: no-op
+    },
+    deleteTable: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DeleteTableCommand } = require("@aws-sdk/client-s3tables");
+      // Act
+      try {
+        const result = await lambdaS3TablesS3TablesClient(world).send(
+          new DeleteTableCommand({
+            TableBucketARN: LAMBDA_S3TABLES_TEST_BUCKET,
+            Namespace: LAMBDA_S3TABLES_TEST_NAMESPACE,
+            Name: LAMBDA_S3TABLES_TEST_TABLE,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+  };
   this.functionHelpers = {
     functionName: LAMBDA_S3TABLES_TEST_FUNC,
     deployFunction: async (world: SdkWorld) => {
@@ -96,15 +159,8 @@ Before({ tags: "@lambdas3tables" }, function (this: SdkWorld) {
 // "an invocation is {string}" — registered in capacity.ts (dispatches via functionHelpers)
 // "no invocation is {string}" — registered in capacity.ts
 
-Given("a record slot is available", async function (this: SdkWorld) {
-  // No-op: always room for records in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("no record slot is available", async function (this: SdkWorld) {
-  // @internal: Cannot exhaust record slot limit in lws via public APIs.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "a record slot is available" and "no record slot is available"
+// — registered in cross_service_common.ts.
 
 // ── Given: S3Tables bucket/table state unique to cross-service scenarios ───────
 
@@ -147,30 +203,8 @@ Given('no table is "ACTIVE"', async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given('the table is "DELETING"', async function (this: SdkWorld) {
-  // Arrange: create bucket, create table, then delete table
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteTableCommand } = require("@aws-sdk/client-s3tables");
-  try {
-    await lambdaS3TablesCreateBucket(this);
-  } catch {
-    // bucket may already exist
-  }
-  try {
-    await lambdaS3TablesCreateTable(this);
-  } catch {
-    // table may already exist
-  }
-  // Act: delete the table to put it in DELETING state
-  await lambdaS3TablesS3TablesClient(this).send(
-    new DeleteTableCommand({
-      TableBucketARN: LAMBDA_S3TABLES_TEST_BUCKET,
-      Namespace: LAMBDA_S3TABLES_TEST_NAMESPACE,
-      Name: LAMBDA_S3TABLES_TEST_TABLE,
-    }),
-  );
-  // Assert: table is now DELETING
-});
+// 'the table is "DELETING"' is registered via the generic 'the table is {string}'
+// in cross_service_common.ts, dispatched via tableHelpers.handleTableStatus above.
 
 Given('the table is not "DELETING"', async function (this: SdkWorld) {
   // Arrange: create the bucket and table (ACTIVE, not DELETING)
@@ -253,25 +287,8 @@ When("a table is created in the table bucket", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When("a table deletion is initiated", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { DeleteTableCommand } = require("@aws-sdk/client-s3tables");
-  // Act
-  try {
-    const result = await lambdaS3TablesS3TablesClient(this).send(
-      new DeleteTableCommand({
-        TableBucketARN: LAMBDA_S3TABLES_TEST_BUCKET,
-        Namespace: LAMBDA_S3TABLES_TEST_NAMESPACE,
-        Name: LAMBDA_S3TABLES_TEST_TABLE,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a table deletion is initiated" is registered in cross_service_common.ts
+// (dispatches via tableHelpers.deleteTable registered in the Before hook above).
 
 When(
   "the Lambda function fails to write because the table is being deleted",

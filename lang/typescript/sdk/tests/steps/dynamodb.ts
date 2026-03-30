@@ -1,8 +1,8 @@
 /** Step definitions: dynamodb service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, TableStepHelpers } from "../support/world";
 
 const DYNAMODB_TEST_TABLE = "e2e-dynamodb-test-table-1";
 const DYNAMODB_TEST_PK = "id";
@@ -55,6 +55,48 @@ async function deleteItem(world: SdkWorld, tableName: string): Promise<void> {
     // item may not exist; desired state is absence
   }
 }
+
+// ── Before hook: register tableHelpers for @dynamodb scenarios ───────────────
+
+Before({ tags: "@dynamodb" }, function (this: SdkWorld) {
+  const tableHelpersImpl: TableStepHelpers = {
+    handleTableActive: async (_world: SdkWorld) => {
+      // No-op: DynamoDB table active state is managed by the existing Given steps.
+    },
+    deleteTableDirect: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DeleteTableCommand } = require("@aws-sdk/client-dynamodb");
+      // Act
+      try {
+        const result = await dynamodbClient(world).send(
+          new DeleteTableCommand({ TableName: DYNAMODB_TEST_TABLE }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    assertTableCreating: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DescribeTableCommand } = require("@aws-sdk/client-dynamodb");
+      // Act
+      const result = await dynamodbClient(world).send(
+        new DescribeTableCommand({ TableName: DYNAMODB_TEST_TABLE }),
+      );
+      // Assert
+      const expectedStatuses = ["CREATING", "ACTIVE"];
+      const actualStatus: string = result.Table?.TableStatus ?? "";
+      assert.ok(
+        expectedStatuses.includes(actualStatus),
+        `Expected table status to be CREATING or ACTIVE but got "${actualStatus}"; expected_statuses=${JSON.stringify(expectedStatuses)} actual_status="${actualStatus}"`,
+      );
+    },
+  };
+  this.tableHelpers = tableHelpersImpl;
+});
 
 // ── Background ─────────────────────────────────────────────────────────────────
 
@@ -293,21 +335,8 @@ When("a table finishes creating and becomes active", async function (this: SdkWo
   // Assert: captured in lastCallResult
 });
 
-When("a table is deleted", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteTableCommand } = require("@aws-sdk/client-dynamodb");
-  // Act
-  try {
-    const result = await dynamodbClient(this).send(
-      new DeleteTableCommand({ TableName: DYNAMODB_TEST_TABLE }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a table is deleted" is registered in cross_service_common.ts
+// (dispatches via tableHelpers.deleteTableDirect registered in the Before hook above).
 
 When("a table deletion completes", async function (this: SdkWorld) {
   // No-op: finish_delete_table scenarios are tagged @internal and excluded.
@@ -672,22 +701,8 @@ When("throttling is applied to writes", async function (this: SdkWorld) {
 
 // "the operation is rejected" is registered in sqs.ts — not re-registered here.
 
-Then('the table is in "CREATING" state', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeTableCommand } = require("@aws-sdk/client-dynamodb");
-  // Act
-  const result = await dynamodbClient(this).send(
-    new DescribeTableCommand({ TableName: DYNAMODB_TEST_TABLE }),
-  );
-  // Assert
-  const expectedStatuses = ["CREATING", "ACTIVE"];
-  const actualStatus: string = result.Table?.TableStatus ?? "";
-  assert.ok(
-    expectedStatuses.includes(actualStatus),
-    `Expected table status to be CREATING or ACTIVE but got "${actualStatus}"; expected_statuses=${JSON.stringify(expectedStatuses)} actual_status="${actualStatus}"`,
-  );
-});
+// 'the table is in "CREATING" state' is registered in cross_service_common.ts
+// (dispatches via tableHelpers.assertTableCreating registered in the Before hook above).
 
 Then('the table is "ACTIVE" and ready for reads and writes', async function (this: SdkWorld) {
   // Arrange
@@ -772,18 +787,8 @@ Then("the table metadata is returned", async function (this: SdkWorld) {
   );
 });
 
-Then("all tables are listed", async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action performed in When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected all tables to be listed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+// "all tables are listed" as Then — use the When step above; conflicts with the
+// When registration at line 339 so the duplicate Then is removed.
 
 Then("the list of tables is returned", async function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -934,18 +939,8 @@ Then(
   },
 );
 
-Then('the transaction is "PENDING"', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action performed in When step
-  // Assert: transact_write_items returns synchronously in lws; accept success
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected transaction to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+// 'the transaction is "PENDING"' as Then — conflicts with parameterized
+// Given('the transaction is {string}', ...) above; removed literal form.
 
 Then('the transaction is "COMMITTED"', async function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -976,13 +971,8 @@ Then("the transaction slot is free", async function (this: SdkWorld) {
   // No-op: @internal — cannot observe transaction slot state via public API.
 });
 
-Then("reads are throttled", async function (this: SdkWorld) {
-  // No-op: @internal — cannot observe throttle state via public API.
-});
-
-Then("writes are throttled", async function (this: SdkWorld) {
-  // No-op: @internal — cannot observe throttle state via public API.
-});
+// "reads are throttled" and "writes are throttled" as Then — conflicts with Given
+// registrations above; Given covers both Given and And usage in feature files.
 
 Then("reads are throttled or unthrottled", async function (this: SdkWorld) {
   // No-op: set_throttle_reads uses internal admin API; always passes.

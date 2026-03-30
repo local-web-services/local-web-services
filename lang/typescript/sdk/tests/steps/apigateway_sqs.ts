@@ -146,6 +146,18 @@ Before({ tags: "@apigatewaysqs" }, function (this: SdkWorld) {
       const restApiId = await apigwSqsCreateRestApi(world);
       await apigwSqsFetchRootResourceId(world, restApiId);
     },
+    setupIntegration: async (world: SdkWorld) => {
+      // Arrange: ensure API and queue exist
+      assert.ok(world.session, "Expected session to be initialized");
+      let restApiId = (world as any)._apigwSqsRestApiId as string | undefined;
+      if (!restApiId) {
+        restApiId = await apigwSqsCreateRestApi(world);
+      }
+      const rootResourceId = await apigwSqsFetchRootResourceId(world, restApiId);
+      await apigwSqsCreateQueue(world);
+      // Act: configure integration
+      await apigwSqsConfigureIntegration(world, restApiId, rootResourceId);
+    },
   };
 });
 
@@ -155,34 +167,13 @@ Before({ tags: "@apigatewaysqs" }, function (this: SdkWorld) {
 // "the \"API\" does not exist", "the \"API\" exists", "the \"API\" is \"ACTIVE\"",
 // "the \"API\" is not \"ACTIVE\"" are registered in apigateway.ts (dispatches via apiHelpers).
 
-Given('the "API" has no integration configured', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: APIs have no integration configured by default.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the "API" has no integration configured' and 'the "API" already has an integration configured'
+// — registered in cross_service_common.ts.
 
-Given('the "API" already has an integration configured', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: this state is not reachable without going through
-  // the happy-path configure step first; scenarios using this are @standard @negative.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given('the "API" has an "SQS" integration configured', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  let restApiId = (this as any)._apigwSqsRestApiId as string | undefined;
-  if (!restApiId) {
-    restApiId = await apigwSqsCreateRestApi(this);
-  }
-  const rootResourceId = await apigwSqsFetchRootResourceId(this, restApiId);
-  await apigwSqsCreateQueue(this);
-  // Act
-  await apigwSqsConfigureIntegration(this, restApiId, rootResourceId);
-});
-
-Given('the "API" has no "SQS" integration configured', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: APIs have no SQS integration configured by default.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the "API" has an "SQS" integration configured' is handled by the generic
+// 'the {string} has an {string} integration configured' in apigateway_sns.ts (dispatches via apiHelpers.setupIntegration).
+// 'the "API" has no "SQS" integration configured' is handled by the generic
+// 'the {string} has no {string} integration configured' in apigateway_sns.ts.
 
 // ── Given: queue state ────────────────────────────────────────────────────────
 
@@ -240,18 +231,7 @@ Given('the target queue is not "ACTIVE"', async function (this: SdkWorld) {
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When('a "REST" "API" is created', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  try {
-    const result = await apigwSqsCreateRestApi(this);
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a \"REST\" \"API\" is created" is registered in apigateway.ts (dispatches via apiHelpers.createApi).
 
 // "an {string} queue is created" is registered in cross_service_common.ts.
 

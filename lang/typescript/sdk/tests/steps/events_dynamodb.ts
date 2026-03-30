@@ -44,20 +44,7 @@ When("an EventBridge rule is created targeting a DynamoDB table", async function
   // Assert: captured in lastCallResult
 });
 
-When("a table deletion is initiated", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { DynamoDBClient, DeleteTableCommand } = require("@aws-sdk/client-dynamodb");
-  const client = this.session!.client<typeof DynamoDBClient>("dynamodb");
-  // Act
-  try {
-    const result = await client.send(new DeleteTableCommand({ TableName: DDB_TABLE }));
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a table deletion is initiated" is registered in cross_service_common.ts.
 
 When("an EventBridge rule is disabled", async function (this: SdkWorld) {
   // Arrange

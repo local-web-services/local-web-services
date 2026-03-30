@@ -3,7 +3,7 @@
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
-import type { StateMachineStepHelpers } from "../support/world";
+import type { StateMachineStepHelpers, TagStepHelpers } from "../support/world";
 
 const SFN_TEST_SM = "e2e-sfn-test-sm-1";
 const SFN_TEST_SM_EXPRESS = "e2e-sfn-test-sm-express-1";
@@ -77,6 +77,48 @@ Before({ tags: "@stepfunctions" }, function (this: SdkWorld) {
     },
   };
   this.smHelpers = smHelpersImpl;
+
+  const tagHelpersImpl: TagStepHelpers = {
+    setupTagAssociationActive: async (world: SdkWorld) => {
+      // Arrange / Act / Assert — no-op: tag associations are always active after creation.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    setupTagAssociationNotActive: async (world: SdkWorld) => {
+      // Arrange: remove the tag to simulate an inactive association
+      assert.ok(world.session, "Expected session to be initialized");
+      const { UntagResourceCommand } = require("@aws-sdk/client-sfn");
+      // Act
+      try {
+        await sfnClient(world).send(
+          new UntagResourceCommand({
+            resourceArn: smArn(SFN_TEST_SM),
+            tagKeys: [SFN_TAG_KEY],
+          }),
+        );
+      } catch {
+        // ignore; desired state is tag absent
+      }
+      // Assert: tag is absent
+    },
+    assertListTagsResult: async (world: SdkWorld) => {
+      // Arrange: no additional setup required
+      // Act: action already performed in When step
+      // Assert
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected list_tags_for_resource to succeed but got error: ${world.lastCallResult.error}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      const output = world.lastCallResult.output as Record<string, unknown>;
+      assert.ok(
+        output && "tags" in output,
+        "Expected 'tags' key in list_tags_for_resource response",
+      );
+    },
+  };
+  this.tagHelpers = tagHelpersImpl;
 });
 
 // ── Background ────────────────────────────────────────────────────────────────
@@ -218,31 +260,13 @@ Given("the tag is associated with the state machine", async function (this: SdkW
   // Assert: tag added (no error thrown)
 });
 
-Given("the tag association is active", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: tag associations are always active after creation.
-});
+// "the tag association is active" is registered in cross_service_common.ts (dispatches via tagHelpers).
 
 Given("the tag is not associated with the state machine", async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: a fresh state machine has no tags.
 });
 
-Given("the tag association is not active", async function (this: SdkWorld) {
-  // Arrange: remove the tag to simulate an inactive association
-  assert.ok(this.session, "Expected session to be initialized");
-  const { UntagResourceCommand } = require("@aws-sdk/client-sfn");
-  // Act
-  try {
-    await sfnClient(this).send(
-      new UntagResourceCommand({
-        resourceArn: smArn(SFN_TEST_SM),
-        tagKeys: [SFN_TAG_KEY],
-      }),
-    );
-  } catch {
-    // ignore; desired state is tag absent
-  }
-  // Assert: tag is absent
-});
+// "the tag association is not active" is registered in cross_service_common.ts (dispatches via tagHelpers).
 
 // ── Given: capacity ───────────────────────────────────────────────────────────
 
@@ -254,13 +278,7 @@ Given("the execution slot is available", async function (this: SdkWorld) {
   // Assert: capacity is unlimited
 });
 
-Given("the execution slot is not available", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await this.session!.capacity("stepfunctions").exhaust().apply();
-  // Assert: capacity is exhausted
-});
+// "the execution slot is not available" is registered in capacity.ts.
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
@@ -567,18 +585,7 @@ Then('the state machine is in "DELETING" state', async function (this: SdkWorld)
   );
 });
 
-Then('the state machine is "DELETED"', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected finalization to succeed but got error: ${this.lastCallResult.error}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+// 'the state machine is "DELETED"' (Then) is handled by the generic 'the state machine is {string}' in cross_service_common.ts.
 
 Then("the state machine details are returned", async function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -646,46 +653,10 @@ Then("the list of state machine versions is returned", async function (this: Sdk
   );
 });
 
-Then("the list of tags is returned", async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected list_tags_for_resource to succeed but got error: ${this.lastCallResult.error}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  const output = this.lastCallResult.output as Record<string, unknown>;
-  assert.ok(output && "tags" in output, "Expected 'tags' key in list_tags_for_resource response");
-});
+// "the list of tags is returned" is registered in cross_service_common.ts (dispatches via tagHelpers).
 
-// "the execution is {string}" is registered in stepfunctions_sqs.ts (handles RUNNING and other states).
-
-Then('the execution is "ABORTED"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeExecutionCommand } = require("@aws-sdk/client-sfn");
-  const expectedStopSuccess = true;
-  const actualStopSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualStopSuccess,
-    expectedStopSuccess,
-    `Expected stop_execution to succeed but got error: ${this.lastCallResult.error}; expected_success=${expectedStopSuccess} actual_success=${actualStopSuccess}`,
-  );
-  const executionArn: string = (this as any)._sfnExecArn ?? "";
-  // Act
-  const result = await sfnClient(this).send(new DescribeExecutionCommand({ executionArn }));
-  // Assert
-  const expectedStatus = "ABORTED";
-  const actualStatus = result.status as string;
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected execution status '${expectedStatus}' but got '${actualStatus}'; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
+// "the execution is {string}" is registered in stepfunctions_sqs.ts (handles RUNNING, ABORTED, and other states).
+// "the execution is ABORTED" — handled by the canonical Then("the execution is {string}", ...) in stepfunctions_sqs.ts.
 
 Then('the execution is "SUCCEEDED" or "FAILED"', async function (this: SdkWorld) {
   // Arrange: no additional setup required

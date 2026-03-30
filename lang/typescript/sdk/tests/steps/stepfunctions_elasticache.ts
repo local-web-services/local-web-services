@@ -1,49 +1,18 @@
 /** Step definitions: stepfunctions_elasticache cross-service scenarios — unique steps only */
 
-import { Given, When, Then, Before } from "@cucumber/cucumber";
+import { When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const SFN_ELASTICACHE_TEST_SM = "test-sf-elasticache-sm-1";
 const SFN_ELASTICACHE_TEST_CLUSTER = "test-sf-elasticache-cluster-1";
-const SFN_ELASTICACHE_ROLE_ARN = "arn:aws:iam::000000000000:role/test";
-const SFN_ELASTICACHE_PASS_DEFINITION = JSON.stringify({
-  StartAt: "Pass",
-  States: { Pass: { Type: "Pass", End: true } },
-});
-const SFN_ELASTICACHE_TEST_INPUT = JSON.stringify({ key: "value" });
-const SFN_ELASTICACHE_REGION = "us-east-1";
-const SFN_ELASTICACHE_ACCOUNT_ID = "000000000000";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-function sfnElastiCacheSfnClient(world: SdkWorld) {
-  const { SFNClient } = require("@aws-sdk/client-sfn");
-  return world.session!.client<typeof SFNClient>("stepfunctions");
-}
 
 function sfnElastiCacheClient(world: SdkWorld) {
   const { ElastiCacheClient } = require("@aws-sdk/client-elasticache");
   return world.session!.client<typeof ElastiCacheClient>("elasticache");
-}
-
-function sfnElastiCacheSmArn(name: string): string {
-  return `arn:aws:states:${SFN_ELASTICACHE_REGION}:${SFN_ELASTICACHE_ACCOUNT_ID}:stateMachine:${name}`;
-}
-
-async function sfnElastiCacheCreateSm(world: SdkWorld): Promise<string> {
-  const { CreateStateMachineCommand } = require("@aws-sdk/client-sfn");
-  const result = await sfnElastiCacheSfnClient(world).send(
-    new CreateStateMachineCommand({
-      name: SFN_ELASTICACHE_TEST_SM,
-      definition: SFN_ELASTICACHE_PASS_DEFINITION,
-      roleArn: SFN_ELASTICACHE_ROLE_ARN,
-      type: "STANDARD",
-    }),
-  );
-  return result.stateMachineArn as string;
 }
 
 async function sfnElastiCacheCreateCluster(world: SdkWorld): Promise<void> {
@@ -208,17 +177,10 @@ Then('the cluster is "MODIFYING" and connections may be refused', async function
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then('the cluster is "AVAILABLE" again', async function (this: SdkWorld) {
-  // @internal: Cannot observe cluster returning to AVAILABLE after modification via public API in lws.
-  // No-op: treat as invariant satisfied.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the cluster is \"AVAILABLE\" again" is registered in cluster_common.ts.
 
-Then('the execution is "SUCCEEDED"', async function (this: SdkWorld) {
-  // @internal: Cannot observe internal execution ElastiCache task success in lws.
-  // No-op: treat as invariant satisfied.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the execution is SUCCEEDED" — handled by the canonical
+// Then("the execution is {string}", ...) in stepfunctions_sqs.ts.
 
 Then('the execution is "FAILED" with a connection error', async function (this: SdkWorld) {
   // @internal: Cannot observe internal execution ElastiCache task failure in lws.

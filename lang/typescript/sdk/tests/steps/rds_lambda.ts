@@ -2,7 +2,7 @@
 
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, InstanceStepHelpers } from "../support/world";
 
 const RDS_LAMBDA_TEST_DB_INSTANCE_ID = "test-rds-db-1";
 const RDS_LAMBDA_TEST_FUNC_NAME = "e2e-test-func-1";
@@ -97,20 +97,73 @@ Before({ tags: "@rdslambda" }, function (this: SdkWorld) {
       );
     },
   };
+  const instanceHelpersImpl: InstanceStepHelpers = {
+    setupInstanceNotExists: async (world: SdkWorld) => {
+      // Arrange / Act / Assert — no-op: fresh state has no DB instances.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    setupInstanceExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act
+      await rdsLambdaCreateDBInstance(world);
+      // Assert: DB instance created
+    },
+    setupInstanceAvailable: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create the DB instance (lws instances are AVAILABLE after creation)
+      await rdsLambdaCreateDBInstance(world);
+      // Assert: DB instance created
+    },
+    createDbInstance: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateDBInstanceCommand } = require("@aws-sdk/client-rds");
+      // Act
+      try {
+        const result = await rdsLambdaRdsClient(world).send(
+          new CreateDBInstanceCommand({
+            DBInstanceIdentifier: RDS_LAMBDA_TEST_DB_INSTANCE_ID,
+            DBInstanceClass: RDS_LAMBDA_TEST_DB_CLASS,
+            Engine: RDS_LAMBDA_TEST_DB_ENGINE,
+            MasterUsername: "admin",
+            MasterUserPassword: "password123",
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+  };
+  this.instanceHelpers = instanceHelpersImpl;
 });
 
 // ── Given: DB instance state setup ───────────────────────────────────────────
 
 Given('the "DB" instance does not already exist', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no DB instances.
+  // Arrange
   assert.ok(this.session, "Expected session to be initialized");
+  assert.ok(
+    this.instanceHelpers?.setupInstanceNotExists,
+    "Expected instanceHelpers.setupInstanceNotExists to be registered",
+  );
+  // Act
+  await this.instanceHelpers.setupInstanceNotExists(this);
+  // Assert: captured in lastCallResult or no-op
 });
 
 Given('the "DB" instance already exists', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
+  assert.ok(
+    this.instanceHelpers?.setupInstanceExists,
+    "Expected instanceHelpers.setupInstanceExists to be registered",
+  );
   // Act
-  await rdsLambdaCreateDBInstance(this);
+  await this.instanceHelpers.setupInstanceExists(this);
   // Assert: DB instance created
 });
 
@@ -128,13 +181,9 @@ Given('the "DB" instance does not exist or is not "AVAILABLE"', async function (
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given('the "DB" instance is "AVAILABLE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create the DB instance (lws instances are AVAILABLE after creation)
-  await rdsLambdaCreateDBInstance(this);
-  // Assert: DB instance created
-});
+// 'the "DB" instance is "AVAILABLE"' (Given context) is handled by the combined
+// Given/Then registration below (line ~332) — dispatches via instanceHelpers.setupInstanceAvailable
+// when used as a Given, or instanceHelpers.assertInstanceAvailable when used as a Then.
 
 Given('the "DB" instance is not "AVAILABLE"', async function (this: SdkWorld) {
   // @internal: Cannot force a DB instance into a non-AVAILABLE state via public API.
@@ -165,18 +214,11 @@ Given('the "DB" instance has a Lambda integration configured', async function (t
 
 // ── Given: Lambda function state ──────────────────────────────────────────────
 
-Given('the function exists and is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act: create the Lambda function (lws functions are ACTIVE after creation)
-  await rdsLambdaCreateFunction(this);
-  // Assert: function created
-});
+// 'the function exists and is "ACTIVE"' is registered via the generic
+// 'the function exists and is {string}' in secretsmanager_lambda.ts.
 
-Given('the function does not exist or is not "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no Lambda functions (simulates absent).
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the function does not exist or is not "ACTIVE"' is registered via the generic
+// 'the function does not exist or is not {string}' in secretsmanager_lambda.ts.
 
 Given('the Lambda function is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange / Act / Assert — no-op: Lambda functions in lws are ACTIVE after creation.
@@ -217,22 +259,12 @@ Given('the function is already "DELETED"', async function (this: SdkWorld) {
 When('an "RDS" "DB" instance is created', async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { CreateDBInstanceCommand } = require("@aws-sdk/client-rds");
+  assert.ok(
+    this.instanceHelpers?.createDbInstance,
+    "Expected instanceHelpers.createDbInstance to be registered",
+  );
   // Act
-  try {
-    const result = await rdsLambdaRdsClient(this).send(
-      new CreateDBInstanceCommand({
-        DBInstanceIdentifier: RDS_LAMBDA_TEST_DB_INSTANCE_ID,
-        DBInstanceClass: RDS_LAMBDA_TEST_DB_CLASS,
-        Engine: RDS_LAMBDA_TEST_DB_ENGINE,
-        MasterUsername: "admin",
-        MasterUserPassword: "password123",
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
+  await this.instanceHelpers.createDbInstance(this);
   // Assert: captured in lastCallResult
 });
 
@@ -300,6 +332,24 @@ When(
 );
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
+
+Then('the "DB" instance is "AVAILABLE"', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  // Setup: ensure the DB instance exists (Given context or pre-condition for Then context)
+  if (this.instanceHelpers?.setupInstanceAvailable) {
+    // Act
+    await this.instanceHelpers.setupInstanceAvailable(this);
+  }
+  // Assert: if an explicit assertion helper is registered, use it (Then context)
+  if (this.instanceHelpers?.assertInstanceAvailable) {
+    // Act
+    await this.instanceHelpers.assertInstanceAvailable(this);
+    // Assert: handled by assertInstanceAvailable
+    return;
+  }
+  // Default: assert lastCallResult success (e.g. @rdslambda Given-only context — no-op assertion)
+});
 
 Then(
   'the "DB" instance is "AVAILABLE" with no Lambda integration configured',

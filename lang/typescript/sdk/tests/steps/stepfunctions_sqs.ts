@@ -129,10 +129,23 @@ Then(
 Then("the execution is {string}", async function (this: SdkWorld, expectedState: string) {
   // Arrange
   assert.ok(this.session, "No session running");
-  // Act: check execution status from lastCallResult
+  // Act: check execution status from lastCallResult or via DescribeExecution
   const actualSuccess = this.lastCallResult.success;
   const outputData = this.lastCallResult.output as Record<string, unknown> | null;
-  const actualStatus = (outputData?.status as string) ?? null;
+  let actualStatus = (outputData?.status as string) ?? null;
+  // If we have an execution ARN stored (e.g. from stop_execution), fetch via DescribeExecution
+  const executionArn: string = (this as any)._sfnExecArn ?? "";
+  if (actualStatus === null && executionArn) {
+    const { SFNClient, DescribeExecutionCommand } = require("@aws-sdk/client-sfn");
+    const sfnPort = this.session!.portFor("stepfunctions");
+    const sfnClient = new SFNClient({
+      endpoint: `http://localhost:${sfnPort}`,
+      region: "us-east-1",
+      credentials: { accessKeyId: "test", secretAccessKey: "test" },
+    });
+    const result = await sfnClient.send(new DescribeExecutionCommand({ executionArn }));
+    actualStatus = result.status as string;
+  }
   // Assert
   if (expectedState === "RUNNING") {
     assert.ok(

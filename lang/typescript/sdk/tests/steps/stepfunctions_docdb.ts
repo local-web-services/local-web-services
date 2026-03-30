@@ -1,9 +1,8 @@
 /** Step definitions: stepfunctions_docdb cross-service scenarios — unique steps only */
 
-import { Given, When, Then, Before } from "@cucumber/cucumber";
+import { When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
-import type { ExecutionStepHelpers } from "../support/world";
+import type { SdkWorld, ExecutionStepHelpers } from "../support/world";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -87,6 +86,54 @@ Before({ tags: "@stepfunctionsdocdb" }, function (this: SdkWorld) {
         `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
       );
     },
+    createNamedCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateDBClusterCommand } = require("@aws-sdk/client-docdb");
+      // Act
+      try {
+        const result = await sfnDocDBDocDBClient(world).send(
+          new CreateDBClusterCommand({
+            DBClusterIdentifier: SFN_DOCDB_TEST_CLUSTER,
+            Engine: "docdb",
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    stopCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { StopDBClusterCommand } = require("@aws-sdk/client-docdb");
+      // Act
+      try {
+        const result = await sfnDocDBDocDBClient(world).send(
+          new StopDBClusterCommand({ DBClusterIdentifier: SFN_DOCDB_TEST_CLUSTER }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    startCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { StartDBClusterCommand } = require("@aws-sdk/client-docdb");
+      // Act
+      try {
+        const result = await sfnDocDBDocDBClient(world).send(
+          new StartDBClusterCommand({ DBClusterIdentifier: SFN_DOCDB_TEST_CLUSTER }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
   };
 
   const executionHelpersImpl: ExecutionStepHelpers = {
@@ -138,56 +185,9 @@ Before({ tags: "@stepfunctionsdocdb" }, function (this: SdkWorld) {
 // "a Step Functions state machine is created" is registered in stepfunctions.ts.
 // "an execution of the state machine is started" is registered in stepfunctions.ts.
 
-When("a DocumentDB cluster is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateDBClusterCommand } = require("@aws-sdk/client-docdb");
-  // Act
-  try {
-    const result = await sfnDocDBDocDBClient(this).send(
-      new CreateDBClusterCommand({
-        DBClusterIdentifier: SFN_DOCDB_TEST_CLUSTER,
-        Engine: "docdb",
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("the DocumentDB cluster is started", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { StartDBClusterCommand } = require("@aws-sdk/client-docdb");
-  // Act
-  try {
-    const result = await sfnDocDBDocDBClient(this).send(
-      new StartDBClusterCommand({ DBClusterIdentifier: SFN_DOCDB_TEST_CLUSTER }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("the DocumentDB cluster is stopped", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { StopDBClusterCommand } = require("@aws-sdk/client-docdb");
-  // Act
-  try {
-    const result = await sfnDocDBDocDBClient(this).send(
-      new StopDBClusterCommand({ DBClusterIdentifier: SFN_DOCDB_TEST_CLUSTER }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a DocumentDB cluster is created" is registered in docdb.ts (dispatches via clusterHelpers.createNamedCluster).
+// "the DocumentDB cluster is stopped" is registered in docdb.ts (dispatches via clusterHelpers.stopCluster).
+// "the DocumentDB cluster is started" is registered in docdb.ts (dispatches via clusterHelpers.startCluster).
 
 When(
   "a running execution fails to connect because the DocumentDB cluster is stopped",
@@ -229,41 +229,11 @@ When(
 
 // "the cluster is {string}" is registered in cluster_common.ts (dispatches to assertClusterStatus).
 
-Then('the cluster is "AVAILABLE" and ready to accept connections', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DescribeDBClustersCommand } = require("@aws-sdk/client-docdb");
-  const expectedClusterID = SFN_DOCDB_TEST_CLUSTER;
-  const expectedStatus = "available";
-  // Act
-  const result = await sfnDocDBDocDBClient(this).send(
-    new DescribeDBClustersCommand({ DBClusterIdentifier: expectedClusterID }),
-  );
-  const clusters: Array<{ Status: string }> = result.DBClusters ?? [];
-  assert.ok(
-    clusters.length > 0,
-    `Expected cluster "${expectedClusterID}" to be available but it was not found; expected_cluster_id=${expectedClusterID}`,
-  );
-  const actualStatus = clusters[0].Status;
-  // Assert
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
+// "the cluster is \"AVAILABLE\" and ready to accept connections" is registered in cluster_common.ts (dispatches via clusterHelpers.assertClusterStatus).
+// "the cluster is \"STOPPED\" and connections will be rejected" is registered in cluster_common.ts.
 
-Then('the cluster is "STOPPED" and connections will be rejected', async function (this: SdkWorld) {
-  // @internal: Cannot observe STOPPED cluster state via public API in lws.
-  // No-op: treat as invariant satisfied.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Then('the execution is "SUCCEEDED"', async function (this: SdkWorld) {
-  // @internal: Cannot observe internal execution DocDB task success in lws.
-  // No-op: treat as invariant satisfied.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the execution is SUCCEEDED" — handled by the canonical
+// Then("the execution is {string}", ...) in stepfunctions_sqs.ts.
 
 Then('the execution is "FAILED" with a connection error', async function (this: SdkWorld) {
   // @internal: Cannot observe internal execution DocDB task failure in lws.
@@ -275,10 +245,5 @@ Then('the execution is "FAILED" with a connection error', async function (this: 
 
 // "every {string} execution references an {string} state machine" is in cross_service_common.ts.
 
-Then(
-  "every succeeded execution recorded which cluster it connected to",
-  async function (this: SdkWorld) {
-    // Invariant: trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+// "every succeeded execution recorded which cluster it connected to"
+// — registered in cross_service_common.ts.

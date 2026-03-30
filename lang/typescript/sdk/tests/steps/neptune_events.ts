@@ -147,10 +147,7 @@ Given('the bus is already "DELETED"', async function (this: SdkWorld) {
   // Assert: bus is gone
 });
 
-Given("the bus does not exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has no buses.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the bus does not exist" — registered in cross_service_common.ts.
 
 // ── Given: slots ──────────────────────────────────────────────────────────────
 
@@ -228,8 +225,6 @@ Then('the bus is "DELETED" and Neptune event delivery will fail', async function
 
 // ── Safety invariant Then steps ───────────────────────────────────────────────
 
-Then(/^every "DELIVERED" event references a cluster that exists$/, async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: model-level invariant; guaranteed by construction in lws.
-});
+// 'every "DELIVERED" event references a cluster that exists' is registered in cross_service_common.ts.
 
 // `every "DELIVERED" event references a bus that exists` is registered in cross_service_common.ts.

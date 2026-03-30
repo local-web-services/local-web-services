@@ -451,21 +451,7 @@ When("an inbound cross-cluster connection is rejected", async function (this: Os
   // Assert: captured in lastCallResult
 });
 
-When("a domain configuration update is requested", async function (this: OsWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { UpdateDomainConfigCommand } = require("@aws-sdk/client-opensearch");
-  // Act
-  try {
-    const result = await osClient(this).send(
-      new UpdateDomainConfigCommand({ DomainName: OS_DOMAIN_NAME }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a domain configuration update is requested" is registered in elasticsearch.ts (dispatches via scenarioTags).
 
 When("a search domain finishes creating", async function (this: OsWorld) {
   // @internal: no public API to advance the domain lifecycle — no-op.

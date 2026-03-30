@@ -14,11 +14,7 @@ const SFN_PASS_DEFINITION = JSON.stringify({
 
 // ── Additional Given steps not covered by cross_service_common ────────────────
 
-Given("the bus does not exist", async function (this: SdkWorld) {
-  // Arrange + Act: no-op — fresh session has no custom buses
-  // Assert: session is running
-  assert.ok(this.session, "No session running");
-});
+// "the bus does not exist" — registered in cross_service_common.ts.
 
 Given("the bus is already {string}", async function (this: SdkWorld, _state: string) {
   // Internal lifecycle state not reachable via API — flag and skip

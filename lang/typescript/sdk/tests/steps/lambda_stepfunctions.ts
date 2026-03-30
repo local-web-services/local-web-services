@@ -164,10 +164,8 @@ Given('the state machine is already "DELETED"', async function (this: SdkWorld) 
 
 // "the state machine does not exist" is registered in cross_service_common.ts.
 
-Given('the state machine is "DELETED"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh session has no state machines (simulates deleted).
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the state machine is "DELETED"' is registered via the generic
+// 'the state machine is {string}' in cross_service_common.ts.
 
 Given('the state machine is not "DELETED"', async function (this: SdkWorld) {
   // Arrange: create a state machine so it exists and is ACTIVE (not DELETED)
@@ -285,10 +283,8 @@ Then(
   },
 );
 
-Then('the execution is "SUCCEEDED"', async function (this: SdkWorld) {
-  // @internal: Cannot observe internal execution completion via public API in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the execution is SUCCEEDED" — handled by the canonical
+// Then("the execution is {string}", ...) in stepfunctions_sqs.ts.
 
 Then('the execution is "RUNNING" and the invocation is "SUCCESS"', async function (this: SdkWorld) {
   // @internal: Cannot observe Lambda invocation result or execution state via public API in lws.

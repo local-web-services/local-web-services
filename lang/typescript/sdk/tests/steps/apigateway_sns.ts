@@ -1,8 +1,8 @@
 /** Step definitions: apigateway_sns cross-service scenarios — unique steps only */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, ApiStepHelpers } from "../support/world";
 
 // Steps already registered in cross_service_common.ts:
 //   "the topic does not already exist"
@@ -144,6 +144,31 @@ async function apigwSnsInvokeApi(
   return response.status;
 }
 
+// ── Before hook: register apiHelpers for @apigatewaysns scenarios ─────────────
+
+Before({ tags: "@apigatewaysns" }, function (this: SdkWorld) {
+  const apiHelpersImpl: ApiStepHelpers = {
+    createApi: async (world: SdkWorld) => {
+      const apiId = await apigwSnsCreateRestApi(world);
+      world.lastCallResult = { success: true, output: apiId };
+      return apiId;
+    },
+    createApiWithRoot: async (world: SdkWorld) => {
+      if ((world as any)._apigwSnsApiNotActive) {
+        // Pre-condition set a failure; skip actual creation
+        return;
+      }
+      try {
+        const apiId = await apigwSnsCreateRestApi(world);
+        world.lastCallResult = { success: true, output: apiId };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+  };
+  this.apiHelpers = apiHelpersImpl;
+});
+
 // ── Given: API state ──────────────────────────────────────────────────────────
 
 // "the {string} does not already exist" is registered in apigateway.ts.
@@ -164,7 +189,7 @@ async function apigwSnsInvokeApi(
 Given(
   "the {string} has no {string} integration configured",
   async function (this: SdkWorld, _apiType: string, _service: string) {
-    // Arrange / Act / Assert — no-op: APIs have no SNS integration by default.
+    // Arrange / Act / Assert — no-op: APIs have no integrations configured by default.
     assert.ok(this.session, "Expected session to be initialized");
   },
 );
@@ -185,9 +210,15 @@ Given(
 
 Given(
   "the {string} has an {string} integration configured",
-  async function (this: SdkWorld, _apiType: string, _service: string) {
+  async function (this: SdkWorld, _apiType: string, service: string) {
     // Arrange
     assert.ok(this.session, "Expected session to be initialized");
+    // Dispatch to service-specific apiHelpers.setupIntegration if registered
+    if (service !== "SNS" && this.apiHelpers?.setupIntegration) {
+      await this.apiHelpers.setupIntegration(this);
+      return;
+    }
+    // Default: SNS integration setup
     let apiId = (this as any)._apigwSnsApiId as string | undefined;
     if (!apiId) {
       apiId = await apigwSnsGetApiId(this);
@@ -242,26 +273,8 @@ Given("the topic exists and is {string}", async function (this: SdkWorld, _state
 // "an {string} topic is created" is registered in cross_service_common.ts.
 // "the {string} topic is deleted" is registered in cross_service_common.ts.
 
-When('an "API" Gateway "REST" "API" is created', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  if ((this as any)._apigwSnsApiNotActive) {
-    // Pre-condition set a failure; skip actual creation
-    return;
-  }
-  const { CreateRestApiCommand } = require("@aws-sdk/client-api-gateway");
-  // Act
-  try {
-    const result = await apigwClient(this).send(
-      new CreateRestApiCommand({ name: APIGW_SNS_API_NAME }),
-    );
-    (this as any)._apigwSnsApiId = result.id;
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// 'an "API" Gateway "REST" "API" is created' is registered in apigateway.ts
+// (dispatches via apiHelpers.createApiWithRoot registered in the Before hook above).
 
 When('a direct "SNS" integration is configured on the "API"', async function (this: SdkWorld) {
   // Arrange

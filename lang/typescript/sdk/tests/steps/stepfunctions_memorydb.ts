@@ -1,9 +1,8 @@
 /** Step definitions: stepfunctions_memorydb cross-service scenarios — unique steps only */
 
-import { Given, When, Then, Before } from "@cucumber/cucumber";
+import { When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
-import type { ExecutionStepHelpers } from "../support/world";
+import type { SdkWorld, ExecutionStepHelpers } from "../support/world";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -93,6 +92,50 @@ Before({ tags: "@stepfunctionsmemorydb" }, function (this: SdkWorld) {
         `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
       );
     },
+    createNamedCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateClusterCommand } = require("@aws-sdk/client-memorydb");
+      // Act
+      try {
+        const result = await sfnMemoryDBClient(world).send(
+          new CreateClusterCommand({
+            ClusterName: SFN_MEMORYDB_TEST_CLUSTER,
+            NodeType: "db.r6g.large",
+            ACLName: "open-access",
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    beginClusterUpdate: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { UpdateClusterCommand } = require("@aws-sdk/client-memorydb");
+      // Act
+      try {
+        const result = await sfnMemoryDBClient(world).send(
+          new UpdateClusterCommand({ ClusterName: SFN_MEMORYDB_TEST_CLUSTER }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    completeClusterUpdate: async (world: SdkWorld) => {
+      // @internal: Cannot drive cluster update to completion via public API in lws.
+      assert.ok(world.session, "Expected session to be initialized");
+      world.lastCallResult = {
+        success: false,
+        output: null,
+        error: new Error("cannot drive cluster update to completion via public API in lws"),
+      };
+      // Assert: captured in lastCallResult
+    },
   };
 
   const executionHelpersImpl: ExecutionStepHelpers = {
@@ -144,52 +187,12 @@ Before({ tags: "@stepfunctionsmemorydb" }, function (this: SdkWorld) {
 // "a Step Functions state machine is created" is registered in stepfunctions.ts.
 // "an execution of the state machine is started" is registered in stepfunctions.ts.
 
-When("a MemoryDB cluster is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateClusterCommand } = require("@aws-sdk/client-memorydb");
-  // Act
-  try {
-    const result = await sfnMemoryDBClient(this).send(
-      new CreateClusterCommand({
-        ClusterName: SFN_MEMORYDB_TEST_CLUSTER,
-        NodeType: "db.r6g.large",
-        ACLName: "open-access",
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("a MemoryDB cluster update begins", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { UpdateClusterCommand } = require("@aws-sdk/client-memorydb");
-  // Act
-  try {
-    const result = await sfnMemoryDBClient(this).send(
-      new UpdateClusterCommand({ ClusterName: SFN_MEMORYDB_TEST_CLUSTER }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("the MemoryDB cluster update completes", async function (this: SdkWorld) {
-  // @internal: Cannot drive cluster update to completion via public API in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-  this.lastCallResult = {
-    success: false,
-    output: null,
-    error: new Error("cannot drive cluster update to completion via public API in lws"),
-  };
-  // Assert: captured in lastCallResult
-});
+// "a MemoryDB cluster is created" is registered in memorydb.ts
+// (dispatches via clusterHelpers.createNamedCluster registered in the Before hook above).
+// "a MemoryDB cluster update begins" is registered in memorydb.ts
+// (dispatches via clusterHelpers.beginClusterUpdate registered in the Before hook above).
+// "the MemoryDB cluster update completes" is registered in memorydb.ts
+// (dispatches via clusterHelpers.completeClusterUpdate registered in the Before hook above).
 
 When(
   "a running execution fails to connect because the MemoryDB cluster is updating",
@@ -237,17 +240,10 @@ Then('the cluster is "UPDATING" and connections may be refused', async function 
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then('the cluster is "AVAILABLE" again', async function (this: SdkWorld) {
-  // @internal: Cannot observe cluster returning to AVAILABLE after update via public API in lws.
-  // No-op: treat as invariant satisfied.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the cluster is \"AVAILABLE\" again" is registered in cluster_common.ts.
 
-Then('the execution is "SUCCEEDED"', async function (this: SdkWorld) {
-  // @internal: Cannot observe internal execution MemoryDB task success in lws.
-  // No-op: treat as invariant satisfied.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the execution is SUCCEEDED" — handled by the canonical
+// Then("the execution is {string}", ...) in stepfunctions_sqs.ts.
 
 Then('the execution is "FAILED" with a connection error', async function (this: SdkWorld) {
   // @internal: Cannot observe internal execution MemoryDB task failure in lws.
@@ -259,10 +255,5 @@ Then('the execution is "FAILED" with a connection error', async function (this: 
 
 // "every {string} execution references an {string} state machine" is in cross_service_common.ts.
 
-Then(
-  "every succeeded execution recorded which cluster it connected to",
-  async function (this: SdkWorld) {
-    // Invariant: trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+// "every succeeded execution recorded which cluster it connected to"
+// — registered in cross_service_common.ts.

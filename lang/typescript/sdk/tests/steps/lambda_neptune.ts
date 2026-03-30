@@ -72,6 +72,54 @@ Before({ tags: "@lambdaneptune" }, function (this: SdkWorld) {
         `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
       );
     },
+    createNamedCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "No session running");
+      const { CreateDBClusterCommand } = require("@aws-sdk/client-neptune");
+      // Act
+      try {
+        const result = await lambdaNeptuneNeptuneClient(world).send(
+          new CreateDBClusterCommand({
+            DBClusterIdentifier: LAMBDA_NEPTUNE_TEST_CLUSTER,
+            Engine: "neptune",
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    stopCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "No session running");
+      const { StopDBClusterCommand } = require("@aws-sdk/client-neptune");
+      // Act
+      try {
+        const result = await lambdaNeptuneNeptuneClient(world).send(
+          new StopDBClusterCommand({ DBClusterIdentifier: LAMBDA_NEPTUNE_TEST_CLUSTER }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    startCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "No session running");
+      const { StartDBClusterCommand } = require("@aws-sdk/client-neptune");
+      // Act
+      try {
+        const result = await lambdaNeptuneNeptuneClient(world).send(
+          new StartDBClusterCommand({ DBClusterIdentifier: LAMBDA_NEPTUNE_TEST_CLUSTER }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
   };
   this.functionHelpers = {
     functionName: LAMBDA_NEPTUNE_TEST_FUNC,
@@ -168,56 +216,9 @@ Given('the Neptune cluster is not "AVAILABLE"', async function (this: SdkWorld) 
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When("a Neptune cluster is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { CreateDBClusterCommand } = require("@aws-sdk/client-neptune");
-  // Act
-  try {
-    const result = await lambdaNeptuneNeptuneClient(this).send(
-      new CreateDBClusterCommand({
-        DBClusterIdentifier: LAMBDA_NEPTUNE_TEST_CLUSTER,
-        Engine: "neptune",
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("the Neptune cluster is stopped", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { StopDBClusterCommand } = require("@aws-sdk/client-neptune");
-  // Act
-  try {
-    const result = await lambdaNeptuneNeptuneClient(this).send(
-      new StopDBClusterCommand({ DBClusterIdentifier: LAMBDA_NEPTUNE_TEST_CLUSTER }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("the Neptune cluster is started", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { StartDBClusterCommand } = require("@aws-sdk/client-neptune");
-  // Act
-  try {
-    const result = await lambdaNeptuneNeptuneClient(this).send(
-      new StartDBClusterCommand({ DBClusterIdentifier: LAMBDA_NEPTUNE_TEST_CLUSTER }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a Neptune cluster is created" is registered in neptune.ts (dispatches via clusterHelpers.createNamedCluster).
+// "the Neptune cluster is stopped" is registered in neptune.ts (dispatches via clusterHelpers.stopCluster).
+// "the Neptune cluster is started" is registered in neptune.ts (dispatches via clusterHelpers.startCluster).
 
 When(
   "the Lambda function fails to connect because the Neptune cluster is stopped",
@@ -251,47 +252,8 @@ When(
 
 // "the cluster is {string}" is registered in cluster_common.ts (dispatches to assertClusterStatus).
 
-Then(
-  'the cluster is "AVAILABLE" and ready to accept graph queries',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { DescribeDBClustersCommand } = require("@aws-sdk/client-neptune");
-    // Act
-    const result = await lambdaNeptuneNeptuneClient(this).send(
-      new DescribeDBClustersCommand({ DBClusterIdentifier: LAMBDA_NEPTUNE_TEST_CLUSTER }),
-    );
-    // Assert
-    const expectedStatus = "available";
-    const actualStatus = result.DBClusters?.[0]?.Status ?? "";
-    assert.strictEqual(
-      actualStatus,
-      expectedStatus,
-      `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-    );
-  },
-);
-
-Then(
-  'the cluster is "STOPPED" and graph queries will be rejected',
-  async function (this: SdkWorld) {
-    // Arrange
-    assert.ok(this.session, "Expected session to be initialized");
-    const { DescribeDBClustersCommand } = require("@aws-sdk/client-neptune");
-    // Act
-    const result = await lambdaNeptuneNeptuneClient(this).send(
-      new DescribeDBClustersCommand({ DBClusterIdentifier: LAMBDA_NEPTUNE_TEST_CLUSTER }),
-    );
-    // Assert
-    const expectedStatus = "stopped";
-    const actualStatus = result.DBClusters?.[0]?.Status ?? "";
-    assert.strictEqual(
-      actualStatus,
-      expectedStatus,
-      `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-    );
-  },
-);
+// "the cluster is \"AVAILABLE\" and ready to accept graph queries" is registered in cluster_common.ts (dispatches via clusterHelpers.assertClusterStatus).
+// "the cluster is \"STOPPED\" and graph queries will be rejected" is registered in cluster_common.ts (dispatches via clusterHelpers.assertClusterStatus).
 
 // "the invocation is {string}" — registered in lambda_common.ts
 // "the invocation is FAILED with a connection error" — registered in lambda_common.ts

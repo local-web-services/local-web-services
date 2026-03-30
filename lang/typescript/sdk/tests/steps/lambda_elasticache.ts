@@ -87,6 +87,26 @@ Before({ tags: "@lambdaelasticache" }, function (this: SdkWorld) {
         `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
       );
     },
+    createNamedCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "No session running");
+      const { CreateCacheClusterCommand } = require("@aws-sdk/client-elasticache");
+      // Act
+      try {
+        const result = await lambdaElasticacheElasticacheClient(world).send(
+          new CreateCacheClusterCommand({
+            CacheClusterId: LAMBDA_ELASTICACHE_TEST_CLUSTER,
+            Engine: "redis",
+            CacheNodeType: "cache.t3.micro",
+            NumCacheNodes: 1,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
   };
   this.functionHelpers = {
     functionName: LAMBDA_ELASTICACHE_TEST_FUNC,
@@ -152,26 +172,7 @@ Given("no key slot is available", async function (this: SdkWorld) {
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When("an ElastiCache cluster is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { CreateCacheClusterCommand } = require("@aws-sdk/client-elasticache");
-  // Act
-  try {
-    const result = await lambdaElasticacheElasticacheClient(this).send(
-      new CreateCacheClusterCommand({
-        CacheClusterId: LAMBDA_ELASTICACHE_TEST_CLUSTER,
-        Engine: "redis",
-        CacheNodeType: "cache.t3.micro",
-        NumCacheNodes: 1,
-      }),
-    );
-    // Assert: store result
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-});
+// "an ElastiCache cluster is created" is registered in elasticache.ts (dispatches via clusterHelpers.createNamedCluster).
 
 When(
   "the Lambda function writes a value to the ElastiCache cluster during invocation",

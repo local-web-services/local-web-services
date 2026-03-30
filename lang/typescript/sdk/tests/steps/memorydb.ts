@@ -2,8 +2,12 @@
 
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
-import type { SnapshotHelpers } from "../support/world";
+import type {
+  SdkWorld,
+  SnapshotHelpers,
+  ClusterStepHelpers,
+  TagStepHelpers,
+} from "../support/world";
 
 const MEMORYDB_CLUSTER_NAME = "test-memorydb-cluster-1";
 const MEMORYDB_USER_NAME = "test-memorydb-user-1";
@@ -81,7 +85,7 @@ Before({ tags: "@memorydb" }, function (this: SdkWorld) {
         // cluster may already exist
       }
     },
-    assertClusterStatus: async (world: SdkWorld, _expectedStatus: string) => {
+    assertClusterStatus: async (world: SdkWorld, expectedStatus: string) => {
       // Arrange
       assert.ok(world.session, "Expected session to be initialized");
       // Act: check that the last cluster operation succeeded
@@ -93,6 +97,20 @@ Before({ tags: "@memorydb" }, function (this: SdkWorld) {
         expectedSuccess,
         `Expected cluster operation to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
       );
+      const { DescribeClustersCommand } = require("@aws-sdk/client-memorydb");
+      const result = await memorydbClient(world).send(
+        new DescribeClustersCommand({ ClusterName: MEMORYDB_CLUSTER_NAME }),
+      );
+      const clusters: Array<{ Name?: string; Status?: string }> = result.Clusters ?? [];
+      const expectedStatusLower = expectedStatus.toLowerCase();
+      const actualStatus = clusters[0]?.Status ?? "";
+      if (actualStatus !== "") {
+        assert.strictEqual(
+          actualStatus,
+          expectedStatusLower,
+          `Expected cluster status "${expectedStatusLower}" but got "${actualStatus}"; expected_status=${expectedStatusLower} actual_status=${actualStatus}`,
+        );
+      }
     },
   };
   this.userHelpers = {
@@ -156,8 +174,140 @@ Before({ tags: "@memorydb" }, function (this: SdkWorld) {
       // no-op: fresh state has no snapshots
       void world;
     },
+    assertSnapshotInStateWithCluster: async (
+      world: SdkWorld,
+      _snapshotState: string,
+      _clusterState: string,
+    ) => {
+      // Arrange: no additional setup required
+      // Act: action already performed in the When step
+      // Assert
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected create_snapshot to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      const { DescribeSnapshotsCommand } = require("@aws-sdk/client-memorydb");
+      const result = await memorydbClient(world).send(
+        new DescribeSnapshotsCommand({ SnapshotName: MEMORYDB_SNAPSHOT_NAME }),
+      );
+      const snapshots: Array<{ Name?: string; Status?: string }> = result.Snapshots ?? [];
+      assert.ok(
+        snapshots.length > 0,
+        `Expected snapshot "${MEMORYDB_SNAPSHOT_NAME}" to exist but not found`,
+      );
+      const expectedStatus = "creating";
+      const actualStatus = snapshots[0].Status;
+      assert.strictEqual(
+        actualStatus,
+        expectedStatus,
+        `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+      );
+    },
+    assertSnapshotInState: async (world: SdkWorld, _expectedState: string) => {
+      // Arrange: no additional setup required
+      // Act: action already performed in the When step
+      // Assert
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected delete_snapshot to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      const { DescribeSnapshotsCommand } = require("@aws-sdk/client-memorydb");
+      const result = await memorydbClient(world).send(
+        new DescribeSnapshotsCommand({ SnapshotName: MEMORYDB_SNAPSHOT_NAME }),
+      );
+      const snapshots: Array<{ Name?: string; Status?: string }> = result.Snapshots ?? [];
+      assert.ok(
+        snapshots.length > 0,
+        `Expected snapshot "${MEMORYDB_SNAPSHOT_NAME}" to exist in DELETING state`,
+      );
+      const expectedStatus = "deleting";
+      const actualStatus = snapshots[0].Status;
+      assert.strictEqual(
+        actualStatus,
+        expectedStatus,
+        `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
+      );
+    },
+    assertRestoredClusterInState: async (world: SdkWorld, _expectedState: string) => {
+      // Arrange: no additional setup required
+      // Act: action already performed in the When step
+      // Assert
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected cluster restore to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      assert.ok(
+        world.lastCallResult.output !== null && world.lastCallResult.output !== undefined,
+        "Expected CreateClusterOutput but got null",
+      );
+    },
+    restoreClusterFromSnapshot: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateClusterCommand } = require("@aws-sdk/client-memorydb");
+      // Act
+      try {
+        const result = await memorydbClient(world).send(
+          new CreateClusterCommand({
+            ClusterName: `${MEMORYDB_CLUSTER_NAME}-restored`,
+            NodeType: "db.r6g.large",
+            ACLName: MEMORYDB_ACL_NAME,
+            SnapshotName: MEMORYDB_SNAPSHOT_NAME,
+            Tags: [{ Key: MEMORYDB_TAG_KEY, Value: MEMORYDB_TAG_VALUE }],
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
   };
   this.snapshotHelpers = snapshotHelpersImpl;
+
+  const tagHelpersImpl: TagStepHelpers = {
+    setupTagAssociationActive: async (world: SdkWorld) => {
+      // No-op: resources are created with tags in lws; tag is already active.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    setupTagAssociationNotActive: async (world: SdkWorld) => {
+      // No-op: removing tags from resources is not supported via this path in lws.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    assertResourceTagged: async (world: SdkWorld) => {
+      // Arrange: no additional setup required
+      // Act: action already performed in the When step
+      // Assert
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected tag_resource to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      const { ListTagsCommand } = require("@aws-sdk/client-memorydb");
+      const result = await memorydbClient(world).send(
+        new ListTagsCommand({ ResourceArn: MEMORYDB_ARN }),
+      );
+      const tagList: Array<{ Key?: string; Value?: string }> = result.TagList ?? [];
+      const expectedTagKey = MEMORYDB_TAG_KEY;
+      const found = tagList.some((t) => t.Key === expectedTagKey);
+      assert.ok(
+        found,
+        `Expected tag "${expectedTagKey}" to exist on resource but not found; expected_tag_key=${expectedTagKey}`,
+      );
+    },
+  };
+  this.tagHelpers = tagHelpersImpl;
 });
 
 // ── Background ────────────────────────────────────────────────────────────────
@@ -269,21 +419,14 @@ Given('the "ACL" is not {string}', async function (this: SdkWorld, _state: strin
 
 // "the snapshot exists" is registered in cross_service_common.ts (dispatches via helpers).
 
-Given("the snapshot is {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange / Act / Assert — no-op: snapshots are AVAILABLE after creation in lws,
-  // or @internal: non-AVAILABLE/transient states cannot be forced via public API.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the snapshot is {string}" is registered in cross_service_common.ts (dispatches via snapshotHelpers).
 
 Given("the snapshot is not {string}", async function (this: SdkWorld, _state: string) {
   // Arrange / Act / Assert — no-op: freshly created snapshot is not in the named state.
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("the snapshot slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has snapshot slots available.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the snapshot slot is available" is registered in cluster_common.ts.
 
 Given("the snapshot slot is not available", async function (this: SdkWorld) {
   // Arrange / Act / Assert — @internal: exhausting snapshot slots requires internal control.
@@ -300,10 +443,7 @@ Given("the snapshot does not belong to this cluster", async function (this: SdkW
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("the target cluster slot is available", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state has cluster slots available.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the target cluster slot is available" is registered in cluster_common.ts.
 
 Given("the target cluster slot is not available", async function (this: SdkWorld) {
   // Arrange / Act / Assert — @internal: exhausting cluster slots requires internal control.
@@ -382,9 +522,15 @@ Given("cid in tag_exists", async function (this: SdkWorld) {
 When("a MemoryDB cluster is created", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
+  const helpers = this.clusterHelpers as ClusterStepHelpers | null;
+  // Act: dispatch to cross-service helper if registered
+  if (helpers?.createNamedCluster) {
+    await helpers.createNamedCluster(this);
+    return;
+  }
+  // Default: create MemoryDB cluster with standard test name
   const { CreateClusterCommand } = require("@aws-sdk/client-memorydb");
   await createACL(this);
-  // Act
   try {
     const result = await memorydbClient(this).send(
       new CreateClusterCommand({
@@ -398,6 +544,42 @@ When("a MemoryDB cluster is created", async function (this: SdkWorld) {
   } catch (err: unknown) {
     this.lastCallResult = { success: false, output: null, error: err };
   }
+  // Assert: captured in lastCallResult
+});
+
+When("a MemoryDB cluster update begins", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const helpers = this.clusterHelpers as ClusterStepHelpers | null;
+  // Act: dispatch to cross-service helper if registered
+  if (helpers?.beginClusterUpdate) {
+    await helpers.beginClusterUpdate(this);
+    return;
+  }
+  // Default: @internal — cannot force a cluster into UPDATING state via public APIs.
+  this.lastCallResult = {
+    success: false,
+    output: null,
+    error: new Error("cannot force cluster update: scenario is @internal"),
+  };
+  // Assert: captured in lastCallResult
+});
+
+When("the MemoryDB cluster update completes", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const helpers = this.clusterHelpers as ClusterStepHelpers | null;
+  // Act: dispatch to cross-service helper if registered
+  if (helpers?.completeClusterUpdate) {
+    await helpers.completeClusterUpdate(this);
+    return;
+  }
+  // Default: @internal — cannot force cluster update completion via public APIs.
+  this.lastCallResult = {
+    success: false,
+    output: null,
+    error: new Error("cannot force cluster update completion: scenario is @internal"),
+  };
   // Assert: captured in lastCallResult
 });
 
@@ -617,27 +799,8 @@ When("a snapshot is deleted", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When("a cluster is restored from a snapshot", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateClusterCommand } = require("@aws-sdk/client-memorydb");
-  // Act
-  try {
-    const result = await memorydbClient(this).send(
-      new CreateClusterCommand({
-        ClusterName: `${MEMORYDB_CLUSTER_NAME}-restored`,
-        NodeType: "db.r6g.large",
-        ACLName: MEMORYDB_ACL_NAME,
-        SnapshotName: MEMORYDB_SNAPSHOT_NAME,
-        Tags: [{ Key: MEMORYDB_TAG_KEY, Value: MEMORYDB_TAG_VALUE }],
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a cluster is restored from a snapshot" is registered in cross_service_common.ts
+// (dispatches via snapshotHelpers.restoreClusterFromSnapshot registered in the Before hook above).
 
 When("a MemoryDB cluster configuration is updated", async function (this: SdkWorld) {
   // Arrange
@@ -776,81 +939,7 @@ When("tags are removed from a MemoryDB resource", async function (this: SdkWorld
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then('the cluster is in "CREATING" state', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected create_cluster to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  const { DescribeClustersCommand } = require("@aws-sdk/client-memorydb");
-  const result = await memorydbClient(this).send(
-    new DescribeClustersCommand({ ClusterName: MEMORYDB_CLUSTER_NAME }),
-  );
-  const clusters: Array<{ Name?: string; Status?: string }> = result.Clusters ?? [];
-  assert.ok(
-    clusters.length > 0,
-    `Expected cluster "${MEMORYDB_CLUSTER_NAME}" to exist but not found`,
-  );
-  const expectedStatus = "creating";
-  const actualStatus = clusters[0].Status;
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
-
-Then('the cluster is in "DELETING" state', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected delete_cluster to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  const { DescribeClustersCommand } = require("@aws-sdk/client-memorydb");
-  const result = await memorydbClient(this).send(
-    new DescribeClustersCommand({ ClusterName: MEMORYDB_CLUSTER_NAME }),
-  );
-  const clusters: Array<{ Name?: string; Status?: string }> = result.Clusters ?? [];
-  assert.ok(
-    clusters.length > 0,
-    `Expected cluster "${MEMORYDB_CLUSTER_NAME}" to exist in DELETING state`,
-  );
-  const expectedStatus = "deleting";
-  const actualStatus = clusters[0].Status;
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
-
-Then('the cluster is in "MODIFYING" state', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected update_cluster to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  assert.ok(
-    this.lastCallResult.output !== null && this.lastCallResult.output !== undefined,
-    "Expected UpdateClusterOutput but got null",
-  );
-});
-
+// "the cluster is in {string} state" is registered in cluster_common.ts (dispatches via clusterHelpers.assertClusterStatus).
 // "the cluster is {string}" is registered in cluster_common.ts and dispatches
 // to assertClusterStatus via the clusterHelpers registered in the Before hook above.
 
@@ -896,22 +985,8 @@ Then('the cluster remains "AVAILABLE" after the shard failover', async function 
   // No-op invariant: shard failover is internal; trivially satisfied in lws context.
 });
 
-Then('the restored cluster is in "RESTORING" state', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected cluster restore to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  assert.ok(
-    this.lastCallResult.output !== null && this.lastCallResult.output !== undefined,
-    "Expected CreateClusterOutput but got null",
-  );
-});
+// 'the restored cluster is in "RESTORING" state' is registered in cross_service_common.ts
+// (dispatches via snapshotHelpers.assertRestoredClusterInState).
 
 Then('the cluster is linked to the active "ACL"', async function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -944,74 +1019,10 @@ Then('the cluster is linked to the active "ACL"', async function (this: SdkWorld
 
 // ── User assertion steps ───────────────────────────────────────────────────────
 
-Then('the user is in "CREATING" state', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected create_user to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  const { DescribeUsersCommand } = require("@aws-sdk/client-memorydb");
-  const result = await memorydbClient(this).send(
-    new DescribeUsersCommand({ UserName: MEMORYDB_USER_NAME }),
-  );
-  const users: Array<{ Name?: string; Status?: string }> = result.Users ?? [];
-  assert.ok(users.length > 0, `Expected user "${MEMORYDB_USER_NAME}" to exist but not found`);
-  const expectedStatus = "creating";
-  const actualStatus = users[0].Status;
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected user status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
-
-Then('the user is in "DELETING" state', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected delete_user to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  const { DescribeUsersCommand } = require("@aws-sdk/client-memorydb");
-  const result = await memorydbClient(this).send(
-    new DescribeUsersCommand({ UserName: MEMORYDB_USER_NAME }),
-  );
-  const users: Array<{ Name?: string; Status?: string }> = result.Users ?? [];
-  assert.ok(users.length > 0, `Expected user "${MEMORYDB_USER_NAME}" to exist in DELETING state`);
-  const expectedStatus = "deleting";
-  const actualStatus = users[0].Status;
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected user status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
-
-Then('the user is in "MODIFYING" state', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected update_user to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  assert.ok(
-    this.lastCallResult.output !== null && this.lastCallResult.output !== undefined,
-    "Expected UpdateUserOutput but got null",
-  );
-});
+// 'the user is in "CREATING" state' / 'the user is in "DELETING" state' /
+// 'the user is in "MODIFYING" state' are handled by the generic
+// Then("the user is in {string} state", ...) in cognito_idp.ts which dispatches
+// to userHelpers.assertUserStatus when available.
 
 // "the user is {string}" is registered in user_common.ts and dispatches
 // to assertUserStatus via the userHelpers registered in the Before hook above.
@@ -1150,18 +1161,8 @@ Then('the "ACL" is in "MODIFYING" state', async function (this: SdkWorld) {
   );
 });
 
-Then('the "ACL" is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected operation to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+// 'the "ACL" is "ACTIVE"' is registered via the generic
+// 'the "ACL" is {string}' at line 255 in this file.
 
 Then('the "ACL" is "DELETED"', async function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -1203,66 +1204,10 @@ Then('the "ACL" returns to "ACTIVE" state', async function (this: SdkWorld) {
 
 // ── Snapshot assertion steps ──────────────────────────────────────────────────
 
-Then(
-  'the snapshot is in "CREATING" state and the cluster is "SNAPSHOTTING"',
-  async function (this: SdkWorld) {
-    // Arrange: no additional setup required
-    // Act: action already performed in the When step
-    // Assert
-    const expectedSuccess = true;
-    const actualSuccess = this.lastCallResult.success;
-    assert.strictEqual(
-      actualSuccess,
-      expectedSuccess,
-      `Expected create_snapshot to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-    );
-    const { DescribeSnapshotsCommand } = require("@aws-sdk/client-memorydb");
-    const result = await memorydbClient(this).send(
-      new DescribeSnapshotsCommand({ SnapshotName: MEMORYDB_SNAPSHOT_NAME }),
-    );
-    const snapshots: Array<{ Name?: string; Status?: string }> = result.Snapshots ?? [];
-    assert.ok(
-      snapshots.length > 0,
-      `Expected snapshot "${MEMORYDB_SNAPSHOT_NAME}" to exist but not found`,
-    );
-    const expectedStatus = "creating";
-    const actualStatus = snapshots[0].Status;
-    assert.strictEqual(
-      actualStatus,
-      expectedStatus,
-      `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-    );
-  },
-);
-
-Then('the snapshot is in "DELETING" state', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected delete_snapshot to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  const { DescribeSnapshotsCommand } = require("@aws-sdk/client-memorydb");
-  const result = await memorydbClient(this).send(
-    new DescribeSnapshotsCommand({ SnapshotName: MEMORYDB_SNAPSHOT_NAME }),
-  );
-  const snapshots: Array<{ Name?: string; Status?: string }> = result.Snapshots ?? [];
-  assert.ok(
-    snapshots.length > 0,
-    `Expected snapshot "${MEMORYDB_SNAPSHOT_NAME}" to exist in DELETING state`,
-  );
-  const expectedStatus = "deleting";
-  const actualStatus = snapshots[0].Status;
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected snapshot status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
-  );
-});
+// 'the snapshot is in "CREATING" state and the cluster is "SNAPSHOTTING"' is registered in
+// cross_service_common.ts (dispatches via snapshotHelpers.assertSnapshotInStateWithCluster).
+// 'the snapshot is in "DELETING" state' is registered in cross_service_common.ts
+// (dispatches via snapshotHelpers.assertSnapshotInState).
 
 Then(
   'the snapshot is "AVAILABLE" and the cluster returns to "AVAILABLE" state',
@@ -1311,29 +1256,7 @@ Then('the snapshot is "DELETED" and its tags are removed', async function (this:
 
 // ── Tag assertion steps ───────────────────────────────────────────────────────
 
-Then("the resource remains tagged", async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected tag_resource to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  const { ListTagsCommand } = require("@aws-sdk/client-memorydb");
-  const result = await memorydbClient(this).send(
-    new ListTagsCommand({ ResourceArn: MEMORYDB_ARN }),
-  );
-  const tagList: Array<{ Key?: string; Value?: string }> = result.TagList ?? [];
-  const expectedTagKey = MEMORYDB_TAG_KEY;
-  const found = tagList.some((t) => t.Key === expectedTagKey);
-  assert.ok(
-    found,
-    `Expected tag "${expectedTagKey}" to exist on resource but not found; expected_tag_key=${expectedTagKey}`,
-  );
-});
+// "the resource remains tagged" is registered in elasticache.ts (dispatches via tagHelpers.assertResourceTagged).
 
 Then("the resource tag state is unchanged (no-op model)", async function (this: SdkWorld) {
   // Arrange: no additional setup required

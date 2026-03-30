@@ -1,11 +1,10 @@
 /** Step definitions: lambda_s3api cross-service scenarios — unique steps only */
 
-import { Given, When, Then, Before } from "@cucumber/cucumber";
+import { When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
 
 const LAMBDA_S3API_FUNC = "e2e-test-func-1";
-const LAMBDA_S3API_BUCKET = "e2e-test-bucket-1";
 const LAMBDA_S3API_ROLE_ARN = "arn:aws:iam::000000000000:role/test";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -13,11 +12,6 @@ const LAMBDA_S3API_ROLE_ARN = "arn:aws:iam::000000000000:role/test";
 function lambdaClient(world: SdkWorld) {
   const { LambdaClient } = require("@aws-sdk/client-lambda");
   return world.session!.client<typeof LambdaClient>("lambda");
-}
-
-function s3Client(world: SdkWorld) {
-  const { S3Client } = require("@aws-sdk/client-s3");
-  return world.session!.client<typeof S3Client>("s3");
 }
 
 async function lambdaS3apiCreateFunction(world: SdkWorld): Promise<void> {
@@ -129,7 +123,7 @@ Then('the invocation is "FAILED"', async function (this: SdkWorld) {
 
 // "every {string} invocation references an {string} Lambda function" is registered in cross_service_common.ts.
 
-Then('every existing object belongs to an "ACTIVE" bucket', async function (this: SdkWorld) {
-  // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'every existing object belongs to an "ACTIVE" bucket' is registered via
+// 'every {string} event references a bus that exists' — no, actually it is
+// handled by the generic `every existing object belongs to an {string} bucket`
+// registered in cross_service_common.ts.

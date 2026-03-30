@@ -188,17 +188,11 @@ Given('the "API" has an S3 integration configured', async function (this: SdkWor
 
 // ── Given: object state ────────────────────────────────────────────────────────
 
-Given('an object "EXISTS" in the target bucket', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — @internal: Cannot pre-seed objects for S3 integration test in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-  (this as any)._noObjectInBucket = false;
-});
+// 'an object "EXISTS" in the target bucket' is registered via the generic
+// 'an object {string} in the target bucket' in cross_service_common.ts.
 
-Given('no object "EXISTS" in the target bucket', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — @internal: Cannot verify absence of objects for S3 integration in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-  (this as any)._noObjectInBucket = true;
-});
+// 'no object "EXISTS" in the target bucket' is registered via the generic
+// 'no object {string} in the target bucket' in cross_service_common.ts.
 
 // ── Given: bucket lifecycle state ─────────────────────────────────────────────
 

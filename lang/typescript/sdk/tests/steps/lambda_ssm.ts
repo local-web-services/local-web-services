@@ -95,10 +95,8 @@ Before({ tags: "@lambdassm" }, function (this: SdkWorld) {
 // These use exact string literals so Cucumber.js picks them over the parameterised
 // versions in cross_service_common.ts (which use SM_PARAM = "/test/ssm/cs-1").
 
-Given('the parameter "EXISTS"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: parameter already created by "the parameter exists" step.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the parameter "EXISTS"' is registered via the generic
+// 'the parameter {string}' in cross_service_common.ts.
 
 Given('the parameter is already "DELETED"', async function (this: SdkWorld) {
   // Arrange

@@ -99,15 +99,8 @@ Before({ tags: "@lambdaopensearch" }, function (this: SdkWorld) {
 // "an invocation is {string}" — registered in capacity.ts (dispatches via functionHelpers)
 // "no invocation is {string}" — registered in capacity.ts
 
-Given("a document slot is available", async function (this: SdkWorld) {
-  // No-op: always room for documents in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("no document slot is available", async function (this: SdkWorld) {
-  // @internal: Cannot exhaust document slot limit in lws via public APIs.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "a document slot is available" and "no document slot is available"
+// — registered in cross_service_common.ts.
 
 // ── Given: OpenSearch domain/index state unique to cross-service scenarios ─────
 

@@ -44,6 +44,24 @@ Before({ tags: "@glaciersns" }, function (this: SdkWorld) {
       await glacierSNSCreateVault(world);
       // Assert: vault created
     },
+    createVault: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateVaultCommand } = require("@aws-sdk/client-glacier");
+      // Act
+      try {
+        const result = await glacierSNSGlacierClient(this).send(
+          new CreateVaultCommand({
+            accountId: GLACIER_SNS_ACCOUNT_ID,
+            vaultName: GLACIER_SNS_TEST_VAULT,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
   };
   this.vaultHelpers = vaultHelpersImpl;
 });
@@ -52,18 +70,8 @@ Before({ tags: "@glaciersns" }, function (this: SdkWorld) {
 
 // ── Given: vault state setup ──────────────────────────────────────────────────
 
-Given("the vault does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no vaults.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the vault already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  await glacierSNSCreateVault(this);
-  // Assert: vault created
-});
+// "the vault does not already exist" is registered in cross_service_common.ts.
+// "the vault already exists" is registered in cross_service_common.ts (dispatches via vaultHelpers).
 
 // "the vault exists" is registered in cross_service_common.ts (dispatches via helpers).
 
@@ -179,19 +187,9 @@ Given("jid in job_status", async function (this: SdkWorld) {
 When("a Glacier vault is created", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  const { CreateVaultCommand } = require("@aws-sdk/client-glacier");
-  // Act
-  try {
-    const result = await glacierSNSGlacierClient(this).send(
-      new CreateVaultCommand({
-        accountId: GLACIER_SNS_ACCOUNT_ID,
-        vaultName: GLACIER_SNS_TEST_VAULT,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
+  assert.ok(this.vaultHelpers?.createVault, "Expected vaultHelpers.createVault to be registered");
+  // Act: dispatch to service-specific vault helpers
+  await this.vaultHelpers.createVault(this);
   // Assert: captured in lastCallResult
 });
 

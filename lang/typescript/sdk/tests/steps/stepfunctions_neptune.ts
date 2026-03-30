@@ -1,9 +1,8 @@
 /** Step definitions: stepfunctions_neptune cross-service scenarios — unique steps only */
 
-import { Given, When, Then, Before } from "@cucumber/cucumber";
+import { When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
-import type { ExecutionStepHelpers } from "../support/world";
+import type { SdkWorld, ExecutionStepHelpers } from "../support/world";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -88,6 +87,54 @@ Before({ tags: "@stepfunctionsneptune" }, function (this: SdkWorld) {
         return;
       }
     },
+    createNamedCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateDBClusterCommand } = require("@aws-sdk/client-neptune");
+      // Act
+      try {
+        const result = await sfnNeptuneNeptuneClient(world).send(
+          new CreateDBClusterCommand({
+            DBClusterIdentifier: SFN_NEPTUNE_TEST_CLUSTER_ID,
+            Engine: "neptune",
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    stopCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { StopDBClusterCommand } = require("@aws-sdk/client-neptune");
+      // Act
+      try {
+        const result = await sfnNeptuneNeptuneClient(world).send(
+          new StopDBClusterCommand({ DBClusterIdentifier: SFN_NEPTUNE_TEST_CLUSTER_ID }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    startCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { StartDBClusterCommand } = require("@aws-sdk/client-neptune");
+      // Act
+      try {
+        const result = await sfnNeptuneNeptuneClient(world).send(
+          new StartDBClusterCommand({ DBClusterIdentifier: SFN_NEPTUNE_TEST_CLUSTER_ID }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
   };
 
   const executionHelpersImpl: ExecutionStepHelpers = {
@@ -139,56 +186,9 @@ Before({ tags: "@stepfunctionsneptune" }, function (this: SdkWorld) {
 // "a Step Functions state machine is created" is registered in stepfunctions.ts.
 // "an execution of the state machine is started" is registered in stepfunctions.ts.
 
-When("a Neptune cluster is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateDBClusterCommand } = require("@aws-sdk/client-neptune");
-  // Act
-  try {
-    const result = await sfnNeptuneNeptuneClient(this).send(
-      new CreateDBClusterCommand({
-        DBClusterIdentifier: SFN_NEPTUNE_TEST_CLUSTER_ID,
-        Engine: "neptune",
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("the Neptune cluster is stopped", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { StopDBClusterCommand } = require("@aws-sdk/client-neptune");
-  // Act
-  try {
-    const result = await sfnNeptuneNeptuneClient(this).send(
-      new StopDBClusterCommand({ DBClusterIdentifier: SFN_NEPTUNE_TEST_CLUSTER_ID }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
-
-When("the Neptune cluster is started", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { StartDBClusterCommand } = require("@aws-sdk/client-neptune");
-  // Act
-  try {
-    const result = await sfnNeptuneNeptuneClient(this).send(
-      new StartDBClusterCommand({ DBClusterIdentifier: SFN_NEPTUNE_TEST_CLUSTER_ID }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a Neptune cluster is created" is registered in neptune.ts (dispatches via clusterHelpers.createNamedCluster).
+// "the Neptune cluster is stopped" is registered in neptune.ts (dispatches via clusterHelpers.stopCluster).
+// "the Neptune cluster is started" is registered in neptune.ts (dispatches via clusterHelpers.startCluster).
 
 When(
   "a running execution fails to query because the Neptune cluster is stopped",
@@ -222,29 +222,11 @@ When(
 
 // "the cluster is {string}" is registered in cluster_common.ts (dispatches to assertClusterStatus).
 
-Then(
-  'the cluster is "STOPPED" and graph queries will be rejected',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe internal Neptune cluster STOPPED state in lws.
-    // No-op: invariant trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
+// "the cluster is \"STOPPED\" and graph queries will be rejected" is registered in cluster_common.ts.
+// "the cluster is \"AVAILABLE\" and ready to accept graph queries" is registered in cluster_common.ts (dispatches via clusterHelpers.assertClusterStatus).
 
-Then(
-  'the cluster is "AVAILABLE" and ready to accept graph queries',
-  async function (this: SdkWorld) {
-    // @internal: Cannot observe internal Neptune cluster restart in lws.
-    // No-op: invariant trivially satisfied in isolated lws context.
-    assert.ok(this.session, "Expected session to be initialized");
-  },
-);
-
-Then(`the execution is "SUCCEEDED"`, async function (this: SdkWorld) {
-  // @internal: Cannot observe internal execution Neptune task success in lws.
-  // No-op: invariant trivially satisfied in isolated lws context.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the execution is SUCCEEDED" — handled by the canonical
+// Then("the execution is {string}", ...) in stepfunctions_sqs.ts.
 
 Then(`the execution is "FAILED" with a connection error`, async function (this: SdkWorld) {
   // @internal: Cannot observe internal execution Neptune task failure in lws.

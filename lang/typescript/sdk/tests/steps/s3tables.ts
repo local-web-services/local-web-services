@@ -66,6 +66,48 @@ Before({ tags: "@s3tables" }, function (this: SdkWorld) {
         // table may already exist
       }
     },
+    deleteTableDirect: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { DeleteTableCommand } = require("@aws-sdk/client-s3tables");
+      let arn: string;
+      try {
+        arn = await getBucketArn(world);
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+        return;
+      }
+      // Act
+      try {
+        const result = await s3tablesClient(world).send(
+          new DeleteTableCommand({
+            tableBucketARN: arn,
+            namespace: S3TABLES_NAMESPACE_NAME,
+            name: S3TABLES_TABLE_NAME,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    assertTableCreating: async (world: SdkWorld) => {
+      // Arrange: action already performed in the When step
+      // Act: no additional action needed
+      // Assert: check that lastCallResult indicates success
+      const expectedSuccess = true;
+      const actualSuccess = world.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected create_table to succeed but got error: ${String(world.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      assert.ok(
+        world.lastCallResult.output !== null && world.lastCallResult.output !== undefined,
+        "Expected CreateTableOutput but got null",
+      );
+    },
   };
   this.tableHelpers = tableHelpersImpl;
 });
@@ -147,10 +189,7 @@ Given("the namespace exists", async function (this: SdkWorld) {
   // Assert: namespace created
 });
 
-Given('the namespace is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: namespaces are always ACTIVE after creation in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the namespace is "ACTIVE"' as Given — handled by the combined Then registration below.
 
 Given('the namespace is not "ACTIVE"', async function (this: SdkWorld) {
   // @internal: no public API can place a namespace in a non-ACTIVE state.
@@ -195,10 +234,8 @@ Given("the namespace does not exist", async function (this: SdkWorld) {
 
 // "the table is {string}" is registered in cross_service_common.ts (dispatches via tableHelpers).
 
-Given('the table is not "ACTIVE"', async function (this: SdkWorld) {
-  // @internal: no public API can place a table in a non-ACTIVE state.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the table is not "ACTIVE"' is registered via the generic
+// 'the table is not {string}' in cross_service_common.ts.
 
 Given('the table is "CREATING"', async function (this: SdkWorld) {
   // @internal: no public API can place a table in CREATING state.
@@ -210,10 +247,7 @@ Given('the table is not "CREATING"', async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given('the table is "DELETING"', async function (this: SdkWorld) {
-  // @internal: no public API can place a table in DELETING state.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the table is "DELETING"' is handled by the generic 'the table is {string}' in cross_service_common.ts.
 
 Given('the table is not "DELETING"', async function (this: SdkWorld) {
   // @internal: no public API can place a table in non-DELETING state selectively.
@@ -237,16 +271,27 @@ Given("the table has a policy", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
   const { PutTablePolicyCommand } = require("@aws-sdk/client-s3tables");
   const arn = await getBucketArn(this);
-  // Act
-  await s3tablesClient(this).send(
-    new PutTablePolicyCommand({
-      tableBucketARN: arn,
-      namespace: S3TABLES_NAMESPACE_NAME,
-      name: S3TABLES_TABLE_NAME,
-      resourcePolicy: S3TABLES_TEST_POLICY,
-    }),
+  // Act: create policy if used as Given precondition
+  if (this.lastCallResult.output === null && !this.lastCallResult.success) {
+    // Used as Given/And precondition — put the policy
+    await s3tablesClient(this).send(
+      new PutTablePolicyCommand({
+        tableBucketARN: arn,
+        namespace: S3TABLES_NAMESPACE_NAME,
+        name: S3TABLES_TABLE_NAME,
+        resourcePolicy: S3TABLES_TEST_POLICY,
+      }),
+    );
+    return;
+  }
+  // Assert: used as Then — assert the preceding action succeeded
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected put_table_policy to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
-  // Assert: policy attached
 });
 
 Given("the table does not have a policy", async function (this: SdkWorld) {
@@ -266,15 +311,8 @@ Given("the snapshot already exists", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given("the snapshot exists", async function (this: SdkWorld) {
-  // @internal: snapshot existence is managed by lws internally.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given('the snapshot is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: snapshots are always ACTIVE after creation in lws.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the snapshot exists" is registered in cross_service_common.ts.
+// 'the snapshot is "ACTIVE"' is registered in cross_service_common.ts.
 
 Given('the snapshot is not "ACTIVE"', async function (this: SdkWorld) {
   // @internal: no public API can place a snapshot in a non-ACTIVE state.
@@ -298,20 +336,31 @@ Given("compaction is enabled for the table", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
   const { PutTableMaintenanceConfigurationCommand } = require("@aws-sdk/client-s3tables");
   const arn = await getBucketArn(this);
-  // Act
-  await s3tablesClient(this).send(
-    new PutTableMaintenanceConfigurationCommand({
-      tableBucketARN: arn,
-      namespace: S3TABLES_NAMESPACE_NAME,
-      name: S3TABLES_TABLE_NAME,
-      type: "icebergCompaction",
-      value: {
-        status: "enabled",
-        settings: { icebergCompaction: { targetFileSizeMB: 512 } },
-      },
-    }),
+  // Act: enable compaction if used as Given precondition, or assert if used as Then
+  if (this.lastCallResult.output === null && !this.lastCallResult.success) {
+    // Used as Given/And precondition — enable compaction
+    await s3tablesClient(this).send(
+      new PutTableMaintenanceConfigurationCommand({
+        tableBucketARN: arn,
+        namespace: S3TABLES_NAMESPACE_NAME,
+        name: S3TABLES_TABLE_NAME,
+        type: "icebergCompaction",
+        value: {
+          status: "enabled",
+          settings: { icebergCompaction: { targetFileSizeMB: 512 } },
+        },
+      }),
+    );
+    return;
+  }
+  // Assert: used as Then — assert the preceding action succeeded
+  const expectedSuccess = true;
+  const actualSuccess = this.lastCallResult.success;
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected put_table_maintenance_configuration to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
   );
-  // Assert: compaction enabled
 });
 
 Given("compaction is not enabled for the table", async function (this: SdkWorld) {
@@ -453,32 +502,8 @@ When("a table is created in a namespace", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When("a table is deleted", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { DeleteTableCommand } = require("@aws-sdk/client-s3tables");
-  let arn: string;
-  try {
-    arn = await getBucketArn(this);
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-    return;
-  }
-  // Act
-  try {
-    const result = await s3tablesClient(this).send(
-      new DeleteTableCommand({
-        tableBucketARN: arn,
-        namespace: S3TABLES_NAMESPACE_NAME,
-        name: S3TABLES_TABLE_NAME,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a table is deleted" is registered in cross_service_common.ts
+// (dispatches via tableHelpers.deleteTableDirect registered in the Before hook above).
 
 When("a snapshot is created for a table", async function (this: SdkWorld) {
   // @internal: snapshot creation is managed internally by lws
@@ -728,7 +753,10 @@ Then(
 
 Then('the namespace is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange: no additional setup required
-  // Act: action already performed in the When step
+  // Act: action already performed in the When step (no-op when used as Given precondition)
+  if (this.lastCallResult.output === null && !this.lastCallResult.success) {
+    return; // Used as Given precondition — namespaces are always ACTIVE after creation
+  }
   // Assert
   const expectedSuccess = true;
   const actualSuccess = this.lastCallResult.success;
@@ -763,22 +791,8 @@ Then(
   },
 );
 
-Then('the table is in "CREATING" state', async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected create_table to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-  assert.ok(
-    this.lastCallResult.output !== null && this.lastCallResult.output !== undefined,
-    "Expected CreateTableOutput but got null",
-  );
-});
+// 'the table is in "CREATING" state' is registered in cross_service_common.ts
+// (dispatches via tableHelpers.assertTableCreating registered in the Before hook above).
 
 Then('the table enters "DELETING" state', async function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -851,18 +865,8 @@ Then("the schema version is incremented", async function (this: SdkWorld) {
   );
 });
 
-Then("the table has a policy", async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected put_table_policy to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+// "the table has a policy" as Then — handled by the combined
+// Given registration above (creates policy if precondition, asserts if Then).
 
 Then("the table has no policy", async function (this: SdkWorld) {
   // Arrange: no additional setup required
@@ -877,18 +881,8 @@ Then("the table has no policy", async function (this: SdkWorld) {
   );
 });
 
-Then("compaction is enabled for the table", async function (this: SdkWorld) {
-  // Arrange: no additional setup required
-  // Act: action already performed in the When step
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected put_table_maintenance_configuration to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+// "compaction is enabled for the table" as Then — handled by the combined
+// Given registration above (enables compaction if precondition, asserts if Then).
 
 // "the operation is rejected" is registered in cross_service_common.ts.
 

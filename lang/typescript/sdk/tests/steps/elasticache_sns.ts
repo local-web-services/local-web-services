@@ -75,6 +75,26 @@ Before({ tags: "@elasticachesns" }, function (this: SdkWorld) {
         `Expected cluster status "${expectedStatus}" but got "${actualStatus}"; expected_status=${expectedStatus} actual_status=${actualStatus}`,
       );
     },
+    createNamedCluster: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CreateCacheClusterCommand } = require("@aws-sdk/client-elasticache");
+      // Act
+      try {
+        const result = await elasticacheSnsElastiCacheClient(world).send(
+          new CreateCacheClusterCommand({
+            CacheClusterId: ELASTICACHE_SNS_CLUSTER_ID,
+            Engine: "redis",
+            CacheNodeType: "cache.t3.micro",
+            NumCacheNodes: 1,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
   };
 });
 
@@ -158,26 +178,7 @@ Given(
 
 // ── When: actions ─────────────────────────────────────────────────────────────
 
-When("an ElastiCache cluster is created", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateCacheClusterCommand } = require("@aws-sdk/client-elasticache");
-  // Act
-  try {
-    const result = await elasticacheSnsElastiCacheClient(this).send(
-      new CreateCacheClusterCommand({
-        CacheClusterId: ELASTICACHE_SNS_CLUSTER_ID,
-        Engine: "redis",
-        CacheNodeType: "cache.t3.micro",
-        NumCacheNodes: 1,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "an ElastiCache cluster is created" is registered in elasticache.ts (dispatches via clusterHelpers.createNamedCluster).
 
 // "an {string} topic is created" (When) is registered in cross_service_common.ts.
 

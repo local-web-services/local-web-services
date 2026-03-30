@@ -1,8 +1,8 @@
 /** Step definitions: apigateway_stepfunctions cross-service informal specification scenarios */
 
-import { Given, When, Then } from "@cucumber/cucumber";
+import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
-import type { SdkWorld } from "../support/world";
+import type { SdkWorld, ApiStepHelpers } from "../support/world";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -135,23 +135,31 @@ async function apigwSfnInvokeApi(
   return { statusCode: response.status, body: responseBody };
 }
 
+// ── Before hook: register API helpers for @apigatewaystepfunctions scenarios ──
+
+Before({ tags: "@apigatewaystepfunctions" }, function (this: SdkWorld) {
+  const apiHelpersImpl: ApiStepHelpers = {
+    createApi: async (world: SdkWorld) => {
+      const apiId = await apigwSfnCreateRestApi(world);
+      world.lastCallResult = { success: true, output: apiId };
+      return apiId;
+    },
+    createApiWithRoot: async (world: SdkWorld) => {
+      const apiId = await apigwSfnCreateRestApi(world);
+      world.lastCallResult = { success: true, output: apiId };
+    },
+  };
+  this.apiHelpers = apiHelpersImpl;
+});
+
 // ── Background ────────────────────────────────────────────────────────────────
 
 // "the system is initialized" is registered in cross_service_common.ts.
 
 // ── Given: API integration state — unique to cross-service suite ──────────────
 
-Given('the "API" has no integration configured', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: APIs have no integration configured by default.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given('the "API" already has an integration configured', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — cannot simulate pre-configured integration conflict.
-  assert.ok(this.session, "Expected session to be initialized");
-  (this as any)._apigwSfnSkip =
-    "Cannot simulate pre-configured StepFunctions integration conflict in lws";
-});
+// 'the "API" has no integration configured' and 'the "API" already has an integration configured'
+// — registered in cross_service_common.ts.
 
 Given('the "API" has a Step Functions integration configured', async function (this: SdkWorld) {
   // Arrange
@@ -214,22 +222,7 @@ Given('the integrated state machine is not "ACTIVE"', async function (this: SdkW
 
 // ── When: actions — unique to cross-service suite ─────────────────────────────
 
-When('a "REST" "API" is created', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  try {
-    const { CreateRestApiCommand } = require("@aws-sdk/client-api-gateway");
-    const result = await apigwClient(this).send(
-      new CreateRestApiCommand({ name: APIGW_SFN_TEST_API_NAME }),
-    );
-    (this as any)._apigwSfnRestApiId = result.id;
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a \"REST\" \"API\" is created" is registered in apigateway.ts (dispatches via apiHelpers.createApi).
 
 When("a Step Functions Express Workflow state machine is created", async function (this: SdkWorld) {
   // Arrange
@@ -433,10 +426,8 @@ Then('the execution is "FAILED" and the request is "FAILED"', async function (th
 
 // ── Then: invariants ──────────────────────────────────────────────────────────
 
-Then('every "IN_PROGRESS" request references an "ACTIVE" "API"', async function (this: SdkWorld) {
-  // Invariant: trivially satisfied in isolated lws context.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'every "IN_PROGRESS" request references an "ACTIVE" "API"'
+// — registered in cross_service_common.ts.
 
 // "every {string} execution references an {string} state machine" is in cross_service_common.ts.
 

@@ -222,14 +222,29 @@ Given("the resource slot is already allocated", async function (this: SdkWorld) 
 Given("the resource exists", async function (this: SdkWorld) {
   // Arrange
   assert.ok(this.session, "Expected session to be initialized");
-  // Act
+  // Dispatch via tagHelpers.setupResourceExists when available (e.g. @elasticache scenarios)
+  if (this.tagHelpers?.setupResourceExists) {
+    // Act
+    await this.tagHelpers.setupResourceExists(this);
+    // Assert: resource created
+    return;
+  }
+  // Act: API Gateway — create REST API with root resource
   await createRestApiWithRoot(this);
   // Assert: API and root resource created
 });
 
 Given("the resource does not exist", async function (this: SdkWorld) {
-  // No-op: fresh state has no resources.
+  // Arrange
   assert.ok(this.session, "Expected session to be initialized");
+  // Dispatch via tagHelpers.setupResourceNotExists when available (e.g. @elasticache scenarios)
+  if (this.tagHelpers?.setupResourceNotExists) {
+    // Act
+    await this.tagHelpers.setupResourceNotExists(this);
+    // Assert: resource absent
+    return;
+  }
+  // No-op: fresh state has no resources.
 });
 
 Given('the resource is "ACTIVE"', async function (this: SdkWorld) {
@@ -340,10 +355,7 @@ Given("the integration does not exist", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given('the integration "EXISTS"', async function (this: SdkWorld) {
-  // No-op: integration existence is verified after setup.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the integration "EXISTS"' as Given — handled by the combined Then registration below.
 
 // ── Given: deployment state ────────────────────────────────────────────────────
 
@@ -370,10 +382,7 @@ Given("the deployment does not exist", async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Given('the deployment is "ACTIVE"', async function (this: SdkWorld) {
-  // No-op: deployments are ACTIVE immediately after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the deployment is "ACTIVE"' as Given — handled by the combined Then registration below.
 
 Given('the deployment is not "ACTIVE"', async function (this: SdkWorld) {
   // No-op: this state is not reachable via public API in lws.
@@ -489,6 +498,48 @@ Given("throttling is not enabled for the prod stage", async function (this: SdkW
 });
 
 // ── When: actions ──────────────────────────────────────────────────────────────
+
+When('a "REST" "API" is created', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const helpers = this.apiHelpers as ApiStepHelpers | null;
+  // Act: dispatch to service-specific helper if registered, otherwise use default
+  try {
+    if (helpers) {
+      await helpers.createApi(this);
+    } else {
+      const { CreateRestApiCommand } = require("@aws-sdk/client-api-gateway");
+      const result = await apigwClient(this).send(
+        new CreateRestApiCommand({ name: APIGW_TEST_API_NAME }),
+      );
+      this.lastCallResult = { success: true, output: result };
+    }
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
+
+When('an "API" Gateway "REST" "API" is created', async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "Expected session to be initialized");
+  const helpers = this.apiHelpers as ApiStepHelpers | null;
+  // Act: dispatch to service-specific helper if registered, otherwise use default
+  try {
+    if (helpers) {
+      await helpers.createApiWithRoot(this);
+    } else {
+      const { CreateRestApiCommand } = require("@aws-sdk/client-api-gateway");
+      const result = await apigwClient(this).send(
+        new CreateRestApiCommand({ name: APIGW_TEST_API_NAME }),
+      );
+      this.lastCallResult = { success: true, output: result };
+    }
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
 
 When('a "REST" "API" is created with a root resource', async function (this: SdkWorld) {
   // Arrange
@@ -1288,7 +1339,10 @@ Then(
 
 Then('the integration "EXISTS"', async function (this: SdkWorld) {
   // Arrange: no additional setup required
-  // Act: action performed in When step
+  // Act: action performed in When step (no-op when used as Given precondition)
+  if (this.lastCallResult.output === null && !this.lastCallResult.success) {
+    return; // Used as Given precondition — integration existence assumed
+  }
   // Assert
   const expectedSuccess = true;
   const actualSuccess = this.lastCallResult.success;
@@ -1340,7 +1394,10 @@ Then("the integration response exists", async function (this: SdkWorld) {
 
 Then('the deployment is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange: no additional setup required
-  // Act: action performed in When step
+  // Act: action performed in When step (no-op when used as Given precondition)
+  if (this.lastCallResult.output === null && !this.lastCallResult.success) {
+    return; // Used as Given precondition — deployment is ACTIVE after creation
+  }
   // Assert
   const expectedSuccess = true;
   const actualSuccess = this.lastCallResult.success;

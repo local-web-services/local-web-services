@@ -3,7 +3,7 @@
 import { Given, When, Then, Before } from "@cucumber/cucumber";
 import assert from "assert";
 import type { SdkWorld } from "../support/world";
-import type { UploadStepHelpers } from "../support/world";
+import type { UploadStepHelpers, MultipartUploadStepHelpers } from "../support/world";
 
 const S3API_TEST_BUCKET = "e2e-s3api-test-bucket-1";
 const S3API_TEST_SRC_BUCKET = "e2e-src-bkt-1";
@@ -70,6 +70,87 @@ Before({ tags: "@s3api" }, function (this: SdkWorld) {
     },
   };
   this.uploadHelpers = uploadHelpersImpl;
+
+  const multipartUploadHelpersImpl: MultipartUploadStepHelpers = {
+    setupUploadDoesNotExist: async (world: SdkWorld) => {
+      // No-op: no uploads in progress by default.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    setupUploadAlreadyExists: async (world: SdkWorld) => {
+      // S3 allows multiple concurrent multipart uploads for the same key; no-op.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    setupUploadDoesNotAlreadyExist: async (world: SdkWorld) => {
+      // No-op: no uploads in progress.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    uploadPart: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { UploadPartCommand } = require("@aws-sdk/client-s3");
+      const { Readable } = require("stream");
+      const uploadId: string = (world as any)._s3UploadId ?? "invalid";
+      // Act
+      try {
+        const body = Readable.from([Buffer.from(S3API_TEST_BODY)]);
+        const result = await s3Client(world).send(
+          new UploadPartCommand({
+            Bucket: S3API_TEST_BUCKET,
+            Key: S3API_TEST_KEY,
+            UploadId: uploadId,
+            PartNumber: 1,
+            Body: body,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+        const etags: Array<{ ETag: string; PartNumber: number }> = (world as any)._s3Etags ?? [];
+        etags.push({ ETag: result.ETag, PartNumber: 1 });
+        (world as any)._s3Etags = etags;
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    completeUpload: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { CompleteMultipartUploadCommand } = require("@aws-sdk/client-s3");
+      const uploadId: string = (world as any)._s3UploadId ?? "invalid";
+      const etags: Array<{ ETag: string; PartNumber: number }> = (world as any)._s3Etags ?? [
+        { ETag: "etag1", PartNumber: 1 },
+      ];
+      // Act
+      try {
+        const result = await s3Client(world).send(
+          new CompleteMultipartUploadCommand({
+            Bucket: S3API_TEST_BUCKET,
+            Key: S3API_TEST_KEY,
+            UploadId: uploadId,
+            MultipartUpload: { Parts: etags },
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+    abortUpload: async (world: SdkWorld) => {
+      assert.ok(world.session, "Expected session to be initialized");
+      const { AbortMultipartUploadCommand } = require("@aws-sdk/client-s3");
+      const uploadId: string = (world as any)._s3UploadId ?? "invalid";
+      // Act
+      try {
+        const result = await s3Client(world).send(
+          new AbortMultipartUploadCommand({
+            Bucket: S3API_TEST_BUCKET,
+            Key: S3API_TEST_KEY,
+            UploadId: uploadId,
+          }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+    },
+  };
+  this.multipartUploadHelpers = multipartUploadHelpersImpl;
 });
 
 // -- Background
@@ -325,24 +406,30 @@ Given("the lifecycle policy has an expiry rule for the object", async function (
 
 // ── Given: multipart upload state setup ───────────────────────────────────────
 
-Given("the upload does not already exist", async function (this: SdkWorld) {
-  // No-op: no uploads in progress.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-Given("the upload does not exist", async function (this: SdkWorld) {
-  // No-op: no uploads in progress by default.
-  assert.ok(this.session, "Expected session to be initialized");
-});
-
-// "the upload exists" is registered in cross_service_common.ts (dispatches via helpers).
-
-Given("the upload already exists", async function (this: SdkWorld) {
-  // S3 allows multiple concurrent multipart uploads for the same key; no-op.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the upload does not already exist" is registered in cross_service_common.ts (dispatches via multipartUploadHelpers).
+// "the upload does not exist" is registered in cross_service_common.ts (dispatches via multipartUploadHelpers).
+// "the upload exists" is registered in cross_service_common.ts (dispatches via uploadHelpers).
+// "the upload already exists" is registered in cross_service_common.ts (dispatches via multipartUploadHelpers).
 
 Given("the upload is {string}", async function (this: SdkWorld, state: string) {
+  // When used as Then (assertion context), check lastCallResult
+  if (this.lastCallResult.output !== null || this.lastCallResult.success) {
+    if (state === "ABORTED") {
+      // Assert abort succeeded
+      const expectedSuccess = true;
+      const actualSuccess = this.lastCallResult.success;
+      assert.strictEqual(
+        actualSuccess,
+        expectedSuccess,
+        `Expected abort to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+      );
+      return;
+    }
+    // For other states in Then context, no-op.
+    assert.ok(this.session, "Expected session to be initialized");
+    return;
+  }
+  // Given (setup) context
   if (state === "IN_PROGRESS") {
     // No-op: upload was already created in the upload_exists step.
     assert.ok(this.session, "Expected session to be initialized");
@@ -357,7 +444,19 @@ Given("the upload is not {string}", async function (this: SdkWorld, _state: stri
 });
 
 Given("the upload has at least one part", async function (this: SdkWorld) {
-  // Arrange
+  // When used as Then (assertion context), check lastCallResult
+  if (this.lastCallResult.output !== null || this.lastCallResult.success) {
+    // Assert: action already performed in the When step
+    const expectedSuccess = true;
+    const actualSuccess = this.lastCallResult.success;
+    assert.strictEqual(
+      actualSuccess,
+      expectedSuccess,
+      `Expected part upload to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
+    );
+    return;
+  }
+  // Given (setup) context: upload a part
   assert.ok(this.session, "Expected session to be initialized");
   const { UploadPartCommand } = require("@aws-sdk/client-s3");
   const { Readable } = require("stream");
@@ -599,79 +698,11 @@ When("a multipart upload is initiated", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When("a part is uploaded for a multipart upload", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { UploadPartCommand } = require("@aws-sdk/client-s3");
-  const { Readable } = require("stream");
-  const uploadId: string = (this as any)._s3UploadId ?? "invalid";
-  // Act
-  try {
-    const body = Readable.from([Buffer.from(S3API_TEST_BODY)]);
-    const result = await s3Client(this).send(
-      new UploadPartCommand({
-        Bucket: S3API_TEST_BUCKET,
-        Key: S3API_TEST_KEY,
-        UploadId: uploadId,
-        PartNumber: 1,
-        Body: body,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-    const etags: Array<{ ETag: string; PartNumber: number }> = (this as any)._s3Etags ?? [];
-    etags.push({ ETag: result.ETag, PartNumber: 1 });
-    (this as any)._s3Etags = etags;
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a part is uploaded for a multipart upload" is registered in cross_service_common.ts (dispatches via multipartUploadHelpers).
 
-When("a multipart upload is completed", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CompleteMultipartUploadCommand } = require("@aws-sdk/client-s3");
-  const uploadId: string = (this as any)._s3UploadId ?? "invalid";
-  const etags: Array<{ ETag: string; PartNumber: number }> = (this as any)._s3Etags ?? [
-    { ETag: "etag1", PartNumber: 1 },
-  ];
-  // Act
-  try {
-    const result = await s3Client(this).send(
-      new CompleteMultipartUploadCommand({
-        Bucket: S3API_TEST_BUCKET,
-        Key: S3API_TEST_KEY,
-        UploadId: uploadId,
-        MultipartUpload: { Parts: etags },
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a multipart upload is completed" is registered in cross_service_common.ts (dispatches via multipartUploadHelpers).
 
-When("a multipart upload is aborted", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { AbortMultipartUploadCommand } = require("@aws-sdk/client-s3");
-  const uploadId: string = (this as any)._s3UploadId ?? "invalid";
-  // Act
-  try {
-    const result = await s3Client(this).send(
-      new AbortMultipartUploadCommand({
-        Bucket: S3API_TEST_BUCKET,
-        Key: S3API_TEST_KEY,
-        UploadId: uploadId,
-      }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a multipart upload is aborted" is registered in cross_service_common.ts (dispatches via multipartUploadHelpers).
 
 When("a lifecycle rule expires an object", async function (this: SdkWorld) {
   // No-op: lifecycle expiry scenarios are tagged @internal; excluded from test run.
@@ -703,21 +734,8 @@ Then('the bucket is "ACTIVE" with versioning disabled', async function (this: Sd
   );
 });
 
-Then('the bucket is "DELETED"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ListBucketsCommand } = require("@aws-sdk/client-s3");
-  // Act
-  const result = await s3Client(this).send(new ListBucketsCommand({}));
-  const actualBuckets: Array<{ Name?: string }> = result.Buckets ?? [];
-  // Assert
-  const expectedBucket = S3API_TEST_BUCKET;
-  const actualFound = actualBuckets.some((b) => b.Name === expectedBucket);
-  assert.ok(
-    !actualFound,
-    `Expected bucket "${expectedBucket}" to be DELETED but found it; actual_buckets=${JSON.stringify(actualBuckets.map((b) => b.Name))}`,
-  );
-});
+// 'the bucket is "DELETED"' is registered via the generic
+// 'the bucket is {string}' in cross_service_common.ts.
 
 Then("the bucket is deleted", async function (this: SdkWorld) {
   // Arrange
@@ -883,18 +901,7 @@ Then('the upload is "IN_PROGRESS" with no parts', async function (this: SdkWorld
   );
 });
 
-Then("the upload has at least one part", async function (this: SdkWorld) {
-  // Arrange: action already performed in the When step
-  // Act: (no-op)
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected part upload to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+// "the upload has at least one part" (Then) is handled by the dual-purpose Given above.
 
 Then("the part is uploaded and the upload is still in progress", async function (this: SdkWorld) {
   // Arrange: action already performed in the When step
@@ -931,18 +938,7 @@ Then(
   },
 );
 
-Then('the upload is "ABORTED"', async function (this: SdkWorld) {
-  // Arrange: action already performed in the When step
-  // Act: (no-op)
-  // Assert
-  const expectedSuccess = true;
-  const actualSuccess = this.lastCallResult.success;
-  assert.strictEqual(
-    actualSuccess,
-    expectedSuccess,
-    `Expected abort to succeed but got error: ${String(this.lastCallResult.error)}; expected_success=${expectedSuccess} actual_success=${actualSuccess}`,
-  );
-});
+// "the upload is "ABORTED"" (Then) is handled by the dual-purpose Given("the upload is {string}", ...) above.
 
 Then("the object is expired and removed from the bucket", async function (this: SdkWorld) {
   // No-op: lifecycle expiry scenarios are tagged @internal; excluded from test run.

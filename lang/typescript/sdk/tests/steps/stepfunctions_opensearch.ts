@@ -91,6 +91,42 @@ Before({ tags: "@stepfunctionsopensearch" }, function (this: SdkWorld) {
       (world as any)._sfnOpenSearchDomainName = expectedDomainName;
       assert.ok(expectedDomainName, "Expected domain name to be defined");
     },
+    setupDomainNotAlreadyExists: async (world: SdkWorld) => {
+      // Arrange / Act / Assert — no-op: fresh state after session reset has no OpenSearch domains.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
+    setupDomainAlreadyExists: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      // Act: create domain (ignore if already exists)
+      try {
+        const expectedDomainName = await sfnOpenSearchCreateDomain(this);
+        (world as any)._sfnOpenSearchDomainName = expectedDomainName;
+      } catch {
+        // domain may already exist; desired state is that it exists
+      }
+      // Assert: domain exists
+    },
+    beginDomainConfigUpdate: async (world: SdkWorld) => {
+      // Arrange
+      assert.ok(world.session, "Expected session to be initialized");
+      const { UpdateDomainConfigCommand } = require("@aws-sdk/client-opensearch");
+      // Act
+      try {
+        const result = await sfnOpenSearchOpenSearchClient(this).send(
+          new UpdateDomainConfigCommand({ DomainName: SFN_OPENSEARCH_TEST_DOMAIN_NAME }),
+        );
+        world.lastCallResult = { success: true, output: result };
+      } catch (err: unknown) {
+        world.lastCallResult = { success: false, output: null, error: err };
+      }
+      // Assert: captured in lastCallResult
+    },
+    assertDomainProcessing: async (world: SdkWorld) => {
+      // @internal: Cannot observe internal domain PROCESSING state in lws.
+      // No-op: invariant trivially satisfied in isolated lws context.
+      assert.ok(world.session, "Expected session to be initialized");
+    },
   };
   this.domainHelpers = domainHelpersImpl;
 });
@@ -99,20 +135,9 @@ Before({ tags: "@stepfunctionsopensearch" }, function (this: SdkWorld) {
 
 // ── Given: domain existence ───────────────────────────────────────────────────
 
-Given("the domain does not already exist", async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: fresh state after session reset has no OpenSearch domains.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the domain does not already exist" is registered in elasticsearch.ts (dispatches via domainHelpers.setupDomainNotAlreadyExists).
 
-Given("the domain already exists", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  const expectedDomainName = await sfnOpenSearchCreateDomain(this);
-  // Assert: domain created
-  (this as any)._sfnOpenSearchDomainName = expectedDomainName;
-  assert.ok(expectedDomainName, "Expected domain name to be defined");
-});
+// "the domain already exists" is registered in elasticsearch.ts (dispatches via domainHelpers.setupDomainAlreadyExists).
 
 // "the domain exists" is registered in cross_service_common.ts (dispatches via domainHelpers).
 
@@ -124,11 +149,7 @@ Given("the domain already exists", async function (this: SdkWorld) {
 
 // "the domain is not {string}" is registered in cross_service_common.ts.
 
-Given('the domain is "PROCESSING"', async function (this: SdkWorld) {
-  // @internal: Cannot force a domain into PROCESSING state via public API.
-  // No-op: treat as precondition satisfied.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the domain is "PROCESSING"' is handled by the generic 'the domain is {string}' in cross_service_common.ts.
 
 Given('the domain is not "PROCESSING"', async function (this: SdkWorld) {
   // Arrange
@@ -172,21 +193,7 @@ When('an OpenSearch domain is created and becomes "ACTIVE"', async function (thi
   // Assert: captured in lastCallResult
 });
 
-When("a domain configuration update begins", async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { UpdateDomainConfigCommand } = require("@aws-sdk/client-opensearch");
-  // Act
-  try {
-    const result = await sfnOpenSearchOpenSearchClient(this).send(
-      new UpdateDomainConfigCommand({ DomainName: SFN_OPENSEARCH_TEST_DOMAIN_NAME }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "a domain configuration update begins" is registered in elasticsearch.ts (dispatches via domainHelpers.beginDomainConfigUpdate).
 
 When("the domain configuration update completes", async function (this: SdkWorld) {
   // @internal: Cannot trigger internal domain processing completion in lws.
@@ -237,17 +244,10 @@ Then('the domain is "ACTIVE" again', async function (this: SdkWorld) {
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then('the domain is "PROCESSING" and "API" calls may fail', async function (this: SdkWorld) {
-  // @internal: Cannot observe internal domain PROCESSING state in lws.
-  // No-op: invariant trivially satisfied in isolated lws context.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// 'the domain is "PROCESSING" and "API" calls may fail' is registered in elasticsearch.ts (dispatches via domainHelpers.assertDomainProcessing).
 
-Then(`the execution is "SUCCEEDED"`, async function (this: SdkWorld) {
-  // @internal: Cannot observe internal execution OpenSearch task success in lws.
-  // No-op: invariant trivially satisfied in isolated lws context.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the execution is SUCCEEDED" — handled by the canonical
+// Then("the execution is {string}", ...) in stepfunctions_sqs.ts.
 
 Then(`the execution is "FAILED" with a connection error`, async function (this: SdkWorld) {
   // @internal: Cannot observe internal execution OpenSearch task failure in lws.
