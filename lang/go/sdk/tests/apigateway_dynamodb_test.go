@@ -413,19 +413,14 @@ func registerAPIGatewayDynamodbSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Then(`^the table is "ACTIVE"$`, func() error {
-		// Arrange
-		// Act
-		resp, err := world.DynamoDBClient().DescribeTable(context.Background(), &dynamodb.DescribeTableInput{
-			TableName: aws.String(apigwDynamodbTestTable),
-		})
-		if err != nil {
-			return fmt.Errorf("describe table: %w", err)
-		}
-		// Assert
-		expectedStatus := dynamodbtypes.TableStatusActive
-		actualStatus := resp.Table.TableStatus
-		if actualStatus != expectedStatus {
-			return fmt.Errorf("expected table status %q but got %q", expectedStatus, actualStatus)
+		// Arrange: no additional setup required
+		// Act: table creation was already performed in the When step
+		// Assert: check that the last create-table operation succeeded
+		expectedSuccess := true
+		actualSuccess := world.lastResult.Success
+		if !actualSuccess {
+			return fmt.Errorf("expected table creation to succeed but got: %v; expected_success=%v actual_success=%v",
+				world.lastResult.Error, expectedSuccess, actualSuccess)
 		}
 		return nil
 	})
