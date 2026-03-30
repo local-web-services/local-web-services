@@ -25,6 +25,19 @@ class CognitoIdpPoolOps {
       case "CreateUserPool":
         {
           String name = (String) body.get("PoolName");
+          boolean poolNameExists =
+              store.pools.values().stream().anyMatch(p -> name.equals(p.get("Name")));
+          if (poolNameExists) {
+            helpers.sendJson(
+                exchange,
+                400,
+                Map.of(
+                    "__type",
+                    "ResourceConflictException",
+                    "message",
+                    "Pool already exists"));
+            return true;
+          }
           String id = REGION + "_" + CognitoIdpHelpers.uuid9();
           double now = CognitoIdpHelpers.nowSeconds();
           Map<String, Object> pool = new LinkedHashMap<>();

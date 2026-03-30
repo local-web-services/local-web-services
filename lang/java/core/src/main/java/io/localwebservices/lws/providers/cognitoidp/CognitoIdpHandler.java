@@ -129,6 +129,18 @@ public class CognitoIdpHandler implements HttpHandler {
         {
           String poolId = (String) body.get("UserPoolId");
           String username = (String) body.get("Username");
+          Map<String, Map<String, Object>> poolUsers = store.users.get(poolId);
+          if (poolUsers == null || !poolUsers.containsKey(username)) {
+            helpers.sendJson(
+                exchange,
+                400,
+                Map.of(
+                    "__type",
+                    "ResourceNotFoundException",
+                    "message",
+                    "User " + username + " not found"));
+            break;
+          }
           Map<String, Object> user = helpers.requireUser(poolId, username);
           user.put("Enabled", false);
           user.put("UserLastModifiedDate", CognitoIdpHelpers.nowSeconds());
@@ -140,6 +152,18 @@ public class CognitoIdpHandler implements HttpHandler {
         {
           String poolId = (String) body.get("UserPoolId");
           String username = (String) body.get("Username");
+          Map<String, Map<String, Object>> poolUsers = store.users.get(poolId);
+          if (poolUsers == null || !poolUsers.containsKey(username)) {
+            helpers.sendJson(
+                exchange,
+                400,
+                Map.of(
+                    "__type",
+                    "ResourceNotFoundException",
+                    "message",
+                    "User " + username + " not found"));
+            break;
+          }
           Map<String, Object> user = helpers.requireUser(poolId, username);
           user.put("Enabled", true);
           user.put("UserLastModifiedDate", CognitoIdpHelpers.nowSeconds());
@@ -289,7 +313,7 @@ public class CognitoIdpHandler implements HttpHandler {
       user.put("TemporaryPassword", null);
     } else {
       user.put("TemporaryPassword", password);
-      user.put("UserStatus", "FORCE_CHANGE_PASSWORD");
+      user.put("UserStatus", "RESET_REQUIRED");
     }
     user.put("UserLastModifiedDate", CognitoIdpHelpers.nowSeconds());
     helpers.sendJson(exchange, 200, Map.of());
@@ -300,6 +324,18 @@ public class CognitoIdpHandler implements HttpHandler {
       throws IOException {
     String poolId = (String) body.get("UserPoolId");
     String username = (String) body.get("Username");
+    Map<String, Map<String, Object>> poolUsers = store.users.get(poolId);
+    if (poolUsers == null || !poolUsers.containsKey(username)) {
+      helpers.sendJson(
+          exchange,
+          400,
+          Map.of(
+              "__type",
+              "ResourceNotFoundException",
+              "message",
+              "User " + username + " not found"));
+      return;
+    }
     Map<String, Object> user = helpers.requireUser(poolId, username);
     List<Map<String, Object>> newAttrs =
         (List<Map<String, Object>>) body.getOrDefault("UserAttributes", List.of());

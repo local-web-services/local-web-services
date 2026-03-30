@@ -236,6 +236,15 @@ public class SqsHandler implements HttpHandler {
         }
       case "SendMessageBatch":
         {
+          if (state.getCapacityConfig("sqs").isExhausted()) {
+            sendError(
+                exchange,
+                "AWS.SimpleQueueService.QueueDeletedRecently",
+                "Service capacity exhausted",
+                true,
+                400);
+            break;
+          }
           String queueUrl = (String) body.get("QueueUrl");
           if (queueUrl == null) queueUrl = extractQueueUrlFromPath(path);
           SqsStore.LocalQueue q = store.getQueue(queueUrl);

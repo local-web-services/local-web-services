@@ -7,6 +7,7 @@ import io.localwebservices.lws.ServerState;
 import io.localwebservices.lws.middleware.ChaosMiddleware;
 import io.localwebservices.lws.middleware.IamMiddleware;
 import io.localwebservices.lws.providers.dynamodb.DynamoDbHandler;
+import io.localwebservices.lws.providers.lambda.LambdaHandler;
 import io.localwebservices.lws.providers.sns.SnsHandler;
 import io.localwebservices.lws.providers.sqs.SqsHandler;
 import io.localwebservices.lws.providers.stepfunctions.StepFunctionsHandler;
@@ -49,6 +50,11 @@ public class EventBridgeHandler implements HttpHandler {
   /** Wires in the DynamoDB handler for EventBridge→DynamoDB target dispatch. */
   public void setDynamoDbHandler(DynamoDbHandler dynamoDbHandler) {
     dispatchOps.setDynamoDbHandler(dynamoDbHandler);
+  }
+
+  /** Wires in the Lambda handler for EventBridge→Lambda target dispatch. */
+  public void setLambdaHandler(LambdaHandler lambdaHandler) {
+    dispatchOps.setLambdaHandler(lambdaHandler);
   }
 
   /**

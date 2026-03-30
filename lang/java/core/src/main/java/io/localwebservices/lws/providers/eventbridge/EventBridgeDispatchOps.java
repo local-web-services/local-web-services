@@ -3,6 +3,7 @@ package io.localwebservices.lws.providers.eventbridge;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.localwebservices.lws.ServerState;
 import io.localwebservices.lws.providers.dynamodb.DynamoDbHandler;
+import io.localwebservices.lws.providers.lambda.LambdaHandler;
 import io.localwebservices.lws.providers.sns.SnsHandler;
 import io.localwebservices.lws.providers.sqs.SqsHandler;
 import io.localwebservices.lws.providers.stepfunctions.StepFunctionsHandler;
@@ -27,6 +28,7 @@ class EventBridgeDispatchOps {
   private SnsHandler snsHandler;
   private StepFunctionsHandler stepFunctionsHandler;
   private DynamoDbHandler dynamoDbHandler;
+  private LambdaHandler lambdaHandler;
 
   EventBridgeDispatchOps(EventBridgeStore store, ServerState state) {
     this.store = store;
@@ -47,6 +49,10 @@ class EventBridgeDispatchOps {
 
   void setDynamoDbHandler(DynamoDbHandler dynamoDbHandler) {
     this.dynamoDbHandler = dynamoDbHandler;
+  }
+
+  void setLambdaHandler(LambdaHandler lambdaHandler) {
+    this.lambdaHandler = lambdaHandler;
   }
 
   /**
@@ -164,6 +170,12 @@ class EventBridgeDispatchOps {
       putParams.put("TableName", tableName);
       putParams.put("Item", item);
       dynamoDbHandler.executePutItem(putParams);
+    } else if ((arn.contains(":lambda:") || arn.contains(":function:")) && lambdaHandler != null) {
+      String functionName = arn.substring(arn.lastIndexOf(':') + 1);
+      if (functionName.contains("/")) {
+        functionName = functionName.substring(functionName.lastIndexOf('/') + 1);
+      }
+      lambdaHandler.invokeFunction(functionName, eventJson);
     }
   }
 }

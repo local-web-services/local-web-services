@@ -213,6 +213,7 @@ public class LwsServer {
       HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
       LambdaHandler lambdaHandler = new LambdaHandler(state);
       s3Handler.setLambdaHandler(lambdaHandler);
+      eventBridgeHandler.setLambdaHandler(lambdaHandler);
       server.createContext("/", lambdaHandler);
       server.setExecutor(Executors.newCachedThreadPool());
       server.start();

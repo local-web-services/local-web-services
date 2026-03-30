@@ -105,6 +105,13 @@ public class SqsStore {
         return (int) messages.stream().filter(m -> m.visibleAt <= now).count();
       }
     }
+
+    public int approximateNotVisibleCount() {
+      long now = System.currentTimeMillis();
+      synchronized (messages) {
+        return (int) messages.stream().filter(m -> m.visibleAt > now).count();
+      }
+    }
   }
 
   private final Map<String, LocalQueue> queues = new ConcurrentHashMap<>();
