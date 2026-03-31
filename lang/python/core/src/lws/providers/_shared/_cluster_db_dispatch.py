@@ -46,6 +46,7 @@ async def dispatch_request(
     lc: ResourceLifecycleConfig,
     cluster_tracker: ResourceStateTracker,
     instance_tracker: ResourceStateTracker,
+    snapshot_tracker: ResourceStateTracker,
     check_cluster_lifecycle: Any,
     check_instance_lifecycle: Any,
     run_with_lifecycle: Any,
@@ -81,6 +82,14 @@ async def dispatch_request(
         return wrap(resp)
 
     resp = await run_with_lifecycle(
-        handler, state, body, config, lc, cluster_tracker, instance_tracker, action
+        handler,
+        state,
+        body,
+        config,
+        lc,
+        cluster_tracker,
+        instance_tracker,
+        snapshot_tracker,
+        action,
     )
     return wrap(resp)

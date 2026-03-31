@@ -6,6 +6,8 @@ file below the project's 500-line limit.
 
 from __future__ import annotations
 
+from typing import Any
+
 from fastapi import Response
 
 from lws.providers._shared._cluster_db_state import (
@@ -20,6 +22,14 @@ from lws.providers._shared._cluster_db_state import (
     _describe_snapshot,
 )
 from lws.providers._shared.aws_capacity import check_capacity
+from lws.providers._shared.aws_lifecycle import (
+    ResourceLifecycleConfig,
+    ResourceStateTracker,
+    apply_delete_lifecycle,
+)
+from lws.providers._shared.response_helpers import (
+    creating_guard as _creating_guard,
+)
 from lws.providers._shared.response_helpers import (
     error_response as _error_response,
 )
@@ -66,7 +76,7 @@ async def handle_create_db_cluster_snapshot(state: _ClusterDBState, body: dict, 
 
 
 async def handle_describe_db_cluster_snapshots(
-    state: _ClusterDBState, body: dict, _config
+    state: _ClusterDBState, body: dict, _config, *, snapshot_tracker=None
 ) -> Response:
     """Describe DB cluster snapshots."""
     sid = body.get("DBClusterSnapshotIdentifier")
@@ -77,8 +87,20 @@ async def handle_describe_db_cluster_snapshots(
                 "DBClusterSnapshotNotFoundFault",
                 f"Snapshot {sid} not found.",
             )
-        return _json_response({"DBClusterSnapshots": [_describe_snapshot(snapshot)]})
-    snapshots = [_describe_snapshot(s) for s in state.snapshots.values()]
+        raw = _describe_snapshot(snapshot)
+        if snapshot_tracker is not None:
+            lc_state = snapshot_tracker.get_state(sid)
+            if lc_state is not None:
+                raw["Status"] = lc_state.lower()
+        return _json_response({"DBClusterSnapshots": [raw]})
+    snapshots = []
+    for s in state.snapshots.values():
+        raw = _describe_snapshot(s)
+        if snapshot_tracker is not None:
+            lc_state = snapshot_tracker.get_state(s.snapshot_identifier)
+            if lc_state is not None:
+                raw["Status"] = lc_state.lower()
+        snapshots.append(raw)
     return _json_response({"DBClusterSnapshots": snapshots})
 
 
@@ -240,3 +262,58 @@ async def handle_modify_db_instance(state: _ClusterDBState, body: dict, _config)
         )
     instance.status = "modifying"
     return _json_response({"DBInstance": _describe_instance(instance)})
+
+
+async def lifecycle_create_snapshot(
+    handler: Any,
+    state: _ClusterDBState,
+    body: dict,
+    config: Any,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Invoke create-snapshot handler and register lifecycle CREATING state."""
+    resp = await handler(state, body, config)
+    if resp.status_code == 200:
+        sid = body.get("DBClusterSnapshotIdentifier", "")
+        tracker.set_state(sid, "CREATING")
+        tracker.schedule_transition(sid, "available", lc.create_dwell_ms)
+    return resp
+
+
+async def lifecycle_delete_snapshot(
+    handler: Any,
+    state: _ClusterDBState,
+    body: dict,
+    config: Any,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Guard against deleting a creating snapshot and apply delete lifecycle."""
+    sid = body.get("DBClusterSnapshotIdentifier", "")
+    guard = _creating_guard(
+        sid, "InvalidDBClusterSnapshotStateFault", "DB cluster snapshot", tracker.get_state(sid)
+    )
+    if guard is not None:
+        return guard
+    resp = await handler(state, body, config)
+    return apply_delete_lifecycle(resp, sid, lc, tracker)
+
+
+async def run_snapshot_lifecycle(
+    handler: Any,
+    state: _ClusterDBState,
+    body: dict,
+    config: Any,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+    action: str,
+) -> Response | None:
+    """Handle snapshot-specific lifecycle. Returns None to fall through."""
+    if action == "CreateDBClusterSnapshot":
+        return await lifecycle_create_snapshot(handler, state, body, config, lc, tracker)
+    if action == "DeleteDBClusterSnapshot":
+        return await lifecycle_delete_snapshot(handler, state, body, config, lc, tracker)
+    if action == "DescribeDBClusterSnapshots":
+        return await handler(state, body, config, snapshot_tracker=tracker)
+    return None

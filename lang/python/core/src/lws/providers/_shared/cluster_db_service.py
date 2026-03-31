@@ -45,6 +45,9 @@ from lws.providers._shared._cluster_db_extra_handlers import (
 from lws.providers._shared._cluster_db_extra_handlers import (
     handle_stop_db_cluster as _handle_stop_db_cluster,
 )
+from lws.providers._shared._cluster_db_extra_handlers import (
+    run_snapshot_lifecycle as _run_snapshot_lifecycle,
+)
 from lws.providers._shared._cluster_db_state import (
     _apply_tags,
     _cluster_available_guard,
@@ -388,9 +391,11 @@ def create_cluster_db_app(
     _lc = config.lifecycle or ResourceLifecycleConfig()
     _cluster_tracker = ResourceStateTracker(_lc)
     _instance_tracker = ResourceStateTracker(_lc)
+    _snapshot_tracker = ResourceStateTracker(_lc)
     if registry is not None:
         register_tracker(registry, config.service_name, "cluster", _cluster_tracker)
         register_tracker(registry, config.service_name, "instance", _instance_tracker)
+        register_tracker(registry, config.service_name, "snapshot", _snapshot_tracker)
 
     app = FastAPI(title=f"LDK {config.display_name}")
     app.add_middleware(RequestLoggingMiddleware, logger=logger, service_name=config.service_name)
@@ -430,12 +435,35 @@ def create_cluster_db_app(
             _lc,
             _cluster_tracker,
             _instance_tracker,
+            _snapshot_tracker,
             _check_cluster_read_lifecycle,
             _check_instance_read_lifecycle,
             _run_with_lifecycle,
         )
 
     return app, state
+
+
+async def _run_cluster_instance_lifecycle(
+    handler: Any,
+    state: _ClusterDBState,
+    body: dict,
+    config: ClusterDBConfig,
+    lc: ResourceLifecycleConfig,
+    cluster_tracker: ResourceStateTracker,
+    instance_tracker: ResourceStateTracker,
+    action: str,
+) -> Response | None:
+    """Handle cluster/instance lifecycle. Returns None to fall through."""
+    if action == "CreateDBCluster":
+        return await _lifecycle_create_cluster(handler, state, body, config, lc, cluster_tracker)
+    if action == "DeleteDBCluster":
+        return await _lifecycle_delete_cluster(handler, state, body, config, lc, cluster_tracker)
+    if action == "CreateDBInstance":
+        return await _lifecycle_create_instance(handler, state, body, config, lc, instance_tracker)
+    if action == "DeleteDBInstance":
+        return await _lifecycle_delete_instance(handler, state, body, config, lc, instance_tracker)
+    return None
 
 
 async def _run_with_lifecycle(
@@ -446,15 +474,19 @@ async def _run_with_lifecycle(
     lc: ResourceLifecycleConfig,
     cluster_tracker: ResourceStateTracker,
     instance_tracker: ResourceStateTracker,
+    snapshot_tracker: ResourceStateTracker,
     action: str,
 ) -> Response:
     """Run handler, applying lifecycle management for create/delete actions."""
-    if action == "CreateDBCluster" and lc.enabled:
-        return await _lifecycle_create_cluster(handler, state, body, config, lc, cluster_tracker)
-    if action == "DeleteDBCluster" and lc.enabled:
-        return await _lifecycle_delete_cluster(handler, state, body, config, lc, cluster_tracker)
-    if action == "CreateDBInstance" and lc.enabled:
-        return await _lifecycle_create_instance(handler, state, body, config, lc, instance_tracker)
-    if action == "DeleteDBInstance" and lc.enabled:
-        return await _lifecycle_delete_instance(handler, state, body, config, lc, instance_tracker)
+    if lc.enabled:
+        resp = await _run_cluster_instance_lifecycle(
+            handler, state, body, config, lc, cluster_tracker, instance_tracker, action
+        )
+        if resp is not None:
+            return resp
+        snap_resp = await _run_snapshot_lifecycle(
+            handler, state, body, config, lc, snapshot_tracker, action
+        )
+        if snap_resp is not None:
+            return snap_resp
     return await handler(state, body, config)

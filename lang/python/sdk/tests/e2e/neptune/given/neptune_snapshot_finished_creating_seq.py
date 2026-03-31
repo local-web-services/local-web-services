@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
+
+from ..constants import TEST_SNAPSHOT
 
 
 @given('a "neptune" "cluster" neptune snapshot finishes creating')
-def neptune_snapshot_finished_creating_seq():
-    pytest.skip("Cannot trigger internal Neptune snapshot creation completion in lws")
+def neptune_snapshot_finished_creating_seq(lws_session):
+    lws_session.inject_state("neptune", "snapshot", TEST_SNAPSHOT, "available")
