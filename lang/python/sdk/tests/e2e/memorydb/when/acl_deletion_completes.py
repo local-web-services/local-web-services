@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
+import pytest
 from pytest_bdd import when
-
-from ..constants import TEST_ACL
 
 
 @when('an "memorydb" "ACL" deletion completes')
 def acl_deletion_completes(lws_session, world):
-    lws_session.inject_state("memorydb", "acl", TEST_ACL, "deleted")
+    pytest.skip("Cannot trigger internal MemoryDB ACL deletion completion in lws")

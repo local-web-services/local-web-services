@@ -12,4 +12,7 @@ from ..constants import TEST_NAMESPACE
 def namespace_finishes_deleting(lws_session, world):
     bucket_arn = S3tablesTestClient(lws_session).get_bucket_arn()
     ns_key = f"{bucket_arn}#{TEST_NAMESPACE}"
-    lws_session.inject_state("s3tables", "namespace", ns_key, "deleted")
+    try:
+        lws_session.inject_state("s3tables", "namespace", ns_key, "deleted")
+    except RuntimeError as exc:
+        world["error"] = exc

@@ -9,4 +9,7 @@ from ..constants import TEST_CLUSTER
 
 @when('an "elasticache" "cluster" deletion completes')
 def cluster_deletion_completes(lws_session, world):
-    lws_session.inject_state("elasticache", "cluster", TEST_CLUSTER, "deleted")
+    try:
+        lws_session.inject_state("elasticache", "cluster", TEST_CLUSTER, "deleted")
+    except RuntimeError as exc:
+        world["error"] = exc

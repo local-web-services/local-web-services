@@ -9,6 +9,9 @@ from ..constants import TEST_REPLICATION_GROUP
 
 @when('a "elasticache" "replication group" finishes creating')
 def rg_finishes_creating(lws_session, world):
-    lws_session.inject_state(
-        "elasticache", "replication-group", TEST_REPLICATION_GROUP, "available"
-    )
+    try:
+        lws_session.inject_state(
+            "elasticache", "replication-group", TEST_REPLICATION_GROUP, "available"
+        )
+    except RuntimeError as exc:
+        world["error"] = exc

@@ -13,6 +13,7 @@ from lws.providers._shared.aws_lifecycle import TrackerRegistry
 _DELETED_STATES = {"deleted", "removed"}
 _COMPLETION_PREDECESSORS: dict[str, frozenset[str]] = {
     "available": frozenset({"creating", "starting", "rebooting", "restoring"}),
+    "active": frozenset({"creating"}),
     "stopped": frozenset({"stopping"}),
     "deleted": frozenset({"deleting"}),
     "removed": frozenset({"deleting"}),

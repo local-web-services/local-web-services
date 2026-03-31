@@ -9,4 +9,7 @@ from ..constants import TEST_DB
 
 @when('a "rds" "instance" deletion completes')
 def instance_deletion_completes(lws_session, world):
-    lws_session.inject_state("rds", "instance", TEST_DB, "deleted")
+    try:
+        lws_session.inject_state("rds", "instance", TEST_DB, "deleted")
+    except RuntimeError as exc:
+        world["error"] = exc

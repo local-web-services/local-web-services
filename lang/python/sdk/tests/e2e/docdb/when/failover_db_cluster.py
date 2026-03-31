@@ -9,7 +9,7 @@ from ..constants import TEST_CLUSTER
 
 @when("a failover is triggered and a replica is promoted to primary")
 def failover_db_cluster(lws_session, world):
-    # Arrange / Act
-    lws_session.inject_state("docdb", "cluster", TEST_CLUSTER, "available")
-    # Assert
-    pass
+    try:
+        lws_session.inject_state("docdb", "cluster", TEST_CLUSTER, "available")
+    except RuntimeError as exc:
+        world["error"] = exc

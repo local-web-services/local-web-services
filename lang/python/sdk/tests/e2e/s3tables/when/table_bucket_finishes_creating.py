@@ -9,4 +9,7 @@ from ..constants import TEST_BUCKET
 
 @when('a "s3 tables" "table" s3 tables bucket finishes creating')
 def table_bucket_finishes_creating(lws_session, world):
-    lws_session.inject_state("s3tables", "bucket", TEST_BUCKET, "active")
+    try:
+        lws_session.inject_state("s3tables", "bucket", TEST_BUCKET, "active")
+    except RuntimeError as exc:
+        world["error"] = exc

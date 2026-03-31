@@ -9,4 +9,7 @@ from ..constants import TEST_DOMAIN
 
 @when('an "elasticsearch" "domain" finishes deleting')
 def domain_finishes_deleting(lws_session, world):
-    lws_session.inject_state("es", "domain", TEST_DOMAIN, "deleted")
+    try:
+        lws_session.inject_state("es", "domain", TEST_DOMAIN, "deleted")
+    except RuntimeError as exc:
+        world["error"] = exc

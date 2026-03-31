@@ -9,7 +9,7 @@ from ..constants import TEST_SNAPSHOT
 
 @when('a "documentdb" "cluster" documentdb snapshot finishes creating')
 def snapshot_finishes_creating(lws_session, world):
-    # Arrange / Act
-    lws_session.inject_state("docdb", "snapshot", TEST_SNAPSHOT, "available")
-    # Assert
-    pass
+    try:
+        lws_session.inject_state("docdb", "snapshot", TEST_SNAPSHOT, "available")
+    except RuntimeError as exc:
+        world["error"] = exc

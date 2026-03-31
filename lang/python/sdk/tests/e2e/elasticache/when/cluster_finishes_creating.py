@@ -9,4 +9,7 @@ from ..constants import TEST_CLUSTER
 
 @when('a standalone "elasticache" "cluster" finishes creating')
 def cluster_finishes_creating(lws_session, world):
-    lws_session.inject_state("elasticache", "cluster", TEST_CLUSTER, "available")
+    try:
+        lws_session.inject_state("elasticache", "cluster", TEST_CLUSTER, "available")
+    except RuntimeError as exc:
+        world["error"] = exc
