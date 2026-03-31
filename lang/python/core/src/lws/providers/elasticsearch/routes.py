@@ -9,7 +9,7 @@ from dataclasses import replace
 
 from fastapi import FastAPI
 
-from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig
+from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, TrackerRegistry
 from lws.providers._shared.search_service import (
     SearchServiceConfig,
     _SearchState,
@@ -42,6 +42,7 @@ def create_elasticsearch_app(
     *,
     container_manager=None,
     lifecycle: ResourceLifecycleConfig | None = None,
+    registry: TrackerRegistry | None = None,
 ) -> tuple[FastAPI, _SearchState]:
     """Create a FastAPI application that speaks the Elasticsearch Service wire protocol.
 
@@ -53,4 +54,4 @@ def create_elasticsearch_app(
     if lifecycle is not None:
         updates["lifecycle"] = lifecycle
     config = replace(_ES_CONFIG, **updates) if updates else _ES_CONFIG
-    return create_search_service_app(config)
+    return create_search_service_app(config, registry=registry)

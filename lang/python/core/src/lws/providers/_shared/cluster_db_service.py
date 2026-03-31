@@ -59,7 +59,9 @@ from lws.providers._shared.aws_capacity import check_capacity as _check_capacity
 from lws.providers._shared.aws_lifecycle import (
     ResourceLifecycleConfig,
     ResourceStateTracker,
+    TrackerRegistry,
     apply_delete_lifecycle,
+    register_tracker,
 )
 from lws.providers._shared.response_helpers import (
     creating_guard as _creating_guard,
@@ -374,7 +376,10 @@ async def _lifecycle_delete_instance(
 # ------------------------------------------------------------------
 
 
-def create_cluster_db_app(config: ClusterDBConfig) -> tuple[FastAPI, _ClusterDBState]:
+def create_cluster_db_app(
+    config: ClusterDBConfig,
+    registry: TrackerRegistry | None = None,
+) -> tuple[FastAPI, _ClusterDBState]:
     """Create a FastAPI app that speaks a cluster-DB wire protocol.
 
     Returns a tuple of (app, state) so the caller can register state for reset.
@@ -383,6 +388,9 @@ def create_cluster_db_app(config: ClusterDBConfig) -> tuple[FastAPI, _ClusterDBS
     _lc = config.lifecycle or ResourceLifecycleConfig()
     _cluster_tracker = ResourceStateTracker(_lc)
     _instance_tracker = ResourceStateTracker(_lc)
+    if registry is not None:
+        register_tracker(registry, config.service_name, "cluster", _cluster_tracker)
+        register_tracker(registry, config.service_name, "instance", _instance_tracker)
 
     app = FastAPI(title=f"LDK {config.display_name}")
     app.add_middleware(RequestLoggingMiddleware, logger=logger, service_name=config.service_name)

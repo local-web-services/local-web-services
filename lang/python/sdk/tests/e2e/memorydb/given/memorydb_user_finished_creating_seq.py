@@ -1,11 +1,12 @@
-"""Given: an "memorydb" "ACL" finishes creating"""
+"""Given: a "memorydb" "user" finishes creating"""
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
 
+from ..constants import TEST_USER
 
-@given('an "memorydb" "ACL" finishes creating')
-def memorydb_user_finished_creating_seq():
-    pytest.skip("Cannot trigger internal MemoryDB user creation completion in lws")
+
+@given('a "memorydb" "user" finishes creating')
+def memorydb_user_finished_creating_seq(lws_session):
+    lws_session.inject_state("memorydb", "user", TEST_USER, "available")

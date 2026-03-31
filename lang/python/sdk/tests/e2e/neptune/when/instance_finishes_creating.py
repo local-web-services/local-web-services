@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_INSTANCE
 
 
 @when('a "neptune" "instance" finishes creating')
 def instance_finishes_creating(lws_session, world):
-    pytest.skip("Cannot trigger internal Neptune instance creation completion in lws")
+    lws_session.inject_state("neptune", "instance", TEST_INSTANCE, "available")

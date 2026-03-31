@@ -54,7 +54,7 @@ from lws.logging.logger import get_logger, get_ws_handler
 from lws.providers._shared.async_state_store import AsyncStateStore
 from lws.providers._shared.aws_capacity import AwsCapacityConfig
 from lws.providers._shared.aws_chaos import AwsChaosConfig
-from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig
+from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, TrackerRegistry
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig
 from lws.runtime.orchestrator import Orchestrator
 
@@ -206,6 +206,7 @@ def create_management_router(
     capacity_configs: dict[str, AwsCapacityConfig] | None = None,
     fake_provider: Any | None = None,
     state_store: AsyncStateStore | None = None,
+    tracker_registry: TrackerRegistry | None = None,
 ) -> APIRouter:
     """Create a management API router.
 
@@ -251,7 +252,7 @@ def create_management_router(
     _register_fake_server_routes(router, fake_provider)
     _register_lifecycle_routes(router, _lifecycle_configs)
     _register_capacity_routes(router, _capacity_configs)
-    _register_state_routes(router, _state_store, all_providers)
+    _register_state_routes(router, _state_store, all_providers, tracker_registry)
 
     return router
 

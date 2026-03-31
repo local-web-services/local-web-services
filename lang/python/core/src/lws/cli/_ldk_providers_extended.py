@@ -11,6 +11,7 @@ from __future__ import annotations
 from lws.interfaces import Provider
 from lws.parser.assembly import AppModel
 from lws.providers._shared.aws_iam_auth import IamAuthBundle
+from lws.providers._shared.aws_lifecycle import TrackerRegistry
 
 
 def _register_ssm_secretsmanager_providers(
@@ -105,6 +106,7 @@ def _register_organizations_provider(
 def _register_experimental_providers(
     providers: dict[str, Provider],
     ports: dict[str, int],
+    registry: TrackerRegistry | None = None,
 ) -> None:
     """Register all experimental-service providers (HTTP with per-resource containers)."""
     from lws.cli._ldk_http_registry import (  # pylint: disable=import-outside-toplevel
@@ -197,50 +199,56 @@ def _register_experimental_providers(
     # ElastiCache
     providers["__elasticache_http__"] = _HttpServiceProvider(
         "elasticache-http",
-        lambda cm=elasticache_cm: create_elasticache_app(container_manager=cm),
+        lambda cm=elasticache_cm, reg=registry: create_elasticache_app(
+            container_manager=cm, registry=reg
+        ),
         ports["elasticache"],
     )
 
     # MemoryDB
     providers["__memorydb_http__"] = _HttpServiceProvider(
         "memorydb-http",
-        lambda cm=memorydb_cm: create_memorydb_app(container_manager=cm),
+        lambda cm=memorydb_cm, reg=registry: create_memorydb_app(
+            container_manager=cm, registry=reg
+        ),
         ports["memorydb"],
     )
 
     # DocumentDB
     providers["__docdb_http__"] = _HttpServiceProvider(
         "docdb-http",
-        lambda cm=docdb_cm: create_docdb_app(container_manager=cm),
+        lambda cm=docdb_cm, reg=registry: create_docdb_app(container_manager=cm, registry=reg),
         ports["docdb"],
     )
 
     # Neptune
     providers["__neptune_http__"] = _HttpServiceProvider(
         "neptune-http",
-        lambda cm=neptune_cm: create_neptune_app(container_manager=cm),
+        lambda cm=neptune_cm, reg=registry: create_neptune_app(container_manager=cm, registry=reg),
         ports["neptune"],
     )
 
     # Elasticsearch
     providers["__es_http__"] = _HttpServiceProvider(
         "es-http",
-        lambda cm=es_cm: create_elasticsearch_app(container_manager=cm),
+        lambda cm=es_cm, reg=registry: create_elasticsearch_app(container_manager=cm, registry=reg),
         ports["es"],
     )
 
     # OpenSearch
     providers["__opensearch_http__"] = _HttpServiceProvider(
         "opensearch-http",
-        lambda cm=opensearch_cm: create_opensearch_app(container_manager=cm),
+        lambda cm=opensearch_cm, reg=registry: create_opensearch_app(
+            container_manager=cm, registry=reg
+        ),
         ports["opensearch"],
     )
 
     # RDS
     providers["__rds_http__"] = _HttpServiceProvider(
         "rds-http",
-        lambda pg=rds_pg_cm, my=rds_mysql_cm: create_rds_app(
-            postgres_container_manager=pg, mysql_container_manager=my
+        lambda pg=rds_pg_cm, my=rds_mysql_cm, reg=registry: create_rds_app(
+            postgres_container_manager=pg, mysql_container_manager=my, registry=reg
         ),
         ports["rds"],
     )
@@ -252,7 +260,9 @@ def _register_experimental_providers(
 
     # S3 Tables
     providers["__s3tables_http__"] = _HttpServiceProvider(
-        "s3tables-http", create_s3tables_app, ports["s3tables"]
+        "s3tables-http",
+        lambda reg=registry: create_s3tables_app(registry=reg),
+        ports["s3tables"],
     )
 
     # Container cleanup provider for graceful shutdown

@@ -169,6 +169,8 @@ def _create_providers(  # pylint: disable=too-many-statements
         _CoreProviderSet,
         _HttpServiceProvider,
         _register_http_providers_from_set,
+    )
+    from lws.cli._ldk_resource_metadata import (  # pylint: disable=import-outside-toplevel
         _service_ports,
     )
     from lws.runtime.sdk_env import build_sdk_env  # pylint: disable=import-outside-toplevel

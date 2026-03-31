@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
+
+from ..constants import TEST_REPLICATION_GROUP
 
 
 @given('a "elasticache" "replication group" deletion completes')
-def elasticache_rg_deletion_completed():
-    pytest.skip(
-        "Cannot represent a completed ElastiCache replication group deletion as sequence setup in lws"  # noqa: E501
-    )
+def elasticache_rg_deletion_completed(lws_session):
+    lws_session.inject_state("elasticache", "replication-group", TEST_REPLICATION_GROUP, "deleted")

@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_CLUSTER
 
 
 @when('a "neptune" "cluster" deletion completes')
 def cluster_deletion_completes(lws_session, world):
-    pytest.skip("Cannot trigger internal Neptune cluster deletion completion in lws")
+    lws_session.inject_state("neptune", "cluster", TEST_CLUSTER, "deleted")

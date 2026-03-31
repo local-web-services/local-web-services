@@ -12,7 +12,12 @@ from fastapi import FastAPI, Query, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
-from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
+from lws.providers._shared.aws_lifecycle import (
+    ResourceLifecycleConfig,
+    ResourceStateTracker,
+    TrackerRegistry,
+    register_tracker,
+)
 from lws.providers.s3tables._s3tables_handlers import (
     _create_namespace,
     _create_table,
@@ -73,7 +78,8 @@ async def _s3tables_delete_table_bucket(
     tracker: ResourceStateTracker,
 ) -> Response:
     """Handle lifecycle-aware DeleteTableBucket."""
-    if lc.enabled and tracker.get_state(table_bucket_arn) == "CREATING":
+    bucket_name = table_bucket_arn.rsplit("/", 1)[-1]
+    if lc.enabled and tracker.get_state(bucket_name) == "CREATING":
         return _error_response(
             "ConflictException",
             f"Table bucket '{table_bucket_arn}' is still being created",
@@ -82,10 +88,10 @@ async def _s3tables_delete_table_bucket(
     resp = await _delete_table_bucket(table_bucket_arn, state)
     if lc.enabled and resp.status_code == 204:
         if lc.delete_dwell_ms > 0:
-            tracker.set_state(table_bucket_arn, "DELETING")
-            tracker.schedule_transition(table_bucket_arn, None, lc.delete_dwell_ms)
+            tracker.set_state(bucket_name, "DELETING")
+            tracker.schedule_transition(bucket_name, None, lc.delete_dwell_ms)
         else:
-            tracker.remove(table_bucket_arn)
+            tracker.remove(bucket_name)
     return resp
 
 
@@ -137,7 +143,15 @@ async def _s3tables_delete_namespace(
                 f"Namespace '{namespace}' is still being created",
                 status_code=409,
             )
-    return await _delete_namespace(table_bucket_arn, namespace, state)
+    resp = await _delete_namespace(table_bucket_arn, namespace, state)
+    if lc.enabled and resp.status_code == 204:
+        key = _ns_tracker_key(table_bucket_arn, namespace)
+        if lc.delete_dwell_ms > 0:
+            tracker.set_state(key, "DELETING")
+            tracker.schedule_transition(key, None, lc.delete_dwell_ms)
+        else:
+            tracker.remove(key)
+    return resp
 
 
 async def _s3tables_create_table(
@@ -195,7 +209,15 @@ async def _s3tables_delete_table(
                 f"Table '{table_name}' is still being created",
                 status_code=409,
             )
-    return await _delete_table(table_bucket_arn, namespace, table_name, state)
+    resp = await _delete_table(table_bucket_arn, namespace, table_name, state)
+    if lc.enabled and resp.status_code == 204:
+        key = _table_tracker_key(table_bucket_arn, namespace, table_name)
+        if lc.delete_dwell_ms > 0:
+            tracker.set_state(key, "DELETING")
+            tracker.schedule_transition(key, None, lc.delete_dwell_ms)
+        else:
+            tracker.remove(key)
+    return resp
 
 
 async def _s3tables_put_table_policy(
@@ -397,10 +419,15 @@ def _register_table_routes(
 
 def create_s3tables_app(
     lifecycle: ResourceLifecycleConfig | None = None,
+    registry: TrackerRegistry | None = None,
 ) -> tuple[FastAPI, _S3TablesState]:
     """Create a FastAPI application that speaks the S3 Tables REST API."""
     _lc = lifecycle or ResourceLifecycleConfig()
     _tracker = ResourceStateTracker(_lc)
+    if registry is not None:
+        register_tracker(registry, "s3tables", "bucket", _tracker)
+        register_tracker(registry, "s3tables", "namespace", _tracker)
+        register_tracker(registry, "s3tables", "table", _tracker)
 
     app = FastAPI(title="LDK S3 Tables")
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="s3tables")

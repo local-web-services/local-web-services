@@ -9,7 +9,7 @@ from dataclasses import replace
 
 from fastapi import FastAPI
 
-from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig
+from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, TrackerRegistry
 from lws.providers._shared.search_service import (
     SearchServiceConfig,
     _SearchState,
@@ -43,6 +43,7 @@ def create_opensearch_app(
     *,
     container_manager=None,
     lifecycle: ResourceLifecycleConfig | None = None,
+    registry: TrackerRegistry | None = None,
 ) -> tuple[FastAPI, _SearchState]:
     """Create a FastAPI application that speaks the OpenSearch Service wire protocol.
 
@@ -54,4 +55,4 @@ def create_opensearch_app(
     if lifecycle is not None:
         updates["lifecycle"] = lifecycle
     config = replace(_OPENSEARCH_CONFIG, **updates) if updates else _OPENSEARCH_CONFIG
-    return create_search_service_app(config)
+    return create_search_service_app(config, registry=registry)

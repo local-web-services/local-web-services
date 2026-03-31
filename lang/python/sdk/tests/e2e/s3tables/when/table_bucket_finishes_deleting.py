@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_BUCKET
 
 
 @when('a "s3 tables" "table" s3 tables bucket finishes being deleted')
 def table_bucket_finishes_deleting(lws_session, world):
-    pytest.skip("Cannot trigger internal table bucket deletion completion in lws")
+    lws_session.inject_state("s3tables", "bucket", TEST_BUCKET, "deleted")

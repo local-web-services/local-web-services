@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_DOMAIN
 
 
 @when('an "elasticsearch" "domain" finishes creating')
 def domain_finishes_creating(lws_session, world):
-    pytest.skip("Cannot trigger internal Elasticsearch domain creation completion in lws")
+    lws_session.inject_state("es", "domain", TEST_DOMAIN, "active")

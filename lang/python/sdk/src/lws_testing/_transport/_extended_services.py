@@ -10,6 +10,7 @@ def build_extended_service_apps(
     lifecycle_configs: dict[str, Any],
     capacity_configs: dict[str, Any] | None = None,
     dynamodb_tracker_ref: list | None = None,
+    tracker_registry: dict | None = None,
 ) -> tuple[list[tuple[str, Any]], dict[str, Any]]:
     """Build FastAPI apps for cognito, docdb, neptune, rds, elasticache, memorydb,
     elasticsearch, opensearch, glacier, s3tables, and lambda services.
@@ -72,21 +73,25 @@ def build_extended_service_apps(
         lifecycle=lifecycle_configs["glacier"],
         capacity=_cap.get("glacier"),
     )
-    s3tables_app, s3tables_state = create_s3tables_app(lifecycle=lifecycle_configs["s3tables"])
+    s3tables_app, s3tables_state = create_s3tables_app(
+        lifecycle=lifecycle_configs["s3tables"], registry=tracker_registry
+    )
     elasticsearch_app, elasticsearch_state = create_elasticsearch_app(
-        lifecycle=lifecycle_configs["es"]
+        lifecycle=lifecycle_configs["es"], registry=tracker_registry
     )
     opensearch_app, opensearch_state = create_opensearch_app(
-        lifecycle=lifecycle_configs["opensearch"]
+        lifecycle=lifecycle_configs["opensearch"], registry=tracker_registry
     )
 
     docdb_app, docdb_state = create_docdb_app(
         lifecycle=lifecycle_configs["docdb"],
         capacity=_cap.get("docdb"),
+        registry=tracker_registry,
     )
     neptune_app, neptune_state = create_neptune_app(
         lifecycle=lifecycle_configs["neptune"],
         capacity=_cap.get("neptune"),
+        registry=tracker_registry,
     )
 
     apps = [
@@ -100,9 +105,17 @@ def build_extended_service_apps(
         ),
         ("docdb", docdb_app),
         ("neptune", neptune_app),
-        ("rds", create_rds_app(lifecycle=lifecycle_configs["rds"])),
-        ("elasticache", create_elasticache_app(lifecycle=lifecycle_configs["elasticache"])),
-        ("memorydb", create_memorydb_app(lifecycle=lifecycle_configs["memorydb"])),
+        ("rds", create_rds_app(lifecycle=lifecycle_configs["rds"], registry=tracker_registry)),
+        (
+            "elasticache",
+            create_elasticache_app(
+                lifecycle=lifecycle_configs["elasticache"], registry=tracker_registry
+            ),
+        ),
+        (
+            "memorydb",
+            create_memorydb_app(lifecycle=lifecycle_configs["memorydb"], registry=tracker_registry),
+        ),
         ("es", elasticsearch_app),
         ("opensearch", opensearch_app),
         ("glacier", glacier_app),

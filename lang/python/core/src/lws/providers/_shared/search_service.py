@@ -14,7 +14,12 @@ from fastapi import FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
-from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
+from lws.providers._shared.aws_lifecycle import (
+    ResourceLifecycleConfig,
+    ResourceStateTracker,
+    TrackerRegistry,
+    register_tracker,
+)
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
 from lws.providers._shared.resource_container import ResourceContainerManager
 from lws.providers._shared.response_helpers import (
@@ -356,6 +361,7 @@ _GENERIC_HANDLERS = {
 
 def create_search_service_app(  # noqa: C901
     config: SearchServiceConfig,
+    registry: TrackerRegistry | None = None,
 ) -> tuple[FastAPI, _SearchState]:
     """Create a FastAPI app that speaks a search-service wire protocol.
 
@@ -367,6 +373,8 @@ def create_search_service_app(  # noqa: C901
     state = _SearchState()
     _lc = config.lifecycle or ResourceLifecycleConfig()
     _tracker = ResourceStateTracker(_lc)
+    if registry is not None:
+        register_tracker(registry, config.arn_service, "domain", _tracker)
 
     # Build action dispatch: map service-specific action names to handlers
     action_handlers: dict[str, Any] = {}

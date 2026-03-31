@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_ACL
 
 
 @when('an "memorydb" "ACL" finishes creating')
 def acl_finishes_creating(lws_session, world):
-    pytest.skip("Cannot trigger internal MemoryDB ACL creation completion in lws")
+    lws_session.inject_state("memorydb", "acl", TEST_ACL, "available")

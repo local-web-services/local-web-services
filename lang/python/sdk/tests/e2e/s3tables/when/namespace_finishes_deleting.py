@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..client import S3tablesTestClient
+from ..constants import TEST_NAMESPACE
 
 
 @when('a "s3 tables" "namespace" finishes being deleted')
 def namespace_finishes_deleting(lws_session, world):
-    pytest.skip("Cannot trigger internal namespace deletion completion in lws")
+    bucket_arn = S3tablesTestClient(lws_session).get_bucket_arn()
+    ns_key = f"{bucket_arn}#{TEST_NAMESPACE}"
+    lws_session.inject_state("s3tables", "namespace", ns_key, "deleted")

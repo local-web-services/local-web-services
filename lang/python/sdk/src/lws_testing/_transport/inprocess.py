@@ -51,6 +51,7 @@ def _create_management_app(
     capacity_configs: dict[str, Any] | None = None,
     fake_provider: Any | None = None,
     state_store: Any | None = None,
+    tracker_registry: dict | None = None,
 ) -> Any:
     """Build a FastAPI management app with reset, fake, chaos, lifecycle, and capacity endpoints."""
     from fastapi import FastAPI
@@ -70,6 +71,7 @@ def _create_management_app(
         capacity_configs=capacity_configs,
         fake_provider=fake_provider,
         state_store=state_store,
+        tracker_registry=tracker_registry,
     )
     app.include_router(router)
     app.include_router(create_capacity_control_router(capacity_configs or {}))
@@ -165,6 +167,7 @@ def _build_service_apps(
     lifecycle_configs: dict[str, Any],
     cfg: dict[str, list[Any]],
     capacity_configs: dict[str, Any] | None = None,
+    tracker_registry: dict | None = None,
 ) -> tuple[list[tuple[str, Any]], dict[str, Any]]:
     """Build FastAPI apps for all services.
 
@@ -191,6 +194,7 @@ def _build_service_apps(
         lifecycle_configs,
         capacity_configs=_cap,
         dynamodb_tracker_ref=(_dynamodb_tracker_ref := []),
+        tracker_registry=tracker_registry,
     )
 
     ssm_app, ssm_state = create_ssm_app(
@@ -402,7 +406,7 @@ async def start_services(
     """
     from lws.providers._shared.aws_capacity import AwsCapacityConfig
     from lws.providers._shared.aws_chaos import AwsChaosConfig
-    from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig
+    from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, TrackerRegistry
     from lws.providers._shared.aws_operation_fake import AwsFakeConfig
     from lws.providers.fakeserver.provider import FakeServerProvider
 
@@ -416,6 +420,7 @@ async def start_services(
     lifecycle_configs: dict[str, Any] = {s: ResourceLifecycleConfig() for s in _SERVICE_NAMES}
     capacity_configs: dict[str, Any] = {s: AwsCapacityConfig() for s in _SERVICE_NAMES}
     capacity_configs["lambda-async"] = AwsCapacityConfig()
+    tracker_registry: TrackerRegistry = {}
     _sockets: dict[str, socket.socket] = {s: _bound_socket() for s in _SERVICE_NAMES}
     _mgmt_socket = _bound_socket()
     ports: dict[str, int] = {s: sock.getsockname()[1] for s, sock in _sockets.items()}
@@ -429,6 +434,7 @@ async def start_services(
         lifecycle_configs,
         cfg,
         capacity_configs,
+        tracker_registry=tracker_registry,
     )
     # Merge ssm/secretsmanager state wrappers so the management reset endpoint can reach them
     all_providers = {**providers, **extra_providers}
@@ -459,6 +465,7 @@ async def start_services(
         capacity_configs,
         fake_provider=fake_server_provider,
         state_store=state_store,
+        tracker_registry=tracker_registry,
     )
     servers = await _start_all_servers(service_apps, _sockets, mgmt_app, _mgmt_socket)
 

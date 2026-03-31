@@ -16,6 +16,20 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     pass
 
+# Registry mapping (service, resource_type) → ResourceStateTracker.
+# Created once by the management layer and threaded to each provider factory.
+TrackerRegistry = dict[tuple[str, str], "ResourceStateTracker"]
+
+
+def register_tracker(
+    registry: TrackerRegistry,
+    service: str,
+    resource_type: str,
+    tracker: ResourceStateTracker,
+) -> None:
+    """Register *tracker* under *(service, resource_type)* in *registry*."""
+    registry[(service, resource_type)] = tracker
+
 
 @dataclass
 class ResourceLifecycleConfig:
