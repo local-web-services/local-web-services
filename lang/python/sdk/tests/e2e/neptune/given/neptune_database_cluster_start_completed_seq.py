@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
+
+from ..constants import TEST_CLUSTER
 
 
 @given('a "neptune" "cluster" start completes')
-def neptune_database_cluster_start_completed_seq():
-    pytest.skip("Cannot trigger internal Neptune cluster start completion in lws")
+def neptune_database_cluster_start_completed_seq(lws_session):
+    # Arrange / Act
+    lws_session.inject_state("neptune", "cluster", TEST_CLUSTER, "available")
+    # Assert
+    pass

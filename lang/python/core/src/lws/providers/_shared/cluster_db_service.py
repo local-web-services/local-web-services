@@ -45,8 +45,8 @@ from lws.providers._shared._cluster_db_extra_handlers import (
 from lws.providers._shared._cluster_db_extra_handlers import (
     handle_stop_db_cluster as _handle_stop_db_cluster,
 )
-from lws.providers._shared._cluster_db_extra_handlers import (
-    run_snapshot_lifecycle as _run_snapshot_lifecycle,
+from lws.providers._shared._cluster_db_lifecycle_runners import (
+    run_with_lifecycle as _run_with_lifecycle,
 )
 from lws.providers._shared._cluster_db_state import (
     _apply_tags,
@@ -63,11 +63,7 @@ from lws.providers._shared.aws_lifecycle import (
     ResourceLifecycleConfig,
     ResourceStateTracker,
     TrackerRegistry,
-    apply_delete_lifecycle,
     register_tracker,
-)
-from lws.providers._shared.response_helpers import (
-    creating_guard as _creating_guard,
 )
 from lws.providers._shared.response_helpers import (
     error_response as _error_response,
@@ -121,7 +117,7 @@ async def _handle_create_db_cluster(
 
 
 async def _handle_describe_db_clusters(
-    state: _ClusterDBState, body: dict, config: ClusterDBConfig
+    state: _ClusterDBState, body: dict, config: ClusterDBConfig, *, cluster_tracker=None
 ) -> Response:
     cid = body.get("DBClusterIdentifier")
     if cid:
@@ -131,8 +127,20 @@ async def _handle_describe_db_clusters(
                 "DBClusterNotFoundFault",
                 f"Cluster {cid} not found.",
             )
-        return _json_response({"DBClusters": [_describe_cluster(cluster, config)]})
-    clusters = [_describe_cluster(c, config) for c in state.clusters.values()]
+        raw = _describe_cluster(cluster, config)
+        if cluster_tracker is not None:
+            lc_state = cluster_tracker.get_state(cid)
+            if lc_state is not None:
+                raw["Status"] = lc_state.lower()
+        return _json_response({"DBClusters": [raw]})
+    clusters = []
+    for c in state.clusters.values():
+        raw = _describe_cluster(c, config)
+        if cluster_tracker is not None:
+            lc_state = cluster_tracker.get_state(c.db_cluster_identifier)
+            if lc_state is not None:
+                raw["Status"] = lc_state.lower()
+        clusters.append(raw)
     return _json_response({"DBClusters": clusters})
 
 
@@ -193,7 +201,7 @@ async def _handle_create_db_instance(
 
 
 async def _handle_describe_db_instances(
-    state: _ClusterDBState, body: dict, _config: ClusterDBConfig
+    state: _ClusterDBState, body: dict, _config: ClusterDBConfig, *, instance_tracker=None
 ) -> Response:
     iid = body.get("DBInstanceIdentifier")
     if iid:
@@ -203,8 +211,20 @@ async def _handle_describe_db_instances(
                 "DBInstanceNotFoundFault",
                 f"Instance {iid} not found.",
             )
-        return _json_response({"DBInstances": [_describe_instance(instance)]})
-    instances = [_describe_instance(i) for i in state.instances.values()]
+        raw = _describe_instance(instance)
+        if instance_tracker is not None:
+            lc_state = instance_tracker.get_state(iid)
+            if lc_state is not None:
+                raw["DBInstanceStatus"] = lc_state.lower()
+        return _json_response({"DBInstances": [raw]})
+    instances = []
+    for i in state.instances.values():
+        raw = _describe_instance(i)
+        if instance_tracker is not None:
+            lc_state = instance_tracker.get_state(i.db_instance_identifier)
+            if lc_state is not None:
+                raw["DBInstanceStatus"] = lc_state.lower()
+        instances.append(raw)
     return _json_response({"DBInstances": instances})
 
 
@@ -308,72 +328,6 @@ def _check_instance_read_lifecycle(
     )
 
 
-async def _lifecycle_create_cluster(
-    handler: Any,
-    state: _ClusterDBState,
-    body: dict,
-    config: ClusterDBConfig,
-    lc: ResourceLifecycleConfig,
-    tracker: ResourceStateTracker,
-) -> Response:
-    resp = await handler(state, body, config)
-    if resp.status_code == 200:
-        cid = body.get("DBClusterIdentifier", "")
-        tracker.set_state(cid, "CREATING")
-        tracker.schedule_transition(cid, "ACTIVE", lc.create_dwell_ms)
-    return resp
-
-
-async def _lifecycle_delete_cluster(
-    handler: Any,
-    state: _ClusterDBState,
-    body: dict,
-    config: ClusterDBConfig,
-    lc: ResourceLifecycleConfig,
-    tracker: ResourceStateTracker,
-) -> Response:
-    cid = body.get("DBClusterIdentifier", "")
-    guard = _creating_guard(cid, "InvalidDBClusterStateFault", "DB cluster", tracker.get_state(cid))
-    if guard is not None:
-        return guard
-    resp = await handler(state, body, config)
-    return apply_delete_lifecycle(resp, cid, lc, tracker)
-
-
-async def _lifecycle_create_instance(
-    handler: Any,
-    state: _ClusterDBState,
-    body: dict,
-    config: ClusterDBConfig,
-    lc: ResourceLifecycleConfig,
-    tracker: ResourceStateTracker,
-) -> Response:
-    resp = await handler(state, body, config)
-    if resp.status_code == 200:
-        iid = body.get("DBInstanceIdentifier", "")
-        tracker.set_state(iid, "CREATING")
-        tracker.schedule_transition(iid, "ACTIVE", lc.create_dwell_ms)
-    return resp
-
-
-async def _lifecycle_delete_instance(
-    handler: Any,
-    state: _ClusterDBState,
-    body: dict,
-    config: ClusterDBConfig,
-    lc: ResourceLifecycleConfig,
-    tracker: ResourceStateTracker,
-) -> Response:
-    iid = body.get("DBInstanceIdentifier", "")
-    guard = _creating_guard(
-        iid, "InvalidDBInstanceStateFault", "DB instance", tracker.get_state(iid)
-    )
-    if guard is not None:
-        return guard
-    resp = await handler(state, body, config)
-    return apply_delete_lifecycle(resp, iid, lc, tracker)
-
-
 # ------------------------------------------------------------------
 # App factory
 # ------------------------------------------------------------------
@@ -442,51 +396,3 @@ def create_cluster_db_app(
         )
 
     return app, state
-
-
-async def _run_cluster_instance_lifecycle(
-    handler: Any,
-    state: _ClusterDBState,
-    body: dict,
-    config: ClusterDBConfig,
-    lc: ResourceLifecycleConfig,
-    cluster_tracker: ResourceStateTracker,
-    instance_tracker: ResourceStateTracker,
-    action: str,
-) -> Response | None:
-    """Handle cluster/instance lifecycle. Returns None to fall through."""
-    if action == "CreateDBCluster":
-        return await _lifecycle_create_cluster(handler, state, body, config, lc, cluster_tracker)
-    if action == "DeleteDBCluster":
-        return await _lifecycle_delete_cluster(handler, state, body, config, lc, cluster_tracker)
-    if action == "CreateDBInstance":
-        return await _lifecycle_create_instance(handler, state, body, config, lc, instance_tracker)
-    if action == "DeleteDBInstance":
-        return await _lifecycle_delete_instance(handler, state, body, config, lc, instance_tracker)
-    return None
-
-
-async def _run_with_lifecycle(
-    handler: Any,
-    state: _ClusterDBState,
-    body: dict,
-    config: ClusterDBConfig,
-    lc: ResourceLifecycleConfig,
-    cluster_tracker: ResourceStateTracker,
-    instance_tracker: ResourceStateTracker,
-    snapshot_tracker: ResourceStateTracker,
-    action: str,
-) -> Response:
-    """Run handler, applying lifecycle management for create/delete actions."""
-    if lc.enabled:
-        resp = await _run_cluster_instance_lifecycle(
-            handler, state, body, config, lc, cluster_tracker, instance_tracker, action
-        )
-        if resp is not None:
-            return resp
-        snap_resp = await _run_snapshot_lifecycle(
-            handler, state, body, config, lc, snapshot_tracker, action
-        )
-        if snap_resp is not None:
-            return snap_resp
-    return await handler(state, body, config)

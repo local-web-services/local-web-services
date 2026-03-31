@@ -9,4 +9,7 @@ from ..constants import TEST_SNAPSHOT
 
 @when('a "neptune" "cluster" neptune snapshot deletion completes')
 def snapshot_deletion_completes(lws_session, world):
-    lws_session.inject_state("neptune", "snapshot", TEST_SNAPSHOT, "deleted")
+    try:
+        lws_session.inject_state("neptune", "snapshot", TEST_SNAPSHOT, "deleted")
+    except RuntimeError as exc:
+        world["error"] = exc

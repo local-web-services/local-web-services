@@ -159,7 +159,7 @@ async def handle_stop_db_cluster(state: _ClusterDBState, body: dict, config) -> 
     guard = _cluster_available_guard(cid, cluster)
     if guard is not None:
         return guard
-    cluster.status = "stopped"  # type: ignore[union-attr]
+    cluster.status = "stopping"  # type: ignore[union-attr]
     return _json_response({"DBCluster": _describe_cluster(cluster, config)})
 
 
@@ -317,3 +317,73 @@ async def run_snapshot_lifecycle(
     if action == "DescribeDBClusterSnapshots":
         return await handler(state, body, config, snapshot_tracker=tracker)
     return None
+
+
+async def lifecycle_create_cluster(
+    handler: Any,
+    state: _ClusterDBState,
+    body: dict,
+    config: Any,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Invoke create-cluster handler and register lifecycle CREATING state."""
+    resp = await handler(state, body, config)
+    if resp.status_code == 200:
+        cid = body.get("DBClusterIdentifier", "")
+        tracker.set_state(cid, "CREATING")
+        tracker.schedule_transition(cid, "available", lc.create_dwell_ms)
+    return resp
+
+
+async def lifecycle_delete_cluster(
+    handler: Any,
+    state: _ClusterDBState,
+    body: dict,
+    config: Any,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Guard against deleting a creating cluster and apply delete lifecycle."""
+    cid = body.get("DBClusterIdentifier", "")
+    guard = _creating_guard(cid, "InvalidDBClusterStateFault", "DB cluster", tracker.get_state(cid))
+    if guard is not None:
+        return guard
+    resp = await handler(state, body, config)
+    return apply_delete_lifecycle(resp, cid, lc, tracker)
+
+
+async def lifecycle_create_instance(
+    handler: Any,
+    state: _ClusterDBState,
+    body: dict,
+    config: Any,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Invoke create-instance handler and register lifecycle CREATING state."""
+    resp = await handler(state, body, config)
+    if resp.status_code == 200:
+        iid = body.get("DBInstanceIdentifier", "")
+        tracker.set_state(iid, "CREATING")
+        tracker.schedule_transition(iid, "available", lc.create_dwell_ms)
+    return resp
+
+
+async def lifecycle_delete_instance(
+    handler: Any,
+    state: _ClusterDBState,
+    body: dict,
+    config: Any,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Guard against deleting a creating instance and apply delete lifecycle."""
+    iid = body.get("DBInstanceIdentifier", "")
+    guard = _creating_guard(
+        iid, "InvalidDBInstanceStateFault", "DB instance", tracker.get_state(iid)
+    )
+    if guard is not None:
+        return guard
+    resp = await handler(state, body, config)
+    return apply_delete_lifecycle(resp, iid, lc, tracker)

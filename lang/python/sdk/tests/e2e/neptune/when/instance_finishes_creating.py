@@ -9,4 +9,7 @@ from ..constants import TEST_INSTANCE
 
 @when('a "neptune" "instance" finishes creating')
 def instance_finishes_creating(lws_session, world):
-    lws_session.inject_state("neptune", "instance", TEST_INSTANCE, "available")
+    try:
+        lws_session.inject_state("neptune", "instance", TEST_INSTANCE, "available")
+    except RuntimeError as exc:
+        world["error"] = exc

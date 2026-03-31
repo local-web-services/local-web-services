@@ -1,11 +1,15 @@
-"""When: a stopped neptune database neptune cluster is started"""
+"""When: a "neptune" "cluster" start completes"""
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_CLUSTER
 
 
 @when('a "neptune" "cluster" start completes')
 def cluster_start_completes(lws_session, world):
-    pytest.skip("Cannot trigger internal Neptune cluster start completion in lws")
+    try:
+        lws_session.inject_state("neptune", "cluster", TEST_CLUSTER, "available")
+    except RuntimeError as exc:
+        world["error"] = exc

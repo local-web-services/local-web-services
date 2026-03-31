@@ -47,3 +47,21 @@ class NeptuneTestClient:
             self._client.delete_db_cluster(DBClusterIdentifier=cluster_id)
         except Exception:  # noqa: BLE001
             pass
+
+    def stop_cluster(self, cluster_id=TEST_CLUSTER):
+        try:
+            self._client.stop_db_cluster(DBClusterIdentifier=cluster_id)
+        except Exception:  # noqa: BLE001
+            pass
+
+    def start_cluster(self, cluster_id=TEST_CLUSTER):
+        try:
+            self._client.start_db_cluster(DBClusterIdentifier=cluster_id)
+        except Exception:  # noqa: BLE001
+            pass
+
+    def reboot_instance(self, instance_id=TEST_INSTANCE):
+        try:
+            self._client.reboot_db_instance(DBInstanceIdentifier=instance_id)
+        except Exception:  # noqa: BLE001
+            pass

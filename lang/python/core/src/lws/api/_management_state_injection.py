@@ -11,7 +11,12 @@ from lws.providers._shared.async_state_store import AsyncStateStore, resource_st
 from lws.providers._shared.aws_lifecycle import TrackerRegistry
 
 _DELETED_STATES = {"deleted", "removed"}
-_ACTIVE_TERMINAL_STATES = {"available", "active"}
+_COMPLETION_PREDECESSORS: dict[str, frozenset[str]] = {
+    "available": frozenset({"creating", "starting", "rebooting", "restoring"}),
+    "stopped": frozenset({"stopping"}),
+    "deleted": frozenset({"deleting"}),
+    "removed": frozenset({"deleting"}),
+}
 
 
 def _register_state_routes(
@@ -95,27 +100,24 @@ def _apply_tracker_transition(
     state: str,
     current: str,
 ) -> JSONResponse | None:
-    """Apply a lifecycle state transition on a tracker, validating predecessor state."""
+    """Apply a lifecycle state transition on a tracker.
+
+    Returns a JSONResponse error if the predecessor state is invalid, else None.
+    """
     state_lower = state.lower()
-    if state_lower in _DELETED_STATES:
-        if current.upper() != "DELETING":
-            return JSONResponse(
-                status_code=409,
-                content={
-                    "error": (
-                        f"{resource_type} {resource_id!r} is not in DELETING state"
-                        f" (current: {current!r})"
-                    )
-                },
-            )
-        tracker.remove(resource_id)
-    elif state_lower in _ACTIVE_TERMINAL_STATES and current.upper() == "ACTIVE":
+    predecessors = _COMPLETION_PREDECESSORS.get(state_lower)
+    if predecessors is not None and current.lower() not in predecessors:
         return JSONResponse(
             status_code=409,
             content={
-                "error": f"{resource_type} {resource_id!r} is already active (current: {current!r})"
+                "error": (
+                    f"{resource_type} '{resource_id}' is not in a valid predecessor state"
+                    f" for '{state}' (current: '{current}')"
+                )
             },
         )
+    if state_lower in _DELETED_STATES:
+        tracker.remove(resource_id)
     else:
         tracker.set_state(resource_id, state)
     return None
@@ -148,7 +150,7 @@ def _dispatch_injection(
     if current is None:
         return JSONResponse(
             status_code=404,
-            content={"error": f"{resource_type} {resource_id!r} is not tracked"},
+            content={"error": f"{resource_type} '{resource_id}' is not tracked"},
         )
 
     return _apply_tracker_transition(tracker, resource_type, resource_id, state, current)

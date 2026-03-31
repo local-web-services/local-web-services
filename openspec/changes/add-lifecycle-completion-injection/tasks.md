@@ -14,14 +14,14 @@
 
 ## Phase 2: Snapshot Lifecycle Tracker
 
-- [ ] 2.1 Add `_snapshot_tracker = ResourceStateTracker(_lc)` to `create_cluster_db_app` in `cluster_db_service.py`
-- [ ] 2.2 Register `_snapshot_tracker` as `(service, "snapshot")` in the `TrackerRegistry`
-- [ ] 2.3 Update `handle_create_db_cluster_snapshot` in `_cluster_db_extra_handlers.py` to call `_snapshot_tracker.set_state(sid, "CREATING")` then `schedule_transition(sid, "available", create_dwell_ms)` when `create_dwell_ms > 0`; otherwise set directly to "available"
-- [ ] 2.4 Update `handle_delete_db_cluster_snapshot` similarly for DELETING → removed
-- [ ] 2.5 Update `describe_db_cluster_snapshots` to read snapshot status from `_snapshot_tracker` if available, falling back to the status field on `_DBClusterSnapshot`
-- [ ] 2.6 Thread `_snapshot_tracker` through to snapshot handlers (pass alongside `_cluster_tracker` and `_instance_tracker`)
-- [ ] 2.7 Unit tests for snapshot tracker transitions — CREATING → available via dwell, CREATING → available via inject, DELETING → removed
-- [ ] 2.8 Replace all `pytest.skip("Cannot trigger internal X snapshot creation/deletion completion")` when steps with `lws_session.inject_state(service, "snapshot", id, "available"/"deleted")` — covers neptune, rds, docdb (~30 steps)
+- [x] 2.1 Add `_snapshot_tracker = ResourceStateTracker(_lc)` to `create_cluster_db_app` in `cluster_db_service.py`
+- [x] 2.2 Register `_snapshot_tracker` as `(service, "snapshot")` in the `TrackerRegistry`
+- [x] 2.3 Update `handle_create_db_cluster_snapshot` in `_cluster_db_extra_handlers.py` to call `_snapshot_tracker.set_state(sid, "CREATING")` then `schedule_transition(sid, "available", create_dwell_ms)` when `create_dwell_ms > 0`; otherwise set directly to "available"
+- [x] 2.4 Update `handle_delete_db_cluster_snapshot` similarly for DELETING → removed
+- [x] 2.5 Update `describe_db_cluster_snapshots` to read snapshot status from `_snapshot_tracker` if available, falling back to the status field on `_DBClusterSnapshot`
+- [x] 2.6 Thread `_snapshot_tracker` through to snapshot handlers (pass alongside `_cluster_tracker` and `_instance_tracker`)
+- [x] 2.7 Unit tests for snapshot tracker transitions — CREATING → available via dwell, CREATING → available via inject, DELETING → removed
+- [x] 2.8 Replace all `pytest.skip("Cannot trigger internal X snapshot creation/deletion completion")` when steps with `lws_session.inject_state(service, "snapshot", id, "available"/"deleted")` — covers neptune, rds, docdb (~30 steps)
 
 ## Phase 3a: Cluster Operational State Handlers (Neptune, RDS, DocumentDB)
 

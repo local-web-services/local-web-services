@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
+
+from ..constants import TEST_INSTANCE
 
 
 @given('a "neptune" "instance" reboot completes')
-def neptune_database_instance_reboot_completed_seq():
-    pytest.skip("Cannot trigger internal Neptune instance reboot completion in lws")
+def neptune_database_instance_reboot_completed_seq(lws_session):
+    # Arrange / Act
+    lws_session.inject_state("neptune", "instance", TEST_INSTANCE, "available")
+    # Assert
+    pass

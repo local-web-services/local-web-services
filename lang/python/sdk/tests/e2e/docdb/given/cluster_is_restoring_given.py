@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
+
+from ..constants import TEST_CLUSTER
 
 
 @given('the "documentdb" "cluster" was "RESTORING"')
-def cluster_is_restoring_given():
-    pytest.skip("Cannot observe RESTORING cluster state in lws")
+def cluster_is_restoring_given(lws_session):
+    # Arrange / Act
+    lws_session.inject_state("docdb", "cluster", TEST_CLUSTER, "restoring")
+    # Assert
+    pass

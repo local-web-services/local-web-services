@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_INSTANCE
 
 
 @when('a "neptune" "instance" reboot completes')
 def instance_reboot_completes(lws_session, world):
-    pytest.skip("Cannot trigger internal Neptune instance reboot completion in lws")
+    try:
+        lws_session.inject_state("neptune", "instance", TEST_INSTANCE, "available")
+    except RuntimeError as exc:
+        world["error"] = exc

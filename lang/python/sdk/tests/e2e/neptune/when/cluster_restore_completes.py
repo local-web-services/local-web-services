@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_CLUSTER
 
 
 @when('a "neptune" "cluster" restore from neptune snapshot completes')
 def cluster_restore_completes(lws_session, world):
-    pytest.skip("Cannot trigger internal Neptune cluster restore completion in lws")
+    try:
+        lws_session.inject_state("neptune", "cluster", TEST_CLUSTER, "available")
+    except RuntimeError as exc:
+        world["error"] = exc

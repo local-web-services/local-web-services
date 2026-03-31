@@ -10,6 +10,7 @@ from ..constants import TEST_CLUSTER
 
 @when('a "neptune" "cluster" is stopped')
 def stop_db_cluster(lws_session, world):
+    lws_session.lifecycle("neptune").modify_dwell_ms(5000).apply()
     try:
         cluster_id = world.get("cluster_id", TEST_CLUSTER)
         result = lws_session.client("neptune").stop_db_cluster(DBClusterIdentifier=cluster_id)

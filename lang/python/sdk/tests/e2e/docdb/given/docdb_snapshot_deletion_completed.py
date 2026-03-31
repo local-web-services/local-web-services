@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
+
+from ..constants import TEST_SNAPSHOT
 
 
 @given('a "documentdb" "cluster" documentdb snapshot deletion completes')
-def docdb_snapshot_deletion_completed():
-    pytest.skip(
-        "Cannot represent a completed DocumentDB snapshot deletion as sequence setup in lws"
-    )
+def docdb_snapshot_deletion_completed(lws_session):
+    # Arrange / Act
+    lws_session.inject_state("docdb", "snapshot", TEST_SNAPSHOT, "deleted")
+    # Assert
+    pass
