@@ -1,4 +1,4 @@
-"""When: a database cluster finishes creating"""
+"""When: a "documentdb" "cluster" finishes creating"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import NeptuneTestClient
 from ..constants import INT_CLUSTER
 
 
-@when("a database cluster finishes creating")
+@when('a "documentdb" "cluster" finishes creating')
 def finish_creating_cluster(client: TestClient, world: dict):
     r = NeptuneTestClient(client).post("DescribeDBClusters", {"DBClusterIdentifier": INT_CLUSTER})
     if r.status_code != 200:

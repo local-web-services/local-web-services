@@ -1,4 +1,4 @@
-"""Given: the integration does not exist"""
+"""Given: the "api gateway" "integration" did not exist"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ApigatewayTestClient
 from ..constants import TEST_HTTP_METHOD
 
 
-@given("the integration does not exist")
+@given('the "api gateway" "integration" did not exist')
 def integration_does_not_exist(lws_session):
     """Delete the GET integration on the root resource if it exists, to enforce non-existence."""
     api_id = ApigatewayTestClient(lws_session).get_api_id()

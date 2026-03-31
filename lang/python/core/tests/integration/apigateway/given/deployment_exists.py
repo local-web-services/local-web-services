@@ -1,4 +1,4 @@
-"""Given: the deployment exists"""
+"""Given: the "api gateway" "deployment" existed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import ApigatewayTestClient
 
 
-@given("the deployment exists")
+@given('the "api gateway" "deployment" existed')
 def deployment_exists(client: TestClient):
     api_body = ApigatewayTestClient(client).create_rest_api()
     api_id = api_body["id"]

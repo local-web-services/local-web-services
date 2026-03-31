@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - A Disabled Event Source Mapping Is Deleted
+Feature: Lambda - A Disabled Lambda Event Source Mapping Is Deleted
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions
@@ -8,11 +8,11 @@ Feature: Lambda - A Disabled Event Source Mapping Is Deleted
     Given the system is initialized
 
   @minimal @happy @delete_disabled_event_source_mapping
-  Scenario: a disabled event source mapping is deleted
-    Given the event source mapping exists
-    And the mapping is "DISABLED"
-    When a disabled event source mapping is deleted
-    Then the mapping enters "DELETING" state
+  Scenario: a disabled lambda event source mapping is deleted
+    Given the "lambda" "event source mapping" existed
+    And the mapping was "DISABLED"
+    When a disabled lambda event source mapping is deleted
+    Then the mapping will be in "DELETING" state
     And every active event source mapping references an existing non-deleted function
     And no function in "DELETING" state has active executions
     And active execution count never exceeds reserved concurrency when set
@@ -22,14 +22,14 @@ Feature: Lambda - A Disabled Event Source Mapping Is Deleted
     And all async slots reference known function IDs or are empty
 
   @guard @negative @delete_disabled_event_source_mapping
-  Scenario: a disabled event source mapping is deleted fails when the event source mapping does not exist
-    Given the event source mapping does not exist
-    When a disabled event source mapping is deleted
+  Scenario: a disabled lambda event source mapping is deleted fails when the "lambda" "event source mapping" did not exist
+    Given the "lambda" "event source mapping" did not exist
+    When a disabled lambda event source mapping is deleted
     Then the operation is rejected
 
   @guard @negative @delete_disabled_event_source_mapping @lifecycle
-  Scenario: a disabled event source mapping is deleted fails when the mapping is not "DISABLED"
-    Given the event source mapping exists
-    And the mapping is not "DISABLED"
-    When a disabled event source mapping is deleted
+  Scenario: a disabled lambda event source mapping is deleted fails when the mapping was not "DISABLED"
+    Given the "lambda" "event source mapping" existed
+    And the mapping was not "DISABLED"
+    When a disabled lambda event source mapping is deleted
     Then the operation is rejected

@@ -1,4 +1,4 @@
-"""Then: the table enters "DELETING" state"""
+"""Then: the "s3 tables" "table" will be in "DELETING" state"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_NAMESPACE, INT_TABLE
 
 
-@then('the table enters "DELETING" state')
+@then('the "s3 tables" "table" will be in "DELETING" state')
 def table_enters_deleting_state(client: TestClient):
     r = client.get(
         "/get-table",

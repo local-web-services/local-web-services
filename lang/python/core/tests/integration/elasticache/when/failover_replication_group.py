@@ -1,4 +1,4 @@
-"""When: an automatic failover promotes a new primary in a replication group"""
+"""When: an automatic failover promotes a new primary in a "elasticache" "replication group" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_RG_ID
 
 
-@when("an automatic failover promotes a new primary in a replication group")
+@when('an automatic failover promotes a new primary in a "elasticache" "replication group"')
 def failover_replication_group(client: TestClient, world):
     r = client.post(
         "/",

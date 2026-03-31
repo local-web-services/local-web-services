@@ -1,11 +1,13 @@
-"""Then: the bucket is "DELETED" and all its namespaces and tables are "DELETED" """
+"""Then: the "s3 tables" "bucket" will be "DELETED" and all its namespaces and tables will be deleted"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the bucket is "DELETED" and all its namespaces and tables are "DELETED"')
+@then(
+    'the "s3 tables" "bucket" will be "DELETED" and all its namespaces and tables will be deleted'
+)
 def bucket_is_deleted_then(world):
     expected_error = None
     actual_error = world["error"]

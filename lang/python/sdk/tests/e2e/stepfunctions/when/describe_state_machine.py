@@ -1,4 +1,4 @@
-"""When: a state machine is described"""
+"""When: a "step functions" "state machine" is described"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_SM, _sm_arn
 
 
-@when("a state machine is described")
+@when('a "step functions" "state machine" is described')
 def describe_state_machine(lws_session, world):
     try:
         sm_name = world.get("state_machine_name") or TEST_SM

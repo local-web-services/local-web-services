@@ -1,4 +1,4 @@
-"""When: a backend integration is attached to a method"""
+"""When: a backend integration is attached to a "api gateway" "method" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ApigatewayTestClient
 from ..constants import TEST_HTTP_METHOD, TEST_INTEGRATION_TYPE, TEST_INTEGRATION_URI
 
 
-@when("a backend integration is attached to a method")
+@when('a backend integration is attached to a "api gateway" "method"')
 def attach_backend_integration(lws_session, world):
     try:
         api_id = ApigatewayTestClient(lws_session).get_api_id()

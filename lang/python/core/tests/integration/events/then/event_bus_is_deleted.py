@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EVENTS_TARGET, INT_BUS
 
 
-@then('the event bus is "DELETED"')
+@then('the "eventbridge" "bus" will be deleted')
 def event_bus_is_deleted_then(client: TestClient):
     r = client.post("/", headers={"X-Amz-Target": f"{_EVENTS_TARGET}.ListEventBuses"}, json={})
     actual_names = [b["Name"] for b in r.json().get("EventBuses", [])]

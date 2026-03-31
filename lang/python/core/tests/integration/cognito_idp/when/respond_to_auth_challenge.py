@@ -1,4 +1,4 @@
-"""When: a user responds to an auth challenge"""
+"""When: a "cognito" "user" responds to an auth challenge"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import CognitoIdpTestClient
 from ..constants import INT_CLIENT_ID, INT_PASSWORD, INT_USERNAME, _store
 
 
-@when("a user responds to an auth challenge")
+@when('a "cognito" "user" responds to an auth challenge')
 def respond_to_auth_challenge(client: TestClient, world):
     session_id = world.get("session_id", "nonexistent-session")
     r = CognitoIdpTestClient(client).cognito_post(

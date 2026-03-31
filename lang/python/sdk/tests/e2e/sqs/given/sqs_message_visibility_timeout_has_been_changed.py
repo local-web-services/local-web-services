@@ -1,4 +1,4 @@
-"""Given: message visibility timeout has been changed"""
+"""Given: "sqs" "message" visibility timeout is changed"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..client import SqsTestClient
 
 
-@given("message visibility timeout has been changed")
+@given('"sqs" "message" visibility timeout is changed')
 def sqs_message_visibility_timeout_has_been_changed(lws_session):
     SqsTestClient(lws_session).create_queue()
     SqsTestClient(lws_session).send_message()

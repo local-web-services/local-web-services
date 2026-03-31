@@ -1,4 +1,4 @@
-"""When: a user account is enabled by an admin"""
+"""When: a "cognito" "user" is deleted by an admin"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_USERNAME, _skip_if_not_implemented
 
 
-@when("a user account is enabled by an admin")
+@when('a "cognito" "user" was "ENABLED" by an admin')
 def enable_user_by_admin(lws_session, world):
     try:
         pool_id = world.get("pool_id", "")

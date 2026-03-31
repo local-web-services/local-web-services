@@ -1,11 +1,11 @@
-"""Then: the tags are associated with the parameter"""
+"""Then: the tags are associated with the "ssm" "parameter" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the tags are associated with the parameter")
+@then('the tags are associated with the "ssm" "parameter"')
 def tags_associated_with_parameter(world):
     assert (
         world["error"] is None

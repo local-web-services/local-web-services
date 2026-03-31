@@ -1,4 +1,4 @@
-"""Then: the pool is "ACTIVE" with no EventBridge configuration"""
+"""Then: the "cognito" "user pool" will be "ACTIVE" with no EventBridge configuration"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_POOL
 
 
-@then('the pool is "ACTIVE" with no EventBridge configuration')
+@then('the "cognito" "user pool" will be "ACTIVE" with no EventBridge configuration')
 def pool_is_active_no_eventbridge(lws_session):
     resp = lws_session.client("cognito-idp").list_user_pools(MaxResults=60)
     actual_names = [p["Name"] for p in resp.get("UserPools", [])]

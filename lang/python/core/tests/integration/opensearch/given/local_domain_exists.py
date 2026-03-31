@@ -1,4 +1,4 @@
-"""Given: the local domain exists"""
+"""Given: the local "opensearch" "domain" existed"""
 
 from __future__ import annotations
 
@@ -9,6 +9,6 @@ from ..client import OpensearchTestClient
 from ..constants import INT_DOMAIN
 
 
-@given("the local domain exists")
+@given('the local "opensearch" "domain" existed')
 def local_domain_exists(client: TestClient):
     OpensearchTestClient(client).create_domain(INT_DOMAIN)

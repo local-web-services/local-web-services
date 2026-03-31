@@ -1,11 +1,11 @@
-"""Then: the policy is attached to the target"""
+"""Then: the policy will be attached to the target"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the policy is attached to the target")
+@then('the "organizations" "policy" will be attached to the "organizations" "target"')
 def policy_is_attached_to_target(lws_session, world):
     assert world["error"] is None, f"Expected AttachPolicy to succeed but got: {world['error']}"
     policy_id = world["policy_id"]

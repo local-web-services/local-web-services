@@ -1,4 +1,4 @@
-"""Then: the function is in "PENDING" state"""
+"""Then: the "lambda" "function" will be in "PENDING" state"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_FUNCTION_NAME
 
 
-@then('the function is in "PENDING" state')
+@then('the "lambda" "function" will be in "PENDING" state')
 def function_is_in_pending_state(client: TestClient, world):
     actual_error = world["error"]
     assert actual_error is None, f"Expected function creation to succeed but got: {actual_error}"

@@ -1,4 +1,4 @@
-"""Given: the user membership entry exists"""
+"""Given: the "memorydb" "user" membership entry existed"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import MemorydbTestClient
 from ..constants import _MDB_TARGET, INT_ACL_NAME, INT_USER_NAME
 
 
-@given("the user membership entry exists")
+@given('the "memorydb" "user" membership entry existed')
 def user_membership_entry_exists(client: TestClient):
     MemorydbTestClient(client).create_user()
     MemorydbTestClient(client).create_acl()

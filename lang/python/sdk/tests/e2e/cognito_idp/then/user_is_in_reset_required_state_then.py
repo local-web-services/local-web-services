@@ -1,4 +1,4 @@
-"""Then: the user is in "RESET_REQUIRED" state"""
+"""Then: the "cognito" "user" will be in "RESET_REQUIRED" state"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_USERNAME
 
 
-@then('the user is in "RESET_REQUIRED" state')
+@then('the "cognito" "user" will be in "RESET_REQUIRED" state')
 def user_is_in_reset_required_state_then(lws_session, world):
     pool_id = world.get("pool_id", "")
     username = world.get("username", TEST_USERNAME)

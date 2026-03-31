@@ -1,11 +1,13 @@
-"""Then: the execution is "SUCCEEDED" and the message has been published to the topic"""
+"""Then: the "step functions" "execution" will be "SUCCEEDED" and the message has been published to the topic"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the execution is "SUCCEEDED" and the message has been published to the topic')
+@then(
+    'the "step functions" "execution" will be "SUCCEEDED" and the message has been published to the topic'
+)
 def execution_succeeded_and_message_published(lws_session, world):
     # Arrange
     expected_error = None

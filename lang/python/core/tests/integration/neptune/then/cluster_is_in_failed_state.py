@@ -1,11 +1,11 @@
-"""Then: the cluster is in "FAILED" state"""
+"""Then: the "documentdb" "cluster" will be in "FAILED" state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the cluster is in "FAILED" state')
+@then('the "documentdb" "cluster" will be in "FAILED" state')
 def cluster_is_in_failed_state(world: dict):
     actual_result = world["result"]
     assert (

@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Database Instance Is Created In An Available Cluster
+Feature: Neptune - A "Neptune" "Instance" Is Created In An Available Neptune Cluster
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,12 +8,12 @@ Feature: Neptune - A Database Instance Is Created In An Available Cluster
     Given the system is initialized
 
   @minimal @happy @create_d_b_instance
-  Scenario: a database instance is created in an available cluster
-    Given the cluster exists
-    And the cluster is "AVAILABLE"
-    And the instance slot is available
-    When a database instance is created in an available cluster
-    Then the instance is in "CREATING" state and associated with the cluster
+  Scenario: a "neptune" "instance" is created in an available neptune cluster
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "AVAILABLE"
+    And the "neptune" "instance" slot is available
+    When a "neptune" "instance" is created in an available neptune cluster
+    Then the "neptune" "INSTANCE" will be in "CREATING" state and associated with the "neptune" "cluster"
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -24,22 +24,22 @@ Feature: Neptune - A Database Instance Is Created In An Available Cluster
     And a failed cluster has no available instances
 
   @guard @negative @create_d_b_instance
-  Scenario: a database instance is created in an available cluster fails when the cluster does not exist
-    Given the cluster does not exist
-    When a database instance is created in an available cluster
+  Scenario: a "neptune" "instance" is created in an available neptune cluster fails when the "neptune" "cluster" did not exist
+    Given the "neptune" "cluster" did not exist
+    When a "neptune" "instance" is created in an available neptune cluster
     Then the operation is rejected
 
   @guard @negative @create_d_b_instance @lifecycle
-  Scenario: a database instance is created in an available cluster fails when the cluster is not "AVAILABLE"
-    Given the cluster exists
-    And the cluster is not "AVAILABLE"
-    When a database instance is created in an available cluster
+  Scenario: a "neptune" "instance" is created in an available neptune cluster fails when the "neptune" "cluster" was not "AVAILABLE"
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was not "AVAILABLE"
+    When a "neptune" "instance" is created in an available neptune cluster
     Then the operation is rejected
 
-  @guard @negative @internal @create_d_b_instance
-  Scenario: a database instance is created in an available cluster fails when the instance slot is not available
-    Given the cluster exists
-    And the cluster is "AVAILABLE"
-    And the instance slot is not available
-    When a database instance is created in an available cluster
+  @guard @negative @create_d_b_instance
+  Scenario: a "neptune" "instance" is created in an available neptune cluster fails when the "neptune" "instance" slot is not available
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "AVAILABLE"
+    And the "neptune" "instance" slot is not available
+    When a "neptune" "instance" is created in an available neptune cluster
     Then the operation is rejected

@@ -1,4 +1,4 @@
-"""When: tags are removed from an active secret"""
+"""When: tags are removed from an active "secrets manager" "secret" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import SecretsmanagerTestClient
 from ..constants import _SM_TARGET_PREFIX, INT_SECRET, INT_TAG_KEY
 
 
-@when("tags are removed from an active secret")
+@when('tags are removed from an active "secrets manager" "secret"')
 def untag_resource(sync_client: TestClient, world):
     desc = SecretsmanagerTestClient(sync_client).describe_secret()
     if desc and "DeletedDate" in desc:

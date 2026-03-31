@@ -1,4 +1,4 @@
-"""When: the recovery window for a deleted secret expires"""
+"""When: the recovery window for a deleted "secrets manager" "secret" expires"""
 
 from __future__ import annotations
 
@@ -6,6 +6,6 @@ import pytest
 from pytest_bdd import when
 
 
-@when("the recovery window for a deleted secret expires")
+@when('the recovery window for a deleted "secrets manager" "secret" expires')
 def recovery_window_expires(world):
     pytest.skip("Cannot expire the recovery window programmatically.")

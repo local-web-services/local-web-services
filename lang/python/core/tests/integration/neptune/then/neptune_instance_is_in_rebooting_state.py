@@ -1,11 +1,11 @@
-"""Then: the instance is in "REBOOTING" state"""
+"""Then: the "neptune" "INSTANCE" will be in "REBOOTING" state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the instance is in "REBOOTING" state')
+@then('the "neptune" "INSTANCE" will be in "REBOOTING" state')
 def neptune_instance_is_in_rebooting_state(world: dict):
     actual_result = world["result"]
     assert (

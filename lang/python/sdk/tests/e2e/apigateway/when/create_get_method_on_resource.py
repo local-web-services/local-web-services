@@ -1,4 +1,4 @@
-"""When: a "GET" method is created on a resource"""
+"""When: a "GET" method is created on a "api gateway" "resource" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ApigatewayTestClient
 from ..constants import TEST_AUTH_TYPE, TEST_HTTP_METHOD
 
 
-@when('a "GET" method is created on a resource')
+@when('a "GET" method is created on a "api gateway" "resource"')
 def create_get_method_on_resource(lws_session, world):
     try:
         api_id = ApigatewayTestClient(lws_session).get_api_id()

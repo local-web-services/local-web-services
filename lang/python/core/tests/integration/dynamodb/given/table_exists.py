@@ -1,4 +1,4 @@
-"""Given: the table exists"""
+"""Given: the "dynamodb" "table" existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import DynamodbTestClient
 
 
-@given("the table exists")
+@given('the "dynamodb" "table" existed')
 def table_exists(client: TestClient):
     DynamodbTestClient(client).create_table()

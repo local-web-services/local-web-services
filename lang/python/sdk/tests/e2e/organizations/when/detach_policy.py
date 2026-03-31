@@ -1,4 +1,4 @@
-"""When: a policy is detached from a target"""
+"""When: an "organizations" "policy" is detached from a target"""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from botocore.exceptions import ClientError
 from pytest_bdd import when
 
 
-@when("a policy is detached from a target")
+@when('an "organizations" "policy" is detached from a target')
 def detach_policy(lws_session, world):
     try:
         resp = lws_session.client("organizations").detach_policy(

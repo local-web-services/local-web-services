@@ -1,4 +1,4 @@
-"""When: an outbound connection finishes deleting"""
+"""When: an "opensearch" "outbound connection" finishes deleting"""
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import when
 from starlette.testclient import TestClient
 
 
-@when("an outbound connection finishes deleting")
+@when('an "opensearch" "outbound connection" finishes deleting')
 def finish_deleting_outbound_connection(client: TestClient, world: dict):
     pytest.skip("Cross-cluster connections are not available in stateless integration tests.")

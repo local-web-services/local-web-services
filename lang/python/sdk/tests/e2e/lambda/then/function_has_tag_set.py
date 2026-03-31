@@ -1,4 +1,4 @@
-"""Then: the function has the tag set"""
+"""Then: the "lambda" "function" has the tag set"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_TAG_KEY, _func_arn
 
 
-@then("the function has the tag set")
+@then('the "lambda" "function" has the tag set')
 def function_has_tag_set(lws_session, world):
     assert world["error"] is None, f"Expected tag_resource to succeed but got: {world['error']}"
     resp = lws_session.client("lambda").list_tags(Resource=_func_arn())

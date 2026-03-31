@@ -1,4 +1,4 @@
-"""When: an "API" deployment is created"""
+"""When: an "api gateway" "API" deployment is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import ApigatewayTestClient
 
 
-@when('an "API" deployment is created')
+@when('an "api gateway" "API" deployment is created')
 def create_api_deployment(lws_session, world):
     try:
         api_id = ApigatewayTestClient(lws_session).get_api_id()

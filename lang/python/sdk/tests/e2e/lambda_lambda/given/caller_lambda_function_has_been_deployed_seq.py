@@ -1,4 +1,4 @@
-"""Given: a caller Lambda function has been deployed"""
+"""Given: a caller "lambda" "function" is deployed"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import LambdaLambdaTestClient
 from ..constants import TEST_CALLER
 
 
-@given("a caller Lambda function has been deployed")
+@given('a caller "lambda" "function" is deployed')
 def caller_lambda_function_has_been_deployed_seq(lws_session):
     try:
         LambdaLambdaTestClient(lws_session).create_function(TEST_CALLER)

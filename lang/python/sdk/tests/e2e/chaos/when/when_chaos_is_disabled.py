@@ -1,4 +1,4 @@
-"""When: chaos is disabled for a service"""
+"""When: chaos was "DISABLED" for a service"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import when
 from ..constants import TEST_SERVICE
 
 
-@when("chaos is disabled for a service")
+@when('chaos was "DISABLED" for a service')
 def when_chaos_is_disabled(lws_session, world):
     """Disable chaos for the test service and record the result."""
     try:

@@ -1,4 +1,4 @@
-"""Then: the secret is "ACTIVE" but no event is delivered"""
+"""Then: the "secrets manager" "secret" will be "ACTIVE" but no event will be delivered"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_SECRET
 
 
-@then('the secret is "ACTIVE" but no event is delivered')
+@then('the "secrets manager" "secret" will be "ACTIVE" but no event will be delivered')
 def secret_active_but_no_event(lws_session):
     resp = lws_session.client("secretsmanager").list_secrets()
     actual_names = [s["Name"] for s in resp.get("SecretList", [])]

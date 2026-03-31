@@ -1,4 +1,4 @@
-"""Then: the "API" will enqueue incoming requests as "SQS" messages without invoking Lambda"""
+"""Then: the "api gateway" "API" will enqueue incoming requests as "SQS" messages without invoking Lambda"""
 
 from __future__ import annotations
 
@@ -7,7 +7,9 @@ from pytest_bdd import then
 from ..client import ApigatewaySqsTestClient
 
 
-@then('the "API" will enqueue incoming requests as "SQS" messages without invoking Lambda')
+@then(
+    'the "api gateway" "API" will enqueue incoming requests as "SQS" messages without invoking Lambda'
+)
 def api_will_enqueue_requests(lws_session, world):
     api_id = world.get("api_id") or ApigatewaySqsTestClient(lws_session).get_api_id()
     assert api_id is not None, "Expected API to exist"

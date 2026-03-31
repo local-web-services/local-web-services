@@ -1,4 +1,4 @@
-"""Given: the topic is not "ACTIVE" """
+"""Given: the target topic was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import EventsSnsTestClient
 from ..constants import _topic_arn
 
 
-@given('the topic is not "ACTIVE"')
+@given('the target topic was not "ACTIVE"')
 def topic_is_not_active_given(lws_session, world):
     try:
         EventsSnsTestClient(lws_session)._sns.delete_topic(TopicArn=_topic_arn())

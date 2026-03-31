@@ -1,4 +1,4 @@
-"""When: an EventBridge rule is created"""
+"""When: an "eventbridge" "rule" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import EVENT_PATTERN, TEST_BUS, TEST_RULE
 
 
-@when("an EventBridge rule is created")
+@when('an "eventbridge" "rule" is created')
 def put_rule(lws_session, world):
     try:
         resp = lws_session.client("events").put_rule(

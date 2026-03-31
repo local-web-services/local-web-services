@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EVENTS_TARGET, INT_BUS, INT_RULE, INT_TARGET_ARN, INT_TARGET_ID, _store
 
 
-@when("targets are added to a rule")
+@when('targets are added to an "eventbridge" "rule"')
 def put_targets(client: TestClient, world):
     r = client.post(
         "/",

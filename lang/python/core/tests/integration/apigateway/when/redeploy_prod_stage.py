@@ -1,4 +1,4 @@
-"""When: the prod stage is redeployed to a new deployment"""
+"""When: the "api gateway" "prod stage" is redeployed to a new deployment"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_STAGE_PROD
 
 
-@when("the prod stage is redeployed to a new deployment")
+@when('the "api gateway" "prod stage" is redeployed to a new deployment')
 def redeploy_prod_stage(client: TestClient, world):
     list_r = client.get("/restapis")
     items = list_r.json().get("item", [])

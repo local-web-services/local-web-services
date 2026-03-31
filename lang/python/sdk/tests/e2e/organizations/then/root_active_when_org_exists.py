@@ -1,11 +1,11 @@
-"""Then: the root is "ACTIVE" whenever the organization exists"""
+"""Then: the root was "ACTIVE" whenever the "organizations" "organization" exists"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the root is "ACTIVE" whenever the organization exists')
+@then('the root was "ACTIVE" whenever the "organizations" "organization" exists')
 def root_active_when_org_exists(lws_session):
     roots_resp = lws_session.client("organizations").list_roots()
     actual_roots = roots_resp["Roots"]

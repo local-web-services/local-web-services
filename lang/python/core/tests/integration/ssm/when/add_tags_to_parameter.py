@@ -1,4 +1,4 @@
-"""When: tags are added to a parameter"""
+"""When: tags are added to a "ssm" "parameter" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SSM_TARGET, INT_PARAM, INT_TAG_KEY, INT_TAG_VALUE
 
 
-@when("tags are added to a parameter")
+@when('tags are added to a "ssm" "parameter"')
 def add_tags_to_parameter(client: TestClient, world):
     r = client.post(
         "/",

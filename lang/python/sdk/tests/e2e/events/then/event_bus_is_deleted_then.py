@@ -1,4 +1,4 @@
-"""Then: the event bus is "DELETED" """
+"""Then: the "eventbridge" "bus" will be deleted"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_BUS
 
 
-@then('the event bus is "DELETED"')
+@then('the "eventbridge" "bus" will be deleted')
 def event_bus_is_deleted_then(lws_session):
     resp = lws_session.client("events").list_event_buses()
     actual_names = [b["Name"] for b in resp.get("EventBuses", [])]

@@ -1,4 +1,4 @@
-"""When: an item is conditionally written to the table"""
+"""When: a "dynamodb" "item" is conditionally written to the "dynamodb" "table" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import DynamodbTestClient
 from ..constants import TEST_ATTR_VAL, TEST_ITEM_KEY, TEST_PK, TEST_TABLE, _store
 
 
-@when("an item is conditionally written to the table")
+@when('a "dynamodb" "item" is conditionally written to the "dynamodb" "table"')
 def conditional_write_item(client: TestClient, world: dict):
     r = DynamodbTestClient(client).post(
         "PutItem",

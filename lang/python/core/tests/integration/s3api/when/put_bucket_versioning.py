@@ -1,4 +1,4 @@
-"""When: versioning is configured on a bucket"""
+"""When: versioning is configured on a "s3" "bucket" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET
 
 
-@when("versioning is configured on a bucket")
+@when('versioning is configured on a "s3" "bucket"')
 def put_bucket_versioning(sync_client: TestClient, world):
     r = sync_client.put(
         f"/{INT_BUCKET}",

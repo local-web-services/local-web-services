@@ -1,5 +1,5 @@
 @apigateway @generated
-Feature: Apigateway - An Integration Is Deleted
+Feature: Apigateway - An "Api Gateway" "Integration" Is Deleted
 
   # Generated from FizzBee spec: apigateway.fizz
   # Safety invariants: ResourcesBelongToExistingApis, MethodsBelongToExistingResources, IntegrationsBelongToExistingMethods, DeploymentsBelongToExistingApis, StagesReferenceExistingDeployments, StagesBelongToExistingApis, RootResourcePreserved
@@ -8,11 +8,11 @@ Feature: Apigateway - An Integration Is Deleted
     Given the system is initialized
 
   @minimal @happy @delete_integration
-  Scenario: an integration is deleted
-    Given the integration exists
-    And the integration "EXISTS"
-    When an integration is deleted
-    Then the integration is "DELETED"
+  Scenario: an "api gateway" "integration" is deleted
+    Given the "api gateway" "integration" existed
+    And the "api gateway" "integration" existed
+    When an "api gateway" "integration" is deleted
+    Then the "api gateway" "integration" will be deleted
     And all "ACTIVE" resources belong to "ACTIVE" APIs
     And all "EXISTING" methods belong to "ACTIVE" resources
     And all "EXISTING" integrations correspond to "EXISTING" methods
@@ -22,14 +22,14 @@ Feature: Apigateway - An Integration Is Deleted
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
   @guard @negative @delete_integration
-  Scenario: an integration is deleted fails when the integration does not exist
-    Given the integration does not exist
-    When an integration is deleted
+  Scenario: an "api gateway" "integration" is deleted fails when the "api gateway" "integration" did not exist
+    Given the "api gateway" "integration" did not exist
+    When an "api gateway" "integration" is deleted
     Then the operation is rejected
 
   @guard @negative @delete_integration
-  Scenario: an integration is deleted fails when the integration does not exist
-    Given the integration exists
-    And the integration does not exist
-    When an integration is deleted
+  Scenario: an "api gateway" "integration" is deleted fails when the "api gateway" "integration" did not exist
+    Given the "api gateway" "integration" existed
+    And the "api gateway" "integration" did not exist
+    When an "api gateway" "integration" is deleted
     Then the operation is rejected

@@ -1,11 +1,11 @@
-"""Then: the instance tag state is unchanged (no-op model)"""
+"""Then: the "rds" "instance" tag state will be unchanged (no-op model)"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the instance tag state is unchanged (no-op model)")
+@then('the "rds" "instance" tag state will be unchanged (no-op model)')
 def instance_tag_state_unchanged(world: dict):
     actual_result = world["result"]
     assert (

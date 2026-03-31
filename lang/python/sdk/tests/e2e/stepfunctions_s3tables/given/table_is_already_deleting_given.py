@@ -2,10 +2,21 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
+
+from ..client import StepfunctionsS3tablesTestClient
+from ..constants import TEST_BUCKET
 
 
 @given('the table is already "DELETING"')
 def table_is_already_deleting_given(lws_session, world):
-    pytest.skip("Cannot put an S3 Tables table into DELETING state in lws")
+    try:
+        StepfunctionsS3tablesTestClient(lws_session).create_table_bucket()
+    except Exception:
+        pass
+    resp = lws_session.client("s3tables").get_table_bucket(tableBucketARN=TEST_BUCKET)
+    actual_arn = resp.get("arn", TEST_BUCKET)
+    lws_session.lifecycle("s3tables").delete_dwell_ms(5000).apply()
+    lws_session.client("s3tables").delete_table_bucket(tableBucketARN=actual_arn)
+    world["result"] = None
+    world["error"] = None

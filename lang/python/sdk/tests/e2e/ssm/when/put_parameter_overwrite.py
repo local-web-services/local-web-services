@@ -1,4 +1,4 @@
-"""When: an existing parameter value is updated"""
+"""When: an existing "ssm" "parameter" value is updated"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_PARAM, TEST_VALUE2
 
 
-@when("an existing parameter value is updated")
+@when('an existing "ssm" "parameter" value is updated')
 def put_parameter_overwrite(lws_session, world):
     try:
         desc = lws_session.client("ssm").describe_parameters(

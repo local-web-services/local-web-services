@@ -1,4 +1,4 @@
-"""Given: the function already exists"""
+"""Given: the "lambda" "function" already existed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import LambdaTestClient
 
 
-@given("the function already exists")
+@given('the "lambda" "function" already existed')
 def function_already_exists(client: TestClient, world):
     LambdaTestClient(client).create_function()
     world["_skip"] = "lws does not enforce function uniqueness in stateless integration tests."

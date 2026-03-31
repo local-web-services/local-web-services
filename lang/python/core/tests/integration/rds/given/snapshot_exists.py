@@ -1,4 +1,4 @@
-"""Given: the snapshot exists"""
+"""Given: the "documentdb" "snapshot" existed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,8 @@ from starlette.testclient import TestClient
 from ..client import RdsTestClient
 
 
-@given("the snapshot exists")
+@given('the "rds" "snapshot" existed')
+@given('the "documentdb" "snapshot" existed')
 def snapshot_exists(client: TestClient):
     """Create an instance (snapshots are not standalone in lws)."""
     RdsTestClient(client).create_instance()

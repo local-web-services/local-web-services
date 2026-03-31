@@ -21,9 +21,9 @@ action Init:
 
 
 # step: an AWS fake is created for a service
-# result: the AWS fake is ACTIVE
-# guard: the AWS fake does not already exist
-# guard_violation: the AWS fake already exists
+# result: the AWS fake will be "ACTIVE"
+# guard: the AWS fake did not already exist
+# guard_violation: the AWS fake already existed
 atomic action CreateAwsFake:
     oneof fid in FAKE_IDS:
         if fid not in fake_status:
@@ -36,11 +36,11 @@ atomic action CreateAwsFake:
 
 
 # step: an AWS fake is deleted
-# result: the AWS fake is DELETED and its operations are removed
-# guard: the AWS fake exists
-# guard_violation: the AWS fake does not exist
-# guard: the AWS fake is ACTIVE
-# guard_violation: the AWS fake is not ACTIVE
+# result: the AWS fake will be deleted and its operations will be removed
+# guard: the AWS fake existed
+# guard_violation: the AWS fake did not exist
+# guard: the AWS fake was "ACTIVE"
+# guard_violation: the AWS fake was not "ACTIVE"
 atomic action DeleteAwsFake:
     oneof fid in FAKE_IDS:
         if fid in fake_status:
@@ -53,11 +53,11 @@ atomic action DeleteAwsFake:
 
 
 # step: an operation is added to an AWS fake
-# result: the operation is ACTIVE on the AWS fake
-# guard: the AWS fake exists
-# guard_violation: the AWS fake does not exist
-# guard: the AWS fake is ACTIVE
-# guard_violation: the AWS fake is not ACTIVE
+# result: the operation will be "ACTIVE" on the AWS fake
+# guard: the AWS fake existed
+# guard_violation: the AWS fake did not exist
+# guard: the AWS fake was "ACTIVE"
+# guard_violation: the AWS fake was not "ACTIVE"
 # guard: an operation slot is available
 # guard_violation: no operation slot is available
 atomic action AddOperation:
@@ -74,11 +74,11 @@ atomic action AddOperation:
 
 
 # step: an operation is removed from an AWS fake
-# result: the operation is DELETED
-# guard: the operation exists
-# guard_violation: the operation does not exist
-# guard: the operation is ACTIVE
-# guard_violation: the operation is not ACTIVE
+# result: the operation will be deleted
+# guard: the operation existed
+# guard_violation: the operation did not exist
+# guard: the operation was "ACTIVE"
+# guard_violation: the operation was not "ACTIVE"
 atomic action RemoveOperation:
     oneof oid in OP_IDS:
         if oid in op_status:
@@ -87,11 +87,11 @@ atomic action RemoveOperation:
 
 
 # step: a request matching an AWS fake operation is intercepted
-# result: the canned response is returned and the request does not reach the provider
-# guard: the operation exists
-# guard_violation: the operation does not exist
-# guard: the operation is ACTIVE
-# guard_violation: the operation is not ACTIVE
+# result: the canned response will be returned and the request does not reach the provider
+# guard: the operation existed
+# guard_violation: the operation did not exist
+# guard: the operation was "ACTIVE"
+# guard_violation: the operation was not "ACTIVE"
 # guard: the operation has no header filter
 # guard_violation: the operation has a header filter
 atomic action InterceptRequest:
@@ -103,11 +103,11 @@ atomic action InterceptRequest:
 
 
 # step: a request matching a header-filtered operation is intercepted
-# result: the canned response is returned when the request header matches
-# guard: the operation exists
-# guard_violation: the operation does not exist
-# guard: the operation is ACTIVE
-# guard_violation: the operation is not ACTIVE
+# result: the canned response will be returned when the request header matches
+# guard: the operation existed
+# guard_violation: the operation did not exist
+# guard: the operation was "ACTIVE"
+# guard_violation: the operation was not "ACTIVE"
 # guard: the operation has a header filter
 # guard_violation: the operation does not have a header filter
 atomic action InterceptRequestWithHeader:
@@ -120,10 +120,10 @@ atomic action InterceptRequestWithHeader:
 
 # step: a request for an operation not covered by the AWS fake reaches the provider
 # result: the request passes through to the real AWS provider unchanged
-# guard: the AWS fake exists
-# guard_violation: the AWS fake does not exist
-# guard: the AWS fake is ACTIVE
-# guard_violation: the AWS fake is not ACTIVE
+# guard: the AWS fake existed
+# guard_violation: the AWS fake did not exist
+# guard: the AWS fake was "ACTIVE"
+# guard_violation: the AWS fake was not "ACTIVE"
 atomic action FallthroughRequest:
     oneof fid in FAKE_IDS:
         if fid in fake_status:

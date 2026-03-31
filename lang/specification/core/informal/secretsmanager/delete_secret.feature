@@ -1,5 +1,5 @@
 @secretsmanager @generated
-Feature: Secretsmanager - A Secret Is Deleted
+Feature: Secretsmanager - A "Secrets Manager" "Secret" Is Deleted
 
   # Generated from FizzBee spec: secretsmanager.fizz
   # Safety invariants: ActiveSecretHasCurrentVersion, AtMostOneCurrentVersionPerSecret, AtMostOnePreviousVersionPerSecret, DeletedSecretWithClosedWindowNotRestored, SecretNamesAreUnique, VersionIdsAreUnique, DeletedSecretRecoveryWindowIsOpen, ActiveSecretHasVersion
@@ -8,11 +8,11 @@ Feature: Secretsmanager - A Secret Is Deleted
     Given the system is initialized
 
   @minimal @happy @delete_secret
-  Scenario: a secret is deleted
-    Given the secret exists
-    And the secret is "ACTIVE"
-    When a secret is deleted
-    Then the secret is "DELETED" and the recovery window is open
+  Scenario: a "secrets manager" "secret" is deleted
+    Given the "secrets manager" "secret" existed
+    And the "secrets manager" "secret" was "ACTIVE"
+    When a "secrets manager" "secret" is deleted
+    Then the "secrets manager" "secret" will be "DELETED" and the recovery window will be open
     And every "ACTIVE" secret has a current version assigned
     And at most one current version exists per secret
     And at most one previous version exists per secret
@@ -23,14 +23,14 @@ Feature: Secretsmanager - A Secret Is Deleted
     And every active secret has a current version assigned
 
   @guard @negative @delete_secret
-  Scenario: a secret is deleted fails when the secret does not exist
-    Given the secret does not exist
-    When a secret is deleted
+  Scenario: a "secrets manager" "secret" is deleted fails when the "secrets manager" "secret" did not exist
+    Given the "secrets manager" "secret" did not exist
+    When a "secrets manager" "secret" is deleted
     Then the operation is rejected
 
   @guard @negative @delete_secret @lifecycle
-  Scenario: a secret is deleted fails when the secret is not "ACTIVE"
-    Given the secret exists
-    And the secret is not "ACTIVE"
-    When a secret is deleted
+  Scenario: a "secrets manager" "secret" is deleted fails when the "secrets manager" "secret" was not "ACTIVE"
+    Given the "secrets manager" "secret" existed
+    And the "secrets manager" "secret" was not "ACTIVE"
+    When a "secrets manager" "secret" is deleted
     Then the operation is rejected

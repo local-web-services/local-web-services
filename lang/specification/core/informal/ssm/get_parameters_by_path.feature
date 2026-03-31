@@ -1,5 +1,5 @@
 @ssm @generated
-Feature: Ssm - Parameters Under A Path Are Retrieved From Ssm
+Feature: Ssm - "Ssm" "Parameter"S Under A Path Are Retrieved
 
   # Generated from FizzBee spec: ssm.fizz
   # Safety invariants: VersionIsPositive, TypeIsValid, ParamExistsValuesValid, ErrorLogEntriesAreValid
@@ -8,9 +8,9 @@ Feature: Ssm - Parameters Under A Path Are Retrieved From Ssm
     Given the system is initialized
 
   @minimal @happy @get_parameters_by_path
-  Scenario: parameters under a path are retrieved from "SSM"
-    When parameters under a path are retrieved from "SSM"
-    Then the parameters under the path are returned
+  Scenario: "ssm" "parameter"s under a path are retrieved
+    When "ssm" "parameter"s under a path are retrieved
+    Then the "ssm" "parameter"s under the path will be returned
     And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans

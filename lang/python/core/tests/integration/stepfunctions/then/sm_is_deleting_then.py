@@ -1,11 +1,11 @@
-"""Then: the state machine is in "DELETING" state"""
+"""Then: the "step functions" "state machine" will be in "DELETING" state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the state machine is in "DELETING" state')
+@then('the "step functions" "state machine" will be in "DELETING" state')
 def sm_is_deleting_then(world):
     assert (
         world["error"] is None

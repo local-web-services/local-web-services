@@ -10,7 +10,7 @@ from ..constants import TEST_TABLE
 
 
 @then("the table is deleted")
-@then('the table enters "DELETING" state and all its items are removed')
+@then('the "dynamodb" "table" will be in "DELETING" state and all its items will be removed')
 def table_is_deleted_then(client: TestClient):
     r = DynamodbTestClient(client).post("ListTables", {})
     actual_tables = r.json().get("TableNames", [])

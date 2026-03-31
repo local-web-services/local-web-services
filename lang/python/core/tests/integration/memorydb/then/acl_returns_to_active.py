@@ -1,4 +1,4 @@
-"""Then: the "ACL" returns to "ACTIVE" state"""
+"""Then: the "memorydb" "ACL" returns to "ACTIVE" state"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_ACL_NAME
 
 
-@then('the "ACL" returns to "ACTIVE" state')
+@then('the "memorydb" "ACL" returns to "ACTIVE" state')
 def acl_returns_to_active(client: TestClient):
     r = client.post(
         "/",

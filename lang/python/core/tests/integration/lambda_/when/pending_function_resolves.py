@@ -1,4 +1,4 @@
-"""When: a pending function resolves its deployment"""
+"""When: a pending "lambda" "function" resolves its deployment"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_FUNCTION_NAME
 
 
-@when("a pending function resolves its deployment")
+@when('a pending "lambda" "function" resolves its deployment')
 def pending_function_resolves(client: TestClient, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

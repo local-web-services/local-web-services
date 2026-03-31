@@ -1,4 +1,4 @@
-"""Given: the remote domain exists"""
+"""Given: the remote "opensearch" "domain" existed"""
 
 from __future__ import annotations
 
@@ -9,6 +9,6 @@ from ..client import OpensearchTestClient
 from ..constants import INT_DOMAIN2
 
 
-@given("the remote domain exists")
+@given('the remote "opensearch" "domain" existed')
 def remote_domain_exists(client: TestClient):
     OpensearchTestClient(client).create_domain(INT_DOMAIN2)

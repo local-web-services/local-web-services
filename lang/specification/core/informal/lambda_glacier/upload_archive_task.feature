@@ -1,5 +1,5 @@
 @lambdaglacier @generated
-Feature: LambdaGlacier - The Lambda Function Uploads An Archive To An Existing Vault And Succeeds
+Feature: LambdaGlacier - The "Lambda" "Function" Uploads An "Glacier" "Archive" To An Existing Vault And Succeeds
 
   # Generated from FizzBee spec: lambda_glacier.fizz
   # Safety invariants: InvocationRequiresActiveFunction, ArchiveReferencesExistingVault
@@ -8,32 +8,32 @@ Feature: LambdaGlacier - The Lambda Function Uploads An Archive To An Existing V
     Given the system is initialized
 
   @minimal @happy @upload_archive_task @internal
-  Scenario: the Lambda function uploads an archive to an existing vault and succeeds
-    Given an invocation is "IN_PROGRESS"
-    And the vault "EXISTS"
-    And an archive slot is available
-    When the Lambda function uploads an archive to an existing vault and succeeds
-    Then the archive "EXISTS" in the vault and the invocation is "SUCCESS"
+  Scenario: the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "glacier" "vault" existed
+    And an "glacier" "archive" slot is available
+    When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
+    Then the "glacier" "archive" will exist in the "glacier" "vault" and the invocation will be "SUCCESS"
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing archive references a vault that exists
+    And every existing archive references a "glacier" "vault" that exists
 
   @guard @negative @upload_archive_task @internal
-  Scenario: the Lambda function uploads an archive to an existing vault and succeeds fails when no invocation is "IN_PROGRESS"
-    Given no invocation is "IN_PROGRESS"
-    When the Lambda function uploads an archive to an existing vault and succeeds
+  Scenario: the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds fails when no "lambda" "invocation" was "IN_PROGRESS"
+    Given no "lambda" "invocation" was "IN_PROGRESS"
+    When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     Then the operation is rejected
 
   @guard @negative @upload_archive_task @internal
-  Scenario: the Lambda function uploads an archive to an existing vault and succeeds fails when the vault does not exist or is "DELETED"
-    Given an invocation is "IN_PROGRESS"
-    And the vault does not exist or is "DELETED"
-    When the Lambda function uploads an archive to an existing vault and succeeds
+  Scenario: the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds fails when the "glacier" "vault" did not exist or was "DELETED"
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "glacier" "vault" did not exist or was "DELETED"
+    When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     Then the operation is rejected
 
   @guard @negative @upload_archive_task @internal
-  Scenario: the Lambda function uploads an archive to an existing vault and succeeds fails when no archive slot is available
-    Given an invocation is "IN_PROGRESS"
-    And the vault "EXISTS"
+  Scenario: the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds fails when no archive slot is available
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "glacier" "vault" existed
     And no archive slot is available
-    When the Lambda function uploads an archive to an existing vault and succeeds
+    When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     Then the operation is rejected

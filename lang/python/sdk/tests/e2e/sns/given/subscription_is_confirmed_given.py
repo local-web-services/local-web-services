@@ -1,4 +1,4 @@
-"""Given: the subscription is "CONFIRMED" """
+"""Given: the "sns" "subscription" was "CONFIRMED" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import SnsTestClient
 from ..constants import TEST_SUB_QUEUE
 
 
-@given('the subscription is "CONFIRMED"')
+@given('the "sns" "subscription" was "CONFIRMED"')
 def subscription_is_confirmed_given(lws_session, world):
     """Set up a confirmed SQS subscription (auto-confirmed in lws)."""
     if not world.get("topic_arn"):

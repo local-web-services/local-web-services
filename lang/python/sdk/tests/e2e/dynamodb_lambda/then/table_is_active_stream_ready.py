@@ -1,4 +1,4 @@
-"""Then: the table is "ACTIVE" and its stream is ready to receive change records"""
+"""Then: the "dynamodb" "table" will be "ACTIVE" and its stream will be ready to receive change records"""
 
 from __future__ import annotations
 
@@ -7,7 +7,9 @@ from pytest_bdd import then
 from ..constants import TEST_TABLE
 
 
-@then('the table is "ACTIVE" and its stream is ready to receive change records')
+@then(
+    'the "dynamodb" "table" will be "ACTIVE" and its stream will be ready to receive change records'
+)
 def table_is_active_stream_ready(lws_session):
     resp = lws_session.client("dynamodb").describe_table(TableName=TEST_TABLE)
     expected_status = "ACTIVE"

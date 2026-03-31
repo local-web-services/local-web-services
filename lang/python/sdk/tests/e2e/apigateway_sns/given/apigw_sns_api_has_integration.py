@@ -1,4 +1,4 @@
-"""Given: the "API" has an "SNS" integration configured"""
+"""Given: the "api gateway" "api" has a "SNS" integration configured"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..client import ApigatewaySnsTestClient
 
 
-@given('the "API" has an "SNS" integration configured')
+@given('the "api gateway" "api" has a "SNS" integration configured')
 def apigw_sns_api_has_integration(lws_session, world):
     api_id = ApigatewaySnsTestClient(lws_session).get_api_id()
     if api_id is None:

@@ -1,5 +1,5 @@
 @stepfunctionsmemorydb @generated
-Feature: StepfunctionsMemorydb - A Step Functions State Machine Is Created
+Feature: StepfunctionsMemorydb - A "Step Functions" "State Machine" Is Created
 
   # Generated from FizzBee spec: stepfunctions_memorydb.fizz
   # Safety invariants: ExecutionRequiresActiveStateMachine, SuccessfulExecutionConnectedToACluster
@@ -8,15 +8,15 @@ Feature: StepfunctionsMemorydb - A Step Functions State Machine Is Created
     Given the system is initialized
 
   @minimal @happy @create_state_machine
-  Scenario: a Step Functions state machine is created
-    Given the state machine does not already exist
-    When a Step Functions state machine is created
-    Then the state machine is "ACTIVE"
+  Scenario: a "step functions" "state machine" is created
+    Given the "step functions" "state machine" did not already exist
+    When a "step functions" "state machine" is created
+    Then the "step functions" "state machine" will be "ACTIVE"
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @guard @negative @create_state_machine
-  Scenario: a Step Functions state machine is created fails when the state machine already exists
-    Given the state machine already exists
-    When a Step Functions state machine is created
+  Scenario: a "step functions" "state machine" is created fails when the "step functions" "state machine" already existed
+    Given the "step functions" "state machine" already existed
+    When a "step functions" "state machine" is created
     Then the operation is rejected

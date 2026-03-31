@@ -6,7 +6,7 @@ import pytest
 from pytest_bdd import when
 
 
-@when("a dead-letter queue entry is retried or discarded")
+@when("a dead-letter eventbridge queue entry is retried or discarded")
 def retry_dead_letter(world):
     pytest.skip(
         "Cannot trigger dead-letter queue retry programmatically in integration test context"

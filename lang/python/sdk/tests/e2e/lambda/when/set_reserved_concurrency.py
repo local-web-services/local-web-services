@@ -1,4 +1,4 @@
-"""When: reserved concurrency is set for a function"""
+"""When: reserved concurrency is set for a "lambda" "function" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_FUNC
 
 
-@when("reserved concurrency is set for a function")
+@when('reserved concurrency is set for a "lambda" "function"')
 def set_reserved_concurrency(lws_session, world):
     try:
         resp = lws_session.client("lambda").put_function_concurrency(

@@ -1,11 +1,11 @@
-"""Then: a ParameterAlreadyExists error is recorded"""
+"""Then: a ParameterAlreadyExists error will be recorded"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("a ParameterAlreadyExists error is recorded")
+@then("a ParameterAlreadyExists error will be recorded")
 def parameter_already_exists_error(world):
     actual_error = world["error"]
     assert (

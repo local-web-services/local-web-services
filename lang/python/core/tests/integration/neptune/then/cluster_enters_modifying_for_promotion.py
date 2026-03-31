@@ -1,11 +1,11 @@
-"""Then: the cluster enters "MODIFYING" state for primary promotion"""
+"""Then: the "neptune" "cluster" will be in "MODIFYING" state for primary promotion"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the cluster enters "MODIFYING" state for primary promotion')
+@then('the "neptune" "cluster" will be in "MODIFYING" state for primary promotion')
 def cluster_enters_modifying_for_promotion(world: dict):
     actual_result = world["result"]
     assert (

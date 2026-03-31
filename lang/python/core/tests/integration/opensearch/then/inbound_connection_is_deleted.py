@@ -1,11 +1,11 @@
-"""Then: the inbound connection is "DELETED" """
+"""Then: the "opensearch" "inbound connection" will be "DELETED" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the inbound connection is "DELETED"')
+@then('the "opensearch" "inbound connection" will be "DELETED"')
 def inbound_connection_is_deleted(world: dict):
     actual_result = world["result"]
     assert (

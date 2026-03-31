@@ -1,4 +1,4 @@
-"""When: a table is described"""
+"""When: a "dynamodb" "table" is described"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_TABLE
 
 
-@when("a table is described")
+@when('a "dynamodb" "table" is described')
 def describe_table(lws_session, world):
     try:
         world["result"] = lws_session.client("dynamodb").describe_table(TableName=TEST_TABLE)

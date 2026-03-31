@@ -1,4 +1,4 @@
-"""Then: the bucket versioning state is "ENABLED" or "SUSPENDED" non-deterministically"""
+"""Then: the "s3" "bucket" versioning state will be "ENABLED" or "SUSPENDED" non-deterministically"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_BUCKET
 
 
-@then('the bucket versioning state is "ENABLED" or "SUSPENDED" non-deterministically')
+@then('the "s3" "bucket" versioning state will be "ENABLED" or "SUSPENDED" non-deterministically')
 def bucket_versioning_enabled_or_suspended_then(lws_session):
     client = lws_session.client("s3")
     resp = client.get_bucket_versioning(Bucket=TEST_BUCKET)

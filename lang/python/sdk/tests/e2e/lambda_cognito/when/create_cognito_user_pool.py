@@ -1,4 +1,4 @@
-"""When: a Cognito user pool is created"""
+"""When: a "cognito" "user pool" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import LambdaCognitoTestClient
 
 
-@when("a Cognito user pool is created")
+@when('a "cognito" "user pool" is created')
 def create_cognito_user_pool(lws_session, world):
     try:
         resp = LambdaCognitoTestClient(lws_session).create_pool()

@@ -1,4 +1,4 @@
-"""When: executions for a state machine are listed"""
+"""When: executions for a "step functions" "state machine" are listed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SFN_TARGET, INT_SM, _sm_arn
 
 
-@when("executions for a state machine are listed")
+@when('executions for a "step functions" "state machine" are listed')
 def list_executions(client: TestClient, world):
     sm_name = world.get("state_machine_name", INT_SM)
     r = client.post(

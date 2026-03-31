@@ -1,4 +1,4 @@
-"""Given: the state machine is not an "EXPRESS" type"""
+"""Given: the "step functions" "state machine" is not an "EXPRESS" type"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import StepfunctionsTestClient
 from ..constants import INT_SM
 
 
-@given('the state machine is not an "EXPRESS" type')
+@given('the "step functions" "state machine" is not an "EXPRESS" type')
 def sm_is_not_express_given(client: TestClient, world):
     if world.get("state_machine_arn") is None:
         world["state_machine_name"] = INT_SM

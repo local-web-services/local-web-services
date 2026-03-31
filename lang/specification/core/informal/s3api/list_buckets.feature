@@ -1,5 +1,5 @@
 @s3api @generated
-Feature: S3api - The List Of Buckets Is Retrieved
+Feature: S3api - The List Of "S3" "Buckets" Is Retrieved
 
   # Generated from FizzBee spec: s3api.fizz
   # Safety invariants: BucketStatusValid, VersioningStateValid, MultipartUploadStatusValid, DeleteBucketRequiresEmpty
@@ -8,9 +8,9 @@ Feature: S3api - The List Of Buckets Is Retrieved
     Given the system is initialized
 
   @minimal @happy @list_buckets
-  Scenario: the list of buckets is retrieved
-    When the list of buckets is retrieved
-    Then the available buckets are returned
+  Scenario: the list of "s3" "buckets" is retrieved
+    When the list of "s3" "buckets" is retrieved
+    Then the available "s3" "buckets" will be returned
     And every bucket has a valid status ("ACTIVE" or "DELETED")
     And every bucket versioning state is valid ("DISABLED", "ENABLED", or "SUSPENDED")
     And every multipart upload has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")

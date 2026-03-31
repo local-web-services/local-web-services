@@ -56,6 +56,7 @@ from .instance_is_primary_of_cluster import *  # noqa: F401,F403
 from .instance_is_the_primary import *  # noqa: F401,F403
 from .instance_slot_available import *  # noqa: F401,F403
 from .instance_slot_not_available import *  # noqa: F401,F403
+from .instance_was_not_already_primary import *  # noqa: F401,F403
 from .new_primary_instance_does_not_exist import *  # noqa: F401,F403
 from .new_primary_instance_exists import *  # noqa: F401,F403
 from .sid_in_snapshot_status import *  # noqa: F401,F403

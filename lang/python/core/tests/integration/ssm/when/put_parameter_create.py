@@ -1,4 +1,4 @@
-"""When: a parameter is stored in "SSM" """
+"""When: a "ssm" "parameter" is stored"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SSM_TARGET, INT_PARAM, INT_VALUE
 
 
-@when('a parameter is stored in "SSM"')
+@when('a "ssm" "parameter" is stored')
 def put_parameter_create(client: TestClient, world):
     r = client.post(
         "/",

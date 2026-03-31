@@ -1,5 +1,5 @@
 @apigateway @generated
-Feature: Apigateway - A Child Resource Is Created Under An Existing Resource
+Feature: Apigateway - A Child "Api Gateway" "Resource" Is Created Under An Existing "Api Gateway" "Resource"
 
   # Generated from FizzBee spec: apigateway.fizz
   # Safety invariants: ResourcesBelongToExistingApis, MethodsBelongToExistingResources, IntegrationsBelongToExistingMethods, DeploymentsBelongToExistingApis, StagesReferenceExistingDeployments, StagesBelongToExistingApis, RootResourcePreserved
@@ -8,12 +8,12 @@ Feature: Apigateway - A Child Resource Is Created Under An Existing Resource
     Given the system is initialized
 
   @minimal @happy @create_resource
-  Scenario: a child resource is created under an existing resource
-    Given the resource slot is unallocated
-    And the parent resource exists
-    And the parent resource is "ACTIVE"
-    When a child resource is created under an existing resource
-    Then the new resource is "ACTIVE"
+  Scenario: a child "api gateway" "resource" is created under an existing "api gateway" "resource"
+    Given the "api gateway" "resource" slot is unallocated
+    And the parent "api gateway" "resource" existed
+    And the parent "api gateway" "resource" was "ACTIVE"
+    When a child "api gateway" "resource" is created under an existing "api gateway" "resource"
+    Then the new "api gateway" "resource" will be "ACTIVE"
     And all "ACTIVE" resources belong to "ACTIVE" APIs
     And all "EXISTING" methods belong to "ACTIVE" resources
     And all "EXISTING" integrations correspond to "EXISTING" methods
@@ -22,23 +22,23 @@ Feature: Apigateway - A Child Resource Is Created Under An Existing Resource
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @guard @negative @internal @create_resource
-  Scenario: a child resource is created under an existing resource fails when the resource slot is already allocated
-    Given the resource slot is already allocated
-    When a child resource is created under an existing resource
+  @guard @negative @create_resource
+  Scenario: a child "api gateway" "resource" is created under an existing "api gateway" "resource" fails when the "api gateway" "resource" slot is already allocated
+    Given the "api gateway" "resource" slot is already allocated
+    When a child "api gateway" "resource" is created under an existing "api gateway" "resource"
     Then the operation is rejected
 
   @guard @negative @create_resource
-  Scenario: a child resource is created under an existing resource fails when the parent resource does not exist
-    Given the resource slot is unallocated
-    And the parent resource does not exist
-    When a child resource is created under an existing resource
+  Scenario: a child "api gateway" "resource" is created under an existing "api gateway" "resource" fails when the parent "api gateway" "resource" did not exist
+    Given the "api gateway" "resource" slot is unallocated
+    And the parent "api gateway" "resource" did not exist
+    When a child "api gateway" "resource" is created under an existing "api gateway" "resource"
     Then the operation is rejected
 
   @guard @negative @create_resource @lifecycle
-  Scenario: a child resource is created under an existing resource fails when the parent resource is not "ACTIVE"
-    Given the resource slot is unallocated
-    And the parent resource exists
-    And the parent resource is not "ACTIVE"
-    When a child resource is created under an existing resource
+  Scenario: a child "api gateway" "resource" is created under an existing "api gateway" "resource" fails when the parent "api gateway" "resource" was not "ACTIVE"
+    Given the "api gateway" "resource" slot is unallocated
+    And the parent "api gateway" "resource" existed
+    And the parent "api gateway" "resource" was not "ACTIVE"
+    When a child "api gateway" "resource" is created under an existing "api gateway" "resource"
     Then the operation is rejected

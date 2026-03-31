@@ -1,4 +1,4 @@
-"""When: a "REST" "API" is deleted"""
+"""When: a "api gateway" "REST API" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import ApigatewayTestClient
 
 
-@when('a "REST" "API" is deleted')
+@when('a "api gateway" "REST API" is deleted')
 def delete_rest_api_quoted(lws_session, world):
     try:
         api_id = ApigatewayTestClient(lws_session).get_api_id()

@@ -1,4 +1,4 @@
-"""Given: the cluster is not part of this replication group"""
+"""Given: the "elasticache" "cluster" is not part of this replication group"""
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import ElasticacheTestClient
 
 
-@given("the cluster is not part of this replication group")
+@given('the "elasticache" "cluster" is not part of this replication group')
 def cluster_is_not_part_of_this_rg(client: TestClient):
     ElasticacheTestClient(client).create_cluster()

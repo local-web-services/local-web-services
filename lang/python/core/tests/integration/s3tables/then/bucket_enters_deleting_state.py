@@ -1,4 +1,4 @@
-"""Then: the bucket enters "DELETING" state"""
+"""Then: the "s3 tables" "bucket" will be in "DELETING" state"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET
 
 
-@then('the bucket enters "DELETING" state')
+@then('the "s3 tables" "bucket" will be in "DELETING" state')
 def bucket_enters_deleting_state(client: TestClient):
     r = client.get("/buckets")
     actual_names = [b["name"] for b in r.json().get("tableBuckets", [])]

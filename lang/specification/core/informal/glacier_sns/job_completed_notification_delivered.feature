@@ -9,41 +9,41 @@ Feature: GlacierSns - The Glacier Job Completes And Publishes A Notification To 
 
   @minimal @happy @job_completed_notification_delivered @internal
   Scenario: the Glacier job completes and publishes a notification to the configured "SNS" topic
-    Given a job is "IN_PROGRESS"
-    And the vault has an "SNS" notification configured
-    And the configured topic is "ACTIVE"
+    Given a "glacier" "job" was "IN_PROGRESS"
+    And the "glacier" "vault" has a "SNS" notification configured
+    And the configured topic was "ACTIVE"
     And a message slot is available
     When the Glacier job completes and publishes a notification to the configured "SNS" topic
-    Then the job is "SUCCEEDED" and the notification is "PUBLISHED"
-    And every "PUBLISHED" notification references a job that exists
-    And every "PUBLISHED" notification references a topic that exists
+    Then the "glacier" "job" will be "SUCCEEDED" and the notification will be "PUBLISHED"
+    And every "PUBLISHED" notification references a "glacier" "job" that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
   @guard @negative @job_completed_notification_delivered @internal
-  Scenario: the Glacier job completes and publishes a notification to the configured "SNS" topic fails when no job is "IN_PROGRESS"
-    Given no job is "IN_PROGRESS"
+  Scenario: the Glacier job completes and publishes a notification to the configured "SNS" topic fails when no job was "IN_PROGRESS"
+    Given no job was "IN_PROGRESS"
     When the Glacier job completes and publishes a notification to the configured "SNS" topic
     Then the operation is rejected
 
   @guard @negative @job_completed_notification_delivered @internal
-  Scenario: the Glacier job completes and publishes a notification to the configured "SNS" topic fails when the vault has no "SNS" notification configured
-    Given a job is "IN_PROGRESS"
-    And the vault has no "SNS" notification configured
+  Scenario: the Glacier job completes and publishes a notification to the configured "SNS" topic fails when the "glacier" "vault" has no "SNS" notification configured
+    Given a "glacier" "job" was "IN_PROGRESS"
+    And the "glacier" "vault" has no "SNS" notification configured
     When the Glacier job completes and publishes a notification to the configured "SNS" topic
     Then the operation is rejected
 
   @guard @negative @job_completed_notification_delivered @internal
-  Scenario: the Glacier job completes and publishes a notification to the configured "SNS" topic fails when the configured topic is "DELETED"
-    Given a job is "IN_PROGRESS"
-    And the vault has an "SNS" notification configured
-    And the configured topic is "DELETED"
+  Scenario: the Glacier job completes and publishes a notification to the configured "SNS" topic fails when the configured topic was "DELETED"
+    Given a "glacier" "job" was "IN_PROGRESS"
+    And the "glacier" "vault" has a "SNS" notification configured
+    And the configured topic was "DELETED"
     When the Glacier job completes and publishes a notification to the configured "SNS" topic
     Then the operation is rejected
 
   @guard @negative @job_completed_notification_delivered @internal
   Scenario: the Glacier job completes and publishes a notification to the configured "SNS" topic fails when no message slot is available
-    Given a job is "IN_PROGRESS"
-    And the vault has an "SNS" notification configured
-    And the configured topic is "ACTIVE"
+    Given a "glacier" "job" was "IN_PROGRESS"
+    And the "glacier" "vault" has a "SNS" notification configured
+    And the configured topic was "ACTIVE"
     And no message slot is available
     When the Glacier job completes and publishes a notification to the configured "SNS" topic
     Then the operation is rejected

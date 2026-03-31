@@ -1,4 +1,4 @@
-"""When: a database instance finishes creating"""
+"""When: a "documentdb" "instance" finishes creating"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import RdsTestClient
 from ..constants import INT_DB_INSTANCE
 
 
-@when("a database instance finishes creating")
+@when('a "documentdb" "instance" finishes creating')
 def finish_creating_db_instance(client: TestClient, world: dict):
     r = RdsTestClient(client).post("DescribeDBInstances", {"DBInstanceIdentifier": INT_DB_INSTANCE})
     if r.status_code != 200:

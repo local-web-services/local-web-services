@@ -1,4 +1,4 @@
-"""When: an "ACL" deletion completes"""
+"""When: an "memorydb" "ACL" deletion completes"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET
 
 
-@when('an "ACL" deletion completes')
+@when('an "memorydb" "ACL" deletion completes')
 def acl_deletion_completes(client: TestClient, world):
     r = client.post(
         "/",

@@ -1,4 +1,4 @@
-"""Then: the bucket is "ACTIVE" """
+"""Then: the "s3" "bucket" will be "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaS3tablesTestClient
 from ..constants import TEST_BUCKET
 
 
-@then('the bucket is "ACTIVE"')
+@then('the "s3" "bucket" will be "ACTIVE"')
 def lambda_s3tables_bucket_is_active_then(lws_session):
     expected_exists = True
     actual_exists = LambdaS3tablesTestClient(lws_session).table_bucket_exists()

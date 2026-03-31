@@ -9,10 +9,10 @@ Feature: Apigateway - An Existing Method Is Updated
 
   @minimal @happy @put_method_update
   Scenario: an existing method is updated
-    Given the method exists
-    And the method "EXISTS"
+    Given the "api gateway" "method" existed
+    And the "api gateway" "method" existed
     When an existing method is updated
-    Then the method remains unchanged
+    Then the "api gateway" "method" remains unchanged
     And all "ACTIVE" resources belong to "ACTIVE" APIs
     And all "EXISTING" methods belong to "ACTIVE" resources
     And all "EXISTING" integrations correspond to "EXISTING" methods
@@ -22,14 +22,14 @@ Feature: Apigateway - An Existing Method Is Updated
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
   @guard @negative @put_method_update
-  Scenario: an existing method is updated fails when the method does not exist
-    Given the method does not exist
+  Scenario: an existing method is updated fails when the "api gateway" "method" did not exist
+    Given the "api gateway" "method" did not exist
     When an existing method is updated
     Then the operation is rejected
 
   @guard @negative @put_method_update
-  Scenario: an existing method is updated fails when the method does not exist
-    Given the method exists
-    And the method does not exist
+  Scenario: an existing method is updated fails when the "api gateway" "method" did not exist
+    Given the "api gateway" "method" existed
+    And the "api gateway" "method" did not exist
     When an existing method is updated
     Then the operation is rejected

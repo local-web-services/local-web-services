@@ -1,4 +1,4 @@
-"""Given: the pool is already "DELETED" """
+"""Given: the "cognito" "user pool" is already "DELETED" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..client import StepfunctionsCognitoTestClient
 
 
-@given('the pool is already "DELETED"')
+@given('the "cognito" "user pool" is already "DELETED"')
 def pool_is_already_deleted(lws_session, world):
     try:
         pool_id = StepfunctionsCognitoTestClient(lws_session).create_pool()

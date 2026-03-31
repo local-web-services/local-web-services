@@ -1,4 +1,4 @@
-"""When: an account is moved to a new parent"""
+"""When: an "organizations" "account" is moved to a new parent"""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from botocore.exceptions import ClientError
 from pytest_bdd import when
 
 
-@when("an account is moved to a new parent")
+@when('an "organizations" "account" is moved to a new parent')
 def move_account(lws_session, world):
     try:
         resp = lws_session.client("organizations").move_account(

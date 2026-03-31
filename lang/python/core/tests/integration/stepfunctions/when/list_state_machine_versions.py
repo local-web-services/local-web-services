@@ -1,4 +1,4 @@
-"""When: versions of a state machine are listed"""
+"""When: versions of a "step functions" "state machine" are listed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SFN_TARGET, INT_SM, _sm_arn
 
 
-@when("versions of a state machine are listed")
+@when('versions of a "step functions" "state machine" are listed')
 def list_state_machine_versions(client: TestClient, world):
     sm_name = world.get("state_machine_name", INT_SM)
     r = client.post(

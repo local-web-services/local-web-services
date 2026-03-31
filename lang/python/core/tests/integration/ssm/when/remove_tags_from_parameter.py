@@ -1,4 +1,4 @@
-"""When: tags are removed from a parameter"""
+"""When: tags are removed from a "ssm" "parameter" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SSM_TARGET, INT_PARAM, INT_TAG_KEY
 
 
-@when("tags are removed from a parameter")
+@when('tags are removed from a "ssm" "parameter"')
 def remove_tags_from_parameter(client: TestClient, world):
     # Check tag existence first — lws returns 200 even when tag is absent
     tag_r = client.post(

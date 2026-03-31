@@ -10,7 +10,9 @@ from pytest_bdd import when
 from ..constants import TEST_SECRET, TEST_SECRET_VALUE
 
 
-@when('a secret is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus')
+@when(
+    'a "secretsmanager" "secret" is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus'
+)
 def create_secret_event_delivered(lws_session, world):
     try:
         world["result"] = lws_session.client("secretsmanager").create_secret(

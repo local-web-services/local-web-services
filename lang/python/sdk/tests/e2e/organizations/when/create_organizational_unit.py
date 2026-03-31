@@ -1,4 +1,4 @@
-"""When: an organizational unit is created under a parent"""
+"""When: an "organizations" "organizational unit" is created under a parent"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_OU_NAME
 
 
-@when("an organizational unit is created under a parent")
+@when('an "organizations" "organizational unit" is created under a parent')
 def create_organizational_unit(lws_session, world):
     try:
         parent_id = world.get("parent_id") or world.get("root_id")

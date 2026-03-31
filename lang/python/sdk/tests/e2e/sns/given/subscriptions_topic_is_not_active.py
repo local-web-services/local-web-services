@@ -1,4 +1,4 @@
-"""Given: the subscription's topic is not "ACTIVE" """
+"""Given: the subscription's sns topic was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..client import SnsTestClient
 
 
-@given('the subscription\'s topic is not "ACTIVE"')
+@given('the "sns" "subscription"\'s "sns" "topic" was not "ACTIVE"')
 def subscriptions_topic_is_not_active(lws_session, world):
     try:
         SnsTestClient(lws_session).delete_topic(TopicArn=SnsTestClient(lws_session).get_topic_arn())

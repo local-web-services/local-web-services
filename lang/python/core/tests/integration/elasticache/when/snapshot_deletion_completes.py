@@ -1,4 +1,4 @@
-"""When: a cache snapshot deletion completes"""
+"""When: an "elasticache" "snapshot" deletion completes"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET
 
 
-@when("a cache snapshot deletion completes")
+@when('an "elasticache" "snapshot" deletion completes')
 def snapshot_deletion_completes(client: TestClient, world):
     r = client.post(
         "/",

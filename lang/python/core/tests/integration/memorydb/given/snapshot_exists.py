@@ -1,4 +1,4 @@
-"""Given: the snapshot exists"""
+"""Given: the "documentdb" "snapshot" existed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,8 @@ from starlette.testclient import TestClient
 from ..client import MemorydbTestClient
 
 
-@given("the snapshot exists")
+@given('the "memorydb" "snapshot" existed')
+@given('the "documentdb" "snapshot" existed')
 def snapshot_exists(client: TestClient):
     MemorydbTestClient(client).create_cluster()
     MemorydbTestClient(client).create_snapshot()

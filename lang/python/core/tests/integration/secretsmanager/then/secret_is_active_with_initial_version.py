@@ -1,4 +1,4 @@
-"""Then: the secret is "ACTIVE" with an initial version"""
+"""Then: the "secrets manager" "secret" will be "ACTIVE" with an initial version"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import SecretsmanagerTestClient
 from ..constants import INT_SECRET
 
 
-@then('the secret is "ACTIVE" with an initial version')
+@then('the "secrets manager" "secret" will be "ACTIVE" with an initial version')
 def secret_is_active_with_initial_version(sync_client: TestClient):
     desc = SecretsmanagerTestClient(sync_client).describe_secret()
     expected_name = INT_SECRET

@@ -24,10 +24,10 @@ action Init:
     event_bus = {}              # event_bus[eid] = bus_id
 
 
-# step: a Neptune cluster is created and becomes AVAILABLE
-# result: the cluster is AVAILABLE
-# guard: the cluster does not already exist
-# guard_violation: the cluster already exists
+# step: a "neptune" "cluster" is created and becomes AVAILABLE
+# result: the "neptune" "cluster" will be "AVAILABLE"
+# guard: the cluster did not already exist
+# guard_violation: the cluster already existed
 atomic action CreateCluster:
     oneof cid in CLUSTER_IDS:
         if cid not in cluster_status:
@@ -35,9 +35,9 @@ atomic action CreateCluster:
 
 
 # step: an EventBridge event bus is created
-# result: the bus is ACTIVE
-# guard: the bus does not already exist
-# guard_violation: the bus already exists
+# result: the bus will be "ACTIVE"
+# guard: the bus did not already exist
+# guard_violation: the bus already existed
 atomic action CreateEventBus:
     oneof busid in BUS_IDS:
         if busid not in bus_status:
@@ -45,11 +45,11 @@ atomic action CreateEventBus:
 
 
 # step: the EventBridge event bus is deleted
-# result: the bus is DELETED and Neptune event delivery will fail
-# guard: the bus exists
-# guard_violation: the bus does not exist
-# guard: the bus is ACTIVE
-# guard_violation_lifecycle: the bus is already DELETED
+# result: the bus will be deleted and Neptune event delivery will fail
+# guard: the bus existed
+# guard_violation: the bus did not exist
+# guard: the bus was "ACTIVE"
+# guard_violation_lifecycle: the bus is already "DELETED"
 atomic action DeleteEventBus:
     oneof busid in BUS_IDS:
         if busid in bus_status:
@@ -58,12 +58,12 @@ atomic action DeleteEventBus:
 
 
 # fake_skip: internal
-# step: the Neptune cluster stops and delivers the state change event to the EventBridge bus
-# result: the cluster is STOPPING and the STOPPED event is DELIVERED
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
-# guard: the bus is ACTIVE
-# guard_violation_lifecycle: the bus is DELETED
+# step: the "neptune" "cluster" stops and delivers the state change event to the EventBridge bus
+# result: the "neptune" "cluster" will be "STOPPING" and the "STOPPED" event will be "DELIVERED"
+# guard: the "neptune" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "neptune" "cluster" was not "AVAILABLE"
+# guard: the bus was "ACTIVE"
+# guard_violation_lifecycle: the bus was "DELETED"
 # guard: an event slot is available
 # guard_violation_capacity: no event slot is available
 atomic action ClusterStopEventDelivered:
@@ -83,12 +83,12 @@ atomic action ClusterStopEventDelivered:
 
 
 # fake_skip: internal
-# step: the Neptune cluster stops but event delivery fails because the bus is deleted
-# result: the cluster is STOPPING but no event is delivered
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
-# guard: the bus is DELETED
-# guard_violation_lifecycle: the bus is not DELETED
+# step: the "neptune" "cluster" stops but event delivery fails because the bus is deleted
+# result: the "neptune" "cluster" will be "STOPPING" but no event will be delivered
+# guard: the "neptune" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "neptune" "cluster" was not "AVAILABLE"
+# guard: the bus was "DELETED"
+# guard_violation_lifecycle: the bus was not "DELETED"
 atomic action ClusterStopEventFails:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -100,10 +100,10 @@ atomic action ClusterStopEventFails:
 
 
 # fake_skip: internal
-# step: the Neptune cluster finishes stopping
-# result: the cluster is STOPPED
-# guard: the cluster is STOPPING
-# guard_violation_lifecycle: the cluster is not STOPPING
+# step: the "neptune" "cluster" finishes stopping
+# result: the "neptune" "cluster" will be "STOPPED"
+# guard: the "neptune" "cluster" was "STOPPING"
+# guard_violation_lifecycle: the "neptune" "cluster" was not "STOPPING"
 atomic action ClusterStopComplete:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:

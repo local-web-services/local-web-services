@@ -1,11 +1,11 @@
-"""Then: the user pool is "ACTIVE" """
+"""Then: the "cognito" "user pool" will be "ACTIVE" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the user pool is "ACTIVE"')
+@then('the "cognito" "user pool" will be "ACTIVE"')
 def user_pool_is_active(world):
     actual_error = world.get("error")
     assert actual_error is None, f"Expected user pool creation to succeed but got: {actual_error}"

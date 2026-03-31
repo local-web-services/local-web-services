@@ -1,4 +1,4 @@
-"""When: a table is described"""
+"""When: a "dynamodb" "table" is described"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import DynamodbTestClient
 from ..constants import TEST_TABLE, _store
 
 
-@when("a table is described")
+@when('a "dynamodb" "table" is described')
 def describe_table(client: TestClient, world: dict):
     r = DynamodbTestClient(client).post("DescribeTable", {"TableName": TEST_TABLE})
     _store(world, r)

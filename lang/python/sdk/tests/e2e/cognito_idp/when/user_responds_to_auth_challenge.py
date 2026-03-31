@@ -1,4 +1,4 @@
-"""When: a user responds to an auth challenge"""
+"""When: a "cognito" "user" responds to an auth challenge"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_PASSWORD, TEST_USERNAME, _skip_if_not_implemented
 
 
-@when("a user responds to an auth challenge")
+@when('a "cognito" "user" responds to an auth challenge')
 def user_responds_to_auth_challenge(lws_session, world):
     if world.get("session_token") is None:
         world["result"] = None

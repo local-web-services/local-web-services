@@ -1,4 +1,4 @@
-"""Given: the Lambda function has failed to write because the table is being deleted"""
+"""Given: the "lambda" "function" fails to write because the table is being deleted"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import uuid
 from pytest_bdd import given
 
 
-@given("the Lambda function has failed to write because the table is being deleted")
+@given('the "lambda" "function" fails to write because the table is being deleted')
 def lambda_s3tables_failed_write_table_deleting_seq(lws_session, world):
     # Arrange
     invocation_id = str(uuid.uuid4())

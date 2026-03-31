@@ -1,4 +1,4 @@
-"""Then: the secret is "ACTIVE" with an initial version"""
+"""Then: the "secrets manager" "secret" will be "ACTIVE" with an initial version"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_SECRET
 
 
-@then('the secret is "ACTIVE" with an initial version')
+@then('the "secrets manager" "secret" will be "ACTIVE" with an initial version')
 def secret_is_active_with_initial_version(lws_session):
     resp = lws_session.client("secretsmanager").describe_secret(SecretId=TEST_SECRET)
     assert (

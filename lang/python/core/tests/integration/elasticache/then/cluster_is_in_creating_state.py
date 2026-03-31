@@ -1,4 +1,4 @@
-"""Then: the cluster is in "CREATING" state"""
+"""Then: the "documentdb" "cluster" will be in "CREATING" state"""
 
 from __future__ import annotations
 
@@ -8,7 +8,8 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_CLUSTER_ID
 
 
-@then('the cluster is in "CREATING" state')
+@then('the "elasticache" "cluster" will be in "CREATING" state')
+@then('the "documentdb" "cluster" will be in "CREATING" state')
 def cluster_is_in_creating_state(client: TestClient, world):
     actual_error = world["error"]
     assert actual_error is None, f"Expected cluster creation to succeed but got: {actual_error}"

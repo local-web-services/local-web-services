@@ -1,4 +1,4 @@
-"""When: a cluster is restored from a snapshot"""
+"""When: a "documentdb" "cluster" is restored from a "documentdb" "snapshot" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _DOCDB_TARGET, INT_CLUSTER_ID, INT_SNAPSHOT_ID
 
 
-@when("a cluster is restored from a snapshot")
+@when('a "documentdb" "cluster" is restored from a "documentdb" "snapshot"')
 def restore_cluster_from_snapshot(client: TestClient, world):
     r = client.post(
         "/",

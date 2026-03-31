@@ -1,4 +1,4 @@
-"""Given: the domain is "CREATING" """
+"""Given: the "elasticsearch" "domain" was "CREATING" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import ElasticsearchTestClient
 from ..constants import TEST_DOMAIN
 
 
-@given('the domain is "CREATING"')
+@given('the "elasticsearch" "domain" was "CREATING"')
 def domain_is_creating_given(lws_session):
     try:
         ElasticsearchTestClient(lws_session).delete_elasticsearch_domain(DomainName=TEST_DOMAIN)

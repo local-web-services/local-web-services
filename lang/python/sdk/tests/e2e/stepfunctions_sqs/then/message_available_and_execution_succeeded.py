@@ -1,4 +1,4 @@
-"""Then: the message is "AVAILABLE" in the queue and the execution is "SUCCEEDED" """
+"""Then: the message will be "AVAILABLE" in the queue and the "step functions" "execution" will be "SUCCEEDED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from ..client import StepfunctionsSqsTestClient
 from ..constants import TEST_MESSAGE_BODY, TEST_QUEUE
 
 
-@then('the message is "AVAILABLE" in the queue and the execution is "SUCCEEDED"')
+@then(
+    'the message will be "AVAILABLE" in the queue and the "step functions" "execution" will be "SUCCEEDED"'
+)
 def message_available_and_execution_succeeded(lws_session, world):
     expected_error = None
     expected_message = TEST_MESSAGE_BODY

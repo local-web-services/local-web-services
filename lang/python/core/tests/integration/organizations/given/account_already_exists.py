@@ -1,4 +1,4 @@
-"""Given: the account already exists"""
+"""Given: the "organizations" "account" already existed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import OrganizationsTestClient
 
 
-@given("the account already exists")
+@given('the "organizations" "account" already existed')
 def account_already_exists(client: TestClient, world):
     resp = OrganizationsTestClient(client).create_org()
     world["org_id"] = resp.get("Organization", {}).get("Id")

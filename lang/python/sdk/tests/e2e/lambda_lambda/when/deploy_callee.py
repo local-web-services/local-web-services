@@ -1,4 +1,4 @@
-"""When: a callee Lambda function is deployed"""
+"""When: a callee "lambda" "function" is deployed"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import LambdaLambdaTestClient
 from ..constants import TEST_CALLEE
 
 
-@when("a callee Lambda function is deployed")
+@when('a callee "lambda" "function" is deployed')
 def deploy_callee(lws_session, world):
     try:
         LambdaLambdaTestClient(lws_session).create_function(TEST_CALLEE)

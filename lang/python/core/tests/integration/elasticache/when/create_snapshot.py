@@ -1,4 +1,4 @@
-"""When: a snapshot is created from an available redis cache cluster"""
+"""When: an "elasticache" "snapshot" is created from an available redis "elasticache" "cluster" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_CLUSTER_ID, INT_SNAPSHOT_ID
 
 
-@when("a snapshot is created from an available redis cache cluster")
+@when('an "elasticache" "snapshot" is created from an available redis "elasticache" "cluster"')
 def create_snapshot(client: TestClient, world):
     r = client.post(
         "/",

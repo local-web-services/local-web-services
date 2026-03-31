@@ -1,5 +1,5 @@
 @secretsmanagerevents @generated
-Feature: SecretsmanagerEvents - A Secret Is Created And Secrets Manager Delivers A Created Event To The Eventbridge Bus
+Feature: SecretsmanagerEvents - A "Secretsmanager" "Secret" Is Created And Secrets Manager Delivers A Created Event To The Eventbridge Bus
 
   # Generated from FizzBee spec: secretsmanager_events.fizz
   # Safety invariants: DeliveredEventReferencesExistingSecret, DeliveredEventReferencesExistingBus
@@ -8,32 +8,32 @@ Feature: SecretsmanagerEvents - A Secret Is Created And Secrets Manager Delivers
     Given the system is initialized
 
   @minimal @happy @create_secret_event_delivered @internal
-  Scenario: a secret is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus
-    Given the secret does not already exist
-    And the bus exists and is "ACTIVE"
+  Scenario: a "secretsmanager" "secret" is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus
+    Given the "secretsmanager" "secret" did not already exist
+    And the bus existed and was "ACTIVE"
     And an event slot is available
-    When a secret is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus
-    Then the secret is "ACTIVE" and the "CREATED" event is "DELIVERED"
-    And every "DELIVERED" event references a secret that exists
+    When a "secretsmanager" "secret" is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus
+    Then the "secrets manager" "secret" will be "ACTIVE" and the "CREATED" event will be "DELIVERED"
+    And every "DELIVERED" event references a "secretsmanager" "secret" that exists
     And every "DELIVERED" event references a bus that exists
 
   @guard @negative @create_secret_event_delivered @internal
-  Scenario: a secret is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus fails when the secret already exists
-    Given the secret already exists
-    When a secret is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus
+  Scenario: a "secretsmanager" "secret" is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus fails when the "secretsmanager" "secret" already existed
+    Given the "secretsmanager" "secret" already existed
+    When a "secretsmanager" "secret" is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus
     Then the operation is rejected
 
   @guard @negative @create_secret_event_delivered @internal
-  Scenario: a secret is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus fails when the bus does not exist or is "DELETED"
-    Given the secret does not already exist
-    And the bus does not exist or is "DELETED"
-    When a secret is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus
+  Scenario: a "secretsmanager" "secret" is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus fails when the bus did not exist or was "DELETED"
+    Given the "secretsmanager" "secret" did not already exist
+    And the bus did not exist or was "DELETED"
+    When a "secretsmanager" "secret" is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus
     Then the operation is rejected
 
   @guard @negative @create_secret_event_delivered @internal
-  Scenario: a secret is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus fails when no event slot is available
-    Given the secret does not already exist
-    And the bus exists and is "ACTIVE"
+  Scenario: a "secretsmanager" "secret" is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus fails when no event slot is available
+    Given the "secretsmanager" "secret" did not already exist
+    And the bus existed and was "ACTIVE"
     And no event slot is available
-    When a secret is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus
+    When a "secretsmanager" "secret" is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus
     Then the operation is rejected

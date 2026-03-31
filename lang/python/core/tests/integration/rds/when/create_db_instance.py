@@ -1,4 +1,4 @@
-"""When: a database instance is created"""
+"""When: a "rds" "instance" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import RdsTestClient
 from ..constants import INT_DB_INSTANCE, _store
 
 
-@when("a database instance is created")
+@when('a "rds" "instance" is created')
 def create_db_instance(client: TestClient, world: dict):
     r = RdsTestClient(client).post(
         "CreateDBInstance", {"DBInstanceIdentifier": INT_DB_INSTANCE, "Engine": "postgres"}

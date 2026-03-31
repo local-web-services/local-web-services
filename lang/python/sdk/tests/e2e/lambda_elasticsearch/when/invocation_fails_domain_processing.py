@@ -1,4 +1,4 @@
-"""When: the Lambda function fails to write because the domain is processing a config update"""
+"""When: the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update"""
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from pytest_bdd import when
 from ..constants import TEST_DOMAIN
 
 
-@when("the Lambda function fails to write because the domain is processing a config update")
+@when(
+    'the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update'
+)
 def invocation_fails_domain_processing(lws_session, world):
     # Arrange
     invocation_id = world.get("invocation_id")

@@ -1,5 +1,5 @@
 @dynamodb @generated
-Feature: Dynamodb - An Existing Item Is Updated In The Table
+Feature: Dynamodb - An Existing "Dynamodb" "Item" Is Updated In The "Dynamodb" "Table"
 
   # Generated from FizzBee spec: dynamodb.fizz
   # Safety invariants: TableStatusValid, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
@@ -8,14 +8,14 @@ Feature: Dynamodb - An Existing Item Is Updated In The Table
     Given the system is initialized
 
   @minimal @happy @update_item
-  Scenario: an existing item is updated in the table
-    Given the table exists
-    And the table is "ACTIVE"
-    And writes are not throttled
-    And the item exists
-    And the item is present
-    When an existing item is updated in the table
-    Then the item is updated or unchanged (conditional update)
+  Scenario: an existing "dynamodb" "item" is updated in the "dynamodb" "table"
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was "ACTIVE"
+    And writes were not throttled
+    And the "dynamodb" "item" existed
+    And the "dynamodb" "item" was present
+    When an existing "dynamodb" "item" is updated in the "dynamodb" "table"
+    Then the "dynamodb" "item" will be updated or unchanged (conditional update)
     And every table has a valid status ("CREATING", "ACTIVE", or "DELETED")
     And "GSI" pending write count is never negative
     And transaction status is always a valid value
@@ -24,41 +24,41 @@ Feature: Dynamodb - An Existing Item Is Updated In The Table
     And deleted tables are never the target of a pending transaction
 
   @guard @negative @update_item
-  Scenario: an existing item is updated in the table fails when the table does not exist
-    Given the table does not exist
-    When an existing item is updated in the table
+  Scenario: an existing "dynamodb" "item" is updated in the "dynamodb" "table" fails when the "dynamodb" "table" did not exist
+    Given the "dynamodb" "table" did not exist
+    When an existing "dynamodb" "item" is updated in the "dynamodb" "table"
     Then the operation is rejected
 
   @guard @negative @update_item @lifecycle
-  Scenario: an existing item is updated in the table fails when the table is not "ACTIVE"
-    Given the table exists
-    And the table is not "ACTIVE"
-    When an existing item is updated in the table
+  Scenario: an existing "dynamodb" "item" is updated in the "dynamodb" "table" fails when the "dynamodb" "table" was not "ACTIVE"
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was not "ACTIVE"
+    When an existing "dynamodb" "item" is updated in the "dynamodb" "table"
     Then the operation is rejected
 
   @guard @negative @update_item @capacity
-  Scenario: an existing item is updated in the table fails when writes are throttled
-    Given the table exists
-    And the table is "ACTIVE"
-    And writes are throttled
-    When an existing item is updated in the table
+  Scenario: an existing "dynamodb" "item" is updated in the "dynamodb" "table" fails when writes were throttled
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was "ACTIVE"
+    And writes were throttled
+    When an existing "dynamodb" "item" is updated in the "dynamodb" "table"
     Then the operation is rejected
 
   @guard @negative @update_item
-  Scenario: an existing item is updated in the table fails when the item does not exist
-    Given the table exists
-    And the table is "ACTIVE"
-    And writes are not throttled
-    And the item does not exist
-    When an existing item is updated in the table
+  Scenario: an existing "dynamodb" "item" is updated in the "dynamodb" "table" fails when the "dynamodb" "item" did not exist
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was "ACTIVE"
+    And writes were not throttled
+    And the "dynamodb" "item" did not exist
+    When an existing "dynamodb" "item" is updated in the "dynamodb" "table"
     Then the operation is rejected
 
   @guard @negative @update_item
-  Scenario: an existing item is updated in the table fails when the item is not present
-    Given the table exists
-    And the table is "ACTIVE"
-    And writes are not throttled
-    And the item exists
-    And the item is not present
-    When an existing item is updated in the table
+  Scenario: an existing "dynamodb" "item" is updated in the "dynamodb" "table" fails when the "dynamodb" "item" was not present
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was "ACTIVE"
+    And writes were not throttled
+    And the "dynamodb" "item" existed
+    And the "dynamodb" "item" was not present
+    When an existing "dynamodb" "item" is updated in the "dynamodb" "table"
     Then the operation is rejected

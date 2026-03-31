@@ -1,11 +1,11 @@
-"""Then: the state machine version is incremented"""
+"""Then: the "step functions" "state machine" version will be incremented"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the state machine version is incremented")
+@then('the "step functions" "state machine" version will be incremented')
 def sm_version_incremented(world):
     assert (
         world["error"] is None

@@ -1,4 +1,4 @@
-"""When: the prod stage is deleted"""
+"""When: the "api gateway" "prod stage" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_STAGE_PROD
 
 
-@when("the prod stage is deleted")
+@when('the "api gateway" "prod stage" is deleted')
 def delete_prod_stage(client: TestClient, world):
     list_r = client.get("/restapis")
     items = list_r.json().get("item", [])

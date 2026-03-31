@@ -1,11 +1,11 @@
-"""Then: the policy is "ACTIVE" """
+"""Then: the "organizations" "policy" will be "ACTIVE" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the policy is "ACTIVE"')
+@then('the "organizations" "policy" will be "ACTIVE"')
 def policy_is_active(lws_session, world):
     assert world["error"] is None, f"Expected CreatePolicy to succeed but got: {world['error']}"
     policy_id = world["policy_id"]

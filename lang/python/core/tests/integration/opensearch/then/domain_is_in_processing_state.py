@@ -1,11 +1,11 @@
-"""Then: the domain is in "PROCESSING" state and a blue-green deployment begins"""
+"""Then: the "opensearch" "domain" will be in "PROCESSING" state and a blue-green deployment begins"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the domain is in "PROCESSING" state and a blue-green deployment begins')
+@then('the "opensearch" "domain" will be in "PROCESSING" state and a blue-green deployment begins')
 def domain_is_in_processing_state(world: dict):
     actual_result = world["result"]
     assert (

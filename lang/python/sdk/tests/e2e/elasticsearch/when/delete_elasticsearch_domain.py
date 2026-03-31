@@ -1,4 +1,4 @@
-"""When: a search domain is deleted"""
+"""When: an "elasticsearch" "domain" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_DOMAIN
 
 
-@when("a search domain is deleted")
+@when('an "elasticsearch" "domain" is deleted')
 def delete_elasticsearch_domain(lws_session, world):
     try:
         world["result"] = lws_session.client("es").delete_elasticsearch_domain(

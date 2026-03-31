@@ -1,4 +1,4 @@
-"""When: an execution is started on a standard state machine"""
+"""When: an execution is started on a standard "step functions" "state machine" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SFN_TARGET, INT_INPUT, INT_SM, _sm_arn
 
 
-@when("an execution is started on a standard state machine")
+@when('an execution is started on a standard "step functions" "state machine"')
 def start_execution(client: TestClient, world):
     sm_name = world.get("state_machine_name", INT_SM)
     r = client.post(

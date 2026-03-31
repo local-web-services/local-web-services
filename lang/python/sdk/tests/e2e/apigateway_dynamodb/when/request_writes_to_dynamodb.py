@@ -1,4 +1,4 @@
-"""When: a request is received, the "API" writes to the DynamoDB table, and returns 200"""
+"""When: a request is received, the "api gateway" "API" writes to the "dynamodb" "table", and returns 200"""
 
 from __future__ import annotations
 
@@ -9,7 +9,9 @@ from ..client import ApigatewayDynamodbTestClient
 from ..constants import _ITEM_KEY, TEST_TABLE
 
 
-@when('a request is received, the "API" writes to the DynamoDB table, and returns 200')
+@when(
+    'a request is received, the "api gateway" "API" writes to the "dynamodb" "table", and returns 200'
+)
 def request_writes_to_dynamodb(lws_session, world):
     try:
         api_id = world.get("api_id") or ApigatewayDynamodbTestClient(lws_session).get_api_id()

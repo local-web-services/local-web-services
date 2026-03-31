@@ -1,4 +1,4 @@
-"""Given: the "API" has a DynamoDB integration configured"""
+"""Given: the "api gateway" "api" has a "dynamodb" integration configured"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..client import ApigatewayDynamodbTestClient
 
 
-@given('the "API" has a DynamoDB integration configured')
+@given('the "api gateway" "api" has a "dynamodb" integration configured')
 def apigw_dynamodb_api_has_integration(lws_session, world):
     api_id = ApigatewayDynamodbTestClient(lws_session).get_api_id()
     if api_id is None:

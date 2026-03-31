@@ -1,4 +1,4 @@
-"""When: a parameter is retrieved from "SSM" """
+"""When: a "ssm" "parameter" is retrieved"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_PARAM
 
 
-@when('a parameter is retrieved from "SSM"')
+@when('a "ssm" "parameter" is retrieved')
 def get_parameter(lws_session, world):
     try:
         resp = lws_session.client("ssm").get_parameter(Name=TEST_PARAM)

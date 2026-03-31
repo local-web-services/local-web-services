@@ -1,4 +1,4 @@
-"""Then: the message is "AVAILABLE" for delivery"""
+"""Then: the "sqs" "message" will be "AVAILABLE" for delivery"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SqsTestClient
 from ..constants import TEST_MESSAGE
 
 
-@then('the message is "AVAILABLE" for delivery')
+@then('the "sqs" "message" will be "AVAILABLE" for delivery')
 def message_is_available_then(client):
     msg = SqsTestClient(client).receive_message()
     expected_body = TEST_MESSAGE

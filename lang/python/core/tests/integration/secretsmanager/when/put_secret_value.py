@@ -1,4 +1,4 @@
-"""When: a new value is stored for an active secret"""
+"""When: a new value is stored for an active "secrets manager" "secret" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SM_TARGET_PREFIX, INT_SECRET, INT_VALUE2
 
 
-@when("a new value is stored for an active secret")
+@when('a new value is stored for an active "secrets manager" "secret"')
 def put_secret_value(sync_client: TestClient, world):
     r = sync_client.post(
         "/",

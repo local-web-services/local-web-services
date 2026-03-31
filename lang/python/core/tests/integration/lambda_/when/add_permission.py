@@ -1,4 +1,4 @@
-"""When: a permission is added to a function's resource policy"""
+"""When: a permission is added to a "lambda" "function"'s resource policy"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_FUNCTION_NAME, INT_PRINCIPAL, INT_STATEMENT_ID
 
 
-@when("a permission is added to a function's resource policy")
+@when('a permission is added to a "lambda" "function"\'s resource policy')
 def add_permission(client: TestClient, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

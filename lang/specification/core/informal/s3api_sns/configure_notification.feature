@@ -1,5 +1,5 @@
 @s3apisns @generated
-Feature: S3apiSns - An Sns Notification Configuration Is Added To The Bucket
+Feature: S3apiSns - A Sns Notification Configuration Is Added To The Bucket
 
   # Generated from FizzBee spec: s3api_sns.fizz
   # Safety invariants: PublishedNotificationReferencesExistingObject, PublishedNotificationReferencesExistingTopic
@@ -8,32 +8,32 @@ Feature: S3apiSns - An Sns Notification Configuration Is Added To The Bucket
     Given the system is initialized
 
   @minimal @happy @configure_notification
-  Scenario: an "SNS" notification configuration is added to the bucket
-    Given the bucket exists and is "ACTIVE"
+  Scenario: a "SNS" notification configuration is added to the bucket
+    Given the bucket existed and was "ACTIVE"
     And the bucket has no notification configuration
-    And the topic exists and is "ACTIVE"
-    When an "SNS" notification configuration is added to the bucket
+    And the "sns" "topic" existed and was "ACTIVE"
+    When a "SNS" notification configuration is added to the bucket
     Then the bucket will publish notifications to the topic when objects are uploaded
     And every "PUBLISHED" notification references an object that exists
     And every "PUBLISHED" notification references a topic that exists
 
   @guard @negative @configure_notification
-  Scenario: an "SNS" notification configuration is added to the bucket fails when the bucket does not exist or is not "ACTIVE"
-    Given the bucket does not exist or is not "ACTIVE"
-    When an "SNS" notification configuration is added to the bucket
+  Scenario: a "SNS" notification configuration is added to the bucket fails when the bucket did not exist or was "ACTIVE"
+    Given the bucket did not exist or was "ACTIVE"
+    When a "SNS" notification configuration is added to the bucket
     Then the operation is rejected
 
   @guard @negative @configure_notification
-  Scenario: an "SNS" notification configuration is added to the bucket fails when the bucket already has a notification configuration
-    Given the bucket exists and is "ACTIVE"
+  Scenario: a "SNS" notification configuration is added to the bucket fails when the bucket already has a notification configuration
+    Given the bucket existed and was "ACTIVE"
     And the bucket already has a notification configuration
-    When an "SNS" notification configuration is added to the bucket
+    When a "SNS" notification configuration is added to the bucket
     Then the operation is rejected
 
   @guard @negative @configure_notification
-  Scenario: an "SNS" notification configuration is added to the bucket fails when the topic does not exist or is not "ACTIVE"
-    Given the bucket exists and is "ACTIVE"
+  Scenario: a "SNS" notification configuration is added to the bucket fails when the "sns" "topic" did not exist or was "ACTIVE"
+    Given the bucket existed and was "ACTIVE"
     And the bucket has no notification configuration
-    And the topic does not exist or is not "ACTIVE"
-    When an "SNS" notification configuration is added to the bucket
+    And the "sns" "topic" did not exist or was "ACTIVE"
+    When a "SNS" notification configuration is added to the bucket
     Then the operation is rejected

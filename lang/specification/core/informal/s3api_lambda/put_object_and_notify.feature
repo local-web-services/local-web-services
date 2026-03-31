@@ -9,63 +9,63 @@ Feature: S3apiLambda - An Object Is Put Into The Bucket And Asynchronously Invok
 
   @minimal @happy @put_object_and_notify
   Scenario: an object is put into the bucket and asynchronously invokes the configured Lambda function
-    Given the bucket exists
-    And the bucket is "ACTIVE"
+    Given the bucket existed
+    And the bucket was "ACTIVE"
     And the bucket has a notification configured
-    And the notification target function is "ACTIVE"
+    And the notification target function was "ACTIVE"
     And an object slot is available
-    And an invocation slot is available
+    And a "lambda" "invocation" slot is available
     When an object is put into the bucket and asynchronously invokes the configured Lambda function
-    Then the object "EXISTS" in the bucket and an invocation is "IN_PROGRESS"
+    Then the object will exist in the bucket and an invocation will be "IN_PROGRESS"
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation was triggered by an object in an "ACTIVE" bucket
 
   @guard @negative @put_object_and_notify
-  Scenario: an object is put into the bucket and asynchronously invokes the configured Lambda function fails when the bucket does not exist
-    Given the bucket does not exist
+  Scenario: an object is put into the bucket and asynchronously invokes the configured Lambda function fails when the bucket did not exist
+    Given the bucket did not exist
     When an object is put into the bucket and asynchronously invokes the configured Lambda function
     Then the operation is rejected
 
   @guard @negative @put_object_and_notify @lifecycle
-  Scenario: an object is put into the bucket and asynchronously invokes the configured Lambda function fails when the bucket is not "ACTIVE"
-    Given the bucket exists
-    And the bucket is not "ACTIVE"
+  Scenario: an object is put into the bucket and asynchronously invokes the configured Lambda function fails when the bucket was not "ACTIVE"
+    Given the bucket existed
+    And the bucket was not "ACTIVE"
     When an object is put into the bucket and asynchronously invokes the configured Lambda function
     Then the operation is rejected
 
   @guard @negative @put_object_and_notify
   Scenario: an object is put into the bucket and asynchronously invokes the configured Lambda function fails when the bucket has no notification configured
-    Given the bucket exists
-    And the bucket is "ACTIVE"
+    Given the bucket existed
+    And the bucket was "ACTIVE"
     And the bucket has no notification configured
     When an object is put into the bucket and asynchronously invokes the configured Lambda function
     Then the operation is rejected
 
   @guard @negative @put_object_and_notify @lifecycle
-  Scenario: an object is put into the bucket and asynchronously invokes the configured Lambda function fails when the notification target function is not "ACTIVE"
-    Given the bucket exists
-    And the bucket is "ACTIVE"
+  Scenario: an object is put into the bucket and asynchronously invokes the configured Lambda function fails when the notification target function was not "ACTIVE"
+    Given the bucket existed
+    And the bucket was "ACTIVE"
     And the bucket has a notification configured
-    And the notification target function is not "ACTIVE"
+    And the notification target function was not "ACTIVE"
     When an object is put into the bucket and asynchronously invokes the configured Lambda function
     Then the operation is rejected
 
-  @guard @negative @internal @put_object_and_notify @capacity
+  @guard @negative @put_object_and_notify @capacity
   Scenario: an object is put into the bucket and asynchronously invokes the configured Lambda function fails when no object slot is available
-    Given the bucket exists
-    And the bucket is "ACTIVE"
+    Given the bucket existed
+    And the bucket was "ACTIVE"
     And the bucket has a notification configured
-    And the notification target function is "ACTIVE"
+    And the notification target function was "ACTIVE"
     And no object slot is available
     When an object is put into the bucket and asynchronously invokes the configured Lambda function
     Then the operation is rejected
 
-  @guard @negative @internal @put_object_and_notify @capacity
+  @guard @negative @put_object_and_notify @capacity
   Scenario: an object is put into the bucket and asynchronously invokes the configured Lambda function fails when no invocation slot is available
-    Given the bucket exists
-    And the bucket is "ACTIVE"
+    Given the bucket existed
+    And the bucket was "ACTIVE"
     And the bucket has a notification configured
-    And the notification target function is "ACTIVE"
+    And the notification target function was "ACTIVE"
     And an object slot is available
     And no invocation slot is available
     When an object is put into the bucket and asynchronously invokes the configured Lambda function

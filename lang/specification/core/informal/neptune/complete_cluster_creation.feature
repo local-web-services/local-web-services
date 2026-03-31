@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Database Cluster Finishes Creating
+Feature: Neptune - A "Neptune" "Cluster" Finishes Creating
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,11 +8,11 @@ Feature: Neptune - A Database Cluster Finishes Creating
     Given the system is initialized
 
   @minimal @happy @complete_cluster_creation @internal
-  Scenario: a database cluster finishes creating
-    Given the cluster exists
-    And the cluster is "CREATING"
-    When a database cluster finishes creating
-    Then the cluster is "AVAILABLE"
+  Scenario: a "neptune" "cluster" finishes creating
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "CREATING"
+    When a "neptune" "cluster" finishes creating
+    Then the "neptune" "cluster" will be "AVAILABLE"
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -23,14 +23,14 @@ Feature: Neptune - A Database Cluster Finishes Creating
     And a failed cluster has no available instances
 
   @guard @negative @complete_cluster_creation @internal
-  Scenario: a database cluster finishes creating fails when the cluster does not exist
-    Given the cluster does not exist
-    When a database cluster finishes creating
+  Scenario: a "neptune" "cluster" finishes creating fails when the "neptune" "cluster" did not exist
+    Given the "neptune" "cluster" did not exist
+    When a "neptune" "cluster" finishes creating
     Then the operation is rejected
 
   @guard @negative @complete_cluster_creation @internal
-  Scenario: a database cluster finishes creating fails when the cluster is not "CREATING"
-    Given the cluster exists
-    And the cluster is not "CREATING"
-    When a database cluster finishes creating
+  Scenario: a "neptune" "cluster" finishes creating fails when the "neptune" "cluster" was not "CREATING"
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was not "CREATING"
+    When a "neptune" "cluster" finishes creating
     Then the operation is rejected

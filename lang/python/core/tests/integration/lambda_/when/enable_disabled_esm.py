@@ -1,4 +1,4 @@
-"""When: a disabled event source mapping is enabled"""
+"""When: a disabled lambda event source mapping was "ENABLED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import LambdaTestClient
 
 
-@when("a disabled event source mapping is enabled")
+@when('a disabled lambda event source mapping was "ENABLED"')
 def enable_disabled_esm(client: TestClient, world):
     uuid = LambdaTestClient(client).get_esm_uuid()
     r = client.put(f"/2015-03-31/event-source-mappings/{uuid}", json={"Enabled": True})

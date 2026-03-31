@@ -1,4 +1,4 @@
-"""When: an object is uploaded to a bucket"""
+"""When: a "s3" "object" is uploaded to a "s3" "bucket" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BODY, TEST_BUCKET, TEST_KEY
 
 
-@when("an object is uploaded to a bucket")
+@when('a "s3" "object" is uploaded to a "s3" "bucket"')
 def put_object(lws_session, world):
     try:
         world["result"] = lws_session.client("s3").put_object(

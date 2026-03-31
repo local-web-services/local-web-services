@@ -1,4 +1,4 @@
-"""Given: the domain is not "ACTIVE" """
+"""Given: the "elasticsearch" "domain" was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import ElasticsearchTestClient
 from ..constants import TEST_DOMAIN
 
 
-@given('the domain is not "ACTIVE"')
+@given('the "elasticsearch" "domain" was not "ACTIVE"')
 def domain_is_not_active_given(lws_session):
     try:
         ElasticsearchTestClient(lws_session).delete_elasticsearch_domain(DomainName=TEST_DOMAIN)

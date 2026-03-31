@@ -1,4 +1,4 @@
-"""When: a cache parameter group is created"""
+"""When: an "elasticache" parameter group is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_PARAM_GROUP_ID
 
 
-@when("a cache parameter group is created")
+@when('an "elasticache" parameter group is created')
 def create_cache_parameter_group(client: TestClient, world):
     r = client.post(
         "/",

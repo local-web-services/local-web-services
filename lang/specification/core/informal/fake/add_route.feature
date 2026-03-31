@@ -9,31 +9,31 @@ Feature: Fake - A Route Is Added To A Fake Server
 
   @minimal @happy @add_route
   Scenario: a route is added to a fake server
-    Given the server exists
-    And the server is "ACTIVE"
+    Given the server existed
+    And the server was "ACTIVE"
     And a route slot is available
     When a route is added to a fake server
-    Then the route is "ACTIVE" on the server
+    Then the route will be "ACTIVE" on the server
     And every "ACTIVE" route belongs to an "ACTIVE" server
     And every server has a valid protocol
 
   @guard @negative @add_route
-  Scenario: a route is added to a fake server fails when the server does not exist
-    Given the server does not exist
+  Scenario: a route is added to a fake server fails when the server did not exist
+    Given the server did not exist
     When a route is added to a fake server
     Then the operation is rejected
 
   @guard @negative @add_route
-  Scenario: a route is added to a fake server fails when the server is not "ACTIVE"
-    Given the server exists
-    And the server is not "ACTIVE"
+  Scenario: a route is added to a fake server fails when the server was not "ACTIVE"
+    Given the server existed
+    And the server was not "ACTIVE"
     When a route is added to a fake server
     Then the operation is rejected
 
-  @guard @negative @internal @add_route
+  @guard @negative @add_route
   Scenario: a route is added to a fake server fails when no route slot is available
-    Given the server exists
-    And the server is "ACTIVE"
+    Given the server existed
+    And the server was "ACTIVE"
     And no route slot is available
     When a route is added to a fake server
     Then the operation is rejected

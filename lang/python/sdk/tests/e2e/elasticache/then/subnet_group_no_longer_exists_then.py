@@ -1,11 +1,11 @@
-"""Then: the subnet group no longer exists"""
+"""Then: the "elasticache" subnet group no longer will exist"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the subnet group no longer exists")
+@then('the "elasticache" subnet group no longer will exist')
 def subnet_group_no_longer_exists_then(world):
     expected_error = None
     actual_error = world["error"]

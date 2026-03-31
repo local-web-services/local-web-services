@@ -1,4 +1,4 @@
-"""When: an "SQS" direct integration is configured on the "REST" "API" """
+"""When: a "SQS" direct integration is configured on the "api gateway" "api" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import ApigatewaySqsTestClient
 
 
-@when('an "SQS" direct integration is configured on the "REST" "API"')
+@when('a "SQS" direct integration is configured on the "api gateway" "api"')
 def configure_sqs_integration_apigw(lws_session, world):
     try:
         api_id = ApigatewaySqsTestClient(lws_session).get_api_id()

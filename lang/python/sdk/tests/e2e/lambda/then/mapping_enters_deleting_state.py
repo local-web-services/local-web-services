@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import pytest
-from pytest_bdd import parsers, then
+from pytest_bdd import then
 
 
-@then(parsers.re(r'^the mapping enters "DELETING" state$'))
+@then('the mapping will be in "DELETING" state')
 def mapping_enters_deleting_state(world):
     pytest.skip("Cannot observe ESM DELETING state in lws")

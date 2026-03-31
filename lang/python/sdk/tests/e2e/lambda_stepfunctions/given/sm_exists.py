@@ -1,4 +1,4 @@
-"""Given: the state machine exists"""
+"""Given: the state machine is already "DELETED" """
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import given
 from ..client import LambdaStepfunctionsTestClient
 
 
-@given("the state machine exists")
+@given('the "step functions" "state machine" existed')
 def sm_exists(lws_session):
     LambdaStepfunctionsTestClient(lws_session).create_sm()

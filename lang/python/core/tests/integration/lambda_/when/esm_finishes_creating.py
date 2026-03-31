@@ -1,4 +1,4 @@
-"""When: an event source mapping finishes creating"""
+"""When: a "lambda" "event source mapping" finishes creating"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import when
 from starlette.testclient import TestClient
 
 
-@when("an event source mapping finishes creating")
+@when('a "lambda" "event source mapping" finishes creating')
 def esm_finishes_creating(client: TestClient, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

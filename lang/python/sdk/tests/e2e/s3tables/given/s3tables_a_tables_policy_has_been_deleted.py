@@ -1,4 +1,4 @@
-"""Given: a table's policy has been deleted"""
+"""Given: a "s3 tables" "table"'s policy is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import S3tablesTestClient
 from ..constants import TEST_NAMESPACE, TEST_TABLE
 
 
-@given("a table's policy has been deleted")
+@given('a "s3 tables" "table"\'s policy is deleted')
 def s3tables_a_tables_policy_has_been_deleted(lws_session):
     bucket_arn = S3tablesTestClient(lws_session).setup_bucket_namespace_table()
     S3tablesTestClient(lws_session).put_table_policy(

@@ -1,4 +1,4 @@
-"""Then: the namespace is "DELETED" and all its tables are "DELETED" """
+"""Then: the "s3 tables" "namespace" will be deleted and all its tables will be deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_NAMESPACE
 
 
-@then('the namespace is "DELETED" and all its tables are "DELETED"')
+@then('the "s3 tables" "namespace" will be deleted and all its tables will be deleted')
 def namespace_is_deleted_and_tables_deleted(client: TestClient):
     r = client.get(f"/namespaces/{INT_BUCKET}")
     actual_namespaces = [ns["namespace"] for ns in r.json().get("namespaces", [])]

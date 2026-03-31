@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
 
 
 @given("no item slot is available")
-def apigw_dynamodb_no_item_slot():
-    pytest.skip("Cannot simulate exhausted item slots in lws")
+def apigw_dynamodb_no_item_slot(lws_session):
+    lws_session.capacity("dynamodb").exhaust().apply()

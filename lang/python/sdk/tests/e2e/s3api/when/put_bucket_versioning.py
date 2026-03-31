@@ -1,4 +1,4 @@
-"""When: versioning is configured on a bucket"""
+"""When: versioning is configured on a "s3" "bucket" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUCKET
 
 
-@when("versioning is configured on a bucket")
+@when('versioning is configured on a "s3" "bucket"')
 def put_bucket_versioning(lws_session, world):
     try:
         world["result"] = lws_session.client("s3").put_bucket_versioning(

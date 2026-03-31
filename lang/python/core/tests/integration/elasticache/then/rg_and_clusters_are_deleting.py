@@ -1,4 +1,4 @@
-"""Then: the replication group and its clusters are in "DELETING" state"""
+"""Then: the "elasticache" "replication group" and its clusters are in "DELETING" state"""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from pytest_bdd import then
 from starlette.testclient import TestClient
 
 
-@then('the replication group and its clusters are in "DELETING" state')
+@then('the "elasticache" "replication group" and its clusters are in "DELETING" state')
 def rg_and_clusters_are_deleting(client: TestClient, world):
     actual_error = world["error"]
     assert (

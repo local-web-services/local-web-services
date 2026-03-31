@@ -1,4 +1,4 @@
-"""When: an EventBridge rule is created to route matching events to an "SNS" topic"""
+"""When: an "eventbridge" "rule" is created to route matching events to a "sns" "topic" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import EVENT_PATTERN, TEST_BUS, TEST_RULE, _topic_arn
 
 
-@when('an EventBridge rule is created to route matching events to an "SNS" topic')
+@when('an "eventbridge" "rule" is created to route matching events to a "sns" "topic"')
 def put_rule_targeting_sns(lws_session, world):
     try:
         lws_session.client("events").put_rule(

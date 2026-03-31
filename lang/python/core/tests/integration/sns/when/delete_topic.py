@@ -1,4 +1,4 @@
-"""When: an "SNS" topic is deleted"""
+"""When: a "sns" "topic" is deleted"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import when
 from ..constants import TEST_TOPIC_ARN
 
 
-@when('an "SNS" topic is deleted')
+@when('a "sns" "topic" is deleted')
 def delete_topic(client, world):
     topic_arn = world.get("topic_arn", TEST_TOPIC_ARN)
     r = client.post("/", data={"Action": "DeleteTopic", "TopicArn": topic_arn})

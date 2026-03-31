@@ -1,4 +1,4 @@
-"""Given: the organizational unit already exists"""
+"""Given: the "organizations" "organizational unit" already existed"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import OrganizationsTestClient
 from ..constants import INT_OU_NAME
 
 
-@given("the organizational unit already exists")
+@given('the "organizations" "organizational unit" already existed')
 def ou_already_exists(client: TestClient, world):
     resp = OrganizationsTestClient(client).create_org()
     world["org_id"] = resp.get("Organization", {}).get("Id")

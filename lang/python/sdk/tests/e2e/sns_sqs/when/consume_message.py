@@ -1,4 +1,4 @@
-"""When: a message is consumed from the "SQS" queue"""
+"""When: a message is consumed from the "sqs" "queue" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import SnsSqsTestClient
 from ..constants import TEST_QUEUE
 
 
-@when('a message is consumed from the "SQS" queue')
+@when('a message is consumed from the "sqs" "queue"')
 def consume_message(lws_session, world):
     try:
         url = SnsSqsTestClient(lws_session).queue_url()

@@ -1,4 +1,4 @@
-"""Then: the domain is "AVAILABLE" again"""
+"""Then: the "elasticsearch" "domain" will be "AVAILABLE" again"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_DOMAIN
 
 
-@then('the domain is "AVAILABLE" again')
+@then('the "elasticsearch" "domain" will be "AVAILABLE" again')
 def domain_is_available_again_then(lws_session):
     resp = lws_session.client("es").describe_elasticsearch_domain(DomainName=TEST_DOMAIN)
     expected_processing = False

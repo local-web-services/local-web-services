@@ -1,4 +1,4 @@
-"""When: a user account is marked as compromised"""
+"""When: a "cognito" "user" is marked as compromised"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import when
 from starlette.testclient import TestClient
 
 
-@when("a user account is marked as compromised")
+@when('a "cognito" "user" is marked as compromised')
 def mark_user_compromised(client: TestClient, world):
     pytest.skip(
         "AdminUserGlobalSignOut (mark-compromised) is not yet implemented "

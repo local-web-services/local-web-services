@@ -1,4 +1,4 @@
-"""When: events are published to an event bus"""
+"""When: events are published to an "eventbridge" "bus" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUS
 
 
-@when("events are published to an event bus")
+@when('events are published to an "eventbridge" "bus"')
 def put_events(lws_session, world):
     try:
         resp = lws_session.client("events").put_events(

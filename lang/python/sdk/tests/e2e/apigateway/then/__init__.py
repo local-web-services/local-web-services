@@ -19,6 +19,7 @@ from .every_api_has_valid_status import *  # noqa: F401,F403
 from .integration_exists_then import *  # noqa: F401,F403
 from .integration_is_deleted_then import *  # noqa: F401,F403
 from .integration_response_exists_then import *  # noqa: F401,F403
+from .integration_times_out_or_responds import *  # noqa: F401,F403
 from .method_exists_on_resource_then import *  # noqa: F401,F403
 from .method_is_deleted_then import *  # noqa: F401,F403
 from .method_remains_unchanged_then import *  # noqa: F401,F403

@@ -1,11 +1,11 @@
-"""Then: the specified tags are associated with the domain"""
+"""Then: the specified tags are associated with the "elasticsearch" "domain" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the specified tags are associated with the domain")
+@then('the specified tags are associated with the "elasticsearch" "domain"')
 def es_specified_tags_associated_with_domain(world: dict):
     actual_result = world["result"]
     assert (

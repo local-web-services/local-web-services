@@ -1,4 +1,4 @@
-"""Given: the replication group is "MODIFYING" """
+"""Given: the "elasticache" "replication group" was "MODIFYING" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..constants import TEST_REPLICATION_GROUP
 
 
-@given('the replication group is "MODIFYING"')
+@given('the "elasticache" "replication group" was "MODIFYING"')
 def rg_is_modifying_given(lws_session, world):
     # Arrange
     rg_id = world.get("replication_group_id", TEST_REPLICATION_GROUP)

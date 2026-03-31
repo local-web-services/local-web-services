@@ -1,4 +1,4 @@
-"""Given: the database instance already exists"""
+"""Given: the "rds" "instance" already existed"""
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import given
 from ..client import RdsTestClient
 
 
-@given("the database instance already exists")
+@given('the "rds" "instance" already existed')
 def db_instance_already_exists(lws_session):
     RdsTestClient(lws_session).create_db_instance()

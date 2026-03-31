@@ -1,4 +1,4 @@
-"""Given: the user is "CONFIRMED" """
+"""Given: the "cognito" "user" was "CONFIRMED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import CognitoIdpTestClient
 from ..constants import TEST_PASSWORD, TEST_USERNAME
 
 
-@given('the user is "CONFIRMED"')
+@given('the "cognito" "user" was "CONFIRMED"')
 def user_is_confirmed(lws_session, world):
     """Ensure the user is in CONFIRMED state with TEST_PASSWORD via delete-and-recreate."""
     if not world.get("pool_id"):

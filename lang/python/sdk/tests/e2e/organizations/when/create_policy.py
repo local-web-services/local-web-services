@@ -1,4 +1,4 @@
-"""When: a service control policy is created"""
+"""When: an "organizations" "policy" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_POLICY_NAME, TEST_POLICY_TYPE
 
 
-@when("a service control policy is created")
+@when('an "organizations" "policy" is created')
 def create_policy(lws_session, world):
     try:
         resp = lws_session.client("organizations").create_policy(

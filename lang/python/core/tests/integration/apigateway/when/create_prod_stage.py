@@ -1,4 +1,4 @@
-"""When: a prod stage is created for an "API" """
+"""When: a prod stage is created for an "api gateway" "API" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_STAGE_PROD
 
 
-@when('a prod stage is created for an "API"')
+@when('a prod stage is created for an "api gateway" "API"')
 def create_prod_stage(client: TestClient, world):
     list_r = client.get("/restapis")
     items = list_r.json().get("item", [])

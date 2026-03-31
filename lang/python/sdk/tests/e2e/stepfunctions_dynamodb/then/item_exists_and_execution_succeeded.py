@@ -1,4 +1,4 @@
-"""Then: the item "EXISTS" in the table and the execution is "SUCCEEDED" """
+"""Then: the item will exist in the "dynamodb" "table" and the "step functions" "execution" will be "SUCCEEDED" """
 
 from __future__ import annotations
 
@@ -7,7 +7,9 @@ from pytest_bdd import then
 from ..constants import TEST_ITEM_KEY, TEST_PK, TEST_TABLE
 
 
-@then('the item "EXISTS" in the table and the execution is "SUCCEEDED"')
+@then(
+    'the item will exist in the "dynamodb" "table" and the "step functions" "execution" will be "SUCCEEDED"'
+)
 def item_exists_and_execution_succeeded(lws_session, world):
     expected_error = None
     expected_item_key = TEST_ITEM_KEY

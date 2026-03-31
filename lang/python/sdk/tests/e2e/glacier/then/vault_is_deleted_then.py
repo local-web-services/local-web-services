@@ -1,11 +1,11 @@
-"""Then: the vault is "DELETED" """
+"""Then: the "glacier" "vault" will be "DELETED" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the vault is "DELETED"')
+@then('the "glacier" "vault" will be "DELETED"')
 def vault_is_deleted_then(world):
     expected_error = None
     actual_error = world["error"]

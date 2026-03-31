@@ -1,4 +1,4 @@
-"""Given: a running execution has read an existing parameter and the task succeeded"""
+"""Given: a running "step functions" "execution" reads an existing parameter and the task succeeds"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsSsmTestClient
 from ..constants import TEST_PARAM, _sm_arn, _ssm_get_parameter_definition
 
 
-@given("a running execution has read an existing parameter and the task succeeded")
+@given('a running "step functions" "execution" reads an existing parameter and the task succeeds')
 def running_execution_read_parameter_succeeded_given(lws_session, world):
     client = StepfunctionsSsmTestClient(lws_session)
     try:

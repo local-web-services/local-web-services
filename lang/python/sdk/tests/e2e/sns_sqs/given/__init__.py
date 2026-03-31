@@ -6,6 +6,7 @@ from .no_confirmed_subscription_exists import *  # noqa: F401,F403
 from .no_message_slot_available import *  # noqa: F401,F403
 from .queue_already_exists import *  # noqa: F401,F403
 from .queue_does_not_exist import *  # noqa: F401,F403
+from .queue_existed import *  # noqa: F401,F403
 from .queue_exists import *  # noqa: F401,F403
 from .queue_is_active_given import *  # noqa: F401,F403
 from .queue_is_not_active_given import *  # noqa: F401,F403

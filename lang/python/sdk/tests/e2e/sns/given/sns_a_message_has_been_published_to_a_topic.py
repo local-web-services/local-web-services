@@ -1,4 +1,4 @@
-"""Given: a message has been published to a topic"""
+"""Given: a "sns" "message" is published to a "sns" "topic" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SnsTestClient
 from ..constants import TEST_SUB_QUEUE
 
 
-@given("a message has been published to a topic")
+@given('a "sns" "message" is published to a "sns" "topic"')
 def sns_a_message_has_been_published_to_a_topic(lws_session, world):
     # Arrange
     topic_arn = SnsTestClient(lws_session).create_topic()

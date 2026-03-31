@@ -1,4 +1,4 @@
-"""When: a database cluster snapshot is deleted"""
+"""When: a "neptune" "cluster" neptune snapshot is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_SNAPSHOT
 
 
-@when("a database cluster snapshot is deleted")
+@when('a "neptune" "cluster" neptune snapshot is deleted')
 def delete_db_cluster_snapshot(lws_session, world):
     try:
         snapshot_id = world.get("snapshot_id", TEST_SNAPSHOT)

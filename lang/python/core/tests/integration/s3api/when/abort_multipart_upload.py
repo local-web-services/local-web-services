@@ -1,4 +1,4 @@
-"""When: a multipart upload is aborted"""
+"""When: a multipart "glacier" "upload" is aborted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,8 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_KEY
 
 
-@when("a multipart upload is aborted")
+@when('a multipart "s3" "upload" is aborted')
+@when('a multipart "glacier" "upload" is aborted')
 def abort_multipart_upload(sync_client: TestClient, world):
     # Guard: reject if bucket does not exist (lws returns 204 regardless)
     head_r = sync_client.head(f"/{INT_BUCKET}")

@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
 
 
 @given("no execution slot is available")
-def apigw_sfn_no_execution_slot():
-    pytest.skip("Cannot simulate exhausted execution slots in lws")
+def apigw_sfn_no_execution_slot(lws_session):
+    lws_session.capacity("stepfunctions").exhaust().apply()

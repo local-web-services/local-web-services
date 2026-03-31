@@ -1,4 +1,4 @@
-"""Given: the state machine has an S3 task configured"""
+"""Given: the state machine has a S3 task configured"""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from ..constants import (
 )
 
 
-@given("the state machine has an S3 task configured")
+@given("the state machine has a S3 task configured")
 def sm_has_s3_task(lws_session):
     """Create a state machine with an S3 putObject task; update if it already exists."""
     try:

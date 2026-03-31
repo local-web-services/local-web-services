@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import given, parsers
+from pytest_bdd import given
 
 
-@given(parsers.re(r'^the function is "ACTIVE"$'))
+@given('the "lambda" "function" was "ACTIVE"')
 def function_is_active_given():
     """No-op: lws resolves functions to ACTIVE immediately."""

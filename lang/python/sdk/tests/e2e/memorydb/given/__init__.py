@@ -64,7 +64,9 @@ from .memorydb_user_updated_seq import *  # noqa: F401,F403
 from .multi_az_enabled_given import *  # noqa: F401,F403
 from .multi_az_not_enabled_given import *  # noqa: F401,F403
 from .resource_does_not_have_tag_entry import *  # noqa: F401,F403
+from .resource_does_not_have_tag_entry_guard import *  # noqa: F401,F403
 from .resource_has_tag_entry import *  # noqa: F401,F403
+from .resource_has_tag_entry_guard import *  # noqa: F401,F403
 from .sid_in_snapshot_status import *  # noqa: F401,F403
 from .snapshot_belongs_to_cluster import *  # noqa: F401,F403
 from .snapshot_does_not_belong_to_cluster import *  # noqa: F401,F403

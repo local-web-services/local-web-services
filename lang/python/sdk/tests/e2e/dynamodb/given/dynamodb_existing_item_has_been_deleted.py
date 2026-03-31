@@ -1,4 +1,4 @@
-"""Given: an existing item has been deleted from the table"""
+"""Given: an existing "dynamodb" "item" is deleted from the "dynamodb" "table" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import DynamodbTestClient
 from ..constants import TEST_ITEM_KEY, TEST_PK, TEST_TABLE
 
 
-@given("an existing item has been deleted from the table")
+@given('an existing "dynamodb" "item" is deleted from the "dynamodb" "table"')
 def dynamodb_existing_item_has_been_deleted(lws_session):
     DynamodbTestClient(lws_session).create_table()
     DynamodbTestClient(lws_session).put_item()

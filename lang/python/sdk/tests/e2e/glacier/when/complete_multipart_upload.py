@@ -1,4 +1,4 @@
-"""When: a multipart upload is completed"""
+"""When: a multipart "glacier" "upload" is completed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_VAULT
 
 
-@when("a multipart upload is completed")
+@when('a multipart "glacier" "upload" is completed')
 def complete_multipart_upload(lws_session, world):
     try:
         upload_id = world.get("upload_id") or "nonexistent-upload-id"

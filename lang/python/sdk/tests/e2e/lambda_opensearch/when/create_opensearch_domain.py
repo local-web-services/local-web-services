@@ -1,4 +1,4 @@
-"""When: an OpenSearch domain is created"""
+"""When: an "opensearch" "domain" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import LambdaOpensearchTestClient
 from ..constants import TEST_DOMAIN
 
 
-@when("an OpenSearch domain is created")
+@when('an "opensearch" "domain" is created')
 def create_opensearch_domain(lws_session, world):
     try:
         LambdaOpensearchTestClient(lws_session).create_domain()

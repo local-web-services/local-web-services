@@ -1,4 +1,4 @@
-"""When: an "SNS" topic is created"""
+"""When: a "sns" "topic" is created"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import when
 from ..constants import TEST_TOPIC, _extract_xml_tag
 
 
-@when('an "SNS" topic is created')
+@when('a "sns" "topic" is created')
 def create_topic(client, world):
     r = client.post("/", data={"Action": "CreateTopic", "Name": TEST_TOPIC})
     if r.status_code == 200:

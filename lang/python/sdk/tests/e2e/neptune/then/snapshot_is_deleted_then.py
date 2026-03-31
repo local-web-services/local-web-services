@@ -1,11 +1,11 @@
-"""Then: the snapshot is "DELETED" """
+"""Then: the "neptune" "SNAPSHOT" will be "DELETED" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the snapshot is "DELETED"')
+@then('the "neptune" "SNAPSHOT" will be "DELETED"')
 def snapshot_is_deleted_then(world):
     expected_error = None
     actual_error = world["error"]

@@ -1,4 +1,4 @@
-"""Given: the event bus is not "ACTIVE" """
+"""Given: the "eventbridge" "bus" was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import EventsTestClient
 from ..constants import TEST_BUS
 
 
-@given('the event bus is not "ACTIVE"')
+@given('the "eventbridge" "bus" was not "ACTIVE"')
 def bus_is_not_active_given(lws_session):
     try:
         EventsTestClient(lws_session).delete_event_bus(Name=TEST_BUS)

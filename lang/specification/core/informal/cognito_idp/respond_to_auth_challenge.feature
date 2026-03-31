@@ -1,5 +1,5 @@
 @cognitoidp @generated
-Feature: CognitoIdp - A User Responds To An Auth Challenge
+Feature: CognitoIdp - A "Cognito" "User" Responds To An Auth Challenge
 
   # Generated from FizzBee spec: cognito_idp.fizz
   # Safety invariants: ValidUserPoolStatus, ValidUserStatus, UserGroupMembershipEntryExists, GroupMembershipReferencesExistingGroups, ValidAuthSessionStatus, DeletedUsersNotAuthenticated, DisabledUsersNotAuthenticated
@@ -8,11 +8,11 @@ Feature: CognitoIdp - A User Responds To An Auth Challenge
     Given the system is initialized
 
   @minimal @happy @respond_to_auth_challenge
-  Scenario: a user responds to an auth challenge
-    Given the session exists
-    And the session is "CHALLENGE_REQUIRED"
-    When a user responds to an auth challenge
-    Then the session is either "AUTHENTICATED" or "CHALLENGE_FAILED"
+  Scenario: a "cognito" "user" responds to an auth challenge
+    Given the "cognito" "session" existed
+    And the "cognito" "session" was "CHALLENGE_REQUIRED"
+    When a "cognito" "user" responds to an auth challenge
+    Then the "cognito" "session" will be either "AUTHENTICATED" or "CHALLENGE_FAILED"
     And every user pool has a valid status ("ACTIVE" or "DELETED")
     And every user has a valid status
     And every non-deleted user has an enabled flag set
@@ -22,14 +22,14 @@ Feature: CognitoIdp - A User Responds To An Auth Challenge
     And disabled users do not have active authenticated sessions
 
   @guard @negative @respond_to_auth_challenge
-  Scenario: a user responds to an auth challenge fails when the session does not exist
-    Given the session does not exist
-    When a user responds to an auth challenge
+  Scenario: a "cognito" "user" responds to an auth challenge fails when the "cognito" "session" did not exist
+    Given the "cognito" "session" did not exist
+    When a "cognito" "user" responds to an auth challenge
     Then the operation is rejected
 
   @guard @negative @respond_to_auth_challenge
-  Scenario: a user responds to an auth challenge fails when the session is not "CHALLENGE_REQUIRED"
-    Given the session exists
-    And the session is not "CHALLENGE_REQUIRED"
-    When a user responds to an auth challenge
+  Scenario: a "cognito" "user" responds to an auth challenge fails when the "cognito" "session" was not "CHALLENGE_REQUIRED"
+    Given the "cognito" "session" existed
+    And the "cognito" "session" was not "CHALLENGE_REQUIRED"
+    When a "cognito" "user" responds to an auth challenge
     Then the operation is rejected

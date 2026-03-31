@@ -1,10 +1,10 @@
-"""Given: the topic does not exist"""
+"""Given: the "sns" "topic" did not exist"""
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given("the topic does not exist")
+@given('the "sns" "topic" did not exist')
 def topic_does_not_exist():
     """No-op: fresh state has no topics."""

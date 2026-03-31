@@ -1,4 +1,4 @@
-"""Then: the parameter is "DELETED" and the "DELETED" event is "DELIVERED" """
+"""Then: the "ssm" "parameter" will be deleted and the "DELETED" event will be "DELIVERED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import then
 from ..constants import TEST_PARAM
 
 
-@then('the parameter is "DELETED" and the "DELETED" event is "DELIVERED"')
+@then('the "ssm" "parameter" will be deleted and the "DELETED" event will be "DELIVERED"')
 def param_is_deleted_and_event_delivered(lws_session):
     try:
         lws_session.client("ssm").get_parameter(Name=TEST_PARAM)

@@ -216,36 +216,15 @@ jobs:
       - run: make test-architecture
         working-directory: lang/python/sdk
 
-  python-sdk-e2e-suites:
-    needs: [changes]
-    if: |
-      always() && !cancelled() && needs.changes.outputs.python-sdk == 'true'
-    runs-on: ubuntu-latest
-    outputs:
-      suites: ${{ steps.list.outputs.suites }}
-    steps:
-      - uses: actions/checkout@v4
-      - id: list
-        run: |
-          suites=$(grep -rL "Placeholder" lang/python/sdk/tests/e2e/*/test_scenarios.py | \
-            sed 's|.*/e2e/||;s|/test_scenarios.py||' | \
-            jq -R . | jq -sc .)
-          echo "suites=$suites" >> $GITHUB_OUTPUT
-
   python-sdk-test-e2e-minimal:
-    needs: [changes, python-sdk-e2e-suites, python-sdk-lint, python-sdk-test-unit, python-sdk-test-architecture]
+    needs: [changes, python-sdk-lint, python-sdk-test-unit, python-sdk-test-architecture]
     if: |
       always() &&
       !cancelled() &&
       needs.changes.outputs.python-sdk == 'true' &&
-      (needs.python-sdk-e2e-suites.result == 'success' || needs.python-sdk-e2e-suites.result == 'skipped') &&
       (needs.python-sdk-lint.result == 'success' || needs.python-sdk-lint.result == 'skipped') &&
       (needs.python-sdk-test-unit.result == 'success' || needs.python-sdk-test-unit.result == 'skipped') &&
       (needs.python-sdk-test-architecture.result == 'success' || needs.python-sdk-test-architecture.result == 'skipped')
-    strategy:
-      fail-fast: false
-      matrix:
-        suite: ${{ fromJSON(needs.python-sdk-e2e-suites.outputs.suites) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -280,30 +259,23 @@ jobs:
       - run: uv pip install --system -e lang/python/core
       - run: make install
         working-directory: lang/python/sdk
-      - env:
-          SUITE: ${{ matrix.suite }}
-        run: make test-e2e-minimal SUITE="tests/e2e/$SUITE"
+      - run: make test-e2e-minimal
         working-directory: lang/python/sdk
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: python-sdk-test-e2e-results-minimal-${{ matrix.suite }}
+          name: python-sdk-test-e2e-results-minimal
           path: lang/python/sdk/test-results/junit-minimal.xml
 
   python-sdk-test-e2e-guard:
-    needs: [changes, python-sdk-e2e-suites, python-sdk-lint, python-sdk-test-unit, python-sdk-test-architecture]
+    needs: [changes, python-sdk-lint, python-sdk-test-unit, python-sdk-test-architecture]
     if: |
       always() &&
       !cancelled() &&
       needs.changes.outputs.python-sdk == 'true' &&
-      (needs.python-sdk-e2e-suites.result == 'success' || needs.python-sdk-e2e-suites.result == 'skipped') &&
       (needs.python-sdk-lint.result == 'success' || needs.python-sdk-lint.result == 'skipped') &&
       (needs.python-sdk-test-unit.result == 'success' || needs.python-sdk-test-unit.result == 'skipped') &&
       (needs.python-sdk-test-architecture.result == 'success' || needs.python-sdk-test-architecture.result == 'skipped')
-    strategy:
-      fail-fast: false
-      matrix:
-        suite: ${{ fromJSON(needs.python-sdk-e2e-suites.outputs.suites) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -338,30 +310,23 @@ jobs:
       - run: uv pip install --system -e lang/python/core
       - run: make install
         working-directory: lang/python/sdk
-      - env:
-          SUITE: ${{ matrix.suite }}
-        run: make test-e2e-guard SUITE="tests/e2e/$SUITE"
+      - run: make test-e2e-guard
         working-directory: lang/python/sdk
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: python-sdk-test-e2e-results-guard-${{ matrix.suite }}
+          name: python-sdk-test-e2e-results-guard
           path: lang/python/sdk/test-results/junit-guard.xml
 
   python-sdk-test-e2e-sequence:
-    needs: [changes, python-sdk-e2e-suites, python-sdk-lint, python-sdk-test-unit, python-sdk-test-architecture]
+    needs: [changes, python-sdk-lint, python-sdk-test-unit, python-sdk-test-architecture]
     if: |
       always() &&
       !cancelled() &&
       needs.changes.outputs.python-sdk == 'true' &&
-      (needs.python-sdk-e2e-suites.result == 'success' || needs.python-sdk-e2e-suites.result == 'skipped') &&
       (needs.python-sdk-lint.result == 'success' || needs.python-sdk-lint.result == 'skipped') &&
       (needs.python-sdk-test-unit.result == 'success' || needs.python-sdk-test-unit.result == 'skipped') &&
       (needs.python-sdk-test-architecture.result == 'success' || needs.python-sdk-test-architecture.result == 'skipped')
-    strategy:
-      fail-fast: false
-      matrix:
-        suite: ${{ fromJSON(needs.python-sdk-e2e-suites.outputs.suites) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -396,14 +361,12 @@ jobs:
       - run: uv pip install --system -e lang/python/core
       - run: make install
         working-directory: lang/python/sdk
-      - env:
-          SUITE: ${{ matrix.suite }}
-        run: make test-e2e-sequence SUITE="tests/e2e/$SUITE"
+      - run: make test-e2e-sequence
         working-directory: lang/python/sdk
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: python-sdk-test-e2e-results-sequence-${{ matrix.suite }}
+          name: python-sdk-test-e2e-results-sequence
           path: lang/python/sdk/test-results/junit-sequence.xml
 
   python-sdk-e2e-summary:
@@ -502,12 +465,12 @@ jobs:
         working-directory: lang/python/example
 
   python-example-test-e2e-minimal:
-    needs: [changes, python-sdk-test-e2e-minimal, python-example-lint, python-example-test-unit, python-example-test-architecture]
+    needs: [changes, python-sdk-e2e-summary, python-example-lint, python-example-test-unit, python-example-test-architecture]
     if: |
       always() &&
       !cancelled() &&
       needs.changes.outputs.python-example == 'true' &&
-      (needs.python-sdk-test-e2e-minimal.result == 'success' || needs.python-sdk-test-e2e-minimal.result == 'skipped') &&
+      (needs.python-sdk-e2e-summary.result == 'success' || needs.python-sdk-e2e-summary.result == 'skipped') &&
       (needs.python-example-lint.result == 'success' || needs.python-example-lint.result == 'skipped') &&
       (needs.python-example-test-unit.result == 'success' || needs.python-example-test-unit.result == 'skipped') &&
       (needs.python-example-test-architecture.result == 'success' || needs.python-example-test-architecture.result == 'skipped')
@@ -554,12 +517,12 @@ jobs:
           path: lang/python/example/test-results/junit-minimal.xml
 
   python-example-test-e2e-guard:
-    needs: [changes, python-sdk-test-e2e-guard, python-example-lint, python-example-test-unit, python-example-test-architecture]
+    needs: [changes, python-sdk-e2e-summary, python-example-lint, python-example-test-unit, python-example-test-architecture]
     if: |
       always() &&
       !cancelled() &&
       needs.changes.outputs.python-example == 'true' &&
-      (needs.python-sdk-test-e2e-guard.result == 'success' || needs.python-sdk-test-e2e-guard.result == 'skipped') &&
+      (needs.python-sdk-e2e-summary.result == 'success' || needs.python-sdk-e2e-summary.result == 'skipped') &&
       (needs.python-example-lint.result == 'success' || needs.python-example-lint.result == 'skipped') &&
       (needs.python-example-test-unit.result == 'success' || needs.python-example-test-unit.result == 'skipped') &&
       (needs.python-example-test-architecture.result == 'success' || needs.python-example-test-architecture.result == 'skipped')
@@ -606,12 +569,12 @@ jobs:
           path: lang/python/example/test-results/junit-guard.xml
 
   python-example-test-e2e-sequence:
-    needs: [changes, python-sdk-test-e2e-sequence, python-example-lint, python-example-test-unit, python-example-test-architecture]
+    needs: [changes, python-sdk-e2e-summary, python-example-lint, python-example-test-unit, python-example-test-architecture]
     if: |
       always() &&
       !cancelled() &&
       needs.changes.outputs.python-example == 'true' &&
-      (needs.python-sdk-test-e2e-sequence.result == 'success' || needs.python-sdk-test-e2e-sequence.result == 'skipped') &&
+      (needs.python-sdk-e2e-summary.result == 'success' || needs.python-sdk-e2e-summary.result == 'skipped') &&
       (needs.python-example-lint.result == 'success' || needs.python-example-lint.result == 'skipped') &&
       (needs.python-example-test-unit.result == 'success' || needs.python-example-test-unit.result == 'skipped') &&
       (needs.python-example-test-architecture.result == 'success' || needs.python-example-test-architecture.result == 'skipped')
@@ -681,16 +644,14 @@ jobs:
 
   # ── Python Sample CDK ───────────────────────────────────────────────────────
   python-sample-cdk-build:
-    needs: [changes, python-example-lint, python-example-test-unit, python-example-test-architecture, python-example-test-e2e-minimal, python-example-test-e2e-guard, python-example-test-e2e-sequence]
+    needs: [changes, python-example-lint, python-example-test-unit, python-example-test-architecture, python-example-e2e-summary]
     if: |
       always() &&
       needs.changes.outputs.python-sample-cdk == 'true' &&
       (needs.python-example-lint.result == 'success' || needs.python-example-lint.result == 'skipped') &&
       (needs.python-example-test-unit.result == 'success' || needs.python-example-test-unit.result == 'skipped') &&
       (needs.python-example-test-architecture.result == 'success' || needs.python-example-test-architecture.result == 'skipped') &&
-      (needs.python-example-test-e2e-minimal.result == 'success' || needs.python-example-test-e2e-minimal.result == 'skipped') &&
-      (needs.python-example-test-e2e-guard.result == 'success' || needs.python-example-test-e2e-guard.result == 'skipped') &&
-      (needs.python-example-test-e2e-sequence.result == 'success' || needs.python-example-test-e2e-sequence.result == 'skipped')
+      (needs.python-example-e2e-summary.result == 'success' || needs.python-example-e2e-summary.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -731,16 +692,14 @@ jobs:
 
   # ── Python Sample HCL ───────────────────────────────────────────────────────
   python-sample-hcl-build:
-    needs: [changes, python-example-lint, python-example-test-unit, python-example-test-architecture, python-example-test-e2e-minimal, python-example-test-e2e-guard, python-example-test-e2e-sequence]
+    needs: [changes, python-example-lint, python-example-test-unit, python-example-test-architecture, python-example-e2e-summary]
     if: |
       always() &&
       needs.changes.outputs.python-sample-hcl == 'true' &&
       (needs.python-example-lint.result == 'success' || needs.python-example-lint.result == 'skipped') &&
       (needs.python-example-test-unit.result == 'success' || needs.python-example-test-unit.result == 'skipped') &&
       (needs.python-example-test-architecture.result == 'success' || needs.python-example-test-architecture.result == 'skipped') &&
-      (needs.python-example-test-e2e-minimal.result == 'success' || needs.python-example-test-e2e-minimal.result == 'skipped') &&
-      (needs.python-example-test-e2e-guard.result == 'success' || needs.python-example-test-e2e-guard.result == 'skipped') &&
-      (needs.python-example-test-e2e-sequence.result == 'success' || needs.python-example-test-e2e-sequence.result == 'skipped')
+      (needs.python-example-e2e-summary.result == 'success' || needs.python-example-e2e-summary.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

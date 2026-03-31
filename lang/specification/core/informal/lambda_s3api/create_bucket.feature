@@ -1,5 +1,5 @@
 @lambdas3api @generated
-Feature: LambdaS3api - An S3 Bucket Is Created
+Feature: LambdaS3api - A "S3" "Bucket" Is Created
 
   # Generated from FizzBee spec: lambda_s3api.fizz
   # Safety invariants: InvocationRequiresActiveFunction, ObjectRequiresActiveBucket
@@ -8,15 +8,15 @@ Feature: LambdaS3api - An S3 Bucket Is Created
     Given the system is initialized
 
   @minimal @happy @create_bucket
-  Scenario: an S3 bucket is created
-    Given the bucket does not already exist
-    When an S3 bucket is created
-    Then the bucket is "ACTIVE"
+  Scenario: a "s3" "bucket" is created
+    Given the "s3" "bucket" did not already exist
+    When a "s3" "bucket" is created
+    Then the "s3" "bucket" will be "ACTIVE"
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing object belongs to an "ACTIVE" bucket
 
   @guard @negative @create_bucket
-  Scenario: an S3 bucket is created fails when the bucket already exists
-    Given the bucket already exists
-    When an S3 bucket is created
+  Scenario: a "s3" "bucket" is created fails when the "s3" "bucket" already existed
+    Given the "s3" "bucket" already existed
+    When a "s3" "bucket" is created
     Then the operation is rejected

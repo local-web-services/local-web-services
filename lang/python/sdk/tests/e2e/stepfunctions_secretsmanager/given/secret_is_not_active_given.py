@@ -1,4 +1,4 @@
-"""Given: the secret is not "ACTIVE" """
+"""Given: the "secrets manager" "secret" was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsSecretsmanagerTestClient
 from ..constants import TEST_SECRET
 
 
-@given('the secret is not "ACTIVE"')
+@given('the "secrets manager" "secret" was not "ACTIVE"')
 def secret_is_not_active_given(lws_session, world):
     try:
         StepfunctionsSecretsmanagerTestClient(lws_session)._sm_client.delete_secret(

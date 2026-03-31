@@ -1,4 +1,4 @@
-"""When: an archive is deleted from a vault"""
+"""When: a "glacier" "archive" is deleted from a "glacier" "vault" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_VAULT_NAME
 
 
-@when("an archive is deleted from a vault")
+@when('a "glacier" "archive" is deleted from a "glacier" "vault"')
 def delete_archive(client: TestClient, world):
     vault_name = world.get("vault_name", INT_VAULT_NAME)
     archive_id = world.get("archive_id", "nonexistent-archive-id")

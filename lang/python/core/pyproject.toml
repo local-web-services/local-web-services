@@ -100,6 +100,9 @@ known-first-party = ["lws"]
 "src/lws/api/gui.py" = ["E501"]
 "src/lws/api/_gui_config_routes.py" = ["E501"]
 "src/lws/api/_gui_provider_routes.py" = ["E501"]
+"tests/integration/**/given/*.py" = ["E501"]
+"tests/integration/**/when/*.py" = ["E501"]
+"tests/integration/**/then/*.py" = ["E501"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10

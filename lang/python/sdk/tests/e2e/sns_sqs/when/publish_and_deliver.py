@@ -1,4 +1,4 @@
-"""When: a message is published to an "SNS" topic and delivered to the subscribed "SQS" queue"""
+"""When: a message is published to a "sns" "topic" and delivered to the subscribed "SQS" queue"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_MESSAGE, _topic_arn
 
 
-@when('a message is published to an "SNS" topic and delivered to the subscribed "SQS" queue')
+@when('a message is published to a "sns" "topic" and delivered to the subscribed "SQS" queue')
 def publish_and_deliver(lws_session, world):
     try:
         world["result"] = lws_session.client("sns").publish(

@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Database Cluster Restore From Snapshot Completes
+Feature: Neptune - A "Neptune" "Cluster" Restore From Neptune Snapshot Completes
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,11 +8,11 @@ Feature: Neptune - A Database Cluster Restore From Snapshot Completes
     Given the system is initialized
 
   @minimal @happy @complete_cluster_restore @internal
-  Scenario: a database cluster restore from snapshot completes
-    Given the cluster exists
-    And the cluster is "RESTORING"
-    When a database cluster restore from snapshot completes
-    Then the cluster is "AVAILABLE"
+  Scenario: a "neptune" "cluster" restore from neptune snapshot completes
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "RESTORING"
+    When a "neptune" "cluster" restore from neptune snapshot completes
+    Then the "neptune" "cluster" will be "AVAILABLE"
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -23,14 +23,14 @@ Feature: Neptune - A Database Cluster Restore From Snapshot Completes
     And a failed cluster has no available instances
 
   @guard @negative @complete_cluster_restore @internal
-  Scenario: a database cluster restore from snapshot completes fails when the cluster does not exist
-    Given the cluster does not exist
-    When a database cluster restore from snapshot completes
+  Scenario: a "neptune" "cluster" restore from neptune snapshot completes fails when the "neptune" "cluster" did not exist
+    Given the "neptune" "cluster" did not exist
+    When a "neptune" "cluster" restore from neptune snapshot completes
     Then the operation is rejected
 
   @guard @negative @complete_cluster_restore @internal
-  Scenario: a database cluster restore from snapshot completes fails when the cluster is not "RESTORING"
-    Given the cluster exists
-    And the cluster is not "RESTORING"
-    When a database cluster restore from snapshot completes
+  Scenario: a "neptune" "cluster" restore from neptune snapshot completes fails when the "neptune" "cluster" was not "RESTORING"
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was not "RESTORING"
+    When a "neptune" "cluster" restore from neptune snapshot completes
     Then the operation is rejected

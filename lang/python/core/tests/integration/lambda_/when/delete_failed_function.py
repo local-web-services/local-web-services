@@ -1,4 +1,4 @@
-"""When: a failed function is deleted"""
+"""When: a failed "lambda" "function" is deleted"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_FUNCTION_NAME
 
 
-@when("a failed function is deleted")
+@when('a failed "lambda" "function" is deleted')
 def delete_failed_function(client: TestClient, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

@@ -1,4 +1,4 @@
-"""Given: the integration exists"""
+"""Given: the "api gateway" "integration" existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import ApigatewayTestClient
 
 
-@given("the integration exists")
+@given('the "api gateway" "integration" existed')
 def integration_exists(client: TestClient):
     ApigatewayTestClient(client).setup_api_with_integration()

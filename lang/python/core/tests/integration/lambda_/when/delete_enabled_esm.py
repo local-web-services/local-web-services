@@ -1,4 +1,4 @@
-"""When: an enabled event source mapping is deleted"""
+"""When: an enabled lambda event source mapping is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import LambdaTestClient
 
 
-@when("an enabled event source mapping is deleted")
+@when("an enabled lambda event source mapping is deleted")
 def delete_enabled_esm(client: TestClient, world):
     uuid = LambdaTestClient(client).get_esm_uuid()
     r = client.delete(f"/2015-03-31/event-source-mappings/{uuid}")

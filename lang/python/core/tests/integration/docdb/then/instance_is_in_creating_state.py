@@ -1,4 +1,4 @@
-"""Then: the instance is in "CREATING" state and associated with the cluster"""
+"""Then: the "documentdb" "INSTANCE" will be in "CREATING" state and associated with the "documentdb" "cluster" """
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from starlette.testclient import TestClient
 from ..constants import _DOCDB_TARGET, INT_INSTANCE_ID
 
 
-@then('the instance is in "CREATING" state and associated with the cluster')
+@then(
+    'the "documentdb" "INSTANCE" will be in "CREATING" state and associated with the "documentdb" "cluster"'
+)
 def instance_is_in_creating_state(client: TestClient, world):
     actual_error = world["error"]
     assert actual_error is None, f"Expected instance creation to succeed but got: {actual_error}"

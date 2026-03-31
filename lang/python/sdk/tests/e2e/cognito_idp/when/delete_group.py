@@ -1,4 +1,4 @@
-"""When: a group is deleted"""
+"""When: a "cognito" "group" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_GROUP_NAME, _skip_if_not_implemented
 
 
-@when("a group is deleted")
+@when('a "cognito" "group" is deleted')
 def delete_group(lws_session, world):
     try:
         pool_id = world.get("pool_id", "")

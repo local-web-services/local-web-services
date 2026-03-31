@@ -1,4 +1,4 @@
-"""Then: the snapshot is "AVAILABLE" and the cluster returns to "AVAILABLE" if it was backing up"""
+"""Then: the "neptune" "SNAPSHOT" will be "AVAILABLE" and the "neptune" "cluster" returns to "AVAILABLE" if it was backing up"""
 
 from __future__ import annotations
 
@@ -7,7 +7,9 @@ from pytest_bdd import then
 from ..constants import TEST_SNAPSHOT
 
 
-@then('the snapshot is "AVAILABLE" and the cluster returns to "AVAILABLE" if it was backing up')
+@then(
+    'the "neptune" "SNAPSHOT" will be "AVAILABLE" and the "neptune" "cluster" returns to "AVAILABLE" if it was backing up'
+)
 def snapshot_available_cluster_returns_then(lws_session, world):
     snapshot_id = world.get("snapshot_id", TEST_SNAPSHOT)
     response = lws_session.client("neptune").describe_db_cluster_snapshots(

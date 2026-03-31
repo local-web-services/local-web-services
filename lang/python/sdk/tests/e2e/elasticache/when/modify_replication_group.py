@@ -1,4 +1,4 @@
-"""When: a replication group configuration is modified"""
+"""When: a "elasticache" "replication group" configuration is modified"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_REPLICATION_GROUP
 
 
-@when("a replication group configuration is modified")
+@when('a "elasticache" "replication group" configuration is modified')
 def modify_replication_group(lws_session, world):
     try:
         world["result"] = lws_session.client("elasticache").modify_replication_group(

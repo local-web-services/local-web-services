@@ -1,4 +1,4 @@
-"""When: the dev stage is redeployed to a new deployment"""
+"""When: the "api gateway" "prod stage" is redeployed to a new deployment"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ApigatewayTestClient
 from ..constants import TEST_STAGE_DEV
 
 
-@when("the dev stage is redeployed to a new deployment")
+@when('the "api gateway" "prod stage" is redeployed to a new deployment')
 def redeploy_dev_stage(lws_session, world):
     try:
         api_id = ApigatewayTestClient(lws_session).get_api_id()

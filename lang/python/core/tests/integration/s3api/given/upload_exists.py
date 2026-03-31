@@ -1,4 +1,4 @@
-"""Given: the upload exists"""
+"""Given: the "glacier" "upload" existed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,8 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_KEY, _parse_upload_id
 
 
-@given("the upload exists")
+@given('the "s3" "upload" existed')
+@given('the "glacier" "upload" existed')
 def upload_exists(sync_client: TestClient, world):
     resp = sync_client.post(
         f"/{INT_BUCKET}/{INT_KEY}",

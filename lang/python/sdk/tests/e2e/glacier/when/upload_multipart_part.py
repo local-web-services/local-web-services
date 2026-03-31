@@ -1,4 +1,4 @@
-"""When: a part is uploaded for a multipart upload"""
+"""When: a part is uploaded for a multipart "glacier" "upload" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_VAULT
 
 
-@when("a part is uploaded for a multipart upload")
+@when('a part is uploaded for a multipart "glacier" "upload"')
 def upload_multipart_part(lws_session, world):
     try:
         upload_id = world.get("upload_id") or "nonexistent-upload-id"

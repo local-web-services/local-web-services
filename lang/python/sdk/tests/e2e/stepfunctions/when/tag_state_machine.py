@@ -1,4 +1,4 @@
-"""When: tags are added to a state machine"""
+"""When: tags are added to a "step functions" "state machine" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_SM, TEST_TAG_KEY, TEST_TAG_VALUE, _sm_arn
 
 
-@when("tags are added to a state machine")
+@when('tags are added to a "step functions" "state machine"')
 def tag_state_machine(lws_session, world):
     try:
         sm_name = world.get("state_machine_name") or TEST_SM

@@ -1,4 +1,4 @@
-"""Given: a new value has been stored for an active secret"""
+"""Given: a new value is stored for an active "secrets manager" "secret" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SecretsmanagerTestClient
 from ..constants import TEST_SECRET, TEST_VALUE2
 
 
-@given("a new value has been stored for an active secret")
+@given('a new value is stored for an active "secrets manager" "secret"')
 def secretsmanager_new_value_has_been_stored(lws_session):
     try:
         SecretsmanagerTestClient(lws_session).create_secret()

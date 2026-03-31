@@ -12,7 +12,7 @@ from ..constants import TEST_SECRET
 
 
 @when(
-    'a secret is scheduled for deletion and Secrets Manager delivers a "DELETED" event to the bus'
+    'a "secretsmanager" "secret" is scheduled for deletion and Secrets Manager delivers a "DELETED" event to the bus'
 )
 def delete_secret_event_delivered(lws_session, world):
     try:

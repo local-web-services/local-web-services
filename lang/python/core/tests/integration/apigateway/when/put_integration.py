@@ -1,4 +1,4 @@
-"""When: a backend integration is attached to a method"""
+"""When: a backend integration is attached to a "api gateway" "method" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_HTTP_METHOD, INT_INTEGRATION_TYPE
 
 
-@when("a backend integration is attached to a method")
+@when('a backend integration is attached to a "api gateway" "method"')
 def put_integration(client: TestClient, world):
     list_r = client.get("/restapis")
     items = list_r.json().get("item", [])

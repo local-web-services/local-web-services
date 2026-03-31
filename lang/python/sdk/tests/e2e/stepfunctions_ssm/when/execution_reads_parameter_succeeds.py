@@ -1,4 +1,4 @@
-"""When: a running execution reads an existing parameter and the task succeeds"""
+"""When: a running "step functions" "execution" reads an existing parameter and the task succeeds"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import when
 from ..constants import TEST_PARAM, _sm_arn, _ssm_get_parameter_definition
 
 
-@when("a running execution reads an existing parameter and the task succeeds")
+@when('a running "step functions" "execution" reads an existing parameter and the task succeeds')
 def execution_reads_parameter_succeeds(lws_session, world):
     # Arrange
     if world.get("execution_arn") is None:

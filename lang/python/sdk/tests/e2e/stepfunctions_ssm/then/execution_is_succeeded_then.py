@@ -1,11 +1,11 @@
-"""Then: the execution is "SUCCEEDED" """
+"""Then: the "step functions" "execution" will be "SUCCEEDED" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the execution is "SUCCEEDED"')
+@then('the "step functions" "execution" will be "SUCCEEDED"')
 def execution_is_succeeded_then(world):
     # Arrange
     expected_error = None

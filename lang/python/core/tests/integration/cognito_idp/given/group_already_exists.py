@@ -1,4 +1,4 @@
-"""Given: the group already exists"""
+"""Given: the "cognito" "group" already existed"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from starlette.testclient import TestClient
 
 
-@given("the group already exists")
+@given('the "cognito" "group" already existed')
 def group_already_exists(client: TestClient, world):
     pytest.skip(
         "CreateGroup is not yet implemented in the lws Cognito provider; "

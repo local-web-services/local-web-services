@@ -1,4 +1,4 @@
-"""Given: the state machine exists"""
+"""Given: the "step functions" "state machine" existed"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import StepfunctionsTestClient
 from ..constants import INT_SM
 
 
-@given("the state machine exists")
+@given('the "step functions" "state machine" existed')
 def sm_exists(client: TestClient, world):
     world["state_machine_name"] = INT_SM
     world["state_machine_arn"] = StepfunctionsTestClient(client).create_sm()

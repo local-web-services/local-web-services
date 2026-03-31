@@ -1,4 +1,4 @@
-"""Then: the archive is "STORED" and the vault archive count increases"""
+"""Then: the "glacier" "archive" will be "STORED" and the "glacier" "vault" archive count will increase"""
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from starlette.testclient import TestClient
 from ..constants import INT_VAULT_NAME
 
 
-@then('the archive is "STORED" and the vault archive count increases')
+@then(
+    'the "glacier" "archive" will be "STORED" and the "glacier" "vault" archive count will increase'
+)
 def archive_is_stored_count_increases(client: TestClient, world):
     actual_error = world.get("error")
     assert actual_error is None, f"Expected archive upload to succeed but got: {actual_error}"

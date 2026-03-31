@@ -1,4 +1,4 @@
-"""When: the "API" receives a request and enqueues it as an "SQS" message"""
+"""When: the "api gateway" "API" receives a request and enqueues it as a "SQS" message"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import ApigatewaySqsTestClient
 
 
-@when('the "API" receives a request and enqueues it as an "SQS" message')
+@when('the "api gateway" "API" receives a request and enqueues it as a "SQS" message')
 def api_receives_request_enqueues(lws_session, world):
     try:
         api_id = world.get("api_id") or ApigatewaySqsTestClient(lws_session).get_api_id()

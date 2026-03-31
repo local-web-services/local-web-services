@@ -1,4 +1,4 @@
-"""When: an existing item is deleted from the table"""
+"""When: an existing "dynamodb" "item" is deleted from the "dynamodb" "table" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_ITEM_KEY, TEST_PK, TEST_TABLE
 
 
-@when("an existing item is deleted from the table")
+@when('an existing "dynamodb" "item" is deleted from the "dynamodb" "table"')
 def delete_existing_item(lws_session, world):
     try:
         existing = lws_session.client("dynamodb").get_item(

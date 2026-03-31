@@ -1,4 +1,4 @@
-"""Given: the cluster uses the redis engine"""
+"""Given: the "elasticache" "cluster" uses the redis engine"""
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import ElasticacheTestClient
 
 
-@given("the cluster uses the redis engine")
+@given('the "elasticache" "cluster" uses the redis engine')
 def cluster_uses_redis(client: TestClient):
     ElasticacheTestClient(client).create_cluster()

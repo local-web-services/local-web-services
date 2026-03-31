@@ -1,4 +1,4 @@
-"""When: a running execution publishes a message to the "SNS" topic and succeeds"""
+"""When: a running "step functions" "execution" publishes a message to the "sns" "topic" and succeeds"""
 
 from __future__ import annotations
 
@@ -9,7 +9,9 @@ from ..client import StepfunctionsSnsTestClient
 from ..constants import TEST_INPUT, TEST_TOPIC, _sm_arn, _sns_task_definition
 
 
-@when('a running execution publishes a message to the "SNS" topic and succeeds')
+@when(
+    'a running "step functions" "execution" publishes a message to the "sns" "topic" and succeeds'
+)
 def execution_publishes_to_topic(lws_session, world):
     try:
         StepfunctionsSnsTestClient(lws_session).create_topic()

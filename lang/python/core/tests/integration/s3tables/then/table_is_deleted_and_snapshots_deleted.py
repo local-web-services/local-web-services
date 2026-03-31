@@ -1,4 +1,4 @@
-"""Then: the table is "DELETED" and all its snapshots are "DELETED" """
+"""Then: the "s3 tables" "table" will be "DELETED" and all its snapshots will be deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_NAMESPACE, INT_TABLE
 
 
-@then('the table is "DELETED" and all its snapshots are "DELETED"')
+@then('the "s3 tables" "table" will be "DELETED" and all its snapshots will be deleted')
 def table_is_deleted_and_snapshots_deleted(client: TestClient):
     r = client.get(
         "/get-table",

@@ -1,4 +1,4 @@
-"""Then: the parameters no longer exist"""
+"""Then: the "ssm" "parameter"s no longer exist"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_PARAM
 
 
-@then("the parameters no longer exist")
+@then('the "ssm" "parameter"s no longer exist')
 def parameters_no_longer_exist(lws_session):
     resp = lws_session.client("ssm").describe_parameters()
     actual_names = [p["Name"] for p in resp.get("Parameters", [])]

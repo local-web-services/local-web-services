@@ -1,11 +1,11 @@
-"""Then: the document count for the index increases by one"""
+"""Then: the "elasticsearch" "document" count for the "elasticsearch" "index" increases by one"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the document count for the index increases by one")
+@then('the "elasticsearch" "document" count for the "elasticsearch" "index" increases by one')
 def es_document_count_increases(world: dict):
     actual_result = world["result"]
     assert (

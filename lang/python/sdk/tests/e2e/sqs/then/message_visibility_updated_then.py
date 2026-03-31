@@ -1,11 +1,11 @@
-"""Then: the message visibility is updated"""
+"""Then: the "sqs" "message" visibility will be updated"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the message visibility is updated")
+@then('the "sqs" "message" visibility will be updated')
 def message_visibility_updated_then(world):
     assert (
         world["error"] is None

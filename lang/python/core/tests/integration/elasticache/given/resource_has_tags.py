@@ -1,4 +1,4 @@
-"""Given: the resource has tags"""
+"""Given: the "elasticache" "resource" has tags"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ElasticacheTestClient
 from ..constants import _EC_TARGET, INT_TAG_KEY, INT_TAG_VALUE
 
 
-@given("the resource has tags")
+@given('the "elasticache" "resource" has tags')
 def resource_has_tags(client: TestClient):
     ElasticacheTestClient(client).create_cluster()
     arn = ElasticacheTestClient(client).get_cluster_arn()

@@ -31,10 +31,10 @@ action Init:
     inv_req = {}                # inv_req[iid] = request_id
 
 
-# step: a REST API is created
-# result: the API is ACTIVE with no Lambda integration configured
-# guard: the API does not already exist
-# guard_violation: the API already exists
+# step: an "api gateway" "api" is created
+# result: the "api gateway" "api" will be "ACTIVE" with no Lambda integration configured
+# guard: the "api gateway" "API" did not already exist
+# guard_violation: the "api gateway" "API" already existed
 atomic action CreateRestApi:
     oneof aid in API_IDS:
         if aid not in api_status:
@@ -42,28 +42,28 @@ atomic action CreateRestApi:
             api_func[aid] = ""
 
 
-# step: a Lambda function is deployed
-# result: the function is ACTIVE
-# guard: the function does not already exist
-# guard_violation: the function already exists
+# step: a "lambda" "function" is deployed
+# result: the "lambda" "function" will be "ACTIVE"
+# guard: the "lambda" "function" did not already exist
+# guard_violation: the "lambda" "function" already existed
 atomic action DeployFunction:
     oneof fid in FUNC_IDS:
         if fid not in func_status:
             func_status[fid] = "ACTIVE"
 
 
-# step: a Lambda integration is configured on the REST API
-# result: the API will synchronously invoke the function when a request arrives
-# guard: the API exists
-# guard_violation: the API does not exist
-# guard: the API is ACTIVE
-# guard_violation_lifecycle: the API is not ACTIVE
-# guard: the API has no integration configured
-# guard_violation: the API already has an integration configured
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
+# step: a Lambda integration is configured on the "api gateway" "api"
+# result: the "api gateway" "API" will synchronously invoke the function when a request arrives
+# guard: the "api gateway" "API" existed
+# guard_violation: the "api gateway" "API" did not exist
+# guard: the "api gateway" "api" was "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
+# guard: the "api gateway" "API" had no integration configured
+# guard_violation: the "api gateway" "API" already had an "api gateway" "integration" configured
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
 atomic action ConfigureIntegration:
     oneof aid in API_IDS:
         if aid in api_status:
@@ -75,19 +75,19 @@ atomic action ConfigureIntegration:
                                 api_func[aid] = fid
 
 
-# step: the API receives an HTTP request and synchronously invokes the Lambda function
-# result: the request and invocation are both IN_PROGRESS
-# guard: the API exists
-# guard_violation: the API does not exist
-# guard: the API is ACTIVE
-# guard_violation_lifecycle: the API is not ACTIVE
-# guard: the API has a Lambda integration configured
-# guard_violation: the API has no Lambda integration configured
-# guard: the integrated function is ACTIVE
-# guard_violation_lifecycle: the integrated function is not ACTIVE
+# step: the "api gateway" "API" receives a HTTP request and synchronously invokes the "lambda" "function"
+# result: the request and invocation are both "IN_PROGRESS"
+# guard: the "api gateway" "API" existed
+# guard_violation: the "api gateway" "API" did not exist
+# guard: the "api gateway" "api" was "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
+# guard: the "api gateway" "API" had a Lambda integration configured
+# guard_violation: the "api gateway" "API" had no Lambda integration configured
+# guard: the integrated function was "ACTIVE"
+# guard_violation_lifecycle: the integrated function was not "ACTIVE"
 # guard: a request slot is available
 # guard_violation_capacity: no request slot is available
-# guard: an invocation slot is available
+# guard: a "lambda" "invocation" slot is available
 # guard_violation_capacity: no invocation slot is available
 atomic action HandleRequest:
     oneof aid in API_IDS:
@@ -108,10 +108,10 @@ atomic action HandleRequest:
 
 
 # fake_skip: internal
-# step: the Lambda invocation completes successfully and the API returns a successful response
-# result: the invocation is SUCCESS and the request is SUCCESS
-# guard: an invocation is IN_PROGRESS
-# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# step: the Lambda invocation completes successfully and the "api gateway" "API" returns a successful response
+# result: the invocation will be "SUCCESS" and the request will be "SUCCESS"
+# guard: a "lambda" "invocation" was "IN_PROGRESS"
+# guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationSucceeds:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -122,10 +122,10 @@ atomic action InvocationSucceeds:
 
 
 # fake_skip: internal
-# step: the Lambda invocation fails and the API returns an error response
-# result: the invocation is FAILED and the request is FAILED
-# guard: an invocation is IN_PROGRESS
-# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# step: the Lambda invocation fails and the "api gateway" "API" returns an error response
+# result: the invocation will be "FAILED" and the request will be "FAILED"
+# guard: a "lambda" "invocation" was "IN_PROGRESS"
+# guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationFails:
     oneof iid in INV_IDS:
         if iid in inv_status:

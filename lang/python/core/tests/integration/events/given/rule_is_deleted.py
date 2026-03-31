@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EVENTS_TARGET, INT_BUS, INT_RULE
 
 
-@given('the rule is "DELETED"')
+@given('the "eventbridge" "rule" was "DELETED"')
 def rule_is_deleted_given(client: TestClient):
     client.post(
         "/",

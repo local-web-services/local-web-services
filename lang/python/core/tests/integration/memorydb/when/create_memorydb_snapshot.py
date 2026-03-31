@@ -1,4 +1,4 @@
-"""When: a snapshot is created from an available cluster"""
+"""When: a "memorydb" "snapshot" is created from an available "memorydb" "cluster" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_CLUSTER_NAME, INT_SNAPSHOT_NAME
 
 
-@when("a snapshot is created from an available cluster")
+@when('a "memorydb" "snapshot" is created from an available "memorydb" "cluster"')
 def create_memorydb_snapshot(client: TestClient, world):
     r = client.post(
         "/",

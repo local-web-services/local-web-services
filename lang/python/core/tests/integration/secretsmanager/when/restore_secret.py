@@ -1,4 +1,4 @@
-"""When: a deleted secret is restored within the recovery window"""
+"""When: a deleted "secrets manager" "secret" is restored within the recovery window"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SM_TARGET_PREFIX, INT_SECRET
 
 
-@when("a deleted secret is restored within the recovery window")
+@when('a deleted "secrets manager" "secret" is restored within the recovery window')
 def restore_secret(sync_client: TestClient, world):
     r = sync_client.post(
         "/",

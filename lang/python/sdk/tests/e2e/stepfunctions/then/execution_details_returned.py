@@ -1,11 +1,11 @@
-"""Then: the execution details are returned"""
+"""Then: the execution details will be returned"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the execution details are returned")
+@then("the execution details will be returned")
 def execution_details_returned(world):
     assert (
         world["error"] is None

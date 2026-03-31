@@ -1,11 +1,13 @@
-"""Then: the archive is "STORED" and the vault archive count increases"""
+"""Then: the "glacier" "archive" will be "STORED" and the "glacier" "vault" archive count will increase"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the archive is "STORED" and the vault archive count increases')
+@then(
+    'the "glacier" "archive" will be "STORED" and the "glacier" "vault" archive count will increase'
+)
 def archive_is_stored_then(world):
     expected_error = None
     actual_error = world["error"]

@@ -1,11 +1,11 @@
-"""Then: the secret can no longer be restored"""
+"""Then: the "secrets manager" "secret" can no longer be restored"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the secret can no longer be restored")
+@then('the "secrets manager" "secret" can no longer be restored')
 def secret_cannot_be_restored(world):
     actual_error = world.get("error")
     assert (

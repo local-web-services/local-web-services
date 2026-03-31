@@ -1,10 +1,10 @@
-"""Given: the rule does not already exist"""
+"""Given: the event bus did not already exist"""
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given("the rule does not already exist")
+@given("the rule did not already exist")
 def rule_not_already_exist():
     """No-op: fresh state has no rules."""

@@ -1,4 +1,4 @@
-"""Given: the "API" has an S3 integration configured"""
+"""Given: the "api gateway" "api" has a S3 integration configured"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..client import ApigatewayS3apiTestClient
 
 
-@given('the "API" has an S3 integration configured')
+@given('the "api gateway" "api" has a S3 integration configured')
 def apigw_s3api_api_has_integration(lws_session, world):
     api_id = ApigatewayS3apiTestClient(lws_session).get_api_id()
     if api_id is None:

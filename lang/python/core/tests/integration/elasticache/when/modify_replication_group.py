@@ -1,4 +1,4 @@
-"""When: a replication group configuration is modified"""
+"""When: a "elasticache" "replication group" configuration is modified"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_RG_ID
 
 
-@when("a replication group configuration is modified")
+@when('a "elasticache" "replication group" configuration is modified')
 def modify_replication_group(client: TestClient, world):
     r = client.post(
         "/",

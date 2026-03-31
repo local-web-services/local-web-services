@@ -1,4 +1,4 @@
-"""Then: the upload is "COMPLETED" and the assembled object "EXISTS" in the bucket"""
+"""Then: the "s3" "upload" will be "COMPLETED" and the assembled "s3" "object" will exist in the "s3" "bucket" """
 
 from __future__ import annotations
 
@@ -7,7 +7,9 @@ from pytest_bdd import then
 from ..constants import TEST_BUCKET, TEST_KEY
 
 
-@then('the upload is "COMPLETED" and the assembled object "EXISTS" in the bucket')
+@then(
+    'the "s3" "upload" will be "COMPLETED" and the assembled "s3" "object" will exist in the "s3" "bucket"'
+)
 def upload_completed_assembled_then(lws_session):
     client = lws_session.client("s3")
     resp = client.list_objects_v2(Bucket=TEST_BUCKET)

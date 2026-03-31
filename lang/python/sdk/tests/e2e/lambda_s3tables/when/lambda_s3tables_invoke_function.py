@@ -1,4 +1,4 @@
-"""When: the Lambda function is invoked"""
+"""When: the "lambda" "function" is invoked"""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from pytest_bdd import when
 from ..constants import TEST_FUNC
 
 
-@when("the Lambda function is invoked")
+@when('the "lambda" "function" is invoked')
 def lambda_s3tables_invoke_function(lws_session, world):
     # Arrange
     invocation_id = str(uuid.uuid4())

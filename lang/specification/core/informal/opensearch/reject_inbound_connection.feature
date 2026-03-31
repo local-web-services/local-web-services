@@ -9,33 +9,33 @@ Feature: Opensearch - An Inbound Cross-Cluster Connection Is Rejected
 
   @minimal @happy @reject_inbound_connection
   Scenario: an inbound cross-cluster connection is rejected
-    Given the inbound connection exists
-    And the inbound connection is "PENDING_ACCEPTANCE"
-    And the outbound connection exists
+    Given the "opensearch" "inbound connection" existed
+    And the "opensearch" "inbound connection" was "PENDING_ACCEPTANCE"
+    And the "opensearch" "outbound connection" existed
     When an inbound cross-cluster connection is rejected
     Then both the inbound and outbound connection are "REJECTED"
     And no active connection references a deleted domain
-    And traffic can only be swapped after the new cluster is ready
-    And an outbound connection that is "ACTIVE" cannot have a "REJECTED" inbound connection
-    And a pending config change only exists on a domain that is "PROCESSING"
+    And traffic can only be swapped after the new "opensearch" "cluster" was ready
+    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" inbound connection
+    And a pending config change only exists on a "opensearch" "domain" that is "PROCESSING"
 
   @guard @negative @reject_inbound_connection
-  Scenario: an inbound cross-cluster connection is rejected fails when the inbound connection does not exist
-    Given the inbound connection does not exist
+  Scenario: an inbound cross-cluster connection is rejected fails when the "opensearch" "inbound connection" did not exist
+    Given the "opensearch" "inbound connection" did not exist
     When an inbound cross-cluster connection is rejected
     Then the operation is rejected
 
-  @guard @negative @internal @reject_inbound_connection
-  Scenario: an inbound cross-cluster connection is rejected fails when the inbound connection is not "PENDING_ACCEPTANCE"
-    Given the inbound connection exists
-    And the inbound connection is not "PENDING_ACCEPTANCE"
+  @guard @negative @reject_inbound_connection
+  Scenario: an inbound cross-cluster connection is rejected fails when the "opensearch" "inbound connection" was not "PENDING_ACCEPTANCE"
+    Given the "opensearch" "inbound connection" existed
+    And the "opensearch" "inbound connection" was not "PENDING_ACCEPTANCE"
     When an inbound cross-cluster connection is rejected
     Then the operation is rejected
 
-  @guard @negative @internal @reject_inbound_connection
-  Scenario: an inbound cross-cluster connection is rejected fails when the outbound connection does not exist
-    Given the inbound connection exists
-    And the inbound connection is "PENDING_ACCEPTANCE"
-    And the outbound connection does not exist
+  @guard @negative @reject_inbound_connection
+  Scenario: an inbound cross-cluster connection is rejected fails when the "opensearch" "outbound connection" did not exist
+    Given the "opensearch" "inbound connection" existed
+    And the "opensearch" "inbound connection" was "PENDING_ACCEPTANCE"
+    And the "opensearch" "outbound connection" did not exist
     When an inbound cross-cluster connection is rejected
     Then the operation is rejected

@@ -1,4 +1,4 @@
-"""When: the Lambda function fails because the secret is pending deletion"""
+"""When: the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_SECRET
 
 
-@when("the Lambda function fails because the secret is pending deletion")
+@when('the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion')
 def invocation_fails_secret_pending(lws_session, world):
     # Arrange
     invocation_id = world.get("invocation_id")

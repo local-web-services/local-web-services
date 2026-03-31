@@ -1,4 +1,4 @@
-"""Then: the prod stage no longer exists"""
+"""Then: the "api gateway" "prod stage" no longer will exist"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_STAGE_PROD
 
 
-@then("the prod stage no longer exists")
+@then('the "api gateway" "prod stage" no longer will exist')
 def prod_stage_no_longer_exists_then(client: TestClient, world):
     assert world["error"] is None, f"Expected delete to succeed but got error: {world['error']}"
     list_r = client.get("/restapis")

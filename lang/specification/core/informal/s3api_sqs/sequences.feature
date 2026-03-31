@@ -8,511 +8,511 @@ Feature: S3apiSqs - Action Sequences
     Given the system is initialized
 
   @sequence
-  Scenario: an S3 bucket is created then an "SQS" queue is created
+  Scenario: a "s3" "bucket" is created then a "sqs" "queue" is created
     Given bid not in bucket_status
-    Given an S3 bucket has been created
-    When an "SQS" queue is created
-    Then every "QUEUED" message references an object that exists
+    When a "s3" "bucket" is created
+    When a "sqs" "queue" is created
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an S3 bucket is created then the "SQS" queue is deleted
+  Scenario: a "s3" "bucket" is created then the "sqs" "queue" is deleted
     Given bid not in bucket_status
-    Given an S3 bucket has been created
-    When the "SQS" queue is deleted
-    Then every "QUEUED" message references an object that exists
+    When a "s3" "bucket" is created
+    When the "sqs" "queue" is deleted
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an S3 bucket is created then an "SQS" notification configuration is added to the bucket
+  Scenario: a "s3" "bucket" is created then a "SQS" notification configuration is added to the bucket
     Given bid not in bucket_status
-    Given an S3 bucket has been created
-    When an "SQS" notification configuration is added to the bucket
-    Then every "QUEUED" message references an object that exists
+    When a "s3" "bucket" is created
+    When a "SQS" notification configuration is added to the bucket
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an S3 bucket is created then an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
+  Scenario: a "s3" "bucket" is created then an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
     Given bid not in bucket_status
-    Given an S3 bucket has been created
-    When an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
-    Then every "QUEUED" message references an object that exists
+    When a "s3" "bucket" is created
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an S3 bucket is created then an object is uploaded but notification delivery fails because the queue has been deleted
+  Scenario: a "s3" "bucket" is created then an object is uploaded but notification delivery fails because the queue has been deleted
     Given bid not in bucket_status
-    Given an S3 bucket has been created
+    When a "s3" "bucket" is created
     When an object is uploaded but notification delivery fails because the queue has been deleted
-    Then every "QUEUED" message references an object that exists
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an "SQS" queue is created then an S3 bucket is created
+  Scenario: a "sqs" "queue" is created then a "s3" "bucket" is created
     Given qid not in queue_status
-    Given an "SQS" queue has been created
-    When an S3 bucket is created
-    Then every "QUEUED" message references an object that exists
+    When a "sqs" "queue" is created
+    When a "s3" "bucket" is created
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an "SQS" queue is created then the "SQS" queue is deleted
+  Scenario: a "sqs" "queue" is created then the "sqs" "queue" is deleted
     Given qid not in queue_status
-    Given an "SQS" queue has been created
-    When the "SQS" queue is deleted
-    Then every "QUEUED" message references an object that exists
+    When a "sqs" "queue" is created
+    When the "sqs" "queue" is deleted
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an "SQS" queue is created then an "SQS" notification configuration is added to the bucket
+  Scenario: a "sqs" "queue" is created then a "SQS" notification configuration is added to the bucket
     Given qid not in queue_status
-    Given an "SQS" queue has been created
-    When an "SQS" notification configuration is added to the bucket
-    Then every "QUEUED" message references an object that exists
+    When a "sqs" "queue" is created
+    When a "SQS" notification configuration is added to the bucket
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an "SQS" queue is created then an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
+  Scenario: a "sqs" "queue" is created then an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
     Given qid not in queue_status
-    Given an "SQS" queue has been created
-    When an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
-    Then every "QUEUED" message references an object that exists
+    When a "sqs" "queue" is created
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an "SQS" queue is created then an object is uploaded but notification delivery fails because the queue has been deleted
+  Scenario: a "sqs" "queue" is created then an object is uploaded but notification delivery fails because the queue has been deleted
     Given qid not in queue_status
-    Given an "SQS" queue has been created
+    When a "sqs" "queue" is created
     When an object is uploaded but notification delivery fails because the queue has been deleted
-    Then every "QUEUED" message references an object that exists
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: the "SQS" queue is deleted then an S3 bucket is created
+  Scenario: the "sqs" "queue" is deleted then a "s3" "bucket" is created
     Given qid in queue_status
-    Given the "SQS" queue has been deleted
-    When an S3 bucket is created
-    Then every "QUEUED" message references an object that exists
+    When the "sqs" "queue" is deleted
+    When a "s3" "bucket" is created
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: the "SQS" queue is deleted then an "SQS" queue is created
+  Scenario: the "sqs" "queue" is deleted then a "sqs" "queue" is created
     Given qid in queue_status
-    Given the "SQS" queue has been deleted
-    When an "SQS" queue is created
-    Then every "QUEUED" message references an object that exists
+    When the "sqs" "queue" is deleted
+    When a "sqs" "queue" is created
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: the "SQS" queue is deleted then an "SQS" notification configuration is added to the bucket
+  Scenario: the "sqs" "queue" is deleted then a "SQS" notification configuration is added to the bucket
     Given qid in queue_status
-    Given the "SQS" queue has been deleted
-    When an "SQS" notification configuration is added to the bucket
-    Then every "QUEUED" message references an object that exists
+    When the "sqs" "queue" is deleted
+    When a "SQS" notification configuration is added to the bucket
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: the "SQS" queue is deleted then an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
+  Scenario: the "sqs" "queue" is deleted then an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
     Given qid in queue_status
-    Given the "SQS" queue has been deleted
-    When an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
-    Then every "QUEUED" message references an object that exists
+    When the "sqs" "queue" is deleted
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: the "SQS" queue is deleted then an object is uploaded but notification delivery fails because the queue has been deleted
+  Scenario: the "sqs" "queue" is deleted then an object is uploaded but notification delivery fails because the queue has been deleted
     Given qid in queue_status
-    Given the "SQS" queue has been deleted
+    When the "sqs" "queue" is deleted
     When an object is uploaded but notification delivery fails because the queue has been deleted
-    Then every "QUEUED" message references an object that exists
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an "SQS" notification configuration is added to the bucket then an S3 bucket is created
+  Scenario: a "SQS" notification configuration is added to the bucket then a "s3" "bucket" is created
     Given bid in bucket_status
-    Given an "SQS" notification configuration has been added to the bucket
-    When an S3 bucket is created
-    Then every "QUEUED" message references an object that exists
+    When a "SQS" notification configuration is added to the bucket
+    When a "s3" "bucket" is created
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an "SQS" notification configuration is added to the bucket then an "SQS" queue is created
+  Scenario: a "SQS" notification configuration is added to the bucket then a "sqs" "queue" is created
     Given bid in bucket_status
-    Given an "SQS" notification configuration has been added to the bucket
-    When an "SQS" queue is created
-    Then every "QUEUED" message references an object that exists
+    When a "SQS" notification configuration is added to the bucket
+    When a "sqs" "queue" is created
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an "SQS" notification configuration is added to the bucket then the "SQS" queue is deleted
+  Scenario: a "SQS" notification configuration is added to the bucket then the "sqs" "queue" is deleted
     Given bid in bucket_status
-    Given an "SQS" notification configuration has been added to the bucket
-    When the "SQS" queue is deleted
-    Then every "QUEUED" message references an object that exists
+    When a "SQS" notification configuration is added to the bucket
+    When the "sqs" "queue" is deleted
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an "SQS" notification configuration is added to the bucket then an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
+  Scenario: a "SQS" notification configuration is added to the bucket then an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
     Given bid in bucket_status
-    Given an "SQS" notification configuration has been added to the bucket
-    When an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
-    Then every "QUEUED" message references an object that exists
+    When a "SQS" notification configuration is added to the bucket
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an "SQS" notification configuration is added to the bucket then an object is uploaded but notification delivery fails because the queue has been deleted
+  Scenario: a "SQS" notification configuration is added to the bucket then an object is uploaded but notification delivery fails because the queue has been deleted
     Given bid in bucket_status
-    Given an "SQS" notification configuration has been added to the bucket
+    When a "SQS" notification configuration is added to the bucket
     When an object is uploaded but notification delivery fails because the queue has been deleted
-    Then every "QUEUED" message references an object that exists
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue then an S3 bucket is created
+  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue" then a "s3" "bucket" is created
     Given bid in bucket_status
-    Given an object has been uploaded to the bucket and S3 has delivered a notification to the "SQS" queue
-    When an S3 bucket is created
-    Then every "QUEUED" message references an object that exists
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    When a "s3" "bucket" is created
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue then an "SQS" queue is created
+  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue" then a "sqs" "queue" is created
     Given bid in bucket_status
-    Given an object has been uploaded to the bucket and S3 has delivered a notification to the "SQS" queue
-    When an "SQS" queue is created
-    Then every "QUEUED" message references an object that exists
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    When a "sqs" "queue" is created
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue then the "SQS" queue is deleted
+  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue" then the "sqs" "queue" is deleted
     Given bid in bucket_status
-    Given an object has been uploaded to the bucket and S3 has delivered a notification to the "SQS" queue
-    When the "SQS" queue is deleted
-    Then every "QUEUED" message references an object that exists
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    When the "sqs" "queue" is deleted
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue then an "SQS" notification configuration is added to the bucket
+  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue" then a "SQS" notification configuration is added to the bucket
     Given bid in bucket_status
-    Given an object has been uploaded to the bucket and S3 has delivered a notification to the "SQS" queue
-    When an "SQS" notification configuration is added to the bucket
-    Then every "QUEUED" message references an object that exists
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    When a "SQS" notification configuration is added to the bucket
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue then an object is uploaded but notification delivery fails because the queue has been deleted
+  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue" then an object is uploaded but notification delivery fails because the queue has been deleted
     Given bid in bucket_status
-    Given an object has been uploaded to the bucket and S3 has delivered a notification to the "SQS" queue
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
     When an object is uploaded but notification delivery fails because the queue has been deleted
-    Then every "QUEUED" message references an object that exists
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then an S3 bucket is created
+  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then a "s3" "bucket" is created
     Given bid in bucket_status
-    Given an object has been uploaded but notification delivery has failed because the queue has been deleted
-    When an S3 bucket is created
-    Then every "QUEUED" message references an object that exists
+    When an object is uploaded but notification delivery fails because the queue has been deleted
+    When a "s3" "bucket" is created
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then an "SQS" queue is created
+  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then a "sqs" "queue" is created
     Given bid in bucket_status
-    Given an object has been uploaded but notification delivery has failed because the queue has been deleted
-    When an "SQS" queue is created
-    Then every "QUEUED" message references an object that exists
+    When an object is uploaded but notification delivery fails because the queue has been deleted
+    When a "sqs" "queue" is created
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then the "SQS" queue is deleted
+  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then the "sqs" "queue" is deleted
     Given bid in bucket_status
-    Given an object has been uploaded but notification delivery has failed because the queue has been deleted
-    When the "SQS" queue is deleted
-    Then every "QUEUED" message references an object that exists
+    When an object is uploaded but notification delivery fails because the queue has been deleted
+    When the "sqs" "queue" is deleted
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then an "SQS" notification configuration is added to the bucket
+  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then a "SQS" notification configuration is added to the bucket
     Given bid in bucket_status
-    Given an object has been uploaded but notification delivery has failed because the queue has been deleted
-    When an "SQS" notification configuration is added to the bucket
-    Then every "QUEUED" message references an object that exists
+    When an object is uploaded but notification delivery fails because the queue has been deleted
+    When a "SQS" notification configuration is added to the bucket
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
+  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
     Given bid in bucket_status
-    Given an object has been uploaded but notification delivery has failed because the queue has been deleted
-    When an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
-    Then every "QUEUED" message references an object that exists
+    When an object is uploaded but notification delivery fails because the queue has been deleted
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an S3 bucket is created then an "SQS" queue is created then the "SQS" queue is deleted
+  Scenario: a "s3" "bucket" is created then a "sqs" "queue" is created then the "sqs" "queue" is deleted
     Given bid not in bucket_status
-    Given an S3 bucket has been created
-    Given an "SQS" queue has been created
-    When the "SQS" queue is deleted
-    Then every "QUEUED" message references an object that exists
+    When a "s3" "bucket" is created
+    When a "sqs" "queue" is created
+    When the "sqs" "queue" is deleted
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an S3 bucket is created then the "SQS" queue is deleted then an "SQS" notification configuration is added to the bucket
+  Scenario: a "s3" "bucket" is created then the "sqs" "queue" is deleted then a "SQS" notification configuration is added to the bucket
     Given bid not in bucket_status
-    Given an S3 bucket has been created
-    Given the "SQS" queue has been deleted
-    When an "SQS" notification configuration is added to the bucket
-    Then every "QUEUED" message references an object that exists
+    When a "s3" "bucket" is created
+    When the "sqs" "queue" is deleted
+    When a "SQS" notification configuration is added to the bucket
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an S3 bucket is created then an "SQS" notification configuration is added to the bucket then an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
+  Scenario: a "s3" "bucket" is created then a "SQS" notification configuration is added to the bucket then an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
     Given bid not in bucket_status
-    Given an S3 bucket has been created
-    Given an "SQS" notification configuration has been added to the bucket
-    When an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
-    Then every "QUEUED" message references an object that exists
+    When a "s3" "bucket" is created
+    When a "SQS" notification configuration is added to the bucket
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an S3 bucket is created then an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue then an object is uploaded but notification delivery fails because the queue has been deleted
+  Scenario: a "s3" "bucket" is created then an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue" then an object is uploaded but notification delivery fails because the queue has been deleted
     Given bid not in bucket_status
-    Given an S3 bucket has been created
-    Given an object has been uploaded to the bucket and S3 has delivered a notification to the "SQS" queue
+    When a "s3" "bucket" is created
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
     When an object is uploaded but notification delivery fails because the queue has been deleted
-    Then every "QUEUED" message references an object that exists
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an S3 bucket is created then an object is uploaded but notification delivery fails because the queue has been deleted then an "SQS" queue is created
+  Scenario: a "s3" "bucket" is created then an object is uploaded but notification delivery fails because the queue has been deleted then a "sqs" "queue" is created
     Given bid not in bucket_status
-    Given an S3 bucket has been created
-    Given an object has been uploaded but notification delivery has failed because the queue has been deleted
-    When an "SQS" queue is created
-    Then every "QUEUED" message references an object that exists
-    And every "QUEUED" message references a queue that exists
-
-  @sequence
-  Scenario: an "SQS" queue is created then an S3 bucket is created then an "SQS" notification configuration is added to the bucket
-    Given qid not in queue_status
-    Given an "SQS" queue has been created
-    Given an S3 bucket has been created
-    When an "SQS" notification configuration is added to the bucket
-    Then every "QUEUED" message references an object that exists
-    And every "QUEUED" message references a queue that exists
-
-  @sequence
-  Scenario: an "SQS" queue is created then the "SQS" queue is deleted then an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
-    Given qid not in queue_status
-    Given an "SQS" queue has been created
-    Given the "SQS" queue has been deleted
-    When an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
-    Then every "QUEUED" message references an object that exists
-    And every "QUEUED" message references a queue that exists
-
-  @sequence
-  Scenario: an "SQS" queue is created then an "SQS" notification configuration is added to the bucket then an object is uploaded but notification delivery fails because the queue has been deleted
-    Given qid not in queue_status
-    Given an "SQS" queue has been created
-    Given an "SQS" notification configuration has been added to the bucket
+    When a "s3" "bucket" is created
     When an object is uploaded but notification delivery fails because the queue has been deleted
-    Then every "QUEUED" message references an object that exists
+    When a "sqs" "queue" is created
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an "SQS" queue is created then an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue then an S3 bucket is created
+  Scenario: a "sqs" "queue" is created then a "s3" "bucket" is created then a "SQS" notification configuration is added to the bucket
     Given qid not in queue_status
-    Given an "SQS" queue has been created
-    Given an object has been uploaded to the bucket and S3 has delivered a notification to the "SQS" queue
-    When an S3 bucket is created
-    Then every "QUEUED" message references an object that exists
+    When a "sqs" "queue" is created
+    When a "s3" "bucket" is created
+    When a "SQS" notification configuration is added to the bucket
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an "SQS" queue is created then an object is uploaded but notification delivery fails because the queue has been deleted then the "SQS" queue is deleted
+  Scenario: a "sqs" "queue" is created then the "sqs" "queue" is deleted then an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
     Given qid not in queue_status
-    Given an "SQS" queue has been created
-    Given an object has been uploaded but notification delivery has failed because the queue has been deleted
-    When the "SQS" queue is deleted
-    Then every "QUEUED" message references an object that exists
+    When a "sqs" "queue" is created
+    When the "sqs" "queue" is deleted
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: the "SQS" queue is deleted then an S3 bucket is created then an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
-    Given qid in queue_status
-    Given the "SQS" queue has been deleted
-    Given an S3 bucket has been created
-    When an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
-    Then every "QUEUED" message references an object that exists
-    And every "QUEUED" message references a queue that exists
-
-  @sequence
-  Scenario: the "SQS" queue is deleted then an "SQS" queue is created then an object is uploaded but notification delivery fails because the queue has been deleted
-    Given qid in queue_status
-    Given the "SQS" queue has been deleted
-    Given an "SQS" queue has been created
+  Scenario: a "sqs" "queue" is created then a "SQS" notification configuration is added to the bucket then an object is uploaded but notification delivery fails because the queue has been deleted
+    Given qid not in queue_status
+    When a "sqs" "queue" is created
+    When a "SQS" notification configuration is added to the bucket
     When an object is uploaded but notification delivery fails because the queue has been deleted
-    Then every "QUEUED" message references an object that exists
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: the "SQS" queue is deleted then an "SQS" notification configuration is added to the bucket then an S3 bucket is created
-    Given qid in queue_status
-    Given the "SQS" queue has been deleted
-    Given an "SQS" notification configuration has been added to the bucket
-    When an S3 bucket is created
-    Then every "QUEUED" message references an object that exists
+  Scenario: a "sqs" "queue" is created then an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue" then a "s3" "bucket" is created
+    Given qid not in queue_status
+    When a "sqs" "queue" is created
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    When a "s3" "bucket" is created
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: the "SQS" queue is deleted then an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue then an "SQS" queue is created
-    Given qid in queue_status
-    Given the "SQS" queue has been deleted
-    Given an object has been uploaded to the bucket and S3 has delivered a notification to the "SQS" queue
-    When an "SQS" queue is created
-    Then every "QUEUED" message references an object that exists
-    And every "QUEUED" message references a queue that exists
-
-  @sequence
-  Scenario: the "SQS" queue is deleted then an object is uploaded but notification delivery fails because the queue has been deleted then an "SQS" notification configuration is added to the bucket
-    Given qid in queue_status
-    Given the "SQS" queue has been deleted
-    Given an object has been uploaded but notification delivery has failed because the queue has been deleted
-    When an "SQS" notification configuration is added to the bucket
-    Then every "QUEUED" message references an object that exists
-    And every "QUEUED" message references a queue that exists
-
-  @sequence
-  Scenario: an "SQS" notification configuration is added to the bucket then an S3 bucket is created then an object is uploaded but notification delivery fails because the queue has been deleted
-    Given bid in bucket_status
-    Given an "SQS" notification configuration has been added to the bucket
-    Given an S3 bucket has been created
+  Scenario: a "sqs" "queue" is created then an object is uploaded but notification delivery fails because the queue has been deleted then the "sqs" "queue" is deleted
+    Given qid not in queue_status
+    When a "sqs" "queue" is created
     When an object is uploaded but notification delivery fails because the queue has been deleted
-    Then every "QUEUED" message references an object that exists
+    When the "sqs" "queue" is deleted
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an "SQS" notification configuration is added to the bucket then an "SQS" queue is created then an S3 bucket is created
-    Given bid in bucket_status
-    Given an "SQS" notification configuration has been added to the bucket
-    Given an "SQS" queue has been created
-    When an S3 bucket is created
-    Then every "QUEUED" message references an object that exists
+  Scenario: the "sqs" "queue" is deleted then a "s3" "bucket" is created then an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    Given qid in queue_status
+    When the "sqs" "queue" is deleted
+    When a "s3" "bucket" is created
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an "SQS" notification configuration is added to the bucket then the "SQS" queue is deleted then an "SQS" queue is created
-    Given bid in bucket_status
-    Given an "SQS" notification configuration has been added to the bucket
-    Given the "SQS" queue has been deleted
-    When an "SQS" queue is created
-    Then every "QUEUED" message references an object that exists
-    And every "QUEUED" message references a queue that exists
-
-  @sequence
-  Scenario: an "SQS" notification configuration is added to the bucket then an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue then the "SQS" queue is deleted
-    Given bid in bucket_status
-    Given an "SQS" notification configuration has been added to the bucket
-    Given an object has been uploaded to the bucket and S3 has delivered a notification to the "SQS" queue
-    When the "SQS" queue is deleted
-    Then every "QUEUED" message references an object that exists
-    And every "QUEUED" message references a queue that exists
-
-  @sequence
-  Scenario: an "SQS" notification configuration is added to the bucket then an object is uploaded but notification delivery fails because the queue has been deleted then an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
-    Given bid in bucket_status
-    Given an "SQS" notification configuration has been added to the bucket
-    Given an object has been uploaded but notification delivery has failed because the queue has been deleted
-    When an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
-    Then every "QUEUED" message references an object that exists
-    And every "QUEUED" message references a queue that exists
-
-  @sequence
-  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue then an S3 bucket is created then an "SQS" queue is created
-    Given bid in bucket_status
-    Given an object has been uploaded to the bucket and S3 has delivered a notification to the "SQS" queue
-    Given an S3 bucket has been created
-    When an "SQS" queue is created
-    Then every "QUEUED" message references an object that exists
-    And every "QUEUED" message references a queue that exists
-
-  @sequence
-  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue then an "SQS" queue is created then the "SQS" queue is deleted
-    Given bid in bucket_status
-    Given an object has been uploaded to the bucket and S3 has delivered a notification to the "SQS" queue
-    Given an "SQS" queue has been created
-    When the "SQS" queue is deleted
-    Then every "QUEUED" message references an object that exists
-    And every "QUEUED" message references a queue that exists
-
-  @sequence
-  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue then the "SQS" queue is deleted then an "SQS" notification configuration is added to the bucket
-    Given bid in bucket_status
-    Given an object has been uploaded to the bucket and S3 has delivered a notification to the "SQS" queue
-    Given the "SQS" queue has been deleted
-    When an "SQS" notification configuration is added to the bucket
-    Then every "QUEUED" message references an object that exists
-    And every "QUEUED" message references a queue that exists
-
-  @sequence
-  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue then an "SQS" notification configuration is added to the bucket then an object is uploaded but notification delivery fails because the queue has been deleted
-    Given bid in bucket_status
-    Given an object has been uploaded to the bucket and S3 has delivered a notification to the "SQS" queue
-    Given an "SQS" notification configuration has been added to the bucket
+  Scenario: the "sqs" "queue" is deleted then a "sqs" "queue" is created then an object is uploaded but notification delivery fails because the queue has been deleted
+    Given qid in queue_status
+    When the "sqs" "queue" is deleted
+    When a "sqs" "queue" is created
     When an object is uploaded but notification delivery fails because the queue has been deleted
-    Then every "QUEUED" message references an object that exists
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue then an object is uploaded but notification delivery fails because the queue has been deleted then an S3 bucket is created
-    Given bid in bucket_status
-    Given an object has been uploaded to the bucket and S3 has delivered a notification to the "SQS" queue
-    Given an object has been uploaded but notification delivery has failed because the queue has been deleted
-    When an S3 bucket is created
-    Then every "QUEUED" message references an object that exists
+  Scenario: the "sqs" "queue" is deleted then a "SQS" notification configuration is added to the bucket then a "s3" "bucket" is created
+    Given qid in queue_status
+    When the "sqs" "queue" is deleted
+    When a "SQS" notification configuration is added to the bucket
+    When a "s3" "bucket" is created
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then an S3 bucket is created then the "SQS" queue is deleted
-    Given bid in bucket_status
-    Given an object has been uploaded but notification delivery has failed because the queue has been deleted
-    Given an S3 bucket has been created
-    When the "SQS" queue is deleted
-    Then every "QUEUED" message references an object that exists
+  Scenario: the "sqs" "queue" is deleted then an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue" then a "sqs" "queue" is created
+    Given qid in queue_status
+    When the "sqs" "queue" is deleted
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    When a "sqs" "queue" is created
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then an "SQS" queue is created then an "SQS" notification configuration is added to the bucket
-    Given bid in bucket_status
-    Given an object has been uploaded but notification delivery has failed because the queue has been deleted
-    Given an "SQS" queue has been created
-    When an "SQS" notification configuration is added to the bucket
-    Then every "QUEUED" message references an object that exists
+  Scenario: the "sqs" "queue" is deleted then an object is uploaded but notification delivery fails because the queue has been deleted then a "SQS" notification configuration is added to the bucket
+    Given qid in queue_status
+    When the "sqs" "queue" is deleted
+    When an object is uploaded but notification delivery fails because the queue has been deleted
+    When a "SQS" notification configuration is added to the bucket
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then the "SQS" queue is deleted then an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
+  Scenario: a "SQS" notification configuration is added to the bucket then a "s3" "bucket" is created then an object is uploaded but notification delivery fails because the queue has been deleted
     Given bid in bucket_status
-    Given an object has been uploaded but notification delivery has failed because the queue has been deleted
-    Given the "SQS" queue has been deleted
-    When an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue
-    Then every "QUEUED" message references an object that exists
+    When a "SQS" notification configuration is added to the bucket
+    When a "s3" "bucket" is created
+    When an object is uploaded but notification delivery fails because the queue has been deleted
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then an "SQS" notification configuration is added to the bucket then an S3 bucket is created
+  Scenario: a "SQS" notification configuration is added to the bucket then a "sqs" "queue" is created then a "s3" "bucket" is created
     Given bid in bucket_status
-    Given an object has been uploaded but notification delivery has failed because the queue has been deleted
-    Given an "SQS" notification configuration has been added to the bucket
-    When an S3 bucket is created
-    Then every "QUEUED" message references an object that exists
+    When a "SQS" notification configuration is added to the bucket
+    When a "sqs" "queue" is created
+    When a "s3" "bucket" is created
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
   @sequence
-  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue then an "SQS" queue is created
+  Scenario: a "SQS" notification configuration is added to the bucket then the "sqs" "queue" is deleted then a "sqs" "queue" is created
     Given bid in bucket_status
-    Given an object has been uploaded but notification delivery has failed because the queue has been deleted
-    Given an object has been uploaded to the bucket and S3 has delivered a notification to the "SQS" queue
-    When an "SQS" queue is created
-    Then every "QUEUED" message references an object that exists
+    When a "SQS" notification configuration is added to the bucket
+    When the "sqs" "queue" is deleted
+    When a "sqs" "queue" is created
+    And every "QUEUED" message references an object that exists
+    And every "QUEUED" message references a queue that exists
+
+  @sequence
+  Scenario: a "SQS" notification configuration is added to the bucket then an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue" then the "sqs" "queue" is deleted
+    Given bid in bucket_status
+    When a "SQS" notification configuration is added to the bucket
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    When the "sqs" "queue" is deleted
+    And every "QUEUED" message references an object that exists
+    And every "QUEUED" message references a queue that exists
+
+  @sequence
+  Scenario: a "SQS" notification configuration is added to the bucket then an object is uploaded but notification delivery fails because the queue has been deleted then an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    Given bid in bucket_status
+    When a "SQS" notification configuration is added to the bucket
+    When an object is uploaded but notification delivery fails because the queue has been deleted
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    And every "QUEUED" message references an object that exists
+    And every "QUEUED" message references a queue that exists
+
+  @sequence
+  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue" then a "s3" "bucket" is created then a "sqs" "queue" is created
+    Given bid in bucket_status
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    When a "s3" "bucket" is created
+    When a "sqs" "queue" is created
+    And every "QUEUED" message references an object that exists
+    And every "QUEUED" message references a queue that exists
+
+  @sequence
+  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue" then a "sqs" "queue" is created then the "sqs" "queue" is deleted
+    Given bid in bucket_status
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    When a "sqs" "queue" is created
+    When the "sqs" "queue" is deleted
+    And every "QUEUED" message references an object that exists
+    And every "QUEUED" message references a queue that exists
+
+  @sequence
+  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue" then the "sqs" "queue" is deleted then a "SQS" notification configuration is added to the bucket
+    Given bid in bucket_status
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    When the "sqs" "queue" is deleted
+    When a "SQS" notification configuration is added to the bucket
+    And every "QUEUED" message references an object that exists
+    And every "QUEUED" message references a queue that exists
+
+  @sequence
+  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue" then a "SQS" notification configuration is added to the bucket then an object is uploaded but notification delivery fails because the queue has been deleted
+    Given bid in bucket_status
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    When a "SQS" notification configuration is added to the bucket
+    When an object is uploaded but notification delivery fails because the queue has been deleted
+    And every "QUEUED" message references an object that exists
+    And every "QUEUED" message references a queue that exists
+
+  @sequence
+  Scenario: an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue" then an object is uploaded but notification delivery fails because the queue has been deleted then a "s3" "bucket" is created
+    Given bid in bucket_status
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    When an object is uploaded but notification delivery fails because the queue has been deleted
+    When a "s3" "bucket" is created
+    And every "QUEUED" message references an object that exists
+    And every "QUEUED" message references a queue that exists
+
+  @sequence
+  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then a "s3" "bucket" is created then the "sqs" "queue" is deleted
+    Given bid in bucket_status
+    When an object is uploaded but notification delivery fails because the queue has been deleted
+    When a "s3" "bucket" is created
+    When the "sqs" "queue" is deleted
+    And every "QUEUED" message references an object that exists
+    And every "QUEUED" message references a queue that exists
+
+  @sequence
+  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then a "sqs" "queue" is created then a "SQS" notification configuration is added to the bucket
+    Given bid in bucket_status
+    When an object is uploaded but notification delivery fails because the queue has been deleted
+    When a "sqs" "queue" is created
+    When a "SQS" notification configuration is added to the bucket
+    And every "QUEUED" message references an object that exists
+    And every "QUEUED" message references a queue that exists
+
+  @sequence
+  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then the "sqs" "queue" is deleted then an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    Given bid in bucket_status
+    When an object is uploaded but notification delivery fails because the queue has been deleted
+    When the "sqs" "queue" is deleted
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    And every "QUEUED" message references an object that exists
+    And every "QUEUED" message references a queue that exists
+
+  @sequence
+  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then a "SQS" notification configuration is added to the bucket then a "s3" "bucket" is created
+    Given bid in bucket_status
+    When an object is uploaded but notification delivery fails because the queue has been deleted
+    When a "SQS" notification configuration is added to the bucket
+    When a "s3" "bucket" is created
+    And every "QUEUED" message references an object that exists
+    And every "QUEUED" message references a queue that exists
+
+  @sequence
+  Scenario: an object is uploaded but notification delivery fails because the queue has been deleted then an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue" then a "sqs" "queue" is created
+    Given bid in bucket_status
+    When an object is uploaded but notification delivery fails because the queue has been deleted
+    When an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+    When a "sqs" "queue" is created
+    And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists

@@ -1,4 +1,4 @@
-"""Then: the user returns to "ACTIVE" state"""
+"""Then: the "memorydb" "user" returns to "ACTIVE" state"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_USER_NAME
 
 
-@then('the user returns to "ACTIVE" state')
+@then('the "memorydb" "user" returns to "ACTIVE" state')
 def user_returns_to_active(client: TestClient):
     r = client.post(
         "/",

@@ -1,11 +1,13 @@
-"""When: the Lambda function writes a document to the "AVAILABLE" DocumentDB cluster and succeeds"""
+"""When: the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds"""
 
 from __future__ import annotations
 
 from pytest_bdd import when
 
 
-@when('the Lambda function writes a document to the "AVAILABLE" DocumentDB cluster and succeeds')
+@when(
+    'the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds'
+)
 def lambda_writes_document(lws_session, world):
     # Arrange
     invocation_id = world.get("invocation_id")

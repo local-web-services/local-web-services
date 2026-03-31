@@ -1,4 +1,4 @@
-"""When: a database instance is deleted"""
+"""When: a "documentdb" "instance" is deleted"""
 
 from __future__ import annotations
 
@@ -9,7 +9,8 @@ from ..client import NeptuneTestClient
 from ..constants import INT_INSTANCE, _store
 
 
-@when("a database instance is deleted")
+@when('a "neptune" "instance" is deleted')
+@when('a "documentdb" "instance" is deleted')
 def delete_db_instance(client: TestClient, world: dict):
     r = NeptuneTestClient(client).post("DeleteDBInstance", {"DBInstanceIdentifier": INT_INSTANCE})
     _store(world, r)

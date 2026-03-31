@@ -9,25 +9,25 @@ Feature: Memorydb - Tags Are Added To A Memorydb Resource
 
   @minimal @happy @tag_resource
   Scenario: tags are added to a MemoryDB resource
-    Given the resource has a tag entry
-    And the resource is tagged
+    Given the "memorydb" "resource" has a tag entry
+    And the "memorydb" "resource" was tagged
     When tags are added to a MemoryDB resource
-    Then the resource remains tagged
+    Then the "memorydb" "resource" remains tagged
     And every active cluster has write durability enabled
     And every snapshotting cluster has a corresponding in-progress snapshot
-    And no "ACL" in "DELETING" state is currently associated with a cluster
-    And no user in "DELETING" state is currently a member of an "ACL"
+    And no "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"
+    And no user in "DELETING" state is currently a member of an "memorydb" "ACL"
     And every active cluster and snapshot has tags
 
   @guard @negative @tag_resource
-  Scenario: tags are added to a MemoryDB resource fails when the resource does not have a tag entry
-    Given the resource does not have a tag entry
+  Scenario: tags are added to a MemoryDB resource fails when the "memorydb" "resource" does not have a tag entry
+    Given the "memorydb" "resource" does not have a tag entry
     When tags are added to a MemoryDB resource
     Then the operation is rejected
 
   @guard @negative @tag_resource
-  Scenario: tags are added to a MemoryDB resource fails when the resource is not tagged
-    Given the resource has a tag entry
-    And the resource is not tagged
+  Scenario: tags are added to a MemoryDB resource fails when the "memorydb" "resource" was not tagged
+    Given the "memorydb" "resource" has a tag entry
+    And the "memorydb" "resource" was not tagged
     When tags are added to a MemoryDB resource
     Then the operation is rejected

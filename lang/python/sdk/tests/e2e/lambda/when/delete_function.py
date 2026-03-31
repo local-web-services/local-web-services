@@ -1,4 +1,4 @@
-"""When: an active function is deleted"""
+"""When: an active "lambda" "function" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_FUNC
 
 
-@when("an active function is deleted")
+@when('an active "lambda" "function" is deleted')
 def delete_function(lws_session, world):
     try:
         resp = lws_session.client("lambda").delete_function(FunctionName=TEST_FUNC)

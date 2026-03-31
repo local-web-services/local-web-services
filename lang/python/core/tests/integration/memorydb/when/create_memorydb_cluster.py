@@ -1,4 +1,4 @@
-"""When: a MemoryDB cluster is created"""
+"""When: a "memorydb" "cluster" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_CLUSTER_NAME
 
 
-@when("a MemoryDB cluster is created")
+@when('a "memorydb" "cluster" is created')
 def create_memorydb_cluster(client: TestClient, world):
     r = client.post(
         "/",

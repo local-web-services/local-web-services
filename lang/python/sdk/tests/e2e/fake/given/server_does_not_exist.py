@@ -1,10 +1,10 @@
-"""Given: the server does not exist"""
+"""Given: the server did not exist"""
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given("the server does not exist")
+@given("the server did not exist")
 def server_does_not_exist():
     """No-op: fresh state has no fake servers."""

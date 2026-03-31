@@ -1,4 +1,4 @@
-"""When: a running execution fails to read the parameter because it has been deleted"""
+"""When: a running "step functions" "execution" fails to read the parameter because it has been deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from pytest_bdd import when
 from ..constants import TEST_PARAM, _sm_arn, _ssm_get_parameter_definition
 
 
-@when("a running execution fails to read the parameter because it has been deleted")
+@when(
+    'a running "step functions" "execution" fails to read the parameter because it has been deleted'
+)
 def execution_reads_parameter_fails(lws_session, world):
     # Arrange
     if world.get("execution_arn") is None:

@@ -1,4 +1,4 @@
-"""When: a Lambda event source mapping is created to process the DynamoDB Stream"""
+"""When: a "lambda" "event source mapping" is created to process the DynamoDB Stream"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..client import DynamodbLambdaTestClient
 
 
-@when("a Lambda event source mapping is created to process the DynamoDB Stream")
+@when('a "lambda" "event source mapping" is created to process the DynamoDB Stream')
 def create_event_source_mapping(lws_session, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

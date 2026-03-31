@@ -1,11 +1,11 @@
-"""When: the Lambda function fails to write because the cluster is updating"""
+"""When: the "lambda" "function" fails to write because the "memorydb" "cluster" is updating"""
 
 from __future__ import annotations
 
 from pytest_bdd import when
 
 
-@when("the Lambda function fails to write because the cluster is updating")
+@when('the "lambda" "function" fails to write because the "memorydb" "cluster" is updating')
 def invocation_fails_cluster_updating(lws_session, world):
     # Arrange
     invocation_id = world.get("invocation_id")

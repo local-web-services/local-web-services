@@ -1,10 +1,10 @@
-"""Given: the target instance slot is available"""
+"""Given: the target "rds" "instance" slot is available"""
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given("the target instance slot is available")
+@given('the target "rds" "instance" slot is available')
 def target_instance_slot_available():
     """No-op: target instance slots are always available in lws."""

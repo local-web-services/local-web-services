@@ -1,4 +1,4 @@
-"""When: a Lambda function is deployed"""
+"""When: a "lambda" "function" is deployed"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import LambdaMemorydbTestClient
 from ..constants import TEST_FUNC
 
 
-@when("a Lambda function is deployed")
+@when('a "lambda" "function" is deployed')
 def deploy_lambda_function(lws_session, world):
     try:
         LambdaMemorydbTestClient(lws_session).create_function()

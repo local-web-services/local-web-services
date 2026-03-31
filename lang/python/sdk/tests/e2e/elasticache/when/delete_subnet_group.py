@@ -1,4 +1,4 @@
-"""When: a cache subnet group is deleted"""
+"""When: an "elasticache" subnet group is deleted"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import TEST_SUBNET_GROUP
 
 
-@when("a cache subnet group is deleted")
+@when('an "elasticache" subnet group is deleted')
 def delete_subnet_group(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:

@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EVENTS_TARGET, INT_BUS, INT_RULE, INT_TARGET_ID, _store
 
 
-@when("targets are removed from a rule")
+@when('targets are removed from an "eventbridge" "rule"')
 def remove_targets(client: TestClient, world):
     r = client.post(
         "/",

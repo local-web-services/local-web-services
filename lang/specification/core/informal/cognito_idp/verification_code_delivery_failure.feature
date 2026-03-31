@@ -9,10 +9,10 @@ Feature: CognitoIdp - A Verification Code Delivery Fails For An Unconfirmed User
 
   @minimal @happy @verification_code_delivery_failure
   Scenario: a verification code delivery fails for an unconfirmed user
-    Given the user exists
-    And the user is "UNCONFIRMED"
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was "UNCONFIRMED"
     When a verification code delivery fails for an unconfirmed user
-    Then the user remains in "UNCONFIRMED" state
+    Then the "cognito" "user" remains in "UNCONFIRMED" state
     And every user pool has a valid status ("ACTIVE" or "DELETED")
     And every user has a valid status
     And every non-deleted user has an enabled flag set
@@ -22,14 +22,14 @@ Feature: CognitoIdp - A Verification Code Delivery Fails For An Unconfirmed User
     And disabled users do not have active authenticated sessions
 
   @guard @negative @verification_code_delivery_failure
-  Scenario: a verification code delivery fails for an unconfirmed user fails when the user does not exist
-    Given the user does not exist
+  Scenario: a verification code delivery fails for an unconfirmed user fails when the "cognito" "user" did not exist
+    Given the "cognito" "user" did not exist
     When a verification code delivery fails for an unconfirmed user
     Then the operation is rejected
 
   @guard @negative @verification_code_delivery_failure
-  Scenario: a verification code delivery fails for an unconfirmed user fails when the user is not "UNCONFIRMED"
-    Given the user exists
-    And the user is not "UNCONFIRMED"
+  Scenario: a verification code delivery fails for an unconfirmed user fails when the "cognito" "user" was not "UNCONFIRMED"
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was not "UNCONFIRMED"
     When a verification code delivery fails for an unconfirmed user
     Then the operation is rejected

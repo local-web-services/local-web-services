@@ -1,4 +1,4 @@
-"""Given: the Lambda function has failed to write because the cluster is updating"""
+"""Given: the "lambda" "function" fails to write because the "memorydb" "cluster" is updating"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import uuid
 from pytest_bdd import given
 
 
-@given("the Lambda function has failed to write because the cluster is updating")
+@given('the "lambda" "function" fails to write because the "memorydb" "cluster" is updating')
 def lambda_failed_write_cluster_updating_seq(lws_session, world):
     # Arrange
     invocation_id = str(uuid.uuid4())

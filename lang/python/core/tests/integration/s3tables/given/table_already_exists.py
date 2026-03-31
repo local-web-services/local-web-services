@@ -1,4 +1,4 @@
-"""Given: the table already exists"""
+"""Given: the "dynamodb" "table" already existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from starlette.testclient import TestClient
 from ..client import S3tablesTestClient
 
 
-@given("the table already exists")
+@given('the "s3 tables" "table" already existed')
+@given('the "dynamodb" "table" already existed')
 def table_already_exists(client: TestClient):
     S3tablesTestClient(client).create_table()

@@ -1,4 +1,4 @@
-"""Then: the topic is deleted"""
+"""Then: a "sns" "topic" is deleted"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_TOPIC
 
 
-@then("the topic is deleted")
+@then('a "sns" "topic" is deleted')
 def topic_is_deleted_then(lws_session):
     client = lws_session.client("sns")
     resp = client.list_topics()

@@ -1,11 +1,11 @@
-"""Then: a session is created in "AUTHENTICATED" state"""
+"""Then: a "cognito" "session" will be created in "AUTHENTICATED" state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('a session is created in "AUTHENTICATED" state')
+@then('a "cognito" "session" will be created in "AUTHENTICATED" state')
 def session_created_authenticated(world):
     actual_error = world.get("error")
     assert actual_error is None, f"Expected admin auth to succeed but got: {actual_error}"

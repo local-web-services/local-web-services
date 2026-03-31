@@ -1,11 +1,11 @@
-"""Then: the domain is "DELETED" and all its indices are removed"""
+"""Then: the "elasticsearch" "domain" will be "DELETED" and all its indices will be removed"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the domain is "DELETED" and all its indices are removed')
+@then('the "elasticsearch" "domain" will be "DELETED" and all its indices will be removed')
 def es_domain_is_deleted_indices_removed(world: dict):
     actual_result = world["result"]
     assert (

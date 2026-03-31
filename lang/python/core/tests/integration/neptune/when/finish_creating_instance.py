@@ -1,4 +1,4 @@
-"""When: a database instance finishes creating"""
+"""When: a "documentdb" "instance" finishes creating"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import NeptuneTestClient
 from ..constants import INT_INSTANCE
 
 
-@when("a database instance finishes creating")
+@when('a "documentdb" "instance" finishes creating')
 def finish_creating_instance(client: TestClient, world: dict):
     r = NeptuneTestClient(client).post(
         "DescribeDBInstances", {"DBInstanceIdentifier": INT_INSTANCE}

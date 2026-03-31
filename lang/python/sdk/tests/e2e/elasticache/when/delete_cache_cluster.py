@@ -1,4 +1,4 @@
-"""When: a standalone cache cluster is deleted"""
+"""When: a standalone "elasticache" "cluster" is deleted"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import TEST_CLUSTER
 
 
-@when("a standalone cache cluster is deleted")
+@when('a standalone "elasticache" "cluster" is deleted')
 def delete_cache_cluster(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:

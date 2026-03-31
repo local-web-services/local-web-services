@@ -9,22 +9,22 @@ Feature: Fake - A Route Is Removed From A Fake Server
 
   @minimal @happy @remove_route
   Scenario: a route is removed from a fake server
-    Given the route exists
-    And the route is "ACTIVE"
+    Given the route existed
+    And the route was "ACTIVE"
     When a route is removed from a fake server
-    Then the route is "DELETED"
+    Then the route will be deleted
     And every "ACTIVE" route belongs to an "ACTIVE" server
     And every server has a valid protocol
 
   @guard @negative @remove_route
-  Scenario: a route is removed from a fake server fails when the route does not exist
-    Given the route does not exist
+  Scenario: a route is removed from a fake server fails when the route did not exist
+    Given the route did not exist
     When a route is removed from a fake server
     Then the operation is rejected
 
   @guard @negative @remove_route
-  Scenario: a route is removed from a fake server fails when the route is not "ACTIVE"
-    Given the route exists
-    And the route is not "ACTIVE"
+  Scenario: a route is removed from a fake server fails when the route was not "ACTIVE"
+    Given the route existed
+    And the route was not "ACTIVE"
     When a route is removed from a fake server
     Then the operation is rejected

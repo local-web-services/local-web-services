@@ -1,4 +1,4 @@
-"""When: a tag is added to a function"""
+"""When: a tag is added to a "lambda" "function" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_FUNCTION_ARN, INT_TAG_KEY, INT_TAG_VALUE
 
 
-@when("a tag is added to a function")
+@when('a tag is added to a "lambda" "function"')
 def add_tag_to_function(client: TestClient, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

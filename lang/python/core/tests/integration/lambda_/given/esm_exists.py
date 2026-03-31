@@ -1,4 +1,4 @@
-"""Given: the event source mapping exists"""
+"""Given: the event source mapping existed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,8 @@ from starlette.testclient import TestClient
 from ..client import LambdaTestClient
 
 
-@given("the event source mapping exists")
+@given('the "lambda" "event source mapping" existed')
+@given("the event source mapping existed")
 def esm_exists(client: TestClient):
     LambdaTestClient(client).create_function()
     LambdaTestClient(client).create_esm()

@@ -1,5 +1,5 @@
 @dynamodb @generated
-Feature: Dynamodb - A Table Is Described
+Feature: Dynamodb - A "Dynamodb" "Table" Is Described
 
   # Generated from FizzBee spec: dynamodb.fizz
   # Safety invariants: TableStatusValid, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
@@ -8,11 +8,11 @@ Feature: Dynamodb - A Table Is Described
     Given the system is initialized
 
   @minimal @happy @describe_table
-  Scenario: a table is described
-    Given the table exists
-    And the table is "ACTIVE"
-    When a table is described
-    Then the table metadata is returned
+  Scenario: a "dynamodb" "table" is described
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was "ACTIVE"
+    When a "dynamodb" "table" is described
+    Then the "dynamodb" "table" metadata will be returned
     And every table has a valid status ("CREATING", "ACTIVE", or "DELETED")
     And "GSI" pending write count is never negative
     And transaction status is always a valid value
@@ -21,14 +21,14 @@ Feature: Dynamodb - A Table Is Described
     And deleted tables are never the target of a pending transaction
 
   @guard @negative @describe_table
-  Scenario: a table is described fails when the table does not exist
-    Given the table does not exist
-    When a table is described
+  Scenario: a "dynamodb" "table" is described fails when the "dynamodb" "table" did not exist
+    Given the "dynamodb" "table" did not exist
+    When a "dynamodb" "table" is described
     Then the operation is rejected
 
   @guard @negative @describe_table
-  Scenario: a table is described fails when the table is not "ACTIVE"
-    Given the table exists
-    And the table is not "ACTIVE"
-    When a table is described
+  Scenario: a "dynamodb" "table" is described fails when the "dynamodb" "table" was not "ACTIVE"
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was not "ACTIVE"
+    When a "dynamodb" "table" is described
     Then the operation is rejected

@@ -1,4 +1,4 @@
-"""When: a secret is created in Secrets Manager"""
+"""When: a "secretsmanager" "secret" is created in Secrets Manager"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import LambdaSecretsmanagerTestClient
 from ..constants import TEST_SECRET
 
 
-@when("a secret is created in Secrets Manager")
+@when('a "secretsmanager" "secret" is created in Secrets Manager')
 def create_secret(lws_session, world):
     try:
         LambdaSecretsmanagerTestClient(lws_session).create_secret()

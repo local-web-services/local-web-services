@@ -1,4 +1,4 @@
-"""Then: the bucket is "DELETED" """
+"""Then: the "s3" "bucket" was "DELETED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,8 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET
 
 
-@then('the bucket is "DELETED"')
+@then('the "s3" "bucket" will be "DELETED"')
+@then('the "s3" "bucket" was "DELETED"')
 def bucket_is_deleted_status_then(sync_client: TestClient):
     r = sync_client.get("/")
     actual_body = r.text

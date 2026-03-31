@@ -27,7 +27,6 @@ from .method_does_not_exist import *  # noqa: F401,F403
 from .method_does_not_have_api_association import *  # noqa: F401,F403
 from .method_does_not_have_integration import *  # noqa: F401,F403
 from .method_exists import *  # noqa: F401,F403
-from .method_exists_marker import *  # noqa: F401,F403
 from .method_has_api_association import *  # noqa: F401,F403
 from .method_has_integration import *  # noqa: F401,F403
 from .no_resource_slot_available import *  # noqa: F401,F403

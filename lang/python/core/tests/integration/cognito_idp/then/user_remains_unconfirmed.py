@@ -1,11 +1,11 @@
-"""Then: the user remains in "UNCONFIRMED" state"""
+"""Then: the "cognito" "user" remains in "UNCONFIRMED" state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the user remains in "UNCONFIRMED" state')
+@then('the "cognito" "user" remains in "UNCONFIRMED" state')
 def user_remains_unconfirmed(world):
     actual_error = world.get("error")
     assert (

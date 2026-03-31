@@ -1,4 +1,4 @@
-"""When: a Step Functions state machine is deleted"""
+"""When: a "step functions" "state machine" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import _sm_arn
 
 
-@when("a Step Functions state machine is deleted")
+@when('a "step functions" "state machine" is deleted')
 def delete_state_machine(lws_session, world):
     try:
         lws_session.client("stepfunctions").delete_state_machine(stateMachineArn=_sm_arn())

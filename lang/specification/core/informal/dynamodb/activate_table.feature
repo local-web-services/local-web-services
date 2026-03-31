@@ -1,5 +1,5 @@
 @dynamodb @generated
-Feature: Dynamodb - A Table Finishes Creating And Becomes Active
+Feature: Dynamodb - A "Dynamodb" "Table" Finishes Creating And Becomes Active
 
   # Generated from FizzBee spec: dynamodb.fizz
   # Safety invariants: TableStatusValid, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
@@ -8,11 +8,11 @@ Feature: Dynamodb - A Table Finishes Creating And Becomes Active
     Given the system is initialized
 
   @minimal @happy @activate_table @internal
-  Scenario: a table finishes creating and becomes active
-    Given the table exists
-    And the table is "CREATING"
-    When a table finishes creating and becomes active
-    Then the table is "ACTIVE" and ready for reads and writes
+  Scenario: a "dynamodb" "table" finishes creating and becomes active
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was "CREATING"
+    When a "dynamodb" "table" finishes creating and becomes active
+    Then the "dynamodb" "table" will be "ACTIVE" and ready for reads and writes
     And every table has a valid status ("CREATING", "ACTIVE", or "DELETED")
     And "GSI" pending write count is never negative
     And transaction status is always a valid value
@@ -21,14 +21,14 @@ Feature: Dynamodb - A Table Finishes Creating And Becomes Active
     And deleted tables are never the target of a pending transaction
 
   @guard @negative @activate_table @internal
-  Scenario: a table finishes creating and becomes active fails when the table does not exist
-    Given the table does not exist
-    When a table finishes creating and becomes active
+  Scenario: a "dynamodb" "table" finishes creating and becomes active fails when the "dynamodb" "table" did not exist
+    Given the "dynamodb" "table" did not exist
+    When a "dynamodb" "table" finishes creating and becomes active
     Then the operation is rejected
 
   @guard @negative @activate_table @internal
-  Scenario: a table finishes creating and becomes active fails when the table is not "CREATING"
-    Given the table exists
-    And the table is not "CREATING"
-    When a table finishes creating and becomes active
+  Scenario: a "dynamodb" "table" finishes creating and becomes active fails when the "dynamodb" "table" was not "CREATING"
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was not "CREATING"
+    When a "dynamodb" "table" finishes creating and becomes active
     Then the operation is rejected

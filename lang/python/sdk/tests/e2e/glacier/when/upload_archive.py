@@ -1,4 +1,4 @@
-"""When: an archive is uploaded to a vault"""
+"""When: a "glacier" "archive" is uploaded to a "glacier" "vault" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_VAULT
 
 
-@when("an archive is uploaded to a vault")
+@when('a "glacier" "archive" is uploaded to a "glacier" "vault"')
 def upload_archive(lws_session, world):
     try:
         world["result"] = lws_session.client("glacier").upload_archive(

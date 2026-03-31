@@ -1,5 +1,5 @@
 @stepfunctionsopensearch @generated
-Feature: StepfunctionsOpensearch - A Running Execution Fails Because The Domain Is Processing A Config Update
+Feature: StepfunctionsOpensearch - A Running "Step Functions" "Execution" Fails Because The "Opensearch" "Domain" Is Processing A Config Update
 
   # Generated from FizzBee spec: stepfunctions_opensearch.fizz
   # Safety invariants: ExecutionRequiresActiveStateMachine, SuccessfulExecutionCalledADomain
@@ -8,23 +8,23 @@ Feature: StepfunctionsOpensearch - A Running Execution Fails Because The Domain 
     Given the system is initialized
 
   @minimal @happy @search_task_fails @internal
-  Scenario: a running execution fails because the domain is processing a config update
-    Given an execution is "RUNNING"
-    And the domain is "PROCESSING"
-    When a running execution fails because the domain is processing a config update
-    Then the execution is "FAILED" with a connection error
+  Scenario: a running "step functions" "execution" fails because the "opensearch" "domain" is processing a config update
+    Given a "step functions" "execution" was "RUNNING"
+    And the "opensearch" "domain" was "PROCESSING"
+    When a running "step functions" "execution" fails because the "opensearch" "domain" is processing a config update
+    Then the "step functions" "execution" will be "FAILED" with a connection error
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which domain it called
 
   @guard @negative @search_task_fails @internal
-  Scenario: a running execution fails because the domain is processing a config update fails when no execution is "RUNNING"
-    Given no execution is "RUNNING"
-    When a running execution fails because the domain is processing a config update
+  Scenario: a running "step functions" "execution" fails because the "opensearch" "domain" is processing a config update fails when no "step functions" "execution" was "RUNNING"
+    Given no "step functions" "execution" was "RUNNING"
+    When a running "step functions" "execution" fails because the "opensearch" "domain" is processing a config update
     Then the operation is rejected
 
   @guard @negative @search_task_fails @internal
-  Scenario: a running execution fails because the domain is processing a config update fails when the domain is not "PROCESSING"
-    Given an execution is "RUNNING"
-    And the domain is not "PROCESSING"
-    When a running execution fails because the domain is processing a config update
+  Scenario: a running "step functions" "execution" fails because the "opensearch" "domain" is processing a config update fails when the "opensearch" "domain" was not "PROCESSING"
+    Given a "step functions" "execution" was "RUNNING"
+    And the "opensearch" "domain" was not "PROCESSING"
+    When a running "step functions" "execution" fails because the "opensearch" "domain" is processing a config update
     Then the operation is rejected

@@ -1,4 +1,4 @@
-"""Given: the "API" exists"""
+"""Given: the "api gateway" "API" existed"""
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import given
 from ..client import ApigatewayCognitoTestClient
 
 
-@given('the "API" exists')
+@given('the "api gateway" "API" existed')
 def apigw_cognito_api_exists(lws_session):
     ApigatewayCognitoTestClient(lws_session).create_api()

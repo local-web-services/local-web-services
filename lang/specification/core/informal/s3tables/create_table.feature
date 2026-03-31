@@ -1,5 +1,5 @@
 @s3tables @generated
-Feature: S3tables - A Table Is Created In A Namespace
+Feature: S3tables - A "S3 Tables" "Table" Is Created In A "S3 Tables" "Namespace"
 
   # Generated from FizzBee spec: s3tables.fizz
   # Safety invariants: BucketDeletionRequiresNoNamespaces, NamespaceDeletionRequiresNoTables, SnapshotCountNonNegative, SchemaVersionAtLeastOne
@@ -8,55 +8,55 @@ Feature: S3tables - A Table Is Created In A Namespace
     Given the system is initialized
 
   @minimal @happy @create_table
-  Scenario: a table is created in a namespace
-    Given the bucket exists
-    And the bucket is "ACTIVE"
-    And the namespace exists
-    And the namespace is "ACTIVE"
-    And the table does not already exist
-    When a table is created in a namespace
-    Then the table is in "CREATING" state
+  Scenario: a "s3 tables" "table" is created in a "s3 tables" "namespace"
+    Given the "s3 tables" "bucket" existed
+    And the "s3 tables" "bucket" was "ACTIVE"
+    And the "s3 tables" "namespace" existed
+    And the "s3 tables" "namespace" was "ACTIVE"
+    And the "s3 tables" "table" did not already exist
+    When a "s3 tables" "table" is created in a "s3 tables" "namespace"
+    Then the "s3 tables" "table" will be in "CREATING" state
     And a bucket in "DELETING" state has no "ACTIVE" namespaces
-    And a namespace in "DELETING" state has no "ACTIVE" tables
+    And a "s3 tables" "namespace" in "DELETING" state has no "ACTIVE" tables
     And snapshot count is never negative
     And schema version is always at least one
 
   @guard @negative @create_table
-  Scenario: a table is created in a namespace fails when the bucket does not exist
-    Given the bucket does not exist
-    When a table is created in a namespace
+  Scenario: a "s3 tables" "table" is created in a "s3 tables" "namespace" fails when the "s3 tables" "bucket" did not exist
+    Given the "s3 tables" "bucket" did not exist
+    When a "s3 tables" "table" is created in a "s3 tables" "namespace"
     Then the operation is rejected
 
   @guard @negative @create_table @lifecycle
-  Scenario: a table is created in a namespace fails when the bucket is not "ACTIVE"
-    Given the bucket exists
-    And the bucket is not "ACTIVE"
-    When a table is created in a namespace
+  Scenario: a "s3 tables" "table" is created in a "s3 tables" "namespace" fails when the "s3 tables" "bucket" was not "ACTIVE"
+    Given the "s3 tables" "bucket" existed
+    And the "s3 tables" "bucket" was not "ACTIVE"
+    When a "s3 tables" "table" is created in a "s3 tables" "namespace"
     Then the operation is rejected
 
   @guard @negative @create_table
-  Scenario: a table is created in a namespace fails when the namespace does not exist
-    Given the bucket exists
-    And the bucket is "ACTIVE"
-    And the namespace does not exist
-    When a table is created in a namespace
+  Scenario: a "s3 tables" "table" is created in a "s3 tables" "namespace" fails when the "s3 tables" "namespace" did not exist
+    Given the "s3 tables" "bucket" existed
+    And the "s3 tables" "bucket" was "ACTIVE"
+    And the "s3 tables" "namespace" did not exist
+    When a "s3 tables" "table" is created in a "s3 tables" "namespace"
     Then the operation is rejected
 
   @guard @negative @create_table @lifecycle
-  Scenario: a table is created in a namespace fails when the namespace is not "ACTIVE"
-    Given the bucket exists
-    And the bucket is "ACTIVE"
-    And the namespace exists
-    And the namespace is not "ACTIVE"
-    When a table is created in a namespace
+  Scenario: a "s3 tables" "table" is created in a "s3 tables" "namespace" fails when the "s3 tables" "namespace" was not "ACTIVE"
+    Given the "s3 tables" "bucket" existed
+    And the "s3 tables" "bucket" was "ACTIVE"
+    And the "s3 tables" "namespace" existed
+    And the "s3 tables" "namespace" was not "ACTIVE"
+    When a "s3 tables" "table" is created in a "s3 tables" "namespace"
     Then the operation is rejected
 
   @guard @negative @create_table
-  Scenario: a table is created in a namespace fails when the table already exists
-    Given the bucket exists
-    And the bucket is "ACTIVE"
-    And the namespace exists
-    And the namespace is "ACTIVE"
-    And the table already exists
-    When a table is created in a namespace
+  Scenario: a "s3 tables" "table" is created in a "s3 tables" "namespace" fails when the "s3 tables" "table" already existed
+    Given the "s3 tables" "bucket" existed
+    And the "s3 tables" "bucket" was "ACTIVE"
+    And the "s3 tables" "namespace" existed
+    And the "s3 tables" "namespace" was "ACTIVE"
+    And the "s3 tables" "table" already existed
+    When a "s3 tables" "table" is created in a "s3 tables" "namespace"
     Then the operation is rejected

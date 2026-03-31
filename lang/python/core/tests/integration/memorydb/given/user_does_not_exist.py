@@ -1,10 +1,11 @@
-"""Given: the user does not exist"""
+"""Given: the "cognito" "user" did not exist"""
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given("the user does not exist")
+@given('the "memorydb" "user" did not exist')
+@given('the "cognito" "user" did not exist')
 def user_does_not_exist():
     """No-op: fresh state has no users."""

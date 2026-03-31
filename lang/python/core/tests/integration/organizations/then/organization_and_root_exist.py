@@ -1,4 +1,4 @@
-"""Then: the organization and its root exist"""
+"""Then: the "organizations" "organization" and its root will exist"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import OrganizationsTestClient
 
 
-@then("the organization and its root exist")
+@then('the "organizations" "organization" and its root will exist')
 def organization_and_root_exist(client: TestClient, world):
     actual_create_error = world["error"]
     assert (

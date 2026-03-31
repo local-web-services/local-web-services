@@ -1,4 +1,4 @@
-"""When: a domain configuration update is requested"""
+"""When: an "elasticsearch" "domain" configuration update is requested"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_DOMAIN
 
 
-@when("a domain configuration update is requested")
+@when('an "elasticsearch" "domain" configuration update is requested')
 def update_elasticsearch_domain_config(lws_session, world):
     try:
         world["result"] = lws_session.client("es").update_elasticsearch_domain_config(

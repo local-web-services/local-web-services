@@ -1,4 +1,4 @@
-"""Given: the message's queue is not "ACTIVE" """
+"""Given: the message's sqs queue was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SqsTestClient
 from ..constants import TEST_QUEUE
 
 
-@given('the message\'s queue is not "ACTIVE"')
+@given('the "sqs" "message"\'s "sqs" "queue" was not "ACTIVE"')
 def messages_queue_is_not_active(lws_session):
     try:
         SqsTestClient(lws_session).delete_queue(QueueUrl=SqsTestClient(lws_session).queue_url())

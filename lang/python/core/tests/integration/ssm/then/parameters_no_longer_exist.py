@@ -1,4 +1,4 @@
-"""Then: the parameters no longer exist"""
+"""Then: the "ssm" "parameter"s no longer exist"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SSM_TARGET, INT_PARAM
 
 
-@then("the parameters no longer exist")
+@then('the "ssm" "parameter"s no longer exist')
 def parameters_no_longer_exist(client: TestClient):
     r = client.post(
         "/",

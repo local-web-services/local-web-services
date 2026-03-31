@@ -1,4 +1,4 @@
-"""Then: the queue attributes are returned"""
+"""Then: the "sqs" "queue" attributes will be returned"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import QUEUE_URL
 
 
-@then("the queue attributes are returned")
+@then('the "sqs" "queue" attributes will be returned')
 def queue_attributes_returned_then(client):
     r = client.post(
         "/",

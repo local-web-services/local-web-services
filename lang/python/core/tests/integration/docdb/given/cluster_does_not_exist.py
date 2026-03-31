@@ -1,4 +1,4 @@
-"""Given: the cluster does not exist"""
+"""Given: the "documentdb" "cluster" did not exist"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _DOCDB_TARGET, INT_CLUSTER_ID, INT_INSTANCE_ID
 
 
-@given("the cluster does not exist")
+@given('the "documentdb" "cluster" did not exist')
 def cluster_does_not_exist(client: TestClient):
     """Ensure the cluster is absent — delete instance then cluster if created by a prior step."""
     client.post(

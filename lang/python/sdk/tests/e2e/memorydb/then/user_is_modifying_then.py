@@ -1,4 +1,4 @@
-"""Then: the user is in "MODIFYING" state"""
+"""Then: the "memorydb" "user" will be in "MODIFYING" state"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_USER
 
 
-@then('the user is in "MODIFYING" state')
+@then('the "memorydb" "user" will be in "MODIFYING" state')
 def user_is_modifying_then(lws_session, world):
     # Arrange
     user_name = world.get("user_name", TEST_USER)

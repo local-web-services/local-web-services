@@ -1,4 +1,4 @@
-"""When: a namespace is created in a table bucket"""
+"""When: a "s3 tables" "namespace" is created in a "s3 tables" "table" s3 tables bucket"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_NAMESPACE
 
 
-@when("a namespace is created in a table bucket")
+@when('a "s3 tables" "namespace" is created in a "s3 tables" "table" s3 tables bucket')
 def create_namespace(client: TestClient, world: dict):
     r = client.put(
         f"/namespaces/{INT_BUCKET}",

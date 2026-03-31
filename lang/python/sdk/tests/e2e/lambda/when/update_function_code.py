@@ -1,4 +1,4 @@
-"""When: a function's code is updated"""
+"""When: a "lambda" "function"'s code is updated"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_FUNC
 
 
-@when("a function's code is updated")
+@when('a "lambda" "function"\'s code is updated')
 def update_function_code(lws_session, world):
     try:
         resp = lws_session.client("lambda").update_function_code(

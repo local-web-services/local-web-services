@@ -1,4 +1,4 @@
-"""Given: the event source mapping is "ENABLED" """
+"""Given: the event source mapping was "ENABLED" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..client import DynamodbLambdaTestClient
 
 
-@given('the event source mapping is "ENABLED"')
+@given('the event source mapping was "ENABLED"')
 def dynamodb_lambda_esm_is_enabled(lws_session):
     DynamodbLambdaTestClient(lws_session).create_table_with_stream()
     DynamodbLambdaTestClient(lws_session).create_function()

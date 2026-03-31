@@ -1,4 +1,4 @@
-"""Given: a deleted secret has been restored within the recovery window"""
+"""Given: a deleted "secrets manager" "secret" is restored within the recovery window"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SecretsmanagerTestClient
 from ..constants import TEST_SECRET
 
 
-@given("a deleted secret has been restored within the recovery window")
+@given('a deleted "secrets manager" "secret" is restored within the recovery window')
 def secretsmanager_a_deleted_secret_has_been_restored(lws_session):
     try:
         SecretsmanagerTestClient(lws_session).create_secret()

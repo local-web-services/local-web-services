@@ -1,5 +1,5 @@
 @rds @generated
-Feature: Rds - A Database Instance Configuration Is Modified
+Feature: Rds - A "Rds" "Instance" Configuration Is Modified
 
   # Generated from FizzBee spec: rds.fizz
   # Safety invariants: ValidDBInstanceStatus, ValidDBSnapshotStatus, BackingUpInstanceHasSnapshot
@@ -8,24 +8,24 @@ Feature: Rds - A Database Instance Configuration Is Modified
     Given the system is initialized
 
   @minimal @happy @modify_d_b_instance
-  Scenario: a database instance configuration is modified
-    Given the database instance exists
-    And the instance is "AVAILABLE"
-    When a database instance configuration is modified
-    Then the instance is in "MODIFYING" state
+  Scenario: a "rds" "instance" configuration is modified
+    Given the "rds" "instance" existed
+    And the "rds" "instance" was "AVAILABLE"
+    When a "rds" "instance" configuration is modified
+    Then the "rds" "instance" will be in "MODIFYING" state
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
 
   @guard @negative @modify_d_b_instance
-  Scenario: a database instance configuration is modified fails when the database instance does not exist
-    Given the database instance does not exist
-    When a database instance configuration is modified
+  Scenario: a "rds" "instance" configuration is modified fails when the "rds" "instance" did not exist
+    Given the "rds" "instance" did not exist
+    When a "rds" "instance" configuration is modified
     Then the operation is rejected
 
   @guard @negative @modify_d_b_instance @lifecycle
-  Scenario: a database instance configuration is modified fails when the instance is not "AVAILABLE"
-    Given the database instance exists
-    And the instance is not "AVAILABLE"
-    When a database instance configuration is modified
+  Scenario: a "rds" "instance" configuration is modified fails when the "rds" "instance" was not "AVAILABLE"
+    Given the "rds" "instance" existed
+    And the "rds" "instance" was not "AVAILABLE"
+    When a "rds" "instance" configuration is modified
     Then the operation is rejected

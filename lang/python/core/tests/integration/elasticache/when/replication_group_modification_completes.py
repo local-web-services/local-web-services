@@ -1,4 +1,4 @@
-"""When: a replication group modification completes"""
+"""When: a "elasticache" "replication group" modification completes"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_RG_ID
 
 
-@when("a replication group modification completes")
+@when('a "elasticache" "replication group" modification completes')
 def replication_group_modification_completes(client: TestClient, world):
     r = client.post(
         "/",

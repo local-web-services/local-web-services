@@ -1,4 +1,4 @@
-"""Given: the topic is already "DELETED" """
+"""Given: the "sns" "topic" is already "DELETED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import GlacierSnsTestClient
 from ..constants import _topic_arn
 
 
-@given('the topic is already "DELETED"')
+@given('the "sns" "topic" is already "DELETED"')
 def glacier_sns_topic_is_already_deleted(lws_session, world):
     try:
         GlacierSnsTestClient(lws_session).create_topic()

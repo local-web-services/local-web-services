@@ -1,4 +1,4 @@
-"""Given: the table already exists"""
+"""Given: the table already existed"""
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import given
 from ..client import StepfunctionsS3tablesTestClient
 
 
-@given("the table already exists")
+@given("the table already existed")
 def table_already_exists(lws_session):
     StepfunctionsS3tablesTestClient(lws_session).create_table_bucket()

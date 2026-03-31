@@ -1,4 +1,4 @@
-"""When: a snapshot is created from an available redis cache cluster"""
+"""When: an "elasticache" "snapshot" is created from an available redis "elasticache" "cluster" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import TEST_CLUSTER, TEST_SNAPSHOT
 
 
-@when("a snapshot is created from an available redis cache cluster")
+@when('an "elasticache" "snapshot" is created from an available redis "elasticache" "cluster"')
 def create_snapshot_from_cluster(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:

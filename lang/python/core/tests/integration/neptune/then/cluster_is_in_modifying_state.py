@@ -1,11 +1,11 @@
-"""Then: the cluster is in "MODIFYING" state"""
+"""Then: the "documentdb" "cluster" will be in "MODIFYING" state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the cluster is in "MODIFYING" state')
+@then('the "documentdb" "cluster" will be in "MODIFYING" state')
 def cluster_is_in_modifying_state(world: dict):
     actual_result = world["result"]
     assert (

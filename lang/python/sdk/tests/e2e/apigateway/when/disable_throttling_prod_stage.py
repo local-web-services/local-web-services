@@ -1,4 +1,4 @@
-"""When: throttling is disabled for the prod stage"""
+"""When: throttling was "DISABLED" for the "api gateway" "prod stage" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ApigatewayTestClient
 from ..constants import TEST_STAGE_PROD
 
 
-@when("throttling is disabled for the prod stage")
+@when('throttling was "DISABLED" for the "api gateway" "prod stage"')
 def disable_throttling_prod_stage(lws_session, world):
     try:
         api_id = ApigatewayTestClient(lws_session).get_api_id()

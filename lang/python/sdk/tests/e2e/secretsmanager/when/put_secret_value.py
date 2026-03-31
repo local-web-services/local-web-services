@@ -1,4 +1,4 @@
-"""When: a new value is stored for an active secret"""
+"""When: a new value is stored for an active "secrets manager" "secret" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_SECRET, TEST_VALUE2
 
 
-@when("a new value is stored for an active secret")
+@when('a new value is stored for an active "secrets manager" "secret"')
 def put_secret_value(lws_session, world):
     try:
         resp = lws_session.client("secretsmanager").put_secret_value(

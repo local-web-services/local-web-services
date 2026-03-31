@@ -1,4 +1,4 @@
-"""When: the Lambda function uploads an archive to an existing vault and succeeds"""
+"""When: the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_VAULT
 
 
-@when("the Lambda function uploads an archive to an existing vault and succeeds")
+@when('the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds')
 def lambda_uploads_archive(lws_session, world):
     # Arrange
     invocation_id = world.get("invocation_id")

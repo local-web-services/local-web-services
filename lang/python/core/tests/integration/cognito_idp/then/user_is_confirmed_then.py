@@ -1,4 +1,4 @@
-"""Then: the user is "CONFIRMED" """
+"""Then: the "cognito" "user" will be "CONFIRMED" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import CognitoIdpTestClient
 from ..constants import INT_POOL_ID, INT_USERNAME
 
 
-@then('the user is "CONFIRMED"')
+@then('the "cognito" "user" will be "CONFIRMED"')
 def user_is_confirmed_then(client: TestClient, world):
     r = CognitoIdpTestClient(client).cognito_post(
         "AdminGetUser", {"UserPoolId": INT_POOL_ID, "Username": world.get("username", INT_USERNAME)}

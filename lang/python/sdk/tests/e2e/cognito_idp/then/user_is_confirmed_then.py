@@ -1,4 +1,4 @@
-"""Then: the user is "CONFIRMED" """
+"""Then: the "cognito" "user" will be "CONFIRMED" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_USERNAME
 
 
-@then('the user is "CONFIRMED"')
+@then('the "cognito" "user" will be "CONFIRMED"')
 def user_is_confirmed_then(lws_session, world):
     pool_id = world.get("pool_id", "")
     username = world.get("username", TEST_USERNAME)

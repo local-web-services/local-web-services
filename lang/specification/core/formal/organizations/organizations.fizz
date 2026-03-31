@@ -30,23 +30,23 @@ action Init:
     policy_status = {}
     policy_attached = {}
 
-# step: an organization is created
-# result: the organization and its root exist
-# guard: the organization does not already exist
-# guard_violation: the organization already exists
+# step: an "organizations" "organization" is created
+# result: the "organizations" "organization" and its root will exist
+# guard: the "organizations" "organization" did not already exist
+# guard_violation: the "organizations" "organization" already existed
 atomic action CreateOrganization:
     if "org-1" not in org_status:
         org_status["org-1"] = "ACTIVE"
         node_status[ROOT_ID] = "ACTIVE"
 
-# step: an organizational unit is created under a parent
-# result: the organizational unit is ACTIVE
-# guard: the organization exists
-# guard_violation: the organization does not exist
-# guard: the parent exists and is ACTIVE
-# guard_violation: the parent does not exist or is not ACTIVE
-# guard: the organizational unit does not already exist
-# guard_violation: the organizational unit already exists
+# step: an "organizations" "organizational unit" is created under a parent
+# result: the "organizations" "organizational unit" will be "ACTIVE"
+# guard: the "organizations" "organization" existed
+# guard_violation: the "organizations" "organization" did not exist
+# guard: the "organizations" "parent" existed and was "ACTIVE"
+# guard_violation: the "organizations" "parent" did not exist or was "ACTIVE"
+# guard: the "organizations" "organizational unit" did not already exist
+# guard_violation: the "organizations" "organizational unit" already existed
 atomic action CreateOrganizationalUnit:
     if "org-1" in org_status:
         oneof ou_id in OU_IDS:
@@ -57,16 +57,16 @@ atomic action CreateOrganizationalUnit:
                             node_status[ou_id] = "ACTIVE"
                             node_parent[ou_id] = parent_id
 
-# step: an organizational unit is deleted
-# result: the organizational unit is DELETED
-# guard: the organizational unit exists and is ACTIVE
-# guard_violation: the organizational unit does not exist or is not ACTIVE
-# guard: the organizational unit has no child accounts
-# guard_violation: the organizational unit has child accounts
-# guard: the organizational unit has no child organizational units
-# guard_violation: the organizational unit has child organizational units
-# guard: the organizational unit has no attached policies
-# guard_violation: the organizational unit has attached policies
+# step: an "organizations" "organizational unit" is deleted
+# result: the "organizations" "organizational unit" will be "DELETED"
+# guard: the "organizations" "organizational unit" existed and was "ACTIVE"
+# guard_violation: the "organizations" "organizational unit" did not exist or was "ACTIVE"
+# guard: the "organizations" "organizational unit" has no child accounts
+# guard_violation: the "organizations" "organizational unit" has child accounts
+# guard: the "organizations" "organizational unit" has no child organizational units
+# guard_violation: the "organizations" "organizational unit" has child organizational units
+# guard: the "organizations" "organizational unit" has no attached policies
+# guard_violation: the "organizations" "organizational unit" has attached policies
 atomic action DeleteOrganizationalUnit:
     oneof ou_id in OU_IDS:
         if ou_id in node_status:
@@ -76,12 +76,12 @@ atomic action DeleteOrganizationalUnit:
                         if all([(pol_id + "#" + ou_id) not in policy_attached or policy_attached[pol_id + "#" + ou_id] == False for pol_id in POLICY_IDS]):
                             node_status[ou_id] = "DELETED"
 
-# step: an account is created in the organization
-# result: the account is ACTIVE under the root
-# guard: the organization exists
-# guard_violation: the organization does not exist
-# guard: the account does not already exist
-# guard_violation: the account already exists
+# step: an "organizations" "account" is created in the "organizations" "organization"
+# result: the "organizations" "account" will be "ACTIVE" under the root
+# guard: the "organizations" "organization" existed
+# guard_violation: the "organizations" "organization" did not exist
+# guard: the "organizations" "account" did not already exist
+# guard_violation: the "organizations" "account" already existed
 atomic action CreateAccount:
     if "org-1" in org_status:
         oneof acc_id in ACCOUNT_IDS:
@@ -89,14 +89,14 @@ atomic action CreateAccount:
                 node_status[acc_id] = "ACTIVE"
                 node_parent[acc_id] = ROOT_ID
 
-# step: an account is moved to a new parent
-# result: the account is under the new parent
-# guard: the account exists and is ACTIVE
-# guard_violation: the account does not exist or is not ACTIVE
-# guard: the source parent matches the account's current parent
-# guard_violation: the source parent does not match the account's current parent
-# guard: the destination parent is ACTIVE
-# guard_violation: the destination parent is not ACTIVE
+# step: an "organizations" "account" is moved to a new parent
+# result: the "organizations" "account" will be under the new parent
+# guard: the "organizations" "account" existed and was "ACTIVE"
+# guard_violation: the "organizations" "account" did not exist or was "ACTIVE"
+# guard: the source parent matched the "organizations" "account"'s current parent
+# guard_violation: the source parent did not match the "organizations" "account"'s current parent
+# guard: the destination "organizations" "parent" was "ACTIVE"
+# guard_violation: the destination "organizations" "parent" was not "ACTIVE"
 atomic action MoveAccount:
     oneof acc_id in ACCOUNT_IDS:
         if acc_id in node_status:
@@ -110,26 +110,26 @@ atomic action MoveAccount:
                                         if dst_id != src_id:
                                             node_parent[acc_id] = dst_id
 
-# step: a service control policy is created
-# result: the policy is ACTIVE
-# guard: the organization exists
-# guard_violation: the organization does not exist
-# guard: the policy does not already exist
-# guard_violation: the policy already exists
+# step: an "organizations" "policy" is created
+# result: the "organizations" "policy" will be "ACTIVE"
+# guard: the "organizations" "organization" existed
+# guard_violation: the "organizations" "organization" did not exist
+# guard: the "organizations" "policy" did not already exist
+# guard_violation: the "organizations" "policy" already existed
 atomic action CreatePolicy:
     if "org-1" in org_status:
         oneof pol_id in POLICY_IDS:
             if pol_id not in policy_status:
                 policy_status[pol_id] = "ACTIVE"
 
-# step: a policy is attached to a target
-# result: the policy is attached to the target
-# guard: the policy exists and is ACTIVE
-# guard_violation: the policy does not exist or is not ACTIVE
-# guard: the target exists and is ACTIVE
-# guard_violation: the target does not exist or is not ACTIVE
-# guard: the policy is not already attached to the target
-# guard_violation: the policy is already attached to the target
+# step: an "organizations" "policy" is attached to a target
+# result: the "organizations" "policy" will be attached to the "organizations" "target"
+# guard: the "organizations" "policy" existed and was "ACTIVE"
+# guard_violation: the "organizations" "policy" did not exist or was "ACTIVE"
+# guard: the "organizations" "target" existed and was "ACTIVE"
+# guard_violation: the "organizations" "target" did not exist or was "ACTIVE"
+# guard: the "organizations" "policy" was not already attached to the "organizations" "target"
+# guard_violation: the "organizations" "policy" was already attached to the "organizations" "target"
 atomic action AttachPolicy:
     oneof pol_id in POLICY_IDS:
         if pol_id in policy_status:
@@ -140,10 +140,10 @@ atomic action AttachPolicy:
                             if (pol_id + "#" + target_id) not in policy_attached:
                                 policy_attached[pol_id + "#" + target_id] = True
 
-# step: a policy is detached from a target
-# result: the policy is no longer attached to the target
-# guard: the policy is attached to the target
-# guard_violation: the policy is not attached to the target
+# step: an "organizations" "policy" is detached from a target
+# result: the "organizations" "policy" will no longer be attached to the "organizations" "target"
+# guard: the "organizations" "policy" is attached to the "organizations" "target"
+# guard_violation: the "organizations" "policy" is not attached to the "organizations" "target"
 atomic action DetachPolicy:
     oneof pol_id in POLICY_IDS:
         oneof target_id in ALL_MEMBER_IDS:
@@ -151,7 +151,7 @@ atomic action DetachPolicy:
                 if policy_attached[pol_id + "#" + target_id] == True:
                     policy_attached[pol_id + "#" + target_id] = False
 
-# check: the root is ACTIVE whenever the organization exists
+# check: the root was "ACTIVE" whenever the "organizations" "organization" exists
 always assertion OrgRootConsistency:
     if "org-1" in org_status:
         if ROOT_ID not in node_status:

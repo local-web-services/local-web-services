@@ -1,11 +1,11 @@
-"""Then: the cluster is in "CREATING" state"""
+"""Then: the "neptune" "cluster" will be in "CREATING" state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the cluster is in "CREATING" state')
+@then('the "neptune" "cluster" will be in "CREATING" state')
 def cluster_is_creating_then(world):
     expected_error = None
     actual_error = world.get("error")

@@ -1,4 +1,4 @@
-"""Then: the parameter exists with version 1"""
+"""Then: the "ssm" "parameter" will exist with version 1"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SSM_TARGET, INT_PARAM
 
 
-@then("the parameter exists with version 1")
+@then('the "ssm" "parameter" will exist with version 1')
 def parameter_exists_with_version_1(client: TestClient):
     r = client.post(
         "/",

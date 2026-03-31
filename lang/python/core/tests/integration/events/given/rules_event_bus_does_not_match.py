@@ -6,7 +6,7 @@ import pytest
 from pytest_bdd import given
 
 
-@given("the rule's event bus does not match")
+@given('the "eventbridge" "rule"\'s event eventbridge bus does not match')
 def rules_event_bus_does_not_match():
     pytest.skip(
         "put_events does not fail when a rule's event bus does not match; "

@@ -1,11 +1,11 @@
-"""Then: the job is InProgress for the given vault"""
+"""Then: the "glacier" "JOB" will be "InProgress" for the given "glacier" "vault" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the job is InProgress for the given vault")
+@then('the "glacier" "JOB" will be "InProgress" for the given "glacier" "vault"')
 def job_is_in_progress_for_vault(world):
     actual_error = world.get("error")
     assert actual_error is None, f"Expected job initiation to succeed but got: {actual_error}"

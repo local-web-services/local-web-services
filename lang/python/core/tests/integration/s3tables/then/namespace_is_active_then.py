@@ -1,4 +1,4 @@
-"""Then: the namespace is "ACTIVE" """
+"""Then: the "s3 tables" "namespace" will be "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_NAMESPACE
 
 
-@then('the namespace is "ACTIVE"')
+@then('the "s3 tables" "namespace" will be "ACTIVE"')
 def namespace_is_active_then(client: TestClient):
     r = client.get(f"/namespaces/{INT_BUCKET}")
     actual_namespaces = [ns["namespace"] for ns in r.json().get("namespaces", [])]

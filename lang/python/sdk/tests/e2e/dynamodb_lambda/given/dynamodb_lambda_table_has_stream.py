@@ -1,4 +1,4 @@
-"""Given: the table has a stream enabled"""
+"""Given: the "dynamodb" "table" has a stream enabled"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import DynamodbLambdaTestClient
 from ..constants import TEST_TABLE
 
 
-@given("the table has a stream enabled")
+@given('the "dynamodb" "table" has a stream enabled')
 def dynamodb_lambda_table_has_stream(lws_session):
     try:
         DynamodbLambdaTestClient(lws_session)._dynamodb.delete_table(TableName=TEST_TABLE)

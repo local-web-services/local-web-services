@@ -1,4 +1,4 @@
-"""When: a parameter is written without overwrite when it already exists"""
+"""When: a "ssm" "parameter" is written without overwrite when it already exists"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SSM_TARGET, INT_PARAM, INT_VALUE2
 
 
-@when("a parameter is written without overwrite when it already exists")
+@when('a "ssm" "parameter" is written without overwrite when it already exists')
 def put_parameter_no_overwrite(client: TestClient, world):
     # Check parameter existence — lws creates the param even when absent
     desc_r = client.post(

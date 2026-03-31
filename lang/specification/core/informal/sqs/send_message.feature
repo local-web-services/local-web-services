@@ -1,5 +1,5 @@
 @sqs @generated
-Feature: Sqs - A Message Is Sent To The Queue
+Feature: Sqs - A "Sqs" "Message" Is Sent To The "Sqs" "Queue"
 
   # Generated from FizzBee spec: sqs.fizz
   # Safety invariants: MessagesReferValidQueues, InFlightMessagesBelongToActiveQueues, ReceiveCountNonNegative
@@ -8,33 +8,33 @@ Feature: Sqs - A Message Is Sent To The Queue
     Given the system is initialized
 
   @minimal @happy @send_message
-  Scenario: a message is sent to the queue
-    Given the queue exists
-    And the queue is "ACTIVE"
+  Scenario: a "sqs" "message" is sent to the "sqs" "queue"
+    Given the "sqs" "queue" existed
+    And the "sqs" "queue" was "ACTIVE"
     And the message slot is available
-    When a message is sent to the queue
-    Then the message is "AVAILABLE" for delivery
+    When a "sqs" "message" is sent to the "sqs" "queue"
+    Then the "sqs" "message" will be "AVAILABLE" for delivery
     And every non-deleted message belongs to an "ACTIVE" queue
     And every in-flight message belongs to an "ACTIVE" queue
     And every message has a non-negative receive count
 
   @guard @negative @send_message
-  Scenario: a message is sent to the queue fails when the queue does not exist
-    Given the queue does not exist
-    When a message is sent to the queue
+  Scenario: a "sqs" "message" is sent to the "sqs" "queue" fails when the "sqs" "queue" did not exist
+    Given the "sqs" "queue" did not exist
+    When a "sqs" "message" is sent to the "sqs" "queue"
     Then the operation is rejected
 
   @guard @negative @send_message @lifecycle
-  Scenario: a message is sent to the queue fails when the queue is not "ACTIVE"
-    Given the queue exists
-    And the queue is not "ACTIVE"
-    When a message is sent to the queue
+  Scenario: a "sqs" "message" is sent to the "sqs" "queue" fails when the "sqs" "queue" was not "ACTIVE"
+    Given the "sqs" "queue" existed
+    And the "sqs" "queue" was not "ACTIVE"
+    When a "sqs" "message" is sent to the "sqs" "queue"
     Then the operation is rejected
 
-  @guard @negative @internal @send_message @capacity
-  Scenario: a message is sent to the queue fails when the message slot is not available
-    Given the queue exists
-    And the queue is "ACTIVE"
+  @guard @negative @send_message @capacity
+  Scenario: a "sqs" "message" is sent to the "sqs" "queue" fails when the message slot is not available
+    Given the "sqs" "queue" existed
+    And the "sqs" "queue" was "ACTIVE"
     And the message slot is not available
-    When a message is sent to the queue
+    When a "sqs" "message" is sent to the "sqs" "queue"
     Then the operation is rejected

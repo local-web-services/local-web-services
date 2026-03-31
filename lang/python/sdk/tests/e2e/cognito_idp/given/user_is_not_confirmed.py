@@ -1,4 +1,4 @@
-"""Given: the user is not "CONFIRMED" """
+"""Given: the "cognito" "user" was not "CONFIRMED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import CognitoIdpTestClient
 from ..constants import TEST_PASSWORD, TEST_TEMP_PASSWORD, TEST_USERNAME
 
 
-@given('the user is not "CONFIRMED"')
+@given('the "cognito" "user" was not "CONFIRMED"')
 def user_is_not_confirmed(lws_session, world):
     """Ensure the user is in FORCE_CHANGE_PASSWORD (unconfirmed) state."""
     # Arrange

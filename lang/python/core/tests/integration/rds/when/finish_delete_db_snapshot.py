@@ -1,4 +1,4 @@
-"""When: a database snapshot deletion completes"""
+"""When: a "rds" "snapshot" deletion completes"""
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import when
 from starlette.testclient import TestClient
 
 
-@when("a database snapshot deletion completes")
+@when('a "rds" "snapshot" deletion completes')
 def finish_delete_db_snapshot(client: TestClient, world: dict):
     pytest.skip("DeleteDBSnapshot is not yet implemented in lws.")

@@ -1,4 +1,4 @@
-"""Given: a domain configuration update has been requested"""
+"""Given: an "elasticsearch" "domain" configuration update is requested"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import ElasticsearchTestClient
 from ..constants import TEST_DOMAIN
 
 
-@given("a domain configuration update has been requested")
+@given('an "elasticsearch" "domain" configuration update is requested')
 def elasticsearch_seq_domain_config_update_requested(lws_session):
     ElasticsearchTestClient(lws_session).create_domain()
     ElasticsearchTestClient(lws_session).update_elasticsearch_domain_config(

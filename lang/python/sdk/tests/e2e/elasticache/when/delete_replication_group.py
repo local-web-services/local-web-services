@@ -1,4 +1,4 @@
-"""When: a replication group is deleted"""
+"""When: a "elasticache" "replication group" is deleted"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import TEST_REPLICATION_GROUP
 
 
-@when("a replication group is deleted")
+@when('a "elasticache" "replication group" is deleted')
 def delete_replication_group(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:

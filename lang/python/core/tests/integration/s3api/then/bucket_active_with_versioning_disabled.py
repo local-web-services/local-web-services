@@ -1,4 +1,4 @@
-"""Then: the bucket is "ACTIVE" with versioning disabled"""
+"""Then: the "s3" "bucket" will be "ACTIVE" with versioning disabled"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET
 
 
-@then('the bucket is "ACTIVE" with versioning disabled')
+@then('the "s3" "bucket" will be "ACTIVE" with versioning disabled')
 def bucket_active_with_versioning_disabled(sync_client: TestClient):
     r = sync_client.get("/")
     expected_bucket = INT_BUCKET

@@ -1,4 +1,4 @@
-"""Given: a multipart upload has been completed"""
+"""Given: a multipart "glacier" "upload" is completed"""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from ..constants import TEST_PART_SIZE, TEST_VAULT
 _PART_BODY = b"e2e-test-part-data"
 
 
-@given("a multipart upload has been completed")
+@given('a multipart "glacier" "upload" is completed')
 def glacier_seq_multipart_upload_completed(lws_session, world):
     vault_name = world.get("vault_name", TEST_VAULT)
     GlacierTestClient(lws_session).create_vault(vault_name=vault_name)

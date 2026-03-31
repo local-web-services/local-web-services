@@ -1,4 +1,4 @@
-"""Then: the pool is "ACTIVE" """
+"""Then: the "cognito" "user pool" will be "ACTIVE" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..client import LambdaCognitoTestClient
 
 
-@then('the pool is "ACTIVE"')
+@then('the "cognito" "user pool" will be "ACTIVE"')
 def pool_is_active_then(lws_session):
     pool_id = LambdaCognitoTestClient(lws_session).pool_id()
     resp = lws_session.client("cognito-idp").describe_user_pool(UserPoolId=pool_id)

@@ -1,5 +1,5 @@
 @stepfunctionsopensearch @generated
-Feature: StepfunctionsOpensearch - A Domain Configuration Update Begins
+Feature: StepfunctionsOpensearch - A "Opensearch" "Domain" Configuration Update Begins
 
   # Generated from FizzBee spec: stepfunctions_opensearch.fizz
   # Safety invariants: ExecutionRequiresActiveStateMachine, SuccessfulExecutionCalledADomain
@@ -8,23 +8,23 @@ Feature: StepfunctionsOpensearch - A Domain Configuration Update Begins
     Given the system is initialized
 
   @minimal @happy @domain_processing_begins
-  Scenario: a domain configuration update begins
-    Given the domain exists
-    And the domain is "ACTIVE"
-    When a domain configuration update begins
-    Then the domain is "PROCESSING" and "API" calls may fail
+  Scenario: a "opensearch" "domain" configuration update begins
+    Given the "opensearch" "domain" existed
+    And the "opensearch" "domain" was "ACTIVE"
+    When a "opensearch" "domain" configuration update begins
+    Then the "opensearch" "domain" will be "PROCESSING" and "API" calls may fail
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which domain it called
 
   @guard @negative @domain_processing_begins
-  Scenario: a domain configuration update begins fails when the domain does not exist
-    Given the domain does not exist
-    When a domain configuration update begins
+  Scenario: a "opensearch" "domain" configuration update begins fails when the "opensearch" "domain" did not exist
+    Given the "opensearch" "domain" did not exist
+    When a "opensearch" "domain" configuration update begins
     Then the operation is rejected
 
   @guard @negative @domain_processing_begins @lifecycle
-  Scenario: a domain configuration update begins fails when the domain is not "ACTIVE"
-    Given the domain exists
-    And the domain is not "ACTIVE"
-    When a domain configuration update begins
+  Scenario: a "opensearch" "domain" configuration update begins fails when the "opensearch" "domain" was not "ACTIVE"
+    Given the "opensearch" "domain" existed
+    And the "opensearch" "domain" was not "ACTIVE"
+    When a "opensearch" "domain" configuration update begins
     Then the operation is rejected

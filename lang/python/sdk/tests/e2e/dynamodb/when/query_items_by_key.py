@@ -1,4 +1,4 @@
-"""When: items are queried from the table by key"""
+"""When: "dynamodb" "item"s are queried from the "dynamodb" "table" by key"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_ITEM_KEY, TEST_PK, TEST_TABLE
 
 
-@when("items are queried from the table by key")
+@when('"dynamodb" "item"s are queried from the "dynamodb" "table" by key')
 def query_items_by_key(lws_session, world):
     try:
         world["result"] = lws_session.client("dynamodb").query(

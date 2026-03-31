@@ -1,4 +1,4 @@
-"""Then: the cluster is in "MODIFYING" state"""
+"""Then: the "memorydb" "cluster" will be in "MODIFYING" state"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_CLUSTER
 
 
-@then('the cluster is in "MODIFYING" state')
+@then('the "memorydb" "cluster" will be in "MODIFYING" state')
 def cluster_is_modifying_then(lws_session, world):
     # Arrange
     cluster_id = world.get("cluster_id", TEST_CLUSTER)

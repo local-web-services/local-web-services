@@ -1,4 +1,4 @@
-"""Then: the table is "ACTIVE" and ready for reads and writes"""
+"""Then: the "dynamodb" "table" will be "ACTIVE" and ready for reads and writes"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_TABLE
 
 
-@then('the table is "ACTIVE" and ready for reads and writes')
+@then('the "dynamodb" "table" will be "ACTIVE" and ready for reads and writes')
 def table_is_active_then(lws_session):
     client = lws_session.client("dynamodb")
     resp = client.list_tables()

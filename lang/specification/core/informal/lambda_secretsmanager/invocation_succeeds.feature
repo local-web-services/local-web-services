@@ -1,5 +1,5 @@
 @lambdasecretsmanager @generated
-Feature: LambdaSecretsmanager - The Lambda Function Reads An Active Secret And Completes Successfully
+Feature: LambdaSecretsmanager - The "Lambda" "Function" Reads An Active Secret And Completes Successfully
 
   # Generated from FizzBee spec: lambda_secretsmanager.fizz
   # Safety invariants: InvocationRequiresActiveFunction, SuccessfulInvocationReadASecret
@@ -8,23 +8,23 @@ Feature: LambdaSecretsmanager - The Lambda Function Reads An Active Secret And C
     Given the system is initialized
 
   @minimal @happy @invocation_succeeds @internal
-  Scenario: the Lambda function reads an "ACTIVE" secret and completes successfully
-    Given an invocation is "IN_PROGRESS"
-    And the secret exists and is "ACTIVE"
-    When the Lambda function reads an "ACTIVE" secret and completes successfully
-    Then the invocation is "SUCCESS"
+  Scenario: the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the secrets manager secret existed and was "ACTIVE"
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    Then the invocation will be "SUCCESS"
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @guard @negative @invocation_succeeds @internal
-  Scenario: the Lambda function reads an "ACTIVE" secret and completes successfully fails when no invocation is "IN_PROGRESS"
-    Given no invocation is "IN_PROGRESS"
-    When the Lambda function reads an "ACTIVE" secret and completes successfully
+  Scenario: the "lambda" "function" reads an "ACTIVE" secret and completes successfully fails when no "lambda" "invocation" was "IN_PROGRESS"
+    Given no "lambda" "invocation" was "IN_PROGRESS"
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
     Then the operation is rejected
 
   @guard @negative @invocation_succeeds @internal
-  Scenario: the Lambda function reads an "ACTIVE" secret and completes successfully fails when the secret does not exist or is not "ACTIVE"
-    Given an invocation is "IN_PROGRESS"
-    And the secret does not exist or is not "ACTIVE"
-    When the Lambda function reads an "ACTIVE" secret and completes successfully
+  Scenario: the "lambda" "function" reads an "ACTIVE" secret and completes successfully fails when the secrets manager secret did not exist or was "ACTIVE"
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the secrets manager secret did not exist or was "ACTIVE"
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
     Then the operation is rejected

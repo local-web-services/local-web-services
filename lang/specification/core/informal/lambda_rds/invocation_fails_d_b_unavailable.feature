@@ -1,5 +1,5 @@
 @lambdards @generated
-Feature: LambdaRds - The Lambda Function Fails To Connect Because The Database Is Failing Over
+Feature: LambdaRds - The "Lambda" "Function" Fails To Connect Because The Database Is Failing Over
 
   # Generated from FizzBee spec: lambda_rds.fizz
   # Safety invariants: InvocationRequiresActiveFunction, SuccessfulInvocationQueriedADB
@@ -8,23 +8,23 @@ Feature: LambdaRds - The Lambda Function Fails To Connect Because The Database I
     Given the system is initialized
 
   @minimal @happy @invocation_fails_d_b_unavailable
-  Scenario: the Lambda function fails to connect because the database is failing over
-    Given an invocation is "IN_PROGRESS"
-    And the database instance is "FAILING_OVER"
-    When the Lambda function fails to connect because the database is failing over
-    Then the invocation is "FAILED" with a connection error
+  Scenario: the "lambda" "function" fails to connect because the database is failing over
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "rds" "database instance" was "FAILING_OVER"
+    When the "lambda" "function" fails to connect because the database is failing over
+    Then the invocation will be "FAILED" with a connection error
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @guard @negative @invocation_fails_d_b_unavailable @lifecycle
-  Scenario: the Lambda function fails to connect because the database is failing over fails when no invocation is "IN_PROGRESS"
-    Given no invocation is "IN_PROGRESS"
-    When the Lambda function fails to connect because the database is failing over
+  Scenario: the "lambda" "function" fails to connect because the database is failing over fails when no "lambda" "invocation" was "IN_PROGRESS"
+    Given no "lambda" "invocation" was "IN_PROGRESS"
+    When the "lambda" "function" fails to connect because the database is failing over
     Then the operation is rejected
 
   @guard @negative @invocation_fails_d_b_unavailable @lifecycle
-  Scenario: the Lambda function fails to connect because the database is failing over fails when the database instance is not "FAILING_OVER"
-    Given an invocation is "IN_PROGRESS"
-    And the database instance is not "FAILING_OVER"
-    When the Lambda function fails to connect because the database is failing over
+  Scenario: the "lambda" "function" fails to connect because the database is failing over fails when the "rds" "database instance" was not "FAILING_OVER"
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "rds" "database instance" was not "FAILING_OVER"
+    When the "lambda" "function" fails to connect because the database is failing over
     Then the operation is rejected

@@ -44,7 +44,6 @@ from .source_object_does_not_exist import *  # noqa: F401,F403
 from .source_object_exists import *  # noqa: F401,F403
 from .source_object_is_deleted import *  # noqa: F401,F403
 from .source_object_is_not_deleted import *  # noqa: F401,F403
-from .source_objects_bucket_exists import *  # noqa: F401,F403
 from .src_bname_in_bucket_status import *  # noqa: F401,F403
 from .system_is_initialized import *  # noqa: F401,F403
 from .the_list_of_buckets_has_been_retrieved import *  # noqa: F401,F403

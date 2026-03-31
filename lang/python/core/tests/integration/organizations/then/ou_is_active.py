@@ -1,4 +1,4 @@
-"""Then: the organizational unit is "ACTIVE" """
+"""Then: the "organizations" "organizational unit" will be "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import OrganizationsTestClient
 
 
-@then('the organizational unit is "ACTIVE"')
+@then('the "organizations" "organizational unit" will be "ACTIVE"')
 def ou_is_active(client: TestClient, world):
     actual_create_error = world["error"]
     assert (

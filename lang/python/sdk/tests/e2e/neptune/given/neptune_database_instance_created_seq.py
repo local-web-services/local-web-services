@@ -1,4 +1,4 @@
-"""Given: a database instance has been created in an available cluster"""
+"""Given: a "neptune" "instance" is created in an available neptune cluster"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..client import NeptuneTestClient
 
 
-@given("a database instance has been created in an available cluster")
+@given('a "neptune" "instance" is created in an available neptune cluster')
 def neptune_database_instance_created_seq(lws_session):
     NeptuneTestClient(lws_session).create_cluster()
     NeptuneTestClient(lws_session).create_instance()

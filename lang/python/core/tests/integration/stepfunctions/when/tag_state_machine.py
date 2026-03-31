@@ -1,4 +1,4 @@
-"""When: tags are added to a state machine"""
+"""When: tags are added to a "step functions" "state machine" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SFN_TARGET, INT_SM, INT_TAG_KEY, INT_TAG_VALUE, _sm_arn
 
 
-@when("tags are added to a state machine")
+@when('tags are added to a "step functions" "state machine"')
 def tag_state_machine(client: TestClient, world):
     sm_name = world.get("state_machine_name", INT_SM)
     r = client.post(

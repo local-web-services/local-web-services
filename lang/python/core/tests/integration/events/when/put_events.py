@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EVENTS_TARGET, INT_BUS, _store
 
 
-@when("events are published to an event bus")
+@when('events are published to an "eventbridge" "bus"')
 def put_events(client: TestClient, world):
     r = client.post(
         "/",

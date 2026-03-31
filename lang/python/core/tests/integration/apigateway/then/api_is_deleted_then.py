@@ -8,6 +8,9 @@ from starlette.testclient import TestClient
 from ..constants import _API_DELETED_STEP
 
 
+@then(
+    'the "api gateway" "API" will be deleted along with all its resources, methods, integrations, deployments, and stages'
+)
 @then(_API_DELETED_STEP)
 def api_is_deleted_then(client: TestClient, world):
     assert world["error"] is None, f"Expected delete to succeed but got error: {world['error']}"

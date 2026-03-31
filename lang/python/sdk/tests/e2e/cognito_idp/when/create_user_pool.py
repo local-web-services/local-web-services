@@ -1,4 +1,4 @@
-"""When: a user pool is created"""
+"""When: a "cognito" "user pool" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_POOL_NAME, _skip_if_not_implemented
 
 
-@when("a user pool is created")
+@when('a "cognito" "user pool" is created')
 def create_user_pool(lws_session, world):
     try:
         resp = lws_session.client("cognito-idp").create_user_pool(PoolName=TEST_POOL_NAME)

@@ -1,4 +1,4 @@
-"""When: an execution of the state machine is started"""
+"""When: an "step functions" "execution" of the "step functions" "state machine" is started"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import TEST_INPUT, _sm_arn
 
 
-@when("an execution of the state machine is started")
+@when('an "step functions" "execution" of the "step functions" "state machine" is started')
 def start_execution(lws_session, world):
     if world.get("_sm_has_no_dynamodb_task"):
         pytest.skip(

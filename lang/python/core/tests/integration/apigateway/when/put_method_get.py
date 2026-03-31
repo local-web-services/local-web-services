@@ -1,4 +1,4 @@
-"""When: a "GET" method is created on a resource"""
+"""When: a "GET" method is created on a "api gateway" "resource" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_HTTP_METHOD
 
 
-@when('a "GET" method is created on a resource')
+@when('a "GET" method is created on a "api gateway" "resource"')
 def put_method_get(client: TestClient, world):
     list_r = client.get("/restapis")
     items = list_r.json().get("item", [])

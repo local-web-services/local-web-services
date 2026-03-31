@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EVENTS_TARGET, INT_BUS, _store
 
 
-@when("an event bus is deleted")
+@when('an "eventbridge" "bus" is deleted')
 def delete_event_bus(client: TestClient, world):
     r = client.post(
         "/", headers={"X-Amz-Target": f"{_EVENTS_TARGET}.DeleteEventBus"}, json={"Name": INT_BUS}

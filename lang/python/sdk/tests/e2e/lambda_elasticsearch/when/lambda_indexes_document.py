@@ -1,4 +1,4 @@
-"""When: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds"""
+"""When: the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds"""
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from pytest_bdd import when
 from ..constants import TEST_DOMAIN
 
 
-@when('the Lambda function indexes a document into the "AVAILABLE" domain and succeeds')
+@when(
+    'the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds'
+)
 def lambda_indexes_document(lws_session, world):
     # Arrange
     invocation_id = world.get("invocation_id")

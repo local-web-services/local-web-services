@@ -1,10 +1,10 @@
-"""Then: a pending config change only exists on a domain that is "PROCESSING" """
+"""Then: a pending config change only exists on a "opensearch" "domain" that is "PROCESSING" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('a pending config change only exists on a domain that is "PROCESSING"')
+@then('a pending config change only exists on a "opensearch" "domain" that is "PROCESSING"')
 def pending_config_only_on_processing_domain():
     """No-op: domain configuration state invariant; always passes."""

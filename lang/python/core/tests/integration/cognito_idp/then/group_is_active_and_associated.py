@@ -1,4 +1,4 @@
-"""Then: the group is "ACTIVE" and associated with the pool"""
+"""Then: the "cognito" "group" will be "ACTIVE" and associated with the "cognito" "user pool" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import INT_GROUP_NAME
 
 
-@then('the group is "ACTIVE" and associated with the pool')
+@then('the "cognito" "group" will be "ACTIVE" and associated with the "cognito" "user pool"')
 def group_is_active_and_associated(world):
     actual_error = world.get("error")
     assert actual_error is None, f"Expected group creation to succeed but got: {actual_error}"

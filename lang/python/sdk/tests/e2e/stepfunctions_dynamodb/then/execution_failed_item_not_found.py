@@ -1,11 +1,11 @@
-"""Then: the execution is "FAILED" because the item was not found"""
+"""Then: the "step functions" "execution" will be "FAILED" because the item was not found"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the execution is "FAILED" because the item was not found')
+@then('the "step functions" "execution" will be "FAILED" because the item was not found')
 def execution_failed_item_not_found(world):
     # Arrange
     expected_error = None

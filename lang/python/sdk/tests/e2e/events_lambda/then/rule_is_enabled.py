@@ -1,4 +1,4 @@
-"""Then: the rule is "ENABLED" and will trigger the function when matching events are published"""
+"""Then: the rule will be "ENABLED" and will trigger the function when matching events are published"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_BUS, TEST_RULE
 
 
-@then('the rule is "ENABLED" and will trigger the function when matching events are published')
+@then('the rule will be "ENABLED" and will trigger the function when matching events are published')
 def rule_is_enabled(lws_session):
     resp = lws_session.client("events").describe_rule(Name=TEST_RULE, EventBusName=TEST_BUS)
     expected_state = "ENABLED"

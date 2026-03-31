@@ -1,4 +1,4 @@
-"""Given: the message's queue is not "ACTIVE" """
+"""Given: the "sqs" "message"'s "sqs" "queue" was not "ACTIVE" """
 
 from __future__ import annotations
 

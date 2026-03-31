@@ -1,10 +1,10 @@
-"""Given: the event bus is not the default bus"""
+"""Given: the "eventbridge" "bus" is not the default eventbridge bus"""
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given("the event bus is not the default bus")
+@given('the "eventbridge" "bus" is not the default eventbridge bus')
 def bus_is_not_default():
     """No-op: TEST_BUS is not the default bus."""

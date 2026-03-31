@@ -1,4 +1,4 @@
-"""When: an event bus is described"""
+"""When: an "eventbridge" "bus" is described"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUS
 
 
-@when("an event bus is described")
+@when('an "eventbridge" "bus" is described')
 def describe_event_bus(lws_session, world):
     try:
         resp = lws_session.client("events").describe_event_bus(Name=TEST_BUS)

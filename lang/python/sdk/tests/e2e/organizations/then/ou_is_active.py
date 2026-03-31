@@ -1,11 +1,11 @@
-"""Then: the organizational unit is "ACTIVE" """
+"""Then: the "organizations" "policy" will be "ACTIVE" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the organizational unit is "ACTIVE"')
+@then('the "organizations" "organizational unit" will be "ACTIVE"')
 def ou_is_active(lws_session, world):
     assert (
         world["error"] is None

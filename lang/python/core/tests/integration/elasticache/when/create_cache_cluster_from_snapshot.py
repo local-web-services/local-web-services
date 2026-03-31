@@ -1,4 +1,4 @@
-"""When: a cache cluster is created from a snapshot"""
+"""When: an "elasticache" "cluster" is created from an "elasticache" "snapshot" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_CLUSTER_ID, INT_SNAPSHOT_ID
 
 
-@when("a cache cluster is created from a snapshot")
+@when('an "elasticache" "cluster" is created from an "elasticache" "snapshot"')
 def create_cache_cluster_from_snapshot(client: TestClient, world):
     r = client.post(
         "/",

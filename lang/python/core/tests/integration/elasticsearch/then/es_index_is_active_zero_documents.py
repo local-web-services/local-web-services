@@ -1,11 +1,11 @@
-"""Then: the index is "ACTIVE" with zero documents"""
+"""Then: the "elasticsearch" "index" will be "ACTIVE" with zero documents"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the index is "ACTIVE" with zero documents')
+@then('the "elasticsearch" "index" will be "ACTIVE" with zero documents')
 def es_index_is_active_zero_documents(world: dict):
     actual_result = world["result"]
     assert (

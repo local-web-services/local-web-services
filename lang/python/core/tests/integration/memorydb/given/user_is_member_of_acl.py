@@ -1,4 +1,4 @@
-"""Given: the user is a member of the "ACL" """
+"""Given: the "memorydb" "user" was a member of the "memorydb" "ACL" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import MemorydbTestClient
 from ..constants import _MDB_TARGET, INT_ACL_NAME, INT_USER_NAME
 
 
-@given('the user is a member of the "ACL"')
+@given('the "memorydb" "user" was a member of the "memorydb" "ACL"')
 def user_is_member_of_acl(client: TestClient):
     MemorydbTestClient(client).create_user()
     MemorydbTestClient(client).create_acl()

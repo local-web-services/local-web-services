@@ -1,4 +1,4 @@
-"""When: a direct S3 integration is configured on the "API" """
+"""When: a direct S3 integration is configured on the "api gateway" "API" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import ApigatewayS3apiTestClient
 
 
-@when('a direct S3 integration is configured on the "API"')
+@when('a direct S3 integration is configured on the "api gateway" "API"')
 def configure_s3_integration_apigw(lws_session, world):
     try:
         api_id = ApigatewayS3apiTestClient(lws_session).get_api_id()

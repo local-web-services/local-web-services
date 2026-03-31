@@ -1,4 +1,4 @@
-"""When: an in-flight message is deleted"""
+"""When: an in-flight "sqs" "message" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import SqsTestClient
 
 
-@when("an in-flight message is deleted")
+@when('an in-flight "sqs" "message" is deleted')
 def delete_message(lws_session, world):
     try:
         world["result"] = SqsTestClient(lws_session).delete_message(

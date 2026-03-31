@@ -1,4 +1,4 @@
-"""When: tags are removed from a cache resource"""
+"""When: tags are removed from an "elasticache" "resource" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ElasticacheTestClient
 from ..constants import _EC_TARGET, INT_TAG_KEY
 
 
-@when("tags are removed from a cache resource")
+@when('tags are removed from an "elasticache" "resource"')
 def remove_tags_from_cache_resource(client: TestClient, world):
     arn = ElasticacheTestClient(client).get_cluster_arn()
     r = client.post(

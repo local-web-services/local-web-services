@@ -1,4 +1,4 @@
-"""When: object metadata is retrieved from a bucket"""
+"""When: "s3" "object" metadata is retrieved from a "s3" "bucket" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUCKET, TEST_KEY
 
 
-@when("object metadata is retrieved from a bucket")
+@when('"s3" "object" metadata is retrieved from a "s3" "bucket"')
 def head_object(lws_session, world):
     try:
         world["result"] = lws_session.client("s3").head_object(Bucket=TEST_BUCKET, Key=TEST_KEY)

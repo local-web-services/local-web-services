@@ -1,4 +1,4 @@
-"""When: a running execution writes an item to the DynamoDB table and succeeds"""
+"""When: a running "step functions" "execution" writes an item to the "dynamodb" "table" and succeeds"""
 
 from __future__ import annotations
 
@@ -16,7 +16,9 @@ from ..constants import (
 )
 
 
-@when("a running execution writes an item to the DynamoDB table and succeeds")
+@when(
+    'a running "step functions" "execution" writes an item to the "dynamodb" "table" and succeeds'
+)
 def execution_writes_item(lws_session, world):
     try:
         StepfunctionsDynamodbTestClient(lws_session).create_table()

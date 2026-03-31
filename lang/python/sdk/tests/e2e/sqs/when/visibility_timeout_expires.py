@@ -1,4 +1,4 @@
-"""When: a message visibility timeout expires"""
+"""When: a "sqs" "message" visibility timeout expires"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import SqsTestClient
 
 
-@when("a message visibility timeout expires")
+@when('a "sqs" "message" visibility timeout expires')
 def visibility_timeout_expires(lws_session, world):
     """Simulate by setting visibility timeout to 0 (makes message AVAILABLE again)."""
     try:

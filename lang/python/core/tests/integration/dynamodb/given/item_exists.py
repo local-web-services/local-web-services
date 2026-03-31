@@ -1,4 +1,4 @@
-"""Given: the item exists"""
+"""Given: the "dynamodb" "item" existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import DynamodbTestClient
 
 
-@given("the item exists")
+@given('the "dynamodb" "item" existed')
 def item_exists(client: TestClient):
     DynamodbTestClient(client).put_item()

@@ -19,10 +19,10 @@ action Init:
     snapshot_instance = {}
 
 # CreateDBInstance: instance starts in CREATING state
-# step: a database instance is created
-# result: the instance is in CREATING state
-# guard: the database instance does not already exist
-# guard_violation: the database instance already exists
+# step: a "rds" "instance" is created
+# result: the "rds" "instance" will be in "CREATING" state
+# guard: the "rds" "instance" did not already exist
+# guard_violation: the "rds" "instance" already existed
 atomic action CreateDBInstance:
     oneof iid in INSTANCE_IDS:
         if iid not in instance_status:
@@ -31,12 +31,12 @@ atomic action CreateDBInstance:
 
 # Non-deterministic: instance becomes AVAILABLE or FAILED after CREATING
 # fake_skip: internal
-# step: a database instance finishes creating
-# result: the instance is AVAILABLE or FAILED
-# guard: the database instance exists
-# guard_violation: the database instance does not exist
-# guard: the instance is CREATING
-# guard_violation_lifecycle: the instance is not CREATING
+# step: a "rds" "instance" finishes creating
+# result: the "rds" "instance" will be "AVAILABLE" or "FAILED"
+# guard: the "rds" "instance" existed
+# guard_violation: the "rds" "instance" did not exist
+# guard: the "rds" "instance" was "CREATING"
+# guard_violation_lifecycle: the "rds" "instance" was not "CREATING"
 atomic action ActivateDBInstance:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -46,12 +46,12 @@ atomic action ActivateDBInstance:
                     instance_status[iid] = "FAILED"
 
 # ModifyDBInstance: transitions AVAILABLE instance to MODIFYING
-# step: a database instance configuration is modified
-# result: the instance is in MODIFYING state
-# guard: the database instance exists
-# guard_violation: the database instance does not exist
-# guard: the instance is AVAILABLE
-# guard_violation_lifecycle: the instance is not AVAILABLE
+# step: a "rds" "instance" configuration is modified
+# result: the "rds" "instance" will be in "MODIFYING" state
+# guard: the "rds" "instance" existed
+# guard_violation: the "rds" "instance" did not exist
+# guard: the "rds" "instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "rds" "instance" was not "AVAILABLE"
 atomic action ModifyDBInstance:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -59,12 +59,12 @@ atomic action ModifyDBInstance:
                 instance_status[iid] = "MODIFYING"
 
 # fake_skip: internal
-# step: a database instance modification completes
-# result: the instance returns to AVAILABLE state
-# guard: the database instance exists
-# guard_violation: the database instance does not exist
-# guard: the instance is MODIFYING
-# guard_violation_lifecycle: the instance is not MODIFYING
+# step: a "rds" "instance" modification completes
+# result: the "rds" "instance" returns to "AVAILABLE" state
+# guard: the "rds" "instance" existed
+# guard_violation: the "rds" "instance" did not exist
+# guard: the "rds" "instance" was "MODIFYING"
+# guard_violation_lifecycle: the "rds" "instance" was not "MODIFYING"
 atomic action FinishModifyDBInstance:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -72,12 +72,12 @@ atomic action FinishModifyDBInstance:
                 instance_status[iid] = "AVAILABLE"
 
 # RebootDBInstance: only on AVAILABLE instances
-# step: a database instance is rebooted
-# result: the instance is in REBOOTING state
-# guard: the database instance exists
-# guard_violation: the database instance does not exist
-# guard: the instance is AVAILABLE
-# guard_violation_lifecycle: the instance is not AVAILABLE
+# step: a "rds" "instance" is rebooted
+# result: the "rds" "instance" will be in "REBOOTING" state
+# guard: the "rds" "instance" existed
+# guard_violation: the "rds" "instance" did not exist
+# guard: the "rds" "instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "rds" "instance" was not "AVAILABLE"
 atomic action RebootDBInstance:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -85,12 +85,12 @@ atomic action RebootDBInstance:
                 instance_status[iid] = "REBOOTING"
 
 # fake_skip: internal
-# step: a database instance reboot completes
-# result: the instance returns to AVAILABLE state
-# guard: the database instance exists
-# guard_violation: the database instance does not exist
-# guard: the instance is REBOOTING
-# guard_violation_lifecycle: the instance is not REBOOTING
+# step: a "rds" "instance" reboot completes
+# result: the "rds" "instance" returns to "AVAILABLE" state
+# guard: the "rds" "instance" existed
+# guard_violation: the "rds" "instance" did not exist
+# guard: the "rds" "instance" was "REBOOTING"
+# guard_violation_lifecycle: the "rds" "instance" was not "REBOOTING"
 atomic action FinishRebootDBInstance:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -98,12 +98,12 @@ atomic action FinishRebootDBInstance:
                 instance_status[iid] = "AVAILABLE"
 
 # DeleteDBInstance: with SkipFinalSnapshot flag = True
-# step: a database instance is deleted without a final snapshot
-# result: the instance is in DELETING state
-# guard: the database instance exists
-# guard_violation: the database instance does not exist
-# guard: the instance is AVAILABLE or FAILED
-# guard_violation_lifecycle: the instance is neither AVAILABLE nor FAILED
+# step: a "rds" "instance" is deleted without a final "rds" "snapshot"
+# result: the "rds" "instance" will be in "DELETING" state
+# guard: the "rds" "instance" existed
+# guard_violation: the "rds" "instance" did not exist
+# guard: the "rds" "instance" was "AVAILABLE" or "FAILED"
+# guard_violation_lifecycle: the "rds" "instance" is neither "AVAILABLE" nor "FAILED"
 atomic action DeleteDBInstanceSkipSnapshot:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -111,14 +111,14 @@ atomic action DeleteDBInstanceSkipSnapshot:
                 instance_status[iid] = "DELETING"
 
 # DeleteDBInstance: without SkipFinalSnapshot — links a final snapshot to the instance
-# step: a database instance is deleted with a final snapshot
-# result: the instance is in DELETING state and a snapshot is CREATING
-# guard: the database instance exists
-# guard_violation: the database instance does not exist
-# guard: the instance is AVAILABLE
-# guard_violation_lifecycle: the instance is not AVAILABLE
-# guard: a snapshot slot is available
-# guard_violation: no snapshot slot is available
+# step: a "rds" "instance" is deleted with a final "rds" "snapshot"
+# result: the "rds" "instance" will be in "DELETING" state and a "rds" "snapshot" will be "CREATING"
+# guard: the "rds" "instance" existed
+# guard_violation: the "rds" "instance" did not exist
+# guard: the "rds" "instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "rds" "instance" was not "AVAILABLE"
+# guard: a "rds" "snapshot" slot is available
+# guard_violation: no "rds" "snapshot" slot is available
 atomic action DeleteDBInstanceWithSnapshot:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -130,12 +130,12 @@ atomic action DeleteDBInstanceWithSnapshot:
                         instance_status[iid] = "DELETING"
 
 # fake_skip: internal
-# step: a database instance deletion completes
-# result: the instance is DELETED
-# guard: the database instance exists
-# guard_violation: the database instance does not exist
-# guard: the instance is DELETING
-# guard_violation_lifecycle: the instance is not DELETING
+# step: a "rds" "instance" deletion completes
+# result: the "rds" "instance" will be "DELETED"
+# guard: the "rds" "instance" existed
+# guard_violation: the "rds" "instance" did not exist
+# guard: the "rds" "instance" was "DELETING"
+# guard_violation_lifecycle: the "rds" "instance" was not "DELETING"
 atomic action FinishDeleteDBInstance:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -143,14 +143,14 @@ atomic action FinishDeleteDBInstance:
                 instance_status[iid] = "DELETED"
 
 # CreateDBSnapshot: only on AVAILABLE instances; instance moves to BACKING_UP
-# step: a database snapshot is created from an instance
-# result: the snapshot is CREATING and the instance is in BACKING_UP state
-# guard: the database instance exists
-# guard_violation: the database instance does not exist
-# guard: the instance is AVAILABLE
-# guard_violation_lifecycle: the instance is not AVAILABLE
-# guard: a snapshot slot is available
-# guard_violation: no snapshot slot is available
+# step: a "rds" "snapshot" is created from a "rds" "instance"
+# result: the "rds" "snapshot" will be "CREATING" and the "rds" "instance" will be in "BACKING_UP" state
+# guard: the "rds" "instance" existed
+# guard_violation: the "rds" "instance" did not exist
+# guard: the "rds" "instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "rds" "instance" was not "AVAILABLE"
+# guard: a "rds" "snapshot" slot is available
+# guard_violation: no "rds" "snapshot" slot is available
 atomic action CreateDBSnapshot:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -162,16 +162,16 @@ atomic action CreateDBSnapshot:
                         instance_status[iid] = "BACKING_UP"
 
 # fake_skip: internal
-# step: a database snapshot finishes creating
-# result: the snapshot is AVAILABLE and the instance returns to AVAILABLE state
-# guard: the snapshot exists
-# guard_violation: the snapshot does not exist
-# guard: the snapshot is CREATING
-# guard_violation_lifecycle: the snapshot is not CREATING
-# guard: the instance exists
-# guard_violation: the instance does not exist
-# guard: the instance is BACKING_UP
-# guard_violation_lifecycle: the instance is not BACKING_UP
+# step: a "rds" "snapshot" finishes creating
+# result: the "rds" "snapshot" will be "AVAILABLE" and the "rds" "instance" returns to "AVAILABLE" state
+# guard: the "rds" "snapshot" existed
+# guard_violation: the "rds" "snapshot" did not exist
+# guard: the "rds" "snapshot" was "CREATING"
+# guard_violation_lifecycle: the "rds" "snapshot" was not "CREATING"
+# guard: the "rds" "instance" existed
+# guard_violation: the "rds" "instance" did not exist
+# guard: the "rds" "instance" was "BACKING_UP"
+# guard_violation_lifecycle: the "rds" "instance" was not "BACKING_UP"
 atomic action FinishCreateDBSnapshot:
     oneof sid in SNAPSHOT_IDS:
         if sid in snapshot_status:
@@ -183,12 +183,12 @@ atomic action FinishCreateDBSnapshot:
                         instance_status[iid] = "AVAILABLE"
 
 # DeleteDBSnapshot: only on AVAILABLE snapshots
-# step: a database snapshot is deleted
-# result: the snapshot is in DELETING state
-# guard: the snapshot exists
-# guard_violation: the snapshot does not exist
-# guard: the snapshot is AVAILABLE
-# guard_violation_lifecycle: the snapshot is not AVAILABLE
+# step: a "rds" "snapshot" is deleted
+# result: the "rds" "snapshot" will be in "DELETING" state
+# guard: the "rds" "snapshot" existed
+# guard_violation: the "rds" "snapshot" did not exist
+# guard: the "rds" "snapshot" was "AVAILABLE"
+# guard_violation_lifecycle: the "rds" "snapshot" was not "AVAILABLE"
 atomic action DeleteDBSnapshot:
     oneof sid in SNAPSHOT_IDS:
         if sid in snapshot_status:
@@ -196,12 +196,12 @@ atomic action DeleteDBSnapshot:
                 snapshot_status[sid] = "DELETING"
 
 # fake_skip: internal
-# step: a database snapshot deletion completes
-# result: the snapshot is DELETED
-# guard: the snapshot exists
-# guard_violation: the snapshot does not exist
-# guard: the snapshot is DELETING
-# guard_violation_lifecycle: the snapshot is not DELETING
+# step: a "rds" "snapshot" deletion completes
+# result: the "rds" "snapshot" will be "DELETED"
+# guard: the "rds" "snapshot" existed
+# guard_violation: the "rds" "snapshot" did not exist
+# guard: the "rds" "snapshot" was "DELETING"
+# guard_violation_lifecycle: the "rds" "snapshot" was not "DELETING"
 atomic action FinishDeleteDBSnapshot:
     oneof sid in SNAPSHOT_IDS:
         if sid in snapshot_status:
@@ -209,14 +209,14 @@ atomic action FinishDeleteDBSnapshot:
                 snapshot_status[sid] = "DELETED"
 
 # RestoreDBInstanceFromDBSnapshot: creates a new instance in RESTORING state from an AVAILABLE snapshot
-# step: a database instance is restored from a snapshot
-# result: the restored instance is in RESTORING state
-# guard: the snapshot exists
-# guard_violation: the snapshot does not exist
-# guard: the snapshot is AVAILABLE
-# guard_violation_lifecycle: the snapshot is not AVAILABLE
-# guard: the target instance slot is available
-# guard_violation: the target instance slot is not available
+# step: a "rds" "instance" is restored from a "rds" "snapshot"
+# result: the restored "rds" "instance" will be in "RESTORING" state
+# guard: the "rds" "snapshot" existed
+# guard_violation: the "rds" "snapshot" did not exist
+# guard: the "rds" "snapshot" was "AVAILABLE"
+# guard_violation_lifecycle: the "rds" "snapshot" was not "AVAILABLE"
+# guard: the target "rds" "instance" slot is available
+# guard_violation: the target "rds" "instance" slot is not available
 atomic action RestoreDBInstanceFromDBSnapshot:
     oneof sid in SNAPSHOT_IDS:
         if sid in snapshot_status:
@@ -227,12 +227,12 @@ atomic action RestoreDBInstanceFromDBSnapshot:
                         instance_multi_az[iid] = False
 
 # fake_skip: internal
-# step: a database instance restore from snapshot completes
-# result: the instance is AVAILABLE
-# guard: the database instance exists
-# guard_violation: the database instance does not exist
-# guard: the instance is RESTORING
-# guard_violation_lifecycle: the instance is not RESTORING
+# step: a "rds" "instance" restore from "rds" "snapshot" completes
+# result: the "rds" "instance" will be "AVAILABLE"
+# guard: the "rds" "instance" existed
+# guard_violation: the "rds" "instance" did not exist
+# guard: the "rds" "instance" was "RESTORING"
+# guard_violation_lifecycle: the "rds" "instance" was not "RESTORING"
 atomic action FinishRestoreDBInstance:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -241,14 +241,14 @@ atomic action FinishRestoreDBInstance:
 
 # Non-deterministic automated backup window
 # fake_skip: internal
-# step: an automated backup runs on an available instance
-# result: a snapshot is CREATING and the instance is in BACKING_UP state
-# guard: the database instance exists
-# guard_violation: the database instance does not exist
-# guard: the instance is AVAILABLE
-# guard_violation_lifecycle: the instance is not AVAILABLE
-# guard: a snapshot slot is available
-# guard_violation: no snapshot slot is available
+# step: an automated backup runs on an available "rds" "instance"
+# result: a "rds" "snapshot" will be "CREATING" and the "rds" "instance" will be in "BACKING_UP" state
+# guard: the "rds" "instance" existed
+# guard_violation: the "rds" "instance" did not exist
+# guard: the "rds" "instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "rds" "instance" was not "AVAILABLE"
+# guard: a "rds" "snapshot" slot is available
+# guard_violation: no "rds" "snapshot" slot is available
 atomic action AutomatedBackup:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -261,14 +261,14 @@ atomic action AutomatedBackup:
 
 # Non-deterministic Multi-AZ failover: AVAILABLE multi-az instance goes through MODIFYING
 # fake_skip: internal
-# step: a multi-AZ failover is triggered on an instance
-# result: the instance enters MODIFYING state during promotion
-# guard: the database instance exists
-# guard_violation: the database instance does not exist
-# guard: the instance is AVAILABLE
-# guard_violation_lifecycle: the instance is not AVAILABLE
-# guard: the instance has multi-AZ enabled
-# guard_violation: the instance does not have multi-AZ enabled
+# step: a multi-AZ failover is triggered on a "rds" "instance"
+# result: the "rds" "instance" will be in "MODIFYING" state during promotion
+# guard: the "rds" "instance" existed
+# guard_violation: the "rds" "instance" did not exist
+# guard: the "rds" "instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "rds" "instance" was not "AVAILABLE"
+# guard: the "rds" "instance" has multi-AZ enabled
+# guard_violation: the "rds" "instance" does not have multi-AZ enabled
 atomic action MultiAZFailover:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -277,12 +277,12 @@ atomic action MultiAZFailover:
                     instance_status[iid] = "MODIFYING"
 
 # EnableMultiAZ on an AVAILABLE instance
-# step: multi-AZ is enabled on a database instance
-# result: the instance is configured for multi-AZ deployment
-# guard: the database instance exists
-# guard_violation: the database instance does not exist
-# guard: the instance is AVAILABLE
-# guard_violation_lifecycle: the instance is not AVAILABLE
+# step: multi-AZ was "ENABLED" on a "rds" "instance"
+# result: the "rds" "instance" will be configured for multi-AZ deployment
+# guard: the "rds" "instance" existed
+# guard_violation: the "rds" "instance" did not exist
+# guard: the "rds" "instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "rds" "instance" was not "AVAILABLE"
 atomic action EnableMultiAZ:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -290,12 +290,12 @@ atomic action EnableMultiAZ:
                 instance_multi_az[iid] = True
 
 # Tag operation on AVAILABLE instances (simplified: set a tagged flag)
-# step: a tag is applied to a database instance
-# result: the instance tag state is unchanged (no-op model)
-# guard: the database instance exists
-# guard_violation: the database instance does not exist
-# guard: the instance is AVAILABLE
-# guard_violation_lifecycle: the instance is not AVAILABLE
+# step: a tag is applied to a "rds" "instance"
+# result: the "rds" "instance" tag state will be unchanged (no-op model)
+# guard: the "rds" "instance" existed
+# guard_violation: the "rds" "instance" did not exist
+# guard: the "rds" "instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "rds" "instance" was not "AVAILABLE"
 atomic action TagDBInstance:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:

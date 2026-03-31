@@ -1,4 +1,4 @@
-"""Then: the user is in "CREATING" state"""
+"""Then: the "memorydb" "user" will be in "CREATING" state"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_USER_NAME
 
 
-@then('the user is in "CREATING" state')
+@then('the "memorydb" "user" will be in "CREATING" state')
 def user_is_in_creating_state(client: TestClient, world):
     actual_error = world["error"]
     assert actual_error is None, f"Expected user creation to succeed but got: {actual_error}"

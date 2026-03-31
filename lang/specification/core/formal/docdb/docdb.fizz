@@ -23,10 +23,10 @@ action Init:
     snapshot_status = {}
     snapshot_cluster = {}
 
-# step: a database cluster is created
-# result: the cluster is in CREATING state
-# guard: the cluster does not already exist
-# guard_violation: the cluster already exists
+# step: a "documentdb" "cluster" is created
+# result: the "documentdb" "cluster" will be in "CREATING" state
+# guard: the "documentdb" "cluster" did not already exist
+# guard_violation: the "documentdb" "cluster" already existed
 atomic action CreateDBCluster:
     oneof cid in CLUSTER_IDS:
         if cid not in cluster_status:
@@ -34,12 +34,12 @@ atomic action CreateDBCluster:
             cluster_primary_instance[cid] = ""
 
 # fake_skip: internal
-# step: a database cluster finishes creating
-# result: the cluster is AVAILABLE
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is CREATING
-# guard_violation: the cluster is not CREATING
+# step: a "documentdb" "cluster" finishes creating
+# result: the "documentdb" "cluster" will be "AVAILABLE"
+# guard: the "documentdb" "cluster" existed
+# guard_violation: the "documentdb" "cluster" did not exist
+# guard: the "documentdb" "cluster" was "CREATING"
+# guard_violation: the "documentdb" "cluster" was not "CREATING"
 atomic action CompleteClusterCreation:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -47,24 +47,24 @@ atomic action CompleteClusterCreation:
                 cluster_status[cid] = "AVAILABLE"
 
 # fake_skip: internal
-# step: a database cluster creation fails
-# result: the cluster is in FAILED state
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is CREATING
-# guard_violation: the cluster is not CREATING
+# step: a "documentdb" "cluster" creation fails
+# result: the "documentdb" "cluster" will be in "FAILED" state
+# guard: the "documentdb" "cluster" existed
+# guard_violation: the "documentdb" "cluster" did not exist
+# guard: the "documentdb" "cluster" was "CREATING"
+# guard_violation: the "documentdb" "cluster" was not "CREATING"
 atomic action FailClusterCreation:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
             if cluster_status[cid] == "CREATING":
                 cluster_status[cid] = "FAILED"
 
-# step: a database cluster configuration is modified
-# result: the cluster is in MODIFYING state
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
+# step: a "documentdb" "cluster" configuration is modified
+# result: the "documentdb" "cluster" will be in "MODIFYING" state
+# guard: the "documentdb" "cluster" existed
+# guard_violation: the "documentdb" "cluster" did not exist
+# guard: the "documentdb" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "documentdb" "cluster" was not "AVAILABLE"
 atomic action ModifyDBCluster:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -72,26 +72,26 @@ atomic action ModifyDBCluster:
                 cluster_status[cid] = "MODIFYING"
 
 # fake_skip: internal
-# step: a database cluster modification completes
-# result: the cluster returns to AVAILABLE state
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is MODIFYING
-# guard_violation: the cluster is not MODIFYING
+# step: a "documentdb" "cluster" modification completes
+# result: the "documentdb" "cluster" returns to AVAILABLE state
+# guard: the "documentdb" "cluster" existed
+# guard_violation: the "documentdb" "cluster" did not exist
+# guard: the "documentdb" "cluster" was "MODIFYING"
+# guard_violation: the "documentdb" "cluster" was not "MODIFYING"
 atomic action CompleteClusterModification:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
             if cluster_status[cid] == "MODIFYING":
                 cluster_status[cid] = "AVAILABLE"
 
-# step: a database cluster is deleted
-# result: the cluster is in DELETING state
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
-# guard: the cluster has no non-deleted instances
-# guard_violation_lifecycle: the cluster has non-deleted instances
+# step: a "documentdb" "cluster" is deleted
+# result: the "documentdb" "cluster" will be in "DELETING" state
+# guard: the "documentdb" "cluster" existed
+# guard_violation: the "documentdb" "cluster" did not exist
+# guard: the "documentdb" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "documentdb" "cluster" was not "AVAILABLE"
+# guard: the "documentdb" "cluster" has no non-deleted instances
+# guard_violation_lifecycle: the "documentdb" "cluster" has non-deleted instances
 atomic action DeleteDBCluster:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -100,12 +100,12 @@ atomic action DeleteDBCluster:
                     cluster_status[cid] = "DELETING"
 
 # fake_skip: internal
-# step: a database cluster deletion completes
-# result: the cluster is DELETED
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is DELETING
-# guard_violation: the cluster is not DELETING
+# step: a "documentdb" "cluster" deletion completes
+# result: the "documentdb" "cluster" will be "DELETED"
+# guard: the "documentdb" "cluster" existed
+# guard_violation: the "documentdb" "cluster" did not exist
+# guard: the "documentdb" "cluster" was "DELETING"
+# guard_violation: the "documentdb" "cluster" was not "DELETING"
 atomic action CompleteClusterDeletion:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -117,14 +117,14 @@ atomic action CompleteClusterDeletion:
                             if snapshot_cluster[sid] == cid:
                                 snapshot_status[sid] = "DELETED"
 
-# step: a database instance is created in an available cluster
-# result: the instance is in CREATING state and associated with the cluster
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
-# guard: the instance slot is available
-# guard_violation: the instance slot is not available
+# step: a "documentdb" "instance" is created in an available documentdb cluster
+# result: the "documentdb" "INSTANCE" will be in "CREATING" state and associated with the "documentdb" "cluster"
+# guard: the "documentdb" "cluster" existed
+# guard_violation: the "documentdb" "cluster" did not exist
+# guard: the "documentdb" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "documentdb" "cluster" was not "AVAILABLE"
+# guard: the "documentdb" "instance" slot is available
+# guard_violation: the "documentdb" "instance" slot is not available
 atomic action CreateDBInstance:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -139,16 +139,16 @@ atomic action CreateDBInstance:
                             instance_is_primary[iid] = False
 
 # fake_skip: internal
-# step: a database instance finishes creating
-# result: the instance is AVAILABLE and the cluster primary is updated if applicable
-# guard: the instance exists
-# guard_violation: the instance does not exist
-# guard: the instance is CREATING
-# guard_violation: the instance is not CREATING
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the instance is the primary
-# guard_violation: the instance is not the primary
+# step: a "documentdb" "instance" finishes creating
+# result: the "documentdb" "INSTANCE" will be "AVAILABLE" and the "documentdb" "cluster" primary will be updated if applicable
+# guard: the "documentdb" "instance" existed
+# guard_violation: the "documentdb" "instance" did not exist
+# guard: the "documentdb" "instance" was "CREATING"
+# guard_violation: the "documentdb" "instance" was not "CREATING"
+# guard: the "documentdb" "cluster" existed
+# guard_violation: the "documentdb" "cluster" did not exist
+# guard: the "documentdb" "instance" is the primary
+# guard_violation: the "documentdb" "instance" is not the primary
 atomic action CompleteInstanceCreation:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -159,16 +159,16 @@ atomic action CompleteInstanceCreation:
                     if instance_is_primary[iid]:
                         cluster_primary_instance[cid] = iid
 
-# step: a database instance configuration is modified
-# result: the instance is in MODIFYING state
-# guard: the instance exists
-# guard_violation: the instance does not exist
-# guard: the instance is AVAILABLE
-# guard_violation_lifecycle: the instance is not AVAILABLE
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
+# step: a "documentdb" "instance" configuration is modified
+# result: the "documentdb" "INSTANCE" will be in "MODIFYING" state
+# guard: the "documentdb" "instance" existed
+# guard_violation: the "documentdb" "instance" did not exist
+# guard: the "documentdb" "instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "documentdb" "instance" was not "AVAILABLE"
+# guard: the "documentdb" "cluster" existed
+# guard_violation: the "documentdb" "cluster" did not exist
+# guard: the "documentdb" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "documentdb" "cluster" was not "AVAILABLE"
 atomic action ModifyDBInstance:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -179,24 +179,24 @@ atomic action ModifyDBInstance:
                         instance_status[iid] = "MODIFYING"
 
 # fake_skip: internal
-# step: a database instance modification completes
-# result: the instance returns to AVAILABLE state
-# guard: the instance exists
-# guard_violation: the instance does not exist
-# guard: the instance is MODIFYING
-# guard_violation: the instance is not MODIFYING
+# step: a "documentdb" "instance" modification completes
+# result: the "documentdb" "instance" returns to AVAILABLE state
+# guard: the "documentdb" "instance" existed
+# guard_violation: the "documentdb" "instance" did not exist
+# guard: the "documentdb" "instance" was "MODIFYING"
+# guard_violation: the "documentdb" "instance" was not "MODIFYING"
 atomic action CompleteInstanceModification:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
             if instance_status[iid] == "MODIFYING":
                 instance_status[iid] = "AVAILABLE"
 
-# step: a database instance is deleted
-# result: the instance is in DELETING state
-# guard: the instance exists
-# guard_violation: the instance does not exist
-# guard: the instance is AVAILABLE
-# guard_violation_lifecycle: the instance is not AVAILABLE
+# step: a "documentdb" "instance" is deleted
+# result: the "documentdb" "INSTANCE" will be in "DELETING" state
+# guard: the "documentdb" "instance" existed
+# guard_violation: the "documentdb" "instance" did not exist
+# guard: the "documentdb" "instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "documentdb" "instance" was not "AVAILABLE"
 atomic action DeleteDBInstance:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -204,16 +204,16 @@ atomic action DeleteDBInstance:
                 instance_status[iid] = "DELETING"
 
 # fake_skip: internal
-# step: a database instance deletion completes
-# result: the instance is DELETED and the cluster primary is cleared if applicable
-# guard: the instance exists
-# guard_violation: the instance does not exist
-# guard: the instance is DELETING
-# guard_violation: the instance is not DELETING
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the instance is the primary of the cluster
-# guard_violation: the instance is not the primary of the cluster
+# step: a "documentdb" "instance" deletion completes
+# result: the "documentdb" "INSTANCE" will be "DELETED" and the "documentdb" "cluster" primary will be cleared if applicable
+# guard: the "documentdb" "instance" existed
+# guard_violation: the "documentdb" "instance" did not exist
+# guard: the "documentdb" "instance" was "DELETING"
+# guard_violation: the "documentdb" "instance" was not "DELETING"
+# guard: the "documentdb" "cluster" existed
+# guard_violation: the "documentdb" "cluster" did not exist
+# guard: the "documentdb" "instance" is the primary of the "documentdb" "cluster"
+# guard_violation: the "documentdb" "instance" is not the primary of the "documentdb" "cluster"
 atomic action CompleteInstanceDeletion:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -224,14 +224,14 @@ atomic action CompleteInstanceDeletion:
                     if cluster_primary_instance[cid] == iid:
                         cluster_primary_instance[cid] = ""
 
-# step: a database cluster snapshot is created
-# result: the snapshot is in CREATING state and linked to the cluster
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
-# guard: the snapshot slot is available
-# guard_violation: the snapshot slot is not available
+# step: a "documentdb" "cluster" documentdb snapshot is created
+# result: the "documentdb" "SNAPSHOT" will be in "CREATING" state and linked to the "documentdb" "cluster"
+# guard: the "documentdb" "cluster" existed
+# guard_violation: the "documentdb" "cluster" did not exist
+# guard: the "documentdb" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "documentdb" "cluster" was not "AVAILABLE"
+# guard: the "documentdb" "snapshot" slot is available
+# guard_violation: the "documentdb" "snapshot" slot is not available
 atomic action CreateDBClusterSnapshot:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -242,24 +242,24 @@ atomic action CreateDBClusterSnapshot:
                         snapshot_cluster[sid] = cid
 
 # fake_skip: internal
-# step: a database cluster snapshot finishes creating
-# result: the snapshot is AVAILABLE
-# guard: the snapshot exists
-# guard_violation: the snapshot does not exist
-# guard: the snapshot is CREATING
-# guard_violation: the snapshot is not CREATING
+# step: a "documentdb" "cluster" documentdb snapshot finishes creating
+# result: the "documentdb" "SNAPSHOT" will be "AVAILABLE"
+# guard: the "documentdb" "snapshot" existed
+# guard_violation: the "documentdb" "snapshot" did not exist
+# guard: the "documentdb" "snapshot" was "CREATING"
+# guard_violation: the "documentdb" "snapshot" was not "CREATING"
 atomic action CompleteSnapshotCreation:
     oneof sid in SNAPSHOT_IDS:
         if sid in snapshot_status:
             if snapshot_status[sid] == "CREATING":
                 snapshot_status[sid] = "AVAILABLE"
 
-# step: a database cluster snapshot is deleted
-# result: the snapshot is in DELETING state
-# guard: the snapshot exists
-# guard_violation: the snapshot does not exist
-# guard: the snapshot is AVAILABLE
-# guard_violation_lifecycle: the snapshot is not AVAILABLE
+# step: a "documentdb" "cluster" documentdb snapshot is deleted
+# result: the "documentdb" "SNAPSHOT" will be in "DELETING" state
+# guard: the "documentdb" "snapshot" existed
+# guard_violation: the "documentdb" "snapshot" did not exist
+# guard: the "documentdb" "snapshot" was "AVAILABLE"
+# guard_violation_lifecycle: the "documentdb" "snapshot" was not "AVAILABLE"
 atomic action DeleteDBClusterSnapshot:
     oneof sid in SNAPSHOT_IDS:
         if sid in snapshot_status:
@@ -267,26 +267,26 @@ atomic action DeleteDBClusterSnapshot:
                 snapshot_status[sid] = "DELETING"
 
 # fake_skip: internal
-# step: a database cluster snapshot deletion completes
-# result: the snapshot is DELETED
-# guard: the snapshot exists
-# guard_violation: the snapshot does not exist
-# guard: the snapshot is DELETING
-# guard_violation: the snapshot is not DELETING
+# step: a "documentdb" "cluster" documentdb snapshot deletion completes
+# result: the "documentdb" "SNAPSHOT" will be "DELETED"
+# guard: the "documentdb" "snapshot" existed
+# guard_violation: the "documentdb" "snapshot" did not exist
+# guard: the "documentdb" "snapshot" was "DELETING"
+# guard_violation: the "documentdb" "snapshot" was not "DELETING"
 atomic action CompleteSnapshotDeletion:
     oneof sid in SNAPSHOT_IDS:
         if sid in snapshot_status:
             if snapshot_status[sid] == "DELETING":
                 snapshot_status[sid] = "DELETED"
 
-# step: a cluster is restored from a snapshot
-# result: the restored cluster is in RESTORING state
-# guard: the snapshot exists
-# guard_violation: the snapshot does not exist
-# guard: the snapshot is AVAILABLE
-# guard_violation_lifecycle: the snapshot is not AVAILABLE
-# guard: the target cluster slot is available
-# guard_violation: the target cluster slot is not available
+# step: a "documentdb" "cluster" is restored from a "documentdb" "snapshot"
+# result: the restored documentdb cluster will be in "RESTORING" state
+# guard: the "documentdb" "snapshot" existed
+# guard_violation: the "documentdb" "snapshot" did not exist
+# guard: the "documentdb" "snapshot" was "AVAILABLE"
+# guard_violation_lifecycle: the "documentdb" "snapshot" was not "AVAILABLE"
+# guard: the target "documentdb" "cluster" slot is available
+# guard_violation: the target "documentdb" "cluster" slot is not available
 atomic action RestoreDBClusterFromSnapshot:
     oneof sid in SNAPSHOT_IDS:
         if sid in snapshot_status:
@@ -297,12 +297,12 @@ atomic action RestoreDBClusterFromSnapshot:
                         cluster_primary_instance[cid] = ""
 
 # fake_skip: internal
-# step: a database cluster restore from snapshot completes
-# result: the cluster is AVAILABLE
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is RESTORING
-# guard_violation: the cluster is not RESTORING
+# step: a "documentdb" "cluster" restore from documentdb snapshot completes
+# result: the "documentdb" "cluster" will be "AVAILABLE"
+# guard: the "documentdb" "cluster" existed
+# guard_violation: the "documentdb" "cluster" did not exist
+# guard: the "documentdb" "cluster" was "RESTORING"
+# guard_violation: the "documentdb" "cluster" was not "RESTORING"
 atomic action CompleteClusterRestore:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -312,19 +312,19 @@ atomic action CompleteClusterRestore:
 # fake_skip: internal
 # Failover: pick a replica instance to become the new primary
 # step: a failover is triggered and a replica is promoted to primary
-# result: the cluster has a new primary instance
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
-# guard: the new primary instance exists
-# guard_violation: the new primary instance does not exist
-# guard: the instance belongs to this cluster
-# guard_violation: the instance does not belong to this cluster
-# guard: the instance is not already the primary
-# guard_violation: the instance is already the primary
-# guard: the instance is AVAILABLE
-# guard_violation_lifecycle: the instance is not AVAILABLE
+# result: the "documentdb" "cluster" has a new primary documentdb instance
+# guard: the "documentdb" "cluster" existed
+# guard_violation: the "documentdb" "cluster" did not exist
+# guard: the "documentdb" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "documentdb" "cluster" was not "AVAILABLE"
+# guard: the new primary "documentdb" "instance" existed
+# guard_violation: the new primary "documentdb" "instance" did not exist
+# guard: the "documentdb" "instance" belongs to this documentdb cluster
+# guard_violation: the "documentdb" "instance" does not belong to this documentdb cluster
+# guard: the "documentdb" "instance" was not already the primary
+# guard_violation: the "documentdb" "instance" was already the primary
+# guard: the "documentdb" "instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "documentdb" "instance" was not "AVAILABLE"
 atomic action Failover:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:

@@ -1,4 +1,4 @@
-"""When: the Lambda function calls a Cognito admin "API" on an "ACTIVE" pool and succeeds"""
+"""When: the "lambda" "function" calls a Cognito admin "API" on an "ACTIVE" pool and succeeds"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import when
 from ..client import LambdaCognitoTestClient
 
 
-@when('the Lambda function calls a Cognito admin "API" on an "ACTIVE" pool and succeeds')
+@when('the "lambda" "function" calls a Cognito admin "API" on an "ACTIVE" pool and succeeds')
 def invocation_succeeds_cognito(lws_session, world):
     # Arrange
     invocation_id = world.get("invocation_id")

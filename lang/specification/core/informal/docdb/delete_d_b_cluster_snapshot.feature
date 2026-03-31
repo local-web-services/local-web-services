@@ -1,5 +1,5 @@
 @docdb @generated
-Feature: Docdb - A Database Cluster Snapshot Is Deleted
+Feature: Docdb - A "Documentdb" "Cluster" Documentdb Snapshot Is Deleted
 
   # Generated from FizzBee spec: docdb.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, NoNonDeletedInstancesOnDeletedCluster, NoAvailableInstancesOnFailedCluster, DeletingClusterGetsNoNewInstances, SnapshotHasValidClusterReference
@@ -8,11 +8,11 @@ Feature: Docdb - A Database Cluster Snapshot Is Deleted
     Given the system is initialized
 
   @minimal @happy @delete_d_b_cluster_snapshot
-  Scenario: a database cluster snapshot is deleted
-    Given the snapshot exists
-    And the snapshot is "AVAILABLE"
-    When a database cluster snapshot is deleted
-    Then the snapshot is in "DELETING" state
+  Scenario: a "documentdb" "cluster" documentdb snapshot is deleted
+    Given the "documentdb" "snapshot" existed
+    And the "documentdb" "snapshot" was "AVAILABLE"
+    When a "documentdb" "cluster" documentdb snapshot is deleted
+    Then the "documentdb" "SNAPSHOT" will be in "DELETING" state
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -22,14 +22,14 @@ Feature: Docdb - A Database Cluster Snapshot Is Deleted
     And every creating snapshot references a cluster that has not been deleted
 
   @guard @negative @delete_d_b_cluster_snapshot
-  Scenario: a database cluster snapshot is deleted fails when the snapshot does not exist
-    Given the snapshot does not exist
-    When a database cluster snapshot is deleted
+  Scenario: a "documentdb" "cluster" documentdb snapshot is deleted fails when the "documentdb" "snapshot" did not exist
+    Given the "documentdb" "snapshot" did not exist
+    When a "documentdb" "cluster" documentdb snapshot is deleted
     Then the operation is rejected
 
   @guard @negative @delete_d_b_cluster_snapshot @lifecycle
-  Scenario: a database cluster snapshot is deleted fails when the snapshot is not "AVAILABLE"
-    Given the snapshot exists
-    And the snapshot is not "AVAILABLE"
-    When a database cluster snapshot is deleted
+  Scenario: a "documentdb" "cluster" documentdb snapshot is deleted fails when the "documentdb" "snapshot" was not "AVAILABLE"
+    Given the "documentdb" "snapshot" existed
+    And the "documentdb" "snapshot" was not "AVAILABLE"
+    When a "documentdb" "cluster" documentdb snapshot is deleted
     Then the operation is rejected

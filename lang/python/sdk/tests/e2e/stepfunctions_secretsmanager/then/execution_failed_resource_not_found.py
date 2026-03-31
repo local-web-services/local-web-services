@@ -1,11 +1,11 @@
-"""Then: the execution is "FAILED" with a ResourceNotFoundException"""
+"""Then: the "step functions" "execution" will be "FAILED" with a ResourceNotFoundException"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the execution is "FAILED" with a ResourceNotFoundException')
+@then('the "step functions" "execution" will be "FAILED" with a ResourceNotFoundException')
 def execution_failed_resource_not_found(world):
     # Arrange
     expected_error = None

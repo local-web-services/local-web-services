@@ -1,4 +1,4 @@
-"""Then: the account is under the new parent"""
+"""Then: the "organizations" "account" will be under the new parent"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import OrganizationsTestClient
 
 
-@then("the account is under the new parent")
+@then('the "organizations" "account" will be under the new parent')
 def account_under_new_parent(client: TestClient, world):
     assert world["error"] is None, f"Expected MoveAccount to succeed but got: {world['error']}"
     account_id = world["account_id"]

@@ -1,4 +1,4 @@
-"""Given: the cluster already exists"""
+"""Given: the cluster already existed"""
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import given
 from ..client import LambdaElasticacheTestClient
 
 
-@given("the cluster already exists")
+@given("the cluster already existed")
 def cluster_already_exists(lws_session):
     LambdaElasticacheTestClient(lws_session).create_cluster()

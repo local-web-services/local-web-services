@@ -1,11 +1,11 @@
-"""Then: the table is in "CREATING" state"""
+"""Then: the "s3 tables" "table" will be in "CREATING" state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the table is in "CREATING" state')
+@then('the "s3 tables" "table" will be in "CREATING" state')
 def table_is_creating_then(world):
     expected_error = None
     actual_error = world["error"]

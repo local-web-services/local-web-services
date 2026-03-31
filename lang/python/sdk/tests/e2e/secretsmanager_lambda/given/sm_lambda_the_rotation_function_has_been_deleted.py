@@ -1,4 +1,4 @@
-"""Given: the rotation function has been deleted"""
+"""Given: the rotation function is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SecretsmanagerLambdaTestClient
 from ..constants import TEST_FUNC
 
 
-@given("the rotation function has been deleted")
+@given("the rotation function is deleted")
 def sm_lambda_the_rotation_function_has_been_deleted(lws_session):
     try:
         SecretsmanagerLambdaTestClient(lws_session).create_function()

@@ -1,5 +1,5 @@
 @stepfunctionsdocdb @generated
-Feature: StepfunctionsDocdb - The Documentdb Cluster Is Stopped
+Feature: StepfunctionsDocdb - The "Documentdb" "Cluster" Is Stopped
 
   # Generated from FizzBee spec: stepfunctions_docdb.fizz
   # Safety invariants: ExecutionRequiresActiveStateMachine, SuccessfulExecutionConnectedToACluster
@@ -8,23 +8,23 @@ Feature: StepfunctionsDocdb - The Documentdb Cluster Is Stopped
     Given the system is initialized
 
   @minimal @happy @stop_cluster
-  Scenario: the DocumentDB cluster is stopped
-    Given the cluster exists
-    And the cluster is "AVAILABLE"
-    When the DocumentDB cluster is stopped
-    Then the cluster is "STOPPED" and connections will be rejected
+  Scenario: the "documentdb" "cluster" is stopped
+    Given the "documentdb" "cluster" existed
+    And the "documentdb" "cluster" was "AVAILABLE"
+    When the "documentdb" "cluster" is stopped
+    Then the "documentdb" "cluster" will be "STOPPED" and connections will be rejected
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @guard @negative @stop_cluster
-  Scenario: the DocumentDB cluster is stopped fails when the cluster does not exist
-    Given the cluster does not exist
-    When the DocumentDB cluster is stopped
+  Scenario: the "documentdb" "cluster" is stopped fails when the "documentdb" "cluster" did not exist
+    Given the "documentdb" "cluster" did not exist
+    When the "documentdb" "cluster" is stopped
     Then the operation is rejected
 
   @guard @negative @stop_cluster @lifecycle
-  Scenario: the DocumentDB cluster is stopped fails when the cluster is not "AVAILABLE"
-    Given the cluster exists
-    And the cluster is not "AVAILABLE"
-    When the DocumentDB cluster is stopped
+  Scenario: the "documentdb" "cluster" is stopped fails when the "documentdb" "cluster" was not "AVAILABLE"
+    Given the "documentdb" "cluster" existed
+    And the "documentdb" "cluster" was not "AVAILABLE"
+    When the "documentdb" "cluster" is stopped
     Then the operation is rejected

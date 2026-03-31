@@ -8,2767 +8,2767 @@ Feature: Ssm - Action Sequences
     Given the system is initialized
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then an existing parameter value is updated
+  Scenario: a "ssm" "parameter" is stored then an existing "ssm" "parameter" value is updated
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then a parameter is written without overwrite when it already exists
+  Scenario: a "ssm" "parameter" is stored then a "ssm" "parameter" is written without overwrite when it already exists
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then a parameter is retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is stored then a "ssm" "parameter" is retrieved
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then multiple parameters are retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is stored then multiple "ssm" "parameter"s are retrieved
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then parameters under a path are retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is stored then "ssm" "parameter"s under a path are retrieved
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then parameters are described
+  Scenario: a "ssm" "parameter" is stored then "ssm" "parameter"s are described
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    When parameters are described
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then a parameter is deleted from "SSM"
+  Scenario: a "ssm" "parameter" is stored then a "ssm" "parameter" is deleted
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then multiple parameters are deleted from "SSM"
+  Scenario: a "ssm" "parameter" is stored then multiple "ssm" "parameter"s are deleted
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then tags are added to a parameter
+  Scenario: a "ssm" "parameter" is stored then tags are added to a "ssm" "parameter"
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then tags are removed from a parameter
+  Scenario: a "ssm" "parameter" is stored then tags are removed from a "ssm" "parameter"
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then tags for a parameter are listed
+  Scenario: a "ssm" "parameter" is stored then tags for a "ssm" "parameter" are listed
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then a parameter is stored in "SSM"
+  Scenario: an existing "ssm" "parameter" value is updated then a "ssm" "parameter" is stored
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then a parameter is written without overwrite when it already exists
+  Scenario: an existing "ssm" "parameter" value is updated then a "ssm" "parameter" is written without overwrite when it already exists
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then a parameter is retrieved from "SSM"
+  Scenario: an existing "ssm" "parameter" value is updated then a "ssm" "parameter" is retrieved
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then multiple parameters are retrieved from "SSM"
+  Scenario: an existing "ssm" "parameter" value is updated then multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then parameters under a path are retrieved from "SSM"
+  Scenario: an existing "ssm" "parameter" value is updated then "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then parameters are described
+  Scenario: an existing "ssm" "parameter" value is updated then "ssm" "parameter"s are described
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    When parameters are described
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then a parameter is deleted from "SSM"
+  Scenario: an existing "ssm" "parameter" value is updated then a "ssm" "parameter" is deleted
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then multiple parameters are deleted from "SSM"
+  Scenario: an existing "ssm" "parameter" value is updated then multiple "ssm" "parameter"s are deleted
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then tags are added to a parameter
+  Scenario: an existing "ssm" "parameter" value is updated then tags are added to a "ssm" "parameter"
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then tags are removed from a parameter
+  Scenario: an existing "ssm" "parameter" value is updated then tags are removed from a "ssm" "parameter"
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then tags for a parameter are listed
+  Scenario: an existing "ssm" "parameter" value is updated then tags for a "ssm" "parameter" are listed
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then a parameter is stored in "SSM"
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then a "ssm" "parameter" is stored
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then an existing parameter value is updated
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then an existing "ssm" "parameter" value is updated
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then a parameter is retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then a "ssm" "parameter" is retrieved
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then multiple parameters are retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then parameters under a path are retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then parameters are described
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then "ssm" "parameter"s are described
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    When parameters are described
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then a parameter is deleted from "SSM"
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then a "ssm" "parameter" is deleted
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then multiple parameters are deleted from "SSM"
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then multiple "ssm" "parameter"s are deleted
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then tags are added to a parameter
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then tags are added to a "ssm" "parameter"
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then tags are removed from a parameter
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then tags are removed from a "ssm" "parameter"
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then tags for a parameter are listed
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then tags for a "ssm" "parameter" are listed
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then a parameter is stored in "SSM"
+  Scenario: a "ssm" "parameter" is retrieved then a "ssm" "parameter" is stored
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then an existing parameter value is updated
+  Scenario: a "ssm" "parameter" is retrieved then an existing "ssm" "parameter" value is updated
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then a parameter is written without overwrite when it already exists
+  Scenario: a "ssm" "parameter" is retrieved then a "ssm" "parameter" is written without overwrite when it already exists
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then multiple parameters are retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is retrieved then multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then parameters under a path are retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is retrieved then "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then parameters are described
+  Scenario: a "ssm" "parameter" is retrieved then "ssm" "parameter"s are described
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    When parameters are described
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then a parameter is deleted from "SSM"
+  Scenario: a "ssm" "parameter" is retrieved then a "ssm" "parameter" is deleted
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then multiple parameters are deleted from "SSM"
+  Scenario: a "ssm" "parameter" is retrieved then multiple "ssm" "parameter"s are deleted
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then tags are added to a parameter
+  Scenario: a "ssm" "parameter" is retrieved then tags are added to a "ssm" "parameter"
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then tags are removed from a parameter
+  Scenario: a "ssm" "parameter" is retrieved then tags are removed from a "ssm" "parameter"
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then tags for a parameter are listed
+  Scenario: a "ssm" "parameter" is retrieved then tags for a "ssm" "parameter" are listed
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then a parameter is stored in "SSM"
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then a "ssm" "parameter" is stored
+    When multiple "ssm" "parameter"s are retrieved
     Given pname not in param_exists or param_exists[pname] is False
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then an existing parameter value is updated
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then an existing "ssm" "parameter" value is updated
+    When multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then a parameter is written without overwrite when it already exists
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then a "ssm" "parameter" is written without overwrite when it already exists
+    When multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then a parameter is retrieved from "SSM"
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then a "ssm" "parameter" is retrieved
+    When multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then parameters under a path are retrieved from "SSM"
-    Given multiple parameters have been retrieved from "SSM"
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+  Scenario: multiple "ssm" "parameter"s are retrieved then "ssm" "parameter"s under a path are retrieved
+    When multiple "ssm" "parameter"s are retrieved
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then parameters are described
-    Given multiple parameters have been retrieved from "SSM"
-    When parameters are described
-    Then every parameter version is a positive integer
+  Scenario: multiple "ssm" "parameter"s are retrieved then "ssm" "parameter"s are described
+    When multiple "ssm" "parameter"s are retrieved
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then a parameter is deleted from "SSM"
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then a "ssm" "parameter" is deleted
+    When multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then multiple parameters are deleted from "SSM"
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then multiple "ssm" "parameter"s are deleted
+    When multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then tags are added to a parameter
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then tags are added to a "ssm" "parameter"
+    When multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then tags are removed from a parameter
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then tags are removed from a "ssm" "parameter"
+    When multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then tags for a parameter are listed
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then tags for a "ssm" "parameter" are listed
+    When multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then a parameter is stored in "SSM"
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then a "ssm" "parameter" is stored
+    When "ssm" "parameter"s under a path are retrieved
     Given pname not in param_exists or param_exists[pname] is False
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then an existing parameter value is updated
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then an existing "ssm" "parameter" value is updated
+    When "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then a parameter is written without overwrite when it already exists
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then a "ssm" "parameter" is written without overwrite when it already exists
+    When "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then a parameter is retrieved from "SSM"
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then a "ssm" "parameter" is retrieved
+    When "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then multiple parameters are retrieved from "SSM"
-    Given parameters under a path have been retrieved from "SSM"
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+  Scenario: "ssm" "parameter"s under a path are retrieved then multiple "ssm" "parameter"s are retrieved
+    When "ssm" "parameter"s under a path are retrieved
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then parameters are described
-    Given parameters under a path have been retrieved from "SSM"
-    When parameters are described
-    Then every parameter version is a positive integer
+  Scenario: "ssm" "parameter"s under a path are retrieved then "ssm" "parameter"s are described
+    When "ssm" "parameter"s under a path are retrieved
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then a parameter is deleted from "SSM"
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then a "ssm" "parameter" is deleted
+    When "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then multiple parameters are deleted from "SSM"
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then multiple "ssm" "parameter"s are deleted
+    When "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then tags are added to a parameter
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then tags are added to a "ssm" "parameter"
+    When "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then tags are removed from a parameter
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then tags are removed from a "ssm" "parameter"
+    When "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then tags for a parameter are listed
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then tags for a "ssm" "parameter" are listed
+    When "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then a parameter is stored in "SSM"
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s are described then a "ssm" "parameter" is stored
+    When "ssm" "parameter"s are described
     Given pname not in param_exists or param_exists[pname] is False
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then an existing parameter value is updated
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s are described then an existing "ssm" "parameter" value is updated
+    When "ssm" "parameter"s are described
     Given pname in param_exists
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then a parameter is written without overwrite when it already exists
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s are described then a "ssm" "parameter" is written without overwrite when it already exists
+    When "ssm" "parameter"s are described
     Given pname in param_exists
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then a parameter is retrieved from "SSM"
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s are described then a "ssm" "parameter" is retrieved
+    When "ssm" "parameter"s are described
     Given pname in param_exists
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then multiple parameters are retrieved from "SSM"
-    Given parameters have been described
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+  Scenario: "ssm" "parameter"s are described then multiple "ssm" "parameter"s are retrieved
+    When "ssm" "parameter"s are described
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then parameters under a path are retrieved from "SSM"
-    Given parameters have been described
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+  Scenario: "ssm" "parameter"s are described then "ssm" "parameter"s under a path are retrieved
+    When "ssm" "parameter"s are described
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then a parameter is deleted from "SSM"
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s are described then a "ssm" "parameter" is deleted
+    When "ssm" "parameter"s are described
     Given pname in param_exists
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then multiple parameters are deleted from "SSM"
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s are described then multiple "ssm" "parameter"s are deleted
+    When "ssm" "parameter"s are described
     Given pname in param_exists
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then tags are added to a parameter
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s are described then tags are added to a "ssm" "parameter"
+    When "ssm" "parameter"s are described
     Given pname in param_exists
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then tags are removed from a parameter
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s are described then tags are removed from a "ssm" "parameter"
+    When "ssm" "parameter"s are described
     Given pname in param_exists
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then tags for a parameter are listed
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s are described then tags for a "ssm" "parameter" are listed
+    When "ssm" "parameter"s are described
     Given pname in param_exists
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then a parameter is stored in "SSM"
+  Scenario: a "ssm" "parameter" is deleted then a "ssm" "parameter" is stored
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then an existing parameter value is updated
+  Scenario: a "ssm" "parameter" is deleted then an existing "ssm" "parameter" value is updated
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then a parameter is written without overwrite when it already exists
+  Scenario: a "ssm" "parameter" is deleted then a "ssm" "parameter" is written without overwrite when it already exists
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then a parameter is retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is deleted then a "ssm" "parameter" is retrieved
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then multiple parameters are retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is deleted then multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then parameters under a path are retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is deleted then "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then parameters are described
+  Scenario: a "ssm" "parameter" is deleted then "ssm" "parameter"s are described
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    When parameters are described
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then multiple parameters are deleted from "SSM"
+  Scenario: a "ssm" "parameter" is deleted then multiple "ssm" "parameter"s are deleted
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then tags are added to a parameter
+  Scenario: a "ssm" "parameter" is deleted then tags are added to a "ssm" "parameter"
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then tags are removed from a parameter
+  Scenario: a "ssm" "parameter" is deleted then tags are removed from a "ssm" "parameter"
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then tags for a parameter are listed
+  Scenario: a "ssm" "parameter" is deleted then tags for a "ssm" "parameter" are listed
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then a parameter is stored in "SSM"
+  Scenario: multiple "ssm" "parameter"s are deleted then a "ssm" "parameter" is stored
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then an existing parameter value is updated
+  Scenario: multiple "ssm" "parameter"s are deleted then an existing "ssm" "parameter" value is updated
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then a parameter is written without overwrite when it already exists
+  Scenario: multiple "ssm" "parameter"s are deleted then a "ssm" "parameter" is written without overwrite when it already exists
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then a parameter is retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are deleted then a "ssm" "parameter" is retrieved
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then multiple parameters are retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are deleted then multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then parameters under a path are retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are deleted then "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then parameters are described
+  Scenario: multiple "ssm" "parameter"s are deleted then "ssm" "parameter"s are described
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    When parameters are described
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then a parameter is deleted from "SSM"
+  Scenario: multiple "ssm" "parameter"s are deleted then a "ssm" "parameter" is deleted
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then tags are added to a parameter
+  Scenario: multiple "ssm" "parameter"s are deleted then tags are added to a "ssm" "parameter"
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then tags are removed from a parameter
+  Scenario: multiple "ssm" "parameter"s are deleted then tags are removed from a "ssm" "parameter"
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then tags for a parameter are listed
+  Scenario: multiple "ssm" "parameter"s are deleted then tags for a "ssm" "parameter" are listed
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then a parameter is stored in "SSM"
+  Scenario: tags are added to a "ssm" "parameter" then a "ssm" "parameter" is stored
     Given pname in param_exists
-    Given tags have been added to a parameter
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then an existing parameter value is updated
+  Scenario: tags are added to a "ssm" "parameter" then an existing "ssm" "parameter" value is updated
     Given pname in param_exists
-    Given tags have been added to a parameter
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then a parameter is written without overwrite when it already exists
+  Scenario: tags are added to a "ssm" "parameter" then a "ssm" "parameter" is written without overwrite when it already exists
     Given pname in param_exists
-    Given tags have been added to a parameter
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then a parameter is retrieved from "SSM"
+  Scenario: tags are added to a "ssm" "parameter" then a "ssm" "parameter" is retrieved
     Given pname in param_exists
-    Given tags have been added to a parameter
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then multiple parameters are retrieved from "SSM"
+  Scenario: tags are added to a "ssm" "parameter" then multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given tags have been added to a parameter
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then parameters under a path are retrieved from "SSM"
+  Scenario: tags are added to a "ssm" "parameter" then "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given tags have been added to a parameter
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then parameters are described
+  Scenario: tags are added to a "ssm" "parameter" then "ssm" "parameter"s are described
     Given pname in param_exists
-    Given tags have been added to a parameter
-    When parameters are described
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then a parameter is deleted from "SSM"
+  Scenario: tags are added to a "ssm" "parameter" then a "ssm" "parameter" is deleted
     Given pname in param_exists
-    Given tags have been added to a parameter
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then multiple parameters are deleted from "SSM"
+  Scenario: tags are added to a "ssm" "parameter" then multiple "ssm" "parameter"s are deleted
     Given pname in param_exists
-    Given tags have been added to a parameter
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then tags are removed from a parameter
+  Scenario: tags are added to a "ssm" "parameter" then tags are removed from a "ssm" "parameter"
     Given pname in param_exists
-    Given tags have been added to a parameter
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then tags for a parameter are listed
+  Scenario: tags are added to a "ssm" "parameter" then tags for a "ssm" "parameter" are listed
     Given pname in param_exists
-    Given tags have been added to a parameter
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then a parameter is stored in "SSM"
+  Scenario: tags are removed from a "ssm" "parameter" then a "ssm" "parameter" is stored
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then an existing parameter value is updated
+  Scenario: tags are removed from a "ssm" "parameter" then an existing "ssm" "parameter" value is updated
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then a parameter is written without overwrite when it already exists
+  Scenario: tags are removed from a "ssm" "parameter" then a "ssm" "parameter" is written without overwrite when it already exists
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then a parameter is retrieved from "SSM"
+  Scenario: tags are removed from a "ssm" "parameter" then a "ssm" "parameter" is retrieved
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then multiple parameters are retrieved from "SSM"
+  Scenario: tags are removed from a "ssm" "parameter" then multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then parameters under a path are retrieved from "SSM"
+  Scenario: tags are removed from a "ssm" "parameter" then "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then parameters are described
+  Scenario: tags are removed from a "ssm" "parameter" then "ssm" "parameter"s are described
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    When parameters are described
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then a parameter is deleted from "SSM"
+  Scenario: tags are removed from a "ssm" "parameter" then a "ssm" "parameter" is deleted
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then multiple parameters are deleted from "SSM"
+  Scenario: tags are removed from a "ssm" "parameter" then multiple "ssm" "parameter"s are deleted
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then tags are added to a parameter
+  Scenario: tags are removed from a "ssm" "parameter" then tags are added to a "ssm" "parameter"
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then tags for a parameter are listed
+  Scenario: tags are removed from a "ssm" "parameter" then tags for a "ssm" "parameter" are listed
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then a parameter is stored in "SSM"
+  Scenario: tags for a "ssm" "parameter" are listed then a "ssm" "parameter" is stored
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then an existing parameter value is updated
+  Scenario: tags for a "ssm" "parameter" are listed then an existing "ssm" "parameter" value is updated
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then a parameter is written without overwrite when it already exists
+  Scenario: tags for a "ssm" "parameter" are listed then a "ssm" "parameter" is written without overwrite when it already exists
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then a parameter is retrieved from "SSM"
+  Scenario: tags for a "ssm" "parameter" are listed then a "ssm" "parameter" is retrieved
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then multiple parameters are retrieved from "SSM"
+  Scenario: tags for a "ssm" "parameter" are listed then multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then parameters under a path are retrieved from "SSM"
+  Scenario: tags for a "ssm" "parameter" are listed then "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then parameters are described
+  Scenario: tags for a "ssm" "parameter" are listed then "ssm" "parameter"s are described
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    When parameters are described
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then a parameter is deleted from "SSM"
+  Scenario: tags for a "ssm" "parameter" are listed then a "ssm" "parameter" is deleted
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then multiple parameters are deleted from "SSM"
+  Scenario: tags for a "ssm" "parameter" are listed then multiple "ssm" "parameter"s are deleted
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then tags are added to a parameter
+  Scenario: tags for a "ssm" "parameter" are listed then tags are added to a "ssm" "parameter"
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then tags are removed from a parameter
+  Scenario: tags for a "ssm" "parameter" are listed then tags are removed from a "ssm" "parameter"
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then an existing parameter value is updated then a parameter is written without overwrite when it already exists
+  Scenario: a "ssm" "parameter" is stored then an existing "ssm" "parameter" value is updated then a "ssm" "parameter" is written without overwrite when it already exists
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    Given an existing parameter value has been updated
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When an existing "ssm" "parameter" value is updated
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then a parameter is written without overwrite when it already exists then a parameter is retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is stored then a "ssm" "parameter" is written without overwrite when it already exists then a "ssm" "parameter" is retrieved
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    Given a parameter has been written without overwrite when it already exists
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then a parameter is retrieved from "SSM" then multiple parameters are retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is stored then a "ssm" "parameter" is retrieved then multiple "ssm" "parameter"s are retrieved
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    Given a parameter has been retrieved from "SSM"
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When a "ssm" "parameter" is retrieved
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then multiple parameters are retrieved from "SSM" then parameters under a path are retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is stored then multiple "ssm" "parameter"s are retrieved then "ssm" "parameter"s under a path are retrieved
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    Given multiple parameters have been retrieved from "SSM"
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When multiple "ssm" "parameter"s are retrieved
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then parameters under a path are retrieved from "SSM" then parameters are described
+  Scenario: a "ssm" "parameter" is stored then "ssm" "parameter"s under a path are retrieved then "ssm" "parameter"s are described
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    Given parameters under a path have been retrieved from "SSM"
-    When parameters are described
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When "ssm" "parameter"s under a path are retrieved
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then parameters are described then a parameter is deleted from "SSM"
+  Scenario: a "ssm" "parameter" is stored then "ssm" "parameter"s are described then a "ssm" "parameter" is deleted
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    Given parameters have been described
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When "ssm" "parameter"s are described
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then a parameter is deleted from "SSM" then multiple parameters are deleted from "SSM"
+  Scenario: a "ssm" "parameter" is stored then a "ssm" "parameter" is deleted then multiple "ssm" "parameter"s are deleted
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    Given a parameter has been deleted from "SSM"
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When a "ssm" "parameter" is deleted
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then multiple parameters are deleted from "SSM" then tags are added to a parameter
+  Scenario: a "ssm" "parameter" is stored then multiple "ssm" "parameter"s are deleted then tags are added to a "ssm" "parameter"
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    Given multiple parameters have been deleted from "SSM"
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When multiple "ssm" "parameter"s are deleted
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then tags are added to a parameter then tags are removed from a parameter
+  Scenario: a "ssm" "parameter" is stored then tags are added to a "ssm" "parameter" then tags are removed from a "ssm" "parameter"
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    Given tags have been added to a parameter
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When tags are added to a "ssm" "parameter"
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then tags are removed from a parameter then tags for a parameter are listed
+  Scenario: a "ssm" "parameter" is stored then tags are removed from a "ssm" "parameter" then tags for a "ssm" "parameter" are listed
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    Given tags have been removed from a parameter
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When tags are removed from a "ssm" "parameter"
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is stored in "SSM" then tags for a parameter are listed then an existing parameter value is updated
+  Scenario: a "ssm" "parameter" is stored then tags for a "ssm" "parameter" are listed then an existing "ssm" "parameter" value is updated
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    Given tags for a parameter have been listed
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When tags for a "ssm" "parameter" are listed
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then a parameter is stored in "SSM" then a parameter is retrieved from "SSM"
+  Scenario: an existing "ssm" "parameter" value is updated then a "ssm" "parameter" is stored then a "ssm" "parameter" is retrieved
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    Given a parameter has been stored in "SSM"
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When a "ssm" "parameter" is stored
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then a parameter is written without overwrite when it already exists then multiple parameters are retrieved from "SSM"
+  Scenario: an existing "ssm" "parameter" value is updated then a "ssm" "parameter" is written without overwrite when it already exists then multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    Given a parameter has been written without overwrite when it already exists
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then a parameter is retrieved from "SSM" then parameters under a path are retrieved from "SSM"
+  Scenario: an existing "ssm" "parameter" value is updated then a "ssm" "parameter" is retrieved then "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    Given a parameter has been retrieved from "SSM"
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When a "ssm" "parameter" is retrieved
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then multiple parameters are retrieved from "SSM" then parameters are described
+  Scenario: an existing "ssm" "parameter" value is updated then multiple "ssm" "parameter"s are retrieved then "ssm" "parameter"s are described
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    Given multiple parameters have been retrieved from "SSM"
-    When parameters are described
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When multiple "ssm" "parameter"s are retrieved
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then parameters under a path are retrieved from "SSM" then a parameter is deleted from "SSM"
+  Scenario: an existing "ssm" "parameter" value is updated then "ssm" "parameter"s under a path are retrieved then a "ssm" "parameter" is deleted
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    Given parameters under a path have been retrieved from "SSM"
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When "ssm" "parameter"s under a path are retrieved
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then parameters are described then multiple parameters are deleted from "SSM"
+  Scenario: an existing "ssm" "parameter" value is updated then "ssm" "parameter"s are described then multiple "ssm" "parameter"s are deleted
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    Given parameters have been described
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When "ssm" "parameter"s are described
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then a parameter is deleted from "SSM" then tags are added to a parameter
+  Scenario: an existing "ssm" "parameter" value is updated then a "ssm" "parameter" is deleted then tags are added to a "ssm" "parameter"
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    Given a parameter has been deleted from "SSM"
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When a "ssm" "parameter" is deleted
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then multiple parameters are deleted from "SSM" then tags are removed from a parameter
+  Scenario: an existing "ssm" "parameter" value is updated then multiple "ssm" "parameter"s are deleted then tags are removed from a "ssm" "parameter"
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    Given multiple parameters have been deleted from "SSM"
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When multiple "ssm" "parameter"s are deleted
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then tags are added to a parameter then tags for a parameter are listed
+  Scenario: an existing "ssm" "parameter" value is updated then tags are added to a "ssm" "parameter" then tags for a "ssm" "parameter" are listed
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    Given tags have been added to a parameter
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When tags are added to a "ssm" "parameter"
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then tags are removed from a parameter then a parameter is stored in "SSM"
+  Scenario: an existing "ssm" "parameter" value is updated then tags are removed from a "ssm" "parameter" then a "ssm" "parameter" is stored
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    Given tags have been removed from a parameter
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When tags are removed from a "ssm" "parameter"
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: an existing parameter value is updated then tags for a parameter are listed then a parameter is written without overwrite when it already exists
+  Scenario: an existing "ssm" "parameter" value is updated then tags for a "ssm" "parameter" are listed then a "ssm" "parameter" is written without overwrite when it already exists
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    Given tags for a parameter have been listed
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When tags for a "ssm" "parameter" are listed
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then a parameter is stored in "SSM" then multiple parameters are retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then a "ssm" "parameter" is stored then multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    Given a parameter has been stored in "SSM"
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When a "ssm" "parameter" is stored
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then an existing parameter value is updated then parameters under a path are retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then an existing "ssm" "parameter" value is updated then "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    Given an existing parameter value has been updated
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When an existing "ssm" "parameter" value is updated
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then a parameter is retrieved from "SSM" then parameters are described
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then a "ssm" "parameter" is retrieved then "ssm" "parameter"s are described
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    Given a parameter has been retrieved from "SSM"
-    When parameters are described
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When a "ssm" "parameter" is retrieved
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then multiple parameters are retrieved from "SSM" then a parameter is deleted from "SSM"
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then multiple "ssm" "parameter"s are retrieved then a "ssm" "parameter" is deleted
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    Given multiple parameters have been retrieved from "SSM"
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When multiple "ssm" "parameter"s are retrieved
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then parameters under a path are retrieved from "SSM" then multiple parameters are deleted from "SSM"
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then "ssm" "parameter"s under a path are retrieved then multiple "ssm" "parameter"s are deleted
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    Given parameters under a path have been retrieved from "SSM"
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When "ssm" "parameter"s under a path are retrieved
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then parameters are described then tags are added to a parameter
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then "ssm" "parameter"s are described then tags are added to a "ssm" "parameter"
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    Given parameters have been described
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When "ssm" "parameter"s are described
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then a parameter is deleted from "SSM" then tags are removed from a parameter
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then a "ssm" "parameter" is deleted then tags are removed from a "ssm" "parameter"
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    Given a parameter has been deleted from "SSM"
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When a "ssm" "parameter" is deleted
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then multiple parameters are deleted from "SSM" then tags for a parameter are listed
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then multiple "ssm" "parameter"s are deleted then tags for a "ssm" "parameter" are listed
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    Given multiple parameters have been deleted from "SSM"
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When multiple "ssm" "parameter"s are deleted
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then tags are added to a parameter then a parameter is stored in "SSM"
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then tags are added to a "ssm" "parameter" then a "ssm" "parameter" is stored
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    Given tags have been added to a parameter
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When tags are added to a "ssm" "parameter"
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then tags are removed from a parameter then an existing parameter value is updated
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then tags are removed from a "ssm" "parameter" then an existing "ssm" "parameter" value is updated
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    Given tags have been removed from a parameter
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When tags are removed from a "ssm" "parameter"
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is written without overwrite when it already exists then tags for a parameter are listed then a parameter is retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is written without overwrite when it already exists then tags for a "ssm" "parameter" are listed then a "ssm" "parameter" is retrieved
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    Given tags for a parameter have been listed
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When tags for a "ssm" "parameter" are listed
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then a parameter is stored in "SSM" then parameters under a path are retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is retrieved then a "ssm" "parameter" is stored then "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    Given a parameter has been stored in "SSM"
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When a "ssm" "parameter" is stored
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then an existing parameter value is updated then parameters are described
+  Scenario: a "ssm" "parameter" is retrieved then an existing "ssm" "parameter" value is updated then "ssm" "parameter"s are described
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    Given an existing parameter value has been updated
-    When parameters are described
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When an existing "ssm" "parameter" value is updated
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then a parameter is written without overwrite when it already exists then a parameter is deleted from "SSM"
+  Scenario: a "ssm" "parameter" is retrieved then a "ssm" "parameter" is written without overwrite when it already exists then a "ssm" "parameter" is deleted
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    Given a parameter has been written without overwrite when it already exists
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then multiple parameters are retrieved from "SSM" then multiple parameters are deleted from "SSM"
+  Scenario: a "ssm" "parameter" is retrieved then multiple "ssm" "parameter"s are retrieved then multiple "ssm" "parameter"s are deleted
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    Given multiple parameters have been retrieved from "SSM"
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When multiple "ssm" "parameter"s are retrieved
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then parameters under a path are retrieved from "SSM" then tags are added to a parameter
+  Scenario: a "ssm" "parameter" is retrieved then "ssm" "parameter"s under a path are retrieved then tags are added to a "ssm" "parameter"
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    Given parameters under a path have been retrieved from "SSM"
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When "ssm" "parameter"s under a path are retrieved
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then parameters are described then tags are removed from a parameter
+  Scenario: a "ssm" "parameter" is retrieved then "ssm" "parameter"s are described then tags are removed from a "ssm" "parameter"
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    Given parameters have been described
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When "ssm" "parameter"s are described
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then a parameter is deleted from "SSM" then tags for a parameter are listed
+  Scenario: a "ssm" "parameter" is retrieved then a "ssm" "parameter" is deleted then tags for a "ssm" "parameter" are listed
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    Given a parameter has been deleted from "SSM"
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When a "ssm" "parameter" is deleted
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then multiple parameters are deleted from "SSM" then a parameter is stored in "SSM"
+  Scenario: a "ssm" "parameter" is retrieved then multiple "ssm" "parameter"s are deleted then a "ssm" "parameter" is stored
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    Given multiple parameters have been deleted from "SSM"
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When multiple "ssm" "parameter"s are deleted
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then tags are added to a parameter then an existing parameter value is updated
+  Scenario: a "ssm" "parameter" is retrieved then tags are added to a "ssm" "parameter" then an existing "ssm" "parameter" value is updated
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    Given tags have been added to a parameter
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When tags are added to a "ssm" "parameter"
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then tags are removed from a parameter then a parameter is written without overwrite when it already exists
+  Scenario: a "ssm" "parameter" is retrieved then tags are removed from a "ssm" "parameter" then a "ssm" "parameter" is written without overwrite when it already exists
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    Given tags have been removed from a parameter
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When tags are removed from a "ssm" "parameter"
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is retrieved from "SSM" then tags for a parameter are listed then multiple parameters are retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is retrieved then tags for a "ssm" "parameter" are listed then multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    Given tags for a parameter have been listed
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When tags for a "ssm" "parameter" are listed
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then a parameter is stored in "SSM" then parameters are described
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then a "ssm" "parameter" is stored then "ssm" "parameter"s are described
+    When multiple "ssm" "parameter"s are retrieved
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    When parameters are described
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then an existing parameter value is updated then a parameter is deleted from "SSM"
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then an existing "ssm" "parameter" value is updated then a "ssm" "parameter" is deleted
+    When multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then a parameter is written without overwrite when it already exists then multiple parameters are deleted from "SSM"
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then a "ssm" "parameter" is written without overwrite when it already exists then multiple "ssm" "parameter"s are deleted
+    When multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then a parameter is retrieved from "SSM" then tags are added to a parameter
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then a "ssm" "parameter" is retrieved then tags are added to a "ssm" "parameter"
+    When multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then parameters under a path are retrieved from "SSM" then tags are removed from a parameter
-    Given multiple parameters have been retrieved from "SSM"
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then "ssm" "parameter"s under a path are retrieved then tags are removed from a "ssm" "parameter"
+    When multiple "ssm" "parameter"s are retrieved
+    When "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then parameters are described then tags for a parameter are listed
-    Given multiple parameters have been retrieved from "SSM"
-    Given parameters have been described
+  Scenario: multiple "ssm" "parameter"s are retrieved then "ssm" "parameter"s are described then tags for a "ssm" "parameter" are listed
+    When multiple "ssm" "parameter"s are retrieved
+    When "ssm" "parameter"s are described
     Given pname in param_exists
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then a parameter is deleted from "SSM" then a parameter is stored in "SSM"
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then a "ssm" "parameter" is deleted then a "ssm" "parameter" is stored
+    When multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then multiple parameters are deleted from "SSM" then an existing parameter value is updated
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then multiple "ssm" "parameter"s are deleted then an existing "ssm" "parameter" value is updated
+    When multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then tags are added to a parameter then a parameter is written without overwrite when it already exists
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then tags are added to a "ssm" "parameter" then a "ssm" "parameter" is written without overwrite when it already exists
+    When multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given tags have been added to a parameter
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then tags are removed from a parameter then a parameter is retrieved from "SSM"
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then tags are removed from a "ssm" "parameter" then a "ssm" "parameter" is retrieved
+    When multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are retrieved from "SSM" then tags for a parameter are listed then parameters under a path are retrieved from "SSM"
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are retrieved then tags for a "ssm" "parameter" are listed then "ssm" "parameter"s under a path are retrieved
+    When multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then a parameter is stored in "SSM" then a parameter is deleted from "SSM"
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then a "ssm" "parameter" is stored then a "ssm" "parameter" is deleted
+    When "ssm" "parameter"s under a path are retrieved
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then an existing parameter value is updated then multiple parameters are deleted from "SSM"
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then an existing "ssm" "parameter" value is updated then multiple "ssm" "parameter"s are deleted
+    When "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then a parameter is written without overwrite when it already exists then tags are added to a parameter
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then a "ssm" "parameter" is written without overwrite when it already exists then tags are added to a "ssm" "parameter"
+    When "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then a parameter is retrieved from "SSM" then tags are removed from a parameter
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then a "ssm" "parameter" is retrieved then tags are removed from a "ssm" "parameter"
+    When "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then multiple parameters are retrieved from "SSM" then tags for a parameter are listed
-    Given parameters under a path have been retrieved from "SSM"
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then multiple "ssm" "parameter"s are retrieved then tags for a "ssm" "parameter" are listed
+    When "ssm" "parameter"s under a path are retrieved
+    When multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then parameters are described then a parameter is stored in "SSM"
-    Given parameters under a path have been retrieved from "SSM"
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s under a path are retrieved then "ssm" "parameter"s are described then a "ssm" "parameter" is stored
+    When "ssm" "parameter"s under a path are retrieved
+    When "ssm" "parameter"s are described
     Given pname not in param_exists or param_exists[pname] is False
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then a parameter is deleted from "SSM" then an existing parameter value is updated
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then a "ssm" "parameter" is deleted then an existing "ssm" "parameter" value is updated
+    When "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then multiple parameters are deleted from "SSM" then a parameter is written without overwrite when it already exists
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then multiple "ssm" "parameter"s are deleted then a "ssm" "parameter" is written without overwrite when it already exists
+    When "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then tags are added to a parameter then a parameter is retrieved from "SSM"
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then tags are added to a "ssm" "parameter" then a "ssm" "parameter" is retrieved
+    When "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given tags have been added to a parameter
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then tags are removed from a parameter then multiple parameters are retrieved from "SSM"
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then tags are removed from a "ssm" "parameter" then multiple "ssm" "parameter"s are retrieved
+    When "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters under a path are retrieved from "SSM" then tags for a parameter are listed then parameters are described
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s under a path are retrieved then tags for a "ssm" "parameter" are listed then "ssm" "parameter"s are described
+    When "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    When parameters are described
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then a parameter is stored in "SSM" then multiple parameters are deleted from "SSM"
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s are described then a "ssm" "parameter" is stored then multiple "ssm" "parameter"s are deleted
+    When "ssm" "parameter"s are described
     Given pname not in param_exists or param_exists[pname] is False
-    Given a parameter has been stored in "SSM"
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then an existing parameter value is updated then tags are added to a parameter
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s are described then an existing "ssm" "parameter" value is updated then tags are added to a "ssm" "parameter"
+    When "ssm" "parameter"s are described
     Given pname in param_exists
-    Given an existing parameter value has been updated
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then a parameter is written without overwrite when it already exists then tags are removed from a parameter
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s are described then a "ssm" "parameter" is written without overwrite when it already exists then tags are removed from a "ssm" "parameter"
+    When "ssm" "parameter"s are described
     Given pname in param_exists
-    Given a parameter has been written without overwrite when it already exists
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then a parameter is retrieved from "SSM" then tags for a parameter are listed
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s are described then a "ssm" "parameter" is retrieved then tags for a "ssm" "parameter" are listed
+    When "ssm" "parameter"s are described
     Given pname in param_exists
-    Given a parameter has been retrieved from "SSM"
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is retrieved
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then multiple parameters are retrieved from "SSM" then a parameter is stored in "SSM"
-    Given parameters have been described
-    Given multiple parameters have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s are described then multiple "ssm" "parameter"s are retrieved then a "ssm" "parameter" is stored
+    When "ssm" "parameter"s are described
+    When multiple "ssm" "parameter"s are retrieved
     Given pname not in param_exists or param_exists[pname] is False
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then parameters under a path are retrieved from "SSM" then an existing parameter value is updated
-    Given parameters have been described
-    Given parameters under a path have been retrieved from "SSM"
+  Scenario: "ssm" "parameter"s are described then "ssm" "parameter"s under a path are retrieved then an existing "ssm" "parameter" value is updated
+    When "ssm" "parameter"s are described
+    When "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then a parameter is deleted from "SSM" then a parameter is written without overwrite when it already exists
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s are described then a "ssm" "parameter" is deleted then a "ssm" "parameter" is written without overwrite when it already exists
+    When "ssm" "parameter"s are described
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then multiple parameters are deleted from "SSM" then a parameter is retrieved from "SSM"
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s are described then multiple "ssm" "parameter"s are deleted then a "ssm" "parameter" is retrieved
+    When "ssm" "parameter"s are described
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then tags are added to a parameter then multiple parameters are retrieved from "SSM"
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s are described then tags are added to a "ssm" "parameter" then multiple "ssm" "parameter"s are retrieved
+    When "ssm" "parameter"s are described
     Given pname in param_exists
-    Given tags have been added to a parameter
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then tags are removed from a parameter then parameters under a path are retrieved from "SSM"
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s are described then tags are removed from a "ssm" "parameter" then "ssm" "parameter"s under a path are retrieved
+    When "ssm" "parameter"s are described
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: parameters are described then tags for a parameter are listed then a parameter is deleted from "SSM"
-    Given parameters have been described
+  Scenario: "ssm" "parameter"s are described then tags for a "ssm" "parameter" are listed then a "ssm" "parameter" is deleted
+    When "ssm" "parameter"s are described
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then a parameter is stored in "SSM" then tags are added to a parameter
+  Scenario: a "ssm" "parameter" is deleted then a "ssm" "parameter" is stored then tags are added to a "ssm" "parameter"
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    Given a parameter has been stored in "SSM"
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When a "ssm" "parameter" is stored
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then an existing parameter value is updated then tags are removed from a parameter
+  Scenario: a "ssm" "parameter" is deleted then an existing "ssm" "parameter" value is updated then tags are removed from a "ssm" "parameter"
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    Given an existing parameter value has been updated
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When an existing "ssm" "parameter" value is updated
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then a parameter is written without overwrite when it already exists then tags for a parameter are listed
+  Scenario: a "ssm" "parameter" is deleted then a "ssm" "parameter" is written without overwrite when it already exists then tags for a "ssm" "parameter" are listed
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    Given a parameter has been written without overwrite when it already exists
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then a parameter is retrieved from "SSM" then a parameter is stored in "SSM"
+  Scenario: a "ssm" "parameter" is deleted then a "ssm" "parameter" is retrieved then a "ssm" "parameter" is stored
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    Given a parameter has been retrieved from "SSM"
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When a "ssm" "parameter" is retrieved
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then multiple parameters are retrieved from "SSM" then an existing parameter value is updated
+  Scenario: a "ssm" "parameter" is deleted then multiple "ssm" "parameter"s are retrieved then an existing "ssm" "parameter" value is updated
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    Given multiple parameters have been retrieved from "SSM"
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When multiple "ssm" "parameter"s are retrieved
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then parameters under a path are retrieved from "SSM" then a parameter is written without overwrite when it already exists
+  Scenario: a "ssm" "parameter" is deleted then "ssm" "parameter"s under a path are retrieved then a "ssm" "parameter" is written without overwrite when it already exists
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    Given parameters under a path have been retrieved from "SSM"
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When "ssm" "parameter"s under a path are retrieved
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then parameters are described then a parameter is retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is deleted then "ssm" "parameter"s are described then a "ssm" "parameter" is retrieved
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    Given parameters have been described
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When "ssm" "parameter"s are described
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then multiple parameters are deleted from "SSM" then multiple parameters are retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is deleted then multiple "ssm" "parameter"s are deleted then multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    Given multiple parameters have been deleted from "SSM"
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When multiple "ssm" "parameter"s are deleted
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then tags are added to a parameter then parameters under a path are retrieved from "SSM"
+  Scenario: a "ssm" "parameter" is deleted then tags are added to a "ssm" "parameter" then "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    Given tags have been added to a parameter
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When tags are added to a "ssm" "parameter"
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then tags are removed from a parameter then parameters are described
+  Scenario: a "ssm" "parameter" is deleted then tags are removed from a "ssm" "parameter" then "ssm" "parameter"s are described
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    Given tags have been removed from a parameter
-    When parameters are described
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When tags are removed from a "ssm" "parameter"
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" then tags for a parameter are listed then multiple parameters are deleted from "SSM"
+  Scenario: a "ssm" "parameter" is deleted then tags for a "ssm" "parameter" are listed then multiple "ssm" "parameter"s are deleted
     Given pname in param_exists
-    Given a parameter has been deleted from "SSM"
-    Given tags for a parameter have been listed
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When a "ssm" "parameter" is deleted
+    When tags for a "ssm" "parameter" are listed
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then a parameter is stored in "SSM" then tags are removed from a parameter
+  Scenario: multiple "ssm" "parameter"s are deleted then a "ssm" "parameter" is stored then tags are removed from a "ssm" "parameter"
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    Given a parameter has been stored in "SSM"
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When a "ssm" "parameter" is stored
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then an existing parameter value is updated then tags for a parameter are listed
+  Scenario: multiple "ssm" "parameter"s are deleted then an existing "ssm" "parameter" value is updated then tags for a "ssm" "parameter" are listed
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    Given an existing parameter value has been updated
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When an existing "ssm" "parameter" value is updated
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then a parameter is written without overwrite when it already exists then a parameter is stored in "SSM"
+  Scenario: multiple "ssm" "parameter"s are deleted then a "ssm" "parameter" is written without overwrite when it already exists then a "ssm" "parameter" is stored
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    Given a parameter has been written without overwrite when it already exists
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then a parameter is retrieved from "SSM" then an existing parameter value is updated
+  Scenario: multiple "ssm" "parameter"s are deleted then a "ssm" "parameter" is retrieved then an existing "ssm" "parameter" value is updated
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    Given a parameter has been retrieved from "SSM"
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When a "ssm" "parameter" is retrieved
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then multiple parameters are retrieved from "SSM" then a parameter is written without overwrite when it already exists
+  Scenario: multiple "ssm" "parameter"s are deleted then multiple "ssm" "parameter"s are retrieved then a "ssm" "parameter" is written without overwrite when it already exists
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    Given multiple parameters have been retrieved from "SSM"
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When multiple "ssm" "parameter"s are retrieved
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then parameters under a path are retrieved from "SSM" then a parameter is retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are deleted then "ssm" "parameter"s under a path are retrieved then a "ssm" "parameter" is retrieved
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    Given parameters under a path have been retrieved from "SSM"
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When "ssm" "parameter"s under a path are retrieved
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then parameters are described then multiple parameters are retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are deleted then "ssm" "parameter"s are described then multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    Given parameters have been described
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When "ssm" "parameter"s are described
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then a parameter is deleted from "SSM" then parameters under a path are retrieved from "SSM"
+  Scenario: multiple "ssm" "parameter"s are deleted then a "ssm" "parameter" is deleted then "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    Given a parameter has been deleted from "SSM"
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When a "ssm" "parameter" is deleted
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then tags are added to a parameter then parameters are described
+  Scenario: multiple "ssm" "parameter"s are deleted then tags are added to a "ssm" "parameter" then "ssm" "parameter"s are described
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    Given tags have been added to a parameter
-    When parameters are described
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When tags are added to a "ssm" "parameter"
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then tags are removed from a parameter then a parameter is deleted from "SSM"
+  Scenario: multiple "ssm" "parameter"s are deleted then tags are removed from a "ssm" "parameter" then a "ssm" "parameter" is deleted
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    Given tags have been removed from a parameter
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When tags are removed from a "ssm" "parameter"
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: multiple parameters are deleted from "SSM" then tags for a parameter are listed then tags are added to a parameter
+  Scenario: multiple "ssm" "parameter"s are deleted then tags for a "ssm" "parameter" are listed then tags are added to a "ssm" "parameter"
     Given pname in param_exists
-    Given multiple parameters have been deleted from "SSM"
-    Given tags for a parameter have been listed
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When multiple "ssm" "parameter"s are deleted
+    When tags for a "ssm" "parameter" are listed
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then a parameter is stored in "SSM" then tags for a parameter are listed
+  Scenario: tags are added to a "ssm" "parameter" then a "ssm" "parameter" is stored then tags for a "ssm" "parameter" are listed
     Given pname in param_exists
-    Given tags have been added to a parameter
-    Given a parameter has been stored in "SSM"
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When a "ssm" "parameter" is stored
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then an existing parameter value is updated then a parameter is stored in "SSM"
+  Scenario: tags are added to a "ssm" "parameter" then an existing "ssm" "parameter" value is updated then a "ssm" "parameter" is stored
     Given pname in param_exists
-    Given tags have been added to a parameter
-    Given an existing parameter value has been updated
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When an existing "ssm" "parameter" value is updated
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then a parameter is written without overwrite when it already exists then an existing parameter value is updated
+  Scenario: tags are added to a "ssm" "parameter" then a "ssm" "parameter" is written without overwrite when it already exists then an existing "ssm" "parameter" value is updated
     Given pname in param_exists
-    Given tags have been added to a parameter
-    Given a parameter has been written without overwrite when it already exists
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then a parameter is retrieved from "SSM" then a parameter is written without overwrite when it already exists
+  Scenario: tags are added to a "ssm" "parameter" then a "ssm" "parameter" is retrieved then a "ssm" "parameter" is written without overwrite when it already exists
     Given pname in param_exists
-    Given tags have been added to a parameter
-    Given a parameter has been retrieved from "SSM"
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When a "ssm" "parameter" is retrieved
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then multiple parameters are retrieved from "SSM" then a parameter is retrieved from "SSM"
+  Scenario: tags are added to a "ssm" "parameter" then multiple "ssm" "parameter"s are retrieved then a "ssm" "parameter" is retrieved
     Given pname in param_exists
-    Given tags have been added to a parameter
-    Given multiple parameters have been retrieved from "SSM"
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When multiple "ssm" "parameter"s are retrieved
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then parameters under a path are retrieved from "SSM" then multiple parameters are retrieved from "SSM"
+  Scenario: tags are added to a "ssm" "parameter" then "ssm" "parameter"s under a path are retrieved then multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given tags have been added to a parameter
-    Given parameters under a path have been retrieved from "SSM"
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When "ssm" "parameter"s under a path are retrieved
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then parameters are described then parameters under a path are retrieved from "SSM"
+  Scenario: tags are added to a "ssm" "parameter" then "ssm" "parameter"s are described then "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given tags have been added to a parameter
-    Given parameters have been described
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When "ssm" "parameter"s are described
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then a parameter is deleted from "SSM" then parameters are described
+  Scenario: tags are added to a "ssm" "parameter" then a "ssm" "parameter" is deleted then "ssm" "parameter"s are described
     Given pname in param_exists
-    Given tags have been added to a parameter
-    Given a parameter has been deleted from "SSM"
-    When parameters are described
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When a "ssm" "parameter" is deleted
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then multiple parameters are deleted from "SSM" then a parameter is deleted from "SSM"
+  Scenario: tags are added to a "ssm" "parameter" then multiple "ssm" "parameter"s are deleted then a "ssm" "parameter" is deleted
     Given pname in param_exists
-    Given tags have been added to a parameter
-    Given multiple parameters have been deleted from "SSM"
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When multiple "ssm" "parameter"s are deleted
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then tags are removed from a parameter then multiple parameters are deleted from "SSM"
+  Scenario: tags are added to a "ssm" "parameter" then tags are removed from a "ssm" "parameter" then multiple "ssm" "parameter"s are deleted
     Given pname in param_exists
-    Given tags have been added to a parameter
-    Given tags have been removed from a parameter
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When tags are removed from a "ssm" "parameter"
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are added to a parameter then tags for a parameter are listed then tags are removed from a parameter
+  Scenario: tags are added to a "ssm" "parameter" then tags for a "ssm" "parameter" are listed then tags are removed from a "ssm" "parameter"
     Given pname in param_exists
-    Given tags have been added to a parameter
-    Given tags for a parameter have been listed
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When tags are added to a "ssm" "parameter"
+    When tags for a "ssm" "parameter" are listed
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then a parameter is stored in "SSM" then an existing parameter value is updated
+  Scenario: tags are removed from a "ssm" "parameter" then a "ssm" "parameter" is stored then an existing "ssm" "parameter" value is updated
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    Given a parameter has been stored in "SSM"
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When a "ssm" "parameter" is stored
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then an existing parameter value is updated then a parameter is written without overwrite when it already exists
+  Scenario: tags are removed from a "ssm" "parameter" then an existing "ssm" "parameter" value is updated then a "ssm" "parameter" is written without overwrite when it already exists
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    Given an existing parameter value has been updated
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When an existing "ssm" "parameter" value is updated
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then a parameter is written without overwrite when it already exists then a parameter is retrieved from "SSM"
+  Scenario: tags are removed from a "ssm" "parameter" then a "ssm" "parameter" is written without overwrite when it already exists then a "ssm" "parameter" is retrieved
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    Given a parameter has been written without overwrite when it already exists
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then a parameter is retrieved from "SSM" then multiple parameters are retrieved from "SSM"
+  Scenario: tags are removed from a "ssm" "parameter" then a "ssm" "parameter" is retrieved then multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    Given a parameter has been retrieved from "SSM"
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When a "ssm" "parameter" is retrieved
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then multiple parameters are retrieved from "SSM" then parameters under a path are retrieved from "SSM"
+  Scenario: tags are removed from a "ssm" "parameter" then multiple "ssm" "parameter"s are retrieved then "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    Given multiple parameters have been retrieved from "SSM"
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When multiple "ssm" "parameter"s are retrieved
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then parameters under a path are retrieved from "SSM" then parameters are described
+  Scenario: tags are removed from a "ssm" "parameter" then "ssm" "parameter"s under a path are retrieved then "ssm" "parameter"s are described
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    Given parameters under a path have been retrieved from "SSM"
-    When parameters are described
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When "ssm" "parameter"s under a path are retrieved
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then parameters are described then a parameter is deleted from "SSM"
+  Scenario: tags are removed from a "ssm" "parameter" then "ssm" "parameter"s are described then a "ssm" "parameter" is deleted
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    Given parameters have been described
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When "ssm" "parameter"s are described
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then a parameter is deleted from "SSM" then multiple parameters are deleted from "SSM"
+  Scenario: tags are removed from a "ssm" "parameter" then a "ssm" "parameter" is deleted then multiple "ssm" "parameter"s are deleted
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    Given a parameter has been deleted from "SSM"
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When a "ssm" "parameter" is deleted
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then multiple parameters are deleted from "SSM" then tags are added to a parameter
+  Scenario: tags are removed from a "ssm" "parameter" then multiple "ssm" "parameter"s are deleted then tags are added to a "ssm" "parameter"
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    Given multiple parameters have been deleted from "SSM"
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When multiple "ssm" "parameter"s are deleted
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then tags are added to a parameter then tags for a parameter are listed
+  Scenario: tags are removed from a "ssm" "parameter" then tags are added to a "ssm" "parameter" then tags for a "ssm" "parameter" are listed
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    Given tags have been added to a parameter
-    When tags for a parameter are listed
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When tags are added to a "ssm" "parameter"
+    When tags for a "ssm" "parameter" are listed
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags are removed from a parameter then tags for a parameter are listed then a parameter is stored in "SSM"
+  Scenario: tags are removed from a "ssm" "parameter" then tags for a "ssm" "parameter" are listed then a "ssm" "parameter" is stored
     Given pname in param_exists
-    Given tags have been removed from a parameter
-    Given tags for a parameter have been listed
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When tags are removed from a "ssm" "parameter"
+    When tags for a "ssm" "parameter" are listed
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then a parameter is stored in "SSM" then a parameter is written without overwrite when it already exists
+  Scenario: tags for a "ssm" "parameter" are listed then a "ssm" "parameter" is stored then a "ssm" "parameter" is written without overwrite when it already exists
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    Given a parameter has been stored in "SSM"
-    When a parameter is written without overwrite when it already exists
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When a "ssm" "parameter" is stored
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then an existing parameter value is updated then a parameter is retrieved from "SSM"
+  Scenario: tags for a "ssm" "parameter" are listed then an existing "ssm" "parameter" value is updated then a "ssm" "parameter" is retrieved
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    Given an existing parameter value has been updated
-    When a parameter is retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When an existing "ssm" "parameter" value is updated
+    When a "ssm" "parameter" is retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then a parameter is written without overwrite when it already exists then multiple parameters are retrieved from "SSM"
+  Scenario: tags for a "ssm" "parameter" are listed then a "ssm" "parameter" is written without overwrite when it already exists then multiple "ssm" "parameter"s are retrieved
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    Given a parameter has been written without overwrite when it already exists
-    When multiple parameters are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When a "ssm" "parameter" is written without overwrite when it already exists
+    When multiple "ssm" "parameter"s are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then a parameter is retrieved from "SSM" then parameters under a path are retrieved from "SSM"
+  Scenario: tags for a "ssm" "parameter" are listed then a "ssm" "parameter" is retrieved then "ssm" "parameter"s under a path are retrieved
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    Given a parameter has been retrieved from "SSM"
-    When parameters under a path are retrieved from "SSM"
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When a "ssm" "parameter" is retrieved
+    When "ssm" "parameter"s under a path are retrieved
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then multiple parameters are retrieved from "SSM" then parameters are described
+  Scenario: tags for a "ssm" "parameter" are listed then multiple "ssm" "parameter"s are retrieved then "ssm" "parameter"s are described
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    Given multiple parameters have been retrieved from "SSM"
-    When parameters are described
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When multiple "ssm" "parameter"s are retrieved
+    When "ssm" "parameter"s are described
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then parameters under a path are retrieved from "SSM" then a parameter is deleted from "SSM"
+  Scenario: tags for a "ssm" "parameter" are listed then "ssm" "parameter"s under a path are retrieved then a "ssm" "parameter" is deleted
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    Given parameters under a path have been retrieved from "SSM"
-    When a parameter is deleted from "SSM"
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When "ssm" "parameter"s under a path are retrieved
+    When a "ssm" "parameter" is deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then parameters are described then multiple parameters are deleted from "SSM"
+  Scenario: tags for a "ssm" "parameter" are listed then "ssm" "parameter"s are described then multiple "ssm" "parameter"s are deleted
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    Given parameters have been described
-    When multiple parameters are deleted from "SSM"
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When "ssm" "parameter"s are described
+    When multiple "ssm" "parameter"s are deleted
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then a parameter is deleted from "SSM" then tags are added to a parameter
+  Scenario: tags for a "ssm" "parameter" are listed then a "ssm" "parameter" is deleted then tags are added to a "ssm" "parameter"
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    Given a parameter has been deleted from "SSM"
-    When tags are added to a parameter
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When a "ssm" "parameter" is deleted
+    When tags are added to a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then multiple parameters are deleted from "SSM" then tags are removed from a parameter
+  Scenario: tags for a "ssm" "parameter" are listed then multiple "ssm" "parameter"s are deleted then tags are removed from a "ssm" "parameter"
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    Given multiple parameters have been deleted from "SSM"
-    When tags are removed from a parameter
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When multiple "ssm" "parameter"s are deleted
+    When tags are removed from a "ssm" "parameter"
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then tags are added to a parameter then a parameter is stored in "SSM"
+  Scenario: tags for a "ssm" "parameter" are listed then tags are added to a "ssm" "parameter" then a "ssm" "parameter" is stored
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    Given tags have been added to a parameter
-    When a parameter is stored in "SSM"
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When tags are added to a "ssm" "parameter"
+    When a "ssm" "parameter" is stored
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries
 
   @sequence
-  Scenario: tags for a parameter are listed then tags are removed from a parameter then an existing parameter value is updated
+  Scenario: tags for a "ssm" "parameter" are listed then tags are removed from a "ssm" "parameter" then an existing "ssm" "parameter" value is updated
     Given pname in param_exists
-    Given tags for a parameter have been listed
-    Given tags have been removed from a parameter
-    When an existing parameter value is updated
-    Then every parameter version is a positive integer
+    When tags for a "ssm" "parameter" are listed
+    When tags are removed from a "ssm" "parameter"
+    When an existing "ssm" "parameter" value is updated
+    And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans
     And the error log only contains ParameterAlreadyExists entries

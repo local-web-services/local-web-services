@@ -1,4 +1,4 @@
-"""Given: tags have been added to a parameter"""
+"""Given: tags are added to a "ssm" "parameter" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SsmTestClient
 from ..constants import TEST_PARAM, TEST_TAG_KEY, TEST_TAG_VALUE
 
 
-@given("tags have been added to a parameter")
+@given('tags are added to a "ssm" "parameter"')
 def ssm_tags_have_been_added_to_a_parameter(lws_session):
     SsmTestClient(lws_session).create_param()
     try:

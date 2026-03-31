@@ -1,5 +1,5 @@
 @apigatewaysns @generated
-Feature: ApigatewaySns - An Api Gateway Rest Api Is Created
+Feature: ApigatewaySns - An "Api Gateway" "Api" Is Created
 
   # Generated from FizzBee spec: apigateway_sns.fizz
   # Safety invariants: PublishedMessageReferencesExistingTopic, SuccessfulRequestReferencesExistingAPI
@@ -8,15 +8,15 @@ Feature: ApigatewaySns - An Api Gateway Rest Api Is Created
     Given the system is initialized
 
   @minimal @happy @create_rest_a_p_i
-  Scenario: an "API" Gateway "REST" "API" is created
-    Given the "API" does not already exist
-    When an "API" Gateway "REST" "API" is created
-    Then the "API" is "ACTIVE" with no "SNS" integration configured
-    And every "PUBLISHED" message references a topic that exists
-    And every successful request references an "API" that exists
+  Scenario: an "api gateway" "api" is created
+    Given the "api gateway" "API" did not already exist
+    When an "api gateway" "api" is created
+    Then the "api gateway" "api" will be "ACTIVE" with no "SNS" integration configured
+    And every "PUBLISHED" message references a "sns" "topic" that exists
+    And every successful request references an "api gateway" "API" that exists
 
   @guard @negative @create_rest_a_p_i
-  Scenario: an "API" Gateway "REST" "API" is created fails when the "API" already exists
-    Given the "API" already exists
-    When an "API" Gateway "REST" "API" is created
+  Scenario: an "api gateway" "api" is created fails when the "api gateway" "API" already existed
+    Given the "api gateway" "API" already existed
+    When an "api gateway" "api" is created
     Then the operation is rejected

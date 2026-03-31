@@ -1,4 +1,4 @@
-"""When: a policy is attached to a target"""
+"""When: an "organizations" "policy" is attached to a target"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import OrganizationsTestClient
 
 
-@when("a policy is attached to a target")
+@when('an "organizations" "policy" is attached to a target')
 def attach_policy(client: TestClient, world):
     status, body = OrganizationsTestClient(client).post(
         "AttachPolicy", {"PolicyId": world["policy_id"], "TargetId": world["target_id"]}

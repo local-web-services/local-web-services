@@ -48,10 +48,10 @@ action Init:
     # async_retries[slot] = int (number of retries attempted so far)
     async_retries = {}
 
-# step: a function is created
-# result: the function is in PENDING state
-# guard: the function does not already exist
-# guard_violation: the function already exists
+# step: a "lambda" "function" is created
+# result: the "lambda" "function" will be in "PENDING" state
+# guard: the "lambda" "function" did not already exist
+# guard_violation: the "lambda" "function" already existed
 # CreateFunction: allocate a function ID and place it in PENDING
 atomic action CreateFunction:
     oneof fid in FUNC_IDS:
@@ -62,12 +62,12 @@ atomic action CreateFunction:
             func_has_policy[fid] = False
 
 # fake_skip: internal
-# step: a pending function resolves its deployment
-# result: the function becomes ACTIVE or FAILED non-deterministically
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is PENDING
-# guard_violation_lifecycle: the function is not PENDING
+# step: a pending "lambda" "function" resolves its deployment
+# result: the "lambda" "function" becomes "ACTIVE" or "FAILED" non-deterministically
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "PENDING"
+# guard_violation_lifecycle: the "lambda" "function" was not "PENDING"
 # ActivateFunction: non-deterministically resolves PENDING to ACTIVE or FAILED
 atomic action ActivateFunction:
     oneof fid in FUNC_IDS:
@@ -77,14 +77,14 @@ atomic action ActivateFunction:
                     func_status[fid] = "ACTIVE"
                     func_status[fid] = "FAILED"
 
-# step: an active function is deleted
-# result: the function enters DELETING state
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
-# guard: the function has no active executions
-# guard_violation: the function has active executions
+# step: an active "lambda" "function" is deleted
+# result: the "lambda" "function" will be in "DELETING" state
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
+# guard: the "lambda" "function" had no active executions
+# guard_violation: the "lambda" "function" had active executions
 # DeleteFunction: begin deletion when function is not executing
 atomic action DeleteFunction:
     oneof fid in FUNC_IDS:
@@ -93,12 +93,12 @@ atomic action DeleteFunction:
                 if func_active_execs[fid] == 0:
                     func_status[fid] = "DELETING"
 
-# step: a failed function is deleted
-# result: the function enters DELETING state
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is FAILED
-# guard_violation_lifecycle: the function is not FAILED
+# step: a failed "lambda" "function" is deleted
+# result: the "lambda" "function" will be in "DELETING" state
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "FAILED"
+# guard_violation_lifecycle: the "lambda" "function" was not "FAILED"
 atomic action DeleteFailedFunction:
     oneof fid in FUNC_IDS:
         if fid in func_status:
@@ -106,12 +106,12 @@ atomic action DeleteFailedFunction:
                 func_status[fid] = "DELETING"
 
 # fake_skip: internal
-# step: a function finishes being deleted
-# result: the function is DELETED
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is DELETING
-# guard_violation_lifecycle: the function is not DELETING
+# step: a "lambda" "function" finishes being deleted
+# result: the "lambda" "function" will be "DELETED"
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "DELETING"
+# guard_violation_lifecycle: the "lambda" "function" was not "DELETING"
 # FinishDeleteFunction: mark function DELETED (sentinel instead of del)
 atomic action FinishDeleteFunction:
     oneof fid in FUNC_IDS:
@@ -119,12 +119,12 @@ atomic action FinishDeleteFunction:
             if func_status[fid] == "DELETING":
                 func_status[fid] = "DELETED"
 
-# step: a function's code is updated
-# result: the function returns to PENDING state for redeployment
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
+# step: a "lambda" "function"'s code is updated
+# result: the "lambda" "function" returns to "PENDING" state for redeployment
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
 # UpdateFunctionCode: transitions ACTIVE function back to PENDING for redeployment
 atomic action UpdateFunctionCode:
     oneof fid in FUNC_IDS:
@@ -132,12 +132,12 @@ atomic action UpdateFunctionCode:
             if func_status[fid] == "ACTIVE":
                 func_status[fid] = "PENDING"
 
-# step: a function's configuration is updated
-# result: the function configuration is updated while remaining ACTIVE
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
+# step: a "lambda" "function"'s configuration is updated
+# result: the "lambda" "function" configuration will be updated while remaining "ACTIVE"
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
 # UpdateFunctionConfiguration: allowed on ACTIVE functions (no nested dict needed)
 atomic action UpdateFunctionConfiguration:
     oneof fid in FUNC_IDS:
@@ -145,12 +145,12 @@ atomic action UpdateFunctionConfiguration:
             if func_status[fid] == "ACTIVE":
                 pass
 
-# step: reserved concurrency is set for a function
-# result: the function has an unreserved, throttled, or explicit concurrency limit
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
+# step: reserved concurrency is set for a "lambda" "function"
+# result: the "lambda" "function" has an unreserved, throttled, or explicit concurrency limit
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
 # SetReservedConcurrency: -1 = unreserved, 0 = throttled, 5 = explicit limit
 atomic action SetReservedConcurrency:
     oneof fid in FUNC_IDS:
@@ -161,16 +161,16 @@ atomic action SetReservedConcurrency:
                     func_reserved_conc[fid] = 0
                     func_reserved_conc[fid] = 5
 
-# step: a function is invoked synchronously without a concurrency limit
+# step: a "lambda" "function" is invoked synchronously without a concurrency limit
 # result: the active execution count increases
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
-# guard: the function has concurrency configured
-# guard_violation: the function does not have concurrency configured
-# guard: the function has unreserved concurrency
-# guard_violation_capacity: the function does not have unreserved concurrency
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
+# guard: the "lambda" "function" had concurrency configured
+# guard_violation: the "lambda" "function" did not have concurrency configured
+# guard: the "lambda" "function" had unreserved concurrency
+# guard_violation_capacity: the "lambda" "function" did not have unreserved concurrency
 # InvokeFunctionSync: increment active execution count if concurrency allows
 atomic action InvokeFunctionSync:
     oneof fid in FUNC_IDS:
@@ -180,20 +180,20 @@ atomic action InvokeFunctionSync:
                     if func_reserved_conc[fid] == -1:
                         func_active_execs[fid] = func_active_execs[fid] + 1
 
-# step: a function is invoked synchronously within its concurrency limit
+# step: a "lambda" "function" is invoked synchronously within its concurrency limit
 # result: the active execution count increases
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
-# guard: the function has concurrency configured
-# guard_violation: the function does not have concurrency configured
-# guard: the function has a positive concurrency limit
-# guard_violation_capacity: the function does not have a positive concurrency limit
-# guard: the function has active executions tracked
-# guard_violation: the function does not have active executions tracked
-# guard: the active executions are below the concurrency limit
-# guard_violation_capacity: the active executions are at or above the concurrency limit
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
+# guard: the "lambda" "function" had concurrency configured
+# guard_violation: the "lambda" "function" did not have concurrency configured
+# guard: the "lambda" "function" had a positive concurrency limit
+# guard_violation_capacity: the "lambda" "function" did not have a positive concurrency limit
+# guard: the "lambda" "function" had active executions tracked
+# guard_violation: the "lambda" "function" does not have active executions tracked
+# guard: the active executions were below the concurrency limit
+# guard_violation_capacity: the active executions were at or above the concurrency limit
 atomic action InvokeFunctionSyncWithConcurrency:
     oneof fid in FUNC_IDS:
         if fid in func_status:
@@ -205,12 +205,12 @@ atomic action InvokeFunctionSyncWithConcurrency:
                                 func_active_execs[fid] = func_active_execs[fid] + 1
 
 # fake_skip: internal
-# step: a synchronous function invocation completes
+# step: a synchronous "lambda" "function" invocation completes
 # result: the active execution count decreases
-# guard: the function has active execution tracking
-# guard_violation: the function does not have active execution tracking
-# guard: the function has at least one active execution
-# guard_violation: the function has no active executions
+# guard: the "lambda" "function" had active execution tracking
+# guard_violation: the "lambda" "function" did not have active execution tracking
+# guard: the "lambda" "function" had at least one active execution
+# guard_violation: the "lambda" "function" had no active executions
 # FinishInvokeFunctionSync: decrement active execution count
 atomic action FinishInvokeFunctionSync:
     oneof fid in FUNC_IDS:
@@ -218,12 +218,12 @@ atomic action FinishInvokeFunctionSync:
             if func_active_execs[fid] > 0:
                 func_active_execs[fid] = func_active_execs[fid] - 1
 
-# step: a function is invoked asynchronously
-# result: the event is queued in an async slot
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
+# step: a "lambda" "function" is invoked asynchronously
+# result: the event will be queued in an async slot
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
 # guard: an async slot is available
 # guard_violation_capacity: no async slot is available
 # InvokeFunctionAsync: place event in a free async slot
@@ -238,15 +238,15 @@ atomic action InvokeFunctionAsync:
 
 # fake_skip: internal
 # step: an async invocation succeeds
-# result: the async slot is freed
+# result: the async slot will be freed
 # guard: the async slot is occupied
-# guard_violation: the async slot is empty
-# guard: the async slot has a function assigned
-# guard_violation: the async slot does not have a function assigned
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
+# guard_violation: the async slot was empty
+# guard: the async slot has a "lambda" "function" assigned
+# guard_violation: the async slot does not have a "lambda" "function" assigned
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
 # ProcessAsyncSuccess: async invocation succeeded; free the slot
 atomic action ProcessAsyncSuccess:
     oneof slot in ASYNC_SLOTS:
@@ -261,17 +261,17 @@ atomic action ProcessAsyncSuccess:
 # step: an async invocation fails and is retried
 # result: the retry count increases
 # guard: the async slot is occupied
-# guard_violation: the async slot is empty
-# guard: the async slot has a function assigned
-# guard_violation: the async slot does not have a function assigned
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
+# guard_violation: the async slot was empty
+# guard: the async slot has a "lambda" "function" assigned
+# guard_violation: the async slot does not have a "lambda" "function" assigned
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
 # guard: retry tracking is available for the slot
 # guard_violation: retry tracking is not available for the slot
-# guard: the retry count has not been exhausted
-# guard_violation: the retry count has been exhausted
+# guard: the retry count had not been exhausted
+# guard_violation: the retry count had been exhausted
 # ProcessAsyncRetry: invocation failed but retries remain; increment retry count
 atomic action ProcessAsyncRetry:
     oneof slot in ASYNC_SLOTS:
@@ -286,19 +286,19 @@ atomic action ProcessAsyncRetry:
 
 # fake_skip: internal
 # step: an async invocation exhausts all retries
-# result: the event is dropped and the slot is freed
+# result: the event will be dropped and the slot will be freed
 # guard: the async slot is occupied
-# guard_violation: the async slot is empty
-# guard: the async slot has a function assigned
-# guard_violation: the async slot does not have a function assigned
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
+# guard_violation: the async slot was empty
+# guard: the async slot has a "lambda" "function" assigned
+# guard_violation: the async slot does not have a "lambda" "function" assigned
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
 # guard: retry tracking is available for the slot
 # guard_violation: retry tracking is not available for the slot
-# guard: the retry count has been exhausted
-# guard_violation: the retry count has not been exhausted
+# guard: the retry count had been exhausted
+# guard_violation: the retry count had not been exhausted
 # ProcessAsyncExhausted: retries exhausted; drop the event
 atomic action ProcessAsyncExhausted:
     oneof slot in ASYNC_SLOTS:
@@ -311,14 +311,14 @@ atomic action ProcessAsyncExhausted:
                             if async_retries[slot] >= 2:
                                 async_func[slot] = ""
 
-# step: an event source mapping is created
-# result: the mapping is in CREATING state and linked to a function
-# guard: the event source mapping does not already exist
-# guard_violation: the event source mapping already exists
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
+# step: a "lambda" event source mapping is created
+# result: the mapping will be in "CREATING" state and linked to a "lambda" "function"
+# guard: the "lambda" "event source mapping" did not already exist
+# guard_violation: the "lambda" "event source mapping" already existed
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
 # CreateEventSourceMapping
 atomic action CreateEventSourceMapping:
     oneof mid in MAPPING_IDS:
@@ -331,12 +331,12 @@ atomic action CreateEventSourceMapping:
                         mapping_func[mid] = fid
 
 # fake_skip: internal
-# step: an event source mapping finishes creating
-# result: the mapping is ENABLED
-# guard: the event source mapping exists
-# guard_violation: the event source mapping does not exist
-# guard: the mapping is CREATING
-# guard_violation_lifecycle: the mapping is not CREATING
+# step: a "lambda" "event source mapping" finishes creating
+# result: the mapping will be "ENABLED"
+# guard: the "lambda" "event source mapping" existed
+# guard_violation: the "lambda" "event source mapping" did not exist
+# guard: the mapping was "CREATING"
+# guard_violation_lifecycle: the mapping was not "CREATING"
 # ActivateEventSourceMapping: CREATING -> ENABLED
 atomic action ActivateEventSourceMapping:
     oneof mid in MAPPING_IDS:
@@ -344,12 +344,12 @@ atomic action ActivateEventSourceMapping:
             if mapping_status[mid] == "CREATING":
                 mapping_status[mid] = "ENABLED"
 
-# step: a disabled event source mapping is enabled
-# result: the mapping is ENABLED and active
-# guard: the event source mapping exists
-# guard_violation: the event source mapping does not exist
-# guard: the mapping is DISABLED
-# guard_violation_lifecycle: the mapping is not DISABLED
+# step: a disabled lambda event source mapping was "ENABLED"
+# result: the mapping will be "ENABLED" and active
+# guard: the "lambda" "event source mapping" existed
+# guard_violation: the "lambda" "event source mapping" did not exist
+# guard: the mapping was "DISABLED"
+# guard_violation_lifecycle: the mapping was not "DISABLED"
 # UpdateEventSourceMapping: toggle enabled/disabled
 atomic action EnableEventSourceMapping:
     oneof mid in MAPPING_IDS:
@@ -359,12 +359,12 @@ atomic action EnableEventSourceMapping:
                     mapping_status[mid] = "ENABLED"
                     mapping_enabled[mid] = True
 
-# step: an enabled event source mapping is disabled
-# result: the mapping is DISABLED and inactive
-# guard: the event source mapping exists
-# guard_violation: the event source mapping does not exist
-# guard: the mapping is ENABLED
-# guard_violation_lifecycle: the mapping is not ENABLED
+# step: an enabled lambda event source mapping was "DISABLED"
+# result: the mapping will be "DISABLED" and inactive
+# guard: the "lambda" "event source mapping" existed
+# guard_violation: the "lambda" "event source mapping" did not exist
+# guard: the mapping was "ENABLED"
+# guard_violation_lifecycle: the mapping was not "ENABLED"
 atomic action DisableEventSourceMapping:
     oneof mid in MAPPING_IDS:
         if mid in mapping_status:
@@ -373,12 +373,12 @@ atomic action DisableEventSourceMapping:
                     mapping_status[mid] = "DISABLED"
                     mapping_enabled[mid] = False
 
-# step: an enabled event source mapping is deleted
-# result: the mapping enters DELETING state
-# guard: the event source mapping exists
-# guard_violation: the event source mapping does not exist
-# guard: the mapping is ENABLED
-# guard_violation_lifecycle: the mapping is not ENABLED
+# step: an enabled lambda event source mapping is deleted
+# result: the mapping will be in "DELETING" state
+# guard: the "lambda" "event source mapping" existed
+# guard_violation: the "lambda" "event source mapping" did not exist
+# guard: the mapping was "ENABLED"
+# guard_violation_lifecycle: the mapping was not "ENABLED"
 # DeleteEventSourceMapping: begin deletion
 atomic action DeleteEventSourceMapping:
     oneof mid in MAPPING_IDS:
@@ -386,24 +386,24 @@ atomic action DeleteEventSourceMapping:
             if mapping_status[mid] == "ENABLED":
                 mapping_status[mid] = "DELETING"
 
-# step: a disabled event source mapping is deleted
-# result: the mapping enters DELETING state
-# guard: the event source mapping exists
-# guard_violation: the event source mapping does not exist
-# guard: the mapping is DISABLED
-# guard_violation_lifecycle: the mapping is not DISABLED
+# step: a disabled lambda event source mapping is deleted
+# result: the mapping will be in "DELETING" state
+# guard: the "lambda" "event source mapping" existed
+# guard_violation: the "lambda" "event source mapping" did not exist
+# guard: the mapping was "DISABLED"
+# guard_violation_lifecycle: the mapping was not "DISABLED"
 atomic action DeleteDisabledEventSourceMapping:
     oneof mid in MAPPING_IDS:
         if mid in mapping_status:
             if mapping_status[mid] == "DISABLED":
                 mapping_status[mid] = "DELETING"
 
-# step: an event source mapping finishes being deleted
-# result: the mapping is DELETED
-# guard: the event source mapping exists
-# guard_violation: the event source mapping does not exist
-# guard: the mapping is DELETING
-# guard_violation_lifecycle: the mapping is not DELETING
+# step: a "lambda" "event source mapping" finishes being deleted
+# result: the mapping will be deleted
+# guard: the "lambda" "event source mapping" existed
+# guard_violation: the "lambda" "event source mapping" did not exist
+# guard: the mapping was "DELETING"
+# guard_violation_lifecycle: the mapping was not "DELETING"
 # FinishDeleteEventSourceMapping: mark DELETED
 atomic action FinishDeleteEventSourceMapping:
     oneof mid in MAPPING_IDS:
@@ -411,14 +411,14 @@ atomic action FinishDeleteEventSourceMapping:
             if mapping_status[mid] == "DELETING":
                 mapping_status[mid] = "DELETED"
 
-# step: a tag is added to a function
-# result: the function has the tag set
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is not DELETING
-# guard_violation_lifecycle: the function is DELETING
-# guard: the function is not DELETED
-# guard_violation_lifecycle: the function is DELETED
+# step: a tag is added to a "lambda" "function"
+# result: the "lambda" "function" has the tag set
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "DELETING"
+# guard_violation_lifecycle: the "lambda" "function" was not "DELETING"
+# guard: the "lambda" "function" was "DELETED"
+# guard_violation_lifecycle: the "lambda" "function" was not "DELETED"
 # TagResource: set a tag on an active function using compound key fid+"#env"
 atomic action TagResource:
     oneof fid in FUNC_IDS:
@@ -428,14 +428,14 @@ atomic action TagResource:
                     tag_key = fid + "#env"
                     func_has_tag[tag_key] = True
 
-# step: a tag is removed from a function
-# result: the tag is cleared from the function
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the tag exists on the function
-# guard_violation: the tag does not exist on the function
-# guard: the tag is set
-# guard_violation: the tag is not set
+# step: a tag is removed from a "lambda" "function"
+# result: the tag will be cleared from the "lambda" "function"
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the tag existed on the "lambda" "function"
+# guard_violation: the tag did not exist on the "lambda" "function"
+# guard: the tag was set
+# guard_violation: the tag was not set
 # UntagResource: clear the tag
 atomic action UntagResource:
     oneof fid in FUNC_IDS:
@@ -445,12 +445,12 @@ atomic action UntagResource:
                 if func_has_tag[tag_key] == True:
                     func_has_tag[tag_key] = False
 
-# step: a permission is added to a function's resource policy
-# result: the function has a resource policy
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
+# step: a permission is added to a "lambda" "function"'s resource policy
+# result: the "lambda" "function" has a resource policy
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
 # AddPermission: mark function as having a resource policy
 atomic action AddPermission:
     oneof fid in FUNC_IDS:
@@ -458,12 +458,12 @@ atomic action AddPermission:
             if func_status[fid] == "ACTIVE":
                 func_has_policy[fid] = True
 
-# step: a permission is removed from a function's resource policy
-# result: the function's resource policy is cleared
-# guard: the function has a resource policy entry
-# guard_violation: the function does not have a resource policy entry
-# guard: the function has a resource policy
-# guard_violation: the function does not have a resource policy
+# step: a permission is removed from a "lambda" "function"'s resource policy
+# result: the "lambda" "function"'s resource policy will be cleared
+# guard: the "lambda" "function" had a resource policy entry
+# guard_violation: the "lambda" "function" did not have a resource policy entry
+# guard: the "lambda" "function" had a resource policy
+# guard_violation: the "lambda" "function" did not have a resource policy
 # RemovePermission: clear the resource policy
 atomic action RemovePermission:
     oneof fid in FUNC_IDS:

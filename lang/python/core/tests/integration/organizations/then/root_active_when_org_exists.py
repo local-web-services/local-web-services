@@ -1,4 +1,4 @@
-"""Then: the root is "ACTIVE" whenever the organization exists"""
+"""Then: the root was "ACTIVE" whenever the "organizations" "organization" exists"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import OrganizationsTestClient
 
 
-@then('the root is "ACTIVE" whenever the organization exists')
+@then('the root was "ACTIVE" whenever the "organizations" "organization" exists')
 def root_active_when_org_exists(client: TestClient, world):
     _, roots_body = OrganizationsTestClient(client).post("ListRoots", {})
     actual_roots = roots_body.get("Roots", [])

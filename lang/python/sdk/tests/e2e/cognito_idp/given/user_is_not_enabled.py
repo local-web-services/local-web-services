@@ -1,4 +1,4 @@
-"""Given: the user is not enabled"""
+"""Given: the "cognito" "user" was not "ENABLED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import CognitoIdpTestClient
 from ..constants import TEST_USERNAME
 
 
-@given("the user is not enabled")
+@given('the "cognito" "user" was not "ENABLED"')
 def user_is_not_enabled(lws_session, world):
     """Disable the user."""
     if not world.get("username"):

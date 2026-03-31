@@ -1,4 +1,4 @@
-"""Given: the subscription exists"""
+"""Given: the "sns" "subscription" existed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SnsTestClient
 from ..constants import TEST_EMAIL_ENDPOINT
 
 
-@given("the subscription exists")
+@given('the "sns" "subscription" existed')
 def subscription_exists(client, world):
     if not world.get("topic_arn"):
         world["topic_arn"] = SnsTestClient(client).create_topic()

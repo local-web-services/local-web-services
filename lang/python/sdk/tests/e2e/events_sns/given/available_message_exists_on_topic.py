@@ -1,4 +1,4 @@
-"""Given: an "AVAILABLE" message exists on the topic"""
+"""Given: an "AVAILABLE" message existed on the topic"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import EventsSnsTestClient
 from ..constants import TEST_MESSAGE
 
 
-@given('an "AVAILABLE" message exists on the topic')
+@given('an "AVAILABLE" message existed on the topic')
 def available_message_exists_on_topic(lws_session):
     topic_arn = EventsSnsTestClient(lws_session).create_topic()
     EventsSnsTestClient(lws_session)._sns.subscribe(

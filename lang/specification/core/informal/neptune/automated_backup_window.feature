@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - An Automated Backup Window Runs On An Available Cluster
+Feature: Neptune - An Automated Backup Window Runs On An Available Neptune Cluster
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,12 +8,12 @@ Feature: Neptune - An Automated Backup Window Runs On An Available Cluster
     Given the system is initialized
 
   @minimal @happy @automated_backup_window @internal
-  Scenario: an automated backup window runs on an available cluster
-    Given the cluster exists
-    And the cluster is "AVAILABLE"
-    And a snapshot slot is available
-    When an automated backup window runs on an available cluster
-    Then a snapshot is "CREATING" and the cluster is in "BACKING_UP" state
+  Scenario: an automated backup window runs on an available neptune cluster
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "AVAILABLE"
+    And a neptune snapshot slot is available
+    When an automated backup window runs on an available neptune cluster
+    Then a neptune snapshot will be "CREATING" and the "neptune" "cluster" will be in "BACKING_UP" state
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -24,22 +24,22 @@ Feature: Neptune - An Automated Backup Window Runs On An Available Cluster
     And a failed cluster has no available instances
 
   @guard @negative @automated_backup_window @internal
-  Scenario: an automated backup window runs on an available cluster fails when the cluster does not exist
-    Given the cluster does not exist
-    When an automated backup window runs on an available cluster
+  Scenario: an automated backup window runs on an available neptune cluster fails when the "neptune" "cluster" did not exist
+    Given the "neptune" "cluster" did not exist
+    When an automated backup window runs on an available neptune cluster
     Then the operation is rejected
 
   @guard @negative @automated_backup_window @internal
-  Scenario: an automated backup window runs on an available cluster fails when the cluster is not "AVAILABLE"
-    Given the cluster exists
-    And the cluster is not "AVAILABLE"
-    When an automated backup window runs on an available cluster
+  Scenario: an automated backup window runs on an available neptune cluster fails when the "neptune" "cluster" was not "AVAILABLE"
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was not "AVAILABLE"
+    When an automated backup window runs on an available neptune cluster
     Then the operation is rejected
 
   @guard @negative @automated_backup_window @internal
-  Scenario: an automated backup window runs on an available cluster fails when no snapshot slot is available
-    Given the cluster exists
-    And the cluster is "AVAILABLE"
-    And no snapshot slot is available
-    When an automated backup window runs on an available cluster
+  Scenario: an automated backup window runs on an available neptune cluster fails when no neptune snapshot slot is available
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "AVAILABLE"
+    And no neptune snapshot slot is available
+    When an automated backup window runs on an available neptune cluster
     Then the operation is rejected

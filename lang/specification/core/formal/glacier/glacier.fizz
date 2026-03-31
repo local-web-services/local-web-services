@@ -29,10 +29,10 @@ action Init:
     job_output_available = {}
     job_output_retrieved = {}
 
-# step: a vault is created
-# result: the vault is ACTIVE with zero archives
-# guard: the vault does not already exist
-# guard_violation: the vault already exists
+# step: a "glacier" "vault" is created
+# result: the "glacier" "vault" will be "ACTIVE" with zero archives
+# guard: the "glacier" "vault" did not already exist
+# guard_violation: the "glacier" "vault" already existed
 atomic action CreateVault:
     oneof vault in VAULT_NAMES:
         if vault not in vault_status:
@@ -40,16 +40,16 @@ atomic action CreateVault:
             vault_archive_count[vault] = 0
             vault_inventory_fresh[vault] = False
 
-# step: an empty vault is deleted
-# result: the vault is DELETED
-# guard: the vault exists
-# guard_violation: the vault does not exist
-# guard: the vault is ACTIVE
-# guard_violation_lifecycle: the vault is not ACTIVE
-# guard: the vault has no archives
-# guard_violation: the vault has archives
-# guard: the vault has no in-progress jobs
-# guard_violation: the vault has in-progress jobs
+# step: an empty "glacier" "vault" is deleted
+# result: the "glacier" "vault" will be "DELETED"
+# guard: the "glacier" "vault" existed
+# guard_violation: the "glacier" "vault" did not exist
+# guard: the "glacier" "vault" was "ACTIVE"
+# guard_violation_lifecycle: the "glacier" "vault" was not "ACTIVE"
+# guard: the "glacier" "vault" had no archives
+# guard_violation: the "glacier" "vault" had archives
+# guard: the "glacier" "vault" had no in-progress jobs
+# guard_violation: the "glacier" "vault" had in-progress jobs
 atomic action DeleteVault:
     oneof vault in VAULT_NAMES:
         if vault in vault_status:
@@ -58,14 +58,14 @@ atomic action DeleteVault:
                     if all([jid not in job_vault or job_vault[jid] != vault or job_status[jid] != "InProgress" for jid in JOB_IDS]):
                         vault_status[vault] = "DELETED"
 
-# step: an archive is uploaded to a vault
-# result: the archive is STORED and the vault archive count increases
-# guard: the vault exists
-# guard_violation: the vault does not exist
-# guard: the vault is ACTIVE
-# guard_violation_lifecycle: the vault is not ACTIVE
-# guard: the archive does not already exist
-# guard_violation: the archive already exists
+# step: a "glacier" "archive" is uploaded to a "glacier" "vault"
+# result: the "glacier" "archive" will be "STORED" and the "glacier" "vault" archive count will increase
+# guard: the "glacier" "vault" existed
+# guard_violation: the "glacier" "vault" did not exist
+# guard: the "glacier" "vault" was "ACTIVE"
+# guard_violation_lifecycle: the "glacier" "vault" was not "ACTIVE"
+# guard: the "glacier" "archive" did not already exist
+# guard_violation: the "glacier" "archive" already existed
 atomic action UploadArchive:
     oneof vault in VAULT_NAMES:
         if vault in vault_status:
@@ -76,16 +76,16 @@ atomic action UploadArchive:
                         archive_status[arch_key] = "STORED"
                         vault_archive_count[vault] = vault_archive_count[vault] + 1
 
-# step: an archive is deleted from a vault
-# result: the archive is DELETED and the vault archive count decreases
-# guard: the vault exists
-# guard_violation: the vault does not exist
-# guard: the vault is ACTIVE
-# guard_violation_lifecycle: the vault is not ACTIVE
-# guard: the archive exists
-# guard_violation: the archive does not exist
-# guard: the archive is STORED
-# guard_violation_lifecycle: the archive is not STORED
+# step: a "glacier" "archive" is deleted from a "glacier" "vault"
+# result: the "glacier" "archive" will be deleted and the "glacier" "vault" archive count decreases
+# guard: the "glacier" "vault" existed
+# guard_violation: the "glacier" "vault" did not exist
+# guard: the "glacier" "vault" was "ACTIVE"
+# guard_violation_lifecycle: the "glacier" "vault" was not "ACTIVE"
+# guard: the "glacier" "archive" existed
+# guard_violation: the "glacier" "archive" did not exist
+# guard: the "glacier" "archive" was "STORED"
+# guard_violation_lifecycle: the "glacier" "archive" was not "STORED"
 atomic action DeleteArchive:
     oneof vault in VAULT_NAMES:
         if vault in vault_status:
@@ -97,14 +97,14 @@ atomic action DeleteArchive:
                             archive_status[arch_key] = "DELETED"
                             vault_archive_count[vault] = vault_archive_count[vault] - 1
 
-# step: a multipart upload is initiated for a vault
-# result: the upload is InProgress
-# guard: the vault exists
-# guard_violation: the vault does not exist
-# guard: the vault is ACTIVE
-# guard_violation_lifecycle: the vault is not ACTIVE
-# guard: the upload does not already exist
-# guard_violation: the upload already exists
+# step: a multipart "glacier" "upload" is initiated for a "glacier" "vault"
+# result: the "glacier" "upload" will be "InProgress"
+# guard: the "glacier" "vault" existed
+# guard_violation: the "glacier" "vault" did not exist
+# guard: the "glacier" "vault" was "ACTIVE"
+# guard_violation_lifecycle: the "glacier" "vault" was not "ACTIVE"
+# guard: the "glacier" "upload" did not already exist
+# guard_violation: the "glacier" "upload" already existed
 atomic action InitiateMultipartUpload:
     oneof vault in VAULT_NAMES:
         if vault in vault_status:
@@ -114,12 +114,12 @@ atomic action InitiateMultipartUpload:
                         upload_status[upload] = "InProgress"
                         upload_vault[upload] = vault
 
-# step: a part is uploaded for a multipart upload
-# result: the part is recorded for the upload
-# guard: the upload exists
-# guard_violation: the upload does not exist
-# guard: the upload is InProgress
-# guard_violation_lifecycle: the upload is not InProgress
+# step: a part is uploaded for a multipart "glacier" "upload"
+# result: the part will be recorded for the "glacier" "glacier" "upload"
+# guard: the "glacier" "upload" existed
+# guard_violation: the "glacier" "upload" did not exist
+# guard: the "glacier" "upload" was "InProgress"
+# guard_violation_lifecycle: the "glacier" "upload" was not "InProgress"
 # guard: the part has not already been uploaded
 # guard_violation: the part has already been uploaded
 atomic action UploadMultipartPart:
@@ -131,18 +131,18 @@ atomic action UploadMultipartPart:
                     if pkey not in upload_part:
                         upload_part[pkey] = True
 
-# step: a multipart upload is completed
-# result: the upload is Completed and the assembled archive is STORED in the vault
-# guard: the upload exists
-# guard_violation: the upload does not exist
-# guard: the upload is InProgress
-# guard_violation_lifecycle: the upload is not InProgress
-# guard: the vault exists
-# guard_violation: the vault does not exist
-# guard: the vault is ACTIVE
-# guard_violation_lifecycle: the vault is not ACTIVE
-# guard: the archive slot is available
-# guard_violation_capacity: the archive slot is not available
+# step: a multipart "glacier" "upload" is completed
+# result: the "glacier" "upload" will be "Completed" and the assembled archive will be "STORED" in the "glacier" "vault"
+# guard: the "glacier" "upload" existed
+# guard_violation: the "glacier" "upload" did not exist
+# guard: the "glacier" "upload" was "InProgress"
+# guard_violation_lifecycle: the "glacier" "upload" was not "InProgress"
+# guard: the "glacier" "vault" existed
+# guard_violation: the "glacier" "vault" did not exist
+# guard: the "glacier" "vault" was "ACTIVE"
+# guard_violation_lifecycle: the "glacier" "vault" was not "ACTIVE"
+# guard: the "glacier" "archive" slot is available
+# guard_violation_capacity: the "glacier" "archive" slot is not available
 atomic action CompleteMultipartUpload:
     oneof upload_id in UPLOAD_IDS:
         if upload_id in upload_status:
@@ -157,30 +157,30 @@ atomic action CompleteMultipartUpload:
                                 vault_archive_count[vault_name] = vault_archive_count[vault_name] + 1
                                 upload_status[upload_id] = "Completed"
 
-# step: a multipart upload is aborted
-# result: the upload is Aborted
-# guard: the upload exists
-# guard_violation: the upload does not exist
-# guard: the upload is InProgress
-# guard_violation_lifecycle: the upload is not InProgress
+# step: a multipart "glacier" "upload" is aborted
+# result: the "glacier" "upload" will be "Aborted"
+# guard: the "glacier" "upload" existed
+# guard_violation: the "glacier" "upload" did not exist
+# guard: the "glacier" "upload" was "InProgress"
+# guard_violation_lifecycle: the "glacier" "upload" was not "InProgress"
 atomic action AbortMultipartUpload:
     oneof upload_id in UPLOAD_IDS:
         if upload_id in upload_status:
             if upload_status[upload_id] == "InProgress":
                 upload_status[upload_id] = "Aborted"
 
-# step: an archive retrieval job is initiated
-# result: the job is InProgress for the given archive
-# guard: the vault exists
-# guard_violation: the vault does not exist
-# guard: the vault is ACTIVE
-# guard_violation_lifecycle: the vault is not ACTIVE
-# guard: the archive exists
-# guard_violation: the archive does not exist
-# guard: the archive is STORED
-# guard_violation_lifecycle: the archive is not STORED
-# guard: the job slot is available
-# guard_violation_capacity: the job slot is not available
+# step: a "glacier" "archive" retrieval job is initiated
+# result: the "glacier" "JOB" will be "InProgress" for the given archive
+# guard: the "glacier" "vault" existed
+# guard_violation: the "glacier" "vault" did not exist
+# guard: the "glacier" "vault" was "ACTIVE"
+# guard_violation_lifecycle: the "glacier" "vault" was not "ACTIVE"
+# guard: the "glacier" "archive" existed
+# guard_violation: the "glacier" "archive" did not exist
+# guard: the "glacier" "archive" was "STORED"
+# guard_violation_lifecycle: the "glacier" "archive" was not "STORED"
+# guard: the "glacier" "job" slot is available
+# guard_violation_capacity: the "glacier" "job" slot is not available
 atomic action InitiateArchiveRetrievalJob:
     oneof vault in VAULT_NAMES:
         if vault in vault_status:
@@ -198,14 +198,14 @@ atomic action InitiateArchiveRetrievalJob:
                                     job_output_available[jid] = False
                                     job_output_retrieved[jid] = False
 
-# step: a vault inventory retrieval job is initiated
-# result: the job is InProgress for the given vault
-# guard: the vault exists
-# guard_violation: the vault does not exist
-# guard: the vault is ACTIVE
-# guard_violation_lifecycle: the vault is not ACTIVE
-# guard: the job slot is available
-# guard_violation_capacity: the job slot is not available
+# step: a "glacier" "vault" inventory retrieval job is initiated
+# result: the "glacier" "JOB" will be "InProgress" for the given "glacier" "vault"
+# guard: the "glacier" "vault" existed
+# guard_violation: the "glacier" "vault" did not exist
+# guard: the "glacier" "vault" was "ACTIVE"
+# guard_violation_lifecycle: the "glacier" "vault" was not "ACTIVE"
+# guard: the "glacier" "job" slot is available
+# guard_violation_capacity: the "glacier" "job" slot is not available
 atomic action InitiateInventoryRetrievalJob:
     oneof vault in VAULT_NAMES:
         if vault in vault_status:
@@ -220,12 +220,12 @@ atomic action InitiateInventoryRetrievalJob:
                         job_output_retrieved[jid] = False
 
 # fake_skip: internal
-# step: a job completes successfully
-# result: the job is Succeeded and its output is available
-# guard: the job exists
-# guard_violation: the job does not exist
-# guard: the job is InProgress
-# guard_violation: the job is not InProgress
+# step: a "glacier" "job" completes successfully
+# result: the "glacier" "JOB" will be "Succeeded" and its output will be available
+# guard: the "glacier" "job" existed
+# guard_violation: the "glacier" "job" did not exist
+# guard: the "glacier" "job" was "InProgress"
+# guard_violation: the "glacier" "job" was not "InProgress"
 atomic action JobSucceeds:
     oneof jid in JOB_IDS:
         if jid in job_status:
@@ -234,12 +234,12 @@ atomic action JobSucceeds:
                 job_output_available[jid] = True
 
 # fake_skip: internal
-# step: a job fails
-# result: the job is Failed
-# guard: the job exists
-# guard_violation: the job does not exist
-# guard: the job is InProgress
-# guard_violation: the job is not InProgress
+# step: a "glacier" "job" fails
+# result: the "glacier" "JOB" will be "Failed"
+# guard: the "glacier" "job" existed
+# guard_violation: the "glacier" "job" did not exist
+# guard: the "glacier" "job" was "InProgress"
+# guard_violation: the "glacier" "job" was not "InProgress"
 atomic action JobFails:
     oneof jid in JOB_IDS:
         if jid in job_status:
@@ -247,13 +247,13 @@ atomic action JobFails:
                 job_status[jid] = "Failed"
 
 # step: the output of a succeeded job is retrieved
-# result: the job output is marked as retrieved
-# guard: the job exists
-# guard_violation: the job does not exist
-# guard: the job is Succeeded
-# guard_violation_lifecycle: the job is not Succeeded
-# guard: the job output is available
-# guard_violation: the job output is not available
+# result: the "glacier" "job" output will be marked as retrieved
+# guard: the "glacier" "job" existed
+# guard_violation: the "glacier" "job" did not exist
+# guard: the "glacier" "job" was "Succeeded"
+# guard_violation_lifecycle: the "glacier" "job" was not "Succeeded"
+# guard: the "glacier" "job" output is available
+# guard_violation: the "glacier" "job" output is not available
 atomic action GetJobOutput:
     oneof jid in JOB_IDS:
         if jid in job_status:
@@ -262,12 +262,12 @@ atomic action GetJobOutput:
                     job_output_retrieved[jid] = True
 
 # fake_skip: internal
-# step: a vault inventory is refreshed
-# result: the vault inventory is marked as fresh
-# guard: the vault exists
-# guard_violation: the vault does not exist
-# guard: the vault is ACTIVE
-# guard_violation_lifecycle: the vault is not ACTIVE
+# step: a "glacier" "vault" inventory is refreshed
+# result: the "glacier" "vault" inventory will be marked as fresh
+# guard: the "glacier" "vault" existed
+# guard_violation: the "glacier" "vault" did not exist
+# guard: the "glacier" "vault" was "ACTIVE"
+# guard_violation_lifecycle: the "glacier" "vault" was not "ACTIVE"
 atomic action VaultInventoryRefresh:
     oneof vault in VAULT_NAMES:
         if vault in vault_status:

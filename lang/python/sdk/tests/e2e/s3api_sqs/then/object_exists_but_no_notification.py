@@ -1,4 +1,4 @@
-"""Then: the object "EXISTS" but no notification message is delivered"""
+"""Then: the object will exist but no notification message will be delivered"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_BUCKET, TEST_KEY
 
 
-@then('the object "EXISTS" but no notification message is delivered')
+@then("the object will exist but no notification message will be delivered")
 def object_exists_but_no_notification(lws_session, world):
     expected_error = None
     actual_error = world["error"]

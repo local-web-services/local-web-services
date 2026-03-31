@@ -1,4 +1,4 @@
-"""When: a multipart upload is initiated"""
+"""When: a multipart "s3" "upload" is initiated"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUCKET, TEST_KEY
 
 
-@when("a multipart upload is initiated")
+@when('a multipart "s3" "upload" is initiated')
 def create_multipart_upload(lws_session, world):
     try:
         resp = lws_session.client("s3").create_multipart_upload(Bucket=TEST_BUCKET, Key=TEST_KEY)

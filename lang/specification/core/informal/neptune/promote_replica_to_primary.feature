@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Replica Instance Is Promoted To Primary During Failover
+Feature: Neptune - A Replica "Neptune" "Instance" Is Promoted To Primary During Failover
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,15 +8,15 @@ Feature: Neptune - A Replica Instance Is Promoted To Primary During Failover
     Given the system is initialized
 
   @minimal @happy @promote_replica_to_primary @internal
-  Scenario: a replica instance is promoted to primary during failover
-    Given the cluster exists
-    And the cluster is "MODIFYING"
-    And the new primary instance exists
-    And the instance belongs to this cluster
-    And the instance is not already the primary
-    And the instance is "AVAILABLE"
-    When a replica instance is promoted to primary during failover
-    Then the cluster returns to "AVAILABLE" with a new primary instance
+  Scenario: a replica "neptune" "instance" is promoted to primary during failover
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "MODIFYING"
+    And the new primary "neptune" "instance" existed
+    And the "neptune" "instance" belongs to this neptune cluster
+    And the "neptune" "instance" was not already the primary
+    And the "neptune" "instance" was "AVAILABLE"
+    When a replica "neptune" "instance" is promoted to primary during failover
+    Then the "neptune" "cluster" returns to "AVAILABLE" with a new primary neptune instance
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -27,52 +27,52 @@ Feature: Neptune - A Replica Instance Is Promoted To Primary During Failover
     And a failed cluster has no available instances
 
   @guard @negative @promote_replica_to_primary @internal
-  Scenario: a replica instance is promoted to primary during failover fails when the cluster does not exist
-    Given the cluster does not exist
-    When a replica instance is promoted to primary during failover
+  Scenario: a replica "neptune" "instance" is promoted to primary during failover fails when the "neptune" "cluster" did not exist
+    Given the "neptune" "cluster" did not exist
+    When a replica "neptune" "instance" is promoted to primary during failover
     Then the operation is rejected
 
   @guard @negative @promote_replica_to_primary @internal
-  Scenario: a replica instance is promoted to primary during failover fails when the cluster is not "MODIFYING"
-    Given the cluster exists
-    And the cluster is not "MODIFYING"
-    When a replica instance is promoted to primary during failover
+  Scenario: a replica "neptune" "instance" is promoted to primary during failover fails when the "neptune" "cluster" was not "MODIFYING"
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was not "MODIFYING"
+    When a replica "neptune" "instance" is promoted to primary during failover
     Then the operation is rejected
 
   @guard @negative @promote_replica_to_primary @internal
-  Scenario: a replica instance is promoted to primary during failover fails when the new primary instance does not exist
-    Given the cluster exists
-    And the cluster is "MODIFYING"
-    And the new primary instance does not exist
-    When a replica instance is promoted to primary during failover
+  Scenario: a replica "neptune" "instance" is promoted to primary during failover fails when the new primary "neptune" "instance" did not exist
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "MODIFYING"
+    And the new primary "neptune" "instance" did not exist
+    When a replica "neptune" "instance" is promoted to primary during failover
     Then the operation is rejected
 
   @guard @negative @promote_replica_to_primary @internal
-  Scenario: a replica instance is promoted to primary during failover fails when the instance does not belong to this cluster
-    Given the cluster exists
-    And the cluster is "MODIFYING"
-    And the new primary instance exists
-    And the instance does not belong to this cluster
-    When a replica instance is promoted to primary during failover
+  Scenario: a replica "neptune" "instance" is promoted to primary during failover fails when the "neptune" "instance" does not belong to this neptune cluster
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "MODIFYING"
+    And the new primary "neptune" "instance" existed
+    And the "neptune" "instance" does not belong to this neptune cluster
+    When a replica "neptune" "instance" is promoted to primary during failover
     Then the operation is rejected
 
   @guard @negative @promote_replica_to_primary @internal
-  Scenario: a replica instance is promoted to primary during failover fails when the instance is already the primary
-    Given the cluster exists
-    And the cluster is "MODIFYING"
-    And the new primary instance exists
-    And the instance belongs to this cluster
-    And the instance is already the primary
-    When a replica instance is promoted to primary during failover
+  Scenario: a replica "neptune" "instance" is promoted to primary during failover fails when the "neptune" "instance" was already the primary
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "MODIFYING"
+    And the new primary "neptune" "instance" existed
+    And the "neptune" "instance" belongs to this neptune cluster
+    And the "neptune" "instance" was already the primary
+    When a replica "neptune" "instance" is promoted to primary during failover
     Then the operation is rejected
 
   @guard @negative @promote_replica_to_primary @internal
-  Scenario: a replica instance is promoted to primary during failover fails when the instance is not "AVAILABLE"
-    Given the cluster exists
-    And the cluster is "MODIFYING"
-    And the new primary instance exists
-    And the instance belongs to this cluster
-    And the instance is not already the primary
-    And the instance is not "AVAILABLE"
-    When a replica instance is promoted to primary during failover
+  Scenario: a replica "neptune" "instance" is promoted to primary during failover fails when the "neptune" "instance" was not "AVAILABLE"
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "MODIFYING"
+    And the new primary "neptune" "instance" existed
+    And the "neptune" "instance" belongs to this neptune cluster
+    And the "neptune" "instance" was not already the primary
+    And the "neptune" "instance" was not "AVAILABLE"
+    When a replica "neptune" "instance" is promoted to primary during failover
     Then the operation is rejected

@@ -1,4 +1,4 @@
-"""Given: a Step Functions state machine has been created"""
+"""Given: a "step functions" "state machine" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsTestClient
 from ..constants import TEST_SM
 
 
-@given("a Step Functions state machine has been created")
+@given('a "step functions" "state machine" is created')
 def sfn_sm_has_been_created(lws_session, world):
     world["state_machine_name"] = TEST_SM
     world["state_machine_arn"] = StepfunctionsTestClient(lws_session).create_sm()

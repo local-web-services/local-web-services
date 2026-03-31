@@ -1,4 +1,4 @@
-"""Given: the resource is tagged"""
+"""Given: the "memorydb" "resource" was tagged"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import MemorydbTestClient
 from ..constants import _MDB_TARGET, INT_TAG_KEY, INT_TAG_VALUE
 
 
-@given("the resource is tagged")
+@given('the "memorydb" "resource" was tagged')
 def resource_is_tagged(client: TestClient):
     MemorydbTestClient(client).create_cluster()
     arn = MemorydbTestClient(client).get_cluster_arn()

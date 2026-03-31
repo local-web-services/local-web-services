@@ -1,4 +1,4 @@
-"""When: a replica is added to a replication group"""
+"""When: a replica is added to a "elasticache" "replication group" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_RG_ID
 
 
-@when("a replica is added to a replication group")
+@when('a replica is added to a "elasticache" "replication group"')
 def add_replica_to_replication_group(client: TestClient, world):
     r = client.post(
         "/",

@@ -1,4 +1,4 @@
-"""Given: the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded"""
+"""Given: the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds"""
 
 from __future__ import annotations
 
@@ -7,7 +7,9 @@ import uuid
 from pytest_bdd import given
 
 
-@given('the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded')
+@given(
+    'the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds'
+)
 def lambda_elasticsearch_seq_invocation_succeeded(lws_session, world):
     # Arrange
     invocation_id = str(uuid.uuid4())

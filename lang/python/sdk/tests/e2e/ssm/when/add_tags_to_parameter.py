@@ -1,4 +1,4 @@
-"""When: tags are added to a parameter"""
+"""When: tags are added to a "ssm" "parameter" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_PARAM, TEST_TAG_KEY, TEST_TAG_VALUE
 
 
-@when("tags are added to a parameter")
+@when('tags are added to a "ssm" "parameter"')
 def add_tags_to_parameter(lws_session, world):
     try:
         resp = lws_session.client("ssm").add_tags_to_resource(

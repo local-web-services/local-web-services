@@ -1,4 +1,4 @@
-"""When: the "SQS" queue is configured with a dead-letter queue"""
+"""When: the "sqs" "queue" is configured with a dead-letter queue"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import LambdaSqsTestClient
 from ..constants import TEST_DLQ, TEST_QUEUE, _queue_arn
 
 
-@when('the "SQS" queue is configured with a dead-letter queue')
+@when('the "sqs" "queue" is configured with a dead-letter queue')
 def configure_redrive(lws_session, world):
     import json
 

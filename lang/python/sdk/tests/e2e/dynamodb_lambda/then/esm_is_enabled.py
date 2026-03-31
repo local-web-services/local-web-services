@@ -1,11 +1,11 @@
-"""Then: the event source mapping is "ENABLED" and will poll the stream for change records"""
+"""Then: the event source mapping will be "ENABLED" and will poll the stream for change records"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the event source mapping is "ENABLED" and will poll the stream for change records')
+@then('the event source mapping will be "ENABLED" and will poll the stream for change records')
 def esm_is_enabled(lws_session, world):
     actual_error = world.get("error")
     assert (

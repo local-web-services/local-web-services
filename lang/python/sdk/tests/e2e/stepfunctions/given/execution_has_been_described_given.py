@@ -1,4 +1,4 @@
-"""Given: an execution has been described"""
+"""Given: an execution is described"""
 
 from __future__ import annotations
 
@@ -6,6 +6,6 @@ import pytest
 from pytest_bdd import given
 
 
-@given("an execution has been described")
+@given("an execution is described")
 def execution_has_been_described_given():
     pytest.skip("Cannot pre-set a described execution state for sequence setup")

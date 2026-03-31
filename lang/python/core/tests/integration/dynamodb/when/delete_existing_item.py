@@ -1,4 +1,4 @@
-"""When: an existing item is deleted from the table"""
+"""When: an existing "dynamodb" "item" is deleted from the "dynamodb" "table" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import DynamodbTestClient
 from ..constants import TEST_ITEM_KEY, TEST_PK, TEST_TABLE, _store, _try_json
 
 
-@when("an existing item is deleted from the table")
+@when('an existing "dynamodb" "item" is deleted from the "dynamodb" "table"')
 def delete_existing_item(client: TestClient, world: dict):
     get_r = DynamodbTestClient(client).post(
         "GetItem", {"TableName": TEST_TABLE, "Key": {TEST_PK: {"S": TEST_ITEM_KEY}}}

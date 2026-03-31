@@ -1,4 +1,4 @@
-"""When: a user is created"""
+"""When: a "memorydb" "user" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_USER_NAME
 
 
-@when("a user is created")
+@when('a "memorydb" "user" is created')
 def create_memorydb_user(client: TestClient, world):
     r = client.post(
         "/",

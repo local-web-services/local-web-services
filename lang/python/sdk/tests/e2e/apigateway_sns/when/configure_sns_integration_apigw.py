@@ -1,4 +1,4 @@
-"""When: a direct "SNS" integration is configured on the "API" """
+"""When: a direct "SNS" integration is configured on the "api gateway" "API" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import ApigatewaySnsTestClient
 
 
-@when('a direct "SNS" integration is configured on the "API"')
+@when('a direct "SNS" integration is configured on the "api gateway" "API"')
 def configure_sns_integration_apigw(lws_session, world):
     try:
         api_id = ApigatewaySnsTestClient(lws_session).get_api_id()

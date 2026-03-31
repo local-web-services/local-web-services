@@ -1,4 +1,4 @@
-"""When: targets are added to a rule"""
+"""When: targets are added to an "eventbridge" "rule" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUS, TEST_RULE, TEST_TARGET_ARN, TEST_TARGET_ID
 
 
-@when("targets are added to a rule")
+@when('targets are added to an "eventbridge" "rule"')
 def put_targets(lws_session, world):
     try:
         resp = lws_session.client("events").put_targets(

@@ -1,5 +1,5 @@
 @stepfunctionssecretsmanager @generated
-Feature: StepfunctionsSecretsmanager - A Secret Is Scheduled For Deletion
+Feature: StepfunctionsSecretsmanager - A "Secretsmanager" "Secret" Is Scheduled For Deletion
 
   # Generated from FizzBee spec: stepfunctions_secretsmanager.fizz
   # Safety invariants: ExecutionRequiresActiveStateMachine, SuccessfulExecutionReadASecret
@@ -8,23 +8,23 @@ Feature: StepfunctionsSecretsmanager - A Secret Is Scheduled For Deletion
     Given the system is initialized
 
   @minimal @happy @schedule_secret_deletion
-  Scenario: a secret is scheduled for deletion
-    Given the secret exists
-    And the secret is "ACTIVE"
-    When a secret is scheduled for deletion
-    Then the secret is "PENDING_DELETION" and will cause task failures when read
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion
+    Given the secrets manager secret existed
+    And the "secrets manager" "secret" was "ACTIVE"
+    When a "secretsmanager" "secret" is scheduled for deletion
+    Then the "secrets manager" "secret" will be "PENDING_DELETION" and will cause task failures when read
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @guard @negative @schedule_secret_deletion
-  Scenario: a secret is scheduled for deletion fails when the secret does not exist
-    Given the secret does not exist
-    When a secret is scheduled for deletion
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion fails when the secrets manager secret did not exist
+    Given the secrets manager secret did not exist
+    When a "secretsmanager" "secret" is scheduled for deletion
     Then the operation is rejected
 
   @guard @negative @schedule_secret_deletion @lifecycle
-  Scenario: a secret is scheduled for deletion fails when the secret is not "ACTIVE"
-    Given the secret exists
-    And the secret is not "ACTIVE"
-    When a secret is scheduled for deletion
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion fails when the "secrets manager" "secret" was not "ACTIVE"
+    Given the secrets manager secret existed
+    And the "secrets manager" "secret" was not "ACTIVE"
+    When a "secretsmanager" "secret" is scheduled for deletion
     Then the operation is rejected

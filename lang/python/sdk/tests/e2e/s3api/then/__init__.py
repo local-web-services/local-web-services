@@ -7,6 +7,7 @@ from .bucket_active_with_versioning_disabled import *  # noqa: F401,F403
 from .bucket_is_deleted_status_then import *  # noqa: F401,F403
 from .bucket_is_deleted_then import *  # noqa: F401,F403
 from .bucket_versioning_enabled_or_suspended_then import *  # noqa: F401,F403
+from .bucket_will_be_deleted_then import *  # noqa: F401,F403
 from .copy_succeeds_then import *  # noqa: F401,F403
 from .deleting_bucket_requires_empty import *  # noqa: F401,F403
 from .every_bucket_has_valid_status import *  # noqa: F401,F403

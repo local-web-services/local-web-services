@@ -1,4 +1,4 @@
-"""When: an organizational unit is created under a parent"""
+"""When: an "organizations" "organizational unit" is created under a parent"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import OrganizationsTestClient
 from ..constants import INT_OU_NAME
 
 
-@when("an organizational unit is created under a parent")
+@when('an "organizations" "organizational unit" is created under a parent')
 def create_organizational_unit(client: TestClient, world):
     parent_id = world.get("parent_id") or world.get("root_id")
     status, body = OrganizationsTestClient(client).post(

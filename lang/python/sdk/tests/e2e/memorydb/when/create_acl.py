@@ -1,4 +1,4 @@
-"""When: an "ACL" is created"""
+"""When: an "memorydb" "ACL" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import TEST_ACL
 
 
-@when('an "ACL" is created')
+@when('an "memorydb" "ACL" is created')
 def create_acl(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:

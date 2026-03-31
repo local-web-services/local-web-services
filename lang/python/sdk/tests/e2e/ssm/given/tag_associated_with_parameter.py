@@ -1,4 +1,4 @@
-"""Given: the tag is associated with the parameter"""
+"""Given: the tag was associated with the "ssm" "parameter" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SsmTestClient
 from ..constants import TEST_PARAM, TEST_TAG_KEY, TEST_TAG_VALUE
 
 
-@given("the tag is associated with the parameter")
+@given('the tag was associated with the "ssm" "parameter"')
 def tag_associated_with_parameter(lws_session):
     SsmTestClient(lws_session).add_tags_to_resource(
         ResourceType="Parameter",

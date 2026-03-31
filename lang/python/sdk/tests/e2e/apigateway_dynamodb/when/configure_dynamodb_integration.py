@@ -1,4 +1,4 @@
-"""When: a direct DynamoDB integration is configured on the "API" """
+"""When: a direct "dynamodb" integration is configured on the "api gateway" "API" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import ApigatewayDynamodbTestClient
 
 
-@when('a direct DynamoDB integration is configured on the "API"')
+@when('a direct "dynamodb" integration is configured on the "api gateway" "API"')
 def configure_dynamodb_integration(lws_session, world):
     try:
         api_id = ApigatewayDynamodbTestClient(lws_session).get_api_id()

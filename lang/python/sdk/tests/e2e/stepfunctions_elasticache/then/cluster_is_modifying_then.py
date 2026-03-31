@@ -1,4 +1,4 @@
-"""Then: the cluster is "MODIFYING" and connections may be refused"""
+"""Then: the "elasticache" "cluster" will be "MODIFYING" and connections may be refused"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_CLUSTER
 
 
-@then('the cluster is "MODIFYING" and connections may be refused')
+@then('the "elasticache" "cluster" will be "MODIFYING" and connections may be refused')
 def cluster_is_modifying_then(lws_session, world):
     # Arrange
     cluster_id = world.get("cluster_id", TEST_CLUSTER)

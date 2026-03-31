@@ -1,4 +1,4 @@
-"""When: a table deletion completes"""
+"""When: a "dynamodb" "table" deletion completes"""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from pytest_bdd import when
 from ..constants import TEST_TABLE
 
 
-@when("a table deletion completes")
+@when('a "dynamodb" "table" deletion completes')
 def table_deletion_completes(lws_session, world):
     """Complete a table deletion.
 

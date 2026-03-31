@@ -1,11 +1,11 @@
-"""Then: the execution is "FAILED" with a ParameterNotFound error"""
+"""Then: the "step functions" "execution" will be "FAILED" with a ParameterNotFound error"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the execution is "FAILED" with a ParameterNotFound error')
+@then('the "step functions" "execution" will be "FAILED" with a ParameterNotFound error')
 def execution_failed_parameter_not_found(world):
     # Arrange
     expected_error = None

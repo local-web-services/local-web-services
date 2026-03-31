@@ -8,715 +8,715 @@ Feature: StepfunctionsNeptune - Action Sequences
     Given the system is initialized
 
   @sequence
-  Scenario: a Step Functions state machine is created then a Neptune cluster is created
+  Scenario: a "step functions" "state machine" is created then a "neptune" "cluster" is created
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When a Neptune cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a "neptune" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Step Functions state machine is created then the Neptune cluster is stopped
+  Scenario: a "step functions" "state machine" is created then the "neptune" "cluster" is stopped
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Step Functions state machine is created then the Neptune cluster is started
+  Scenario: a "step functions" "state machine" is created then the "neptune" "cluster" is started
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When the Neptune cluster is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When the "neptune" "cluster" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Step Functions state machine is created then an execution of the state machine is started
+  Scenario: a "step functions" "state machine" is created then an "step functions" "execution" of the "step functions" "state machine" is started
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Step Functions state machine is created then a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
+  Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Step Functions state machine is created then a running execution fails to query because the Neptune cluster is stopped
+  Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When a running execution fails to query because the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Neptune cluster is created then a Step Functions state machine is created
+  Scenario: a "neptune" "cluster" is created then a "step functions" "state machine" is created
     Given cid not in cluster_status
-    Given a Neptune cluster has been created
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "neptune" "cluster" is created
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Neptune cluster is created then the Neptune cluster is stopped
+  Scenario: a "neptune" "cluster" is created then the "neptune" "cluster" is stopped
     Given cid not in cluster_status
-    Given a Neptune cluster has been created
-    When the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "neptune" "cluster" is created
+    When the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Neptune cluster is created then the Neptune cluster is started
+  Scenario: a "neptune" "cluster" is created then the "neptune" "cluster" is started
     Given cid not in cluster_status
-    Given a Neptune cluster has been created
-    When the Neptune cluster is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "neptune" "cluster" is created
+    When the "neptune" "cluster" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Neptune cluster is created then an execution of the state machine is started
+  Scenario: a "neptune" "cluster" is created then an "step functions" "execution" of the "step functions" "state machine" is started
     Given cid not in cluster_status
-    Given a Neptune cluster has been created
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "neptune" "cluster" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Neptune cluster is created then a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
+  Scenario: a "neptune" "cluster" is created then a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
     Given cid not in cluster_status
-    Given a Neptune cluster has been created
-    When a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "neptune" "cluster" is created
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Neptune cluster is created then a running execution fails to query because the Neptune cluster is stopped
+  Scenario: a "neptune" "cluster" is created then a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
     Given cid not in cluster_status
-    Given a Neptune cluster has been created
-    When a running execution fails to query because the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "neptune" "cluster" is created
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is stopped then a Step Functions state machine is created
+  Scenario: the "neptune" "cluster" is stopped then a "step functions" "state machine" is created
     Given cid in cluster_status
-    Given the Neptune cluster has been stopped
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is stopped
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is stopped then a Neptune cluster is created
+  Scenario: the "neptune" "cluster" is stopped then a "neptune" "cluster" is created
     Given cid in cluster_status
-    Given the Neptune cluster has been stopped
-    When a Neptune cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is stopped
+    When a "neptune" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is stopped then the Neptune cluster is started
+  Scenario: the "neptune" "cluster" is stopped then the "neptune" "cluster" is started
     Given cid in cluster_status
-    Given the Neptune cluster has been stopped
-    When the Neptune cluster is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is stopped
+    When the "neptune" "cluster" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is stopped then an execution of the state machine is started
+  Scenario: the "neptune" "cluster" is stopped then an "step functions" "execution" of the "step functions" "state machine" is started
     Given cid in cluster_status
-    Given the Neptune cluster has been stopped
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is stopped
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is stopped then a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
+  Scenario: the "neptune" "cluster" is stopped then a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
     Given cid in cluster_status
-    Given the Neptune cluster has been stopped
-    When a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is stopped
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is stopped then a running execution fails to query because the Neptune cluster is stopped
+  Scenario: the "neptune" "cluster" is stopped then a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
     Given cid in cluster_status
-    Given the Neptune cluster has been stopped
-    When a running execution fails to query because the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is stopped
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is started then a Step Functions state machine is created
+  Scenario: the "neptune" "cluster" is started then a "step functions" "state machine" is created
     Given cid in cluster_status
-    Given the Neptune cluster has been started
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is started
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is started then a Neptune cluster is created
+  Scenario: the "neptune" "cluster" is started then a "neptune" "cluster" is created
     Given cid in cluster_status
-    Given the Neptune cluster has been started
-    When a Neptune cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is started
+    When a "neptune" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is started then the Neptune cluster is stopped
+  Scenario: the "neptune" "cluster" is started then the "neptune" "cluster" is stopped
     Given cid in cluster_status
-    Given the Neptune cluster has been started
-    When the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is started
+    When the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is started then an execution of the state machine is started
+  Scenario: the "neptune" "cluster" is started then an "step functions" "execution" of the "step functions" "state machine" is started
     Given cid in cluster_status
-    Given the Neptune cluster has been started
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is started
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is started then a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
+  Scenario: the "neptune" "cluster" is started then a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
     Given cid in cluster_status
-    Given the Neptune cluster has been started
-    When a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is started
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is started then a running execution fails to query because the Neptune cluster is stopped
+  Scenario: the "neptune" "cluster" is started then a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
     Given cid in cluster_status
-    Given the Neptune cluster has been started
-    When a running execution fails to query because the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is started
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: an execution of the state machine is started then a Step Functions state machine is created
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "step functions" "state machine" is created
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: an execution of the state machine is started then a Neptune cluster is created
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "neptune" "cluster" is created
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a Neptune cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "neptune" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: an execution of the state machine is started then the Neptune cluster is stopped
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then the "neptune" "cluster" is stopped
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: an execution of the state machine is started then the Neptune cluster is started
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then the "neptune" "cluster" is started
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When the Neptune cluster is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When the "neptune" "cluster" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: an execution of the state machine is started then a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: an execution of the state machine is started then a running execution fails to query because the Neptune cluster is stopped
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a running execution fails to query because the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds then a Step Functions state machine is created
+  Scenario: a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds then a "step functions" "state machine" is created
     Given eid in exec_status
-    Given a running execution has queried the "AVAILABLE" Neptune cluster and the task succeeded
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds then a Neptune cluster is created
+  Scenario: a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds then a "neptune" "cluster" is created
     Given eid in exec_status
-    Given a running execution has queried the "AVAILABLE" Neptune cluster and the task succeeded
-    When a Neptune cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    When a "neptune" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds then the Neptune cluster is stopped
+  Scenario: a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds then the "neptune" "cluster" is stopped
     Given eid in exec_status
-    Given a running execution has queried the "AVAILABLE" Neptune cluster and the task succeeded
-    When the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    When the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds then the Neptune cluster is started
+  Scenario: a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds then the "neptune" "cluster" is started
     Given eid in exec_status
-    Given a running execution has queried the "AVAILABLE" Neptune cluster and the task succeeded
-    When the Neptune cluster is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    When the "neptune" "cluster" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds then an execution of the state machine is started
+  Scenario: a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds then an "step functions" "execution" of the "step functions" "state machine" is started
     Given eid in exec_status
-    Given a running execution has queried the "AVAILABLE" Neptune cluster and the task succeeded
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds then a running execution fails to query because the Neptune cluster is stopped
+  Scenario: a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds then a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
     Given eid in exec_status
-    Given a running execution has queried the "AVAILABLE" Neptune cluster and the task succeeded
-    When a running execution fails to query because the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution fails to query because the Neptune cluster is stopped then a Step Functions state machine is created
+  Scenario: a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped then a "step functions" "state machine" is created
     Given eid in exec_status
-    Given a running execution has failed to query because the Neptune cluster is stopped
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution fails to query because the Neptune cluster is stopped then a Neptune cluster is created
+  Scenario: a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped then a "neptune" "cluster" is created
     Given eid in exec_status
-    Given a running execution has failed to query because the Neptune cluster is stopped
-    When a Neptune cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    When a "neptune" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution fails to query because the Neptune cluster is stopped then the Neptune cluster is stopped
+  Scenario: a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped then the "neptune" "cluster" is stopped
     Given eid in exec_status
-    Given a running execution has failed to query because the Neptune cluster is stopped
-    When the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    When the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution fails to query because the Neptune cluster is stopped then the Neptune cluster is started
+  Scenario: a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped then the "neptune" "cluster" is started
     Given eid in exec_status
-    Given a running execution has failed to query because the Neptune cluster is stopped
-    When the Neptune cluster is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    When the "neptune" "cluster" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution fails to query because the Neptune cluster is stopped then an execution of the state machine is started
+  Scenario: a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped then an "step functions" "execution" of the "step functions" "state machine" is started
     Given eid in exec_status
-    Given a running execution has failed to query because the Neptune cluster is stopped
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution fails to query because the Neptune cluster is stopped then a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
+  Scenario: a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped then a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
     Given eid in exec_status
-    Given a running execution has failed to query because the Neptune cluster is stopped
-    When a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Step Functions state machine is created then a Neptune cluster is created then the Neptune cluster is stopped
+  Scenario: a "step functions" "state machine" is created then a "neptune" "cluster" is created then the "neptune" "cluster" is stopped
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given a Neptune cluster has been created
-    When the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a "neptune" "cluster" is created
+    When the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Step Functions state machine is created then the Neptune cluster is stopped then the Neptune cluster is started
+  Scenario: a "step functions" "state machine" is created then the "neptune" "cluster" is stopped then the "neptune" "cluster" is started
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given the Neptune cluster has been stopped
-    When the Neptune cluster is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When the "neptune" "cluster" is stopped
+    When the "neptune" "cluster" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Step Functions state machine is created then the Neptune cluster is started then an execution of the state machine is started
+  Scenario: a "step functions" "state machine" is created then the "neptune" "cluster" is started then an "step functions" "execution" of the "step functions" "state machine" is started
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given the Neptune cluster has been started
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When the "neptune" "cluster" is started
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Step Functions state machine is created then an execution of the state machine is started then a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
+  Scenario: a "step functions" "state machine" is created then an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given an execution of the state machine has been started
-    When a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Step Functions state machine is created then a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds then a running execution fails to query because the Neptune cluster is stopped
+  Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds then a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given a running execution has queried the "AVAILABLE" Neptune cluster and the task succeeded
-    When a running execution fails to query because the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Step Functions state machine is created then a running execution fails to query because the Neptune cluster is stopped then a Neptune cluster is created
+  Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped then a "neptune" "cluster" is created
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given a running execution has failed to query because the Neptune cluster is stopped
-    When a Neptune cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    When a "neptune" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Neptune cluster is created then a Step Functions state machine is created then the Neptune cluster is started
+  Scenario: a "neptune" "cluster" is created then a "step functions" "state machine" is created then the "neptune" "cluster" is started
     Given cid not in cluster_status
-    Given a Neptune cluster has been created
-    Given a Step Functions state machine has been created
-    When the Neptune cluster is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "neptune" "cluster" is created
+    When a "step functions" "state machine" is created
+    When the "neptune" "cluster" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Neptune cluster is created then the Neptune cluster is stopped then an execution of the state machine is started
+  Scenario: a "neptune" "cluster" is created then the "neptune" "cluster" is stopped then an "step functions" "execution" of the "step functions" "state machine" is started
     Given cid not in cluster_status
-    Given a Neptune cluster has been created
-    Given the Neptune cluster has been stopped
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "neptune" "cluster" is created
+    When the "neptune" "cluster" is stopped
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Neptune cluster is created then the Neptune cluster is started then a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
+  Scenario: a "neptune" "cluster" is created then the "neptune" "cluster" is started then a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
     Given cid not in cluster_status
-    Given a Neptune cluster has been created
-    Given the Neptune cluster has been started
-    When a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "neptune" "cluster" is created
+    When the "neptune" "cluster" is started
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Neptune cluster is created then an execution of the state machine is started then a running execution fails to query because the Neptune cluster is stopped
+  Scenario: a "neptune" "cluster" is created then an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
     Given cid not in cluster_status
-    Given a Neptune cluster has been created
-    Given an execution of the state machine has been started
-    When a running execution fails to query because the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "neptune" "cluster" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Neptune cluster is created then a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds then a Step Functions state machine is created
+  Scenario: a "neptune" "cluster" is created then a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds then a "step functions" "state machine" is created
     Given cid not in cluster_status
-    Given a Neptune cluster has been created
-    Given a running execution has queried the "AVAILABLE" Neptune cluster and the task succeeded
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "neptune" "cluster" is created
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a Neptune cluster is created then a running execution fails to query because the Neptune cluster is stopped then the Neptune cluster is stopped
+  Scenario: a "neptune" "cluster" is created then a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped then the "neptune" "cluster" is stopped
     Given cid not in cluster_status
-    Given a Neptune cluster has been created
-    Given a running execution has failed to query because the Neptune cluster is stopped
-    When the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "neptune" "cluster" is created
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    When the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is stopped then a Step Functions state machine is created then an execution of the state machine is started
+  Scenario: the "neptune" "cluster" is stopped then a "step functions" "state machine" is created then an "step functions" "execution" of the "step functions" "state machine" is started
     Given cid in cluster_status
-    Given the Neptune cluster has been stopped
-    Given a Step Functions state machine has been created
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is stopped
+    When a "step functions" "state machine" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is stopped then a Neptune cluster is created then a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
+  Scenario: the "neptune" "cluster" is stopped then a "neptune" "cluster" is created then a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
     Given cid in cluster_status
-    Given the Neptune cluster has been stopped
-    Given a Neptune cluster has been created
-    When a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is stopped
+    When a "neptune" "cluster" is created
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is stopped then the Neptune cluster is started then a running execution fails to query because the Neptune cluster is stopped
+  Scenario: the "neptune" "cluster" is stopped then the "neptune" "cluster" is started then a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
     Given cid in cluster_status
-    Given the Neptune cluster has been stopped
-    Given the Neptune cluster has been started
-    When a running execution fails to query because the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is stopped
+    When the "neptune" "cluster" is started
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is stopped then an execution of the state machine is started then a Step Functions state machine is created
+  Scenario: the "neptune" "cluster" is stopped then an "step functions" "execution" of the "step functions" "state machine" is started then a "step functions" "state machine" is created
     Given cid in cluster_status
-    Given the Neptune cluster has been stopped
-    Given an execution of the state machine has been started
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is stopped
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is stopped then a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds then a Neptune cluster is created
+  Scenario: the "neptune" "cluster" is stopped then a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds then a "neptune" "cluster" is created
     Given cid in cluster_status
-    Given the Neptune cluster has been stopped
-    Given a running execution has queried the "AVAILABLE" Neptune cluster and the task succeeded
-    When a Neptune cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is stopped
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    When a "neptune" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is stopped then a running execution fails to query because the Neptune cluster is stopped then the Neptune cluster is started
+  Scenario: the "neptune" "cluster" is stopped then a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped then the "neptune" "cluster" is started
     Given cid in cluster_status
-    Given the Neptune cluster has been stopped
-    Given a running execution has failed to query because the Neptune cluster is stopped
-    When the Neptune cluster is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is stopped
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    When the "neptune" "cluster" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is started then a Step Functions state machine is created then a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
+  Scenario: the "neptune" "cluster" is started then a "step functions" "state machine" is created then a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
     Given cid in cluster_status
-    Given the Neptune cluster has been started
-    Given a Step Functions state machine has been created
-    When a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is started
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is started then a Neptune cluster is created then a running execution fails to query because the Neptune cluster is stopped
+  Scenario: the "neptune" "cluster" is started then a "neptune" "cluster" is created then a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
     Given cid in cluster_status
-    Given the Neptune cluster has been started
-    Given a Neptune cluster has been created
-    When a running execution fails to query because the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is started
+    When a "neptune" "cluster" is created
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is started then the Neptune cluster is stopped then a Step Functions state machine is created
+  Scenario: the "neptune" "cluster" is started then the "neptune" "cluster" is stopped then a "step functions" "state machine" is created
     Given cid in cluster_status
-    Given the Neptune cluster has been started
-    Given the Neptune cluster has been stopped
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is started
+    When the "neptune" "cluster" is stopped
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is started then an execution of the state machine is started then a Neptune cluster is created
+  Scenario: the "neptune" "cluster" is started then an "step functions" "execution" of the "step functions" "state machine" is started then a "neptune" "cluster" is created
     Given cid in cluster_status
-    Given the Neptune cluster has been started
-    Given an execution of the state machine has been started
-    When a Neptune cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is started
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "neptune" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is started then a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds then the Neptune cluster is stopped
+  Scenario: the "neptune" "cluster" is started then a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds then the "neptune" "cluster" is stopped
     Given cid in cluster_status
-    Given the Neptune cluster has been started
-    Given a running execution has queried the "AVAILABLE" Neptune cluster and the task succeeded
-    When the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is started
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    When the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: the Neptune cluster is started then a running execution fails to query because the Neptune cluster is stopped then an execution of the state machine is started
+  Scenario: the "neptune" "cluster" is started then a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped then an "step functions" "execution" of the "step functions" "state machine" is started
     Given cid in cluster_status
-    Given the Neptune cluster has been started
-    Given a running execution has failed to query because the Neptune cluster is stopped
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "neptune" "cluster" is started
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: an execution of the state machine is started then a Step Functions state machine is created then a running execution fails to query because the Neptune cluster is stopped
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "step functions" "state machine" is created then a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a Step Functions state machine has been created
-    When a running execution fails to query because the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: an execution of the state machine is started then a Neptune cluster is created then a Step Functions state machine is created
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "neptune" "cluster" is created then a "step functions" "state machine" is created
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a Neptune cluster has been created
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "neptune" "cluster" is created
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: an execution of the state machine is started then the Neptune cluster is stopped then a Neptune cluster is created
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then the "neptune" "cluster" is stopped then a "neptune" "cluster" is created
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given the Neptune cluster has been stopped
-    When a Neptune cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When the "neptune" "cluster" is stopped
+    When a "neptune" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: an execution of the state machine is started then the Neptune cluster is started then the Neptune cluster is stopped
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then the "neptune" "cluster" is started then the "neptune" "cluster" is stopped
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given the Neptune cluster has been started
-    When the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When the "neptune" "cluster" is started
+    When the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: an execution of the state machine is started then a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds then the Neptune cluster is started
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds then the "neptune" "cluster" is started
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a running execution has queried the "AVAILABLE" Neptune cluster and the task succeeded
-    When the Neptune cluster is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    When the "neptune" "cluster" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: an execution of the state machine is started then a running execution fails to query because the Neptune cluster is stopped then a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped then a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a running execution has failed to query because the Neptune cluster is stopped
-    When a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds then a Step Functions state machine is created then a Neptune cluster is created
+  Scenario: a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds then a "step functions" "state machine" is created then a "neptune" "cluster" is created
     Given eid in exec_status
-    Given a running execution has queried the "AVAILABLE" Neptune cluster and the task succeeded
-    Given a Step Functions state machine has been created
-    When a Neptune cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    When a "step functions" "state machine" is created
+    When a "neptune" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds then a Neptune cluster is created then the Neptune cluster is stopped
+  Scenario: a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds then a "neptune" "cluster" is created then the "neptune" "cluster" is stopped
     Given eid in exec_status
-    Given a running execution has queried the "AVAILABLE" Neptune cluster and the task succeeded
-    Given a Neptune cluster has been created
-    When the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    When a "neptune" "cluster" is created
+    When the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds then the Neptune cluster is stopped then the Neptune cluster is started
+  Scenario: a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds then the "neptune" "cluster" is stopped then the "neptune" "cluster" is started
     Given eid in exec_status
-    Given a running execution has queried the "AVAILABLE" Neptune cluster and the task succeeded
-    Given the Neptune cluster has been stopped
-    When the Neptune cluster is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    When the "neptune" "cluster" is stopped
+    When the "neptune" "cluster" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds then the Neptune cluster is started then an execution of the state machine is started
+  Scenario: a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds then the "neptune" "cluster" is started then an "step functions" "execution" of the "step functions" "state machine" is started
     Given eid in exec_status
-    Given a running execution has queried the "AVAILABLE" Neptune cluster and the task succeeded
-    Given the Neptune cluster has been started
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    When the "neptune" "cluster" is started
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds then an execution of the state machine is started then a running execution fails to query because the Neptune cluster is stopped
+  Scenario: a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds then an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
     Given eid in exec_status
-    Given a running execution has queried the "AVAILABLE" Neptune cluster and the task succeeded
-    Given an execution of the state machine has been started
-    When a running execution fails to query because the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds then a running execution fails to query because the Neptune cluster is stopped then a Step Functions state machine is created
+  Scenario: a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds then a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped then a "step functions" "state machine" is created
     Given eid in exec_status
-    Given a running execution has queried the "AVAILABLE" Neptune cluster and the task succeeded
-    Given a running execution has failed to query because the Neptune cluster is stopped
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution fails to query because the Neptune cluster is stopped then a Step Functions state machine is created then the Neptune cluster is stopped
+  Scenario: a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped then a "step functions" "state machine" is created then the "neptune" "cluster" is stopped
     Given eid in exec_status
-    Given a running execution has failed to query because the Neptune cluster is stopped
-    Given a Step Functions state machine has been created
-    When the Neptune cluster is stopped
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    When a "step functions" "state machine" is created
+    When the "neptune" "cluster" is stopped
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution fails to query because the Neptune cluster is stopped then a Neptune cluster is created then the Neptune cluster is started
+  Scenario: a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped then a "neptune" "cluster" is created then the "neptune" "cluster" is started
     Given eid in exec_status
-    Given a running execution has failed to query because the Neptune cluster is stopped
-    Given a Neptune cluster has been created
-    When the Neptune cluster is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    When a "neptune" "cluster" is created
+    When the "neptune" "cluster" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution fails to query because the Neptune cluster is stopped then the Neptune cluster is stopped then an execution of the state machine is started
+  Scenario: a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped then the "neptune" "cluster" is stopped then an "step functions" "execution" of the "step functions" "state machine" is started
     Given eid in exec_status
-    Given a running execution has failed to query because the Neptune cluster is stopped
-    Given the Neptune cluster has been stopped
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    When the "neptune" "cluster" is stopped
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution fails to query because the Neptune cluster is stopped then the Neptune cluster is started then a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
+  Scenario: a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped then the "neptune" "cluster" is started then a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
     Given eid in exec_status
-    Given a running execution has failed to query because the Neptune cluster is stopped
-    Given the Neptune cluster has been started
-    When a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    When the "neptune" "cluster" is started
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution fails to query because the Neptune cluster is stopped then an execution of the state machine is started then a Step Functions state machine is created
+  Scenario: a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped then an "step functions" "execution" of the "step functions" "state machine" is started then a "step functions" "state machine" is created
     Given eid in exec_status
-    Given a running execution has failed to query because the Neptune cluster is stopped
-    Given an execution of the state machine has been started
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
   @sequence
-  Scenario: a running execution fails to query because the Neptune cluster is stopped then a running execution queries the "AVAILABLE" Neptune cluster and the task succeeds then a Neptune cluster is created
+  Scenario: a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped then a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds then a "neptune" "cluster" is created
     Given eid in exec_status
-    Given a running execution has failed to query because the Neptune cluster is stopped
-    Given a running execution has queried the "AVAILABLE" Neptune cluster and the task succeeded
-    When a Neptune cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
+    When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
+    When a "neptune" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried

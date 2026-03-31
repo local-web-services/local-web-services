@@ -1,4 +1,4 @@
-"""Then: the snapshot is in "CREATING" state and linked to the cluster"""
+"""Then: the "documentdb" "SNAPSHOT" will be in "CREATING" state and linked to the "documentdb" "cluster" """
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from starlette.testclient import TestClient
 from ..constants import _DOCDB_TARGET, INT_SNAPSHOT_ID
 
 
-@then('the snapshot is in "CREATING" state and linked to the cluster')
+@then(
+    'the "documentdb" "SNAPSHOT" will be in "CREATING" state and linked to the "documentdb" "cluster"'
+)
 def snapshot_is_in_creating_state(client: TestClient, world):
     actual_error = world["error"]
     assert actual_error is None, f"Expected snapshot creation to succeed but got: {actual_error}"

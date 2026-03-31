@@ -1,4 +1,4 @@
-"""When: a redis cache cluster is created"""
+"""When: a redis "elasticache" "cluster" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_CLUSTER_ID
 
 
-@when("a redis cache cluster is created")
+@when('a redis "elasticache" "cluster" is created')
 def create_redis_cache_cluster(client: TestClient, world):
     r = client.post(
         "/",

@@ -1,4 +1,4 @@
-"""Then: the object "EXISTS" in the bucket and the execution is "SUCCEEDED" """
+"""Then: the object will exist in the bucket and the "step functions" "execution" will be "SUCCEEDED" """
 
 from __future__ import annotations
 
@@ -7,7 +7,9 @@ from pytest_bdd import then
 from ..constants import TEST_BODY, TEST_BUCKET, TEST_KEY
 
 
-@then('the object "EXISTS" in the bucket and the execution is "SUCCEEDED"')
+@then(
+    'the object will exist in the bucket and the "step functions" "execution" will be "SUCCEEDED"'
+)
 def object_exists_and_execution_succeeded(lws_session, world):
     expected_error = None
     actual_error = world["error"]

@@ -9,12 +9,12 @@ Feature: CognitoIdp - A Confirmed Enabled User Initiates Authentication
 
   @minimal @happy @initiate_auth
   Scenario: a confirmed enabled user initiates authentication
-    Given the user exists
-    And the user is "CONFIRMED"
-    And the user is enabled
-    And the session slot is available
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was "CONFIRMED"
+    And the "cognito" "user" was "ENABLED"
+    And the "cognito" "session" slot is available
     When a confirmed enabled user initiates authentication
-    Then a session is created in "CHALLENGE_REQUIRED" state
+    Then a "cognito" "session" will be created in "CHALLENGE_REQUIRED" state
     And every user pool has a valid status ("ACTIVE" or "DELETED")
     And every user has a valid status
     And every non-deleted user has an enabled flag set
@@ -24,31 +24,31 @@ Feature: CognitoIdp - A Confirmed Enabled User Initiates Authentication
     And disabled users do not have active authenticated sessions
 
   @guard @negative @initiate_auth
-  Scenario: a confirmed enabled user initiates authentication fails when the user does not exist
-    Given the user does not exist
+  Scenario: a confirmed enabled user initiates authentication fails when the "cognito" "user" did not exist
+    Given the "cognito" "user" did not exist
     When a confirmed enabled user initiates authentication
     Then the operation is rejected
 
   @guard @negative @initiate_auth
-  Scenario: a confirmed enabled user initiates authentication fails when the user is not "CONFIRMED"
-    Given the user exists
-    And the user is not "CONFIRMED"
+  Scenario: a confirmed enabled user initiates authentication fails when the "cognito" "user" was not "CONFIRMED"
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was not "CONFIRMED"
     When a confirmed enabled user initiates authentication
     Then the operation is rejected
 
   @guard @negative @initiate_auth
-  Scenario: a confirmed enabled user initiates authentication fails when the user is not enabled
-    Given the user exists
-    And the user is "CONFIRMED"
-    And the user is not enabled
+  Scenario: a confirmed enabled user initiates authentication fails when the "cognito" "user" was not "ENABLED"
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was "CONFIRMED"
+    And the "cognito" "user" was not "ENABLED"
     When a confirmed enabled user initiates authentication
     Then the operation is rejected
 
-  @guard @negative @internal @initiate_auth @capacity
-  Scenario: a confirmed enabled user initiates authentication fails when the session slot is not available
-    Given the user exists
-    And the user is "CONFIRMED"
-    And the user is enabled
-    And the session slot is not available
+  @guard @negative @initiate_auth @capacity
+  Scenario: a confirmed enabled user initiates authentication fails when the "cognito" "session" slot is not available
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was "CONFIRMED"
+    And the "cognito" "user" was "ENABLED"
+    And the "cognito" "session" slot is not available
     When a confirmed enabled user initiates authentication
     Then the operation is rejected

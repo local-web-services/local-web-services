@@ -1,4 +1,4 @@
-"""When: an endpoint subscribes to a topic"""
+"""When: an endpoint subscribes to a "sns" "topic" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import SnsTestClient
 from ..constants import TEST_EMAIL_ENDPOINT
 
 
-@when("an endpoint subscribes to a topic")
+@when('an endpoint subscribes to a "sns" "topic"')
 def subscribe_to_topic(lws_session, world):
     try:
         resp = SnsTestClient(lws_session).subscribe(

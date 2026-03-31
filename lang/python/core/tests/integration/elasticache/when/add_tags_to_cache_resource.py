@@ -1,4 +1,4 @@
-"""When: tags are added to a cache resource"""
+"""When: tags are added to an "elasticache" "resource" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ElasticacheTestClient
 from ..constants import _EC_TARGET, INT_TAG_KEY, INT_TAG_VALUE
 
 
-@when("tags are added to a cache resource")
+@when('tags are added to an "elasticache" "resource"')
 def add_tags_to_cache_resource(client: TestClient, world):
     arn = ElasticacheTestClient(client).get_cluster_arn()
     r = client.post(

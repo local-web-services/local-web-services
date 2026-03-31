@@ -1,4 +1,4 @@
-"""When: a cache cluster modification completes"""
+"""When: an "elasticache" "cluster" modification completes"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_CLUSTER_ID
 
 
-@when("a cache cluster modification completes")
+@when('an "elasticache" "cluster" modification completes')
 def cache_cluster_modification_completes(client: TestClient, world):
     r = client.post(
         "/",

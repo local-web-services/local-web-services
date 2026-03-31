@@ -1,4 +1,4 @@
-"""Then: the function configuration is updated while remaining "ACTIVE" """
+"""Then: the "lambda" "function" configuration will be updated while remaining "ACTIVE" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_FUNC
 
 
-@then('the function configuration is updated while remaining "ACTIVE"')
+@then('the "lambda" "function" configuration will be updated while remaining "ACTIVE"')
 def function_configuration_updated(lws_session, world):
     assert (
         world["error"] is None

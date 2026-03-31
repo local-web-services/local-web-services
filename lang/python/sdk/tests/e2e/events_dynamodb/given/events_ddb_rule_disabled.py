@@ -1,4 +1,4 @@
-"""Given: an EventBridge rule has been disabled"""
+"""Given: an "eventbridge" "rule" was "DISABLED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import EventsDynamodbTestClient
 from ..constants import TEST_BUS, TEST_RULE
 
 
-@given("an EventBridge rule has been disabled")
+@given('the rule was "DISABLED"')
 def events_ddb_rule_disabled(lws_session):
     EventsDynamodbTestClient(lws_session).create_rule()
     try:

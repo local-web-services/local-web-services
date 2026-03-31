@@ -1,4 +1,4 @@
-"""Then: the object is "DELETED" """
+"""Then: the "s3" "object" will be "DELETED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_KEY
 
 
-@then('the object is "DELETED"')
+@then('the "s3" "object" will be "DELETED"')
 def object_is_deleted_status_then(sync_client: TestClient):
     r = sync_client.get(f"/{INT_BUCKET}/{INT_KEY}")
     expected_status_code = 404

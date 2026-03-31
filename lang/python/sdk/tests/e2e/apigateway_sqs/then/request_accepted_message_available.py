@@ -1,4 +1,4 @@
-"""Then: the request is "ACCEPTED" and the message is "AVAILABLE" in the queue"""
+"""Then: the request will be "ACCEPTED" and the "sqs" "message" will be "AVAILABLE" in the "sqs" "queue" """
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from ..client import ApigatewaySqsTestClient
 from ..constants import TEST_QUEUE
 
 
-@then('the request is "ACCEPTED" and the message is "AVAILABLE" in the queue')
+@then(
+    'the request will be "ACCEPTED" and the "sqs" "message" will be "AVAILABLE" in the "sqs" "queue"'
+)
 def request_accepted_message_available(lws_session, world):
     expected_status = 200
     actual_status = world.get("invoke_status")

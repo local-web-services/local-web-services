@@ -1,4 +1,4 @@
-"""Then: the policy is attached to the target"""
+"""Then: the "organizations" "policy" will be attached to the "organizations" "target" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import OrganizationsTestClient
 
 
-@then("the policy is attached to the target")
+@then('the "organizations" "policy" will be attached to the "organizations" "target"')
 def policy_is_attached_to_target(client: TestClient, world):
     assert world["error"] is None, f"Expected AttachPolicy to succeed but got: {world['error']}"
     policy_id = world["policy_id"]

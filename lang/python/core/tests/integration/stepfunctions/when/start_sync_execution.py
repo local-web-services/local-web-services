@@ -1,4 +1,4 @@
-"""When: a synchronous execution is started on an express state machine"""
+"""When: a synchronous execution is started on an express "step functions" "state machine" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SFN_TARGET, INT_INPUT, INT_SM_EXPRESS, _sm_arn
 
 
-@when("a synchronous execution is started on an express state machine")
+@when('a synchronous execution is started on an express "step functions" "state machine"')
 def start_sync_execution(client: TestClient, world):
     sm_name = world.get("state_machine_name", INT_SM_EXPRESS)
     r = client.post(

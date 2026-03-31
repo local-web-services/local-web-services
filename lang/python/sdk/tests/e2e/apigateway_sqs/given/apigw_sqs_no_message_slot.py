@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
 
 
 @given("no message slot is available")
-def apigw_sqs_no_message_slot():
-    pytest.skip("Cannot simulate exhausted message slots in lws")
+def apigw_sqs_no_message_slot(lws_session):
+    lws_session.capacity("sqs").exhaust().apply()

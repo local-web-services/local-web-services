@@ -1,4 +1,4 @@
-"""When: a multipart upload is initiated"""
+"""When: a multipart "s3" "upload" is initiated"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_KEY, _parse_upload_id
 
 
-@when("a multipart upload is initiated")
+@when('a multipart "s3" "upload" is initiated')
 def create_multipart_upload(sync_client: TestClient, world):
     r = sync_client.post(
         f"/{INT_BUCKET}/{INT_KEY}",

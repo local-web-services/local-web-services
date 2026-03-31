@@ -1,4 +1,4 @@
-"""When: a database cluster stop completes"""
+"""When: a "neptune" "cluster" stop completes"""
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import when
 from starlette.testclient import TestClient
 
 
-@when("a database cluster stop completes")
+@when('a "neptune" "cluster" stop completes')
 def finish_stop_cluster(client: TestClient, world: dict):
     pytest.skip("Cluster stop completion cannot be triggered in stateless integration tests.")

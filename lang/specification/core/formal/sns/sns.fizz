@@ -23,21 +23,21 @@ action Init:
     delivery_sub = {}
     delivery_retry = {}
 
-# step: an SNS topic is created
-# result: the topic is ACTIVE
-# guard: the topic does not already exist
-# guard_violation: the topic already exists
+# step: a "sns" "topic" is created
+# result: the "sns" "topic" will be "ACTIVE"
+# guard: the "sns" "topic" did not already exist
+# guard_violation: the "sns" "topic" already existed
 atomic action CreateTopic:
     oneof tarn in TOPIC_ARNS:
         if tarn not in topic_status:
             topic_status[tarn] = "ACTIVE"
 
-# step: an SNS topic is deleted
-# result: the topic is DELETED and its subscriptions are removed
-# guard: the topic exists
-# guard_violation: the topic does not exist
-# guard: the topic is ACTIVE
-# guard_violation_lifecycle: the topic is not ACTIVE
+# step: a "sns" "topic" is deleted
+# result: the "sns" "topic" will be "DELETED" and its subscriptions will be removed
+# guard: the "sns" "topic" existed
+# guard_violation: the "sns" "topic" did not exist
+# guard: the "sns" "topic" was "ACTIVE"
+# guard_violation_lifecycle: the "sns" "topic" was not "ACTIVE"
 atomic action DeleteTopic:
     oneof tarn in TOPIC_ARNS:
         if tarn in topic_status:
@@ -48,12 +48,12 @@ atomic action DeleteTopic:
                         if sub_topic[sid] == tarn:
                             sub_status[sid] = "DELETED"
 
-# step: an endpoint subscribes to a topic
-# result: the subscription is PENDING_CONFIRMATION or CONFIRMED
-# guard: the topic exists
-# guard_violation: the topic does not exist
-# guard: the topic is ACTIVE
-# guard_violation_lifecycle: the topic is not ACTIVE
+# step: an endpoint subscribes to a "sns" "topic"
+# result: the "sns" "subscription" will be "PENDING_CONFIRMATION" or "CONFIRMED"
+# guard: the "sns" "topic" existed
+# guard_violation: the "sns" "topic" did not exist
+# guard: the "sns" "topic" was "ACTIVE"
+# guard_violation_lifecycle: the "sns" "topic" was not "ACTIVE"
 # guard: the subscription slot is available
 # guard_violation_capacity: the subscription slot is not available
 atomic action Subscribe:
@@ -76,16 +76,16 @@ atomic action Subscribe:
                                         sub_filter[sid] = fp
                                         sub_status[sid] = "CONFIRMED"
 
-# step: a pending subscription is confirmed
-# result: the subscription is CONFIRMED
-# guard: the subscription exists
-# guard_violation: the subscription does not exist
-# guard: the subscription is PENDING_CONFIRMATION
-# guard_violation: the subscription is not PENDING_CONFIRMATION
-# guard: the subscription's topic exists
-# guard_violation: the subscription's topic does not exist
-# guard: the subscription's topic is ACTIVE
-# guard_violation_lifecycle: the subscription's topic is not ACTIVE
+# step: a pending "sns" "subscription" is confirmed
+# result: the "sns" "subscription" will be "CONFIRMED"
+# guard: the "sns" "subscription" existed
+# guard_violation: the "sns" "subscription" did not exist
+# guard: the "sns" "subscription" was "PENDING_CONFIRMATION"
+# guard_violation: the "sns" "subscription" was not "PENDING_CONFIRMATION"
+# guard: the "sns" "subscription"'s sns topic existed
+# guard_violation: the "sns" "subscription"'s sns topic did not exist
+# guard: the "sns" "subscription"'s "sns" "topic" was "ACTIVE"
+# guard_violation_lifecycle: the "sns" "subscription"'s "sns" "topic" was not "ACTIVE"
 atomic action ConfirmSubscription:
     oneof sid in SUB_IDS:
         if sid in sub_status:
@@ -94,28 +94,28 @@ atomic action ConfirmSubscription:
                     if topic_status[sub_topic[sid]] == "ACTIVE":
                         sub_status[sid] = "CONFIRMED"
 
-# step: a subscription is removed
-# result: the subscription is DELETED
-# guard: the subscription exists
-# guard_violation: the subscription does not exist
-# guard: the subscription is CONFIRMED
-# guard_violation_lifecycle: the subscription is not CONFIRMED
+# step: a "sns" "subscription" is removed
+# result: the "sns" "subscription" will be "DELETED"
+# guard: the "sns" "subscription" existed
+# guard_violation: the "sns" "subscription" did not exist
+# guard: the "sns" "subscription" was "CONFIRMED"
+# guard_violation_lifecycle: the "sns" "subscription" was not "CONFIRMED"
 atomic action Unsubscribe:
     oneof sid in SUB_IDS:
         if sid in sub_status:
             if sub_status[sid] == "CONFIRMED":
                 sub_status[sid] = "DELETED"
 
-# step: a message is published to a topic
-# result: the message is delivered to confirmed subscriptions
-# guard: the topic exists
-# guard_violation: the topic does not exist
-# guard: the topic is ACTIVE
-# guard_violation_lifecycle: the topic is not ACTIVE
-# guard: a confirmed subscription exists for the topic
-# guard_violation: no confirmed subscription exists for the topic
-# guard: the subscription belongs to this topic
-# guard_violation: the subscription does not belong to this topic
+# step: a "sns" "message" is published to a "sns" "topic"
+# result: the "sns" "message" will be delivered to confirmed subscriptions
+# guard: the "sns" "topic" existed
+# guard_violation: the "sns" "topic" did not exist
+# guard: the "sns" "topic" was "ACTIVE"
+# guard_violation_lifecycle: the "sns" "topic" was not "ACTIVE"
+# guard: a confirmed subscription existed for the "sns" "topic"
+# guard_violation: no confirmed subscription existed for the "sns" "topic"
+# guard: the "sns" "subscription" belongs to this "sns" "topic"
+# guard_violation: the "sns" "subscription" does not belong to this "sns" "topic"
 # guard: a delivery slot is available
 # guard_violation_capacity: no delivery slot is available
 atomic action Publish:
@@ -133,12 +133,12 @@ atomic action Publish:
                                         delivery_status[did] = "IN_FLIGHT"
 
 # fake_skip: internal
-# step: a delivery attempt succeeds
-# result: the delivery is DONE
-# guard: the delivery exists
-# guard_violation: the delivery does not exist
-# guard: the delivery is IN_FLIGHT
-# guard_violation: the delivery is not IN_FLIGHT
+# step: a "sns" "delivery" attempt succeeds
+# result: the "sns" "delivery" will be "DONE"
+# guard: the delivery existed
+# guard_violation: the delivery did not exist
+# guard: the "sns" "delivery" was "IN_FLIGHT"
+# guard_violation: the "sns" "delivery" was not "IN_FLIGHT"
 atomic action DeliverySucceeds:
     oneof did in DELIVERY_IDS:
         if did in delivery_status:
@@ -146,14 +146,14 @@ atomic action DeliverySucceeds:
                 delivery_status[did] = "DONE"
 
 # fake_skip: internal
-# step: a delivery attempt fails and is retried
-# result: the delivery retry count is incremented
-# guard: the delivery exists
-# guard_violation: the delivery does not exist
-# guard: the delivery is IN_FLIGHT
-# guard_violation: the delivery is not IN_FLIGHT
-# guard: the retry count is below the limit
-# guard_violation: the retry count has reached the limit
+# step: a "sns" "delivery" attempt fails and is retried
+# result: the "sns" "delivery" retry count will be incremented
+# guard: the delivery existed
+# guard_violation: the delivery did not exist
+# guard: the "sns" "delivery" was "IN_FLIGHT"
+# guard_violation: the "sns" "delivery" was not "IN_FLIGHT"
+# guard: the retry count was below the limit
+# guard_violation: the retry count had reached the limit
 atomic action DeliveryFails:
     oneof did in DELIVERY_IDS:
         if did in delivery_status:
@@ -162,14 +162,14 @@ atomic action DeliveryFails:
                     delivery_retry[did] = delivery_retry[did] + 1
 
 # fake_skip: internal
-# step: all delivery retries are exhausted
-# result: the delivery is marked DONE
-# guard: the delivery exists
-# guard_violation: the delivery does not exist
-# guard: the delivery is IN_FLIGHT
-# guard_violation: the delivery is not IN_FLIGHT
-# guard: the retry count has reached the limit
-# guard_violation: the retry count is below the limit
+# step: all "sns" "delivery" retries are exhausted
+# result: the "sns" "delivery" will be marked "DONE"
+# guard: the delivery existed
+# guard_violation: the delivery did not exist
+# guard: the "sns" "delivery" was "IN_FLIGHT"
+# guard_violation: the "sns" "delivery" was not "IN_FLIGHT"
+# guard: the retry count had reached the limit
+# guard_violation: the retry count was below the limit
 atomic action RetryExhausted:
     oneof did in DELIVERY_IDS:
         if did in delivery_status:
@@ -178,12 +178,12 @@ atomic action RetryExhausted:
                     delivery_status[did] = "DONE"
 
 # fake_skip: internal
-# step: a subscription confirmation token expires
-# result: the pending subscription is DELETED
-# guard: the subscription exists
-# guard_violation: the subscription does not exist
-# guard: the subscription is PENDING_CONFIRMATION
-# guard_violation: the subscription is not PENDING_CONFIRMATION
+# step: a "sns" "subscription" confirmation token expires
+# result: the pending "sns" "subscription" will be "DELETED"
+# guard: the "sns" "subscription" existed
+# guard_violation: the "sns" "subscription" did not exist
+# guard: the "sns" "subscription" was "PENDING_CONFIRMATION"
+# guard_violation: the "sns" "subscription" was not "PENDING_CONFIRMATION"
 atomic action ConfirmationTokenExpires:
     oneof sid in SUB_IDS:
         if sid in sub_status:

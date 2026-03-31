@@ -1,11 +1,11 @@
-"""Then: the method response exists"""
+"""Then: the "api gateway" "method" response will exist"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the method response exists")
+@then('the "api gateway" "method" response will exist')
 def method_response_exists_then(world):
     actual_result = world["result"]
     assert actual_result is not None, "Expected method response result but got None"

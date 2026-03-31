@@ -1,4 +1,4 @@
-"""Given: tags have been added to a state machine"""
+"""Given: tags are added to a "step functions" "state machine" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsTestClient
 from ..constants import TEST_SM
 
 
-@given("tags have been added to a state machine")
+@given('tags are added to a "step functions" "state machine"')
 def tags_added_to_sm_given(lws_session, world):
     world["state_machine_name"] = TEST_SM
     world["state_machine_arn"] = StepfunctionsTestClient(lws_session).create_sm()

@@ -1,4 +1,4 @@
-"""When: a message exceeding its receive count is moved to the dead-letter queue"""
+"""When: a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue" """
 
 from __future__ import annotations
 
@@ -6,6 +6,6 @@ import pytest
 from pytest_bdd import when
 
 
-@when("a message exceeding its receive count is moved to the dead-letter queue")
+@when('a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue"')
 def redrive_to_dlq(world):
     pytest.skip("Cannot trigger DLQ redrive programmatically in this abstract context")

@@ -1,4 +1,4 @@
-"""When: a multipart upload is completed"""
+"""When: a multipart "glacier" "upload" is completed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,8 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_KEY
 
 
-@when("a multipart upload is completed")
+@when('a multipart "s3" "upload" is completed')
+@when('a multipart "glacier" "upload" is completed')
 def complete_multipart_upload(sync_client: TestClient, world):
     parts = world.get("etags") or []
     parts_xml = "".join(

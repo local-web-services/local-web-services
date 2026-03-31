@@ -1,4 +1,4 @@
-"""When: a method is deleted along with its integration"""
+"""When: a "api gateway" "method" is deleted along with its integration"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_HTTP_METHOD
 
 
-@when("a method is deleted along with its integration")
+@when('a "api gateway" "method" is deleted along with its integration')
 def delete_method(client: TestClient, world):
     list_r = client.get("/restapis")
     items = list_r.json().get("item", [])

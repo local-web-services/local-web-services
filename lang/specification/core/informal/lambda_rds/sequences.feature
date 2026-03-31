@@ -8,715 +8,715 @@ Feature: LambdaRds - Action Sequences
     Given the system is initialized
 
   @sequence
-  Scenario: a Lambda function is deployed then an "RDS" database instance is created
+  Scenario: a "lambda" "function" is deployed then a "rds" "database instance" is created
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When an "RDS" database instance is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When a "rds" "database instance" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: a Lambda function is deployed then a Multi-"AZ" failover begins on the "RDS" instance
+  Scenario: a "lambda" "function" is deployed then a Multi-"AZ" failover begins on the "rds" "instance"
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When a Multi-"AZ" failover begins on the "RDS" instance
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: a Lambda function is deployed then the Multi-"AZ" failover completes and the new primary is promoted
+  Scenario: a "lambda" "function" is deployed then the Multi-"AZ" failover completes and the new primary is promoted
     Given fid not in func_status
-    Given a Lambda function has been deployed
+    When a "lambda" "function" is deployed
     When the Multi-"AZ" failover completes and the new primary is promoted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function is invoked
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" is invoked
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function fails to connect because the database is failing over
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" fails to connect because the database is failing over
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When the Lambda function fails to connect because the database is failing over
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" fails to connect because the database is failing over
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: an "RDS" database instance is created then a Lambda function is deployed
+  Scenario: a "rds" "database instance" is created then a "lambda" "function" is deployed
     Given did not in db_status
-    Given an "RDS" database instance has been created
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "rds" "database instance" is created
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: an "RDS" database instance is created then a Multi-"AZ" failover begins on the "RDS" instance
+  Scenario: a "rds" "database instance" is created then a Multi-"AZ" failover begins on the "rds" "instance"
     Given did not in db_status
-    Given an "RDS" database instance has been created
-    When a Multi-"AZ" failover begins on the "RDS" instance
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "rds" "database instance" is created
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: an "RDS" database instance is created then the Multi-"AZ" failover completes and the new primary is promoted
+  Scenario: a "rds" "database instance" is created then the Multi-"AZ" failover completes and the new primary is promoted
     Given did not in db_status
-    Given an "RDS" database instance has been created
+    When a "rds" "database instance" is created
     When the Multi-"AZ" failover completes and the new primary is promoted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: an "RDS" database instance is created then the Lambda function is invoked
+  Scenario: a "rds" "database instance" is created then the "lambda" "function" is invoked
     Given did not in db_status
-    Given an "RDS" database instance has been created
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "rds" "database instance" is created
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: an "RDS" database instance is created then the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
+  Scenario: a "rds" "database instance" is created then the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
     Given did not in db_status
-    Given an "RDS" database instance has been created
-    When the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "rds" "database instance" is created
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: an "RDS" database instance is created then the Lambda function fails to connect because the database is failing over
+  Scenario: a "rds" "database instance" is created then the "lambda" "function" fails to connect because the database is failing over
     Given did not in db_status
-    Given an "RDS" database instance has been created
-    When the Lambda function fails to connect because the database is failing over
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "rds" "database instance" is created
+    When the "lambda" "function" fails to connect because the database is failing over
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: a Multi-"AZ" failover begins on the "RDS" instance then a Lambda function is deployed
+  Scenario: a Multi-"AZ" failover begins on the "rds" "instance" then a "lambda" "function" is deployed
     Given did in db_status
-    Given a Multi-"AZ" failover has begun on the "RDS" instance
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: a Multi-"AZ" failover begins on the "RDS" instance then an "RDS" database instance is created
+  Scenario: a Multi-"AZ" failover begins on the "rds" "instance" then a "rds" "database instance" is created
     Given did in db_status
-    Given a Multi-"AZ" failover has begun on the "RDS" instance
-    When an "RDS" database instance is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    When a "rds" "database instance" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: a Multi-"AZ" failover begins on the "RDS" instance then the Multi-"AZ" failover completes and the new primary is promoted
+  Scenario: a Multi-"AZ" failover begins on the "rds" "instance" then the Multi-"AZ" failover completes and the new primary is promoted
     Given did in db_status
-    Given a Multi-"AZ" failover has begun on the "RDS" instance
+    When a Multi-"AZ" failover begins on the "rds" "instance"
     When the Multi-"AZ" failover completes and the new primary is promoted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: a Multi-"AZ" failover begins on the "RDS" instance then the Lambda function is invoked
+  Scenario: a Multi-"AZ" failover begins on the "rds" "instance" then the "lambda" "function" is invoked
     Given did in db_status
-    Given a Multi-"AZ" failover has begun on the "RDS" instance
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: a Multi-"AZ" failover begins on the "RDS" instance then the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
+  Scenario: a Multi-"AZ" failover begins on the "rds" "instance" then the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
     Given did in db_status
-    Given a Multi-"AZ" failover has begun on the "RDS" instance
-    When the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: a Multi-"AZ" failover begins on the "RDS" instance then the Lambda function fails to connect because the database is failing over
+  Scenario: a Multi-"AZ" failover begins on the "rds" "instance" then the "lambda" "function" fails to connect because the database is failing over
     Given did in db_status
-    Given a Multi-"AZ" failover has begun on the "RDS" instance
-    When the Lambda function fails to connect because the database is failing over
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    When the "lambda" "function" fails to connect because the database is failing over
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then a Lambda function is deployed
+  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then a "lambda" "function" is deployed
     Given did in db_status
-    Given the Multi-"AZ" failover has completed and the new primary has been promoted
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then an "RDS" database instance is created
-    Given did in db_status
-    Given the Multi-"AZ" failover has completed and the new primary has been promoted
-    When an "RDS" database instance is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then a Multi-"AZ" failover begins on the "RDS" instance
-    Given did in db_status
-    Given the Multi-"AZ" failover has completed and the new primary has been promoted
-    When a Multi-"AZ" failover begins on the "RDS" instance
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then the Lambda function is invoked
-    Given did in db_status
-    Given the Multi-"AZ" failover has completed and the new primary has been promoted
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
-    Given did in db_status
-    Given the Multi-"AZ" failover has completed and the new primary has been promoted
-    When the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then the Lambda function fails to connect because the database is failing over
-    Given did in db_status
-    Given the Multi-"AZ" failover has completed and the new primary has been promoted
-    When the Lambda function fails to connect because the database is failing over
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function is invoked then a Lambda function is deployed
-    Given fid in func_status
-    Given the Lambda function has been invoked
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function is invoked then an "RDS" database instance is created
-    Given fid in func_status
-    Given the Lambda function has been invoked
-    When an "RDS" database instance is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function is invoked then a Multi-"AZ" failover begins on the "RDS" instance
-    Given fid in func_status
-    Given the Lambda function has been invoked
-    When a Multi-"AZ" failover begins on the "RDS" instance
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function is invoked then the Multi-"AZ" failover completes and the new primary is promoted
-    Given fid in func_status
-    Given the Lambda function has been invoked
     When the Multi-"AZ" failover completes and the new primary is promoted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: the Lambda function is invoked then the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
-    Given fid in func_status
-    Given the Lambda function has been invoked
-    When the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function is invoked then the Lambda function fails to connect because the database is failing over
-    Given fid in func_status
-    Given the Lambda function has been invoked
-    When the Lambda function fails to connect because the database is failing over
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds then a Lambda function is deployed
-    Given iid in inv_status
-    Given the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds then an "RDS" database instance is created
-    Given iid in inv_status
-    Given the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded
-    When an "RDS" database instance is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds then a Multi-"AZ" failover begins on the "RDS" instance
-    Given iid in inv_status
-    Given the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded
-    When a Multi-"AZ" failover begins on the "RDS" instance
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds then the Multi-"AZ" failover completes and the new primary is promoted
-    Given iid in inv_status
-    Given the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded
+  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then a "rds" "database instance" is created
+    Given did in db_status
     When the Multi-"AZ" failover completes and the new primary is promoted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "rds" "database instance" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds then the Lambda function is invoked
-    Given iid in inv_status
-    Given the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds then the Lambda function fails to connect because the database is failing over
-    Given iid in inv_status
-    Given the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded
-    When the Lambda function fails to connect because the database is failing over
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function fails to connect because the database is failing over then a Lambda function is deployed
-    Given iid in inv_status
-    Given the Lambda function has failed to connect because the database is failing over
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function fails to connect because the database is failing over then an "RDS" database instance is created
-    Given iid in inv_status
-    Given the Lambda function has failed to connect because the database is failing over
-    When an "RDS" database instance is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function fails to connect because the database is failing over then a Multi-"AZ" failover begins on the "RDS" instance
-    Given iid in inv_status
-    Given the Lambda function has failed to connect because the database is failing over
-    When a Multi-"AZ" failover begins on the "RDS" instance
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function fails to connect because the database is failing over then the Multi-"AZ" failover completes and the new primary is promoted
-    Given iid in inv_status
-    Given the Lambda function has failed to connect because the database is failing over
+  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then a Multi-"AZ" failover begins on the "rds" "instance"
+    Given did in db_status
     When the Multi-"AZ" failover completes and the new primary is promoted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: the Lambda function fails to connect because the database is failing over then the Lambda function is invoked
+  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then the "lambda" "function" is invoked
+    Given did in db_status
+    When the Multi-"AZ" failover completes and the new primary is promoted
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    Given did in db_status
+    When the Multi-"AZ" failover completes and the new primary is promoted
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then the "lambda" "function" fails to connect because the database is failing over
+    Given did in db_status
+    When the Multi-"AZ" failover completes and the new primary is promoted
+    When the "lambda" "function" fails to connect because the database is failing over
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" is invoked then a "lambda" "function" is deployed
+    Given fid in func_status
+    When the "lambda" "function" is invoked
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" is invoked then a "rds" "database instance" is created
+    Given fid in func_status
+    When the "lambda" "function" is invoked
+    When a "rds" "database instance" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" is invoked then a Multi-"AZ" failover begins on the "rds" "instance"
+    Given fid in func_status
+    When the "lambda" "function" is invoked
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" is invoked then the Multi-"AZ" failover completes and the new primary is promoted
+    Given fid in func_status
+    When the "lambda" "function" is invoked
+    When the Multi-"AZ" failover completes and the new primary is promoted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    Given fid in func_status
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" fails to connect because the database is failing over
+    Given fid in func_status
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" fails to connect because the database is failing over
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds then a "lambda" "function" is deployed
     Given iid in inv_status
-    Given the Lambda function has failed to connect because the database is failing over
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: the Lambda function fails to connect because the database is failing over then the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
+  Scenario: the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds then a "rds" "database instance" is created
     Given iid in inv_status
-    Given the Lambda function has failed to connect because the database is failing over
-    When the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    When a "rds" "database instance" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: a Lambda function is deployed then an "RDS" database instance is created then a Multi-"AZ" failover begins on the "RDS" instance
+  Scenario: the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds then a Multi-"AZ" failover begins on the "rds" "instance"
+    Given iid in inv_status
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds then the Multi-"AZ" failover completes and the new primary is promoted
+    Given iid in inv_status
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    When the Multi-"AZ" failover completes and the new primary is promoted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds then the "lambda" "function" is invoked
+    Given iid in inv_status
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds then the "lambda" "function" fails to connect because the database is failing over
+    Given iid in inv_status
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    When the "lambda" "function" fails to connect because the database is failing over
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" fails to connect because the database is failing over then a "lambda" "function" is deployed
+    Given iid in inv_status
+    When the "lambda" "function" fails to connect because the database is failing over
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" fails to connect because the database is failing over then a "rds" "database instance" is created
+    Given iid in inv_status
+    When the "lambda" "function" fails to connect because the database is failing over
+    When a "rds" "database instance" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" fails to connect because the database is failing over then a Multi-"AZ" failover begins on the "rds" "instance"
+    Given iid in inv_status
+    When the "lambda" "function" fails to connect because the database is failing over
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" fails to connect because the database is failing over then the Multi-"AZ" failover completes and the new primary is promoted
+    Given iid in inv_status
+    When the "lambda" "function" fails to connect because the database is failing over
+    When the Multi-"AZ" failover completes and the new primary is promoted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" fails to connect because the database is failing over then the "lambda" "function" is invoked
+    Given iid in inv_status
+    When the "lambda" "function" fails to connect because the database is failing over
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" fails to connect because the database is failing over then the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    Given iid in inv_status
+    When the "lambda" "function" fails to connect because the database is failing over
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: a "lambda" "function" is deployed then a "rds" "database instance" is created then a Multi-"AZ" failover begins on the "rds" "instance"
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given an "RDS" database instance has been created
-    When a Multi-"AZ" failover begins on the "RDS" instance
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When a "rds" "database instance" is created
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: a Lambda function is deployed then a Multi-"AZ" failover begins on the "RDS" instance then the Multi-"AZ" failover completes and the new primary is promoted
+  Scenario: a "lambda" "function" is deployed then a Multi-"AZ" failover begins on the "rds" "instance" then the Multi-"AZ" failover completes and the new primary is promoted
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given a Multi-"AZ" failover has begun on the "RDS" instance
+    When a "lambda" "function" is deployed
+    When a Multi-"AZ" failover begins on the "rds" "instance"
     When the Multi-"AZ" failover completes and the new primary is promoted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: a Lambda function is deployed then the Multi-"AZ" failover completes and the new primary is promoted then the Lambda function is invoked
+  Scenario: a "lambda" "function" is deployed then the Multi-"AZ" failover completes and the new primary is promoted then the "lambda" "function" is invoked
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given the Multi-"AZ" failover has completed and the new primary has been promoted
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the Multi-"AZ" failover completes and the new primary is promoted
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function is invoked then the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" is invoked then the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given the Lambda function has been invoked
-    When the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds then the Lambda function fails to connect because the database is failing over
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds then the "lambda" "function" fails to connect because the database is failing over
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded
-    When the Lambda function fails to connect because the database is failing over
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    When the "lambda" "function" fails to connect because the database is failing over
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function fails to connect because the database is failing over then an "RDS" database instance is created
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" fails to connect because the database is failing over then a "rds" "database instance" is created
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given the Lambda function has failed to connect because the database is failing over
-    When an "RDS" database instance is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" fails to connect because the database is failing over
+    When a "rds" "database instance" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: an "RDS" database instance is created then a Lambda function is deployed then the Multi-"AZ" failover completes and the new primary is promoted
+  Scenario: a "rds" "database instance" is created then a "lambda" "function" is deployed then the Multi-"AZ" failover completes and the new primary is promoted
     Given did not in db_status
-    Given an "RDS" database instance has been created
-    Given a Lambda function has been deployed
+    When a "rds" "database instance" is created
+    When a "lambda" "function" is deployed
     When the Multi-"AZ" failover completes and the new primary is promoted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: an "RDS" database instance is created then a Multi-"AZ" failover begins on the "RDS" instance then the Lambda function is invoked
+  Scenario: a "rds" "database instance" is created then a Multi-"AZ" failover begins on the "rds" "instance" then the "lambda" "function" is invoked
     Given did not in db_status
-    Given an "RDS" database instance has been created
-    Given a Multi-"AZ" failover has begun on the "RDS" instance
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "rds" "database instance" is created
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: an "RDS" database instance is created then the Multi-"AZ" failover completes and the new primary is promoted then the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
+  Scenario: a "rds" "database instance" is created then the Multi-"AZ" failover completes and the new primary is promoted then the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
     Given did not in db_status
-    Given an "RDS" database instance has been created
-    Given the Multi-"AZ" failover has completed and the new primary has been promoted
-    When the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: an "RDS" database instance is created then the Lambda function is invoked then the Lambda function fails to connect because the database is failing over
-    Given did not in db_status
-    Given an "RDS" database instance has been created
-    Given the Lambda function has been invoked
-    When the Lambda function fails to connect because the database is failing over
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: an "RDS" database instance is created then the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds then a Lambda function is deployed
-    Given did not in db_status
-    Given an "RDS" database instance has been created
-    Given the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: an "RDS" database instance is created then the Lambda function fails to connect because the database is failing over then a Multi-"AZ" failover begins on the "RDS" instance
-    Given did not in db_status
-    Given an "RDS" database instance has been created
-    Given the Lambda function has failed to connect because the database is failing over
-    When a Multi-"AZ" failover begins on the "RDS" instance
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: a Multi-"AZ" failover begins on the "RDS" instance then a Lambda function is deployed then the Lambda function is invoked
-    Given did in db_status
-    Given a Multi-"AZ" failover has begun on the "RDS" instance
-    Given a Lambda function has been deployed
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: a Multi-"AZ" failover begins on the "RDS" instance then an "RDS" database instance is created then the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
-    Given did in db_status
-    Given a Multi-"AZ" failover has begun on the "RDS" instance
-    Given an "RDS" database instance has been created
-    When the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: a Multi-"AZ" failover begins on the "RDS" instance then the Multi-"AZ" failover completes and the new primary is promoted then the Lambda function fails to connect because the database is failing over
-    Given did in db_status
-    Given a Multi-"AZ" failover has begun on the "RDS" instance
-    Given the Multi-"AZ" failover has completed and the new primary has been promoted
-    When the Lambda function fails to connect because the database is failing over
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: a Multi-"AZ" failover begins on the "RDS" instance then the Lambda function is invoked then a Lambda function is deployed
-    Given did in db_status
-    Given a Multi-"AZ" failover has begun on the "RDS" instance
-    Given the Lambda function has been invoked
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: a Multi-"AZ" failover begins on the "RDS" instance then the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds then an "RDS" database instance is created
-    Given did in db_status
-    Given a Multi-"AZ" failover has begun on the "RDS" instance
-    Given the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded
-    When an "RDS" database instance is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: a Multi-"AZ" failover begins on the "RDS" instance then the Lambda function fails to connect because the database is failing over then the Multi-"AZ" failover completes and the new primary is promoted
-    Given did in db_status
-    Given a Multi-"AZ" failover has begun on the "RDS" instance
-    Given the Lambda function has failed to connect because the database is failing over
+    When a "rds" "database instance" is created
     When the Multi-"AZ" failover completes and the new primary is promoted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then a Lambda function is deployed then the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
+  Scenario: a "rds" "database instance" is created then the "lambda" "function" is invoked then the "lambda" "function" fails to connect because the database is failing over
+    Given did not in db_status
+    When a "rds" "database instance" is created
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" fails to connect because the database is failing over
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: a "rds" "database instance" is created then the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds then a "lambda" "function" is deployed
+    Given did not in db_status
+    When a "rds" "database instance" is created
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: a "rds" "database instance" is created then the "lambda" "function" fails to connect because the database is failing over then a Multi-"AZ" failover begins on the "rds" "instance"
+    Given did not in db_status
+    When a "rds" "database instance" is created
+    When the "lambda" "function" fails to connect because the database is failing over
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: a Multi-"AZ" failover begins on the "rds" "instance" then a "lambda" "function" is deployed then the "lambda" "function" is invoked
     Given did in db_status
-    Given the Multi-"AZ" failover has completed and the new primary has been promoted
-    Given a Lambda function has been deployed
-    When the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then an "RDS" database instance is created then the Lambda function fails to connect because the database is failing over
+  Scenario: a Multi-"AZ" failover begins on the "rds" "instance" then a "rds" "database instance" is created then the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
     Given did in db_status
-    Given the Multi-"AZ" failover has completed and the new primary has been promoted
-    Given an "RDS" database instance has been created
-    When the Lambda function fails to connect because the database is failing over
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    When a "rds" "database instance" is created
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then a Multi-"AZ" failover begins on the "RDS" instance then a Lambda function is deployed
+  Scenario: a Multi-"AZ" failover begins on the "rds" "instance" then the Multi-"AZ" failover completes and the new primary is promoted then the "lambda" "function" fails to connect because the database is failing over
     Given did in db_status
-    Given the Multi-"AZ" failover has completed and the new primary has been promoted
-    Given a Multi-"AZ" failover has begun on the "RDS" instance
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then the Lambda function is invoked then an "RDS" database instance is created
-    Given did in db_status
-    Given the Multi-"AZ" failover has completed and the new primary has been promoted
-    Given the Lambda function has been invoked
-    When an "RDS" database instance is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds then a Multi-"AZ" failover begins on the "RDS" instance
-    Given did in db_status
-    Given the Multi-"AZ" failover has completed and the new primary has been promoted
-    Given the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded
-    When a Multi-"AZ" failover begins on the "RDS" instance
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then the Lambda function fails to connect because the database is failing over then the Lambda function is invoked
-    Given did in db_status
-    Given the Multi-"AZ" failover has completed and the new primary has been promoted
-    Given the Lambda function has failed to connect because the database is failing over
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function is invoked then a Lambda function is deployed then the Lambda function fails to connect because the database is failing over
-    Given fid in func_status
-    Given the Lambda function has been invoked
-    Given a Lambda function has been deployed
-    When the Lambda function fails to connect because the database is failing over
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function is invoked then an "RDS" database instance is created then a Lambda function is deployed
-    Given fid in func_status
-    Given the Lambda function has been invoked
-    Given an "RDS" database instance has been created
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function is invoked then a Multi-"AZ" failover begins on the "RDS" instance then an "RDS" database instance is created
-    Given fid in func_status
-    Given the Lambda function has been invoked
-    Given a Multi-"AZ" failover has begun on the "RDS" instance
-    When an "RDS" database instance is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function is invoked then the Multi-"AZ" failover completes and the new primary is promoted then a Multi-"AZ" failover begins on the "RDS" instance
-    Given fid in func_status
-    Given the Lambda function has been invoked
-    Given the Multi-"AZ" failover has completed and the new primary has been promoted
-    When a Multi-"AZ" failover begins on the "RDS" instance
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function is invoked then the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds then the Multi-"AZ" failover completes and the new primary is promoted
-    Given fid in func_status
-    Given the Lambda function has been invoked
-    Given the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded
+    When a Multi-"AZ" failover begins on the "rds" "instance"
     When the Multi-"AZ" failover completes and the new primary is promoted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails to connect because the database is failing over
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: the Lambda function is invoked then the Lambda function fails to connect because the database is failing over then the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
+  Scenario: a Multi-"AZ" failover begins on the "rds" "instance" then the "lambda" "function" is invoked then a "lambda" "function" is deployed
+    Given did in db_status
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    When the "lambda" "function" is invoked
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: a Multi-"AZ" failover begins on the "rds" "instance" then the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds then a "rds" "database instance" is created
+    Given did in db_status
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    When a "rds" "database instance" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: a Multi-"AZ" failover begins on the "rds" "instance" then the "lambda" "function" fails to connect because the database is failing over then the Multi-"AZ" failover completes and the new primary is promoted
+    Given did in db_status
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    When the "lambda" "function" fails to connect because the database is failing over
+    When the Multi-"AZ" failover completes and the new primary is promoted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then a "lambda" "function" is deployed then the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    Given did in db_status
+    When the Multi-"AZ" failover completes and the new primary is promoted
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then a "rds" "database instance" is created then the "lambda" "function" fails to connect because the database is failing over
+    Given did in db_status
+    When the Multi-"AZ" failover completes and the new primary is promoted
+    When a "rds" "database instance" is created
+    When the "lambda" "function" fails to connect because the database is failing over
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then a Multi-"AZ" failover begins on the "rds" "instance" then a "lambda" "function" is deployed
+    Given did in db_status
+    When the Multi-"AZ" failover completes and the new primary is promoted
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then the "lambda" "function" is invoked then a "rds" "database instance" is created
+    Given did in db_status
+    When the Multi-"AZ" failover completes and the new primary is promoted
+    When the "lambda" "function" is invoked
+    When a "rds" "database instance" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds then a Multi-"AZ" failover begins on the "rds" "instance"
+    Given did in db_status
+    When the Multi-"AZ" failover completes and the new primary is promoted
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the Multi-"AZ" failover completes and the new primary is promoted then the "lambda" "function" fails to connect because the database is failing over then the "lambda" "function" is invoked
+    Given did in db_status
+    When the Multi-"AZ" failover completes and the new primary is promoted
+    When the "lambda" "function" fails to connect because the database is failing over
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" is invoked then a "lambda" "function" is deployed then the "lambda" "function" fails to connect because the database is failing over
     Given fid in func_status
-    Given the Lambda function has been invoked
-    Given the Lambda function has failed to connect because the database is failing over
-    When the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" fails to connect because the database is failing over
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds then a Lambda function is deployed then an "RDS" database instance is created
-    Given iid in inv_status
-    Given the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded
-    Given a Lambda function has been deployed
-    When an "RDS" database instance is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+  Scenario: the "lambda" "function" is invoked then a "rds" "database instance" is created then a "lambda" "function" is deployed
+    Given fid in func_status
+    When the "lambda" "function" is invoked
+    When a "rds" "database instance" is created
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds then an "RDS" database instance is created then a Multi-"AZ" failover begins on the "RDS" instance
-    Given iid in inv_status
-    Given the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded
-    Given an "RDS" database instance has been created
-    When a Multi-"AZ" failover begins on the "RDS" instance
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+  Scenario: the "lambda" "function" is invoked then a Multi-"AZ" failover begins on the "rds" "instance" then a "rds" "database instance" is created
+    Given fid in func_status
+    When the "lambda" "function" is invoked
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    When a "rds" "database instance" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds then a Multi-"AZ" failover begins on the "RDS" instance then the Multi-"AZ" failover completes and the new primary is promoted
-    Given iid in inv_status
-    Given the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded
-    Given a Multi-"AZ" failover has begun on the "RDS" instance
+  Scenario: the "lambda" "function" is invoked then the Multi-"AZ" failover completes and the new primary is promoted then a Multi-"AZ" failover begins on the "rds" "instance"
+    Given fid in func_status
+    When the "lambda" "function" is invoked
     When the Multi-"AZ" failover completes and the new primary is promoted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds then the Multi-"AZ" failover completes and the new primary is promoted then the Lambda function is invoked
-    Given iid in inv_status
-    Given the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded
-    Given the Multi-"AZ" failover has completed and the new primary has been promoted
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds then the Lambda function is invoked then the Lambda function fails to connect because the database is failing over
-    Given iid in inv_status
-    Given the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded
-    Given the Lambda function has been invoked
-    When the Lambda function fails to connect because the database is failing over
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds then the Lambda function fails to connect because the database is failing over then a Lambda function is deployed
-    Given iid in inv_status
-    Given the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded
-    Given the Lambda function has failed to connect because the database is failing over
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function fails to connect because the database is failing over then a Lambda function is deployed then a Multi-"AZ" failover begins on the "RDS" instance
-    Given iid in inv_status
-    Given the Lambda function has failed to connect because the database is failing over
-    Given a Lambda function has been deployed
-    When a Multi-"AZ" failover begins on the "RDS" instance
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
-
-  @sequence
-  Scenario: the Lambda function fails to connect because the database is failing over then an "RDS" database instance is created then the Multi-"AZ" failover completes and the new primary is promoted
-    Given iid in inv_status
-    Given the Lambda function has failed to connect because the database is failing over
-    Given an "RDS" database instance has been created
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds then the Multi-"AZ" failover completes and the new primary is promoted
+    Given fid in func_status
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
     When the Multi-"AZ" failover completes and the new primary is promoted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: the Lambda function fails to connect because the database is failing over then a Multi-"AZ" failover begins on the "RDS" instance then the Lambda function is invoked
-    Given iid in inv_status
-    Given the Lambda function has failed to connect because the database is failing over
-    Given a Multi-"AZ" failover has begun on the "RDS" instance
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" fails to connect because the database is failing over then the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    Given fid in func_status
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" fails to connect because the database is failing over
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: the Lambda function fails to connect because the database is failing over then the Multi-"AZ" failover completes and the new primary is promoted then the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
+  Scenario: the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds then a "lambda" "function" is deployed then a "rds" "database instance" is created
     Given iid in inv_status
-    Given the Lambda function has failed to connect because the database is failing over
-    Given the Multi-"AZ" failover has completed and the new primary has been promoted
-    When the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    When a "lambda" "function" is deployed
+    When a "rds" "database instance" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: the Lambda function fails to connect because the database is failing over then the Lambda function is invoked then a Lambda function is deployed
+  Scenario: the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds then a "rds" "database instance" is created then a Multi-"AZ" failover begins on the "rds" "instance"
     Given iid in inv_status
-    Given the Lambda function has failed to connect because the database is failing over
-    Given the Lambda function has been invoked
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    When a "rds" "database instance" is created
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried
 
   @sequence
-  Scenario: the Lambda function fails to connect because the database is failing over then the Lambda function executes a "SQL" query against the "AVAILABLE" database and succeeds then an "RDS" database instance is created
+  Scenario: the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds then a Multi-"AZ" failover begins on the "rds" "instance" then the Multi-"AZ" failover completes and the new primary is promoted
     Given iid in inv_status
-    Given the Lambda function has failed to connect because the database is failing over
-    Given the Lambda function has executed a "SQL" query against the "AVAILABLE" database and succeeded
-    When an "RDS" database instance is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    When the Multi-"AZ" failover completes and the new primary is promoted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds then the Multi-"AZ" failover completes and the new primary is promoted then the "lambda" "function" is invoked
+    Given iid in inv_status
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    When the Multi-"AZ" failover completes and the new primary is promoted
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds then the "lambda" "function" is invoked then the "lambda" "function" fails to connect because the database is failing over
+    Given iid in inv_status
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" fails to connect because the database is failing over
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds then the "lambda" "function" fails to connect because the database is failing over then a "lambda" "function" is deployed
+    Given iid in inv_status
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    When the "lambda" "function" fails to connect because the database is failing over
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" fails to connect because the database is failing over then a "lambda" "function" is deployed then a Multi-"AZ" failover begins on the "rds" "instance"
+    Given iid in inv_status
+    When the "lambda" "function" fails to connect because the database is failing over
+    When a "lambda" "function" is deployed
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" fails to connect because the database is failing over then a "rds" "database instance" is created then the Multi-"AZ" failover completes and the new primary is promoted
+    Given iid in inv_status
+    When the "lambda" "function" fails to connect because the database is failing over
+    When a "rds" "database instance" is created
+    When the Multi-"AZ" failover completes and the new primary is promoted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" fails to connect because the database is failing over then a Multi-"AZ" failover begins on the "rds" "instance" then the "lambda" "function" is invoked
+    Given iid in inv_status
+    When the "lambda" "function" fails to connect because the database is failing over
+    When a Multi-"AZ" failover begins on the "rds" "instance"
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" fails to connect because the database is failing over then the Multi-"AZ" failover completes and the new primary is promoted then the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    Given iid in inv_status
+    When the "lambda" "function" fails to connect because the database is failing over
+    When the Multi-"AZ" failover completes and the new primary is promoted
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" fails to connect because the database is failing over then the "lambda" "function" is invoked then a "lambda" "function" is deployed
+    Given iid in inv_status
+    When the "lambda" "function" fails to connect because the database is failing over
+    When the "lambda" "function" is invoked
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every successful invocation recorded which database it queried
+
+  @sequence
+  Scenario: the "lambda" "function" fails to connect because the database is failing over then the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds then a "rds" "database instance" is created
+    Given iid in inv_status
+    When the "lambda" "function" fails to connect because the database is failing over
+    When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
+    When a "rds" "database instance" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which database it queried

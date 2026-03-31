@@ -1,4 +1,4 @@
-"""When: an "ACL" is updated"""
+"""When: an "memorydb" "ACL" is updated"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import TEST_ACL
 
 
-@when('an "ACL" is updated')
+@when('an "memorydb" "ACL" is updated')
 def update_acl(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:

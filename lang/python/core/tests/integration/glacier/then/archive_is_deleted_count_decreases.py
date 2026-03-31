@@ -1,4 +1,4 @@
-"""Then: the archive is "DELETED" and the vault archive count decreases"""
+"""Then: the "glacier" "archive" will be deleted and the "glacier" "vault" archive count decreases"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_VAULT_NAME
 
 
-@then('the archive is "DELETED" and the vault archive count decreases')
+@then('the "glacier" "archive" will be deleted and the "glacier" "vault" archive count decreases')
 def archive_is_deleted_count_decreases(client: TestClient, world):
     actual_error = world.get("error")
     assert actual_error is None, f"Expected archive deletion to succeed but got: {actual_error}"

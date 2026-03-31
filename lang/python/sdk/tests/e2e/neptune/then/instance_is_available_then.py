@@ -1,4 +1,4 @@
-"""Then: the instance is "AVAILABLE" and the cluster primary is updated if applicable"""
+"""Then: the "neptune" "INSTANCE" will be "AVAILABLE" and the "neptune" "cluster" primary will be updated if applicable"""
 
 from __future__ import annotations
 
@@ -7,7 +7,9 @@ from pytest_bdd import then
 from ..constants import TEST_INSTANCE
 
 
-@then('the instance is "AVAILABLE" and the cluster primary is updated if applicable')
+@then(
+    'the "neptune" "INSTANCE" will be "AVAILABLE" and the "neptune" "cluster" primary will be updated if applicable'
+)
 def instance_is_available_then(lws_session, world):
     expected_status = "available"
     instance_id = world.get("instance_id", TEST_INSTANCE)

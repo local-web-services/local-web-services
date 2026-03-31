@@ -1,5 +1,5 @@
 @opensearch @generated
-Feature: Opensearch - An Outbound Cross-Cluster Connection Is Created Between Two Domains
+Feature: Opensearch - An Outbound Cross-Cluster Connection Is Created Between Two "Opensearch" "Domain"S
 
   # Generated from FizzBee spec: opensearch.fizz
   # Safety invariants: ActiveConnectionsReferenceActiveDomains, TrafficSwapRequiresNewCluster, ConnectionStatusConsistency, PendingConfigOnlyOnProcessingDomain
@@ -8,67 +8,67 @@ Feature: Opensearch - An Outbound Cross-Cluster Connection Is Created Between Tw
     Given the system is initialized
 
   @minimal @happy @create_outbound_connection
-  Scenario: an outbound cross-cluster connection is created between two domains
+  Scenario: an outbound cross-cluster connection is created between two "opensearch" "domain"s
     Given the connection slot is available
-    And the local domain exists
-    And the local domain is "ACTIVE"
-    And the remote domain exists
-    And the remote domain is "ACTIVE"
+    And the local "opensearch" "domain" existed
+    And the local "opensearch" "domain" was "ACTIVE"
+    And the remote "opensearch" "domain" existed
+    And the remote "opensearch" "domain" was "ACTIVE"
     And the local and remote domains are different
-    When an outbound cross-cluster connection is created between two domains
-    Then the connection is in "PENDING_ACCEPTANCE" state
+    When an outbound cross-cluster connection is created between two "opensearch" "domain"s
+    Then the connection will be in "PENDING_ACCEPTANCE" state
     And no active connection references a deleted domain
-    And traffic can only be swapped after the new cluster is ready
-    And an outbound connection that is "ACTIVE" cannot have a "REJECTED" inbound connection
-    And a pending config change only exists on a domain that is "PROCESSING"
+    And traffic can only be swapped after the new "opensearch" "cluster" was ready
+    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" inbound connection
+    And a pending config change only exists on a "opensearch" "domain" that is "PROCESSING"
 
-  @guard @negative @internal @create_outbound_connection
-  Scenario: an outbound cross-cluster connection is created between two domains fails when the connection slot is not available
+  @guard @negative @create_outbound_connection
+  Scenario: an outbound cross-cluster connection is created between two "opensearch" "domain"s fails when the connection slot is not available
     Given the connection slot is not available
-    When an outbound cross-cluster connection is created between two domains
+    When an outbound cross-cluster connection is created between two "opensearch" "domain"s
     Then the operation is rejected
 
   @guard @negative @create_outbound_connection
-  Scenario: an outbound cross-cluster connection is created between two domains fails when the local domain does not exist
+  Scenario: an outbound cross-cluster connection is created between two "opensearch" "domain"s fails when the local "opensearch" "domain" did not exist
     Given the connection slot is available
-    And the local domain does not exist
-    When an outbound cross-cluster connection is created between two domains
+    And the local "opensearch" "domain" did not exist
+    When an outbound cross-cluster connection is created between two "opensearch" "domain"s
     Then the operation is rejected
 
   @guard @negative @create_outbound_connection @lifecycle
-  Scenario: an outbound cross-cluster connection is created between two domains fails when the local domain is not "ACTIVE"
+  Scenario: an outbound cross-cluster connection is created between two "opensearch" "domain"s fails when the local "opensearch" "domain" was not "ACTIVE"
     Given the connection slot is available
-    And the local domain exists
-    And the local domain is not "ACTIVE"
-    When an outbound cross-cluster connection is created between two domains
+    And the local "opensearch" "domain" existed
+    And the local "opensearch" "domain" was not "ACTIVE"
+    When an outbound cross-cluster connection is created between two "opensearch" "domain"s
     Then the operation is rejected
 
   @guard @negative @create_outbound_connection
-  Scenario: an outbound cross-cluster connection is created between two domains fails when the remote domain does not exist
+  Scenario: an outbound cross-cluster connection is created between two "opensearch" "domain"s fails when the remote "opensearch" "domain" did not exist
     Given the connection slot is available
-    And the local domain exists
-    And the local domain is "ACTIVE"
-    And the remote domain does not exist
-    When an outbound cross-cluster connection is created between two domains
+    And the local "opensearch" "domain" existed
+    And the local "opensearch" "domain" was "ACTIVE"
+    And the remote "opensearch" "domain" did not exist
+    When an outbound cross-cluster connection is created between two "opensearch" "domain"s
     Then the operation is rejected
 
   @guard @negative @create_outbound_connection @lifecycle
-  Scenario: an outbound cross-cluster connection is created between two domains fails when the remote domain is not "ACTIVE"
+  Scenario: an outbound cross-cluster connection is created between two "opensearch" "domain"s fails when the remote "opensearch" "domain" was not "ACTIVE"
     Given the connection slot is available
-    And the local domain exists
-    And the local domain is "ACTIVE"
-    And the remote domain exists
-    And the remote domain is not "ACTIVE"
-    When an outbound cross-cluster connection is created between two domains
+    And the local "opensearch" "domain" existed
+    And the local "opensearch" "domain" was "ACTIVE"
+    And the remote "opensearch" "domain" existed
+    And the remote "opensearch" "domain" was not "ACTIVE"
+    When an outbound cross-cluster connection is created between two "opensearch" "domain"s
     Then the operation is rejected
 
-  @guard @negative @internal @create_outbound_connection
-  Scenario: an outbound cross-cluster connection is created between two domains fails when the local and remote domains are the same
+  @guard @negative @create_outbound_connection
+  Scenario: an outbound cross-cluster connection is created between two "opensearch" "domain"s fails when the local and remote domains are the same
     Given the connection slot is available
-    And the local domain exists
-    And the local domain is "ACTIVE"
-    And the remote domain exists
-    And the remote domain is "ACTIVE"
+    And the local "opensearch" "domain" existed
+    And the local "opensearch" "domain" was "ACTIVE"
+    And the remote "opensearch" "domain" existed
+    And the remote "opensearch" "domain" was "ACTIVE"
     And the local and remote domains are the same
-    When an outbound cross-cluster connection is created between two domains
+    When an outbound cross-cluster connection is created between two "opensearch" "domain"s
     Then the operation is rejected

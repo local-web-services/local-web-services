@@ -1,4 +1,4 @@
-"""When: a user pool is created"""
+"""When: a "cognito" "user pool" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import CognitoIdpTestClient
 from ..constants import _store
 
 
-@when("a user pool is created")
+@when('a "cognito" "user pool" is created')
 def create_user_pool(client: TestClient, world):
     r = CognitoIdpTestClient(client).cognito_post("CreateUserPool", {"PoolName": "int-test-pool-1"})
     _store(world, r)

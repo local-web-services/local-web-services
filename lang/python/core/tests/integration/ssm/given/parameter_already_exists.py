@@ -1,4 +1,4 @@
-"""Given: the parameter already exists"""
+"""Given: the "ssm" "parameter" already existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import SsmTestClient
 
 
-@given("the parameter already exists")
+@given('the "ssm" "parameter" already existed')
 def parameter_already_exists(client: TestClient):
     SsmTestClient(client).put_parameter()

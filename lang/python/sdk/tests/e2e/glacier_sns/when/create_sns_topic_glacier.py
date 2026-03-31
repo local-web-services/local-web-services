@@ -1,4 +1,4 @@
-"""When: an "SNS" topic is created"""
+"""When: a "sns" "topic" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_TOPIC_NAME
 
 
-@when('an "SNS" topic is created')
+@when('a "sns" "topic" is created')
 def create_sns_topic_glacier(lws_session, world):
     try:
         resp = lws_session.client("sns").create_topic(Name=TEST_TOPIC_NAME)

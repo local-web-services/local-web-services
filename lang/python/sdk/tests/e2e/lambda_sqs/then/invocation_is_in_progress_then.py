@@ -1,11 +1,11 @@
-"""Then: the invocation is "IN_PROGRESS" """
+"""Then: a "lambda" "invocation" was "IN_PROGRESS" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the invocation is "IN_PROGRESS"')
+@then('a "lambda" "invocation" was "IN_PROGRESS"')
 def invocation_is_in_progress_then(lws_session, world):
     # Arrange
     invocation_id = world.get("invocation_id") or "nonexistent-invocation-id"

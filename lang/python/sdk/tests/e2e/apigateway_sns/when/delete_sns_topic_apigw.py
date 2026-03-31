@@ -1,4 +1,4 @@
-"""When: the "SNS" topic is deleted"""
+"""When: the "sns" "topic" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import _topic_arn
 
 
-@when('the "SNS" topic is deleted')
+@when('the "sns" "topic" is deleted')
 def delete_sns_topic_apigw(lws_session, world):
     try:
         resp = lws_session.client("sns").delete_topic(TopicArn=_topic_arn())

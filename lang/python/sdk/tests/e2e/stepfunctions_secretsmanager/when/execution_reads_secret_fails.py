@@ -1,4 +1,4 @@
-"""When: a running execution fails to read the secret because it is pending deletion"""
+"""When: a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion"""
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from pytest_bdd import when
 from ..constants import TEST_SECRET, _secretsmanager_get_secret_definition, _sm_arn
 
 
-@when("a running execution fails to read the secret because it is pending deletion")
+@when(
+    'a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion'
+)
 def execution_reads_secret_fails(lws_session, world):
     # Arrange
     if "execution_arn" not in world:

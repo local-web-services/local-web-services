@@ -1,4 +1,4 @@
-"""Given: the state machine is "DELETING" """
+"""Given: the "step functions" "state machine" was "DELETING" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsTestClient
 from ..constants import TEST_SM, _sm_arn
 
 
-@given('the state machine is "DELETING"')
+@given('the "step functions" "state machine" was "DELETING"')
 def sm_is_deleting_given(lws_session, world):
     """Delete the SM so it enters DELETING state."""
     sm_name = world.get("state_machine_name") or TEST_SM

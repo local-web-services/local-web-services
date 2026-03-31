@@ -1,5 +1,5 @@
 @secretsmanager @generated
-Feature: Secretsmanager - The Recovery Window For A Deleted Secret Expires
+Feature: Secretsmanager - The Recovery Window For A Deleted "Secrets Manager" "Secret" Expires
 
   # Generated from FizzBee spec: secretsmanager.fizz
   # Safety invariants: ActiveSecretHasCurrentVersion, AtMostOneCurrentVersionPerSecret, AtMostOnePreviousVersionPerSecret, DeletedSecretWithClosedWindowNotRestored, SecretNamesAreUnique, VersionIdsAreUnique, DeletedSecretRecoveryWindowIsOpen, ActiveSecretHasVersion
@@ -8,12 +8,12 @@ Feature: Secretsmanager - The Recovery Window For A Deleted Secret Expires
     Given the system is initialized
 
   @minimal @happy @recovery_window_expires @internal
-  Scenario: the recovery window for a deleted secret expires
-    Given the secret exists
-    And the secret is "DELETED"
-    And the recovery window is open
-    When the recovery window for a deleted secret expires
-    Then the secret can no longer be restored
+  Scenario: the recovery window for a deleted "secrets manager" "secret" expires
+    Given the "secrets manager" "secret" existed
+    And the "secrets manager" "secret" was "DELETED"
+    And the recovery window was open
+    When the recovery window for a deleted "secrets manager" "secret" expires
+    Then the "secrets manager" "secret" can no longer be restored
     And every "ACTIVE" secret has a current version assigned
     And at most one current version exists per secret
     And at most one previous version exists per secret
@@ -24,22 +24,22 @@ Feature: Secretsmanager - The Recovery Window For A Deleted Secret Expires
     And every active secret has a current version assigned
 
   @guard @negative @recovery_window_expires @internal
-  Scenario: the recovery window for a deleted secret expires fails when the secret does not exist
-    Given the secret does not exist
-    When the recovery window for a deleted secret expires
+  Scenario: the recovery window for a deleted "secrets manager" "secret" expires fails when the "secrets manager" "secret" did not exist
+    Given the "secrets manager" "secret" did not exist
+    When the recovery window for a deleted "secrets manager" "secret" expires
     Then the operation is rejected
 
   @guard @negative @recovery_window_expires @internal
-  Scenario: the recovery window for a deleted secret expires fails when the secret is not "DELETED"
-    Given the secret exists
-    And the secret is not "DELETED"
-    When the recovery window for a deleted secret expires
+  Scenario: the recovery window for a deleted "secrets manager" "secret" expires fails when the "secrets manager" "secret" was not "DELETED"
+    Given the "secrets manager" "secret" existed
+    And the "secrets manager" "secret" was not "DELETED"
+    When the recovery window for a deleted "secrets manager" "secret" expires
     Then the operation is rejected
 
   @guard @negative @recovery_window_expires @internal
-  Scenario: the recovery window for a deleted secret expires fails when the recovery window is not open
-    Given the secret exists
-    And the secret is "DELETED"
-    And the recovery window is not open
-    When the recovery window for a deleted secret expires
+  Scenario: the recovery window for a deleted "secrets manager" "secret" expires fails when the recovery window was not open
+    Given the "secrets manager" "secret" existed
+    And the "secrets manager" "secret" was "DELETED"
+    And the recovery window was not open
+    When the recovery window for a deleted "secrets manager" "secret" expires
     Then the operation is rejected

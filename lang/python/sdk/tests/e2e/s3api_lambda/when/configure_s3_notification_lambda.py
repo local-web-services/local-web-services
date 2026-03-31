@@ -1,4 +1,4 @@
-"""When: an S3 event notification is configured to invoke a Lambda function on object "PUT" """
+"""When: a S3 event notification is configured to invoke a "lambda" "function" on object "PUT" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import FUNC_ARN, TEST_BUCKET
 
 
-@when('an S3 event notification is configured to invoke a Lambda function on object "PUT"')
+@when('a S3 event notification is configured to invoke a "lambda" "function" on object "PUT"')
 def configure_s3_notification_lambda(lws_session, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

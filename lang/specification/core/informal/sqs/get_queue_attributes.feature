@@ -1,5 +1,5 @@
 @sqs @generated
-Feature: Sqs - Queue Attributes Are Retrieved
+Feature: Sqs - "Sqs" "Queue" Attributes Are Retrieved
 
   # Generated from FizzBee spec: sqs.fizz
   # Safety invariants: MessagesReferValidQueues, InFlightMessagesBelongToActiveQueues, ReceiveCountNonNegative
@@ -8,24 +8,24 @@ Feature: Sqs - Queue Attributes Are Retrieved
     Given the system is initialized
 
   @minimal @happy @get_queue_attributes
-  Scenario: queue attributes are retrieved
-    Given the queue exists
-    And the queue is "ACTIVE"
-    When queue attributes are retrieved
-    Then the queue attributes are returned
+  Scenario: "sqs" "queue" attributes are retrieved
+    Given the "sqs" "queue" existed
+    And the "sqs" "queue" was "ACTIVE"
+    When "sqs" "queue" attributes are retrieved
+    Then the "sqs" "queue" attributes will be returned
     And every non-deleted message belongs to an "ACTIVE" queue
     And every in-flight message belongs to an "ACTIVE" queue
     And every message has a non-negative receive count
 
   @guard @negative @get_queue_attributes
-  Scenario: queue attributes are retrieved fails when the queue does not exist
-    Given the queue does not exist
-    When queue attributes are retrieved
+  Scenario: "sqs" "queue" attributes are retrieved fails when the "sqs" "queue" did not exist
+    Given the "sqs" "queue" did not exist
+    When "sqs" "queue" attributes are retrieved
     Then the operation is rejected
 
   @guard @negative @get_queue_attributes @lifecycle
-  Scenario: queue attributes are retrieved fails when the queue is not "ACTIVE"
-    Given the queue exists
-    And the queue is not "ACTIVE"
-    When queue attributes are retrieved
+  Scenario: "sqs" "queue" attributes are retrieved fails when the "sqs" "queue" was not "ACTIVE"
+    Given the "sqs" "queue" existed
+    And the "sqs" "queue" was not "ACTIVE"
+    When "sqs" "queue" attributes are retrieved
     Then the operation is rejected

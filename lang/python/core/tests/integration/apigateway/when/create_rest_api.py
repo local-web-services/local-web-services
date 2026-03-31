@@ -1,4 +1,4 @@
-"""When: a "REST" "API" is created"""
+"""When: an "api gateway" "api" is created"""
 
 from __future__ import annotations
 
@@ -8,8 +8,8 @@ from starlette.testclient import TestClient
 from ..constants import INT_API_NAME
 
 
-@when('a "REST" "API" is created')
-@when('a "REST" "API" is created with a root resource')
+@when('an "api gateway" "api" is created')
+@when('a "api gateway" "REST API" is created with a root resource')
 def create_rest_api(client: TestClient, world):
     r = client.post("/restapis", json={"name": INT_API_NAME})
     if r.status_code < 300:

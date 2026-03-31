@@ -1,4 +1,4 @@
-"""Then: the user is disabled"""
+"""Then: the "cognito" "user" will be "DISABLED" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import CognitoIdpTestClient
 from ..constants import INT_POOL_ID, INT_USERNAME
 
 
-@then("the user is disabled")
+@then('the "cognito" "user" will be "DISABLED"')
 def user_is_disabled_then(client: TestClient, world):
     r = CognitoIdpTestClient(client).cognito_post(
         "AdminGetUser", {"UserPoolId": INT_POOL_ID, "Username": world.get("username", INT_USERNAME)}

@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - A Pending Function Resolves Its Deployment
+Feature: Lambda - A Pending "Lambda" "Function" Resolves Its Deployment
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions
@@ -8,11 +8,11 @@ Feature: Lambda - A Pending Function Resolves Its Deployment
     Given the system is initialized
 
   @minimal @happy @activate_function @internal
-  Scenario: a pending function resolves its deployment
-    Given the function exists
-    And the function is "PENDING"
-    When a pending function resolves its deployment
-    Then the function becomes "ACTIVE" or "FAILED" non-deterministically
+  Scenario: a pending "lambda" "function" resolves its deployment
+    Given the "lambda" "function" existed
+    And the "lambda" "function" was "PENDING"
+    When a pending "lambda" "function" resolves its deployment
+    Then the "lambda" "function" becomes "ACTIVE" or "FAILED" non-deterministically
     And every active event source mapping references an existing non-deleted function
     And no function in "DELETING" state has active executions
     And active execution count never exceeds reserved concurrency when set
@@ -22,14 +22,14 @@ Feature: Lambda - A Pending Function Resolves Its Deployment
     And all async slots reference known function IDs or are empty
 
   @guard @negative @activate_function @internal
-  Scenario: a pending function resolves its deployment fails when the function does not exist
-    Given the function does not exist
-    When a pending function resolves its deployment
+  Scenario: a pending "lambda" "function" resolves its deployment fails when the "lambda" "function" did not exist
+    Given the "lambda" "function" did not exist
+    When a pending "lambda" "function" resolves its deployment
     Then the operation is rejected
 
   @guard @negative @activate_function @internal
-  Scenario: a pending function resolves its deployment fails when the function is not "PENDING"
-    Given the function exists
-    And the function is not "PENDING"
-    When a pending function resolves its deployment
+  Scenario: a pending "lambda" "function" resolves its deployment fails when the "lambda" "function" was not "PENDING"
+    Given the "lambda" "function" existed
+    And the "lambda" "function" was not "PENDING"
+    When a pending "lambda" "function" resolves its deployment
     Then the operation is rejected

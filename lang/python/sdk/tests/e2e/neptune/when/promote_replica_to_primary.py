@@ -1,4 +1,4 @@
-"""When: a replica instance is promoted to primary during failover"""
+"""When: a replica "neptune" "instance" is promoted to primary during failover"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_CLUSTER
 
 
-@when("a replica instance is promoted to primary during failover")
+@when('a replica "neptune" "instance" is promoted to primary during failover')
 def promote_replica_to_primary(lws_session, world):
     try:
         cluster_id = world.get("cluster_id", TEST_CLUSTER)

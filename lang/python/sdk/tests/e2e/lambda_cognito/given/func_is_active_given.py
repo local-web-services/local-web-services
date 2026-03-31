@@ -1,10 +1,10 @@
-"""Given: the function is "ACTIVE" """
+"""Given: the "lambda" "function" was "ACTIVE" """
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given('the function is "ACTIVE"')
+@given('the "lambda" "function" was "ACTIVE"')
 def func_is_active_given():
     """No-op: functions are ACTIVE immediately after creation."""

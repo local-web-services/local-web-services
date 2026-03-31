@@ -1,4 +1,4 @@
-"""Given: the instance is "MODIFYING" """
+"""Given: the "documentdb" "instance" was "MODIFYING" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..constants import TEST_INSTANCE
 
 
-@given('the instance is "MODIFYING"')
+@given('the "documentdb" "instance" was "MODIFYING"')
 def instance_is_modifying_given(lws_session, world):
     # Arrange
     instance_id = world.get("instance_id", TEST_INSTANCE)

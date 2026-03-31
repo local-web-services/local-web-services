@@ -1,11 +1,12 @@
-"""Then: the cluster is in "CREATING" state"""
+"""Then: the "documentdb" "cluster" will be in "CREATING" state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the cluster is in "CREATING" state')
+@then('the "neptune" "cluster" will be in "CREATING" state')
+@then('the "documentdb" "cluster" will be in "CREATING" state')
 def cluster_is_in_creating_state(world: dict):
     actual_result = world["result"]
     assert (

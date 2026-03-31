@@ -1,4 +1,4 @@
-"""Then: the bucket is in "CREATING" state"""
+"""Then: the "s3 tables" "bucket" will be in "CREATING" state"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET
 
 
-@then('the bucket is in "CREATING" state')
+@then('the "s3 tables" "bucket" will be in "CREATING" state')
 def bucket_is_in_creating_state(client: TestClient):
     r = client.get(f"/buckets/{INT_BUCKET}")
     expected_valid_statuses = ("CREATING", "ACTIVE")

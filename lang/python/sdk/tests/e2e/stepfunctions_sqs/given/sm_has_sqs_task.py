@@ -1,4 +1,4 @@
-"""Given: the state machine has an "SQS" task configured"""
+"""Given: the state machine has a "SQS" task configured"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsSqsTestClient
 from ..constants import ROLE_ARN, TEST_QUEUE, TEST_SM, _sm_arn, _sqs_task_definition
 
 
-@given('the state machine has an "SQS" task configured')
+@given('the state machine has a "SQS" task configured')
 def sm_has_sqs_task(lws_session):
     """Create a state machine with an SQS sendMessage task; update if it already exists."""
     # Arrange

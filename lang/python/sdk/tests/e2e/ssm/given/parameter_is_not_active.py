@@ -1,4 +1,4 @@
-"""Given: the parameter is not active"""
+"""Given: the "ssm" "parameter" was not "active" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SsmTestClient
 from ..constants import TEST_PARAM
 
 
-@given("the parameter is not active")
+@given('the "ssm" "parameter" was not "active"')
 def parameter_is_not_active(lws_session, world):
     try:
         SsmTestClient(lws_session).delete_parameter(Name=TEST_PARAM)

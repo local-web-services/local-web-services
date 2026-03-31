@@ -26,10 +26,10 @@ action Init:
     obj_req = {}                # obj_req[oid] = req_id
 
 
-# step: an API Gateway REST API is created
-# result: the API is ACTIVE with no S3 integration configured
-# guard: the API does not already exist
-# guard_violation: the API already exists
+# step: an "api gateway" "api" is created
+# result: the "api gateway" "api" will be "ACTIVE" with no S3 integration configured
+# guard: the "api gateway" "API" did not already exist
+# guard_violation: the "api gateway" "API" already existed
 atomic action CreateRestAPI:
     oneof aid in API_IDS:
         if aid not in api_status:
@@ -37,22 +37,22 @@ atomic action CreateRestAPI:
             api_bucket[aid] = ""
 
 
-# step: an S3 bucket is created
-# result: the bucket is ACTIVE
-# guard: the bucket does not already exist
-# guard_violation: the bucket already exists
+# step: a "s3" "bucket" is created
+# result: the "s3" "bucket" will be "ACTIVE"
+# guard: the "s3" "bucket" did not already exist
+# guard_violation: the "s3" "bucket" already existed
 atomic action CreateBucket:
     oneof bid in BUCKET_IDS:
         if bid not in bucket_status:
             bucket_status[bid] = "ACTIVE"
 
 
-# step: the S3 bucket is deleted
-# result: the bucket is DELETED and API requests targeting it will fail
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is already DELETED
+# step: the "s3" "bucket" is deleted
+# result: the "s3" "bucket" will be deleted and API requests targeting it will fail
+# guard: the "s3" "bucket" existed
+# guard_violation: the "s3" "bucket" did not exist
+# guard: the "s3" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3" "bucket" is already "DELETED"
 atomic action DeleteBucket:
     oneof bid in BUCKET_IDS:
         if bid in bucket_status:
@@ -60,14 +60,14 @@ atomic action DeleteBucket:
                 bucket_status[bid] = "DELETED"
 
 
-# step: a direct S3 integration is configured on the API
-# result: the API will proxy requests to the S3 bucket
-# guard: the API exists and is ACTIVE
-# guard_violation: the API does not exist or is not ACTIVE
-# guard: the API has no S3 integration configured
-# guard_violation: the API already has an S3 integration configured
-# guard: the bucket exists and is ACTIVE
-# guard_violation: the bucket does not exist or is not ACTIVE
+# step: a direct S3 integration is configured on the "api gateway" "API"
+# result: the "api gateway" "API" will proxy requests to the "s3" "bucket"
+# guard: the "api gateway" "API" existed and was "ACTIVE"
+# guard_violation: the "api gateway" "API" did not exist or was "ACTIVE"
+# guard: the "api gateway" "api" has no S3 integration configured
+# guard_violation: the "api gateway" "API" already has a S3 integration configured
+# guard: the "s3" "bucket" existed and was "ACTIVE"
+# guard_violation: the "s3" "bucket" did not exist or was "ACTIVE"
 atomic action ConfigureS3Integration:
     oneof aid in API_IDS:
         if aid in api_status:
@@ -79,17 +79,17 @@ atomic action ConfigureS3Integration:
                                 api_bucket[aid] = bid
 
 
-# step: a PUT request is received and the API writes an object to the S3 bucket
-# result: the object EXISTS and the request is SUCCESS
-# guard: the API is ACTIVE
-# guard_violation_lifecycle: the API is not ACTIVE
-# guard: the API has an S3 integration configured
-# guard_violation: the API has no S3 integration configured
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
+# step: a PUT request is received and the "api gateway" "API" writes an "s3" "object" to the "s3" "bucket"
+# result: the "s3" "object" will exist and the request will be "SUCCESS"
+# guard: the "api gateway" "api" was "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
+# guard: the "api gateway" "api" has a S3 integration configured
+# guard_violation: the "api gateway" "api" has no S3 integration configured
+# guard: the "s3" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3" "bucket" was not "ACTIVE"
 # guard: a request slot is available
 # guard_violation_capacity: no request slot is available
-# guard: an object slot is available
+# guard: an "s3" "object" slot is available
 # guard_violation_capacity: no object slot is available
 atomic action PutObjectRequestSucceeds:
     oneof aid in API_IDS:
@@ -110,14 +110,14 @@ atomic action PutObjectRequestSucceeds:
                                             obj_req[oid] = rid
 
 
-# step: a GET request is received and the API retrieves an existing object from S3
-# result: the request is SUCCESS
-# guard: the API is ACTIVE
-# guard_violation_lifecycle: the API is not ACTIVE
-# guard: the API has an S3 integration configured
-# guard_violation: the API has no S3 integration configured
-# guard: an object EXISTS in the target bucket
-# guard_violation_lifecycle: no object EXISTS in the target bucket
+# step: a GET request is received and the "api gateway" "API" retrieves an existing object from S3
+# result: the request will be "SUCCESS"
+# guard: the "api gateway" "api" was "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
+# guard: the "api gateway" "api" has a S3 integration configured
+# guard_violation: the "api gateway" "api" has no S3 integration configured
+# guard: an "s3" "object" existed in the target bucket
+# guard_violation_lifecycle: no "s3" "object" existed in the target "s3" "bucket"
 # guard: a request slot is available
 # guard_violation_capacity: no request slot is available
 atomic action GetObjectRequestSucceeds:
@@ -138,14 +138,14 @@ atomic action GetObjectRequestSucceeds:
                                 req_api[rid] = aid
 
 
-# step: a request fails because the S3 bucket has been deleted
-# result: the request is FAILED with a NoSuchBucket error
-# guard: the API is ACTIVE
-# guard_violation_lifecycle: the API is not ACTIVE
-# guard: the API has an S3 integration configured
-# guard_violation: the API has no S3 integration configured
-# guard: the bucket is DELETED
-# guard_violation_lifecycle: the bucket is not DELETED
+# step: a request fails because the "s3" "bucket" has been deleted
+# result: the request will be "FAILED" with a NoSuchBucket error
+# guard: the "api gateway" "api" was "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
+# guard: the "api gateway" "api" has a S3 integration configured
+# guard_violation: the "api gateway" "api" has no S3 integration configured
+# guard: the "s3" "bucket" was "DELETED"
+# guard_violation_lifecycle: the "s3" "bucket" was not "DELETED"
 # guard: a request slot is available
 # guard_violation_capacity: no request slot is available
 atomic action RequestFails:
@@ -162,7 +162,7 @@ atomic action RequestFails:
                                     req_api[rid] = aid
 
 
-# check: every existing object references a bucket that exists
+# check: every existing object references a "s3" "bucket" that exists
 always assertion ObjectReferencesExistingBucket:
     for oid in obj_status:
         if obj_status[oid] == "EXISTS":
@@ -172,7 +172,7 @@ always assertion ObjectReferencesExistingBucket:
     return True
 
 
-# check: every successful request references an API that exists
+# check: every successful request references an "api gateway" "API" that exists
 always assertion SuccessfulRequestReferencesExistingAPI:
     for rid in req_status:
         if req_status[rid] == "SUCCESS":

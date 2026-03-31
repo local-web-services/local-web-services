@@ -1,4 +1,4 @@
-"""When: the caller Lambda function invokes the "ACTIVE" callee and the call succeeds"""
+"""When: the caller "lambda" "function" invokes the "ACTIVE" callee and the call succeeds"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_CALLEE
 
 
-@when('the caller Lambda function invokes the "ACTIVE" callee and the call succeeds')
+@when('the caller "lambda" "function" invokes the "ACTIVE" callee and the call succeeds')
 def caller_invokes_callee_succeeds(lws_session, world):
     # Arrange
     invocation_id = world.get("invocation_id")

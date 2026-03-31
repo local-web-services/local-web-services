@@ -1,4 +1,4 @@
-"""When: a database cluster is created"""
+"""When: a "documentdb" "cluster" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,8 @@ from ..client import NeptuneTestClient
 from ..constants import INT_CLUSTER, _store
 
 
-@when("a database cluster is created")
+@when('a "neptune" "cluster" is created')
+@when('a "documentdb" "cluster" is created')
 def create_db_cluster(client: TestClient, world: dict):
     r = NeptuneTestClient(client).post(
         "CreateDBCluster", {"DBClusterIdentifier": INT_CLUSTER, "Engine": "neptune"}

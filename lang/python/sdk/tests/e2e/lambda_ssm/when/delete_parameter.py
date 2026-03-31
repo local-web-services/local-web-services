@@ -1,4 +1,4 @@
-"""When: a parameter is deleted from "SSM" Parameter Store"""
+"""When: a "ssm" "parameter" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_PARAM
 
 
-@when('a parameter is deleted from "SSM" Parameter Store')
+@when('a "ssm" "parameter" is deleted')
 def delete_parameter(lws_session, world):
     try:
         world["result"] = lws_session.client("ssm").delete_parameter(Name=TEST_PARAM)

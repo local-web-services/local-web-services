@@ -1,4 +1,4 @@
-"""When: a function finishes being deleted"""
+"""When: a "lambda" "function" finishes being deleted"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import when
 from starlette.testclient import TestClient
 
 
-@when("a function finishes being deleted")
+@when('a "lambda" "function" finishes being deleted')
 def function_finishes_being_deleted(client: TestClient, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

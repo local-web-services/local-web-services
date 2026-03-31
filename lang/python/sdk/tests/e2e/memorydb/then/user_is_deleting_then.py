@@ -1,11 +1,11 @@
-"""Then: the user is in "DELETING" state"""
+"""Then: the "memorydb" "user" will be in "DELETING" state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the user is in "DELETING" state')
+@then('the "memorydb" "user" will be in "DELETING" state')
 def user_is_deleting_then(world):
     expected_error = None
     actual_error = world["error"]

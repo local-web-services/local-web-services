@@ -1,4 +1,4 @@
-"""Given: a table has been created in the table bucket"""
+"""Given: a table is created in the table bucket"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaS3tablesTestClient
 from ..constants import TEST_NAMESPACE, TEST_TABLE, _table_bucket_arn
 
 
-@given("a table has been created in the table bucket")
+@given("a table is created in the table bucket")
 def lambda_s3tables_table_has_been_created_seq(lws_session):
     try:
         LambdaS3tablesTestClient(lws_session).create_table_bucket()

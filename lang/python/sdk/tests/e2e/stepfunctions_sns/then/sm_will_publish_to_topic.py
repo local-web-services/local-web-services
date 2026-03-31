@@ -1,11 +1,13 @@
-"""Then: the state machine will publish a message to the topic when it reaches the task state"""
+"""Then: the state machine will publish a "sns" "message" to the "sns" "topic" when it reaches the task state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the state machine will publish a message to the topic when it reaches the task state")
+@then(
+    'the state machine will publish a "sns" "message" to the "sns" "topic" when it reaches the task state'
+)
 def sm_will_publish_to_topic(world):
     # Arrange
     expected_error = None

@@ -1,4 +1,4 @@
-"""Given: the cluster already exists"""
+"""Given: the "documentdb" "cluster" already existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from starlette.testclient import TestClient
 from ..client import ElasticacheTestClient
 
 
-@given("the cluster already exists")
+@given('the "elasticache" "cluster" already existed')
+@given('the "documentdb" "cluster" already existed')
 def cluster_already_exists(client: TestClient):
     ElasticacheTestClient(client).create_cluster()

@@ -1,4 +1,4 @@
-"""When: a "REST" "API" is created"""
+"""When: an "api gateway" "api" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_API
 
 
-@when('a "REST" "API" is created')
+@when('an "api gateway" "api" is created')
 def create_rest_api_lambda(lws_session, world):
     try:
         resp = lws_session.client("apigateway").create_rest_api(name=TEST_API)

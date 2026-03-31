@@ -1,4 +1,4 @@
-"""Given: a vault inventory retrieval job has been initiated"""
+"""Given: a "glacier" "vault" inventory retrieval job is initiated"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import GlacierTestClient
 from ..constants import TEST_VAULT
 
 
-@given("a vault inventory retrieval job has been initiated")
+@given('a "glacier" "vault" inventory retrieval job is initiated')
 def glacier_seq_inventory_retrieval_initiated(lws_session):
     GlacierTestClient(lws_session).create_vault()
     GlacierTestClient(lws_session).initiate_job(

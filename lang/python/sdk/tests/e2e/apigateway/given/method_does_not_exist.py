@@ -1,4 +1,4 @@
-"""Given: the method does not exist"""
+"""Given: the "api gateway" "method" did not exist"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ApigatewayTestClient
 from ..constants import TEST_HTTP_METHOD
 
 
-@given("the method does not exist")
+@given('the "api gateway" "method" did not exist')
 def method_does_not_exist(lws_session):
     """Delete the GET method on the root resource if it exists, to enforce non-existence."""
     api_id = ApigatewayTestClient(lws_session).get_api_id()

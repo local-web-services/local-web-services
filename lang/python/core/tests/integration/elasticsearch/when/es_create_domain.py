@@ -1,4 +1,4 @@
-"""When: a search domain is created"""
+"""When: an "elasticsearch" "domain" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ElasticsearchTestClient
 from ..constants import INT_DOMAIN, _store
 
 
-@when("a search domain is created")
+@when('an "elasticsearch" "domain" is created')
 def es_create_domain(client: TestClient, world: dict):
     r = ElasticsearchTestClient(client).post(
         "CreateElasticsearchDomain", {"DomainName": INT_DOMAIN}

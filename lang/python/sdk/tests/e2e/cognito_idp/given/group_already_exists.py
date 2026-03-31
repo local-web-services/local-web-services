@@ -1,4 +1,4 @@
-"""Given: the group already exists"""
+"""Given: the "cognito" "group" already existed"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import CognitoIdpTestClient
 from ..constants import TEST_GROUP_NAME, _skip_if_not_implemented
 
 
-@given("the group already exists")
+@given('the "cognito" "group" already existed')
 def group_already_exists(lws_session, world):
     """Create a group to represent the already-existing state."""
     if not world.get("pool_id"):

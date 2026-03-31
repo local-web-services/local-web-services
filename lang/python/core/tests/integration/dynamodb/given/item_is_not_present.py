@@ -1,4 +1,4 @@
-"""Given: the item is not present"""
+"""Given: the "dynamodb" "item" was not present"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import DynamodbTestClient
 from ..constants import TEST_ITEM_KEY, TEST_PK, TEST_TABLE
 
 
-@given("the item is not present")
+@given('the "dynamodb" "item" was not present')
 def item_is_not_present(client: TestClient):
     DynamodbTestClient(client).post(
         "DeleteItem", {"TableName": TEST_TABLE, "Key": {TEST_PK: {"S": TEST_ITEM_KEY}}}

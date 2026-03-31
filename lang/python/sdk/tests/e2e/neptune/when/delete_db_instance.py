@@ -1,4 +1,4 @@
-"""When: a database instance is deleted"""
+"""When: a "neptune" "instance" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_INSTANCE
 
 
-@when("a database instance is deleted")
+@when('a "neptune" "instance" is deleted')
 def delete_db_instance(lws_session, world):
     try:
         instance_id = world.get("instance_id", TEST_INSTANCE)

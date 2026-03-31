@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EVENTS_TARGET, INT_BUS, INT_RULE, _store
 
 
-@when("an EventBridge rule is described")
+@when('an "eventbridge" "rule" is described')
 def describe_rule(client: TestClient, world):
     r = client.post(
         "/",

@@ -1,4 +1,4 @@
-"""When: an active function is deleted"""
+"""When: an active "lambda" "function" is deleted"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_FUNCTION_NAME
 
 
-@when("an active function is deleted")
+@when('an active "lambda" "function" is deleted')
 def delete_active_function(client: TestClient, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

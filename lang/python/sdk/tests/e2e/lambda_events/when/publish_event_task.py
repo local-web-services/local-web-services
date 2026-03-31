@@ -1,4 +1,4 @@
-"""When: the Lambda function publishes an event to the "ACTIVE" event bus and succeeds"""
+"""When: the "lambda" "function" publishes an event to the "ACTIVE" event bus and succeeds"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUS
 
 
-@when('the Lambda function publishes an event to the "ACTIVE" event bus and succeeds')
+@when('the "lambda" "function" publishes an event to the "ACTIVE" event bus and succeeds')
 def publish_event_task(lws_session, world):
     # Arrange
     invocation_id = world.get("invocation_id")

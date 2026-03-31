@@ -1,4 +1,4 @@
-"""When: a secret is created"""
+"""When: a "secrets manager" "secret" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SM_TARGET_PREFIX, INT_SECRET, INT_VALUE
 
 
-@when("a secret is created")
+@when('a "secrets manager" "secret" is created')
 def create_secret(sync_client: TestClient, world):
     r = sync_client.post(
         "/",

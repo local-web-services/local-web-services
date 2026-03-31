@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import EventsTestClient
 
 
-@given("the event bus already exists")
+@given('the "eventbridge" "bus" already existed')
 def bus_already_exists(client: TestClient):
     EventsTestClient(client).create_bus()

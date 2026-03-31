@@ -1,4 +1,4 @@
-"""When: a cache snapshot is deleted"""
+"""When: an "elasticache" "snapshot" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_SNAPSHOT_ID
 
 
-@when("a cache snapshot is deleted")
+@when('an "elasticache" "snapshot" is deleted')
 def delete_snapshot(client: TestClient, world):
     r = client.post(
         "/",

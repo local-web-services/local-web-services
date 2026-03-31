@@ -1,4 +1,4 @@
-"""Given: tags have been added to an active secret"""
+"""Given: tags are added to an active "secrets manager" "secret" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SecretsmanagerTestClient
 from ..constants import TEST_SECRET, TEST_TAG_KEY, TEST_TAG_VALUE
 
 
-@given("tags have been added to an active secret")
+@given('tags are added to an active "secrets manager" "secret"')
 def secretsmanager_tags_have_been_added(lws_session):
     try:
         SecretsmanagerTestClient(lws_session).create_secret()

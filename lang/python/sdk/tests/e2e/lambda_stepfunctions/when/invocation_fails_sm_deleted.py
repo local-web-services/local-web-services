@@ -8,7 +8,9 @@ from pytest_bdd import when
 from ..constants import _sm_arn
 
 
-@when("the Lambda function fails to start an execution because the state machine has been deleted")
+@when(
+    'the "lambda" "function" fails to start an execution because the state machine has been deleted'
+)
 def invocation_fails_sm_deleted(lws_session, world):
     # Arrange
     invocation_id = world.get("invocation_id")

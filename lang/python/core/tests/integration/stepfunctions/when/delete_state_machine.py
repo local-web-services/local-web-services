@@ -1,4 +1,4 @@
-"""When: a state machine is deleted"""
+"""When: a "step functions" "state machine" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SFN_TARGET, INT_SM, _sm_arn
 
 
-@when("a state machine is deleted")
+@when('a "step functions" "state machine" is deleted')
 def delete_state_machine(client: TestClient, world):
     sm_name = world.get("state_machine_name", INT_SM)
     r = client.post(

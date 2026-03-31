@@ -1,4 +1,4 @@
-"""Given: the user exists"""
+"""Given: the "cognito" "user" existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from starlette.testclient import TestClient
 from ..client import MemorydbTestClient
 
 
-@given("the user exists")
+@given('the "memorydb" "user" existed')
+@given('the "cognito" "user" existed')
 def user_exists(client: TestClient):
     MemorydbTestClient(client).create_user()

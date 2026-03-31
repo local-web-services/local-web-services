@@ -1,4 +1,4 @@
-"""When: a Step Functions direct integration is configured on the "REST" "API" """
+"""When: a Step Functions direct integration is configured on the "api gateway" "api" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..client import ApigatewayStepfunctionsTestClient
 
 
-@when('a Step Functions direct integration is configured on the "REST" "API"')
+@when('a Step Functions direct integration is configured on the "api gateway" "api"')
 def configure_sfn_integration_apigw(lws_session, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

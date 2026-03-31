@@ -1,10 +1,11 @@
-"""Given: the domain does not exist"""
+"""Given: the "elasticsearch" "domain" did not exist"""
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given("the domain does not exist")
+@given('the "opensearch" "domain" did not exist')
+@given('the "elasticsearch" "domain" did not exist')
 def domain_does_not_exist():
     """No-op: fresh state has no domains."""

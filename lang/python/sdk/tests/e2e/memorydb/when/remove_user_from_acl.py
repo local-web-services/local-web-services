@@ -1,4 +1,4 @@
-"""When: a user is removed from an "ACL" """
+"""When: a "memorydb" "user" is removed from an "memorydb" "ACL" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import TEST_ACL, TEST_USER
 
 
-@when('a user is removed from an "ACL"')
+@when('a "memorydb" "user" is removed from an "memorydb" "ACL"')
 def remove_user_from_acl(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:

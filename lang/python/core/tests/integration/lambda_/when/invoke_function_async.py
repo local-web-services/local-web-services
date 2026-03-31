@@ -1,4 +1,4 @@
-"""When: a function is invoked asynchronously"""
+"""When: a "lambda" "function" is invoked asynchronously"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_FUNCTION_NAME
 
 
-@when("a function is invoked asynchronously")
+@when('a "lambda" "function" is invoked asynchronously')
 def invoke_function_async(client: TestClient, world):
     r = client.post(
         f"/2015-03-31/functions/{INT_FUNCTION_NAME}/invocations",

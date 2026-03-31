@@ -1,4 +1,4 @@
-"""Given: the organizational unit exists and is "ACTIVE" """
+"""Given: the "organizations" "organizational unit" existed and was "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import OrganizationsTestClient
 
 
-@given('the organizational unit exists and is "ACTIVE"')
+@given('the "organizations" "organizational unit" existed and was "ACTIVE"')
 def ou_exists_and_active(client: TestClient, world):
     resp = OrganizationsTestClient(client).create_org()
     world["org_id"] = resp.get("Organization", {}).get("Id")

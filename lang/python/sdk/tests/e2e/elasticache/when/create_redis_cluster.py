@@ -1,4 +1,4 @@
-"""When: a redis cache cluster is created"""
+"""When: a redis "elasticache" "cluster" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import TEST_CLUSTER
 
 
-@when("a redis cache cluster is created")
+@when('a redis "elasticache" "cluster" is created')
 def create_redis_cluster(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:

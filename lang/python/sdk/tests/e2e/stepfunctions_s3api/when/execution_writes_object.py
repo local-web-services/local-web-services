@@ -1,4 +1,4 @@
-"""When: a running execution writes an object to the S3 bucket and succeeds"""
+"""When: a running "step functions" "execution" writes an object to the "s3" "bucket" and succeeds"""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from ..constants import (
 )
 
 
-@when("a running execution writes an object to the S3 bucket and succeeds")
+@when('a running "step functions" "execution" writes an object to the "s3" "bucket" and succeeds')
 def execution_writes_object(lws_session, world):
     try:
         StepfunctionsS3apiTestClient(lws_session).create_bucket()

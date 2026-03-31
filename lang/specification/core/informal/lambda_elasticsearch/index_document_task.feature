@@ -1,5 +1,5 @@
 @lambdaelasticsearch @generated
-Feature: LambdaElasticsearch - The Lambda Function Indexes A Document Into The Available Domain And Succeeds
+Feature: LambdaElasticsearch - The "Lambda" "Function" Indexes A "Elasticsearch" "Document" Into The Available Domain And Succeeds
 
   # Generated from FizzBee spec: lambda_elasticsearch.fizz
   # Safety invariants: InvocationRequiresActiveFunction, DocumentRequiresExistingDomain
@@ -8,32 +8,32 @@ Feature: LambdaElasticsearch - The Lambda Function Indexes A Document Into The A
     Given the system is initialized
 
   @minimal @happy @index_document_task @internal
-  Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
-    Given an invocation is "IN_PROGRESS"
-    And the domain is "AVAILABLE"
-    And a document slot is available
-    When the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
-    Then the document "EXISTS" and the invocation is "SUCCESS"
+  Scenario: the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "elasticsearch" "domain" was "AVAILABLE"
+    And a "elasticsearch" "document" slot is available
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    Then the "elasticsearch" "document" will exist and the invocation will be "SUCCESS"
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @guard @negative @index_document_task @internal
-  Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds fails when no invocation is "IN_PROGRESS"
-    Given no invocation is "IN_PROGRESS"
-    When the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
+  Scenario: the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds fails when no "lambda" "invocation" was "IN_PROGRESS"
+    Given no "lambda" "invocation" was "IN_PROGRESS"
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
     Then the operation is rejected
 
   @guard @negative @index_document_task @internal
-  Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds fails when the domain is not "AVAILABLE"
-    Given an invocation is "IN_PROGRESS"
-    And the domain is not "AVAILABLE"
-    When the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
+  Scenario: the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds fails when the "elasticsearch" "domain" was not "AVAILABLE"
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "elasticsearch" "domain" was not "AVAILABLE"
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
     Then the operation is rejected
 
   @guard @negative @index_document_task @internal
-  Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds fails when no document slot is available
-    Given an invocation is "IN_PROGRESS"
-    And the domain is "AVAILABLE"
+  Scenario: the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds fails when no document slot is available
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "elasticsearch" "domain" was "AVAILABLE"
     And no document slot is available
-    When the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
     Then the operation is rejected

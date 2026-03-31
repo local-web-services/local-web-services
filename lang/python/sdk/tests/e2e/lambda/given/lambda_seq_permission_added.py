@@ -1,4 +1,4 @@
-"""Given: a permission has been added to a function's resource policy"""
+"""Given: a permission is added to a "lambda" "function"'s resource policy"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaTestClient
 from ..constants import TEST_FUNC, TEST_STATEMENT_ID
 
 
-@given("a permission has been added to a function's resource policy")
+@given('a permission is added to a "lambda" "function"\'s resource policy')
 def lambda_seq_permission_added(lws_session):
     LambdaTestClient(lws_session).create_function()
     try:

@@ -1,4 +1,4 @@
-"""When: an account is created in the organization"""
+"""When: an "organizations" "account" is created in the "organizations" "organization" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_ACCOUNT_EMAIL, TEST_ACCOUNT_NAME
 
 
-@when("an account is created in the organization")
+@when('an "organizations" "account" is created in the "organizations" "organization"')
 def create_account(lws_session, world):
     try:
         resp = lws_session.client("organizations").create_account(

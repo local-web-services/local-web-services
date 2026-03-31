@@ -1,4 +1,4 @@
-"""When: all rules on an event bus are listed"""
+"""When: all rules on an "eventbridge" "bus" are listed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUS
 
 
-@when("all rules on an event bus are listed")
+@when('all rules on an "eventbridge" "bus" are listed')
 def list_rules(lws_session, world):
     try:
         resp = lws_session.client("events").list_rules(EventBusName=TEST_BUS)

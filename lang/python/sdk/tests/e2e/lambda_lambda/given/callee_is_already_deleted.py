@@ -1,4 +1,4 @@
-"""Given: the callee is already "DELETED" """
+"""Given: the callee "lambda" "function" was already "DELETED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaLambdaTestClient
 from ..constants import TEST_CALLEE
 
 
-@given('the callee is already "DELETED"')
+@given('the callee "lambda" "function" was already "DELETED"')
 def callee_is_already_deleted(lws_session, world):
     try:
         LambdaLambdaTestClient(lws_session).create_function(TEST_CALLEE)

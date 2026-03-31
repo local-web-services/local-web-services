@@ -9,10 +9,10 @@ Feature: CognitoIdp - An Admin Updates Attributes For A Confirmed User
 
   @minimal @happy @admin_update_user_attributes
   Scenario: an admin updates attributes for a confirmed user
-    Given the user exists
-    And the user is "CONFIRMED"
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was "CONFIRMED"
     When an admin updates attributes for a confirmed user
-    Then the user attributes are updated
+    Then the "cognito" "user" attributes are updated
     And every user pool has a valid status ("ACTIVE" or "DELETED")
     And every user has a valid status
     And every non-deleted user has an enabled flag set
@@ -22,14 +22,14 @@ Feature: CognitoIdp - An Admin Updates Attributes For A Confirmed User
     And disabled users do not have active authenticated sessions
 
   @guard @negative @admin_update_user_attributes
-  Scenario: an admin updates attributes for a confirmed user fails when the user does not exist
-    Given the user does not exist
+  Scenario: an admin updates attributes for a confirmed user fails when the "cognito" "user" did not exist
+    Given the "cognito" "user" did not exist
     When an admin updates attributes for a confirmed user
     Then the operation is rejected
 
   @guard @negative @admin_update_user_attributes
-  Scenario: an admin updates attributes for a confirmed user fails when the user is not "CONFIRMED"
-    Given the user exists
-    And the user is not "CONFIRMED"
+  Scenario: an admin updates attributes for a confirmed user fails when the "cognito" "user" was not "CONFIRMED"
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was not "CONFIRMED"
     When an admin updates attributes for a confirmed user
     Then the operation is rejected

@@ -1,4 +1,4 @@
-"""Given: fid in func_status"""
+"""Given: fid not in func_status"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import given
 from ..client import LambdaSqsTestClient
 
 
-@given("fid in func_status")
+@given("fid not in func_status")
 def fid_in_func_status(lws_session):
     try:
         LambdaSqsTestClient(lws_session).create_function()

@@ -1,4 +1,4 @@
-"""Then: the cluster returns to "AVAILABLE" state"""
+"""Then: the "documentdb" "cluster" returns to "AVAILABLE" state"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_CLUSTER_NAME
 
 
-@then('the cluster returns to "AVAILABLE" state')
+@then('the "documentdb" "cluster" returns to "AVAILABLE" state')
 def cluster_returns_to_available(client: TestClient):
     r = client.post(
         "/",

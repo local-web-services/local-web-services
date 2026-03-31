@@ -1,4 +1,4 @@
-"""When: a tag is removed from a function"""
+"""When: a tag is removed from a "lambda" "function" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_FUNCTION_ARN, INT_TAG_KEY
 
 
-@when("a tag is removed from a function")
+@when('a tag is removed from a "lambda" "function"')
 def remove_tag_from_function(client: TestClient, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

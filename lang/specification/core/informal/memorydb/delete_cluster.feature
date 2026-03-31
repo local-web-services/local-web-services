@@ -1,5 +1,5 @@
 @memorydb @generated
-Feature: Memorydb - A Memorydb Cluster Is Deleted
+Feature: Memorydb - A "Memorydb" "Cluster" Is Deleted
 
   # Generated from FizzBee spec: memorydb.fizz
   # Safety invariants: AllClustersHaveDurability, SnapshottingClusterHasSnapshot, ACLNotDeletedWhileInUse, UserNotDeletedWhileInACL, TagsExistForResources
@@ -8,26 +8,26 @@ Feature: Memorydb - A Memorydb Cluster Is Deleted
     Given the system is initialized
 
   @minimal @happy @delete_cluster
-  Scenario: a MemoryDB cluster is deleted
-    Given the cluster exists
-    And the cluster is "AVAILABLE"
-    When a MemoryDB cluster is deleted
-    Then the cluster is in "DELETING" state
+  Scenario: a "memorydb" "cluster" is deleted
+    Given the "memorydb" "cluster" existed
+    And the "memorydb" "cluster" was "AVAILABLE"
+    When a "memorydb" "cluster" is deleted
+    Then the "memorydb" "cluster" will be in "DELETING" state
     And every active cluster has write durability enabled
     And every snapshotting cluster has a corresponding in-progress snapshot
-    And no "ACL" in "DELETING" state is currently associated with a cluster
-    And no user in "DELETING" state is currently a member of an "ACL"
+    And no "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"
+    And no user in "DELETING" state is currently a member of an "memorydb" "ACL"
     And every active cluster and snapshot has tags
 
   @guard @negative @delete_cluster
-  Scenario: a MemoryDB cluster is deleted fails when the cluster does not exist
-    Given the cluster does not exist
-    When a MemoryDB cluster is deleted
+  Scenario: a "memorydb" "cluster" is deleted fails when the "memorydb" "cluster" did not exist
+    Given the "memorydb" "cluster" did not exist
+    When a "memorydb" "cluster" is deleted
     Then the operation is rejected
 
   @guard @negative @delete_cluster @lifecycle
-  Scenario: a MemoryDB cluster is deleted fails when the cluster is not "AVAILABLE"
-    Given the cluster exists
-    And the cluster is not "AVAILABLE"
-    When a MemoryDB cluster is deleted
+  Scenario: a "memorydb" "cluster" is deleted fails when the "memorydb" "cluster" was not "AVAILABLE"
+    Given the "memorydb" "cluster" existed
+    And the "memorydb" "cluster" was not "AVAILABLE"
+    When a "memorydb" "cluster" is deleted
     Then the operation is rejected

@@ -40,10 +40,10 @@ action Init:
     inv_esm = {}                # inv_esm[iid] = esm_id
 
 
-# step: an SQS queue is created
-# result: the queue is ACTIVE with no dead-letter queue configured
-# guard: the queue does not already exist
-# guard_violation: the queue already exists
+# step: a "sqs" "queue" is created
+# result: the "sqs" "queue" will be "ACTIVE" with no dead-letter queue configured
+# guard: the queue did not already exist
+# guard_violation: the queue already existed
 atomic action CreateQueue:
     oneof qid in QUEUE_IDS:
         if qid not in queue_status:
@@ -51,16 +51,16 @@ atomic action CreateQueue:
             queue_dlq[qid] = ""
 
 
-# step: the SQS queue is configured with a dead-letter queue
+# step: the "sqs" "queue" is configured with a dead-letter queue
 # result: failed messages will be redriven to the dead-letter queue after two receives
-# guard: the source queue exists
-# guard_violation: the source queue does not exist
-# guard: the source queue is ACTIVE
-# guard_violation_lifecycle: the source queue is not ACTIVE
-# guard: the dead-letter queue exists
-# guard_violation: the dead-letter queue does not exist
-# guard: the dead-letter queue is ACTIVE
-# guard_violation_lifecycle: the dead-letter queue is not ACTIVE
+# guard: the source queue existed
+# guard_violation: the source queue did not exist
+# guard: the source queue was "ACTIVE"
+# guard_violation_lifecycle: the source queue was not "ACTIVE"
+# guard: the dead-letter queue existed
+# guard_violation: the dead-letter queue did not exist
+# guard: the dead-letter queue was "ACTIVE"
+# guard_violation_lifecycle: the dead-letter queue was not "ACTIVE"
 # guard: the source queue has no dead-letter queue configured
 # guard_violation: the source queue already has a dead-letter queue configured
 atomic action ConfigureRedrive:
@@ -76,12 +76,12 @@ atomic action ConfigureRedrive:
 
 
 # fake_skip: internal
-# step: a message arrives in the SQS queue
-# result: the message is AVAILABLE for processing
-# guard: the queue exists
-# guard_violation: the queue does not exist
-# guard: the queue is ACTIVE
-# guard_violation_lifecycle: the queue is not ACTIVE
+# step: a message arrives in the "sqs" "queue"
+# result: the message will be "AVAILABLE" for processing
+# guard: the "sqs" "queue" existed
+# guard_violation: the "sqs" "queue" did not exist
+# guard: the "sqs" "queue" was "ACTIVE"
+# guard_violation_lifecycle: the "sqs" "queue" was not "ACTIVE"
 # guard: a message slot is available
 # guard_violation_capacity: no message slot is available
 atomic action MessageArrives:
@@ -96,28 +96,28 @@ atomic action MessageArrives:
                         msg_in_dlq[mid] = False
 
 
-# step: a Lambda function is deployed
-# result: the function is ACTIVE
-# guard: the function does not already exist
-# guard_violation: the function already exists
+# step: a "lambda" "function" is deployed
+# result: the "lambda" "function" will be "ACTIVE"
+# guard: the "lambda" "function" did not already exist
+# guard_violation: the "lambda" "function" already existed
 atomic action DeployFunction:
     oneof fid in FUNC_IDS:
         if fid not in func_status:
             func_status[fid] = "ACTIVE"
 
 
-# step: a Lambda event source mapping is created linking a queue to a function
-# result: the event source mapping is ENABLED and will poll the queue for messages
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
-# guard: the queue exists
-# guard_violation: the queue does not exist
-# guard: the queue is ACTIVE
-# guard_violation_lifecycle: the queue is not ACTIVE
-# guard: the event source mapping does not already exist
-# guard_violation: the event source mapping already exists
+# step: a "lambda" "event source mapping" is created linking a queue to a function
+# result: the event source mapping will be "ENABLED" and will poll the queue for messages
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
+# guard: the "sqs" "queue" existed
+# guard_violation: the "sqs" "queue" did not exist
+# guard: the "sqs" "queue" was "ACTIVE"
+# guard_violation_lifecycle: the "sqs" "queue" was not "ACTIVE"
+# guard: the event source mapping did not already exist
+# guard_violation: the event source mapping already existed
 atomic action CreateEventSourceMapping:
     oneof eid in ESM_IDS:
         if eid not in esm_status:
@@ -133,17 +133,17 @@ atomic action CreateEventSourceMapping:
 
 
 # fake_skip: internal
-# step: the event source mapping polls the queue and invokes the Lambda function
-# result: the message is IN_FLIGHT and a Lambda invocation is IN_PROGRESS
-# guard: the event source mapping exists
-# guard_violation: the event source mapping does not exist
-# guard: the event source mapping is ENABLED
-# guard_violation_lifecycle: the event source mapping is not ENABLED
-# guard: the mapped function is ACTIVE
-# guard_violation_lifecycle: the mapped function is not ACTIVE
-# guard: an AVAILABLE message exists in the mapped queue
-# guard_violation: no AVAILABLE message exists in the mapped queue
-# guard: an invocation slot is available
+# step: the event source mapping polls the queue and invokes the "lambda" "function"
+# result: the message will be "IN_FLIGHT" and a Lambda invocation will be "IN_PROGRESS"
+# guard: the event source mapping existed
+# guard_violation: the event source mapping did not exist
+# guard: the event source mapping was "ENABLED"
+# guard_violation_lifecycle: the event source mapping was not "ENABLED"
+# guard: the mapped function was "ACTIVE"
+# guard_violation_lifecycle: the mapped function was not "ACTIVE"
+# guard: an "AVAILABLE" message existed in the mapped queue
+# guard_violation: no "AVAILABLE" message existed in the mapped queue
+# guard: a "lambda" "invocation" slot is available
 # guard_violation_capacity: no invocation slot is available
 atomic action ESMPollAndInvoke:
     oneof eid in ESM_IDS:
@@ -168,9 +168,9 @@ atomic action ESMPollAndInvoke:
 
 # fake_skip: internal
 # step: the Lambda invocation completes successfully
-# result: the invocation is SUCCESS and the SQS message is DELETED
-# guard: an invocation is IN_PROGRESS
-# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# result: the invocation will be "SUCCESS" and the SQS message will be deleted
+# guard: a "lambda" "invocation" was "IN_PROGRESS"
+# guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationSucceeds:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -182,9 +182,9 @@ atomic action InvocationSucceeds:
 
 # fake_skip: internal
 # step: the Lambda invocation fails
-# result: if the receive count is below the threshold the message is AVAILABLE for reprocessing, otherwise it is redriven to the dead-letter queue
-# guard: an invocation is IN_PROGRESS
-# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# result: if the receive count is below the threshold the message will be "AVAILABLE" for reprocessing, otherwise it will be redriven to the dead-letter queue
+# guard: a "lambda" "invocation" was "IN_PROGRESS"
+# guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationFails:
     oneof iid in INV_IDS:
         if iid in inv_status:

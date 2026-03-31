@@ -1,4 +1,4 @@
-"""Then: the "API" will synchronously start and await an Express Workflow execution per request"""
+"""Then: the "api gateway" "API" will synchronously start and await an Express Workflow execution per request"""
 
 from __future__ import annotations
 
@@ -10,7 +10,9 @@ from ..client import ApigatewayStepfunctionsTestClient
 from ..constants import _sm_arn
 
 
-@then('the "API" will synchronously start and await an Express Workflow execution per request')
+@then(
+    'the "api gateway" "API" will synchronously start and await an Express Workflow execution per request'
+)
 def api_will_start_execution(lws_session, world):
     api_id = world.get("api_id") or ApigatewayStepfunctionsTestClient(lws_session).get_api_id()
     assert api_id is not None, "Expected API to exist"

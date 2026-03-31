@@ -1,4 +1,4 @@
-"""When: a database instance deletion completes"""
+"""When: a "documentdb" "instance" deletion completes"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import NeptuneTestClient
 from ..constants import INT_INSTANCE, _store
 
 
-@when("a database instance deletion completes")
+@when('a "documentdb" "instance" deletion completes')
 def finish_delete_db_instance(client: TestClient, world: dict):
     check = NeptuneTestClient(client).post(
         "DescribeDBInstances", {"DBInstanceIdentifier": INT_INSTANCE}

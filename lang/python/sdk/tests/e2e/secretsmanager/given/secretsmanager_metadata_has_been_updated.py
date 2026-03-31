@@ -1,4 +1,4 @@
-"""Given: metadata or description for an active secret has been updated"""
+"""Given: metadata or description for an active "secrets manager" "secret" is updated"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SecretsmanagerTestClient
 from ..constants import TEST_DESCRIPTION, TEST_SECRET
 
 
-@given("metadata or description for an active secret has been updated")
+@given('metadata or description for an active "secrets manager" "secret" is updated')
 def secretsmanager_metadata_has_been_updated(lws_session):
     try:
         SecretsmanagerTestClient(lws_session).create_secret()

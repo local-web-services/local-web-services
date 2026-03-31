@@ -1,4 +1,4 @@
-"""Given: the table is not "ACTIVE" """
+"""Given: the "dynamodb" "table" was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import DynamodbTestClient
 from ..constants import TEST_TABLE
 
 
-@given('the table is not "ACTIVE"')
+@given('the "dynamodb" "table" was not "ACTIVE"')
 def table_is_not_active_given(lws_session):
     """Enable lifecycle dwell, delete the existing ACTIVE table, and recreate it so it stays
     in CREATING state."""

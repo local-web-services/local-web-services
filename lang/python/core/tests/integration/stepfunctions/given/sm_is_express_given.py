@@ -1,4 +1,4 @@
-"""Given: the state machine is an "EXPRESS" type"""
+"""Given: the "step functions" "state machine" is an "EXPRESS" type"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import StepfunctionsTestClient
 from ..constants import INT_SM_EXPRESS
 
 
-@given('the state machine is an "EXPRESS" type')
+@given('the "step functions" "state machine" is an "EXPRESS" type')
 def sm_is_express_given(client: TestClient, world):
     world["state_machine_name"] = INT_SM_EXPRESS
     world["state_machine_arn"] = StepfunctionsTestClient(client).create_sm(

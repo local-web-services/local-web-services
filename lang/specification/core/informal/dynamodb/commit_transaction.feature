@@ -9,11 +9,11 @@ Feature: Dynamodb - A Pending Transaction Resolves Non-Deterministically
 
   @minimal @happy @commit_transaction @internal
   Scenario: a pending transaction resolves non-deterministically
-    Given a transaction is "PENDING"
-    And the transaction's table exists
-    And the transaction's table is "ACTIVE"
+    Given a transaction was "PENDING"
+    And the transaction's "dynamodb" "table" existed
+    And the transaction's "dynamodb" "table" was "ACTIVE"
     When a pending transaction resolves non-deterministically
-    Then the transaction is "COMMITTED" or "ROLLED_BACK"
+    Then the transaction will be "COMMITTED" or "ROLLED_BACK"
     And every table has a valid status ("CREATING", "ACTIVE", or "DELETED")
     And "GSI" pending write count is never negative
     And transaction status is always a valid value
@@ -22,22 +22,22 @@ Feature: Dynamodb - A Pending Transaction Resolves Non-Deterministically
     And deleted tables are never the target of a pending transaction
 
   @guard @negative @commit_transaction @internal
-  Scenario: a pending transaction resolves non-deterministically fails when no transaction is "PENDING"
-    Given no transaction is "PENDING"
+  Scenario: a pending transaction resolves non-deterministically fails when no transaction was "PENDING"
+    Given no transaction was "PENDING"
     When a pending transaction resolves non-deterministically
     Then the operation is rejected
 
   @guard @negative @commit_transaction @internal
-  Scenario: a pending transaction resolves non-deterministically fails when the transaction's table does not exist
-    Given a transaction is "PENDING"
-    And the transaction's table does not exist
+  Scenario: a pending transaction resolves non-deterministically fails when the transaction's "dynamodb" "table" did not exist
+    Given a transaction was "PENDING"
+    And the transaction's "dynamodb" "table" did not exist
     When a pending transaction resolves non-deterministically
     Then the operation is rejected
 
   @guard @negative @commit_transaction @internal
-  Scenario: a pending transaction resolves non-deterministically fails when the transaction's table is not "ACTIVE"
-    Given a transaction is "PENDING"
-    And the transaction's table exists
-    And the transaction's table is not "ACTIVE"
+  Scenario: a pending transaction resolves non-deterministically fails when the transaction's "dynamodb" "table" was not "ACTIVE"
+    Given a transaction was "PENDING"
+    And the transaction's "dynamodb" "table" existed
+    And the transaction's "dynamodb" "table" was not "ACTIVE"
     When a pending transaction resolves non-deterministically
     Then the operation is rejected

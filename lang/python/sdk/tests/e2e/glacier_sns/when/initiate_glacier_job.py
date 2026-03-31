@@ -1,4 +1,4 @@
-"""When: a Glacier archive retrieval job is initiated on the vault"""
+"""When: a Glacier archive retrieval job is initiated on the "glacier" "vault" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_VAULT
 
 
-@when("a Glacier archive retrieval job is initiated on the vault")
+@when('a Glacier archive retrieval job is initiated on the "glacier" "vault"')
 def initiate_glacier_job(lws_session, world):
     try:
         resp = lws_session.client("glacier").initiate_job(

@@ -1,4 +1,4 @@
-"""When: a change to the DynamoDB table produces a stream record"""
+"""When: a change to the "dynamodb" "table" produces a stream record"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import TEST_TABLE
 
 
-@when("a change to the DynamoDB table produces a stream record")
+@when('a change to the "dynamodb" "table" produces a stream record')
 def table_change_produces_record(lws_session, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

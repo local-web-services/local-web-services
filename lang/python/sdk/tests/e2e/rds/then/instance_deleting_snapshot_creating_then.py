@@ -1,11 +1,11 @@
-"""Then: the instance is in "DELETING" state and a snapshot is "CREATING" """
+"""Then: the "rds" "instance" will be in "DELETING" state and a "rds" "snapshot" will be "CREATING" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the instance is in "DELETING" state and a snapshot is "CREATING"')
+@then('the "rds" "instance" will be in "DELETING" state and a "rds" "snapshot" will be "CREATING"')
 def instance_deleting_snapshot_creating_then(world):
     expected_error = None
     actual_error = world["error"]

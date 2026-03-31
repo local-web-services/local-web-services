@@ -1,4 +1,4 @@
-"""When: a service control policy is created"""
+"""When: an "organizations" "policy" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import OrganizationsTestClient
 from ..constants import INT_POLICY_NAME, INT_POLICY_TYPE
 
 
-@when("a service control policy is created")
+@when('an "organizations" "policy" is created')
 def create_policy(client: TestClient, world):
     status, body = OrganizationsTestClient(client).post(
         "CreatePolicy",

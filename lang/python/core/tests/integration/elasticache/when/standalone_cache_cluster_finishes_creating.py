@@ -1,4 +1,4 @@
-"""When: a standalone cache cluster finishes creating"""
+"""When: a standalone "elasticache" "cluster" finishes creating"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_CLUSTER_ID
 
 
-@when("a standalone cache cluster finishes creating")
+@when('a standalone "elasticache" "cluster" finishes creating')
 def standalone_cache_cluster_finishes_creating(client: TestClient, world):
     r_check = client.post(
         "/",

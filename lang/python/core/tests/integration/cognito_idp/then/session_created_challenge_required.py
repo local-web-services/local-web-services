@@ -1,11 +1,11 @@
-"""Then: a session is created in "CHALLENGE_REQUIRED" state"""
+"""Then: a "cognito" "session" will be created in "CHALLENGE_REQUIRED" state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('a session is created in "CHALLENGE_REQUIRED" state')
+@then('a "cognito" "session" will be created in "CHALLENGE_REQUIRED" state')
 def session_created_challenge_required(world):
     actual_error = world.get("error")
     assert actual_error is None, f"Expected initiate-auth to succeed but got: {actual_error}"

@@ -1,4 +1,4 @@
-"""When: a database instance is created in an available cluster"""
+"""When: a "neptune" "instance" is created in an available neptune cluster"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_CLUSTER, TEST_INSTANCE
 
 
-@when("a database instance is created in an available cluster")
+@when('a "neptune" "instance" is created in an available neptune cluster')
 def create_db_instance(lws_session, world):
     try:
         instance_id = world.get("instance_id", TEST_INSTANCE)

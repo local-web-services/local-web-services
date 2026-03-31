@@ -1,4 +1,4 @@
-"""When: an "SQS" queue is created"""
+"""When: a "sqs" "queue" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import LambdaSqsProducerTestClient
 from ..constants import TEST_QUEUE
 
 
-@when('an "SQS" queue is created')
+@when('a "sqs" "queue" is created')
 def create_sqs_queue(lws_session, world):
     try:
         LambdaSqsProducerTestClient(lws_session).create_queue()

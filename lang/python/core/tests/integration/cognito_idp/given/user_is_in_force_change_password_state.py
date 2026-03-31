@@ -1,10 +1,10 @@
-"""Given: the user is in "FORCE_CHANGE_PASSWORD" state"""
+"""Given: the "cognito" "user" is in "FORCE_CHANGE_PASSWORD" state"""
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given('the user is in "FORCE_CHANGE_PASSWORD" state')
+@given('the "cognito" "user" is in "FORCE_CHANGE_PASSWORD" state')
 def user_is_in_force_change_password_state():
     """No-op: AdminCreateUser leaves users in FORCE_CHANGE_PASSWORD by default."""

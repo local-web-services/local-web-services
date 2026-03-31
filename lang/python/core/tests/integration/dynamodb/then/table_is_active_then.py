@@ -1,4 +1,4 @@
-"""Then: the table is "ACTIVE" and ready for reads and writes"""
+"""Then: the "dynamodb" "table" will be "ACTIVE" and ready for reads and writes"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import DynamodbTestClient
 from ..constants import TEST_TABLE
 
 
-@then('the table is "ACTIVE" and ready for reads and writes')
+@then('the "dynamodb" "table" will be "ACTIVE" and ready for reads and writes')
 def table_is_active_then(client: TestClient):
     r = DynamodbTestClient(client).post("ListTables", {})
     actual_tables = r.json().get("TableNames", [])

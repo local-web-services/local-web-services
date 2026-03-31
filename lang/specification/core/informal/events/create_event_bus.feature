@@ -1,5 +1,5 @@
 @events @generated
-Feature: Events - An Event Bus Is Created
+Feature: events - An "Eventbridge" "Bus" Is Created
 
   # Generated from FizzBee spec: events.fizz
   # Safety invariants: EventBusStatusValid, RuleStatusValid, RulePatternTypeValid, RuleBusExists, DefaultBusCannotBeDeleted, DeleteRuleRequiresNoTargets, RuleOnlyEnabledOnActiveBus, DeadLetterQueueBounded
@@ -8,10 +8,10 @@ Feature: Events - An Event Bus Is Created
     Given the system is initialized
 
   @minimal @happy @create_event_bus
-  Scenario: an event bus is created
-    Given the event bus does not already exist
-    When an event bus is created
-    Then the event bus is "ACTIVE"
+  Scenario: an "eventbridge" "bus" is created
+    Given the "eventbridge" "bus" did not already exist
+    When an "eventbridge" "bus" is created
+    Then the "eventbridge" "bus" will be "ACTIVE"
     And every event bus has a valid status ("ACTIVE" or "DELETED")
     And every rule has a valid status ("ENABLED", "DISABLED", or "DELETED")
     And every rule has a valid pattern type ("EVENT_PATTERN" or "SCHEDULE")
@@ -22,7 +22,7 @@ Feature: Events - An Event Bus Is Created
     And the dead-letter queue never exceeds its bounded capacity
 
   @guard @negative @create_event_bus
-  Scenario: an event bus is created fails when the event bus already exists
-    Given the event bus already exists
-    When an event bus is created
+  Scenario: an "eventbridge" "bus" is created fails when the "eventbridge" "bus" already existed
+    Given the "eventbridge" "bus" already existed
+    When an "eventbridge" "bus" is created
     Then the operation is rejected

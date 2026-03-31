@@ -1,4 +1,4 @@
-"""Given: a Step Functions state machine has been deleted"""
+"""Given: a "step functions" "state machine" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaStepfunctionsTestClient
 from ..constants import _sm_arn
 
 
-@given("a Step Functions state machine has been deleted")
+@given('a "step functions" "state machine" is deleted')
 def sfn_state_machine_has_been_deleted_seq(lws_session):
     try:
         LambdaStepfunctionsTestClient(lws_session).create_sm()

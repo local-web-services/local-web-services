@@ -1,4 +1,4 @@
-"""When: the "API" receives an "HTTP" request and synchronously starts a Step Functions execution"""
+"""When: the "api gateway" "API" receives a "HTTP" request and synchronously starts a Step Functions execution"""
 
 from __future__ import annotations
 
@@ -11,7 +11,9 @@ from ..client import ApigatewayStepfunctionsTestClient
 from ..constants import _sm_arn
 
 
-@when('the "API" receives an "HTTP" request and synchronously starts a Step Functions execution')
+@when(
+    'the "api gateway" "API" receives a "HTTP" request and synchronously starts a Step Functions execution'
+)
 def api_receives_request_starts_execution(lws_session, world):
     try:
         api_id = world.get("api_id") or ApigatewayStepfunctionsTestClient(lws_session).get_api_id()

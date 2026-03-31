@@ -1,4 +1,4 @@
-"""Given: the Lambda function has called a Cognito admin "API" on an "ACTIVE" pool and succeeded"""
+"""Given: the "lambda" "function" calls a Cognito admin "API" on an "ACTIVE" pool and succeeds"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import uuid
 from pytest_bdd import given
 
 
-@given('the Lambda function has called a Cognito admin "API" on an "ACTIVE" pool and succeeded')
+@given('the "lambda" "function" calls a Cognito admin "API" on an "ACTIVE" pool and succeeds')
 def lambda_cognito_seq_invocation_succeeded(lws_session, world):
     # Arrange
     invocation_id = str(uuid.uuid4())

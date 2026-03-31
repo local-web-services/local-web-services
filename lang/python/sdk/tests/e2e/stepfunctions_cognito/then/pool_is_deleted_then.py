@@ -1,4 +1,4 @@
-"""Then: the pool is "DELETED" and "SDK" task calls targeting it will fail"""
+"""Then: the "cognito" "user pool" will be deleted and "SDK" task calls targeting it will fail"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsCognitoTestClient
 from ..constants import TEST_POOL
 
 
-@then('the pool is "DELETED" and "SDK" task calls targeting it will fail')
+@then('the "cognito" "user pool" will be deleted and "SDK" task calls targeting it will fail')
 def pool_is_deleted_then(lws_session):
     pool_id = StepfunctionsCognitoTestClient(lws_session).get_pool_id()
     expected_pool_id = None

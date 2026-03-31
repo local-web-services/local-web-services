@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Database Cluster Start Completes
+Feature: Neptune - A "Neptune" "Cluster" Start Completes
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,11 +8,11 @@ Feature: Neptune - A Database Cluster Start Completes
     Given the system is initialized
 
   @minimal @happy @complete_cluster_start @internal
-  Scenario: a database cluster start completes
-    Given the cluster exists
-    And the cluster is "STARTING"
-    When a database cluster start completes
-    Then the cluster and its instances are "AVAILABLE"
+  Scenario: a "neptune" "cluster" start completes
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "STARTING"
+    When a "neptune" "cluster" start completes
+    Then the "neptune" "cluster" and its instances are "AVAILABLE"
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -23,14 +23,14 @@ Feature: Neptune - A Database Cluster Start Completes
     And a failed cluster has no available instances
 
   @guard @negative @complete_cluster_start @internal
-  Scenario: a database cluster start completes fails when the cluster does not exist
-    Given the cluster does not exist
-    When a database cluster start completes
+  Scenario: a "neptune" "cluster" start completes fails when the "neptune" "cluster" did not exist
+    Given the "neptune" "cluster" did not exist
+    When a "neptune" "cluster" start completes
     Then the operation is rejected
 
   @guard @negative @complete_cluster_start @internal
-  Scenario: a database cluster start completes fails when the cluster is not "STARTING"
-    Given the cluster exists
-    And the cluster is not "STARTING"
-    When a database cluster start completes
+  Scenario: a "neptune" "cluster" start completes fails when the "neptune" "cluster" was not "STARTING"
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was not "STARTING"
+    When a "neptune" "cluster" start completes
     Then the operation is rejected

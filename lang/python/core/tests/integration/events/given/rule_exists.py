@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import EventsTestClient
 
 
-@given("the rule exists")
+@given('the "eventbridge" "rule" existed')
 def rule_exists(client: TestClient):
     EventsTestClient(client).create_bus()
     EventsTestClient(client).create_rule()

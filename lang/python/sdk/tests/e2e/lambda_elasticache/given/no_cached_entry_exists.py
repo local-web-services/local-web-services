@@ -1,10 +1,10 @@
-"""Given: no "CACHED" entry exists"""
+"""Given: no "CACHED" entry existed"""
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given('no "CACHED" entry exists')
+@given('no "CACHED" entry existed')
 def no_cached_entry_exists():
     """No-op: fresh state has no cached entries."""

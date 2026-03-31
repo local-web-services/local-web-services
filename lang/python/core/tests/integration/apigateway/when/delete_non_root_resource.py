@@ -1,4 +1,4 @@
-"""When: a non-root resource is deleted along with its methods and integrations"""
+"""When: a non-root "api gateway" "resource" is deleted along with its methods and integrations"""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from pytest_bdd import when
 from starlette.testclient import TestClient
 
 
-@when("a non-root resource is deleted along with its methods and integrations")
+@when('a non-root "api gateway" "resource" is deleted along with its methods and integrations')
 def delete_non_root_resource(client: TestClient, world):
     list_r = client.get("/restapis")
     items = list_r.json().get("item", [])

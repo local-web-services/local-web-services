@@ -1,5 +1,5 @@
 @s3api @generated
-Feature: S3api - An Object Is Copied From One Bucket To Another
+Feature: S3api - A "S3" "Object" Is Copied From One "S3" "Bucket" To Another
 
   # Generated from FizzBee spec: s3api.fizz
   # Safety invariants: BucketStatusValid, VersioningStateValid, MultipartUploadStatusValid, DeleteBucketRequiresEmpty
@@ -8,67 +8,67 @@ Feature: S3api - An Object Is Copied From One Bucket To Another
     Given the system is initialized
 
   @minimal @happy @copy_object
-  Scenario: an object is copied from one bucket to another
-    Given the source bucket exists
-    And the source bucket is "ACTIVE"
-    And the source object exists
-    And the source object is not deleted
-    And the destination bucket exists
-    And the destination bucket is "ACTIVE"
-    When an object is copied from one bucket to another
-    Then the object "EXISTS" in the destination bucket
+  Scenario: a "s3" "object" is copied from one "s3" "bucket" to another
+    Given the source "s3" "bucket" existed
+    And the source "s3" "bucket" was "ACTIVE"
+    And the source "s3" "object" existed
+    And the source "s3" "object" is not "DELETED"
+    And the destination "s3" "bucket" existed
+    And the destination "s3" "bucket" was "ACTIVE"
+    When a "s3" "object" is copied from one "s3" "bucket" to another
+    Then the "s3" "object" will exist in the destination "s3" "bucket"
     And every bucket has a valid status ("ACTIVE" or "DELETED")
     And every bucket versioning state is valid ("DISABLED", "ENABLED", or "SUSPENDED")
     And every multipart upload has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
     And deleting a bucket requires it to be empty
 
   @guard @negative @copy_object
-  Scenario: an object is copied from one bucket to another fails when the source bucket does not exist
-    Given the source bucket does not exist
-    When an object is copied from one bucket to another
+  Scenario: a "s3" "object" is copied from one "s3" "bucket" to another fails when the source "s3" "bucket" did not exist
+    Given the source "s3" "bucket" did not exist
+    When a "s3" "object" is copied from one "s3" "bucket" to another
     Then the operation is rejected
 
   @guard @negative @copy_object @lifecycle
-  Scenario: an object is copied from one bucket to another fails when the source bucket is not "ACTIVE"
-    Given the source bucket exists
-    And the source bucket is not "ACTIVE"
-    When an object is copied from one bucket to another
+  Scenario: a "s3" "object" is copied from one "s3" "bucket" to another fails when the source "s3" "bucket" was not "ACTIVE"
+    Given the source "s3" "bucket" existed
+    And the source "s3" "bucket" was not "ACTIVE"
+    When a "s3" "object" is copied from one "s3" "bucket" to another
     Then the operation is rejected
 
   @guard @negative @copy_object
-  Scenario: an object is copied from one bucket to another fails when the source object does not exist
-    Given the source bucket exists
-    And the source bucket is "ACTIVE"
-    And the source object does not exist
-    When an object is copied from one bucket to another
+  Scenario: a "s3" "object" is copied from one "s3" "bucket" to another fails when the source "s3" "object" did not exist
+    Given the source "s3" "bucket" existed
+    And the source "s3" "bucket" was "ACTIVE"
+    And the source "s3" "object" did not exist
+    When a "s3" "object" is copied from one "s3" "bucket" to another
     Then the operation is rejected
 
   @guard @negative @copy_object
-  Scenario: an object is copied from one bucket to another fails when the source object is deleted
-    Given the source bucket exists
-    And the source bucket is "ACTIVE"
-    And the source object exists
-    And the source object is deleted
-    When an object is copied from one bucket to another
+  Scenario: a "s3" "object" is copied from one "s3" "bucket" to another fails when the source "s3" "object" is "DELETED"
+    Given the source "s3" "bucket" existed
+    And the source "s3" "bucket" was "ACTIVE"
+    And the source "s3" "object" existed
+    And the source "s3" "object" is "DELETED"
+    When a "s3" "object" is copied from one "s3" "bucket" to another
     Then the operation is rejected
 
   @guard @negative @copy_object
-  Scenario: an object is copied from one bucket to another fails when the destination bucket does not exist
-    Given the source bucket exists
-    And the source bucket is "ACTIVE"
-    And the source object exists
-    And the source object is not deleted
-    And the destination bucket does not exist
-    When an object is copied from one bucket to another
+  Scenario: a "s3" "object" is copied from one "s3" "bucket" to another fails when the destination "s3" "bucket" did not exist
+    Given the source "s3" "bucket" existed
+    And the source "s3" "bucket" was "ACTIVE"
+    And the source "s3" "object" existed
+    And the source "s3" "object" is not "DELETED"
+    And the destination "s3" "bucket" did not exist
+    When a "s3" "object" is copied from one "s3" "bucket" to another
     Then the operation is rejected
 
   @guard @negative @copy_object @lifecycle
-  Scenario: an object is copied from one bucket to another fails when the destination bucket is not "ACTIVE"
-    Given the source bucket exists
-    And the source bucket is "ACTIVE"
-    And the source object exists
-    And the source object is not deleted
-    And the destination bucket exists
-    And the destination bucket is not "ACTIVE"
-    When an object is copied from one bucket to another
+  Scenario: a "s3" "object" is copied from one "s3" "bucket" to another fails when the destination "s3" "bucket" was not "ACTIVE"
+    Given the source "s3" "bucket" existed
+    And the source "s3" "bucket" was "ACTIVE"
+    And the source "s3" "object" existed
+    And the source "s3" "object" is not "DELETED"
+    And the destination "s3" "bucket" existed
+    And the destination "s3" "bucket" was not "ACTIVE"
+    When a "s3" "object" is copied from one "s3" "bucket" to another
     Then the operation is rejected

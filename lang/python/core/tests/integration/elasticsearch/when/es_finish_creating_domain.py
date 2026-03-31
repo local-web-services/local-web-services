@@ -1,4 +1,4 @@
-"""When: a search domain finishes creating"""
+"""When: an "elasticsearch" "domain" finishes creating"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ElasticsearchTestClient
 from ..constants import INT_DOMAIN, _store
 
 
-@when("a search domain finishes creating")
+@when('an "elasticsearch" "domain" finishes creating')
 def es_finish_creating_domain(client: TestClient, world: dict):
     r = ElasticsearchTestClient(client).post(
         "DescribeElasticsearchDomain", {"DomainName": INT_DOMAIN}

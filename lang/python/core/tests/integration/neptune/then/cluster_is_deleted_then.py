@@ -1,11 +1,11 @@
-"""Then: the cluster is "DELETED" """
+"""Then: the "documentdb" "cluster" will be "DELETED" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the cluster is "DELETED"')
+@then('the "documentdb" "cluster" will be "DELETED"')
 def cluster_is_deleted_then(world: dict):
     actual_result = world["result"]
     assert (

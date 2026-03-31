@@ -1,4 +1,4 @@
-"""When: a database instance configuration is modified"""
+"""When: a "neptune" "instance" configuration is modified"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_INSTANCE
 
 
-@when("a database instance configuration is modified")
+@when('a "neptune" "instance" configuration is modified')
 def modify_db_instance(lws_session, world):
     try:
         instance_id = world.get("instance_id", TEST_INSTANCE)

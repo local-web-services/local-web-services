@@ -1,4 +1,4 @@
-"""Given: the function is not "ACTIVE" """
+"""Given: the mapped function was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import DynamodbLambdaTestClient
 from ..constants import TEST_FUNC
 
 
-@given('the function is not "ACTIVE"')
+@given('the "lambda" "function" was not "ACTIVE"')
 def dynamodb_lambda_function_is_not_active_given(lws_session, world):
     try:
         DynamodbLambdaTestClient(lws_session)._lambda.delete_function(FunctionName=TEST_FUNC)

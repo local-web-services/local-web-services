@@ -8,511 +8,511 @@ Feature: LambdaSecretsmanager - Action Sequences
     Given the system is initialized
 
   @sequence
-  Scenario: a Lambda function is deployed then a secret is created in Secrets Manager
+  Scenario: a "lambda" "function" is deployed then a "secretsmanager" "secret" is created in Secrets Manager
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When a secret is created in Secrets Manager
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a Lambda function is deployed then a secret is scheduled for deletion
+  Scenario: a "lambda" "function" is deployed then a "secretsmanager" "secret" is scheduled for deletion
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When a secret is scheduled for deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function is invoked
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" is invoked
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function reads an "ACTIVE" secret and completes successfully
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" reads an "ACTIVE" secret and completes successfully
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When the Lambda function reads an "ACTIVE" secret and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function fails because the secret is pending deletion
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When the Lambda function fails because the secret is pending deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then a Lambda function is deployed
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then a "lambda" "function" is deployed
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then a secret is scheduled for deletion
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then a "secretsmanager" "secret" is scheduled for deletion
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    When a secret is scheduled for deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then the Lambda function is invoked
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then the "lambda" "function" is invoked
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then the Lambda function reads an "ACTIVE" secret and completes successfully
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then the "lambda" "function" reads an "ACTIVE" secret and completes successfully
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    When the Lambda function reads an "ACTIVE" secret and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then the Lambda function fails because the secret is pending deletion
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    When the Lambda function fails because the secret is pending deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then a Lambda function is deployed
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then a "lambda" "function" is deployed
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then a secret is created in Secrets Manager
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then a "secretsmanager" "secret" is created in Secrets Manager
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    When a secret is created in Secrets Manager
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then the Lambda function is invoked
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then the "lambda" "function" is invoked
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then the Lambda function reads an "ACTIVE" secret and completes successfully
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then the "lambda" "function" reads an "ACTIVE" secret and completes successfully
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    When the Lambda function reads an "ACTIVE" secret and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then the Lambda function fails because the secret is pending deletion
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    When the Lambda function fails because the secret is pending deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function is invoked then a Lambda function is deployed
+  Scenario: the "lambda" "function" is invoked then a "lambda" "function" is deployed
     Given fid in func_status
-    Given the Lambda function has been invoked
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function is invoked then a secret is created in Secrets Manager
+  Scenario: the "lambda" "function" is invoked then a "secretsmanager" "secret" is created in Secrets Manager
     Given fid in func_status
-    Given the Lambda function has been invoked
-    When a secret is created in Secrets Manager
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function is invoked then a secret is scheduled for deletion
+  Scenario: the "lambda" "function" is invoked then a "secretsmanager" "secret" is scheduled for deletion
     Given fid in func_status
-    Given the Lambda function has been invoked
-    When a secret is scheduled for deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function is invoked then the Lambda function reads an "ACTIVE" secret and completes successfully
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" reads an "ACTIVE" secret and completes successfully
     Given fid in func_status
-    Given the Lambda function has been invoked
-    When the Lambda function reads an "ACTIVE" secret and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function is invoked then the Lambda function fails because the secret is pending deletion
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
     Given fid in func_status
-    Given the Lambda function has been invoked
-    When the Lambda function fails because the secret is pending deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function reads an "ACTIVE" secret and completes successfully then a Lambda function is deployed
+  Scenario: the "lambda" "function" reads an "ACTIVE" secret and completes successfully then a "lambda" "function" is deployed
     Given iid in inv_status
-    Given the Lambda function has read an "ACTIVE" secret and completed successfully
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function reads an "ACTIVE" secret and completes successfully then a secret is created in Secrets Manager
+  Scenario: the "lambda" "function" reads an "ACTIVE" secret and completes successfully then a "secretsmanager" "secret" is created in Secrets Manager
     Given iid in inv_status
-    Given the Lambda function has read an "ACTIVE" secret and completed successfully
-    When a secret is created in Secrets Manager
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function reads an "ACTIVE" secret and completes successfully then a secret is scheduled for deletion
+  Scenario: the "lambda" "function" reads an "ACTIVE" secret and completes successfully then a "secretsmanager" "secret" is scheduled for deletion
     Given iid in inv_status
-    Given the Lambda function has read an "ACTIVE" secret and completed successfully
-    When a secret is scheduled for deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function reads an "ACTIVE" secret and completes successfully then the Lambda function is invoked
+  Scenario: the "lambda" "function" reads an "ACTIVE" secret and completes successfully then the "lambda" "function" is invoked
     Given iid in inv_status
-    Given the Lambda function has read an "ACTIVE" secret and completed successfully
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function reads an "ACTIVE" secret and completes successfully then the Lambda function fails because the secret is pending deletion
+  Scenario: the "lambda" "function" reads an "ACTIVE" secret and completes successfully then the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
     Given iid in inv_status
-    Given the Lambda function has read an "ACTIVE" secret and completed successfully
-    When the Lambda function fails because the secret is pending deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function fails because the secret is pending deletion then a Lambda function is deployed
+  Scenario: the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion then a "lambda" "function" is deployed
     Given iid in inv_status
-    Given the Lambda function has failed because the secret is pending deletion
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function fails because the secret is pending deletion then a secret is created in Secrets Manager
+  Scenario: the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion then a "secretsmanager" "secret" is created in Secrets Manager
     Given iid in inv_status
-    Given the Lambda function has failed because the secret is pending deletion
-    When a secret is created in Secrets Manager
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function fails because the secret is pending deletion then a secret is scheduled for deletion
+  Scenario: the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion then a "secretsmanager" "secret" is scheduled for deletion
     Given iid in inv_status
-    Given the Lambda function has failed because the secret is pending deletion
-    When a secret is scheduled for deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function fails because the secret is pending deletion then the Lambda function is invoked
+  Scenario: the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion then the "lambda" "function" is invoked
     Given iid in inv_status
-    Given the Lambda function has failed because the secret is pending deletion
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function fails because the secret is pending deletion then the Lambda function reads an "ACTIVE" secret and completes successfully
+  Scenario: the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion then the "lambda" "function" reads an "ACTIVE" secret and completes successfully
     Given iid in inv_status
-    Given the Lambda function has failed because the secret is pending deletion
-    When the Lambda function reads an "ACTIVE" secret and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a Lambda function is deployed then a secret is created in Secrets Manager then a secret is scheduled for deletion
+  Scenario: a "lambda" "function" is deployed then a "secretsmanager" "secret" is created in Secrets Manager then a "secretsmanager" "secret" is scheduled for deletion
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given a secret has been created in Secrets Manager
-    When a secret is scheduled for deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a Lambda function is deployed then a secret is scheduled for deletion then the Lambda function is invoked
+  Scenario: a "lambda" "function" is deployed then a "secretsmanager" "secret" is scheduled for deletion then the "lambda" "function" is invoked
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given a secret has been scheduled for deletion
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function is invoked then the Lambda function reads an "ACTIVE" secret and completes successfully
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" is invoked then the "lambda" "function" reads an "ACTIVE" secret and completes successfully
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given the Lambda function has been invoked
-    When the Lambda function reads an "ACTIVE" secret and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function reads an "ACTIVE" secret and completes successfully then the Lambda function fails because the secret is pending deletion
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" reads an "ACTIVE" secret and completes successfully then the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given the Lambda function has read an "ACTIVE" secret and completed successfully
-    When the Lambda function fails because the secret is pending deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function fails because the secret is pending deletion then a secret is created in Secrets Manager
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion then a "secretsmanager" "secret" is created in Secrets Manager
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given the Lambda function has failed because the secret is pending deletion
-    When a secret is created in Secrets Manager
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then a Lambda function is deployed then the Lambda function is invoked
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then a "lambda" "function" is deployed then the "lambda" "function" is invoked
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    Given a Lambda function has been deployed
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then a secret is scheduled for deletion then the Lambda function reads an "ACTIVE" secret and completes successfully
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then a "secretsmanager" "secret" is scheduled for deletion then the "lambda" "function" reads an "ACTIVE" secret and completes successfully
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    Given a secret has been scheduled for deletion
-    When the Lambda function reads an "ACTIVE" secret and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then the Lambda function is invoked then the Lambda function fails because the secret is pending deletion
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then the "lambda" "function" is invoked then the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    Given the Lambda function has been invoked
-    When the Lambda function fails because the secret is pending deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then the Lambda function reads an "ACTIVE" secret and completes successfully then a Lambda function is deployed
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then the "lambda" "function" reads an "ACTIVE" secret and completes successfully then a "lambda" "function" is deployed
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    Given the Lambda function has read an "ACTIVE" secret and completed successfully
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then the Lambda function fails because the secret is pending deletion then a secret is scheduled for deletion
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion then a "secretsmanager" "secret" is scheduled for deletion
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    Given the Lambda function has failed because the secret is pending deletion
-    When a secret is scheduled for deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then a Lambda function is deployed then the Lambda function reads an "ACTIVE" secret and completes successfully
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then a "lambda" "function" is deployed then the "lambda" "function" reads an "ACTIVE" secret and completes successfully
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    Given a Lambda function has been deployed
-    When the Lambda function reads an "ACTIVE" secret and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then a secret is created in Secrets Manager then the Lambda function fails because the secret is pending deletion
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then a "secretsmanager" "secret" is created in Secrets Manager then the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    Given a secret has been created in Secrets Manager
-    When the Lambda function fails because the secret is pending deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then the Lambda function is invoked then a Lambda function is deployed
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then the "lambda" "function" is invoked then a "lambda" "function" is deployed
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    Given the Lambda function has been invoked
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When the "lambda" "function" is invoked
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then the Lambda function reads an "ACTIVE" secret and completes successfully then a secret is created in Secrets Manager
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then the "lambda" "function" reads an "ACTIVE" secret and completes successfully then a "secretsmanager" "secret" is created in Secrets Manager
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    Given the Lambda function has read an "ACTIVE" secret and completed successfully
-    When a secret is created in Secrets Manager
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then the Lambda function fails because the secret is pending deletion then the Lambda function is invoked
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion then the "lambda" "function" is invoked
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    Given the Lambda function has failed because the secret is pending deletion
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function is invoked then a Lambda function is deployed then the Lambda function fails because the secret is pending deletion
+  Scenario: the "lambda" "function" is invoked then a "lambda" "function" is deployed then the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
     Given fid in func_status
-    Given the Lambda function has been invoked
-    Given a Lambda function has been deployed
-    When the Lambda function fails because the secret is pending deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function is invoked then a secret is created in Secrets Manager then a Lambda function is deployed
+  Scenario: the "lambda" "function" is invoked then a "secretsmanager" "secret" is created in Secrets Manager then a "lambda" "function" is deployed
     Given fid in func_status
-    Given the Lambda function has been invoked
-    Given a secret has been created in Secrets Manager
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function is invoked then a secret is scheduled for deletion then a secret is created in Secrets Manager
+  Scenario: the "lambda" "function" is invoked then a "secretsmanager" "secret" is scheduled for deletion then a "secretsmanager" "secret" is created in Secrets Manager
     Given fid in func_status
-    Given the Lambda function has been invoked
-    Given a secret has been scheduled for deletion
-    When a secret is created in Secrets Manager
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function is invoked then the Lambda function reads an "ACTIVE" secret and completes successfully then a secret is scheduled for deletion
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" reads an "ACTIVE" secret and completes successfully then a "secretsmanager" "secret" is scheduled for deletion
     Given fid in func_status
-    Given the Lambda function has been invoked
-    Given the Lambda function has read an "ACTIVE" secret and completed successfully
-    When a secret is scheduled for deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function is invoked then the Lambda function fails because the secret is pending deletion then the Lambda function reads an "ACTIVE" secret and completes successfully
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion then the "lambda" "function" reads an "ACTIVE" secret and completes successfully
     Given fid in func_status
-    Given the Lambda function has been invoked
-    Given the Lambda function has failed because the secret is pending deletion
-    When the Lambda function reads an "ACTIVE" secret and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function reads an "ACTIVE" secret and completes successfully then a Lambda function is deployed then a secret is created in Secrets Manager
+  Scenario: the "lambda" "function" reads an "ACTIVE" secret and completes successfully then a "lambda" "function" is deployed then a "secretsmanager" "secret" is created in Secrets Manager
     Given iid in inv_status
-    Given the Lambda function has read an "ACTIVE" secret and completed successfully
-    Given a Lambda function has been deployed
-    When a secret is created in Secrets Manager
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    When a "lambda" "function" is deployed
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function reads an "ACTIVE" secret and completes successfully then a secret is created in Secrets Manager then a secret is scheduled for deletion
+  Scenario: the "lambda" "function" reads an "ACTIVE" secret and completes successfully then a "secretsmanager" "secret" is created in Secrets Manager then a "secretsmanager" "secret" is scheduled for deletion
     Given iid in inv_status
-    Given the Lambda function has read an "ACTIVE" secret and completed successfully
-    Given a secret has been created in Secrets Manager
-    When a secret is scheduled for deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function reads an "ACTIVE" secret and completes successfully then a secret is scheduled for deletion then the Lambda function is invoked
+  Scenario: the "lambda" "function" reads an "ACTIVE" secret and completes successfully then a "secretsmanager" "secret" is scheduled for deletion then the "lambda" "function" is invoked
     Given iid in inv_status
-    Given the Lambda function has read an "ACTIVE" secret and completed successfully
-    Given a secret has been scheduled for deletion
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function reads an "ACTIVE" secret and completes successfully then the Lambda function is invoked then the Lambda function fails because the secret is pending deletion
+  Scenario: the "lambda" "function" reads an "ACTIVE" secret and completes successfully then the "lambda" "function" is invoked then the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
     Given iid in inv_status
-    Given the Lambda function has read an "ACTIVE" secret and completed successfully
-    Given the Lambda function has been invoked
-    When the Lambda function fails because the secret is pending deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function reads an "ACTIVE" secret and completes successfully then the Lambda function fails because the secret is pending deletion then a Lambda function is deployed
+  Scenario: the "lambda" "function" reads an "ACTIVE" secret and completes successfully then the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion then a "lambda" "function" is deployed
     Given iid in inv_status
-    Given the Lambda function has read an "ACTIVE" secret and completed successfully
-    Given the Lambda function has failed because the secret is pending deletion
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function fails because the secret is pending deletion then a Lambda function is deployed then a secret is scheduled for deletion
+  Scenario: the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion then a "lambda" "function" is deployed then a "secretsmanager" "secret" is scheduled for deletion
     Given iid in inv_status
-    Given the Lambda function has failed because the secret is pending deletion
-    Given a Lambda function has been deployed
-    When a secret is scheduled for deletion
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    When a "lambda" "function" is deployed
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function fails because the secret is pending deletion then a secret is created in Secrets Manager then the Lambda function is invoked
+  Scenario: the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion then a "secretsmanager" "secret" is created in Secrets Manager then the "lambda" "function" is invoked
     Given iid in inv_status
-    Given the Lambda function has failed because the secret is pending deletion
-    Given a secret has been created in Secrets Manager
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function fails because the secret is pending deletion then a secret is scheduled for deletion then the Lambda function reads an "ACTIVE" secret and completes successfully
+  Scenario: the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion then a "secretsmanager" "secret" is scheduled for deletion then the "lambda" "function" reads an "ACTIVE" secret and completes successfully
     Given iid in inv_status
-    Given the Lambda function has failed because the secret is pending deletion
-    Given a secret has been scheduled for deletion
-    When the Lambda function reads an "ACTIVE" secret and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function fails because the secret is pending deletion then the Lambda function is invoked then a Lambda function is deployed
+  Scenario: the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion then the "lambda" "function" is invoked then a "lambda" "function" is deployed
     Given iid in inv_status
-    Given the Lambda function has failed because the secret is pending deletion
-    Given the Lambda function has been invoked
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    When the "lambda" "function" is invoked
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
   @sequence
-  Scenario: the Lambda function fails because the secret is pending deletion then the Lambda function reads an "ACTIVE" secret and completes successfully then a secret is created in Secrets Manager
+  Scenario: the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion then the "lambda" "function" reads an "ACTIVE" secret and completes successfully then a "secretsmanager" "secret" is created in Secrets Manager
     Given iid in inv_status
-    Given the Lambda function has failed because the secret is pending deletion
-    Given the Lambda function has read an "ACTIVE" secret and completed successfully
-    When a secret is created in Secrets Manager
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
+    When the "lambda" "function" reads an "ACTIVE" secret and completes successfully
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read

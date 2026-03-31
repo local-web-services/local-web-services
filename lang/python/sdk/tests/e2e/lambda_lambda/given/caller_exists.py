@@ -1,4 +1,4 @@
-"""Given: the caller exists"""
+"""Given: the caller "lambda" "function" existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from ..client import LambdaLambdaTestClient
 from ..constants import TEST_CALLER
 
 
-@given("the caller exists")
+@given('the caller "lambda" "function" existed')
 def caller_exists(lws_session):
     LambdaLambdaTestClient(lws_session).create_function(TEST_CALLER)

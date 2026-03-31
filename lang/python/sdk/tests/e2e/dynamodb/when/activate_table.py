@@ -1,4 +1,4 @@
-"""When: a table finishes creating and becomes active"""
+"""When: a "dynamodb" "table" finishes creating and becomes active"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import when
 from ..constants import TEST_TABLE
 
 
-@when("a table finishes creating and becomes active")
+@when('a "dynamodb" "table" finishes creating and becomes active')
 def activate_table(lws_session, world):
     """Disable lifecycle dwell so the table transitions to ACTIVE immediately.
     Validates preconditions: table must exist and be in CREATING state.

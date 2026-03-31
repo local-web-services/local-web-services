@@ -1,4 +1,4 @@
-"""When: a standalone cache cluster is deleted"""
+"""When: a standalone "elasticache" "cluster" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_CLUSTER_ID
 
 
-@when("a standalone cache cluster is deleted")
+@when('a standalone "elasticache" "cluster" is deleted')
 def delete_standalone_cache_cluster(client: TestClient, world):
     r = client.post(
         "/",

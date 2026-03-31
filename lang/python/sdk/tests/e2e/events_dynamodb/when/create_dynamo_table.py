@@ -1,4 +1,4 @@
-"""When: a DynamoDB table is created"""
+"""When: a "dynamodb" "table" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_PK, TEST_TABLE
 
 
-@when("a DynamoDB table is created")
+@when('a "dynamodb" "table" is created')
 def create_dynamo_table(lws_session, world):
     try:
         world["result"] = lws_session.client("dynamodb").create_table(

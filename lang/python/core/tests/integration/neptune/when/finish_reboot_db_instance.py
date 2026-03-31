@@ -1,4 +1,4 @@
-"""When: a database instance reboot completes"""
+"""When: a "neptune" "instance" reboot completes"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import NeptuneTestClient
 from ..constants import INT_INSTANCE, _store
 
 
-@when("a database instance reboot completes")
+@when('a "neptune" "instance" reboot completes')
 def finish_reboot_db_instance(client: TestClient, world: dict):
     r = NeptuneTestClient(client).post("RebootDBInstance", {"DBInstanceIdentifier": INT_INSTANCE})
     _store(world, r)

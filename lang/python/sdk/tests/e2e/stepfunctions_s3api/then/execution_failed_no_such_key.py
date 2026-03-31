@@ -1,11 +1,11 @@
-"""Then: the execution is "FAILED" with a NoSuchKey error"""
+"""Then: the "step functions" "execution" will be "FAILED" with a NoSuchKey error"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the execution is "FAILED" with a NoSuchKey error')
+@then('the "step functions" "execution" will be "FAILED" with a NoSuchKey error')
 def execution_failed_no_such_key(world):
     # Arrange
     expected_error = None

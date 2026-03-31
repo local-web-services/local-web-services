@@ -1,4 +1,4 @@
-"""When: an EventBridge rule is created to start a Step Functions execution on matching events"""
+"""When: an "eventbridge" "rule" is created to start a Step Functions execution on matching events"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import EVENT_PATTERN, TEST_BUS, TEST_RULE, _sm_arn
 
 
-@when("an EventBridge rule is created to start a Step Functions execution on matching events")
+@when('an "eventbridge" "rule" is created to start a Step Functions execution on matching events')
 def put_rule_targeting_sfn(lws_session, world):
     try:
         result = lws_session.client("events").put_rule(

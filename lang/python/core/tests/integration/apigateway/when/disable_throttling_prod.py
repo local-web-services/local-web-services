@@ -1,4 +1,4 @@
-"""When: throttling is disabled for the prod stage"""
+"""When: throttling was "DISABLED" for the "api gateway" "prod stage" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_STAGE_PROD
 
 
-@when("throttling is disabled for the prod stage")
+@when('throttling was "DISABLED" for the "api gateway" "prod stage"')
 def disable_throttling_prod(client: TestClient, world):
     list_r = client.get("/restapis")
     items = list_r.json().get("item", [])

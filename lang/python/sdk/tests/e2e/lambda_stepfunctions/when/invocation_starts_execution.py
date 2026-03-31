@@ -1,4 +1,4 @@
-"""When: the Lambda function starts an execution of an "ACTIVE" state machine and succeeds"""
+"""When: the "lambda" "function" starts an execution of an "ACTIVE" state machine and succeeds"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import _sm_arn
 
 
-@when('the Lambda function starts an execution of an "ACTIVE" state machine and succeeds')
+@when('the "lambda" "function" starts an execution of an "ACTIVE" state machine and succeeds')
 def invocation_starts_execution(lws_session, world):
     # Arrange
     invocation_id = world.get("invocation_id")

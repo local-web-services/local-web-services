@@ -1,4 +1,4 @@
-"""When: a function's configuration is updated"""
+"""When: a "lambda" "function"'s configuration is updated"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_FUNC
 
 
-@when("a function's configuration is updated")
+@when('a "lambda" "function"\'s configuration is updated')
 def update_function_configuration(lws_session, world):
     try:
         resp = lws_session.client("lambda").update_function_configuration(

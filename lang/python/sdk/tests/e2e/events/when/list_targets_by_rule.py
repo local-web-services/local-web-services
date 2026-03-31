@@ -1,4 +1,4 @@
-"""When: targets for a rule are listed"""
+"""When: targets for an "eventbridge" "rule" are listed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUS, TEST_RULE
 
 
-@when("targets for a rule are listed")
+@when('targets for an "eventbridge" "rule" are listed')
 def list_targets_by_rule(lws_session, world):
     try:
         resp = lws_session.client("events").list_targets_by_rule(

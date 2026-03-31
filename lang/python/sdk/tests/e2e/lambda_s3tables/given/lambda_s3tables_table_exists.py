@@ -1,4 +1,4 @@
-"""Given: the table exists"""
+"""Given: the table existed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaS3tablesTestClient
 from ..constants import TEST_NAMESPACE, TEST_TABLE, _table_bucket_arn
 
 
-@given("the table exists")
+@given("the table existed")
 def lambda_s3tables_table_exists(lws_session):
     try:
         LambdaS3tablesTestClient(lws_session).create_table_bucket()

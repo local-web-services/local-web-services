@@ -1,4 +1,4 @@
-"""Given: the dead-letter queue is not "ACTIVE" """
+"""Given: the dead-letter "sqs" "queue" was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SqsTestClient
 from ..constants import TEST_DLQ
 
 
-@given('the dead-letter queue is not "ACTIVE"')
+@given('the dead-letter "sqs" "queue" was not "ACTIVE"')
 def dlq_is_not_active(lws_session):
     try:
         SqsTestClient(lws_session).delete_queue(

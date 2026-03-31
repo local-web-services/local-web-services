@@ -1,4 +1,4 @@
-"""Given: the namespace exists"""
+"""Given: the "s3 tables" "namespace" existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import S3tablesTestClient
 
 
-@given("the namespace exists")
+@given('the "s3 tables" "namespace" existed')
 def namespace_exists(client: TestClient):
     S3tablesTestClient(client).create_namespace()

@@ -1,11 +1,11 @@
-"""Then: the deployment is "ACTIVE" """
+"""Then: the "api gateway" "deployment" will be "ACTIVE" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the deployment is "ACTIVE"')
+@then('the "api gateway" "deployment" will be "ACTIVE"')
 def deployment_is_active_then(lws_session, world):
     actual_result = world["result"]
     assert actual_result is not None, "Expected deployment creation result but got None"

@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Database Instance Configuration Is Modified
+Feature: Neptune - A "Neptune" "Instance" Configuration Is Modified
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,13 +8,13 @@ Feature: Neptune - A Database Instance Configuration Is Modified
     Given the system is initialized
 
   @minimal @happy @modify_d_b_instance
-  Scenario: a database instance configuration is modified
-    Given the instance exists
-    And the instance is "AVAILABLE"
-    And the cluster exists
-    And the cluster is "AVAILABLE"
-    When a database instance configuration is modified
-    Then the instance is in "MODIFYING" state
+  Scenario: a "neptune" "instance" configuration is modified
+    Given the "neptune" "instance" existed
+    And the "neptune" "instance" was "AVAILABLE"
+    And the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "AVAILABLE"
+    When a "neptune" "instance" configuration is modified
+    Then the "neptune" "INSTANCE" will be in "MODIFYING" state
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -25,31 +25,31 @@ Feature: Neptune - A Database Instance Configuration Is Modified
     And a failed cluster has no available instances
 
   @guard @negative @modify_d_b_instance
-  Scenario: a database instance configuration is modified fails when the instance does not exist
-    Given the instance does not exist
-    When a database instance configuration is modified
+  Scenario: a "neptune" "instance" configuration is modified fails when the "neptune" "instance" did not exist
+    Given the "neptune" "instance" did not exist
+    When a "neptune" "instance" configuration is modified
     Then the operation is rejected
 
   @guard @negative @modify_d_b_instance @lifecycle
-  Scenario: a database instance configuration is modified fails when the instance is not "AVAILABLE"
-    Given the instance exists
-    And the instance is not "AVAILABLE"
-    When a database instance configuration is modified
+  Scenario: a "neptune" "instance" configuration is modified fails when the "neptune" "instance" was not "AVAILABLE"
+    Given the "neptune" "instance" existed
+    And the "neptune" "instance" was not "AVAILABLE"
+    When a "neptune" "instance" configuration is modified
     Then the operation is rejected
 
   @guard @negative @modify_d_b_instance
-  Scenario: a database instance configuration is modified fails when the cluster does not exist
-    Given the instance exists
-    And the instance is "AVAILABLE"
-    And the cluster does not exist
-    When a database instance configuration is modified
+  Scenario: a "neptune" "instance" configuration is modified fails when the "neptune" "cluster" did not exist
+    Given the "neptune" "instance" existed
+    And the "neptune" "instance" was "AVAILABLE"
+    And the "neptune" "cluster" did not exist
+    When a "neptune" "instance" configuration is modified
     Then the operation is rejected
 
   @guard @negative @modify_d_b_instance @lifecycle
-  Scenario: a database instance configuration is modified fails when the cluster is not "AVAILABLE"
-    Given the instance exists
-    And the instance is "AVAILABLE"
-    And the cluster exists
-    And the cluster is not "AVAILABLE"
-    When a database instance configuration is modified
+  Scenario: a "neptune" "instance" configuration is modified fails when the "neptune" "cluster" was not "AVAILABLE"
+    Given the "neptune" "instance" existed
+    And the "neptune" "instance" was "AVAILABLE"
+    And the "neptune" "cluster" existed
+    And the "neptune" "cluster" was not "AVAILABLE"
+    When a "neptune" "instance" configuration is modified
     Then the operation is rejected

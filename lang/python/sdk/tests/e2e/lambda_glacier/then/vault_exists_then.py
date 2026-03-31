@@ -1,4 +1,4 @@
-"""Then: the vault "EXISTS" """
+"""Then: the "glacier" "vault" will exist"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_VAULT
 
 
-@then('the vault "EXISTS"')
+@then('the "glacier" "vault" will exist')
 def vault_exists_then(lws_session):
     resp = lws_session.client("glacier").describe_vault(accountId="-", vaultName=TEST_VAULT)
     actual_name = resp.get("VaultName", "")

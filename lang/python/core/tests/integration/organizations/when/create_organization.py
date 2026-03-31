@@ -1,4 +1,4 @@
-"""When: an organization is created"""
+"""When: an "organizations" "organization" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import OrganizationsTestClient
 from ..constants import INT_ORG_FEATURE_SET
 
 
-@when("an organization is created")
+@when('an "organizations" "organization" is created')
 def create_organization(client: TestClient, world):
     status, body = OrganizationsTestClient(client).post(
         "CreateOrganization", {"FeatureSet": INT_ORG_FEATURE_SET}

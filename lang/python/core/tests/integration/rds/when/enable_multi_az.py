@@ -1,4 +1,4 @@
-"""When: multi-"AZ" is enabled on a database instance"""
+"""When: multi-"AZ" was "ENABLED" on a "rds" "instance" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import RdsTestClient
 from ..constants import INT_DB_INSTANCE, _store
 
 
-@when('multi-"AZ" is enabled on a database instance')
+@when('multi-"AZ" was "ENABLED" on a "rds" "instance"')
 def enable_multi_az(client: TestClient, world: dict):
     r = RdsTestClient(client).post(
         "ModifyDBInstance", {"DBInstanceIdentifier": INT_DB_INSTANCE, "MultiAZ": True}

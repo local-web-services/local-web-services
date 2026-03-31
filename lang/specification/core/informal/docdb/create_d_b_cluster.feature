@@ -1,5 +1,5 @@
 @docdb @generated
-Feature: Docdb - A Database Cluster Is Created
+Feature: Docdb - A "Documentdb" "Cluster" Is Created
 
   # Generated from FizzBee spec: docdb.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, NoNonDeletedInstancesOnDeletedCluster, NoAvailableInstancesOnFailedCluster, DeletingClusterGetsNoNewInstances, SnapshotHasValidClusterReference
@@ -8,10 +8,10 @@ Feature: Docdb - A Database Cluster Is Created
     Given the system is initialized
 
   @minimal @happy @create_d_b_cluster
-  Scenario: a database cluster is created
-    Given the cluster does not already exist
-    When a database cluster is created
-    Then the cluster is in "CREATING" state
+  Scenario: a "documentdb" "cluster" is created
+    Given the "documentdb" "cluster" did not already exist
+    When a "documentdb" "cluster" is created
+    Then the "documentdb" "cluster" will be in "CREATING" state
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -21,7 +21,7 @@ Feature: Docdb - A Database Cluster Is Created
     And every creating snapshot references a cluster that has not been deleted
 
   @guard @negative @create_d_b_cluster
-  Scenario: a database cluster is created fails when the cluster already exists
-    Given the cluster already exists
-    When a database cluster is created
+  Scenario: a "documentdb" "cluster" is created fails when the "documentdb" "cluster" already existed
+    Given the "documentdb" "cluster" already existed
+    When a "documentdb" "cluster" is created
     Then the operation is rejected

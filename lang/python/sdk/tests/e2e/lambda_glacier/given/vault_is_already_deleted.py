@@ -1,4 +1,4 @@
-"""Given: the vault is already "DELETED" """
+"""Given: the "glacier" "vault" is already "DELETED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaGlacierTestClient
 from ..constants import TEST_VAULT
 
 
-@given('the vault is already "DELETED"')
+@given('the "glacier" "vault" is already "DELETED"')
 def vault_is_already_deleted(lws_session, world):
     try:
         LambdaGlacierTestClient(lws_session).create_vault()

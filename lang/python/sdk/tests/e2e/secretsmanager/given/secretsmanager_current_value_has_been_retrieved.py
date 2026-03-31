@@ -1,4 +1,4 @@
-"""Given: the current value of an active secret has been retrieved"""
+"""Given: the current value of an active "secrets manager" "secret" is retrieved"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SecretsmanagerTestClient
 from ..constants import TEST_SECRET
 
 
-@given("the current value of an active secret has been retrieved")
+@given('the current value of an active "secrets manager" "secret" is retrieved')
 def secretsmanager_current_value_has_been_retrieved(lws_session):
     try:
         SecretsmanagerTestClient(lws_session).create_secret()

@@ -1,11 +1,11 @@
-"""Given: the account does not exist or is not "ACTIVE" """
+"""Given: the "organizations" "account" did not exist or was "ACTIVE" """
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given('the account does not exist or is not "ACTIVE"')
+@given('the "organizations" "account" did not exist or was "ACTIVE"')
 def account_does_not_exist_or_not_active(world):
     """Use a nonexistent account ID for negative scenarios."""
     world["account_id"] = "nonexistent-account-id"

@@ -1,4 +1,4 @@
-"""When: a cache snapshot finishes creating"""
+"""When: an "elasticache" "snapshot" finishes creating"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_SNAPSHOT_ID
 
 
-@when("a cache snapshot finishes creating")
+@when('an "elasticache" "snapshot" finishes creating')
 def snapshot_finishes_creating(client: TestClient, world):
     r = client.post(
         "/",

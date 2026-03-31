@@ -1,4 +1,4 @@
-"""When: a multipart upload is initiated for a vault"""
+"""When: a multipart "glacier" "upload" is initiated for a "glacier" "vault" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_PART_SIZE, TEST_VAULT
 
 
-@when("a multipart upload is initiated for a vault")
+@when('a multipart "glacier" "upload" is initiated for a "glacier" "vault"')
 def initiate_multipart_upload(lws_session, world):
     try:
         result = lws_session.client("glacier").initiate_multipart_upload(

@@ -1,4 +1,4 @@
-"""Then: the bucket versioning state is "ENABLED" or "SUSPENDED" non-deterministically"""
+"""Then: the "s3" "bucket" versioning state will be "ENABLED" or "SUSPENDED" non-deterministically"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET
 
 
-@then('the bucket versioning state is "ENABLED" or "SUSPENDED" non-deterministically')
+@then('the "s3" "bucket" versioning state will be "ENABLED" or "SUSPENDED" non-deterministically')
 def bucket_versioning_enabled_or_suspended_then(sync_client: TestClient):
     r = sync_client.get(f"/{INT_BUCKET}", params={"versioning": ""})
     actual_body = r.text

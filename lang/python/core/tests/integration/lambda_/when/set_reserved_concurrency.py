@@ -1,4 +1,4 @@
-"""When: reserved concurrency is set for a function"""
+"""When: reserved concurrency is set for a "lambda" "function" """
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import when
 from starlette.testclient import TestClient
 
 
-@when("reserved concurrency is set for a function")
+@when('reserved concurrency is set for a "lambda" "function"')
 def set_reserved_concurrency(client: TestClient, world):
     pytest.skip("lws does not implement the PUT /concurrency route for Lambda functions.")

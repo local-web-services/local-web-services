@@ -1,4 +1,4 @@
-"""When: a DynamoDB table is created"""
+"""When: a "dynamodb" "table" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import LambdaDynamodbTestClient
 from ..constants import TEST_TABLE
 
 
-@when("a DynamoDB table is created")
+@when('a "dynamodb" "table" is created')
 def create_dynamodb_table(lws_session, world):
     try:
         LambdaDynamodbTestClient(lws_session).create_table()

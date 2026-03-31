@@ -1,4 +1,4 @@
-"""Given: the table is already "DELETING" """
+"""Given: the "dynamodb" "table" is already "DELETING" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import EventsDynamodbTestClient
 from ..constants import TEST_TABLE
 
 
-@given('the table is already "DELETING"')
+@given('the "dynamodb" "table" is already "DELETING"')
 def table_is_already_deleting(lws_session, world):
     try:
         EventsDynamodbTestClient(lws_session)._dynamo.delete_table(TableName=TEST_TABLE)

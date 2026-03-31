@@ -1,4 +1,4 @@
-"""Given: the snapshot exists"""
+"""Given: the "documentdb" "snapshot" existed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,8 @@ from starlette.testclient import TestClient
 from ..client import NeptuneTestClient
 
 
-@given("the snapshot exists")
+@given('the "neptune" "snapshot" existed')
+@given('the "documentdb" "snapshot" existed')
 def neptune_snapshot_exists(client: TestClient):
     """Create a cluster (snapshots are not standalone in lws)."""
     NeptuneTestClient(client).create_cluster()

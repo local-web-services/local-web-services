@@ -1,4 +1,4 @@
-"""When: a table bucket is deleted"""
+"""When: a "s3 tables" "table" s3 tables bucket is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUCKET
 
 
-@when("a table bucket is deleted")
+@when('a "s3 tables" "table" s3 tables bucket is deleted')
 def delete_table_bucket(lws_session, world):
     try:
         resp = lws_session.client("s3tables").get_table_bucket(tableBucketARN=TEST_BUCKET)

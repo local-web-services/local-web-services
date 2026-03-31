@@ -1,4 +1,4 @@
-"""When: tags are removed from an active secret"""
+"""When: tags are removed from an active "secrets manager" "secret" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_SECRET, TEST_TAG_KEY
 
 
-@when("tags are removed from an active secret")
+@when('tags are removed from an active "secrets manager" "secret"')
 def untag_resource(lws_session, world):
     try:
         desc = lws_session.client("secretsmanager").describe_secret(SecretId=TEST_SECRET)

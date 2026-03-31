@@ -1,10 +1,10 @@
-"""Given: the configured function is "ACTIVE" """
+"""Given: the configured function was "ACTIVE" """
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given('the configured function is "ACTIVE"')
+@given('the configured function was "ACTIVE"')
 def configured_function_is_active_given():
     """No-op: Lambda functions are ACTIVE immediately after creation."""

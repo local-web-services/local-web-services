@@ -1,5 +1,5 @@
 @neptuneevents @generated
-Feature: NeptuneEvents - The Neptune Cluster Stops And Delivers The State Change Event To The Eventbridge Bus
+Feature: NeptuneEvents - The "Neptune" "Cluster" Stops And Delivers The State Change Event To The Eventbridge Bus
 
   # Generated from FizzBee spec: neptune_events.fizz
   # Safety invariants: DeliveredEventReferencesExistingCluster, DeliveredEventReferencesExistingBus
@@ -8,32 +8,32 @@ Feature: NeptuneEvents - The Neptune Cluster Stops And Delivers The State Change
     Given the system is initialized
 
   @minimal @happy @cluster_stop_event_delivered @internal
-  Scenario: the Neptune cluster stops and delivers the state change event to the EventBridge bus
-    Given the cluster is "AVAILABLE"
-    And the bus is "ACTIVE"
+  Scenario: the "neptune" "cluster" stops and delivers the state change event to the EventBridge bus
+    Given the "neptune" "cluster" was "AVAILABLE"
+    And the bus was "ACTIVE"
     And an event slot is available
-    When the Neptune cluster stops and delivers the state change event to the EventBridge bus
-    Then the cluster is "STOPPING" and the "STOPPED" event is "DELIVERED"
+    When the "neptune" "cluster" stops and delivers the state change event to the EventBridge bus
+    Then the "neptune" "cluster" will be "STOPPING" and the "STOPPED" event will be "DELIVERED"
     And every "DELIVERED" event references a cluster that exists
     And every "DELIVERED" event references a bus that exists
 
   @guard @negative @cluster_stop_event_delivered @internal
-  Scenario: the Neptune cluster stops and delivers the state change event to the EventBridge bus fails when the cluster is not "AVAILABLE"
-    Given the cluster is not "AVAILABLE"
-    When the Neptune cluster stops and delivers the state change event to the EventBridge bus
+  Scenario: the "neptune" "cluster" stops and delivers the state change event to the EventBridge bus fails when the "neptune" "cluster" was not "AVAILABLE"
+    Given the "neptune" "cluster" was not "AVAILABLE"
+    When the "neptune" "cluster" stops and delivers the state change event to the EventBridge bus
     Then the operation is rejected
 
   @guard @negative @cluster_stop_event_delivered @internal
-  Scenario: the Neptune cluster stops and delivers the state change event to the EventBridge bus fails when the bus is "DELETED"
-    Given the cluster is "AVAILABLE"
-    And the bus is "DELETED"
-    When the Neptune cluster stops and delivers the state change event to the EventBridge bus
+  Scenario: the "neptune" "cluster" stops and delivers the state change event to the EventBridge bus fails when the bus was "DELETED"
+    Given the "neptune" "cluster" was "AVAILABLE"
+    And the bus was "DELETED"
+    When the "neptune" "cluster" stops and delivers the state change event to the EventBridge bus
     Then the operation is rejected
 
   @guard @negative @cluster_stop_event_delivered @internal
-  Scenario: the Neptune cluster stops and delivers the state change event to the EventBridge bus fails when no event slot is available
-    Given the cluster is "AVAILABLE"
-    And the bus is "ACTIVE"
+  Scenario: the "neptune" "cluster" stops and delivers the state change event to the EventBridge bus fails when no event slot is available
+    Given the "neptune" "cluster" was "AVAILABLE"
+    And the bus was "ACTIVE"
     And no event slot is available
-    When the Neptune cluster stops and delivers the state change event to the EventBridge bus
+    When the "neptune" "cluster" stops and delivers the state change event to the EventBridge bus
     Then the operation is rejected

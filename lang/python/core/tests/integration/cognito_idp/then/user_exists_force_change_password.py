@@ -1,4 +1,4 @@
-"""Then: the user exists in "FORCE_CHANGE_PASSWORD" state and is enabled"""
+"""Then: the "cognito" "user" will exist in "FORCE_CHANGE_PASSWORD" state and will be enabled"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import CognitoIdpTestClient
 from ..constants import INT_POOL_ID, INT_USERNAME
 
 
-@then('the user exists in "FORCE_CHANGE_PASSWORD" state and is enabled')
+@then('the "cognito" "user" will exist in "FORCE_CHANGE_PASSWORD" state and will be enabled')
 def user_exists_force_change_password(client: TestClient, world):
     r = CognitoIdpTestClient(client).cognito_post(
         "AdminGetUser", {"UserPoolId": INT_POOL_ID, "Username": world.get("username", INT_USERNAME)}

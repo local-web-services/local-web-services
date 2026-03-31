@@ -1,4 +1,4 @@
-"""When: an existing item is updated in the table"""
+"""When: an existing "dynamodb" "item" is updated in the "dynamodb" "table" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import DynamodbTestClient
 from ..constants import TEST_ITEM_KEY, TEST_PK, TEST_TABLE, TEST_UPDATED_VAL, _store, _try_json
 
 
-@when("an existing item is updated in the table")
+@when('an existing "dynamodb" "item" is updated in the "dynamodb" "table"')
 def update_existing_item(client: TestClient, world: dict):
     get_r = DynamodbTestClient(client).post(
         "GetItem", {"TableName": TEST_TABLE, "Key": {TEST_PK: {"S": TEST_ITEM_KEY}}}

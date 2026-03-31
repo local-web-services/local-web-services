@@ -1,4 +1,4 @@
-"""When: a table is created in a namespace"""
+"""When: a "s3 tables" "table" is created in a "s3 tables" "namespace" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUCKET, TEST_NAMESPACE, TEST_TABLE
 
 
-@when("a table is created in a namespace")
+@when('a "s3 tables" "table" is created in a "s3 tables" "namespace"')
 def create_table(lws_session, world):
     try:
         resp = lws_session.client("s3tables").get_table_bucket(tableBucketARN=TEST_BUCKET)

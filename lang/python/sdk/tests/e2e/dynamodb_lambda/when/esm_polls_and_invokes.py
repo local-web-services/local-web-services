@@ -9,7 +9,9 @@ import time
 from pytest_bdd import when
 
 
-@when("the event source mapping polls the stream and invokes the Lambda function with the record")
+@when(
+    'the event source mapping polls the stream and invokes the "lambda" "function" with the record'
+)
 def esm_polls_and_invokes(lws_session, world):
     if world.get("esm_exists") is False:
         world["result"] = None

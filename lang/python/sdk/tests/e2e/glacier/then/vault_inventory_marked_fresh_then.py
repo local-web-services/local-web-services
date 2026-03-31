@@ -1,11 +1,11 @@
-"""Then: the vault inventory is marked as fresh"""
+"""Then: the "glacier" "vault" inventory will be marked as fresh"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the vault inventory is marked as fresh")
+@then('the "glacier" "vault" inventory will be marked as fresh')
 def vault_inventory_marked_fresh_then(world):
     expected_error = None
     actual_error = world.get("error")

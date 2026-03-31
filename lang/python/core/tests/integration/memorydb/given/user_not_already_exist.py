@@ -1,10 +1,11 @@
-"""Given: the user does not already exist"""
+"""Given: the "cognito" "user" did not already exist"""
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given("the user does not already exist")
+@given('the "memorydb" "user" did not already exist')
+@given('the "cognito" "user" did not already exist')
 def user_not_already_exist():
     """No-op: fresh state has no users."""

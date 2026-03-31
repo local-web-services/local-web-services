@@ -1,11 +1,11 @@
-"""Then: the parameter metadata is returned"""
+"""Then: the "ssm" "parameter" metadata will be returned"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the parameter metadata is returned")
+@then('the "ssm" "parameter" metadata will be returned')
 def parameter_metadata_returned(world):
     assert (
         world["error"] is None

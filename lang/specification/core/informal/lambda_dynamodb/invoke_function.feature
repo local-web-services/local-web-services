@@ -1,5 +1,5 @@
 @lambdadynamodb @generated
-Feature: LambdaDynamodb - The Lambda Function Is Invoked
+Feature: LambdaDynamodb - The "Lambda" "Function" Is Invoked
 
   # Generated from FizzBee spec: lambda_dynamodb.fizz
   # Safety invariants: InvocationRequiresActiveFunction, ItemRequiresActiveTable
@@ -8,32 +8,32 @@ Feature: LambdaDynamodb - The Lambda Function Is Invoked
     Given the system is initialized
 
   @minimal @happy @invoke_function
-  Scenario: the Lambda function is invoked
-    Given the function exists
-    And the function is "ACTIVE"
-    And an invocation slot is available
-    When the Lambda function is invoked
-    Then the invocation is "IN_PROGRESS"
+  Scenario: the "lambda" "function" is invoked
+    Given the "lambda" "function" existed
+    And the "lambda" "function" was "ACTIVE"
+    And a "lambda" "invocation" slot is available
+    When the "lambda" "function" is invoked
+    Then the invocation will be "IN_PROGRESS"
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing item belongs to an "ACTIVE" table
 
   @guard @negative @invoke_function
-  Scenario: the Lambda function is invoked fails when the function does not exist
-    Given the function does not exist
-    When the Lambda function is invoked
+  Scenario: the "lambda" "function" is invoked fails when the "lambda" "function" did not exist
+    Given the "lambda" "function" did not exist
+    When the "lambda" "function" is invoked
     Then the operation is rejected
 
   @guard @negative @invoke_function @lifecycle
-  Scenario: the Lambda function is invoked fails when the function is not "ACTIVE"
-    Given the function exists
-    And the function is not "ACTIVE"
-    When the Lambda function is invoked
+  Scenario: the "lambda" "function" is invoked fails when the "lambda" "function" was not "ACTIVE"
+    Given the "lambda" "function" existed
+    And the "lambda" "function" was not "ACTIVE"
+    When the "lambda" "function" is invoked
     Then the operation is rejected
 
-  @guard @negative @internal @invoke_function @capacity
-  Scenario: the Lambda function is invoked fails when no invocation slot is available
-    Given the function exists
-    And the function is "ACTIVE"
+  @guard @negative @invoke_function @capacity
+  Scenario: the "lambda" "function" is invoked fails when no invocation slot is available
+    Given the "lambda" "function" existed
+    And the "lambda" "function" was "ACTIVE"
     And no invocation slot is available
-    When the Lambda function is invoked
+    When the "lambda" "function" is invoked
     Then the operation is rejected

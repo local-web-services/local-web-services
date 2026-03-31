@@ -1,4 +1,4 @@
-"""Given: the user exists"""
+"""Given: the "cognito" "user" existed"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import CognitoIdpTestClient
 from ..constants import INT_USERNAME
 
 
-@given("the user exists")
+@given('the "cognito" "user" existed')
 def user_exists(client: TestClient, world):
     CognitoIdpTestClient(client).create_user()
     world["username"] = INT_USERNAME

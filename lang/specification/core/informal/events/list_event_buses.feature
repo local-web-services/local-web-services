@@ -1,5 +1,5 @@
 @events @generated
-Feature: Events - All Event Buses Are Listed
+Feature: events - All Event Buses Are Listed
 
   # Generated from FizzBee spec: events.fizz
   # Safety invariants: EventBusStatusValid, RuleStatusValid, RulePatternTypeValid, RuleBusExists, DefaultBusCannotBeDeleted, DeleteRuleRequiresNoTargets, RuleOnlyEnabledOnActiveBus, DeadLetterQueueBounded
@@ -10,7 +10,7 @@ Feature: Events - All Event Buses Are Listed
   @minimal @happy @list_event_buses
   Scenario: all event buses are listed
     When all event buses are listed
-    Then the list of event buses is returned
+    Then the list of event buses will be returned
     And every event bus has a valid status ("ACTIVE" or "DELETED")
     And every rule has a valid status ("ENABLED", "DISABLED", or "DELETED")
     And every rule has a valid pattern type ("EVENT_PATTERN" or "SCHEDULE")

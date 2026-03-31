@@ -1,4 +1,4 @@
-"""Given: the instance is the primary"""
+"""Given: the "documentdb" "instance" is the primary"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import DocdbTestClient
 
 
-@given("the instance is the primary")
+@given('the "documentdb" "instance" is the primary')
 def instance_is_primary(client: TestClient):
     DocdbTestClient(client).create_cluster()
     DocdbTestClient(client).create_instance()

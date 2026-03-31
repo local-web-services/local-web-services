@@ -1,4 +1,4 @@
-"""Given: the domain exists"""
+"""Given: the "elasticsearch" "domain" existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import ElasticsearchTestClient
 
 
-@given("the domain exists")
+@given('the "elasticsearch" "domain" existed')
 def es_domain_exists(client: TestClient):
     ElasticsearchTestClient(client).create_domain()

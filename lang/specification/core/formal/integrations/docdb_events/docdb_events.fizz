@@ -24,10 +24,10 @@ action Init:
     event_bus = {}              # event_bus[eid] = bus_id
 
 
-# step: a DocumentDB cluster is created and becomes AVAILABLE
-# result: the cluster is AVAILABLE
-# guard: the cluster does not already exist
-# guard_violation: the cluster already exists
+# step: a "documentdb" "cluster" is created and becomes AVAILABLE
+# result: the "documentdb" "cluster" will be "AVAILABLE"
+# guard: the "documentdb" "cluster" did not already exist
+# guard_violation: the "documentdb" "cluster" already existed
 atomic action CreateCluster:
     oneof cid in CLUSTER_IDS:
         if cid not in cluster_status:
@@ -35,9 +35,9 @@ atomic action CreateCluster:
 
 
 # step: an EventBridge event bus is created
-# result: the bus is ACTIVE
-# guard: the bus does not already exist
-# guard_violation: the bus already exists
+# result: the bus will be "ACTIVE"
+# guard: the bus did not already exist
+# guard_violation: the bus already existed
 atomic action CreateEventBus:
     oneof busid in BUS_IDS:
         if busid not in bus_status:
@@ -45,11 +45,11 @@ atomic action CreateEventBus:
 
 
 # step: the EventBridge event bus is deleted
-# result: the bus is DELETED and DocumentDB event delivery will fail
-# guard: the bus exists
-# guard_violation: the bus does not exist
-# guard: the bus is ACTIVE
-# guard_violation_lifecycle: the bus is already DELETED
+# result: the bus will be deleted and DocumentDB event delivery will fail
+# guard: the bus existed
+# guard_violation: the bus did not exist
+# guard: the bus was "ACTIVE"
+# guard_violation_lifecycle: the bus is already "DELETED"
 atomic action DeleteEventBus:
     oneof busid in BUS_IDS:
         if busid in bus_status:
@@ -58,12 +58,12 @@ atomic action DeleteEventBus:
 
 
 # fake_skip: internal
-# step: a cluster modification begins and DocumentDB delivers the event to the EventBridge bus
-# result: the cluster is MODIFYING and the MODIFIED event is DELIVERED
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
-# guard: the bus is ACTIVE
-# guard_violation_lifecycle: the bus is DELETED
+# step: a "documentdb" "cluster" modification begins and DocumentDB delivers the event to the EventBridge bus
+# result: the "documentdb" "cluster" will be "MODIFYING" and the MODIFIED event will be "DELIVERED"
+# guard: the "documentdb" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "documentdb" "cluster" was not "AVAILABLE"
+# guard: the bus was "ACTIVE"
+# guard_violation_lifecycle: the bus was "DELETED"
 # guard: an event slot is available
 # guard_violation_capacity: no event slot is available
 atomic action ClusterModifyEventDelivered:
@@ -83,12 +83,12 @@ atomic action ClusterModifyEventDelivered:
 
 
 # fake_skip: internal
-# step: a cluster modification begins but event delivery fails because the bus is deleted
-# result: the cluster is MODIFYING but no event is delivered
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
-# guard: the bus is DELETED
-# guard_violation_lifecycle: the bus is not DELETED
+# step: a "documentdb" "cluster" modification begins but event delivery fails because the bus is deleted
+# result: the "documentdb" "cluster" will be "MODIFYING" but no event will be delivered
+# guard: the "documentdb" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "documentdb" "cluster" was not "AVAILABLE"
+# guard: the bus was "DELETED"
+# guard_violation_lifecycle: the bus was not "DELETED"
 atomic action ClusterModifyEventFails:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -100,10 +100,10 @@ atomic action ClusterModifyEventFails:
 
 
 # fake_skip: internal
-# step: the cluster modification completes
-# result: the cluster is AVAILABLE again
-# guard: the cluster is MODIFYING
-# guard_violation_lifecycle: the cluster is not MODIFYING
+# step: the "documentdb" "cluster" modification completes
+# result: the "documentdb" "cluster" will be "AVAILABLE" again
+# guard: the "documentdb" "cluster" was "MODIFYING"
+# guard_violation_lifecycle: the "documentdb" "cluster" was not "MODIFYING"
 atomic action ClusterModifyComplete:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -111,7 +111,7 @@ atomic action ClusterModifyComplete:
                 cluster_status[cid] = "AVAILABLE"
 
 
-# check: every DELIVERED event references a cluster that exists
+# check: every DELIVERED event references a "documentdb" "cluster" that exists
 always assertion DeliveredEventReferencesExistingCluster:
     for eid in event_status:
         if event_status[eid] == "DELIVERED":

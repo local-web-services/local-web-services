@@ -1,4 +1,4 @@
-"""Given: the organizational unit has child accounts"""
+"""Given: the "organizations" "organizational unit" has child accounts"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import OrganizationsTestClient
 
 
-@given("the organizational unit has child accounts")
+@given('the "organizations" "organizational unit" has child accounts')
 def ou_has_child_accounts(client: TestClient, world):
     account_id = OrganizationsTestClient(client).create_account()
     world["account_id"] = account_id

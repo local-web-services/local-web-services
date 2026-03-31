@@ -1,4 +1,4 @@
-"""Given: a tag has been added to a function"""
+"""Given: a tag is added to a "lambda" "function" """
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import given
 from ..client import LambdaTestClient
 
 
-@given("a tag has been added to a function")
+@given('a tag is added to a "lambda" "function"')
 def lambda_seq_tag_added(lws_session):
     LambdaTestClient(lws_session).create_function()

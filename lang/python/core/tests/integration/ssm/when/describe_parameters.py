@@ -1,4 +1,4 @@
-"""When: parameters are described"""
+"""When: "ssm" "parameter"s are described"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SSM_TARGET
 
 
-@when("parameters are described")
+@when('"ssm" "parameter"s are described')
 def describe_parameters(client: TestClient, world):
     r = client.post(
         "/",

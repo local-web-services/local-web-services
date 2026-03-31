@@ -1,4 +1,4 @@
-"""Given: the function does not have a resource policy"""
+"""Given: the "lambda" "function" did not have a resource policy"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import LambdaTestClient
 
 
-@given("the function does not have a resource policy")
+@given('the "lambda" "function" did not have a resource policy')
 def function_does_not_have_resource_policy(client: TestClient, world):
     LambdaTestClient(client).create_function()
     world["_skip"] = (

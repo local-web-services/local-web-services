@@ -1,4 +1,4 @@
-"""When: an integration is deleted"""
+"""When: an "api gateway" "integration" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_HTTP_METHOD
 
 
-@when("an integration is deleted")
+@when('an "api gateway" "integration" is deleted')
 def delete_integration(client: TestClient, world):
     list_r = client.get("/restapis")
     items = list_r.json().get("item", [])

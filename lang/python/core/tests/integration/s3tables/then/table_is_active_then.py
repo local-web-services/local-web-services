@@ -1,4 +1,4 @@
-"""Then: the table is "ACTIVE" """
+"""Then: the "dynamodb" "table" was "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_NAMESPACE, INT_TABLE
 
 
-@then('the table is "ACTIVE"')
+@then('the "dynamodb" "table" was "ACTIVE"')
 def table_is_active_then(client: TestClient):
     r = client.get(
         "/get-table",

@@ -68,11 +68,11 @@ action Init:
     # stage_throttling["aid:sname"] = True|False
     stage_throttling = {}
 
-# step: a REST API is created with a root resource
-# result: the API is ACTIVE and its root resource is ACTIVE
-# guard: the API does not already exist
-# guard_violation: the API already exists
-# guard: a resource slot is available
+# step: a "api gateway" "REST API" is created with a root resource
+# result: the "api gateway" "API" will be "ACTIVE" and its root resource will be "ACTIVE"
+# guard: the "api gateway" "API" did not already exist
+# guard_violation: the "api gateway" "API" already existed
+# guard: a "api gateway" "resource" slot is available
 # guard_violation_capacity: no resource slot is available
 atomic action CreateRestApi:
     oneof aid in API_IDS:
@@ -84,16 +84,16 @@ atomic action CreateRestApi:
                     resource_path[rid] = "/"
                     resource_status[rid] = "ACTIVE"
 
-# step: a root resource is initialized for an API
-# result: the root resource is ACTIVE
-# guard: the API exists
-# guard_violation: the API does not exist
-# guard: the API is ACTIVE
-# guard_violation_lifecycle: the API is not ACTIVE
-# guard: the API has no root resource yet
-# guard_violation: the API already has a root resource
-# guard: the resource slot is unallocated
-# guard_violation: the resource slot is already allocated
+# step: a root resource is initialized for an "api gateway" "API"
+# result: the root "api gateway" "resource" will be "ACTIVE"
+# guard: the "api gateway" "API" existed
+# guard_violation: the "api gateway" "API" did not exist
+# guard: the "api gateway" "API" was "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "API" was not "ACTIVE"
+# guard: the "api gateway" "API" has no root resource yet
+# guard_violation: the "api gateway" "API" already has a root resource
+# guard: the "api gateway" "resource" slot is unallocated
+# guard_violation: the "api gateway" "resource" slot is already allocated
 atomic action InitRootResource:
     oneof aid in API_IDS:
         if aid in api_status:
@@ -112,12 +112,12 @@ atomic action InitRootResource:
                             resource_path[rid] = "/"
                             resource_status[rid] = "ACTIVE"
 
-# step: a REST API is deleted
-# result: the API is DELETED along with all its resources, methods, integrations, deployments, and stages
-# guard: the API exists
-# guard_violation: the API does not exist
-# guard: the API is ACTIVE
-# guard_violation_lifecycle: the API is not ACTIVE
+# step: a "api gateway" "REST API" is deleted
+# result: the "api gateway" "API" will be deleted along with all its resources, methods, integrations, deployments, and stages
+# guard: the "api gateway" "API" existed
+# guard_violation: the "api gateway" "API" did not exist
+# guard: the "api gateway" "API" was "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "API" was not "ACTIVE"
 atomic action DeleteRestApi:
     oneof aid in API_IDS:
         if aid in api_status:
@@ -147,14 +147,14 @@ atomic action DeleteRestApi:
                     if sk in stage_exists:
                         stage_exists[sk] = False
 
-# step: a child resource is created under an existing resource
-# result: the new resource is ACTIVE
-# guard: the resource slot is unallocated
-# guard_violation: the resource slot is already allocated
-# guard: the parent resource exists
-# guard_violation: the parent resource does not exist
-# guard: the parent resource is ACTIVE
-# guard_violation_lifecycle: the parent resource is not ACTIVE
+# step: a child "api gateway" "resource" is created under an existing "api gateway" "resource"
+# result: the new "api gateway" "resource" will be "ACTIVE"
+# guard: the "api gateway" "resource" slot is unallocated
+# guard_violation: the "api gateway" "resource" slot is already allocated
+# guard: the parent "api gateway" "resource" existed
+# guard_violation: the parent "api gateway" "resource" did not exist
+# guard: the parent "api gateway" "resource" was "ACTIVE"
+# guard_violation_lifecycle: the parent "api gateway" "resource" was not "ACTIVE"
 # CreateResource: add a non-root resource under an existing ACTIVE resource
 atomic action CreateResource:
     oneof rid in RESOURCE_IDS:
@@ -166,16 +166,16 @@ atomic action CreateResource:
                         resource_path[rid] = "segment"
                         resource_status[rid] = "ACTIVE"
 
-# step: a non-root resource is deleted along with its methods and integrations
-# result: the resource is DELETED along with all its methods and integrations
-# guard: the resource exists
-# guard_violation: the resource does not exist
-# guard: the resource is ACTIVE
-# guard_violation_lifecycle: the resource is not ACTIVE
-# guard: the resource has a path
-# guard_violation: the resource does not have a path
-# guard: the resource is not the root resource
-# guard_violation: the resource is the root resource
+# step: a non-root "api gateway" "resource" is deleted along with its methods and integrations
+# result: the "api gateway" "resource" will be deleted along with all its methods and integrations
+# guard: the "api gateway" "resource" existed
+# guard_violation: the "api gateway" "resource" did not exist
+# guard: the "api gateway" "resource" was "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "resource" was not "ACTIVE"
+# guard: the "api gateway" "resource" has a path
+# guard_violation: the "api gateway" "resource" does not have a path
+# guard: the "api gateway" "resource" is not the root "api gateway" "resource"
+# guard_violation: the "api gateway" "resource" is the root "api gateway" "resource"
 atomic action DeleteResource:
     oneof rid in RESOURCE_IDS:
         if rid in resource_status:
@@ -192,14 +192,14 @@ atomic action DeleteResource:
                                         if integration_status[mk] == "EXISTS":
                                             integration_status[mk] = "DELETED"
 
-# step: a GET method is created on a resource
-# result: the method EXISTS on the resource
-# guard: the method does not already exist
-# guard_violation: the method already exists
-# guard: the resource exists
-# guard_violation: the resource does not exist
-# guard: the resource is ACTIVE
-# guard_violation_lifecycle: the resource is not ACTIVE
+# step: a GET method is created on a "api gateway" "resource"
+# result: the "api gateway" "method" will exist on the "api gateway" "resource"
+# guard: the "api gateway" "method" did not already exist
+# guard_violation: the "api gateway" "method" already existed
+# guard: the "api gateway" "resource" existed
+# guard_violation: the "api gateway" "resource" did not exist
+# guard: the "api gateway" "resource" was "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "resource" was not "ACTIVE"
 # PutMethod: create a GET method for a resource
 atomic action PutMethodGet:
     oneof mk in METHOD_KEYS:
@@ -212,11 +212,11 @@ atomic action PutMethodGet:
                     method_resource[mk] = rid
 
 # step: an existing method is updated
-# result: the method remains unchanged
-# guard: the method exists
-# guard_violation: the method does not exist
-# guard: the method EXISTS
-# guard_violation: the method does not exist
+# result: the "api gateway" "method" remains unchanged
+# guard: the "api gateway" "method" existed
+# guard_violation: the "api gateway" "method" did not exist
+# guard: the "api gateway" "method" existed
+# guard_violation: the "api gateway" "method" did not exist
 # PutMethod (re-put on existing active method has no semantic change)
 atomic action PutMethodUpdate:
     oneof mk in METHOD_KEYS:
@@ -224,12 +224,12 @@ atomic action PutMethodUpdate:
             if method_status[mk] == "EXISTS":
                 pass
 
-# step: a method is deleted along with its integration
-# result: the method is DELETED and its integration is DELETED if it exists
-# guard: the method exists
-# guard_violation: the method does not exist
-# guard: the method EXISTS
-# guard_violation: the method does not exist
+# step: a "api gateway" "method" is deleted along with its integration
+# result: the "api gateway" "method" will be deleted and its integration will be deleted if it will exist
+# guard: the "api gateway" "method" existed
+# guard_violation: the "api gateway" "method" did not exist
+# guard: the "api gateway" "method" existed
+# guard_violation: the "api gateway" "method" did not exist
 atomic action DeleteMethod:
     oneof mk in METHOD_KEYS:
         if mk in method_status:
@@ -240,11 +240,11 @@ atomic action DeleteMethod:
                         integration_status[mk] = "DELETED"
 
 # step: a 200 method response is configured
-# result: the method response exists
-# guard: the method exists
-# guard_violation: the method does not exist
-# guard: the method EXISTS
-# guard_violation: the method does not exist
+# result: the "api gateway" "method" response will exist
+# guard: the "api gateway" "method" existed
+# guard_violation: the "api gateway" "method" did not exist
+# guard: the "api gateway" "method" existed
+# guard_violation: the "api gateway" "method" did not exist
 # PutMethodResponse: record 200 response for an existing method
 atomic action PutMethodResponse:
     oneof mk in METHOD_KEYS:
@@ -253,12 +253,12 @@ atomic action PutMethodResponse:
                 mr_key = mk + ":200"
                 method_response_exists[mr_key] = True
 
-# step: a backend integration is attached to a method
-# result: the integration EXISTS
-# guard: the method exists
-# guard_violation: the method does not exist
-# guard: the method EXISTS
-# guard_violation: the method does not exist
+# step: a backend integration is attached to a "api gateway" "method"
+# result: the "api gateway" "integration" will exist
+# guard: the "api gateway" "method" existed
+# guard_violation: the "api gateway" "method" did not exist
+# guard: the "api gateway" "method" existed
+# guard_violation: the "api gateway" "method" did not exist
 # PutIntegration: attach backend integration to a method
 atomic action PutIntegration:
     oneof mk in METHOD_KEYS:
@@ -267,12 +267,12 @@ atomic action PutIntegration:
                 integration_status[mk] = "EXISTS"
                 integration_api[mk] = method_api[mk]
 
-# step: an integration is deleted
-# result: the integration is DELETED
-# guard: the integration exists
-# guard_violation: the integration does not exist
-# guard: the integration EXISTS
-# guard_violation: the integration does not exist
+# step: an "api gateway" "integration" is deleted
+# result: the "api gateway" "integration" will be deleted
+# guard: the "api gateway" "integration" existed
+# guard_violation: the "api gateway" "integration" did not exist
+# guard: the "api gateway" "integration" existed
+# guard_violation: the "api gateway" "integration" did not exist
 # DeleteIntegration
 atomic action DeleteIntegration:
     oneof mk in METHOD_KEYS:
@@ -281,11 +281,11 @@ atomic action DeleteIntegration:
                 integration_status[mk] = "DELETED"
 
 # step: a 200 integration response is configured
-# result: the integration response exists
-# guard: the integration exists
-# guard_violation: the integration does not exist
-# guard: the integration EXISTS
-# guard_violation: the integration does not exist
+# result: the "api gateway" "integration" response will exist
+# guard: the "api gateway" "integration" existed
+# guard_violation: the "api gateway" "integration" did not exist
+# guard: the "api gateway" "integration" existed
+# guard_violation: the "api gateway" "integration" did not exist
 # PutIntegrationResponse: record 200 integration response
 atomic action PutIntegrationResponse:
     oneof mk in METHOD_KEYS:
@@ -294,20 +294,20 @@ atomic action PutIntegrationResponse:
                 ir_key = mk + ":200"
                 ir_exists[ir_key] = True
 
-# step: an API deployment is created
-# result: the deployment is ACTIVE
-# guard: the deployment slot is available
-# guard_violation: the deployment slot is already in use
-# guard: the method has an integration
-# guard_violation: the method does not have an integration
-# guard: the integration EXISTS
-# guard_violation: the integration does not exist
-# guard: the method has an API association
-# guard_violation: the method does not have an API association
-# guard: the API exists
-# guard_violation: the API does not exist
-# guard: the API is ACTIVE
-# guard_violation_lifecycle: the API is not ACTIVE
+# step: an "api gateway" "API" deployment is created
+# result: the "api gateway" "deployment" will be "ACTIVE"
+# guard: the "api gateway" "deployment" slot is available
+# guard_violation: the "api gateway" "deployment" slot is already in use
+# guard: the "api gateway" "method" has an "api gateway" "integration"
+# guard_violation: the "api gateway" "method" does not have an "api gateway" "integration"
+# guard: the "api gateway" "integration" existed
+# guard_violation: the "api gateway" "integration" did not exist
+# guard: the "api gateway" "method" has an "api gateway" "API" association
+# guard_violation: the "api gateway" "method" does not have an "api gateway" "API" association
+# guard: the "api gateway" "API" existed
+# guard_violation: the "api gateway" "API" did not exist
+# guard: the "api gateway" "API" was "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "API" was not "ACTIVE"
 # CreateDeployment: create a deployment for an API that has at least one integration
 atomic action CreateDeployment:
     oneof did in DEPLOYMENT_IDS:
@@ -322,22 +322,22 @@ atomic action CreateDeployment:
                                     deployment_status[did] = "ACTIVE"
                                     deployment_api[did] = aid
 
-# step: a deployment is deleted when no stage references it
-# result: the deployment is DELETED
-# guard: the deployment exists
-# guard_violation: the deployment does not exist
-# guard: the deployment is ACTIVE
-# guard_violation_lifecycle: the deployment is not ACTIVE
-# guard: the stage key exists
-# guard_violation: the stage key does not exist
-# guard: the stage is active
-# guard_violation: the stage is not active
-# guard: the stage has a deployment reference
-# guard_violation: the stage does not have a deployment reference
-# guard: the stage references this deployment
-# guard_violation: the stage does not reference this deployment
+# step: a "api gateway" "deployment" is deleted when no stage references it
+# result: the "api gateway" "deployment" will be deleted
+# guard: the "api gateway" "deployment" existed
+# guard_violation: the "api gateway" "deployment" did not exist
+# guard: the "api gateway" "deployment" was "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "deployment" was not "ACTIVE"
+# guard: the "api gateway" "stage" key existed
+# guard_violation: the "api gateway" "stage" key did not exist
+# guard: the "api gateway" "stage" is "ACTIVE"
+# guard_violation: the "api gateway" "stage" is not "ACTIVE"
+# guard: the "api gateway" "stage" has a "api gateway" "deployment" reference
+# guard_violation: the "api gateway" "stage" does not have a "api gateway" "deployment" reference
+# guard: the "api gateway" "stage" references this deployment
+# guard_violation: the "api gateway" "stage" does not reference this deployment
 # guard: no stage references this deployment
-# guard_violation: a stage references this deployment
+# guard_violation: a "api gateway" "stage" references this deployment
 # DeleteDeployment: only if no stage references it
 atomic action DeleteDeployment:
     oneof did in DEPLOYMENT_IDS:
@@ -355,14 +355,14 @@ atomic action DeleteDeployment:
                 if can_delete:
                     deployment_status[did] = "DELETED"
 
-# step: a prod stage is created for an API
-# result: the prod stage exists pointing to the deployment
-# guard: the deployment exists
-# guard_violation: the deployment does not exist
-# guard: the deployment is ACTIVE
-# guard_violation_lifecycle: the deployment is not ACTIVE
-# guard: the prod stage does not already exist for this API
-# guard_violation: the prod stage already exists for this API
+# step: a prod stage is created for an "api gateway" "API"
+# result: the "api gateway" "prod stage" will exist pointing to the "api gateway" "deployment"
+# guard: the "api gateway" "deployment" existed
+# guard_violation: the "api gateway" "deployment" did not exist
+# guard: the "api gateway" "deployment" was "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "deployment" was not "ACTIVE"
+# guard: the "api gateway" "prod stage" did not already exist for this API
+# guard_violation: the "api gateway" "prod stage" already existed for this API
 # CreateStage: associate a stage name with an existing deployment
 atomic action CreateStageProd:
     oneof did in DEPLOYMENT_IDS:
@@ -375,12 +375,12 @@ atomic action CreateStageProd:
                     stage_deployment[sk] = did
                     stage_throttling[sk] = False
 
-# step: the prod stage is deleted
-# result: the prod stage no longer exists
-# guard: the prod stage exists
-# guard_violation: the prod stage does not exist
-# guard: the prod stage is active
-# guard_violation_lifecycle: the prod stage is not active
+# step: the "api gateway" "prod stage" is deleted
+# result: the "api gateway" "prod stage" no longer will exist
+# guard: the "api gateway" "prod stage" existed
+# guard_violation: the "api gateway" "prod stage" did not exist
+# guard: the "api gateway" "prod stage" is "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "prod stage" is not "ACTIVE"
 # DeleteStage
 atomic action DeleteStageProd:
     oneof aid in API_IDS:
@@ -389,16 +389,16 @@ atomic action DeleteStageProd:
             if stage_exists[sk] == True:
                 stage_exists[sk] = False
 
-# step: the prod stage is redeployed to a new deployment
-# result: the prod stage points to the new deployment
-# guard: the deployment exists
-# guard_violation: the deployment does not exist
-# guard: the deployment is ACTIVE
-# guard_violation_lifecycle: the deployment is not ACTIVE
-# guard: the prod stage exists
-# guard_violation: the prod stage does not exist
-# guard: the prod stage is active
-# guard_violation_lifecycle: the prod stage is not active
+# step: the "api gateway" "prod stage" is redeployed to a new deployment
+# result: the "api gateway" "prod stage" points to the new deployment
+# guard: the "api gateway" "deployment" existed
+# guard_violation: the "api gateway" "deployment" did not exist
+# guard: the "api gateway" "deployment" was "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "deployment" was not "ACTIVE"
+# guard: the "api gateway" "prod stage" existed
+# guard_violation: the "api gateway" "prod stage" did not exist
+# guard: the "api gateway" "prod stage" is "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "prod stage" is not "ACTIVE"
 # UpdateStage: point stage at a different deployment (redeploy)
 atomic action UpdateStageProd:
     oneof did in DEPLOYMENT_IDS:
@@ -410,12 +410,12 @@ atomic action UpdateStageProd:
                     if stage_exists[sk] == True:
                         stage_deployment[sk] = did
 
-# step: throttling is enabled for the prod stage
+# step: throttling was "ENABLED" for the "api gateway" "prod stage"
 # result: prod stage requests are throttled
-# guard: the prod stage exists
-# guard_violation: the prod stage does not exist
-# guard: the prod stage is active
-# guard_violation_lifecycle: the prod stage is not active
+# guard: the "api gateway" "prod stage" existed
+# guard_violation: the "api gateway" "prod stage" did not exist
+# guard: the "api gateway" "prod stage" is "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "prod stage" is not "ACTIVE"
 # EnableStageThrottling / DisableStageThrottling
 atomic action EnableStageThrottlingProd:
     oneof aid in API_IDS:
@@ -424,12 +424,12 @@ atomic action EnableStageThrottlingProd:
             if stage_exists[sk] == True:
                 stage_throttling[sk] = True
 
-# step: throttling is disabled for the prod stage
+# step: throttling was "DISABLED" for the "api gateway" "prod stage"
 # result: prod stage requests are not throttled
-# guard: the prod stage exists
-# guard_violation: the prod stage does not exist
-# guard: the prod stage is active
-# guard_violation_lifecycle: the prod stage is not active
+# guard: the "api gateway" "prod stage" existed
+# guard_violation: the "api gateway" "prod stage" did not exist
+# guard: the "api gateway" "prod stage" is "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "prod stage" is not "ACTIVE"
 atomic action DisableStageThrottlingProd:
     oneof aid in API_IDS:
         sk = aid + ":prod"
@@ -439,11 +439,11 @@ atomic action DisableStageThrottlingProd:
 
 # fake_skip: internal
 # step: a request is made to the throttled prod stage
-# result: the request is throttled or passes non-deterministically
-# guard: the prod stage has throttling configured
-# guard_violation: the prod stage does not have throttling configured
-# guard: throttling is enabled for the prod stage
-# guard_violation: throttling is not enabled for the prod stage
+# result: the request will be throttled or pass non-deterministically
+# guard: the "api gateway" "prod stage" has throttling configured
+# guard_violation: the "api gateway" "prod stage" does not have throttling configured
+# guard: throttling was "ENABLED" for the "api gateway" "prod stage"
+# guard_violation: throttling was not "ENABLED" for the "api gateway" "prod stage"
 # RequestThrottled: non-deterministic outcome when throttling is enabled
 atomic action RequestThrottledProd:
     oneof aid in API_IDS:
@@ -456,11 +456,11 @@ atomic action RequestThrottledProd:
 
 # fake_skip: internal
 # step: a backend integration is called
-# result: the integration times out or responds non-deterministically
-# guard: the integration exists
-# guard_violation: the integration does not exist
-# guard: the integration EXISTS
-# guard_violation: the integration does not exist
+# result: the "api gateway" "integration" times out or responds non-deterministically
+# guard: the "api gateway" "integration" existed
+# guard_violation: the "api gateway" "integration" did not exist
+# guard: the "api gateway" "integration" existed
+# guard_violation: the "api gateway" "integration" did not exist
 # IntegrationTimeout: non-deterministic backend latency
 atomic action IntegrationTimeout:
     oneof mk in METHOD_KEYS:

@@ -1,4 +1,4 @@
-"""Given: the policy already exists"""
+"""Given: the "organizations" "policy" already existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import OrganizationsTestClient
 
 
-@given("the policy already exists")
+@given('the "organizations" "policy" already existed')
 def policy_already_exists(client: TestClient, world):
     world["policy_id"] = OrganizationsTestClient(client).create_policy()

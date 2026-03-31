@@ -1,4 +1,4 @@
-"""Given: the caller Lambda function has been invoked"""
+"""Given: the caller "lambda" "function" is invoked"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import uuid
 from pytest_bdd import given
 
 
-@given("the caller Lambda function has been invoked")
+@given('the caller "lambda" "function" is invoked')
 def caller_lambda_function_has_been_invoked_seq(lws_session, world):
     # Arrange
     invocation_id = str(uuid.uuid4())

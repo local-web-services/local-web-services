@@ -1,5 +1,5 @@
 @glaciersns @generated
-Feature: GlacierSns - A Glacier Archive Retrieval Job Is Initiated On The Vault
+Feature: GlacierSns - A Glacier Archive Retrieval Job Is Initiated On The "Glacier" "Vault"
 
   # Generated from FizzBee spec: glacier_sns.fizz
   # Safety invariants: PublishedNotificationReferencesExistingJob, PublishedNotificationReferencesExistingTopic
@@ -8,23 +8,23 @@ Feature: GlacierSns - A Glacier Archive Retrieval Job Is Initiated On The Vault
     Given the system is initialized
 
   @minimal @happy @initiate_job
-  Scenario: a Glacier archive retrieval job is initiated on the vault
-    Given the vault exists
-    And a job slot is available
-    When a Glacier archive retrieval job is initiated on the vault
-    Then the job is "IN_PROGRESS"
-    And every "PUBLISHED" notification references a job that exists
-    And every "PUBLISHED" notification references a topic that exists
+  Scenario: a Glacier archive retrieval job is initiated on the "glacier" "vault"
+    Given the "glacier" "vault" existed
+    And a "glacier" "job" slot is available
+    When a Glacier archive retrieval job is initiated on the "glacier" "vault"
+    Then the "glacier" "job" will be "IN_PROGRESS"
+    And every "PUBLISHED" notification references a "glacier" "job" that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
   @guard @negative @initiate_job
-  Scenario: a Glacier archive retrieval job is initiated on the vault fails when the vault does not exist
-    Given the vault does not exist
-    When a Glacier archive retrieval job is initiated on the vault
+  Scenario: a Glacier archive retrieval job is initiated on the "glacier" "vault" fails when the "glacier" "vault" did not exist
+    Given the "glacier" "vault" did not exist
+    When a Glacier archive retrieval job is initiated on the "glacier" "vault"
     Then the operation is rejected
 
-  @guard @negative @internal @initiate_job @capacity
-  Scenario: a Glacier archive retrieval job is initiated on the vault fails when no job slot is available
-    Given the vault exists
+  @guard @negative @initiate_job @capacity
+  Scenario: a Glacier archive retrieval job is initiated on the "glacier" "vault" fails when no job slot is available
+    Given the "glacier" "vault" existed
     And no job slot is available
-    When a Glacier archive retrieval job is initiated on the vault
+    When a Glacier archive retrieval job is initiated on the "glacier" "vault"
     Then the operation is rejected

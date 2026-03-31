@@ -1,4 +1,4 @@
-"""When: a running execution reads an existing object from the S3 bucket and succeeds"""
+"""When: a running "step functions" "execution" reads an existing object from the "s3" "bucket" and succeeds"""
 
 from __future__ import annotations
 
@@ -16,7 +16,9 @@ from ..constants import (
 )
 
 
-@when("a running execution reads an existing object from the S3 bucket and succeeds")
+@when(
+    'a running "step functions" "execution" reads an existing object from the "s3" "bucket" and succeeds'
+)
 def execution_reads_object(lws_session, world):
     if world.get("_no_object_in_target_bucket"):
         world["result"] = None

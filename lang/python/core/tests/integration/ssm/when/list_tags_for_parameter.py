@@ -1,4 +1,4 @@
-"""When: tags for a parameter are listed"""
+"""When: tags for a "ssm" "parameter" are listed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SSM_TARGET, INT_PARAM
 
 
-@when("tags for a parameter are listed")
+@when('tags for a "ssm" "parameter" are listed')
 def list_tags_for_parameter(client: TestClient, world):
     # Check parameter existence first — lws returns 200 even when parameter is absent
     desc_r = client.post(

@@ -1,4 +1,4 @@
-"""When: a part is uploaded for a multipart upload"""
+"""When: a part is uploaded for a multipart "glacier" "upload" """
 
 from __future__ import annotations
 
@@ -8,7 +8,8 @@ from starlette.testclient import TestClient
 from ..constants import INT_BODY, INT_BUCKET, INT_KEY
 
 
-@when("a part is uploaded for a multipart upload")
+@when('a part is uploaded for a multipart "s3" "upload"')
+@when('a part is uploaded for a multipart "glacier" "upload"')
 def upload_part(sync_client: TestClient, world):
     r = sync_client.put(
         f"/{INT_BUCKET}/{INT_KEY}",

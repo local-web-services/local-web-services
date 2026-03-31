@@ -1,11 +1,11 @@
-"""Then: the root resource is "ACTIVE" """
+"""Then: the root "api gateway" "resource" will be "ACTIVE" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the root resource is "ACTIVE"')
+@then('the root "api gateway" "resource" will be "ACTIVE"')
 def root_resource_is_active_then(lws_session, world):
     actual_result = world["result"]
     assert actual_result is not None, "Expected get_resources result but got None"

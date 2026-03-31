@@ -1,11 +1,11 @@
-"""Then: the bucket is "ACTIVE" """
+"""Then: the "s3 tables" "bucket" will be "ACTIVE" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the bucket is "ACTIVE"')
+@then('the "s3 tables" "bucket" will be "ACTIVE"')
 def bucket_is_active_then(world):
     expected_error = None
     actual_error = world["error"]

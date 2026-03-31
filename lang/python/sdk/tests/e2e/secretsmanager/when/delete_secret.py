@@ -1,4 +1,4 @@
-"""When: a secret is deleted"""
+"""When: a "secrets manager" "secret" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_SECRET
 
 
-@when("a secret is deleted")
+@when('a "secrets manager" "secret" is deleted')
 def delete_secret(lws_session, world):
     try:
         desc = lws_session.client("secretsmanager").describe_secret(SecretId=TEST_SECRET)

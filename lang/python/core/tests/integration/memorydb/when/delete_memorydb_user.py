@@ -1,4 +1,4 @@
-"""When: a user is deleted"""
+"""When: a "memorydb" "user" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_USER_NAME
 
 
-@when("a user is deleted")
+@when('a "memorydb" "user" is deleted')
 def delete_memorydb_user(client: TestClient, world):
     r = client.post(
         "/",

@@ -1,4 +1,4 @@
-"""Then: the state machine is "ACTIVE" with no DynamoDB task configured"""
+"""Then: the "step functions" "state machine" will be "ACTIVE" with no DynamoDB task configured"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import _sm_arn
 
 
-@then('the state machine is "ACTIVE" with no DynamoDB task configured')
+@then('the "step functions" "state machine" will be "ACTIVE" with no DynamoDB task configured')
 def sm_active_no_dynamodb_task(lws_session):
     resp = lws_session.client("stepfunctions").describe_state_machine(stateMachineArn=_sm_arn())
     expected_status = "ACTIVE"

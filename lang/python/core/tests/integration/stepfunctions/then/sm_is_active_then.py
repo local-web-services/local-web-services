@@ -1,4 +1,4 @@
-"""Then: the state machine is "ACTIVE" """
+"""Then: the "step functions" "state machine" will be "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SFN_TARGET, INT_SM, _sm_arn
 
 
-@then('the state machine is "ACTIVE"')
+@then('the "step functions" "state machine" will be "ACTIVE"')
 def sm_is_active_then(client: TestClient, world):
     sm_name = world.get("state_machine_name", INT_SM)
     r = client.post(

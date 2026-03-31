@@ -1,4 +1,4 @@
-"""When: parameters under a path are retrieved from "SSM" """
+"""When: "ssm" "parameter"s under a path are retrieved"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_PATH
 
 
-@when('parameters under a path are retrieved from "SSM"')
+@when('"ssm" "parameter"s under a path are retrieved')
 def get_parameters_by_path(lws_session, world):
     try:
         resp = lws_session.client("ssm").get_parameters_by_path(Path=TEST_PATH)

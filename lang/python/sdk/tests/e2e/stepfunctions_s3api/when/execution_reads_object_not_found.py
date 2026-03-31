@@ -1,4 +1,4 @@
-"""When: a running execution fails to read because no object exists in the bucket"""
+"""When: a running "step functions" "execution" fails to read because no object exists in the bucket"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import StepfunctionsS3apiTestClient
 from ..constants import TEST_BUCKET, TEST_INPUT, _s3_get_object_definition, _sm_arn
 
 
-@when("a running execution fails to read because no object exists in the bucket")
+@when('a running "step functions" "execution" fails to read because no object exists in the bucket')
 def execution_reads_object_not_found(lws_session, world):
     if world.get("_object_in_target_bucket"):
         world["result"] = None

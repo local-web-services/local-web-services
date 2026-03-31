@@ -1,4 +1,4 @@
-"""Then: the "ACL" is in "CREATING" state"""
+"""Then: the "memorydb" "ACL" will be in "CREATING" state"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_ACL_NAME
 
 
-@then('the "ACL" is in "CREATING" state')
+@then('the "memorydb" "ACL" will be in "CREATING" state')
 def acl_is_in_creating_state(client: TestClient, world):
     actual_error = world["error"]
     assert actual_error is None, f"Expected ACL creation to succeed but got: {actual_error}"

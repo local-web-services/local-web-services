@@ -1,4 +1,4 @@
-"""Then: the domain shard layout is updated without changing document counts"""
+"""Then: the "elasticsearch" "domain" shard layout will be updated without changing document counts"""
 
 from __future__ import annotations
 
@@ -6,6 +6,6 @@ import pytest
 from pytest_bdd import then
 
 
-@then("the domain shard layout is updated without changing document counts")
+@then('the "elasticsearch" "domain" shard layout will be updated without changing document counts')
 def shard_layout_updated_then():
     pytest.skip("Cannot observe internal shard layout changes in lws")

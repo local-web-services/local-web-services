@@ -1,4 +1,4 @@
-"""Then: the object "EXISTS" and the request is "SUCCESS" """
+"""Then: the "s3" "object" will exist and the request will be "SUCCESS" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import then
 from ..constants import TEST_BUCKET, TEST_KEY
 
 
-@then('the object "EXISTS" and the request is "SUCCESS"')
+@then('the "s3" "object" will exist and the request will be "SUCCESS"')
 def object_exists_request_success(lws_session, world):
     expected_status = 200
     actual_status = world.get("invoke_status")

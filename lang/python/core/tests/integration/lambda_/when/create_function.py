@@ -1,4 +1,4 @@
-"""When: a function is created"""
+"""When: a "lambda" "function" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from starlette.testclient import TestClient
 from ..client import LambdaTestClient
 
 
-@when("a function is created")
+@when('a "lambda" "function" is created')
 def create_function(client: TestClient, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

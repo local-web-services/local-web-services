@@ -1,11 +1,11 @@
-"""Then: the organizational unit is "DELETED" """
+"""Then: the "organizations" "organizational unit" will be "DELETED" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the organizational unit is "DELETED"')
+@then('the "organizations" "organizational unit" will be "DELETED"')
 def ou_is_deleted(lws_session, world):
     assert (
         world["error"] is None

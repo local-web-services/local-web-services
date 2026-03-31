@@ -1,4 +1,4 @@
-"""When: a running execution reaches the "SQS" task state and sends a message to the queue"""
+"""When: a running "step functions" "execution" reaches the "SQS" task state and sends a message to the queue"""
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from pytest_bdd import when
 from ..constants import TEST_INPUT, _sm_arn
 
 
-@when('a running execution reaches the "SQS" task state and sends a message to the queue')
+@when(
+    'a running "step functions" "execution" reaches the "SQS" task state and sends a message to the queue'
+)
 def execution_sends_message(lws_session, world):
     try:
         resp = lws_session.client("stepfunctions").start_execution(

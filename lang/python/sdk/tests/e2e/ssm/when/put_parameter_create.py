@@ -1,4 +1,4 @@
-"""When: a parameter is stored in "SSM" """
+"""When: a "ssm" "parameter" is stored"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_PARAM, TEST_VALUE
 
 
-@when('a parameter is stored in "SSM"')
+@when('a "ssm" "parameter" is stored')
 def put_parameter_create(lws_session, world):
     try:
         resp = lws_session.client("ssm").put_parameter(

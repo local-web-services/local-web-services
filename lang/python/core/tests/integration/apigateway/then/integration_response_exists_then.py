@@ -1,11 +1,11 @@
-"""Then: the integration response exists"""
+"""Then: the "api gateway" "integration" response will exist"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the integration response exists")
+@then('the "api gateway" "integration" response will exist')
 def integration_response_exists_then(world):
     actual_result = world["result"]
     assert actual_result is not None, "Expected integration response result but got None"

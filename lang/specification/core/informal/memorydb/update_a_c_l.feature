@@ -1,5 +1,5 @@
 @memorydb @generated
-Feature: Memorydb - An Acl Is Updated
+Feature: Memorydb - An "Memorydb" "Acl" Is Updated
 
   # Generated from FizzBee spec: memorydb.fizz
   # Safety invariants: AllClustersHaveDurability, SnapshottingClusterHasSnapshot, ACLNotDeletedWhileInUse, UserNotDeletedWhileInACL, TagsExistForResources
@@ -8,26 +8,26 @@ Feature: Memorydb - An Acl Is Updated
     Given the system is initialized
 
   @minimal @happy @update_a_c_l
-  Scenario: an "ACL" is updated
-    Given the "ACL" exists
-    And the "ACL" is "ACTIVE"
-    When an "ACL" is updated
-    Then the "ACL" is in "MODIFYING" state
+  Scenario: an "memorydb" "ACL" is updated
+    Given the "memorydb" "ACL" existed
+    And the "memorydb" "ACL" was "ACTIVE"
+    When an "memorydb" "ACL" is updated
+    Then the "memorydb" "ACL" will be in "MODIFYING" state
     And every active cluster has write durability enabled
     And every snapshotting cluster has a corresponding in-progress snapshot
-    And no "ACL" in "DELETING" state is currently associated with a cluster
-    And no user in "DELETING" state is currently a member of an "ACL"
+    And no "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"
+    And no user in "DELETING" state is currently a member of an "memorydb" "ACL"
     And every active cluster and snapshot has tags
 
   @guard @negative @update_a_c_l
-  Scenario: an "ACL" is updated fails when the "ACL" does not exist
-    Given the "ACL" does not exist
-    When an "ACL" is updated
+  Scenario: an "memorydb" "ACL" is updated fails when the "memorydb" "ACL" did not exist
+    Given the "memorydb" "ACL" did not exist
+    When an "memorydb" "ACL" is updated
     Then the operation is rejected
 
   @guard @negative @update_a_c_l @lifecycle
-  Scenario: an "ACL" is updated fails when the "ACL" is not "ACTIVE"
-    Given the "ACL" exists
-    And the "ACL" is not "ACTIVE"
-    When an "ACL" is updated
+  Scenario: an "memorydb" "ACL" is updated fails when the "memorydb" "ACL" was not "ACTIVE"
+    Given the "memorydb" "ACL" existed
+    And the "memorydb" "ACL" was not "ACTIVE"
+    When an "memorydb" "ACL" is updated
     Then the operation is rejected

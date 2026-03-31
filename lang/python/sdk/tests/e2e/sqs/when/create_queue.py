@@ -1,4 +1,4 @@
-"""When: a queue is created"""
+"""When: a "sqs" "queue" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_QUEUE
 
 
-@when("a queue is created")
+@when('a "sqs" "queue" is created')
 def create_queue(lws_session, world):
     try:
         world["result"] = lws_session.client("sqs").create_queue(QueueName=TEST_QUEUE)

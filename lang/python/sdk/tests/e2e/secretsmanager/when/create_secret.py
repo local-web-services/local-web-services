@@ -1,4 +1,4 @@
-"""When: a secret is created"""
+"""When: a "secrets manager" "secret" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_SECRET, TEST_VALUE
 
 
-@when("a secret is created")
+@when('a "secrets manager" "secret" is created')
 def create_secret(lws_session, world):
     try:
         resp = lws_session.client("secretsmanager").create_secret(

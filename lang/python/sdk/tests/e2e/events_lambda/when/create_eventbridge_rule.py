@@ -12,7 +12,7 @@ from ..constants import EVENT_PATTERN, TEST_BUS, TEST_FUNC, TEST_RULE
 
 
 @when(
-    "an EventBridge rule is created to asynchronously invoke a Lambda function on matching events"
+    'an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events'
 )
 def create_eventbridge_rule(lws_session, world):
     try:

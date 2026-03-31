@@ -1,4 +1,4 @@
-"""When: a state machine definition is updated"""
+"""When: a "step functions" "state machine" definition is updated"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SFN_TARGET, INT_SM, UPDATED_DEFINITION, _sm_arn
 
 
-@when("a state machine definition is updated")
+@when('a "step functions" "state machine" definition is updated')
 def update_state_machine(client: TestClient, world):
     sm_name = world.get("state_machine_name", INT_SM)
     r = client.post(

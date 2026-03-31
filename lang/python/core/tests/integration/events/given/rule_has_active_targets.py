@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import EventsTestClient
 
 
-@given("the rule has active targets")
+@given('the "eventbridge" "rule" has active targets')
 def rule_has_active_targets(client: TestClient):
     EventsTestClient(client).put_target()

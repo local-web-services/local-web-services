@@ -1,4 +1,4 @@
-"""When: tags are removed from a state machine"""
+"""When: tags are removed from a "step functions" "state machine" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SFN_TARGET, INT_SM, INT_TAG_KEY, _sm_arn
 
 
-@when("tags are removed from a state machine")
+@when('tags are removed from a "step functions" "state machine"')
 def untag_state_machine(client: TestClient, world):
     sm_name = world.get("state_machine_name", INT_SM)
     r = client.post(

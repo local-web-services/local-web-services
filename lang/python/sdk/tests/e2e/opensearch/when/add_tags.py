@@ -1,4 +1,4 @@
-"""When: tags are added to a domain"""
+"""When: tags are added to an "opensearch" "domain" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_DOMAIN
 
 
-@when("tags are added to a domain")
+@when('tags are added to an "opensearch" "domain"')
 def add_tags(lws_session, world):
     try:
         resp = lws_session.client("opensearch").describe_domain(DomainName=TEST_DOMAIN)

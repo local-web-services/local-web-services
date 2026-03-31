@@ -1,4 +1,4 @@
-"""Given: the function has a resource policy entry"""
+"""Given: the "lambda" "function" had a resource policy entry"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import LambdaTestClient
 from ..constants import INT_FUNCTION_NAME, INT_PRINCIPAL, INT_STATEMENT_ID
 
 
-@given("the function has a resource policy entry")
+@given('the "lambda" "function" had a resource policy entry')
 def function_has_resource_policy_entry(client: TestClient):
     LambdaTestClient(client).create_function()
     client.post(

@@ -27,10 +27,10 @@ action Init:
     event_obj = {}              # event_obj[eid] = obj_id
 
 
-# step: an S3 bucket is created
-# result: the bucket is ACTIVE with no EventBridge notification configuration
-# guard: the bucket does not already exist
-# guard_violation: the bucket already exists
+# step: a "s3" "bucket" is created
+# result: the bucket will be "ACTIVE" with no EventBridge notification configuration
+# guard: the bucket did not already exist
+# guard_violation: the bucket already existed
 atomic action CreateBucket:
     oneof bid in BUCKET_IDS:
         if bid not in bucket_status:
@@ -39,9 +39,9 @@ atomic action CreateBucket:
 
 
 # step: an EventBridge event bus is created
-# result: the bus is ACTIVE
-# guard: the bus does not already exist
-# guard_violation: the bus already exists
+# result: the bus will be "ACTIVE"
+# guard: the bus did not already exist
+# guard_violation: the bus already existed
 atomic action CreateEventBus:
     oneof busid in BUS_IDS:
         if busid not in bus_status:
@@ -49,11 +49,11 @@ atomic action CreateEventBus:
 
 
 # step: the EventBridge event bus is deleted
-# result: the bus is DELETED and event delivery to it will fail
-# guard: the bus exists
-# guard_violation: the bus does not exist
-# guard: the bus is ACTIVE
-# guard_violation_lifecycle: the bus is already DELETED
+# result: the bus will be deleted and event delivery to it will fail
+# guard: the bus existed
+# guard_violation: the bus did not exist
+# guard: the bus was "ACTIVE"
+# guard_violation_lifecycle: the bus is already "DELETED"
 atomic action DeleteEventBus:
     oneof busid in BUS_IDS:
         if busid in bus_status:
@@ -63,12 +63,12 @@ atomic action DeleteEventBus:
 
 # step: EventBridge notifications are enabled on the bucket targeting a specific bus
 # result: the bucket will send events to the bus when objects are uploaded
-# guard: the bucket exists and is ACTIVE
-# guard_violation: the bucket does not exist or is not ACTIVE
+# guard: the bucket existed and was "ACTIVE"
+# guard_violation: the bucket did not exist or was "ACTIVE"
 # guard: the bucket has no EventBridge notification configured
 # guard_violation: the bucket already has an EventBridge notification configured
-# guard: the bus exists and is ACTIVE
-# guard_violation: the bus does not exist or is not ACTIVE
+# guard: the bus existed and was "ACTIVE"
+# guard_violation: the bus did not exist or was "ACTIVE"
 atomic action EnableEventBridgeNotification:
     oneof bid in BUCKET_IDS:
         if bid in bucket_status:
@@ -81,13 +81,13 @@ atomic action EnableEventBridgeNotification:
 
 
 # step: an object is uploaded and S3 delivers an event to the EventBridge bus
-# result: the object EXISTS and an event is DELIVERED to the bus
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
+# result: the object will exist and an event will be "DELIVERED" to the bus
+# guard: the bucket was "ACTIVE"
+# guard_violation_lifecycle: the bucket was not "ACTIVE"
 # guard: the bucket has an EventBridge notification configured
 # guard_violation: the bucket has no EventBridge notification configured
-# guard: the target bus is ACTIVE
-# guard_violation_lifecycle: the target bus is DELETED
+# guard: the target bus was "ACTIVE"
+# guard_violation_lifecycle: the target bus was "DELETED"
 # guard: an object slot is available
 # guard_violation_capacity: no object slot is available
 # guard: an event slot is available
@@ -112,13 +112,13 @@ atomic action PutObjectWithEvent:
 
 
 # step: an object is uploaded but event delivery fails because the bus has been deleted
-# result: the object EXISTS but no event is delivered
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
+# result: the object will exist but no event will be delivered
+# guard: the bucket was "ACTIVE"
+# guard_violation_lifecycle: the bucket was not "ACTIVE"
 # guard: the bucket has an EventBridge notification configured
 # guard_violation: the bucket has no EventBridge notification configured
-# guard: the target bus is DELETED
-# guard_violation_lifecycle: the target bus is not DELETED
+# guard: the target bus was "DELETED"
+# guard_violation_lifecycle: the target bus was not "DELETED"
 # guard: an object slot is available
 # guard_violation_capacity: no object slot is available
 atomic action PutObjectEventFails:

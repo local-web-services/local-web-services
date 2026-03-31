@@ -1,4 +1,4 @@
-"""When: a message is sent to the queue"""
+"""When: a "sqs" "message" is sent to the "sqs" "queue" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import SqsTestClient
 from ..constants import TEST_MESSAGE
 
 
-@when("a message is sent to the queue")
+@when('a "sqs" "message" is sent to the "sqs" "queue"')
 def send_message(lws_session, world):
     try:
         world["result"] = lws_session.client("sqs").send_message(

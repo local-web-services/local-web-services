@@ -1,4 +1,4 @@
-"""Given: the user has an enabled flag"""
+"""Given: the "cognito" "user" had an enabled flag"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import CognitoIdpTestClient
 from ..constants import TEST_TEMP_PASSWORD, TEST_USERNAME
 
 
-@given("the user has an enabled flag")
+@given('the "cognito" "user" had an enabled flag')
 def user_has_enabled_flag(lws_session, world):
     """Ensure a user exists (all Cognito users have an enabled flag)."""
     if not world.get("pool_id"):

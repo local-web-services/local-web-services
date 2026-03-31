@@ -1,4 +1,4 @@
-"""When: all items in the table are scanned"""
+"""When: all "dynamodb" "item"s in the "dynamodb" "table" are scanned"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_TABLE
 
 
-@when("all items in the table are scanned")
+@when('all "dynamodb" "item"s in the "dynamodb" "table" are scanned')
 def scan_table(lws_session, world):
     try:
         world["result"] = lws_session.client("dynamodb").scan(TableName=TEST_TABLE)

@@ -1,4 +1,4 @@
-"""When: a memcached cache cluster is created"""
+"""When: a memcached "elasticache" "cluster" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import TEST_CLUSTER
 
 
-@when("a memcached cache cluster is created")
+@when('a memcached "elasticache" "cluster" is created')
 def create_memcached_cluster(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:

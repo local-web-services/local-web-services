@@ -1,4 +1,4 @@
-"""When: a function is created"""
+"""When: a "lambda" "function" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import ROLE_ARN, TEST_FUNC
 
 
-@when("a function is created")
+@when('a "lambda" "function" is created')
 def create_function(lws_session, world):
     try:
         resp = lws_session.client("lambda").create_function(

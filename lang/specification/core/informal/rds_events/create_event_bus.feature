@@ -9,14 +9,14 @@ Feature: RdsEvents - An Eventbridge Event Bus Is Created
 
   @minimal @happy @create_event_bus
   Scenario: an EventBridge event bus is created
-    Given the bus does not already exist
+    Given the bus did not already exist
     When an EventBridge event bus is created
-    Then the bus is "ACTIVE"
+    Then the bus will be "ACTIVE"
     And every "DELIVERED" event references a "DB" instance that exists
     And every "DELIVERED" event references a bus that exists
 
   @guard @negative @create_event_bus
-  Scenario: an EventBridge event bus is created fails when the bus already exists
-    Given the bus already exists
+  Scenario: an EventBridge event bus is created fails when the bus already existed
+    Given the bus already existed
     When an EventBridge event bus is created
     Then the operation is rejected

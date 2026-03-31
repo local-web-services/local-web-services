@@ -1,4 +1,4 @@
-"""Then: the replication group is in "CREATING" state"""
+"""Then: the "elasticache" "replication group" will be in "CREATING" state"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import then
 from ..constants import TEST_REPLICATION_GROUP
 
 
-@then('the replication group is in "CREATING" state')
+@then('the "elasticache" "replication group" will be in "CREATING" state')
 def rg_is_creating_then(lws_session):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     resp = lws_session.client("elasticache").describe_replication_groups(

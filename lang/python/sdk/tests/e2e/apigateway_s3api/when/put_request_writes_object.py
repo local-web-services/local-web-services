@@ -1,4 +1,4 @@
-"""When: a "PUT" request is received and the "API" writes an object to the S3 bucket"""
+"""When: a "PUT" request is received and the "api gateway" "API" writes an "s3" "object" to the "s3" "bucket" """
 
 from __future__ import annotations
 
@@ -9,7 +9,9 @@ from ..client import ApigatewayS3apiTestClient
 from ..constants import TEST_BODY
 
 
-@when('a "PUT" request is received and the "API" writes an object to the S3 bucket')
+@when(
+    'a "PUT" request is received and the "api gateway" "API" writes an "s3" "object" to the "s3" "bucket"'
+)
 def put_request_writes_object(lws_session, world):
     try:
         api_id = world.get("api_id") or ApigatewayS3apiTestClient(lws_session).get_api_id()

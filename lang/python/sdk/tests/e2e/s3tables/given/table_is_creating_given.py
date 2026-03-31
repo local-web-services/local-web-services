@@ -1,4 +1,4 @@
-"""Given: the table is "CREATING" """
+"""Given: the "s3 tables" "table" was "CREATING" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import S3tablesTestClient
 from ..constants import TEST_NAMESPACE, TEST_TABLE
 
 
-@given('the table is "CREATING"')
+@given('the "s3 tables" "table" was "CREATING"')
 def table_is_creating_given(lws_session):
     try:
         bucket_arn = S3tablesTestClient(lws_session).get_bucket_arn()

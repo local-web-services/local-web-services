@@ -1,11 +1,11 @@
-"""Then: the snapshot is in "DELETING" state"""
+"""Then: the "documentdb" "SNAPSHOT" will be in "DELETING" state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the snapshot is in "DELETING" state')
+@then('the "documentdb" "SNAPSHOT" will be in "DELETING" state')
 def snapshot_is_deleting_then(world):
     expected_error = None
     actual_error = world["error"]

@@ -1,4 +1,4 @@
-"""Given: the user is disabled"""
+"""Given: the "cognito" "user" was "DISABLED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import CognitoIdpTestClient
 from ..constants import TEST_USERNAME
 
 
-@given("the user is disabled")
+@given('the "cognito" "user" was "DISABLED"')
 def user_is_disabled(lws_session, world):
     """Disable the user to set up the DISABLED state."""
     if not world.get("username"):

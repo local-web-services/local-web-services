@@ -1,4 +1,4 @@
-"""When: versions of a state machine are listed"""
+"""When: versions of a "step functions" "state machine" are listed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_SM, _sm_arn
 
 
-@when("versions of a state machine are listed")
+@when('versions of a "step functions" "state machine" are listed')
 def list_state_machine_versions(lws_session, world):
     try:
         sm_name = world.get("state_machine_name") or TEST_SM

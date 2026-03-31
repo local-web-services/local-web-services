@@ -1,4 +1,4 @@
-"""When: a tag is removed from a function"""
+"""When: a tag is removed from a "lambda" "function" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_TAG_KEY, _func_arn
 
 
-@when("a tag is removed from a function")
+@when('a tag is removed from a "lambda" "function"')
 def untag_function(lws_session, world):
     try:
         resp = lws_session.client("lambda").untag_resource(

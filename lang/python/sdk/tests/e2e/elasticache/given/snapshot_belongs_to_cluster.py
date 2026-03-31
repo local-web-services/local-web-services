@@ -1,10 +1,10 @@
-"""Given: the snapshot belongs to this cluster"""
+"""Given: the "elasticache" "snapshot" belongs to this "elasticache" "cluster" """
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given("the snapshot belongs to this cluster")
+@given('the "elasticache" "snapshot" belongs to this "elasticache" "cluster"')
 def snapshot_belongs_to_cluster():
     """No-op: snapshot is linked to cluster by default."""

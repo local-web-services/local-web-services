@@ -1,4 +1,4 @@
-"""When: an EventBridge rule is created targeting a DynamoDB table"""
+"""When: an "eventbridge" "rule" is created targeting a "dynamodb" "table" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import EVENT_PATTERN, ROLE_ARN, TEST_BUS, TEST_RULE, TEST_TABLE
 
 
-@when("an EventBridge rule is created targeting a DynamoDB table")
+@when('an "eventbridge" "rule" is created targeting a "dynamodb" "table"')
 def create_rule_targeting_dynamodb(lws_session, world):
     try:
         events = lws_session.client("events")

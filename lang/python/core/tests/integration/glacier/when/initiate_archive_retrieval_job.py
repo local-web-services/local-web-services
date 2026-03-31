@@ -1,4 +1,4 @@
-"""When: an archive retrieval job is initiated"""
+"""When: a "glacier" "archive" retrieval job is initiated"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_VAULT_NAME
 
 
-@when("an archive retrieval job is initiated")
+@when('a "glacier" "archive" retrieval job is initiated')
 def initiate_archive_retrieval_job(client: TestClient, world):
     vault_name = world.get("vault_name", INT_VAULT_NAME)
     archive_id = world.get("archive_id", "nonexistent-archive-id")

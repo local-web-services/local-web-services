@@ -30,37 +30,37 @@ action Init:
 
 
 # step: an EventBridge event bus is created
-# result: the event bus is ACTIVE
-# guard: the event bus does not already exist
-# guard_violation: the event bus already exists
+# result: the event bus will be "ACTIVE"
+# guard: the event bus did not already exist
+# guard_violation: the event bus already existed
 atomic action CreateEventBus:
     oneof bid in BUS_IDS:
         if bid not in bus_status:
             bus_status[bid] = "ACTIVE"
 
 
-# step: a Step Functions state machine is created
-# result: the state machine is ACTIVE
-# guard: the state machine does not already exist
-# guard_violation: the state machine already exists
+# step: a "step functions" "state machine" is created
+# result: the "step functions" "state machine" will be "ACTIVE"
+# guard: the "step functions" "state machine" did not already exist
+# guard_violation: the "step functions" "state machine" already existed
 atomic action CreateStateMachine:
     oneof smid in SM_IDS:
         if smid not in sm_status:
             sm_status[smid] = "ACTIVE"
 
 
-# step: an EventBridge rule is created to start a Step Functions execution on matching events
-# result: the rule is ENABLED and will trigger an execution when matching events are published
-# guard: the event bus exists
-# guard_violation: the event bus does not exist
-# guard: the event bus is ACTIVE
-# guard_violation_lifecycle: the event bus is not ACTIVE
-# guard: the state machine exists
-# guard_violation: the state machine does not exist
-# guard: the state machine is ACTIVE
-# guard_violation_lifecycle: the state machine is not ACTIVE
-# guard: the rule does not already exist
-# guard_violation: the rule already exists
+# step: an "eventbridge" "rule" is created to start a Step Functions execution on matching events
+# result: the rule will be "ENABLED" and will trigger an execution when matching events are published
+# guard: the event bus existed
+# guard_violation: the event bus did not exist
+# guard: the event bus was "ACTIVE"
+# guard_violation_lifecycle: the event bus was not "ACTIVE"
+# guard: the "step functions" "state machine" existed
+# guard_violation: the "step functions" "state machine" did not exist
+# guard: the "step functions" "state machine" was "ACTIVE"
+# guard_violation_lifecycle: the "step functions" "state machine" was not "ACTIVE"
+# guard: the rule did not already exist
+# guard_violation: the rule already existed
 atomic action PutRule:
     oneof rid in RULE_IDS:
         if rid not in rule_status:
@@ -76,16 +76,16 @@ atomic action PutRule:
 
 
 # step: an event is published to the bus and triggers a new Step Functions execution
-# result: the execution is RUNNING
-# guard: the event bus exists
-# guard_violation: the event bus does not exist
-# guard: the event bus is ACTIVE
-# guard_violation_lifecycle: the event bus is not ACTIVE
-# guard: an ENABLED rule exists on the bus targeting a state machine
-# guard_violation_lifecycle: no ENABLED rule exists on the bus targeting a state machine
-# guard: the target state machine is ACTIVE
-# guard_violation_lifecycle: the target state machine is not ACTIVE
-# guard: an execution slot is available
+# result: the "step functions" "execution" will be "RUNNING"
+# guard: the event bus existed
+# guard_violation: the event bus did not exist
+# guard: the event bus was "ACTIVE"
+# guard_violation_lifecycle: the event bus was not "ACTIVE"
+# guard: an ENABLED rule existed on the bus targeting a state machine
+# guard_violation_lifecycle: no ENABLED rule existed on the bus targeting a state machine
+# guard: the target state machine was "ACTIVE"
+# guard_violation_lifecycle: the target state machine was not "ACTIVE"
+# guard: an "step functions" "execution" slot is available
 # guard_violation_capacity: no execution slot is available
 atomic action PutEvent:
     oneof bid in BUS_IDS:
@@ -106,10 +106,10 @@ atomic action PutEvent:
 
 
 # fake_skip: internal
-# step: a running execution completes successfully
-# result: the execution is SUCCEEDED
-# guard: an execution is RUNNING
-# guard_violation_lifecycle: no execution is RUNNING
+# step: a running "step functions" "execution" completes successfully
+# result: the "step functions" "execution" will be "SUCCEEDED"
+# guard: a "step functions" "execution" was "RUNNING"
+# guard_violation_lifecycle: no "step functions" "execution" was "RUNNING"
 atomic action ExecutionSucceeds:
     oneof eid in EXEC_IDS:
         if eid in exec_status:
@@ -118,10 +118,10 @@ atomic action ExecutionSucceeds:
 
 
 # fake_skip: internal
-# step: a running execution fails
-# result: the execution is FAILED
-# guard: an execution is RUNNING
-# guard_violation_lifecycle: no execution is RUNNING
+# step: a running "step functions" "execution" fails
+# result: the "step functions" "execution" will be "FAILED"
+# guard: a "step functions" "execution" was "RUNNING"
+# guard_violation_lifecycle: no "step functions" "execution" was "RUNNING"
 atomic action ExecutionFails:
     oneof eid in EXEC_IDS:
         if eid in exec_status:

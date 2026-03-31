@@ -1,4 +1,4 @@
-"""Then: the domain is "ACTIVE" again"""
+"""Then: the "opensearch" "domain" will be "ACTIVE" again"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_DOMAIN
 
 
-@then('the domain is "ACTIVE" again')
+@then('the "opensearch" "domain" will be "ACTIVE" again')
 def domain_is_active_again_then(lws_session):
     resp = lws_session.client("opensearch").describe_domain(DomainName=TEST_DOMAIN)
     expected_processing = False

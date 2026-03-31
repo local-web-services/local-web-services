@@ -1,5 +1,5 @@
 @lambdadocdb @generated
-Feature: LambdaDocdb - The Lambda Function Fails To Connect Because The Documentdb Cluster Is Stopped
+Feature: LambdaDocdb - The "Lambda" "Function" Fails To Connect Because The "Documentdb" "Cluster" Is Stopped
 
   # Generated from FizzBee spec: lambda_docdb.fizz
   # Safety invariants: InvocationRequiresActiveFunction, DocumentReferencesExistingCluster
@@ -8,23 +8,23 @@ Feature: LambdaDocdb - The Lambda Function Fails To Connect Because The Document
     Given the system is initialized
 
   @minimal @happy @invocation_fails_cluster_stopped
-  Scenario: the Lambda function fails to connect because the DocumentDB cluster is stopped
-    Given an invocation is "IN_PROGRESS"
-    And the cluster is "STOPPED"
-    When the Lambda function fails to connect because the DocumentDB cluster is stopped
-    Then the invocation is "FAILED" with a connection error
+  Scenario: the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "documentdb" "cluster" was "STOPPED"
+    When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
+    Then the invocation will be "FAILED" with a connection error
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a cluster that exists
+    And every existing document references a "documentdb" "cluster" that exists
 
   @guard @negative @invocation_fails_cluster_stopped @lifecycle
-  Scenario: the Lambda function fails to connect because the DocumentDB cluster is stopped fails when no invocation is "IN_PROGRESS"
-    Given no invocation is "IN_PROGRESS"
-    When the Lambda function fails to connect because the DocumentDB cluster is stopped
+  Scenario: the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped fails when no "lambda" "invocation" was "IN_PROGRESS"
+    Given no "lambda" "invocation" was "IN_PROGRESS"
+    When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     Then the operation is rejected
 
   @guard @negative @invocation_fails_cluster_stopped @lifecycle
-  Scenario: the Lambda function fails to connect because the DocumentDB cluster is stopped fails when the cluster is not "STOPPED"
-    Given an invocation is "IN_PROGRESS"
-    And the cluster is not "STOPPED"
-    When the Lambda function fails to connect because the DocumentDB cluster is stopped
+  Scenario: the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped fails when the "documentdb" "cluster" was not "STOPPED"
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "documentdb" "cluster" was not "STOPPED"
+    When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     Then the operation is rejected

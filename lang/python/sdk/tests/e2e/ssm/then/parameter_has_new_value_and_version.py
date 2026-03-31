@@ -1,4 +1,4 @@
-"""Then: the parameter has a new value and an incremented version"""
+"""Then: the "ssm" "parameter" has a new value and an incremented version"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_PARAM, TEST_VALUE2
 
 
-@then("the parameter has a new value and an incremented version")
+@then('the "ssm" "parameter" has a new value and an incremented version')
 def parameter_has_new_value_and_version(lws_session):
     resp = lws_session.client("ssm").get_parameter(Name=TEST_PARAM)
     expected_value = TEST_VALUE2

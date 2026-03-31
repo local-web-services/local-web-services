@@ -24,10 +24,10 @@ action Init:
     snapshot_status = {}
     snapshot_cluster = {}
 
-# step: a database cluster is created
-# result: the cluster is in CREATING state
-# guard: the cluster does not already exist
-# guard_violation: the cluster already exists
+# step: a "neptune" "cluster" is created
+# result: the "neptune" "cluster" will be in "CREATING" state
+# guard: the "neptune" "cluster" did not already exist
+# guard_violation: the "neptune" "cluster" already existed
 atomic action CreateDBCluster:
     oneof cid in CLUSTER_IDS:
         if cid not in cluster_status:
@@ -36,12 +36,12 @@ atomic action CreateDBCluster:
             cluster_primary_instance[cid] = ""
 
 # fake_skip: internal
-# step: a database cluster finishes creating
-# result: the cluster is AVAILABLE
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is CREATING
-# guard_violation: the cluster is not CREATING
+# step: a "neptune" "cluster" finishes creating
+# result: the "neptune" "cluster" will be "AVAILABLE"
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "cluster" was "CREATING"
+# guard_violation: the "neptune" "cluster" was not "CREATING"
 atomic action CompleteClusterCreation:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -49,24 +49,24 @@ atomic action CompleteClusterCreation:
                 cluster_status[cid] = "AVAILABLE"
 
 # fake_skip: internal
-# step: a database cluster creation fails
-# result: the cluster is in FAILED state
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is CREATING
-# guard_violation: the cluster is not CREATING
+# step: a "neptune" "cluster" creation fails
+# result: the "neptune" "cluster" will be in "FAILED" state
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "cluster" was "CREATING"
+# guard_violation: the "neptune" "cluster" was not "CREATING"
 atomic action FailClusterCreation:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
             if cluster_status[cid] == "CREATING":
                 cluster_status[cid] = "FAILED"
 
-# step: a database cluster configuration is modified
-# result: the cluster is in MODIFYING state
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
+# step: a "neptune" "cluster" configuration is modified
+# result: the "neptune" "cluster" will be in "MODIFYING" state
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "neptune" "cluster" was not "AVAILABLE"
 atomic action ModifyDBCluster:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -74,24 +74,24 @@ atomic action ModifyDBCluster:
                 cluster_status[cid] = "MODIFYING"
 
 # fake_skip: internal
-# step: a database cluster modification completes
-# result: the cluster returns to AVAILABLE state
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is MODIFYING
-# guard_violation: the cluster is not MODIFYING
+# step: a "neptune" "cluster" modification completes
+# result: the "neptune" "cluster" returns to AVAILABLE state
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "cluster" was "MODIFYING"
+# guard_violation: the "neptune" "cluster" was not "MODIFYING"
 atomic action CompleteClusterModification:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
             if cluster_status[cid] == "MODIFYING":
                 cluster_status[cid] = "AVAILABLE"
 
-# step: a database cluster is stopped
-# result: the cluster is in STOPPING state
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
+# step: a "neptune" "cluster" is stopped
+# result: the "neptune" "cluster" will be in "STOPPING" state
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "neptune" "cluster" was not "AVAILABLE"
 atomic action StopDBCluster:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -99,18 +99,18 @@ atomic action StopDBCluster:
                 cluster_status[cid] = "STOPPING"
 
 # fake_skip: internal
-# step: a database cluster stop completes
-# result: the cluster and its instances are STOPPED
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is STOPPING
-# guard_violation: the cluster is not STOPPING
-# guard: the instance is associated with a cluster
-# guard_violation: the instance is not associated with a cluster
-# guard: the instance belongs to this cluster
-# guard_violation: the instance belongs to a different cluster
-# guard: the instance is AVAILABLE
-# guard_violation: the instance is not AVAILABLE
+# step: a "neptune" "cluster" stop completes
+# result: the "neptune" "cluster" and its instances are STOPPED
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "cluster" was "STOPPING"
+# guard_violation: the "neptune" "cluster" was not "STOPPING"
+# guard: the "neptune" "instance" is associated with a "neptune" "cluster"
+# guard_violation: the "neptune" "instance" is not associated with a "neptune" "cluster"
+# guard: the "neptune" "instance" belongs to this neptune cluster
+# guard_violation: the "neptune" "instance" belongs to a different neptune cluster
+# guard: the "neptune" "instance" was "AVAILABLE"
+# guard_violation: the "neptune" "instance" was not "AVAILABLE"
 atomic action CompleteClusterStop:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -122,12 +122,12 @@ atomic action CompleteClusterStop:
                             if instance_status[iid] == "AVAILABLE":
                                 instance_status[iid] = "STOPPED"
 
-# step: a stopped database cluster is started
-# result: the cluster is in STARTING state
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is STOPPED
-# guard_violation_lifecycle: the cluster is not STOPPED
+# step: a stopped neptune database neptune cluster is started
+# result: the "neptune" "cluster" will be in "STARTING" state
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "cluster" was "STOPPED"
+# guard_violation_lifecycle: the "neptune" "cluster" was not "STOPPED"
 atomic action StartDBCluster:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -135,18 +135,18 @@ atomic action StartDBCluster:
                 cluster_status[cid] = "STARTING"
 
 # fake_skip: internal
-# step: a database cluster start completes
-# result: the cluster and its instances are AVAILABLE
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is STARTING
-# guard_violation: the cluster is not STARTING
-# guard: the instance is associated with a cluster
-# guard_violation: the instance is not associated with a cluster
-# guard: the instance belongs to this cluster
-# guard_violation: the instance belongs to a different cluster
-# guard: the instance is STOPPED
-# guard_violation: the instance is not STOPPED
+# step: a "neptune" "cluster" start completes
+# result: the "neptune" "cluster" and its instances are AVAILABLE
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "cluster" was "STARTING"
+# guard_violation: the "neptune" "cluster" was not "STARTING"
+# guard: the "neptune" "instance" is associated with a "neptune" "cluster"
+# guard_violation: the "neptune" "instance" is not associated with a "neptune" "cluster"
+# guard: the "neptune" "instance" belongs to this neptune cluster
+# guard_violation: the "neptune" "instance" belongs to a different neptune cluster
+# guard: the "neptune" "instance" was "STOPPED"
+# guard_violation: the "neptune" "instance" was not "STOPPED"
 atomic action CompleteClusterStart:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -158,14 +158,14 @@ atomic action CompleteClusterStart:
                             if instance_status[iid] == "STOPPED":
                                 instance_status[iid] = "AVAILABLE"
 
-# step: a database cluster is deleted
-# result: the cluster is in DELETING state
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
-# guard: the cluster has no non-deleted instances
-# guard_violation_lifecycle: the cluster has non-deleted instances
+# step: a "neptune" "cluster" is deleted
+# result: the "neptune" "cluster" will be in "DELETING" state
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "neptune" "cluster" was not "AVAILABLE"
+# guard: the "neptune" "cluster" has no non-deleted instances
+# guard_violation_lifecycle: the "neptune" "cluster" has non-deleted instances
 atomic action DeleteDBCluster:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -174,26 +174,26 @@ atomic action DeleteDBCluster:
                     cluster_status[cid] = "DELETING"
 
 # fake_skip: internal
-# step: a database cluster deletion completes
-# result: the cluster is DELETED
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is DELETING
-# guard_violation: the cluster is not DELETING
+# step: a "neptune" "cluster" deletion completes
+# result: the "neptune" "cluster" will be "DELETED"
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "cluster" was "DELETING"
+# guard_violation: the "neptune" "cluster" was not "DELETING"
 atomic action CompleteClusterDeletion:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
             if cluster_status[cid] == "DELETING":
                 cluster_status[cid] = "DELETED"
 
-# step: a database instance is created in an available cluster
-# result: the instance is in CREATING state and associated with the cluster
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
-# guard: the instance slot is available
-# guard_violation: the instance slot is not available
+# step: a "neptune" "instance" is created in an available neptune cluster
+# result: the "neptune" "INSTANCE" will be in "CREATING" state and associated with the "neptune" "cluster"
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "neptune" "cluster" was not "AVAILABLE"
+# guard: the "neptune" "instance" slot is available
+# guard_violation: the "neptune" "instance" slot is not available
 atomic action CreateDBInstance:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -208,16 +208,16 @@ atomic action CreateDBInstance:
                             instance_is_primary[iid] = False
 
 # fake_skip: internal
-# step: a database instance finishes creating
-# result: the instance is AVAILABLE and the cluster primary is updated if applicable
-# guard: the instance exists
-# guard_violation: the instance does not exist
-# guard: the instance is CREATING
-# guard_violation: the instance is not CREATING
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the instance is the primary
-# guard_violation: the instance is not the primary
+# step: a "neptune" "instance" finishes creating
+# result: the "neptune" "INSTANCE" will be "AVAILABLE" and the "neptune" "cluster" primary will be updated if applicable
+# guard: the "neptune" "instance" existed
+# guard_violation: the "neptune" "instance" did not exist
+# guard: the "neptune" "instance" was "CREATING"
+# guard_violation: the "neptune" "instance" was not "CREATING"
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "instance" is the primary
+# guard_violation: the "neptune" "instance" is not the primary
 atomic action CompleteInstanceCreation:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -228,16 +228,16 @@ atomic action CompleteInstanceCreation:
                     if instance_is_primary[iid]:
                         cluster_primary_instance[cid] = iid
 
-# step: a database instance configuration is modified
-# result: the instance is in MODIFYING state
-# guard: the instance exists
-# guard_violation: the instance does not exist
-# guard: the instance is AVAILABLE
-# guard_violation_lifecycle: the instance is not AVAILABLE
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
+# step: a "neptune" "instance" configuration is modified
+# result: the "neptune" "INSTANCE" will be in "MODIFYING" state
+# guard: the "neptune" "instance" existed
+# guard_violation: the "neptune" "instance" did not exist
+# guard: the "neptune" "instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "neptune" "instance" was not "AVAILABLE"
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "neptune" "cluster" was not "AVAILABLE"
 atomic action ModifyDBInstance:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -248,28 +248,28 @@ atomic action ModifyDBInstance:
                         instance_status[iid] = "MODIFYING"
 
 # fake_skip: internal
-# step: a database instance modification completes
-# result: the instance returns to AVAILABLE state
-# guard: the instance exists
-# guard_violation: the instance does not exist
-# guard: the instance is MODIFYING
-# guard_violation: the instance is not MODIFYING
+# step: a "neptune" "instance" modification completes
+# result: the "neptune" "instance" returns to AVAILABLE state
+# guard: the "neptune" "instance" existed
+# guard_violation: the "neptune" "instance" did not exist
+# guard: the "neptune" "instance" was "MODIFYING"
+# guard_violation: the "neptune" "instance" was not "MODIFYING"
 atomic action CompleteInstanceModification:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
             if instance_status[iid] == "MODIFYING":
                 instance_status[iid] = "AVAILABLE"
 
-# step: a database instance is rebooted
-# result: the instance is in REBOOTING state
-# guard: the instance exists
-# guard_violation: the instance does not exist
-# guard: the instance is AVAILABLE
-# guard_violation_lifecycle: the instance is not AVAILABLE
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
+# step: a "neptune" "instance" is rebooted
+# result: the "neptune" "INSTANCE" will be in "REBOOTING" state
+# guard: the "neptune" "instance" existed
+# guard_violation: the "neptune" "instance" did not exist
+# guard: the "neptune" "instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "neptune" "instance" was not "AVAILABLE"
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "neptune" "cluster" was not "AVAILABLE"
 atomic action RebootDBInstance:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -280,24 +280,24 @@ atomic action RebootDBInstance:
                         instance_status[iid] = "REBOOTING"
 
 # fake_skip: internal
-# step: a database instance reboot completes
-# result: the instance returns to AVAILABLE state
-# guard: the instance exists
-# guard_violation: the instance does not exist
-# guard: the instance is REBOOTING
-# guard_violation: the instance is not REBOOTING
+# step: a "neptune" "instance" reboot completes
+# result: the "neptune" "instance" returns to AVAILABLE state
+# guard: the "neptune" "instance" existed
+# guard_violation: the "neptune" "instance" did not exist
+# guard: the "neptune" "instance" was "REBOOTING"
+# guard_violation: the "neptune" "instance" was not "REBOOTING"
 atomic action CompleteInstanceReboot:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
             if instance_status[iid] == "REBOOTING":
                 instance_status[iid] = "AVAILABLE"
 
-# step: a database instance is deleted
-# result: the instance is in DELETING state
-# guard: the instance exists
-# guard_violation: the instance does not exist
-# guard: the instance is AVAILABLE
-# guard_violation_lifecycle: the instance is not AVAILABLE
+# step: a "neptune" "instance" is deleted
+# result: the "neptune" "INSTANCE" will be in "DELETING" state
+# guard: the "neptune" "instance" existed
+# guard_violation: the "neptune" "instance" did not exist
+# guard: the "neptune" "instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "neptune" "instance" was not "AVAILABLE"
 atomic action DeleteDBInstance:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -305,16 +305,16 @@ atomic action DeleteDBInstance:
                 instance_status[iid] = "DELETING"
 
 # fake_skip: internal
-# step: a database instance deletion completes
-# result: the instance is DELETED and the cluster primary is cleared if applicable
-# guard: the instance exists
-# guard_violation: the instance does not exist
-# guard: the instance is DELETING
-# guard_violation: the instance is not DELETING
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the instance is the primary of the cluster
-# guard_violation: the instance is not the primary of the cluster
+# step: a "neptune" "instance" deletion completes
+# result: the "neptune" "INSTANCE" will be "DELETED" and the "neptune" "cluster" primary will be cleared if applicable
+# guard: the "neptune" "instance" existed
+# guard_violation: the "neptune" "instance" did not exist
+# guard: the "neptune" "instance" was "DELETING"
+# guard_violation: the "neptune" "instance" was not "DELETING"
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "instance" is the primary of the "neptune" "cluster"
+# guard_violation: the "neptune" "instance" is not the primary of the "neptune" "cluster"
 atomic action CompleteInstanceDeletion:
     oneof iid in INSTANCE_IDS:
         if iid in instance_status:
@@ -326,14 +326,14 @@ atomic action CompleteInstanceDeletion:
                         cluster_primary_instance[cid] = ""
 
 # MultiAZFailover: model as cluster going through MODIFYING (promotes a new primary)
-# step: a multi-AZ failover is triggered on a cluster
-# result: the cluster enters MODIFYING state for primary promotion
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
-# guard: multi-AZ is enabled for the cluster
-# guard_violation: multi-AZ is not enabled for the cluster
+# step: a multi-AZ failover is triggered on a "neptune" "cluster"
+# result: the "neptune" "cluster" will be in "MODIFYING" state for primary promotion
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "neptune" "cluster" was not "AVAILABLE"
+# guard: multi-AZ was "ENABLED" for the "neptune" "cluster"
+# guard_violation: multi-AZ was not "ENABLED" for the "neptune" "cluster"
 atomic action MultiAZFailover:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -343,20 +343,20 @@ atomic action MultiAZFailover:
 
 # fake_skip: internal
 # Promote a replica instance to primary while cluster is MODIFYING
-# step: a replica instance is promoted to primary during failover
-# result: the cluster returns to AVAILABLE with a new primary instance
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is MODIFYING
-# guard_violation: the cluster is not MODIFYING
-# guard: the new primary instance exists
-# guard_violation: the new primary instance does not exist
-# guard: the instance belongs to this cluster
-# guard_violation: the instance does not belong to this cluster
-# guard: the instance is not already the primary
-# guard_violation: the instance is already the primary
-# guard: the instance is AVAILABLE
-# guard_violation_lifecycle: the instance is not AVAILABLE
+# step: a replica "neptune" "instance" is promoted to primary during failover
+# result: the "neptune" "cluster" returns to AVAILABLE with a new primary neptune instance
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "cluster" was "MODIFYING"
+# guard_violation: the "neptune" "cluster" was not "MODIFYING"
+# guard: the new primary "neptune" "instance" existed
+# guard_violation: the new primary "neptune" "instance" did not exist
+# guard: the "neptune" "instance" belongs to this neptune cluster
+# guard_violation: the "neptune" "instance" does not belong to this neptune cluster
+# guard: the "neptune" "instance" was not already the primary
+# guard_violation: the "neptune" "instance" was already the primary
+# guard: the "neptune" "instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "neptune" "instance" was not "AVAILABLE"
 atomic action PromoteReplicaToPrimary:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -373,14 +373,14 @@ atomic action PromoteReplicaToPrimary:
                                         instance_is_primary[old_primary] = False
                                     cluster_status[cid] = "AVAILABLE"
 
-# step: a database cluster snapshot is created
-# result: the snapshot is in CREATING state and linked to the cluster
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
-# guard: the snapshot slot is available
-# guard_violation: the snapshot slot is not available
+# step: a "neptune" "cluster" neptune snapshot is created
+# result: the "neptune" "SNAPSHOT" will be in "CREATING" state and linked to the "neptune" "cluster"
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "neptune" "cluster" was not "AVAILABLE"
+# guard: the "neptune" "snapshot" slot is available
+# guard_violation: the "neptune" "snapshot" slot is not available
 atomic action CreateDBClusterSnapshot:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -391,12 +391,12 @@ atomic action CreateDBClusterSnapshot:
                         snapshot_cluster[sid] = cid
 
 # fake_skip: internal
-# step: a database cluster snapshot finishes creating
-# result: the snapshot is AVAILABLE and the cluster returns to AVAILABLE if it was backing up
-# guard: the snapshot exists
-# guard_violation: the snapshot does not exist
-# guard: the snapshot is CREATING
-# guard_violation: the snapshot is not CREATING
+# step: a "neptune" "cluster" neptune snapshot finishes creating
+# result: the "neptune" "SNAPSHOT" will be "AVAILABLE" and the "neptune" "cluster" returns to AVAILABLE if it was backing up
+# guard: the "neptune" "snapshot" existed
+# guard_violation: the "neptune" "snapshot" did not exist
+# guard: the "neptune" "snapshot" was "CREATING"
+# guard_violation: the "neptune" "snapshot" was not "CREATING"
 atomic action CompleteSnapshotCreation:
     oneof sid in SNAPSHOT_IDS:
         if sid in snapshot_status:
@@ -407,12 +407,12 @@ atomic action CompleteSnapshotCreation:
                     if cluster_status[cid] == "BACKING_UP":
                         cluster_status[cid] = "AVAILABLE"
 
-# step: a database cluster snapshot is deleted
-# result: the snapshot is in DELETING state
-# guard: the snapshot exists
-# guard_violation: the snapshot does not exist
-# guard: the snapshot is AVAILABLE
-# guard_violation_lifecycle: the snapshot is not AVAILABLE
+# step: a "neptune" "cluster" neptune snapshot is deleted
+# result: the "neptune" "SNAPSHOT" will be in "DELETING" state
+# guard: the "neptune" "snapshot" existed
+# guard_violation: the "neptune" "snapshot" did not exist
+# guard: the "neptune" "snapshot" was "AVAILABLE"
+# guard_violation_lifecycle: the "neptune" "snapshot" was not "AVAILABLE"
 atomic action DeleteDBClusterSnapshot:
     oneof sid in SNAPSHOT_IDS:
         if sid in snapshot_status:
@@ -420,26 +420,26 @@ atomic action DeleteDBClusterSnapshot:
                 snapshot_status[sid] = "DELETING"
 
 # fake_skip: internal
-# step: a database cluster snapshot deletion completes
-# result: the snapshot is DELETED
-# guard: the snapshot exists
-# guard_violation: the snapshot does not exist
-# guard: the snapshot is DELETING
-# guard_violation: the snapshot is not DELETING
+# step: a "neptune" "cluster" neptune snapshot deletion completes
+# result: the "neptune" "SNAPSHOT" will be "DELETED"
+# guard: the "neptune" "snapshot" existed
+# guard_violation: the "neptune" "snapshot" did not exist
+# guard: the "neptune" "snapshot" was "DELETING"
+# guard_violation: the "neptune" "snapshot" was not "DELETING"
 atomic action CompleteSnapshotDeletion:
     oneof sid in SNAPSHOT_IDS:
         if sid in snapshot_status:
             if snapshot_status[sid] == "DELETING":
                 snapshot_status[sid] = "DELETED"
 
-# step: a cluster is restored from a snapshot
-# result: the restored cluster is in RESTORING state
-# guard: the snapshot exists
-# guard_violation: the snapshot does not exist
-# guard: the snapshot is AVAILABLE
-# guard_violation_lifecycle: the snapshot is not AVAILABLE
-# guard: the target cluster slot is available
-# guard_violation: the target cluster slot is not available
+# step: a "neptune" "cluster" is restored from a neptune snapshot
+# result: the restored neptune cluster will be in "RESTORING" state
+# guard: the "neptune" "snapshot" existed
+# guard_violation: the "neptune" "snapshot" did not exist
+# guard: the "neptune" "snapshot" was "AVAILABLE"
+# guard_violation_lifecycle: the "neptune" "snapshot" was not "AVAILABLE"
+# guard: the target "neptune" "cluster" slot is available
+# guard_violation: the target "neptune" "cluster" slot is not available
 atomic action RestoreDBClusterFromSnapshot:
     oneof sid in SNAPSHOT_IDS:
         if sid in snapshot_status:
@@ -451,12 +451,12 @@ atomic action RestoreDBClusterFromSnapshot:
                         cluster_primary_instance[cid] = ""
 
 # fake_skip: internal
-# step: a database cluster restore from snapshot completes
-# result: the cluster is AVAILABLE
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is RESTORING
-# guard_violation: the cluster is not RESTORING
+# step: a "neptune" "cluster" restore from neptune snapshot completes
+# result: the "neptune" "cluster" will be "AVAILABLE"
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "cluster" was "RESTORING"
+# guard_violation: the "neptune" "cluster" was not "RESTORING"
 atomic action CompleteClusterRestore:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -464,14 +464,14 @@ atomic action CompleteClusterRestore:
                 cluster_status[cid] = "AVAILABLE"
 
 # fake_skip: internal
-# step: an automated backup window runs on an available cluster
-# result: a snapshot is CREATING and the cluster is in BACKING_UP state
-# guard: the cluster exists
-# guard_violation: the cluster does not exist
-# guard: the cluster is AVAILABLE
-# guard_violation_lifecycle: the cluster is not AVAILABLE
-# guard: a snapshot slot is available
-# guard_violation: no snapshot slot is available
+# step: an automated backup window runs on an available neptune cluster
+# result: a neptune snapshot will be "CREATING" and the "neptune" "cluster" will be in "BACKING_UP" state
+# guard: the "neptune" "cluster" existed
+# guard_violation: the "neptune" "cluster" did not exist
+# guard: the "neptune" "cluster" was "AVAILABLE"
+# guard_violation_lifecycle: the "neptune" "cluster" was not "AVAILABLE"
+# guard: a neptune snapshot slot is available
+# guard_violation: no neptune snapshot slot is available
 atomic action AutomatedBackupWindow:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:

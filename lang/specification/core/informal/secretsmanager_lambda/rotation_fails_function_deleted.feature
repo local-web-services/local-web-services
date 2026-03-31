@@ -1,5 +1,5 @@
 @secretsmanagerlambda @generated
-Feature: SecretsmanagerLambda - The Lambda Rotation Function Fails And The Rotation Is Aborted
+Feature: SecretsmanagerLambda - The "Lambda" "Rotation Function" Fails And The Rotation Is Aborted
 
   # Generated from FizzBee spec: secretsmanager_lambda.fizz
   # Safety invariants: RotatingSecretHasInProgressInvocation, SuccessfulRotationRotatedASecret
@@ -8,23 +8,23 @@ Feature: SecretsmanagerLambda - The Lambda Rotation Function Fails And The Rotat
     Given the system is initialized
 
   @minimal @happy @rotation_fails_function_deleted @internal
-  Scenario: the Lambda rotation function fails and the rotation is aborted
-    Given an invocation is "IN_PROGRESS"
-    And the rotation function is "DELETED"
-    When the Lambda rotation function fails and the rotation is aborted
-    Then the invocation is "FAILED" and the secret remains "ACTIVE" with the old version
+  Scenario: the "lambda" "rotation function" fails and the rotation is aborted
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the rotation function was "DELETED"
+    When the "lambda" "rotation function" fails and the rotation is aborted
+    Then the invocation will be "FAILED" and the "secretsmanager" "secret" remains "ACTIVE" with the old version
     And every "ROTATING" secret has an "IN_PROGRESS" rotation invocation
     And every successful rotation invocation recorded which secret it rotated
 
   @guard @negative @rotation_fails_function_deleted @internal
-  Scenario: the Lambda rotation function fails and the rotation is aborted fails when no invocation is "IN_PROGRESS"
-    Given no invocation is "IN_PROGRESS"
-    When the Lambda rotation function fails and the rotation is aborted
+  Scenario: the "lambda" "rotation function" fails and the rotation is aborted fails when no "lambda" "invocation" was "IN_PROGRESS"
+    Given no "lambda" "invocation" was "IN_PROGRESS"
+    When the "lambda" "rotation function" fails and the rotation is aborted
     Then the operation is rejected
 
   @guard @negative @rotation_fails_function_deleted @internal
-  Scenario: the Lambda rotation function fails and the rotation is aborted fails when the rotation function is not "DELETED"
-    Given an invocation is "IN_PROGRESS"
-    And the rotation function is not "DELETED"
-    When the Lambda rotation function fails and the rotation is aborted
+  Scenario: the "lambda" "rotation function" fails and the rotation is aborted fails when the rotation function was not "DELETED"
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the rotation function was not "DELETED"
+    When the "lambda" "rotation function" fails and the rotation is aborted
     Then the operation is rejected

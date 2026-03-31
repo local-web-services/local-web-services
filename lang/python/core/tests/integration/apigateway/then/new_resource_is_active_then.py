@@ -1,11 +1,11 @@
-"""Then: the new resource is "ACTIVE" """
+"""Then: the new "api gateway" "resource" will be "ACTIVE" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the new resource is "ACTIVE"')
+@then('the new "api gateway" "resource" will be "ACTIVE"')
 def new_resource_is_active_then(world):
     actual_result = world["result"]
     assert actual_result is not None, "Expected resource creation result but got None"

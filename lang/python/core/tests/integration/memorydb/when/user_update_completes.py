@@ -1,4 +1,4 @@
-"""When: a user update completes"""
+"""When: a "memorydb" "user" update completes"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_USER_NAME
 
 
-@when("a user update completes")
+@when('a "memorydb" "user" update completes')
 def user_update_completes(client: TestClient, world):
     r = client.post(
         "/",

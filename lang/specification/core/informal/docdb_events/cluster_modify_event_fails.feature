@@ -1,5 +1,5 @@
 @docdbevents @generated
-Feature: DocdbEvents - A Cluster Modification Begins But Event Delivery Fails Because The Bus Is Deleted
+Feature: DocdbEvents - A "Documentdb" "Cluster" Modification Begins But Event Delivery Fails Because The Bus Is Deleted
 
   # Generated from FizzBee spec: docdb_events.fizz
   # Safety invariants: DeliveredEventReferencesExistingCluster, DeliveredEventReferencesExistingBus
@@ -8,23 +8,23 @@ Feature: DocdbEvents - A Cluster Modification Begins But Event Delivery Fails Be
     Given the system is initialized
 
   @minimal @happy @cluster_modify_event_fails @internal
-  Scenario: a cluster modification begins but event delivery fails because the bus is deleted
-    Given the cluster is "AVAILABLE"
-    And the bus is "DELETED"
-    When a cluster modification begins but event delivery fails because the bus is deleted
-    Then the cluster is "MODIFYING" but no event is delivered
-    And every "DELIVERED" event references a cluster that exists
+  Scenario: a "documentdb" "cluster" modification begins but event delivery fails because the bus is deleted
+    Given the "documentdb" "cluster" was "AVAILABLE"
+    And the bus was "DELETED"
+    When a "documentdb" "cluster" modification begins but event delivery fails because the bus is deleted
+    Then the "documentdb" "cluster" will be "MODIFYING" but no event will be delivered
+    And every "DELIVERED" event references a "documentdb" "cluster" that exists
     And every "DELIVERED" event references a bus that exists
 
   @guard @negative @cluster_modify_event_fails @internal
-  Scenario: a cluster modification begins but event delivery fails because the bus is deleted fails when the cluster is not "AVAILABLE"
-    Given the cluster is not "AVAILABLE"
-    When a cluster modification begins but event delivery fails because the bus is deleted
+  Scenario: a "documentdb" "cluster" modification begins but event delivery fails because the bus is deleted fails when the "documentdb" "cluster" was not "AVAILABLE"
+    Given the "documentdb" "cluster" was not "AVAILABLE"
+    When a "documentdb" "cluster" modification begins but event delivery fails because the bus is deleted
     Then the operation is rejected
 
   @guard @negative @cluster_modify_event_fails @internal
-  Scenario: a cluster modification begins but event delivery fails because the bus is deleted fails when the bus is not "DELETED"
-    Given the cluster is "AVAILABLE"
-    And the bus is not "DELETED"
-    When a cluster modification begins but event delivery fails because the bus is deleted
+  Scenario: a "documentdb" "cluster" modification begins but event delivery fails because the bus is deleted fails when the bus was not "DELETED"
+    Given the "documentdb" "cluster" was "AVAILABLE"
+    And the bus was not "DELETED"
+    When a "documentdb" "cluster" modification begins but event delivery fails because the bus is deleted
     Then the operation is rejected

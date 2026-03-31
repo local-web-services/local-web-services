@@ -1,4 +1,4 @@
-"""Given: the "ACL" exists"""
+"""Given: the "memorydb" "ACL" existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import MemorydbTestClient
 
 
-@given('the "ACL" exists')
+@given('the "memorydb" "ACL" existed')
 def acl_exists(client: TestClient):
     MemorydbTestClient(client).create_acl()

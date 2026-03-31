@@ -1,5 +1,5 @@
 @events @generated
-Feature: Events - Targets For A Rule Are Listed
+Feature: events - Targets For An "Eventbridge" "Rule" Are Listed
 
   # Generated from FizzBee spec: events.fizz
   # Safety invariants: EventBusStatusValid, RuleStatusValid, RulePatternTypeValid, RuleBusExists, DefaultBusCannotBeDeleted, DeleteRuleRequiresNoTargets, RuleOnlyEnabledOnActiveBus, DeadLetterQueueBounded
@@ -8,11 +8,11 @@ Feature: Events - Targets For A Rule Are Listed
     Given the system is initialized
 
   @minimal @happy @list_targets_by_rule
-  Scenario: targets for a rule are listed
-    Given the rule exists
-    And the rule is not "DELETED"
-    When targets for a rule are listed
-    Then the list of targets is returned
+  Scenario: targets for an "eventbridge" "rule" are listed
+    Given the "eventbridge" "rule" existed
+    And the "eventbridge" "rule" was not "DELETED"
+    When targets for an "eventbridge" "rule" are listed
+    Then the list of targets will be returned
     And every event bus has a valid status ("ACTIVE" or "DELETED")
     And every rule has a valid status ("ENABLED", "DISABLED", or "DELETED")
     And every rule has a valid pattern type ("EVENT_PATTERN" or "SCHEDULE")
@@ -23,14 +23,14 @@ Feature: Events - Targets For A Rule Are Listed
     And the dead-letter queue never exceeds its bounded capacity
 
   @guard @negative @list_targets_by_rule
-  Scenario: targets for a rule are listed fails when the rule does not exist
-    Given the rule does not exist
-    When targets for a rule are listed
+  Scenario: targets for an "eventbridge" "rule" are listed fails when the "eventbridge" "rule" did not exist
+    Given the "eventbridge" "rule" did not exist
+    When targets for an "eventbridge" "rule" are listed
     Then the operation is rejected
 
   @guard @negative @list_targets_by_rule
-  Scenario: targets for a rule are listed fails when the rule is "DELETED"
-    Given the rule exists
-    And the rule is "DELETED"
-    When targets for a rule are listed
+  Scenario: targets for an "eventbridge" "rule" are listed fails when the "eventbridge" "rule" was "DELETED"
+    Given the "eventbridge" "rule" existed
+    And the "eventbridge" "rule" was "DELETED"
+    When targets for an "eventbridge" "rule" are listed
     Then the operation is rejected

@@ -1,11 +1,11 @@
-"""Then: the list of state machines is returned"""
+"""Then: the list of state machines will be returned"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the list of state machines is returned")
+@then("the list of state machines will be returned")
 def list_of_sms_returned(world):
     assert (
         world["error"] is None

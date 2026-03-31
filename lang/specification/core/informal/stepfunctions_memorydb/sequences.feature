@@ -8,715 +8,715 @@ Feature: StepfunctionsMemorydb - Action Sequences
     Given the system is initialized
 
   @sequence
-  Scenario: a Step Functions state machine is created then a MemoryDB cluster is created
+  Scenario: a "step functions" "state machine" is created then a "memorydb" "cluster" is created
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When a MemoryDB cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a "memorydb" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a Step Functions state machine is created then a MemoryDB cluster update begins
+  Scenario: a "step functions" "state machine" is created then a "memorydb" "cluster" update begins
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When a MemoryDB cluster update begins
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a "memorydb" "cluster" update begins
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a Step Functions state machine is created then the MemoryDB cluster update completes
+  Scenario: a "step functions" "state machine" is created then the "memorydb" "cluster" update completes
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When the MemoryDB cluster update completes
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When the "memorydb" "cluster" update completes
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a Step Functions state machine is created then an execution of the state machine is started
+  Scenario: a "step functions" "state machine" is created then an "step functions" "execution" of the "step functions" "state machine" is started
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a Step Functions state machine is created then a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+  Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a Step Functions state machine is created then a running execution fails to connect because the MemoryDB cluster is updating
+  Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When a running execution fails to connect because the MemoryDB cluster is updating
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster is created then a Step Functions state machine is created
+  Scenario: a "memorydb" "cluster" is created then a "step functions" "state machine" is created
     Given cid not in cluster_status
-    Given a MemoryDB cluster has been created
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" is created
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster is created then a MemoryDB cluster update begins
+  Scenario: a "memorydb" "cluster" is created then a "memorydb" "cluster" update begins
     Given cid not in cluster_status
-    Given a MemoryDB cluster has been created
-    When a MemoryDB cluster update begins
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" is created
+    When a "memorydb" "cluster" update begins
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster is created then the MemoryDB cluster update completes
+  Scenario: a "memorydb" "cluster" is created then the "memorydb" "cluster" update completes
     Given cid not in cluster_status
-    Given a MemoryDB cluster has been created
-    When the MemoryDB cluster update completes
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" is created
+    When the "memorydb" "cluster" update completes
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster is created then an execution of the state machine is started
+  Scenario: a "memorydb" "cluster" is created then an "step functions" "execution" of the "step functions" "state machine" is started
     Given cid not in cluster_status
-    Given a MemoryDB cluster has been created
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster is created then a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+  Scenario: a "memorydb" "cluster" is created then a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
     Given cid not in cluster_status
-    Given a MemoryDB cluster has been created
-    When a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" is created
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster is created then a running execution fails to connect because the MemoryDB cluster is updating
+  Scenario: a "memorydb" "cluster" is created then a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
     Given cid not in cluster_status
-    Given a MemoryDB cluster has been created
-    When a running execution fails to connect because the MemoryDB cluster is updating
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" is created
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster update begins then a Step Functions state machine is created
+  Scenario: a "memorydb" "cluster" update begins then a "step functions" "state machine" is created
     Given cid in cluster_status
-    Given a MemoryDB cluster update has begun
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" update begins
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster update begins then a MemoryDB cluster is created
+  Scenario: a "memorydb" "cluster" update begins then a "memorydb" "cluster" is created
     Given cid in cluster_status
-    Given a MemoryDB cluster update has begun
-    When a MemoryDB cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" update begins
+    When a "memorydb" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster update begins then the MemoryDB cluster update completes
+  Scenario: a "memorydb" "cluster" update begins then the "memorydb" "cluster" update completes
     Given cid in cluster_status
-    Given a MemoryDB cluster update has begun
-    When the MemoryDB cluster update completes
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" update begins
+    When the "memorydb" "cluster" update completes
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster update begins then an execution of the state machine is started
+  Scenario: a "memorydb" "cluster" update begins then an "step functions" "execution" of the "step functions" "state machine" is started
     Given cid in cluster_status
-    Given a MemoryDB cluster update has begun
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" update begins
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster update begins then a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+  Scenario: a "memorydb" "cluster" update begins then a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
     Given cid in cluster_status
-    Given a MemoryDB cluster update has begun
-    When a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" update begins
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster update begins then a running execution fails to connect because the MemoryDB cluster is updating
+  Scenario: a "memorydb" "cluster" update begins then a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
     Given cid in cluster_status
-    Given a MemoryDB cluster update has begun
-    When a running execution fails to connect because the MemoryDB cluster is updating
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" update begins
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: the MemoryDB cluster update completes then a Step Functions state machine is created
+  Scenario: the "memorydb" "cluster" update completes then a "step functions" "state machine" is created
     Given cid in cluster_status
-    Given the MemoryDB cluster update has completed
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "memorydb" "cluster" update completes
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: the MemoryDB cluster update completes then a MemoryDB cluster is created
+  Scenario: the "memorydb" "cluster" update completes then a "memorydb" "cluster" is created
     Given cid in cluster_status
-    Given the MemoryDB cluster update has completed
-    When a MemoryDB cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "memorydb" "cluster" update completes
+    When a "memorydb" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: the MemoryDB cluster update completes then a MemoryDB cluster update begins
+  Scenario: the "memorydb" "cluster" update completes then a "memorydb" "cluster" update begins
     Given cid in cluster_status
-    Given the MemoryDB cluster update has completed
-    When a MemoryDB cluster update begins
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "memorydb" "cluster" update completes
+    When a "memorydb" "cluster" update begins
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: the MemoryDB cluster update completes then an execution of the state machine is started
+  Scenario: the "memorydb" "cluster" update completes then an "step functions" "execution" of the "step functions" "state machine" is started
     Given cid in cluster_status
-    Given the MemoryDB cluster update has completed
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "memorydb" "cluster" update completes
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: the MemoryDB cluster update completes then a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+  Scenario: the "memorydb" "cluster" update completes then a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
     Given cid in cluster_status
-    Given the MemoryDB cluster update has completed
-    When a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "memorydb" "cluster" update completes
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: the MemoryDB cluster update completes then a running execution fails to connect because the MemoryDB cluster is updating
+  Scenario: the "memorydb" "cluster" update completes then a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
     Given cid in cluster_status
-    Given the MemoryDB cluster update has completed
-    When a running execution fails to connect because the MemoryDB cluster is updating
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "memorydb" "cluster" update completes
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: an execution of the state machine is started then a Step Functions state machine is created
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "step functions" "state machine" is created
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: an execution of the state machine is started then a MemoryDB cluster is created
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "memorydb" "cluster" is created
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a MemoryDB cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "memorydb" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: an execution of the state machine is started then a MemoryDB cluster update begins
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "memorydb" "cluster" update begins
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a MemoryDB cluster update begins
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "memorydb" "cluster" update begins
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: an execution of the state machine is started then the MemoryDB cluster update completes
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then the "memorydb" "cluster" update completes
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When the MemoryDB cluster update completes
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When the "memorydb" "cluster" update completes
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: an execution of the state machine is started then a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: an execution of the state machine is started then a running execution fails to connect because the MemoryDB cluster is updating
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a running execution fails to connect because the MemoryDB cluster is updating
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a Step Functions state machine is created
+  Scenario: a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a "step functions" "state machine" is created
     Given eid in exec_status
-    Given a running execution has connected to the "AVAILABLE" MemoryDB cluster and the task succeeded
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a MemoryDB cluster is created
+  Scenario: a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a "memorydb" "cluster" is created
     Given eid in exec_status
-    Given a running execution has connected to the "AVAILABLE" MemoryDB cluster and the task succeeded
-    When a MemoryDB cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    When a "memorydb" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a MemoryDB cluster update begins
+  Scenario: a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a "memorydb" "cluster" update begins
     Given eid in exec_status
-    Given a running execution has connected to the "AVAILABLE" MemoryDB cluster and the task succeeded
-    When a MemoryDB cluster update begins
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    When a "memorydb" "cluster" update begins
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then the MemoryDB cluster update completes
+  Scenario: a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then the "memorydb" "cluster" update completes
     Given eid in exec_status
-    Given a running execution has connected to the "AVAILABLE" MemoryDB cluster and the task succeeded
-    When the MemoryDB cluster update completes
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    When the "memorydb" "cluster" update completes
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then an execution of the state machine is started
+  Scenario: a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then an "step functions" "execution" of the "step functions" "state machine" is started
     Given eid in exec_status
-    Given a running execution has connected to the "AVAILABLE" MemoryDB cluster and the task succeeded
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a running execution fails to connect because the MemoryDB cluster is updating
+  Scenario: a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
     Given eid in exec_status
-    Given a running execution has connected to the "AVAILABLE" MemoryDB cluster and the task succeeded
-    When a running execution fails to connect because the MemoryDB cluster is updating
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution fails to connect because the MemoryDB cluster is updating then a Step Functions state machine is created
+  Scenario: a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating then a "step functions" "state machine" is created
     Given eid in exec_status
-    Given a running execution has failed to connect because the MemoryDB cluster is updating
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution fails to connect because the MemoryDB cluster is updating then a MemoryDB cluster is created
+  Scenario: a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating then a "memorydb" "cluster" is created
     Given eid in exec_status
-    Given a running execution has failed to connect because the MemoryDB cluster is updating
-    When a MemoryDB cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    When a "memorydb" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution fails to connect because the MemoryDB cluster is updating then a MemoryDB cluster update begins
+  Scenario: a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating then a "memorydb" "cluster" update begins
     Given eid in exec_status
-    Given a running execution has failed to connect because the MemoryDB cluster is updating
-    When a MemoryDB cluster update begins
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    When a "memorydb" "cluster" update begins
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution fails to connect because the MemoryDB cluster is updating then the MemoryDB cluster update completes
+  Scenario: a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating then the "memorydb" "cluster" update completes
     Given eid in exec_status
-    Given a running execution has failed to connect because the MemoryDB cluster is updating
-    When the MemoryDB cluster update completes
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    When the "memorydb" "cluster" update completes
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution fails to connect because the MemoryDB cluster is updating then an execution of the state machine is started
+  Scenario: a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating then an "step functions" "execution" of the "step functions" "state machine" is started
     Given eid in exec_status
-    Given a running execution has failed to connect because the MemoryDB cluster is updating
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution fails to connect because the MemoryDB cluster is updating then a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+  Scenario: a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating then a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
     Given eid in exec_status
-    Given a running execution has failed to connect because the MemoryDB cluster is updating
-    When a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a Step Functions state machine is created then a MemoryDB cluster is created then a MemoryDB cluster update begins
+  Scenario: a "step functions" "state machine" is created then a "memorydb" "cluster" is created then a "memorydb" "cluster" update begins
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given a MemoryDB cluster has been created
-    When a MemoryDB cluster update begins
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a "memorydb" "cluster" is created
+    When a "memorydb" "cluster" update begins
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a Step Functions state machine is created then a MemoryDB cluster update begins then the MemoryDB cluster update completes
+  Scenario: a "step functions" "state machine" is created then a "memorydb" "cluster" update begins then the "memorydb" "cluster" update completes
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given a MemoryDB cluster update has begun
-    When the MemoryDB cluster update completes
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a "memorydb" "cluster" update begins
+    When the "memorydb" "cluster" update completes
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a Step Functions state machine is created then the MemoryDB cluster update completes then an execution of the state machine is started
+  Scenario: a "step functions" "state machine" is created then the "memorydb" "cluster" update completes then an "step functions" "execution" of the "step functions" "state machine" is started
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given the MemoryDB cluster update has completed
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When the "memorydb" "cluster" update completes
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a Step Functions state machine is created then an execution of the state machine is started then a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+  Scenario: a "step functions" "state machine" is created then an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given an execution of the state machine has been started
-    When a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a Step Functions state machine is created then a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a running execution fails to connect because the MemoryDB cluster is updating
+  Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given a running execution has connected to the "AVAILABLE" MemoryDB cluster and the task succeeded
-    When a running execution fails to connect because the MemoryDB cluster is updating
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a Step Functions state machine is created then a running execution fails to connect because the MemoryDB cluster is updating then a MemoryDB cluster is created
+  Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating then a "memorydb" "cluster" is created
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given a running execution has failed to connect because the MemoryDB cluster is updating
-    When a MemoryDB cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    When a "memorydb" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster is created then a Step Functions state machine is created then the MemoryDB cluster update completes
+  Scenario: a "memorydb" "cluster" is created then a "step functions" "state machine" is created then the "memorydb" "cluster" update completes
     Given cid not in cluster_status
-    Given a MemoryDB cluster has been created
-    Given a Step Functions state machine has been created
-    When the MemoryDB cluster update completes
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" is created
+    When a "step functions" "state machine" is created
+    When the "memorydb" "cluster" update completes
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster is created then a MemoryDB cluster update begins then an execution of the state machine is started
+  Scenario: a "memorydb" "cluster" is created then a "memorydb" "cluster" update begins then an "step functions" "execution" of the "step functions" "state machine" is started
     Given cid not in cluster_status
-    Given a MemoryDB cluster has been created
-    Given a MemoryDB cluster update has begun
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" is created
+    When a "memorydb" "cluster" update begins
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster is created then the MemoryDB cluster update completes then a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+  Scenario: a "memorydb" "cluster" is created then the "memorydb" "cluster" update completes then a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
     Given cid not in cluster_status
-    Given a MemoryDB cluster has been created
-    Given the MemoryDB cluster update has completed
-    When a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" is created
+    When the "memorydb" "cluster" update completes
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster is created then an execution of the state machine is started then a running execution fails to connect because the MemoryDB cluster is updating
+  Scenario: a "memorydb" "cluster" is created then an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
     Given cid not in cluster_status
-    Given a MemoryDB cluster has been created
-    Given an execution of the state machine has been started
-    When a running execution fails to connect because the MemoryDB cluster is updating
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster is created then a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a Step Functions state machine is created
+  Scenario: a "memorydb" "cluster" is created then a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a "step functions" "state machine" is created
     Given cid not in cluster_status
-    Given a MemoryDB cluster has been created
-    Given a running execution has connected to the "AVAILABLE" MemoryDB cluster and the task succeeded
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" is created
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster is created then a running execution fails to connect because the MemoryDB cluster is updating then a MemoryDB cluster update begins
+  Scenario: a "memorydb" "cluster" is created then a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating then a "memorydb" "cluster" update begins
     Given cid not in cluster_status
-    Given a MemoryDB cluster has been created
-    Given a running execution has failed to connect because the MemoryDB cluster is updating
-    When a MemoryDB cluster update begins
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" is created
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    When a "memorydb" "cluster" update begins
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster update begins then a Step Functions state machine is created then an execution of the state machine is started
+  Scenario: a "memorydb" "cluster" update begins then a "step functions" "state machine" is created then an "step functions" "execution" of the "step functions" "state machine" is started
     Given cid in cluster_status
-    Given a MemoryDB cluster update has begun
-    Given a Step Functions state machine has been created
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" update begins
+    When a "step functions" "state machine" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster update begins then a MemoryDB cluster is created then a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+  Scenario: a "memorydb" "cluster" update begins then a "memorydb" "cluster" is created then a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
     Given cid in cluster_status
-    Given a MemoryDB cluster update has begun
-    Given a MemoryDB cluster has been created
-    When a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" update begins
+    When a "memorydb" "cluster" is created
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster update begins then the MemoryDB cluster update completes then a running execution fails to connect because the MemoryDB cluster is updating
+  Scenario: a "memorydb" "cluster" update begins then the "memorydb" "cluster" update completes then a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
     Given cid in cluster_status
-    Given a MemoryDB cluster update has begun
-    Given the MemoryDB cluster update has completed
-    When a running execution fails to connect because the MemoryDB cluster is updating
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" update begins
+    When the "memorydb" "cluster" update completes
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster update begins then an execution of the state machine is started then a Step Functions state machine is created
+  Scenario: a "memorydb" "cluster" update begins then an "step functions" "execution" of the "step functions" "state machine" is started then a "step functions" "state machine" is created
     Given cid in cluster_status
-    Given a MemoryDB cluster update has begun
-    Given an execution of the state machine has been started
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" update begins
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster update begins then a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a MemoryDB cluster is created
+  Scenario: a "memorydb" "cluster" update begins then a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a "memorydb" "cluster" is created
     Given cid in cluster_status
-    Given a MemoryDB cluster update has begun
-    Given a running execution has connected to the "AVAILABLE" MemoryDB cluster and the task succeeded
-    When a MemoryDB cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" update begins
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    When a "memorydb" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a MemoryDB cluster update begins then a running execution fails to connect because the MemoryDB cluster is updating then the MemoryDB cluster update completes
+  Scenario: a "memorydb" "cluster" update begins then a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating then the "memorydb" "cluster" update completes
     Given cid in cluster_status
-    Given a MemoryDB cluster update has begun
-    Given a running execution has failed to connect because the MemoryDB cluster is updating
-    When the MemoryDB cluster update completes
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "memorydb" "cluster" update begins
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    When the "memorydb" "cluster" update completes
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: the MemoryDB cluster update completes then a Step Functions state machine is created then a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+  Scenario: the "memorydb" "cluster" update completes then a "step functions" "state machine" is created then a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
     Given cid in cluster_status
-    Given the MemoryDB cluster update has completed
-    Given a Step Functions state machine has been created
-    When a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "memorydb" "cluster" update completes
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: the MemoryDB cluster update completes then a MemoryDB cluster is created then a running execution fails to connect because the MemoryDB cluster is updating
+  Scenario: the "memorydb" "cluster" update completes then a "memorydb" "cluster" is created then a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
     Given cid in cluster_status
-    Given the MemoryDB cluster update has completed
-    Given a MemoryDB cluster has been created
-    When a running execution fails to connect because the MemoryDB cluster is updating
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "memorydb" "cluster" update completes
+    When a "memorydb" "cluster" is created
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: the MemoryDB cluster update completes then a MemoryDB cluster update begins then a Step Functions state machine is created
+  Scenario: the "memorydb" "cluster" update completes then a "memorydb" "cluster" update begins then a "step functions" "state machine" is created
     Given cid in cluster_status
-    Given the MemoryDB cluster update has completed
-    Given a MemoryDB cluster update has begun
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "memorydb" "cluster" update completes
+    When a "memorydb" "cluster" update begins
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: the MemoryDB cluster update completes then an execution of the state machine is started then a MemoryDB cluster is created
+  Scenario: the "memorydb" "cluster" update completes then an "step functions" "execution" of the "step functions" "state machine" is started then a "memorydb" "cluster" is created
     Given cid in cluster_status
-    Given the MemoryDB cluster update has completed
-    Given an execution of the state machine has been started
-    When a MemoryDB cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "memorydb" "cluster" update completes
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "memorydb" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: the MemoryDB cluster update completes then a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a MemoryDB cluster update begins
+  Scenario: the "memorydb" "cluster" update completes then a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a "memorydb" "cluster" update begins
     Given cid in cluster_status
-    Given the MemoryDB cluster update has completed
-    Given a running execution has connected to the "AVAILABLE" MemoryDB cluster and the task succeeded
-    When a MemoryDB cluster update begins
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "memorydb" "cluster" update completes
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    When a "memorydb" "cluster" update begins
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: the MemoryDB cluster update completes then a running execution fails to connect because the MemoryDB cluster is updating then an execution of the state machine is started
+  Scenario: the "memorydb" "cluster" update completes then a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating then an "step functions" "execution" of the "step functions" "state machine" is started
     Given cid in cluster_status
-    Given the MemoryDB cluster update has completed
-    Given a running execution has failed to connect because the MemoryDB cluster is updating
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When the "memorydb" "cluster" update completes
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: an execution of the state machine is started then a Step Functions state machine is created then a running execution fails to connect because the MemoryDB cluster is updating
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "step functions" "state machine" is created then a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a Step Functions state machine has been created
-    When a running execution fails to connect because the MemoryDB cluster is updating
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: an execution of the state machine is started then a MemoryDB cluster is created then a Step Functions state machine is created
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "memorydb" "cluster" is created then a "step functions" "state machine" is created
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a MemoryDB cluster has been created
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "memorydb" "cluster" is created
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: an execution of the state machine is started then a MemoryDB cluster update begins then a MemoryDB cluster is created
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "memorydb" "cluster" update begins then a "memorydb" "cluster" is created
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a MemoryDB cluster update has begun
-    When a MemoryDB cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "memorydb" "cluster" update begins
+    When a "memorydb" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: an execution of the state machine is started then the MemoryDB cluster update completes then a MemoryDB cluster update begins
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then the "memorydb" "cluster" update completes then a "memorydb" "cluster" update begins
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given the MemoryDB cluster update has completed
-    When a MemoryDB cluster update begins
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When the "memorydb" "cluster" update completes
+    When a "memorydb" "cluster" update begins
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: an execution of the state machine is started then a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then the MemoryDB cluster update completes
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then the "memorydb" "cluster" update completes
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a running execution has connected to the "AVAILABLE" MemoryDB cluster and the task succeeded
-    When the MemoryDB cluster update completes
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    When the "memorydb" "cluster" update completes
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: an execution of the state machine is started then a running execution fails to connect because the MemoryDB cluster is updating then a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating then a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a running execution has failed to connect because the MemoryDB cluster is updating
-    When a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a Step Functions state machine is created then a MemoryDB cluster is created
+  Scenario: a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a "step functions" "state machine" is created then a "memorydb" "cluster" is created
     Given eid in exec_status
-    Given a running execution has connected to the "AVAILABLE" MemoryDB cluster and the task succeeded
-    Given a Step Functions state machine has been created
-    When a MemoryDB cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    When a "step functions" "state machine" is created
+    When a "memorydb" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a MemoryDB cluster is created then a MemoryDB cluster update begins
+  Scenario: a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a "memorydb" "cluster" is created then a "memorydb" "cluster" update begins
     Given eid in exec_status
-    Given a running execution has connected to the "AVAILABLE" MemoryDB cluster and the task succeeded
-    Given a MemoryDB cluster has been created
-    When a MemoryDB cluster update begins
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    When a "memorydb" "cluster" is created
+    When a "memorydb" "cluster" update begins
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a MemoryDB cluster update begins then the MemoryDB cluster update completes
+  Scenario: a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a "memorydb" "cluster" update begins then the "memorydb" "cluster" update completes
     Given eid in exec_status
-    Given a running execution has connected to the "AVAILABLE" MemoryDB cluster and the task succeeded
-    Given a MemoryDB cluster update has begun
-    When the MemoryDB cluster update completes
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    When a "memorydb" "cluster" update begins
+    When the "memorydb" "cluster" update completes
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then the MemoryDB cluster update completes then an execution of the state machine is started
+  Scenario: a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then the "memorydb" "cluster" update completes then an "step functions" "execution" of the "step functions" "state machine" is started
     Given eid in exec_status
-    Given a running execution has connected to the "AVAILABLE" MemoryDB cluster and the task succeeded
-    Given the MemoryDB cluster update has completed
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    When the "memorydb" "cluster" update completes
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then an execution of the state machine is started then a running execution fails to connect because the MemoryDB cluster is updating
+  Scenario: a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
     Given eid in exec_status
-    Given a running execution has connected to the "AVAILABLE" MemoryDB cluster and the task succeeded
-    Given an execution of the state machine has been started
-    When a running execution fails to connect because the MemoryDB cluster is updating
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a running execution fails to connect because the MemoryDB cluster is updating then a Step Functions state machine is created
+  Scenario: a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating then a "step functions" "state machine" is created
     Given eid in exec_status
-    Given a running execution has connected to the "AVAILABLE" MemoryDB cluster and the task succeeded
-    Given a running execution has failed to connect because the MemoryDB cluster is updating
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution fails to connect because the MemoryDB cluster is updating then a Step Functions state machine is created then a MemoryDB cluster update begins
+  Scenario: a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating then a "step functions" "state machine" is created then a "memorydb" "cluster" update begins
     Given eid in exec_status
-    Given a running execution has failed to connect because the MemoryDB cluster is updating
-    Given a Step Functions state machine has been created
-    When a MemoryDB cluster update begins
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    When a "step functions" "state machine" is created
+    When a "memorydb" "cluster" update begins
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution fails to connect because the MemoryDB cluster is updating then a MemoryDB cluster is created then the MemoryDB cluster update completes
+  Scenario: a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating then a "memorydb" "cluster" is created then the "memorydb" "cluster" update completes
     Given eid in exec_status
-    Given a running execution has failed to connect because the MemoryDB cluster is updating
-    Given a MemoryDB cluster has been created
-    When the MemoryDB cluster update completes
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    When a "memorydb" "cluster" is created
+    When the "memorydb" "cluster" update completes
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution fails to connect because the MemoryDB cluster is updating then a MemoryDB cluster update begins then an execution of the state machine is started
+  Scenario: a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating then a "memorydb" "cluster" update begins then an "step functions" "execution" of the "step functions" "state machine" is started
     Given eid in exec_status
-    Given a running execution has failed to connect because the MemoryDB cluster is updating
-    Given a MemoryDB cluster update has begun
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    When a "memorydb" "cluster" update begins
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution fails to connect because the MemoryDB cluster is updating then the MemoryDB cluster update completes then a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+  Scenario: a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating then the "memorydb" "cluster" update completes then a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
     Given eid in exec_status
-    Given a running execution has failed to connect because the MemoryDB cluster is updating
-    Given the MemoryDB cluster update has completed
-    When a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    When the "memorydb" "cluster" update completes
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution fails to connect because the MemoryDB cluster is updating then an execution of the state machine is started then a Step Functions state machine is created
+  Scenario: a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating then an "step functions" "execution" of the "step functions" "state machine" is started then a "step functions" "state machine" is created
     Given eid in exec_status
-    Given a running execution has failed to connect because the MemoryDB cluster is updating
-    Given an execution of the state machine has been started
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @sequence
-  Scenario: a running execution fails to connect because the MemoryDB cluster is updating then a running execution connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a MemoryDB cluster is created
+  Scenario: a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating then a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds then a "memorydb" "cluster" is created
     Given eid in exec_status
-    Given a running execution has failed to connect because the MemoryDB cluster is updating
-    Given a running execution has connected to the "AVAILABLE" MemoryDB cluster and the task succeeded
-    When a MemoryDB cluster is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
+    When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
+    When a "memorydb" "cluster" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to

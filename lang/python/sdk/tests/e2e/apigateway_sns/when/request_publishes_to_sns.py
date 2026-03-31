@@ -1,4 +1,4 @@
-"""When: a request is received, the "API" publishes to the "SNS" topic, and returns 200"""
+"""When: a request is received, the "api gateway" "API" publishes to the "sns" "topic", and returns 200"""
 
 from __future__ import annotations
 
@@ -9,7 +9,9 @@ from ..client import ApigatewaySnsTestClient
 from ..constants import _topic_arn
 
 
-@when('a request is received, the "API" publishes to the "SNS" topic, and returns 200')
+@when(
+    'a request is received, the "api gateway" "API" publishes to the "sns" "topic", and returns 200'
+)
 def request_publishes_to_sns(lws_session, world):
     try:
         api_id = world.get("api_id") or ApigatewaySnsTestClient(lws_session).get_api_id()

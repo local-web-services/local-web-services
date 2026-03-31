@@ -1,11 +1,11 @@
-"""Then: the table metadata is returned"""
+"""Then: the "dynamodb" "table" metadata will be returned"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the table metadata is returned")
+@then('the "dynamodb" "table" metadata will be returned')
 def table_metadata_returned_then(world):
     expected_field = "Table"
     actual_result = world["result"]

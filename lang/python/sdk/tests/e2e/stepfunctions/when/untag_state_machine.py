@@ -1,4 +1,4 @@
-"""When: tags are removed from a state machine"""
+"""When: tags are removed from a "step functions" "state machine" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_SM, TEST_TAG_KEY, _sm_arn
 
 
-@when("tags are removed from a state machine")
+@when('tags are removed from a "step functions" "state machine"')
 def untag_state_machine(lws_session, world):
     try:
         sm_name = world.get("state_machine_name") or TEST_SM

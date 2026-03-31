@@ -1,4 +1,4 @@
-"""Given: the policy already exists"""
+"""Given: the "organizations" "policy" already existed"""
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import given
 from ..client import OrganizationsTestClient
 
 
-@given("the policy already exists")
+@given('the "organizations" "policy" already existed')
 def policy_already_exists(lws_session, world):
     world["policy_id"] = OrganizationsTestClient(lws_session).create_policy()

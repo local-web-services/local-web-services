@@ -1,4 +1,4 @@
-"""Given: the subscription's topic is not "ACTIVE" """
+"""Given: the "sns" "subscription"'s "sns" "topic" was not "ACTIVE" """
 
 from __future__ import annotations
 

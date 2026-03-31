@@ -1,4 +1,4 @@
-"""Given: the function does not have a resource policy"""
+"""Given: the "lambda" "function" did not have a resource policy"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaTestClient
 from ..constants import TEST_FUNC, TEST_STATEMENT_ID
 
 
-@given("the function does not have a resource policy")
+@given('the "lambda" "function" did not have a resource policy')
 def function_does_not_have_resource_policy(lws_session):
     try:
         LambdaTestClient(lws_session).remove_permission(

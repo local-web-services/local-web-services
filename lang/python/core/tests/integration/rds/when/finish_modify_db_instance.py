@@ -1,4 +1,4 @@
-"""When: a database instance modification completes"""
+"""When: a "documentdb" "instance" modification completes"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import RdsTestClient
 from ..constants import INT_DB_INSTANCE, _store
 
 
-@when("a database instance modification completes")
+@when('a "documentdb" "instance" modification completes')
 def finish_modify_db_instance(client: TestClient, world: dict):
     r = RdsTestClient(client).post(
         "ModifyDBInstance",

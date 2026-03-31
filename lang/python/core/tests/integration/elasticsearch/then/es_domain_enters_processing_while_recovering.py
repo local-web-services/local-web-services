@@ -1,11 +1,11 @@
-"""Then: the domain enters "PROCESSING" state while recovering"""
+"""Then: the "elasticsearch" "domain" will be in "PROCESSING" state while recovering"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the domain enters "PROCESSING" state while recovering')
+@then('the "elasticsearch" "domain" will be in "PROCESSING" state while recovering')
 def es_domain_enters_processing_while_recovering(world: dict):
     actual_result = world["result"]
     assert (

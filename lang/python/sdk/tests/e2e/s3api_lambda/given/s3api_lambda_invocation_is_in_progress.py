@@ -1,11 +1,11 @@
-"""Given: an invocation is "IN_PROGRESS" """
+"""Given: a "lambda" "invocation" was "IN_PROGRESS" """
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given('an invocation is "IN_PROGRESS"')
+@given('a "lambda" "invocation" was "IN_PROGRESS"')
 def s3api_lambda_invocation_is_in_progress(world):
     """Internal state not reachable via public API; mark scenario as N/A."""
     world["result"] = None

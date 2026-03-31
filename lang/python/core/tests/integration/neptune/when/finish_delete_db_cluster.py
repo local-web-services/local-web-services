@@ -1,4 +1,4 @@
-"""When: a database cluster deletion completes"""
+"""When: a "documentdb" "cluster" deletion completes"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import NeptuneTestClient
 from ..constants import INT_CLUSTER, _store
 
 
-@when("a database cluster deletion completes")
+@when('a "documentdb" "cluster" deletion completes')
 def finish_delete_db_cluster(client: TestClient, world: dict):
     check = NeptuneTestClient(client).post(
         "DescribeDBClusters", {"DBClusterIdentifier": INT_CLUSTER}

@@ -1,11 +1,11 @@
-"""Then: the tags are disassociated from the parameter"""
+"""Then: the tags are disassociated from the "ssm" "parameter" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the tags are disassociated from the parameter")
+@then('the tags are disassociated from the "ssm" "parameter"')
 def tags_disassociated_from_parameter(world):
     assert (
         world["error"] is None

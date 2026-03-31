@@ -1,4 +1,4 @@
-"""When: a subscription is removed"""
+"""When: a "sns" "subscription" is removed"""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from botocore.exceptions import ClientError
 from pytest_bdd import when
 
 
-@when("a subscription is removed")
+@when('a "sns" "subscription" is removed')
 def subscription_removed(lws_session, world):
     try:
         sub_arn = world.get("subscription_arn", "")

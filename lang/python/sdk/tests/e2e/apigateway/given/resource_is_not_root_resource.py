@@ -1,4 +1,4 @@
-"""Given: the resource is not the root resource"""
+"""Given: the "api gateway" "resource" is not the root "api gateway" "resource" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ApigatewayTestClient
 from ..constants import TEST_CHILD_PATH
 
 
-@given("the resource is not the root resource")
+@given('the "api gateway" "resource" is not the root "api gateway" "resource"')
 def resource_is_not_root_resource(lws_session):
     """Create a child resource so there is a non-root resource to operate on."""
     api_id = ApigatewayTestClient(lws_session).get_or_create_api()

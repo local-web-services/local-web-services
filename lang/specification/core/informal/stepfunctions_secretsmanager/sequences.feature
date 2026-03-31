@@ -8,511 +8,511 @@ Feature: StepfunctionsSecretsmanager - Action Sequences
     Given the system is initialized
 
   @sequence
-  Scenario: a Step Functions state machine is created then a secret is created in Secrets Manager
+  Scenario: a "step functions" "state machine" is created then a "secretsmanager" "secret" is created in Secrets Manager
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When a secret is created in Secrets Manager
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a Step Functions state machine is created then a secret is scheduled for deletion
+  Scenario: a "step functions" "state machine" is created then a "secretsmanager" "secret" is scheduled for deletion
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When a secret is scheduled for deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a Step Functions state machine is created then an execution of the state machine is started
+  Scenario: a "step functions" "state machine" is created then an "step functions" "execution" of the "step functions" "state machine" is started
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a Step Functions state machine is created then a running execution reads an "ACTIVE" secret and the task succeeds
+  Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When a running execution reads an "ACTIVE" secret and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a Step Functions state machine is created then a running execution fails to read the secret because it is pending deletion
+  Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When a running execution fails to read the secret because it is pending deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then a Step Functions state machine is created
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then a "step functions" "state machine" is created
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then a secret is scheduled for deletion
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then a "secretsmanager" "secret" is scheduled for deletion
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    When a secret is scheduled for deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then an execution of the state machine is started
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then an "step functions" "execution" of the "step functions" "state machine" is started
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then a running execution reads an "ACTIVE" secret and the task succeeds
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    When a running execution reads an "ACTIVE" secret and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then a running execution fails to read the secret because it is pending deletion
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    When a running execution fails to read the secret because it is pending deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then a Step Functions state machine is created
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then a "step functions" "state machine" is created
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then a secret is created in Secrets Manager
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then a "secretsmanager" "secret" is created in Secrets Manager
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    When a secret is created in Secrets Manager
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then an execution of the state machine is started
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then an "step functions" "execution" of the "step functions" "state machine" is started
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then a running execution reads an "ACTIVE" secret and the task succeeds
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    When a running execution reads an "ACTIVE" secret and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then a running execution fails to read the secret because it is pending deletion
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    When a running execution fails to read the secret because it is pending deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: an execution of the state machine is started then a Step Functions state machine is created
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "step functions" "state machine" is created
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: an execution of the state machine is started then a secret is created in Secrets Manager
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "secretsmanager" "secret" is created in Secrets Manager
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a secret is created in Secrets Manager
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: an execution of the state machine is started then a secret is scheduled for deletion
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "secretsmanager" "secret" is scheduled for deletion
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a secret is scheduled for deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: an execution of the state machine is started then a running execution reads an "ACTIVE" secret and the task succeeds
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a running execution reads an "ACTIVE" secret and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: an execution of the state machine is started then a running execution fails to read the secret because it is pending deletion
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a running execution fails to read the secret because it is pending deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution reads an "ACTIVE" secret and the task succeeds then a Step Functions state machine is created
+  Scenario: a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds then a "step functions" "state machine" is created
     Given eid in exec_status
-    Given a running execution has read an "ACTIVE" secret and the task succeeded
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution reads an "ACTIVE" secret and the task succeeds then a secret is created in Secrets Manager
+  Scenario: a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds then a "secretsmanager" "secret" is created in Secrets Manager
     Given eid in exec_status
-    Given a running execution has read an "ACTIVE" secret and the task succeeded
-    When a secret is created in Secrets Manager
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution reads an "ACTIVE" secret and the task succeeds then a secret is scheduled for deletion
+  Scenario: a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds then a "secretsmanager" "secret" is scheduled for deletion
     Given eid in exec_status
-    Given a running execution has read an "ACTIVE" secret and the task succeeded
-    When a secret is scheduled for deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution reads an "ACTIVE" secret and the task succeeds then an execution of the state machine is started
+  Scenario: a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds then an "step functions" "execution" of the "step functions" "state machine" is started
     Given eid in exec_status
-    Given a running execution has read an "ACTIVE" secret and the task succeeded
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution reads an "ACTIVE" secret and the task succeeds then a running execution fails to read the secret because it is pending deletion
+  Scenario: a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds then a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
     Given eid in exec_status
-    Given a running execution has read an "ACTIVE" secret and the task succeeded
-    When a running execution fails to read the secret because it is pending deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution fails to read the secret because it is pending deletion then a Step Functions state machine is created
+  Scenario: a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion then a "step functions" "state machine" is created
     Given eid in exec_status
-    Given a running execution has failed to read the secret because it is pending deletion
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution fails to read the secret because it is pending deletion then a secret is created in Secrets Manager
+  Scenario: a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion then a "secretsmanager" "secret" is created in Secrets Manager
     Given eid in exec_status
-    Given a running execution has failed to read the secret because it is pending deletion
-    When a secret is created in Secrets Manager
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution fails to read the secret because it is pending deletion then a secret is scheduled for deletion
+  Scenario: a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion then a "secretsmanager" "secret" is scheduled for deletion
     Given eid in exec_status
-    Given a running execution has failed to read the secret because it is pending deletion
-    When a secret is scheduled for deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution fails to read the secret because it is pending deletion then an execution of the state machine is started
+  Scenario: a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion then an "step functions" "execution" of the "step functions" "state machine" is started
     Given eid in exec_status
-    Given a running execution has failed to read the secret because it is pending deletion
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution fails to read the secret because it is pending deletion then a running execution reads an "ACTIVE" secret and the task succeeds
+  Scenario: a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion then a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
     Given eid in exec_status
-    Given a running execution has failed to read the secret because it is pending deletion
-    When a running execution reads an "ACTIVE" secret and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a Step Functions state machine is created then a secret is created in Secrets Manager then a secret is scheduled for deletion
+  Scenario: a "step functions" "state machine" is created then a "secretsmanager" "secret" is created in Secrets Manager then a "secretsmanager" "secret" is scheduled for deletion
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given a secret has been created in Secrets Manager
-    When a secret is scheduled for deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a Step Functions state machine is created then a secret is scheduled for deletion then an execution of the state machine is started
+  Scenario: a "step functions" "state machine" is created then a "secretsmanager" "secret" is scheduled for deletion then an "step functions" "execution" of the "step functions" "state machine" is started
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given a secret has been scheduled for deletion
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a Step Functions state machine is created then an execution of the state machine is started then a running execution reads an "ACTIVE" secret and the task succeeds
+  Scenario: a "step functions" "state machine" is created then an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given an execution of the state machine has been started
-    When a running execution reads an "ACTIVE" secret and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a Step Functions state machine is created then a running execution reads an "ACTIVE" secret and the task succeeds then a running execution fails to read the secret because it is pending deletion
+  Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds then a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given a running execution has read an "ACTIVE" secret and the task succeeded
-    When a running execution fails to read the secret because it is pending deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a Step Functions state machine is created then a running execution fails to read the secret because it is pending deletion then a secret is created in Secrets Manager
+  Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion then a "secretsmanager" "secret" is created in Secrets Manager
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given a running execution has failed to read the secret because it is pending deletion
-    When a secret is created in Secrets Manager
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then a Step Functions state machine is created then an execution of the state machine is started
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then a "step functions" "state machine" is created then an "step functions" "execution" of the "step functions" "state machine" is started
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    Given a Step Functions state machine has been created
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a "step functions" "state machine" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then a secret is scheduled for deletion then a running execution reads an "ACTIVE" secret and the task succeeds
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then a "secretsmanager" "secret" is scheduled for deletion then a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    Given a secret has been scheduled for deletion
-    When a running execution reads an "ACTIVE" secret and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then an execution of the state machine is started then a running execution fails to read the secret because it is pending deletion
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    Given an execution of the state machine has been started
-    When a running execution fails to read the secret because it is pending deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then a running execution reads an "ACTIVE" secret and the task succeeds then a Step Functions state machine is created
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds then a "step functions" "state machine" is created
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    Given a running execution has read an "ACTIVE" secret and the task succeeded
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is created in Secrets Manager then a running execution fails to read the secret because it is pending deletion then a secret is scheduled for deletion
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager then a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion then a "secretsmanager" "secret" is scheduled for deletion
     Given sid not in secret_status
-    Given a secret has been created in Secrets Manager
-    Given a running execution has failed to read the secret because it is pending deletion
-    When a secret is scheduled for deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then a Step Functions state machine is created then a running execution reads an "ACTIVE" secret and the task succeeds
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then a "step functions" "state machine" is created then a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    Given a Step Functions state machine has been created
-    When a running execution reads an "ACTIVE" secret and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then a secret is created in Secrets Manager then a running execution fails to read the secret because it is pending deletion
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then a "secretsmanager" "secret" is created in Secrets Manager then a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    Given a secret has been created in Secrets Manager
-    When a running execution fails to read the secret because it is pending deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then an execution of the state machine is started then a Step Functions state machine is created
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then an "step functions" "execution" of the "step functions" "state machine" is started then a "step functions" "state machine" is created
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    Given an execution of the state machine has been started
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then a running execution reads an "ACTIVE" secret and the task succeeds then a secret is created in Secrets Manager
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds then a "secretsmanager" "secret" is created in Secrets Manager
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    Given a running execution has read an "ACTIVE" secret and the task succeeded
-    When a secret is created in Secrets Manager
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a secret is scheduled for deletion then a running execution fails to read the secret because it is pending deletion then an execution of the state machine is started
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion then a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion then an "step functions" "execution" of the "step functions" "state machine" is started
     Given sid in secret_status
-    Given a secret has been scheduled for deletion
-    Given a running execution has failed to read the secret because it is pending deletion
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: an execution of the state machine is started then a Step Functions state machine is created then a running execution fails to read the secret because it is pending deletion
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "step functions" "state machine" is created then a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a Step Functions state machine has been created
-    When a running execution fails to read the secret because it is pending deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: an execution of the state machine is started then a secret is created in Secrets Manager then a Step Functions state machine is created
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "secretsmanager" "secret" is created in Secrets Manager then a "step functions" "state machine" is created
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a secret has been created in Secrets Manager
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: an execution of the state machine is started then a secret is scheduled for deletion then a secret is created in Secrets Manager
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "secretsmanager" "secret" is scheduled for deletion then a "secretsmanager" "secret" is created in Secrets Manager
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a secret has been scheduled for deletion
-    When a secret is created in Secrets Manager
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: an execution of the state machine is started then a running execution reads an "ACTIVE" secret and the task succeeds then a secret is scheduled for deletion
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds then a "secretsmanager" "secret" is scheduled for deletion
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a running execution has read an "ACTIVE" secret and the task succeeded
-    When a secret is scheduled for deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: an execution of the state machine is started then a running execution fails to read the secret because it is pending deletion then a running execution reads an "ACTIVE" secret and the task succeeds
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion then a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a running execution has failed to read the secret because it is pending deletion
-    When a running execution reads an "ACTIVE" secret and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution reads an "ACTIVE" secret and the task succeeds then a Step Functions state machine is created then a secret is created in Secrets Manager
+  Scenario: a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds then a "step functions" "state machine" is created then a "secretsmanager" "secret" is created in Secrets Manager
     Given eid in exec_status
-    Given a running execution has read an "ACTIVE" secret and the task succeeded
-    Given a Step Functions state machine has been created
-    When a secret is created in Secrets Manager
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    When a "step functions" "state machine" is created
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution reads an "ACTIVE" secret and the task succeeds then a secret is created in Secrets Manager then a secret is scheduled for deletion
+  Scenario: a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds then a "secretsmanager" "secret" is created in Secrets Manager then a "secretsmanager" "secret" is scheduled for deletion
     Given eid in exec_status
-    Given a running execution has read an "ACTIVE" secret and the task succeeded
-    Given a secret has been created in Secrets Manager
-    When a secret is scheduled for deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution reads an "ACTIVE" secret and the task succeeds then a secret is scheduled for deletion then an execution of the state machine is started
+  Scenario: a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds then a "secretsmanager" "secret" is scheduled for deletion then an "step functions" "execution" of the "step functions" "state machine" is started
     Given eid in exec_status
-    Given a running execution has read an "ACTIVE" secret and the task succeeded
-    Given a secret has been scheduled for deletion
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution reads an "ACTIVE" secret and the task succeeds then an execution of the state machine is started then a running execution fails to read the secret because it is pending deletion
+  Scenario: a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds then an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
     Given eid in exec_status
-    Given a running execution has read an "ACTIVE" secret and the task succeeded
-    Given an execution of the state machine has been started
-    When a running execution fails to read the secret because it is pending deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution reads an "ACTIVE" secret and the task succeeds then a running execution fails to read the secret because it is pending deletion then a Step Functions state machine is created
+  Scenario: a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds then a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion then a "step functions" "state machine" is created
     Given eid in exec_status
-    Given a running execution has read an "ACTIVE" secret and the task succeeded
-    Given a running execution has failed to read the secret because it is pending deletion
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution fails to read the secret because it is pending deletion then a Step Functions state machine is created then a secret is scheduled for deletion
+  Scenario: a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion then a "step functions" "state machine" is created then a "secretsmanager" "secret" is scheduled for deletion
     Given eid in exec_status
-    Given a running execution has failed to read the secret because it is pending deletion
-    Given a Step Functions state machine has been created
-    When a secret is scheduled for deletion
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    When a "step functions" "state machine" is created
+    When a "secretsmanager" "secret" is scheduled for deletion
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution fails to read the secret because it is pending deletion then a secret is created in Secrets Manager then an execution of the state machine is started
+  Scenario: a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion then a "secretsmanager" "secret" is created in Secrets Manager then an "step functions" "execution" of the "step functions" "state machine" is started
     Given eid in exec_status
-    Given a running execution has failed to read the secret because it is pending deletion
-    Given a secret has been created in Secrets Manager
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution fails to read the secret because it is pending deletion then a secret is scheduled for deletion then a running execution reads an "ACTIVE" secret and the task succeeds
+  Scenario: a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion then a "secretsmanager" "secret" is scheduled for deletion then a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
     Given eid in exec_status
-    Given a running execution has failed to read the secret because it is pending deletion
-    Given a secret has been scheduled for deletion
-    When a running execution reads an "ACTIVE" secret and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    When a "secretsmanager" "secret" is scheduled for deletion
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution fails to read the secret because it is pending deletion then an execution of the state machine is started then a Step Functions state machine is created
+  Scenario: a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion then an "step functions" "execution" of the "step functions" "state machine" is started then a "step functions" "state machine" is created
     Given eid in exec_status
-    Given a running execution has failed to read the secret because it is pending deletion
-    Given an execution of the state machine has been started
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
   @sequence
-  Scenario: a running execution fails to read the secret because it is pending deletion then a running execution reads an "ACTIVE" secret and the task succeeds then a secret is created in Secrets Manager
+  Scenario: a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion then a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds then a "secretsmanager" "secret" is created in Secrets Manager
     Given eid in exec_status
-    Given a running execution has failed to read the secret because it is pending deletion
-    Given a running execution has read an "ACTIVE" secret and the task succeeded
-    When a secret is created in Secrets Manager
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read

@@ -10,5 +10,5 @@ Feature: Chaos - The Chaos Latency Is Configured For A Service
   @minimal @happy @set_latency
   Scenario: the chaos latency is configured for a service
     When the chaos latency is configured for a service
-    Then the latency configuration is updated
+    Then the latency configuration will be updated
     And every chaos-configured service is a known service

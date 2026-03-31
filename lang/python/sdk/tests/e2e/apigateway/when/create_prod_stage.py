@@ -1,4 +1,4 @@
-"""When: a prod stage is created for an "API" """
+"""When: a prod stage is created for an "api gateway" "API" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ApigatewayTestClient
 from ..constants import TEST_STAGE_PROD
 
 
-@when('a prod stage is created for an "API"')
+@when('a prod stage is created for an "api gateway" "API"')
 def create_prod_stage(lws_session, world):
     try:
         api_id = ApigatewayTestClient(lws_session).get_api_id()

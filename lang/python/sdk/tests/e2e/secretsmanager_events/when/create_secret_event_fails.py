@@ -1,4 +1,4 @@
-"""When: a secret is created but the "CREATED" event delivery fails because the bus is deleted"""
+"""When: a "secretsmanager" "secret" is created but the "CREATED" event delivery fails because the bus is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from pytest_bdd import when
 from ..constants import TEST_SECRET, TEST_SECRET_VALUE
 
 
-@when('a secret is created but the "CREATED" event delivery fails because the bus is deleted')
+@when(
+    'a "secretsmanager" "secret" is created but the "CREATED" event delivery fails because the bus is deleted'
+)
 def create_secret_event_fails(lws_session, world):
     try:
         world["result"] = lws_session.client("secretsmanager").create_secret(

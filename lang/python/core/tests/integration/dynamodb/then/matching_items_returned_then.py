@@ -1,11 +1,11 @@
-"""Then: matching items are returned"""
+"""Then: matching items will be returned"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("matching items are returned")
+@then("matching items will be returned")
 def matching_items_returned_then(world: dict):
     expected_field = "Items"
     actual_result = world["result"]

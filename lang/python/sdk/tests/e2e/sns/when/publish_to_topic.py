@@ -1,4 +1,4 @@
-"""When: a message is published to a topic"""
+"""When: a "sns" "message" is published to a "sns" "topic" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import SnsTestClient
 from ..constants import TEST_MESSAGE
 
 
-@when("a message is published to a topic")
+@when('a "sns" "message" is published to a "sns" "topic"')
 def publish_to_topic(lws_session, world):
     try:
         world["result"] = SnsTestClient(lws_session).publish(

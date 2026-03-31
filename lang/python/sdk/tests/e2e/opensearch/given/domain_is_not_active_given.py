@@ -1,4 +1,4 @@
-"""Given: the domain is not "ACTIVE" """
+"""Given: the "opensearch" "domain" was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import OpensearchTestClient
 from ..constants import TEST_DOMAIN
 
 
-@given('the domain is not "ACTIVE"')
+@given('the "opensearch" "domain" was not "ACTIVE"')
 def domain_is_not_active_given(lws_session):
     try:
         OpensearchTestClient(lws_session).delete_domain(DomainName=TEST_DOMAIN)

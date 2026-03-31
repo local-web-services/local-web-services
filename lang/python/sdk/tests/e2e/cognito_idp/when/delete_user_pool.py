@@ -1,4 +1,4 @@
-"""When: a user pool is deleted"""
+"""When: a "cognito" "user pool" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import _skip_if_not_implemented
 
 
-@when("a user pool is deleted")
+@when('a "cognito" "user pool" is deleted')
 def delete_user_pool(lws_session, world):
     try:
         pool_id = world.get("pool_id", "")

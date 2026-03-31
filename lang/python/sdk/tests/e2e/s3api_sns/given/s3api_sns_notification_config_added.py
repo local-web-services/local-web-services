@@ -1,4 +1,4 @@
-"""Given: an "SNS" notification configuration has been added to the bucket"""
+"""Given: a "SNS" notification configuration is added to the bucket"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import S3apiSnsTestClient
 from ..constants import TEST_BUCKET, _topic_arn
 
 
-@given('an "SNS" notification configuration has been added to the bucket')
+@given('a "SNS" notification configuration is added to the bucket')
 def s3api_sns_notification_config_added(lws_session):
     S3apiSnsTestClient(lws_session).create_bucket()
     S3apiSnsTestClient(lws_session).create_topic()

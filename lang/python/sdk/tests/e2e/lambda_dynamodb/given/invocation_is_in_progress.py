@@ -1,4 +1,4 @@
-"""Given: an invocation is "IN_PROGRESS" """
+"""Given: a "lambda" "invocation" was "IN_PROGRESS" """
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from pytest_bdd import given
 from ..client import LambdaDynamodbTestClient
 
 
-@given('an invocation is "IN_PROGRESS"')
+@given('a "lambda" "invocation" was "IN_PROGRESS"')
 def invocation_is_in_progress(lws_session, world):
     try:
         LambdaDynamodbTestClient(lws_session).create_function()

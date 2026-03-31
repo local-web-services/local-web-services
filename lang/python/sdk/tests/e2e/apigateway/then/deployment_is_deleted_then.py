@@ -1,11 +1,11 @@
-"""Then: the deployment is "DELETED" """
+"""Then: the "api gateway" "deployment" will be deleted"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the deployment is "DELETED"')
+@then('the "api gateway" "deployment" will be deleted')
 def deployment_is_deleted_then(lws_session, world):
     assert (
         world["error"] is None

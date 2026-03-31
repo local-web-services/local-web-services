@@ -1,11 +1,11 @@
-"""Then: the state machine details are returned"""
+"""Then: the "step functions" "state machine" details will be returned"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the state machine details are returned")
+@then('the "step functions" "state machine" details will be returned')
 def sm_details_returned(world):
     assert (
         world["error"] is None

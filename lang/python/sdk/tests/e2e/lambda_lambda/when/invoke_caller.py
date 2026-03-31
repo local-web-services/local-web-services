@@ -1,4 +1,4 @@
-"""When: the caller Lambda function is invoked"""
+"""When: the caller "lambda" "function" is invoked"""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from pytest_bdd import when
 from ..constants import TEST_CALLER
 
 
-@when("the caller Lambda function is invoked")
+@when('the caller "lambda" "function" is invoked')
 def invoke_caller(lws_session, world):
     # Arrange
     invocation_id = str(uuid.uuid4())

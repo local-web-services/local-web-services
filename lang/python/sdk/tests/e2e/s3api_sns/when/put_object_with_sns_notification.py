@@ -1,4 +1,4 @@
-"""When: an object is uploaded and S3 publishes a notification to the "SNS" topic"""
+"""When: an object is uploaded and S3 publishes a notification to the "sns" "topic" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BODY, TEST_BUCKET, TEST_KEY
 
 
-@when('an object is uploaded and S3 publishes a notification to the "SNS" topic')
+@when('an object is uploaded and S3 publishes a notification to the "sns" "topic"')
 def put_object_with_sns_notification(lws_session, world):
     if world.get("_target_topic_deleted"):
         pytest.skip(

@@ -1,4 +1,4 @@
-"""Then: the table is in "CREATING" state"""
+"""Then: the "dynamodb" "table" will be in "CREATING" state"""
 
 from __future__ import annotations
 
@@ -8,7 +8,8 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_NAMESPACE, INT_TABLE
 
 
-@then('the table is in "CREATING" state')
+@then('the "s3 tables" "table" will be in "CREATING" state')
+@then('the "dynamodb" "table" will be in "CREATING" state')
 def table_is_in_creating_state(client: TestClient):
     r = client.get(
         "/get-table",

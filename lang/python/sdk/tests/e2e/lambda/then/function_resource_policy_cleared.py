@@ -1,11 +1,11 @@
-"""Then: the function's resource policy is cleared"""
+"""Then: the "lambda" "function"'s resource policy will be cleared"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the function's resource policy is cleared")
+@then('the "lambda" "function"\'s resource policy will be cleared')
 def function_resource_policy_cleared(world):
     assert (
         world["error"] is None

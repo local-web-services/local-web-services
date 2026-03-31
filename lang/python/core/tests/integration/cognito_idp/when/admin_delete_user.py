@@ -1,4 +1,4 @@
-"""When: a user is deleted by an admin"""
+"""When: a "cognito" "user" is deleted by an admin"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import CognitoIdpTestClient
 from ..constants import INT_POOL_ID, INT_USERNAME, _store
 
 
-@when("a user is deleted by an admin")
+@when('a "cognito" "user" is deleted by an admin')
 def admin_delete_user(client: TestClient, world):
     pool_id = world.get("pool_id", INT_POOL_ID)
     username = world.get("username", INT_USERNAME)

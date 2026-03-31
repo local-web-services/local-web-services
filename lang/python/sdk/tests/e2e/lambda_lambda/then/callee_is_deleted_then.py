@@ -1,4 +1,4 @@
-"""Then: the callee is "DELETED" and invocations targeting it will fail"""
+"""Then: the callee "lambda" "function" will be "DELETED" and invocations targeting it will fail"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import then
 from ..constants import TEST_CALLEE
 
 
-@then('the callee is "DELETED" and invocations targeting it will fail')
+@then('the callee "lambda" "function" will be "DELETED" and invocations targeting it will fail')
 def callee_is_deleted_then(lws_session):
     try:
         lws_session.client("lambda").get_function(FunctionName=TEST_CALLEE)

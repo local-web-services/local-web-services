@@ -1,4 +1,4 @@
-"""Then: the function has a resource policy"""
+"""Then: the "lambda" "function" has a resource policy"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_FUNCTION_NAME
 
 
-@then("the function has a resource policy")
+@then('the "lambda" "function" has a resource policy')
 def function_has_resource_policy_then(client: TestClient, world):
     actual_error = world["error"]
     assert actual_error is None, f"Expected permission to be added but got: {actual_error}"

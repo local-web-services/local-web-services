@@ -1,4 +1,4 @@
-"""When: a child resource is created under an existing resource"""
+"""When: a child "api gateway" "resource" is created under an existing "api gateway" "resource" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_RESOURCE_PATH
 
 
-@when("a child resource is created under an existing resource")
+@when('a child "api gateway" "resource" is created under an existing "api gateway" "resource"')
 def create_child_resource(client: TestClient, world):
     list_r = client.get("/restapis")
     items = list_r.json().get("item", [])

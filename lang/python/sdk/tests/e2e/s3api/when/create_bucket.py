@@ -1,4 +1,4 @@
-"""When: a bucket is created"""
+"""When: a "s3" "bucket" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUCKET
 
 
-@when("a bucket is created")
+@when('a "s3" "bucket" is created')
 def create_bucket(lws_session, world):
     try:
         world["result"] = lws_session.client("s3").create_bucket(Bucket=TEST_BUCKET)

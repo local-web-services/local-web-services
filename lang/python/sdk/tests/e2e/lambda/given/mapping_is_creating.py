@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import pytest
-from pytest_bdd import given, parsers
+from pytest_bdd import given
 
 
-@given(parsers.re(r'^the mapping is "CREATING"$'))
+@given('the mapping was "CREATING"')
 def mapping_is_creating():
     pytest.skip("Cannot observe ESM CREATING state in lws")

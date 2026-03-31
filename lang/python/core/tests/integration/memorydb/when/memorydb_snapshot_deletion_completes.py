@@ -1,4 +1,4 @@
-"""When: a snapshot deletion completes"""
+"""When: a "memorydb" "snapshot" deletion completes"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET
 
 
-@when("a snapshot deletion completes")
+@when('a "memorydb" "snapshot" deletion completes')
 def memorydb_snapshot_deletion_completes(client: TestClient, world):
     r = client.post(
         "/",

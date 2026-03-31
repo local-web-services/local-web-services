@@ -8,715 +8,715 @@ Feature: LambdaElasticsearch - Action Sequences
     Given the system is initialized
 
   @sequence
-  Scenario: a Lambda function is deployed then an Elasticsearch domain is created and becomes "AVAILABLE"
+  Scenario: a "lambda" "function" is deployed then an "elasticsearch" "domain" is created and becomes "AVAILABLE"
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When an Elasticsearch domain is created and becomes "AVAILABLE"
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "lambda" "function" is deployed
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a Lambda function is deployed then a domain configuration update begins
+  Scenario: a "lambda" "function" is deployed then a "elasticsearch" "domain" configuration update begins
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When a domain configuration update begins
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "lambda" "function" is deployed
+    When a "elasticsearch" "domain" configuration update begins
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a Lambda function is deployed then the domain configuration update completes
+  Scenario: a "lambda" "function" is deployed then the "elasticsearch" "domain" configuration update completes
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When the domain configuration update completes
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "lambda" "function" is deployed
+    When the "elasticsearch" "domain" configuration update completes
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function is invoked
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" is invoked
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function fails to write because the domain is processing a config update
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When the Lambda function fails to write because the domain is processing a config update
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: an Elasticsearch domain is created and becomes "AVAILABLE" then a Lambda function is deployed
+  Scenario: an "elasticsearch" "domain" is created and becomes "AVAILABLE" then a "lambda" "function" is deployed
     Given did not in domain_status
-    Given an Elasticsearch domain has been created and become "AVAILABLE"
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: an Elasticsearch domain is created and becomes "AVAILABLE" then a domain configuration update begins
+  Scenario: an "elasticsearch" "domain" is created and becomes "AVAILABLE" then a "elasticsearch" "domain" configuration update begins
     Given did not in domain_status
-    Given an Elasticsearch domain has been created and become "AVAILABLE"
-    When a domain configuration update begins
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    When a "elasticsearch" "domain" configuration update begins
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: an Elasticsearch domain is created and becomes "AVAILABLE" then the domain configuration update completes
+  Scenario: an "elasticsearch" "domain" is created and becomes "AVAILABLE" then the "elasticsearch" "domain" configuration update completes
     Given did not in domain_status
-    Given an Elasticsearch domain has been created and become "AVAILABLE"
-    When the domain configuration update completes
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    When the "elasticsearch" "domain" configuration update completes
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: an Elasticsearch domain is created and becomes "AVAILABLE" then the Lambda function is invoked
+  Scenario: an "elasticsearch" "domain" is created and becomes "AVAILABLE" then the "lambda" "function" is invoked
     Given did not in domain_status
-    Given an Elasticsearch domain has been created and become "AVAILABLE"
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: an Elasticsearch domain is created and becomes "AVAILABLE" then the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
+  Scenario: an "elasticsearch" "domain" is created and becomes "AVAILABLE" then the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
     Given did not in domain_status
-    Given an Elasticsearch domain has been created and become "AVAILABLE"
-    When the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: an Elasticsearch domain is created and becomes "AVAILABLE" then the Lambda function fails to write because the domain is processing a config update
+  Scenario: an "elasticsearch" "domain" is created and becomes "AVAILABLE" then the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
     Given did not in domain_status
-    Given an Elasticsearch domain has been created and become "AVAILABLE"
-    When the Lambda function fails to write because the domain is processing a config update
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a domain configuration update begins then a Lambda function is deployed
+  Scenario: a "elasticsearch" "domain" configuration update begins then a "lambda" "function" is deployed
     Given did in domain_status
-    Given a domain configuration update has begun
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "elasticsearch" "domain" configuration update begins
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a domain configuration update begins then an Elasticsearch domain is created and becomes "AVAILABLE"
+  Scenario: a "elasticsearch" "domain" configuration update begins then an "elasticsearch" "domain" is created and becomes "AVAILABLE"
     Given did in domain_status
-    Given a domain configuration update has begun
-    When an Elasticsearch domain is created and becomes "AVAILABLE"
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "elasticsearch" "domain" configuration update begins
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a domain configuration update begins then the domain configuration update completes
+  Scenario: a "elasticsearch" "domain" configuration update begins then the "elasticsearch" "domain" configuration update completes
     Given did in domain_status
-    Given a domain configuration update has begun
-    When the domain configuration update completes
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "elasticsearch" "domain" configuration update begins
+    When the "elasticsearch" "domain" configuration update completes
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a domain configuration update begins then the Lambda function is invoked
+  Scenario: a "elasticsearch" "domain" configuration update begins then the "lambda" "function" is invoked
     Given did in domain_status
-    Given a domain configuration update has begun
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "elasticsearch" "domain" configuration update begins
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a domain configuration update begins then the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
+  Scenario: a "elasticsearch" "domain" configuration update begins then the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
     Given did in domain_status
-    Given a domain configuration update has begun
-    When the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "elasticsearch" "domain" configuration update begins
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a domain configuration update begins then the Lambda function fails to write because the domain is processing a config update
+  Scenario: a "elasticsearch" "domain" configuration update begins then the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
     Given did in domain_status
-    Given a domain configuration update has begun
-    When the Lambda function fails to write because the domain is processing a config update
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "elasticsearch" "domain" configuration update begins
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the domain configuration update completes then a Lambda function is deployed
+  Scenario: the "elasticsearch" "domain" configuration update completes then a "lambda" "function" is deployed
     Given did in domain_status
-    Given the domain configuration update has completed
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "elasticsearch" "domain" configuration update completes
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the domain configuration update completes then an Elasticsearch domain is created and becomes "AVAILABLE"
+  Scenario: the "elasticsearch" "domain" configuration update completes then an "elasticsearch" "domain" is created and becomes "AVAILABLE"
     Given did in domain_status
-    Given the domain configuration update has completed
-    When an Elasticsearch domain is created and becomes "AVAILABLE"
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "elasticsearch" "domain" configuration update completes
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the domain configuration update completes then a domain configuration update begins
+  Scenario: the "elasticsearch" "domain" configuration update completes then a "elasticsearch" "domain" configuration update begins
     Given did in domain_status
-    Given the domain configuration update has completed
-    When a domain configuration update begins
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "elasticsearch" "domain" configuration update completes
+    When a "elasticsearch" "domain" configuration update begins
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the domain configuration update completes then the Lambda function is invoked
+  Scenario: the "elasticsearch" "domain" configuration update completes then the "lambda" "function" is invoked
     Given did in domain_status
-    Given the domain configuration update has completed
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "elasticsearch" "domain" configuration update completes
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the domain configuration update completes then the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
+  Scenario: the "elasticsearch" "domain" configuration update completes then the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
     Given did in domain_status
-    Given the domain configuration update has completed
-    When the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "elasticsearch" "domain" configuration update completes
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the domain configuration update completes then the Lambda function fails to write because the domain is processing a config update
+  Scenario: the "elasticsearch" "domain" configuration update completes then the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
     Given did in domain_status
-    Given the domain configuration update has completed
-    When the Lambda function fails to write because the domain is processing a config update
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "elasticsearch" "domain" configuration update completes
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function is invoked then a Lambda function is deployed
+  Scenario: the "lambda" "function" is invoked then a "lambda" "function" is deployed
     Given fid in func_status
-    Given the Lambda function has been invoked
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" is invoked
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function is invoked then an Elasticsearch domain is created and becomes "AVAILABLE"
+  Scenario: the "lambda" "function" is invoked then an "elasticsearch" "domain" is created and becomes "AVAILABLE"
     Given fid in func_status
-    Given the Lambda function has been invoked
-    When an Elasticsearch domain is created and becomes "AVAILABLE"
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" is invoked
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function is invoked then a domain configuration update begins
+  Scenario: the "lambda" "function" is invoked then a "elasticsearch" "domain" configuration update begins
     Given fid in func_status
-    Given the Lambda function has been invoked
-    When a domain configuration update begins
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" is invoked
+    When a "elasticsearch" "domain" configuration update begins
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function is invoked then the domain configuration update completes
+  Scenario: the "lambda" "function" is invoked then the "elasticsearch" "domain" configuration update completes
     Given fid in func_status
-    Given the Lambda function has been invoked
-    When the domain configuration update completes
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" is invoked
+    When the "elasticsearch" "domain" configuration update completes
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function is invoked then the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
     Given fid in func_status
-    Given the Lambda function has been invoked
-    When the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function is invoked then the Lambda function fails to write because the domain is processing a config update
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
     Given fid in func_status
-    Given the Lambda function has been invoked
-    When the Lambda function fails to write because the domain is processing a config update
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds then a Lambda function is deployed
+  Scenario: the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds then a "lambda" "function" is deployed
     Given iid in inv_status
-    Given the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds then an Elasticsearch domain is created and becomes "AVAILABLE"
+  Scenario: the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds then an "elasticsearch" "domain" is created and becomes "AVAILABLE"
     Given iid in inv_status
-    Given the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded
-    When an Elasticsearch domain is created and becomes "AVAILABLE"
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds then a domain configuration update begins
+  Scenario: the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds then a "elasticsearch" "domain" configuration update begins
     Given iid in inv_status
-    Given the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded
-    When a domain configuration update begins
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    When a "elasticsearch" "domain" configuration update begins
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds then the domain configuration update completes
+  Scenario: the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds then the "elasticsearch" "domain" configuration update completes
     Given iid in inv_status
-    Given the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded
-    When the domain configuration update completes
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    When the "elasticsearch" "domain" configuration update completes
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds then the Lambda function is invoked
+  Scenario: the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds then the "lambda" "function" is invoked
     Given iid in inv_status
-    Given the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds then the Lambda function fails to write because the domain is processing a config update
+  Scenario: the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds then the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
     Given iid in inv_status
-    Given the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded
-    When the Lambda function fails to write because the domain is processing a config update
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function fails to write because the domain is processing a config update then a Lambda function is deployed
+  Scenario: the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update then a "lambda" "function" is deployed
     Given iid in inv_status
-    Given the Lambda function has failed to write because the domain is processing a config update
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function fails to write because the domain is processing a config update then an Elasticsearch domain is created and becomes "AVAILABLE"
+  Scenario: the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update then an "elasticsearch" "domain" is created and becomes "AVAILABLE"
     Given iid in inv_status
-    Given the Lambda function has failed to write because the domain is processing a config update
-    When an Elasticsearch domain is created and becomes "AVAILABLE"
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function fails to write because the domain is processing a config update then a domain configuration update begins
+  Scenario: the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update then a "elasticsearch" "domain" configuration update begins
     Given iid in inv_status
-    Given the Lambda function has failed to write because the domain is processing a config update
-    When a domain configuration update begins
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    When a "elasticsearch" "domain" configuration update begins
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function fails to write because the domain is processing a config update then the domain configuration update completes
+  Scenario: the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update then the "elasticsearch" "domain" configuration update completes
     Given iid in inv_status
-    Given the Lambda function has failed to write because the domain is processing a config update
-    When the domain configuration update completes
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    When the "elasticsearch" "domain" configuration update completes
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function fails to write because the domain is processing a config update then the Lambda function is invoked
+  Scenario: the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update then the "lambda" "function" is invoked
     Given iid in inv_status
-    Given the Lambda function has failed to write because the domain is processing a config update
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function fails to write because the domain is processing a config update then the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
+  Scenario: the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update then the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
     Given iid in inv_status
-    Given the Lambda function has failed to write because the domain is processing a config update
-    When the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a Lambda function is deployed then an Elasticsearch domain is created and becomes "AVAILABLE" then a domain configuration update begins
+  Scenario: a "lambda" "function" is deployed then an "elasticsearch" "domain" is created and becomes "AVAILABLE" then a "elasticsearch" "domain" configuration update begins
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given an Elasticsearch domain has been created and become "AVAILABLE"
-    When a domain configuration update begins
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "lambda" "function" is deployed
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    When a "elasticsearch" "domain" configuration update begins
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a Lambda function is deployed then a domain configuration update begins then the domain configuration update completes
+  Scenario: a "lambda" "function" is deployed then a "elasticsearch" "domain" configuration update begins then the "elasticsearch" "domain" configuration update completes
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given a domain configuration update has begun
-    When the domain configuration update completes
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "lambda" "function" is deployed
+    When a "elasticsearch" "domain" configuration update begins
+    When the "elasticsearch" "domain" configuration update completes
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a Lambda function is deployed then the domain configuration update completes then the Lambda function is invoked
+  Scenario: a "lambda" "function" is deployed then the "elasticsearch" "domain" configuration update completes then the "lambda" "function" is invoked
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given the domain configuration update has completed
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "lambda" "function" is deployed
+    When the "elasticsearch" "domain" configuration update completes
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function is invoked then the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" is invoked then the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given the Lambda function has been invoked
-    When the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function indexes a document into the "AVAILABLE" domain and succeeds then the Lambda function fails to write because the domain is processing a config update
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds then the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded
-    When the Lambda function fails to write because the domain is processing a config update
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function fails to write because the domain is processing a config update then an Elasticsearch domain is created and becomes "AVAILABLE"
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update then an "elasticsearch" "domain" is created and becomes "AVAILABLE"
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given the Lambda function has failed to write because the domain is processing a config update
-    When an Elasticsearch domain is created and becomes "AVAILABLE"
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: an Elasticsearch domain is created and becomes "AVAILABLE" then a Lambda function is deployed then the domain configuration update completes
+  Scenario: an "elasticsearch" "domain" is created and becomes "AVAILABLE" then a "lambda" "function" is deployed then the "elasticsearch" "domain" configuration update completes
     Given did not in domain_status
-    Given an Elasticsearch domain has been created and become "AVAILABLE"
-    Given a Lambda function has been deployed
-    When the domain configuration update completes
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    When a "lambda" "function" is deployed
+    When the "elasticsearch" "domain" configuration update completes
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: an Elasticsearch domain is created and becomes "AVAILABLE" then a domain configuration update begins then the Lambda function is invoked
+  Scenario: an "elasticsearch" "domain" is created and becomes "AVAILABLE" then a "elasticsearch" "domain" configuration update begins then the "lambda" "function" is invoked
     Given did not in domain_status
-    Given an Elasticsearch domain has been created and become "AVAILABLE"
-    Given a domain configuration update has begun
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    When a "elasticsearch" "domain" configuration update begins
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: an Elasticsearch domain is created and becomes "AVAILABLE" then the domain configuration update completes then the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
+  Scenario: an "elasticsearch" "domain" is created and becomes "AVAILABLE" then the "elasticsearch" "domain" configuration update completes then the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
     Given did not in domain_status
-    Given an Elasticsearch domain has been created and become "AVAILABLE"
-    Given the domain configuration update has completed
-    When the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    When the "elasticsearch" "domain" configuration update completes
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: an Elasticsearch domain is created and becomes "AVAILABLE" then the Lambda function is invoked then the Lambda function fails to write because the domain is processing a config update
+  Scenario: an "elasticsearch" "domain" is created and becomes "AVAILABLE" then the "lambda" "function" is invoked then the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
     Given did not in domain_status
-    Given an Elasticsearch domain has been created and become "AVAILABLE"
-    Given the Lambda function has been invoked
-    When the Lambda function fails to write because the domain is processing a config update
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: an Elasticsearch domain is created and becomes "AVAILABLE" then the Lambda function indexes a document into the "AVAILABLE" domain and succeeds then a Lambda function is deployed
+  Scenario: an "elasticsearch" "domain" is created and becomes "AVAILABLE" then the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds then a "lambda" "function" is deployed
     Given did not in domain_status
-    Given an Elasticsearch domain has been created and become "AVAILABLE"
-    Given the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: an Elasticsearch domain is created and becomes "AVAILABLE" then the Lambda function fails to write because the domain is processing a config update then a domain configuration update begins
+  Scenario: an "elasticsearch" "domain" is created and becomes "AVAILABLE" then the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update then a "elasticsearch" "domain" configuration update begins
     Given did not in domain_status
-    Given an Elasticsearch domain has been created and become "AVAILABLE"
-    Given the Lambda function has failed to write because the domain is processing a config update
-    When a domain configuration update begins
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    When a "elasticsearch" "domain" configuration update begins
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a domain configuration update begins then a Lambda function is deployed then the Lambda function is invoked
+  Scenario: a "elasticsearch" "domain" configuration update begins then a "lambda" "function" is deployed then the "lambda" "function" is invoked
     Given did in domain_status
-    Given a domain configuration update has begun
-    Given a Lambda function has been deployed
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "elasticsearch" "domain" configuration update begins
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a domain configuration update begins then an Elasticsearch domain is created and becomes "AVAILABLE" then the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
+  Scenario: a "elasticsearch" "domain" configuration update begins then an "elasticsearch" "domain" is created and becomes "AVAILABLE" then the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
     Given did in domain_status
-    Given a domain configuration update has begun
-    Given an Elasticsearch domain has been created and become "AVAILABLE"
-    When the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "elasticsearch" "domain" configuration update begins
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a domain configuration update begins then the domain configuration update completes then the Lambda function fails to write because the domain is processing a config update
+  Scenario: a "elasticsearch" "domain" configuration update begins then the "elasticsearch" "domain" configuration update completes then the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
     Given did in domain_status
-    Given a domain configuration update has begun
-    Given the domain configuration update has completed
-    When the Lambda function fails to write because the domain is processing a config update
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "elasticsearch" "domain" configuration update begins
+    When the "elasticsearch" "domain" configuration update completes
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a domain configuration update begins then the Lambda function is invoked then a Lambda function is deployed
+  Scenario: a "elasticsearch" "domain" configuration update begins then the "lambda" "function" is invoked then a "lambda" "function" is deployed
     Given did in domain_status
-    Given a domain configuration update has begun
-    Given the Lambda function has been invoked
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "elasticsearch" "domain" configuration update begins
+    When the "lambda" "function" is invoked
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a domain configuration update begins then the Lambda function indexes a document into the "AVAILABLE" domain and succeeds then an Elasticsearch domain is created and becomes "AVAILABLE"
+  Scenario: a "elasticsearch" "domain" configuration update begins then the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds then an "elasticsearch" "domain" is created and becomes "AVAILABLE"
     Given did in domain_status
-    Given a domain configuration update has begun
-    Given the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded
-    When an Elasticsearch domain is created and becomes "AVAILABLE"
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "elasticsearch" "domain" configuration update begins
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: a domain configuration update begins then the Lambda function fails to write because the domain is processing a config update then the domain configuration update completes
+  Scenario: a "elasticsearch" "domain" configuration update begins then the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update then the "elasticsearch" "domain" configuration update completes
     Given did in domain_status
-    Given a domain configuration update has begun
-    Given the Lambda function has failed to write because the domain is processing a config update
-    When the domain configuration update completes
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When a "elasticsearch" "domain" configuration update begins
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    When the "elasticsearch" "domain" configuration update completes
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the domain configuration update completes then a Lambda function is deployed then the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
+  Scenario: the "elasticsearch" "domain" configuration update completes then a "lambda" "function" is deployed then the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
     Given did in domain_status
-    Given the domain configuration update has completed
-    Given a Lambda function has been deployed
-    When the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "elasticsearch" "domain" configuration update completes
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the domain configuration update completes then an Elasticsearch domain is created and becomes "AVAILABLE" then the Lambda function fails to write because the domain is processing a config update
+  Scenario: the "elasticsearch" "domain" configuration update completes then an "elasticsearch" "domain" is created and becomes "AVAILABLE" then the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
     Given did in domain_status
-    Given the domain configuration update has completed
-    Given an Elasticsearch domain has been created and become "AVAILABLE"
-    When the Lambda function fails to write because the domain is processing a config update
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "elasticsearch" "domain" configuration update completes
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the domain configuration update completes then a domain configuration update begins then a Lambda function is deployed
+  Scenario: the "elasticsearch" "domain" configuration update completes then a "elasticsearch" "domain" configuration update begins then a "lambda" "function" is deployed
     Given did in domain_status
-    Given the domain configuration update has completed
-    Given a domain configuration update has begun
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "elasticsearch" "domain" configuration update completes
+    When a "elasticsearch" "domain" configuration update begins
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the domain configuration update completes then the Lambda function is invoked then an Elasticsearch domain is created and becomes "AVAILABLE"
+  Scenario: the "elasticsearch" "domain" configuration update completes then the "lambda" "function" is invoked then an "elasticsearch" "domain" is created and becomes "AVAILABLE"
     Given did in domain_status
-    Given the domain configuration update has completed
-    Given the Lambda function has been invoked
-    When an Elasticsearch domain is created and becomes "AVAILABLE"
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "elasticsearch" "domain" configuration update completes
+    When the "lambda" "function" is invoked
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the domain configuration update completes then the Lambda function indexes a document into the "AVAILABLE" domain and succeeds then a domain configuration update begins
+  Scenario: the "elasticsearch" "domain" configuration update completes then the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds then a "elasticsearch" "domain" configuration update begins
     Given did in domain_status
-    Given the domain configuration update has completed
-    Given the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded
-    When a domain configuration update begins
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "elasticsearch" "domain" configuration update completes
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    When a "elasticsearch" "domain" configuration update begins
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the domain configuration update completes then the Lambda function fails to write because the domain is processing a config update then the Lambda function is invoked
+  Scenario: the "elasticsearch" "domain" configuration update completes then the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update then the "lambda" "function" is invoked
     Given did in domain_status
-    Given the domain configuration update has completed
-    Given the Lambda function has failed to write because the domain is processing a config update
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "elasticsearch" "domain" configuration update completes
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function is invoked then a Lambda function is deployed then the Lambda function fails to write because the domain is processing a config update
+  Scenario: the "lambda" "function" is invoked then a "lambda" "function" is deployed then the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
     Given fid in func_status
-    Given the Lambda function has been invoked
-    Given a Lambda function has been deployed
-    When the Lambda function fails to write because the domain is processing a config update
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" is invoked
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function is invoked then an Elasticsearch domain is created and becomes "AVAILABLE" then a Lambda function is deployed
+  Scenario: the "lambda" "function" is invoked then an "elasticsearch" "domain" is created and becomes "AVAILABLE" then a "lambda" "function" is deployed
     Given fid in func_status
-    Given the Lambda function has been invoked
-    Given an Elasticsearch domain has been created and become "AVAILABLE"
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" is invoked
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function is invoked then a domain configuration update begins then an Elasticsearch domain is created and becomes "AVAILABLE"
+  Scenario: the "lambda" "function" is invoked then a "elasticsearch" "domain" configuration update begins then an "elasticsearch" "domain" is created and becomes "AVAILABLE"
     Given fid in func_status
-    Given the Lambda function has been invoked
-    Given a domain configuration update has begun
-    When an Elasticsearch domain is created and becomes "AVAILABLE"
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" is invoked
+    When a "elasticsearch" "domain" configuration update begins
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function is invoked then the domain configuration update completes then a domain configuration update begins
+  Scenario: the "lambda" "function" is invoked then the "elasticsearch" "domain" configuration update completes then a "elasticsearch" "domain" configuration update begins
     Given fid in func_status
-    Given the Lambda function has been invoked
-    Given the domain configuration update has completed
-    When a domain configuration update begins
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" is invoked
+    When the "elasticsearch" "domain" configuration update completes
+    When a "elasticsearch" "domain" configuration update begins
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function is invoked then the Lambda function indexes a document into the "AVAILABLE" domain and succeeds then the domain configuration update completes
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds then the "elasticsearch" "domain" configuration update completes
     Given fid in func_status
-    Given the Lambda function has been invoked
-    Given the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded
-    When the domain configuration update completes
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    When the "elasticsearch" "domain" configuration update completes
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function is invoked then the Lambda function fails to write because the domain is processing a config update then the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update then the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
     Given fid in func_status
-    Given the Lambda function has been invoked
-    Given the Lambda function has failed to write because the domain is processing a config update
-    When the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds then a Lambda function is deployed then an Elasticsearch domain is created and becomes "AVAILABLE"
+  Scenario: the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds then a "lambda" "function" is deployed then an "elasticsearch" "domain" is created and becomes "AVAILABLE"
     Given iid in inv_status
-    Given the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded
-    Given a Lambda function has been deployed
-    When an Elasticsearch domain is created and becomes "AVAILABLE"
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    When a "lambda" "function" is deployed
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds then an Elasticsearch domain is created and becomes "AVAILABLE" then a domain configuration update begins
+  Scenario: the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds then an "elasticsearch" "domain" is created and becomes "AVAILABLE" then a "elasticsearch" "domain" configuration update begins
     Given iid in inv_status
-    Given the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded
-    Given an Elasticsearch domain has been created and become "AVAILABLE"
-    When a domain configuration update begins
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    When a "elasticsearch" "domain" configuration update begins
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds then a domain configuration update begins then the domain configuration update completes
+  Scenario: the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds then a "elasticsearch" "domain" configuration update begins then the "elasticsearch" "domain" configuration update completes
     Given iid in inv_status
-    Given the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded
-    Given a domain configuration update has begun
-    When the domain configuration update completes
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    When a "elasticsearch" "domain" configuration update begins
+    When the "elasticsearch" "domain" configuration update completes
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds then the domain configuration update completes then the Lambda function is invoked
+  Scenario: the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds then the "elasticsearch" "domain" configuration update completes then the "lambda" "function" is invoked
     Given iid in inv_status
-    Given the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded
-    Given the domain configuration update has completed
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    When the "elasticsearch" "domain" configuration update completes
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds then the Lambda function is invoked then the Lambda function fails to write because the domain is processing a config update
+  Scenario: the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds then the "lambda" "function" is invoked then the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
     Given iid in inv_status
-    Given the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded
-    Given the Lambda function has been invoked
-    When the Lambda function fails to write because the domain is processing a config update
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function indexes a document into the "AVAILABLE" domain and succeeds then the Lambda function fails to write because the domain is processing a config update then a Lambda function is deployed
+  Scenario: the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds then the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update then a "lambda" "function" is deployed
     Given iid in inv_status
-    Given the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded
-    Given the Lambda function has failed to write because the domain is processing a config update
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function fails to write because the domain is processing a config update then a Lambda function is deployed then a domain configuration update begins
+  Scenario: the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update then a "lambda" "function" is deployed then a "elasticsearch" "domain" configuration update begins
     Given iid in inv_status
-    Given the Lambda function has failed to write because the domain is processing a config update
-    Given a Lambda function has been deployed
-    When a domain configuration update begins
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    When a "lambda" "function" is deployed
+    When a "elasticsearch" "domain" configuration update begins
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function fails to write because the domain is processing a config update then an Elasticsearch domain is created and becomes "AVAILABLE" then the domain configuration update completes
+  Scenario: the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update then an "elasticsearch" "domain" is created and becomes "AVAILABLE" then the "elasticsearch" "domain" configuration update completes
     Given iid in inv_status
-    Given the Lambda function has failed to write because the domain is processing a config update
-    Given an Elasticsearch domain has been created and become "AVAILABLE"
-    When the domain configuration update completes
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    When the "elasticsearch" "domain" configuration update completes
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function fails to write because the domain is processing a config update then a domain configuration update begins then the Lambda function is invoked
+  Scenario: the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update then a "elasticsearch" "domain" configuration update begins then the "lambda" "function" is invoked
     Given iid in inv_status
-    Given the Lambda function has failed to write because the domain is processing a config update
-    Given a domain configuration update has begun
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    When a "elasticsearch" "domain" configuration update begins
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function fails to write because the domain is processing a config update then the domain configuration update completes then the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
+  Scenario: the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update then the "elasticsearch" "domain" configuration update completes then the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
     Given iid in inv_status
-    Given the Lambda function has failed to write because the domain is processing a config update
-    Given the domain configuration update has completed
-    When the Lambda function indexes a document into the "AVAILABLE" domain and succeeds
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    When the "elasticsearch" "domain" configuration update completes
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function fails to write because the domain is processing a config update then the Lambda function is invoked then a Lambda function is deployed
+  Scenario: the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update then the "lambda" "function" is invoked then a "lambda" "function" is deployed
     Given iid in inv_status
-    Given the Lambda function has failed to write because the domain is processing a config update
-    Given the Lambda function has been invoked
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    When the "lambda" "function" is invoked
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists
 
   @sequence
-  Scenario: the Lambda function fails to write because the domain is processing a config update then the Lambda function indexes a document into the "AVAILABLE" domain and succeeds then an Elasticsearch domain is created and becomes "AVAILABLE"
+  Scenario: the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update then the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds then an "elasticsearch" "domain" is created and becomes "AVAILABLE"
     Given iid in inv_status
-    Given the Lambda function has failed to write because the domain is processing a config update
-    Given the Lambda function has indexed a document into the "AVAILABLE" domain and succeeded
-    When an Elasticsearch domain is created and becomes "AVAILABLE"
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a domain that exists
+    When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+    When the "lambda" "function" indexes a "elasticsearch" "document" into the "AVAILABLE" domain and succeeds
+    When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing document references a "elasticsearch" "domain" that exists

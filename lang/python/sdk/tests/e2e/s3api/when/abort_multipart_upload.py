@@ -1,4 +1,4 @@
-"""When: a multipart upload is aborted"""
+"""When: a multipart "s3" "upload" is aborted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUCKET, TEST_KEY
 
 
-@when("a multipart upload is aborted")
+@when('a multipart "s3" "upload" is aborted')
 def abort_multipart_upload(lws_session, world):
     try:
         world["result"] = lws_session.client("s3").abort_multipart_upload(

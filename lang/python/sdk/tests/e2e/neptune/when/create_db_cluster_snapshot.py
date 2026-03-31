@@ -1,4 +1,4 @@
-"""When: a database cluster snapshot is created"""
+"""When: a "neptune" "cluster" neptune snapshot is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_CLUSTER, TEST_SNAPSHOT
 
 
-@when("a database cluster snapshot is created")
+@when('a "neptune" "cluster" neptune snapshot is created')
 def create_db_cluster_snapshot(lws_session, world):
     try:
         cluster_id = world.get("cluster_id", TEST_CLUSTER)

@@ -1,4 +1,4 @@
-"""Then: the cluster is in "CREATING" state with the memcached engine"""
+"""Then: the "elasticache" "cluster" will be in "CREATING" state with the memcached engine"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import then
 from ..constants import TEST_CLUSTER
 
 
-@then('the cluster is in "CREATING" state with the memcached engine')
+@then('the "elasticache" "cluster" will be in "CREATING" state with the memcached engine')
 def cluster_is_creating_memcached_then(lws_session):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     resp = lws_session.client("elasticache").describe_cache_clusters(CacheClusterId=TEST_CLUSTER)

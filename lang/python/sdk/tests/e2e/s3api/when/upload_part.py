@@ -1,4 +1,4 @@
-"""When: a part is uploaded for a multipart upload"""
+"""When: a part is uploaded for a multipart "s3" "upload" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BODY, TEST_BUCKET, TEST_KEY
 
 
-@when("a part is uploaded for a multipart upload")
+@when('a part is uploaded for a multipart "s3" "upload"')
 def upload_part(lws_session, world):
     try:
         part_resp = lws_session.client("s3").upload_part(

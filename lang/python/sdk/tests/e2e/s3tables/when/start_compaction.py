@@ -1,4 +1,4 @@
-"""When: compaction is started on a table"""
+"""When: compaction is started on a "s3 tables" "table" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUCKET
 
 
-@when("compaction is started on a table")
+@when('compaction is started on a "s3 tables" "table"')
 def start_compaction(lws_session, world):
     try:
         resp = lws_session.client("s3tables").get_table_bucket(tableBucketARN=TEST_BUCKET)

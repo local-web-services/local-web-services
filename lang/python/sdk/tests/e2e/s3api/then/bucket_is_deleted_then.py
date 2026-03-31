@@ -1,4 +1,4 @@
-"""Then: the bucket is deleted"""
+"""Then: a "s3" "bucket" is deleted"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_BUCKET
 
 
-@then("the bucket is deleted")
+@then('a "s3" "bucket" is deleted')
 def bucket_is_deleted_then(lws_session):
     client = lws_session.client("s3")
     resp = client.list_buckets()

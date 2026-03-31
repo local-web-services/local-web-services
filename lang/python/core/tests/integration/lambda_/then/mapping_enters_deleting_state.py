@@ -1,4 +1,4 @@
-"""Then: the mapping enters "DELETING" state"""
+"""Then: the mapping will be in "DELETING" state"""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from pytest_bdd import then
 from starlette.testclient import TestClient
 
 
-@then('the mapping enters "DELETING" state')
+@then('the mapping will be in "DELETING" state')
 def mapping_enters_deleting_state(client: TestClient, world):
     actual_error = world["error"]
     assert (

@@ -1,4 +1,4 @@
-"""When: a database cluster modification completes"""
+"""When: a "documentdb" "cluster" modification completes"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _DOCDB_TARGET, INT_CLUSTER_ID
 
 
-@when("a database cluster modification completes")
+@when('a "documentdb" "cluster" modification completes')
 def database_cluster_modification_completes(client: TestClient, world):
     r = client.post(
         "/",

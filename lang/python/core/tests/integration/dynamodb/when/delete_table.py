@@ -1,4 +1,4 @@
-"""When: a table is deleted"""
+"""When: a "dynamodb" "table" is deleted"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import DynamodbTestClient
 from ..constants import TEST_TABLE, _store
 
 
-@when("a table is deleted")
+@when('a "dynamodb" "table" is deleted')
 def delete_table(client: TestClient, world: dict):
     r = DynamodbTestClient(client).post("DeleteTable", {"TableName": TEST_TABLE})
     _store(world, r)

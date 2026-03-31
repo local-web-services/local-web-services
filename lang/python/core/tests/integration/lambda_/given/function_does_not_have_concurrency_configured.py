@@ -1,4 +1,4 @@
-"""Given: the function does not have concurrency configured"""
+"""Given: the "lambda" "function" did not have concurrency configured"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import LambdaTestClient
 
 
-@given("the function does not have concurrency configured")
+@given('the "lambda" "function" did not have concurrency configured')
 def function_does_not_have_concurrency_configured(client: TestClient, world):
     LambdaTestClient(client).create_function()
     world["_skip"] = (

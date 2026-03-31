@@ -1,5 +1,5 @@
 @s3tables @generated
-Feature: S3tables - A Table Finishes Being Deleted
+Feature: S3tables - A "S3 Tables" "Table" Finishes Being Deleted
 
   # Generated from FizzBee spec: s3tables.fizz
   # Safety invariants: BucketDeletionRequiresNoNamespaces, NamespaceDeletionRequiresNoTables, SnapshotCountNonNegative, SchemaVersionAtLeastOne
@@ -8,25 +8,25 @@ Feature: S3tables - A Table Finishes Being Deleted
     Given the system is initialized
 
   @minimal @happy @finish_deleting_table @internal
-  Scenario: a table finishes being deleted
-    Given the table exists
-    And the table is "DELETING"
-    When a table finishes being deleted
-    Then the table is "DELETED" and all its snapshots are "DELETED"
+  Scenario: a "s3 tables" "table" finishes being deleted
+    Given the "s3 tables" "table" existed
+    And the "s3 tables" "table" was "DELETING"
+    When a "s3 tables" "table" finishes being deleted
+    Then the "s3 tables" "table" will be "DELETED" and all its snapshots will be deleted
     And a bucket in "DELETING" state has no "ACTIVE" namespaces
-    And a namespace in "DELETING" state has no "ACTIVE" tables
+    And a "s3 tables" "namespace" in "DELETING" state has no "ACTIVE" tables
     And snapshot count is never negative
     And schema version is always at least one
 
   @guard @negative @finish_deleting_table @internal
-  Scenario: a table finishes being deleted fails when the table does not exist
-    Given the table does not exist
-    When a table finishes being deleted
+  Scenario: a "s3 tables" "table" finishes being deleted fails when the "s3 tables" "table" did not exist
+    Given the "s3 tables" "table" did not exist
+    When a "s3 tables" "table" finishes being deleted
     Then the operation is rejected
 
   @guard @negative @finish_deleting_table @internal
-  Scenario: a table finishes being deleted fails when the table is not "DELETING"
-    Given the table exists
-    And the table is not "DELETING"
-    When a table finishes being deleted
+  Scenario: a "s3 tables" "table" finishes being deleted fails when the "s3 tables" "table" was not "DELETING"
+    Given the "s3 tables" "table" existed
+    And the "s3 tables" "table" was not "DELETING"
+    When a "s3 tables" "table" finishes being deleted
     Then the operation is rejected

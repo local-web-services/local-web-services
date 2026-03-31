@@ -1,4 +1,4 @@
-"""Given: a multipart upload has been completed"""
+"""Given: a multipart "s3" "upload" is completed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import S3apiTestClient
 from ..constants import TEST_BODY, TEST_BUCKET, TEST_KEY
 
 
-@given("a multipart upload has been completed")
+@given('a multipart "s3" "upload" is completed')
 def a_multipart_upload_has_been_completed(lws_session):
     S3apiTestClient(lws_session).create_bucket()
     resp = S3apiTestClient(lws_session).create_multipart_upload(Bucket=TEST_BUCKET, Key=TEST_KEY)

@@ -1,4 +1,4 @@
-"""When: a Step Functions Express Workflow state machine is created"""
+"""When: a "step functions" "Express Workflow state machine" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import PASS_DEFINITION, ROLE_ARN, TEST_SM
 
 
-@when("a Step Functions Express Workflow state machine is created")
+@when('a "step functions" "Express Workflow state machine" is created')
 def create_sfn_state_machine_apigw(lws_session, world):
     try:
         resp = lws_session.client("stepfunctions").create_state_machine(

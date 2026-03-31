@@ -1,4 +1,4 @@
-"""Given: the resource has a tag entry"""
+"""Given: the "memorydb" "resource" has a tag entry"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import MemorydbTestClient
 from ..constants import _MDB_TARGET, INT_TAG_KEY, INT_TAG_VALUE
 
 
-@given("the resource has a tag entry")
+@given('the "memorydb" "resource" has a tag entry')
 def resource_has_tag_entry(client: TestClient):
     MemorydbTestClient(client).create_cluster()
     arn = MemorydbTestClient(client).get_cluster_arn()

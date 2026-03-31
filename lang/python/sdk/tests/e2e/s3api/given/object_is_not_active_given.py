@@ -1,4 +1,4 @@
-"""Given: the object is not "ACTIVE" """
+"""Given: the "s3" "bucket" was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import S3apiTestClient
 from ..constants import TEST_BUCKET
 
 
-@given('the object is not "ACTIVE"')
+@given('the "s3" "bucket" was not "ACTIVE"')
 def object_is_not_active_given(lws_session):
     try:
         S3apiTestClient(lws_session).delete_bucket(Bucket=TEST_BUCKET)

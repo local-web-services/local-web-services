@@ -1,4 +1,4 @@
-"""Given: an invocation is "IN_PROGRESS" """
+"""Given: a "lambda" "invocation" was "IN_PROGRESS" """
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from ..client import EventsLambdaTestClient
 from ..constants import TEST_FUNC
 
 
-@given('an invocation is "IN_PROGRESS"')
+@given('a "lambda" "invocation" was "IN_PROGRESS"')
 def events_lambda_invocation_is_in_progress(lws_session, world):
     # Arrange
     func_name = world.get("function_name", TEST_FUNC)

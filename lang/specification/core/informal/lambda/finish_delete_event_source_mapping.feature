@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - An Event Source Mapping Finishes Being Deleted
+Feature: Lambda - A "Lambda" "Event Source Mapping" Finishes Being Deleted
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions
@@ -8,11 +8,11 @@ Feature: Lambda - An Event Source Mapping Finishes Being Deleted
     Given the system is initialized
 
   @minimal @happy @finish_delete_event_source_mapping
-  Scenario: an event source mapping finishes being deleted
-    Given the event source mapping exists
-    And the mapping is "DELETING"
-    When an event source mapping finishes being deleted
-    Then the mapping is "DELETED"
+  Scenario: a "lambda" "event source mapping" finishes being deleted
+    Given the "lambda" "event source mapping" existed
+    And the mapping was "DELETING"
+    When a "lambda" "event source mapping" finishes being deleted
+    Then the mapping will be deleted
     And every active event source mapping references an existing non-deleted function
     And no function in "DELETING" state has active executions
     And active execution count never exceeds reserved concurrency when set
@@ -22,14 +22,14 @@ Feature: Lambda - An Event Source Mapping Finishes Being Deleted
     And all async slots reference known function IDs or are empty
 
   @guard @negative @finish_delete_event_source_mapping
-  Scenario: an event source mapping finishes being deleted fails when the event source mapping does not exist
-    Given the event source mapping does not exist
-    When an event source mapping finishes being deleted
+  Scenario: a "lambda" "event source mapping" finishes being deleted fails when the "lambda" "event source mapping" did not exist
+    Given the "lambda" "event source mapping" did not exist
+    When a "lambda" "event source mapping" finishes being deleted
     Then the operation is rejected
 
   @guard @negative @finish_delete_event_source_mapping @lifecycle
-  Scenario: an event source mapping finishes being deleted fails when the mapping is not "DELETING"
-    Given the event source mapping exists
-    And the mapping is not "DELETING"
-    When an event source mapping finishes being deleted
+  Scenario: a "lambda" "event source mapping" finishes being deleted fails when the mapping was not "DELETING"
+    Given the "lambda" "event source mapping" existed
+    And the mapping was not "DELETING"
+    When a "lambda" "event source mapping" finishes being deleted
     Then the operation is rejected

@@ -1,4 +1,4 @@
-"""Then: the cluster is linked to the active "ACL" """
+"""Then: the "memorydb" "cluster" will be linked to the active "ACL" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import then
 from ..constants import TEST_CLUSTER
 
 
-@then('the cluster is linked to the active "ACL"')
+@then('the "memorydb" "cluster" will be linked to the active "ACL"')
 def cluster_is_linked_to_acl_then(lws_session):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     resp = lws_session.client("memorydb").describe_clusters(ClusterName=TEST_CLUSTER)

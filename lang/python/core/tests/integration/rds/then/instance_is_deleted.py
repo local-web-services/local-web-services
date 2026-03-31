@@ -1,11 +1,11 @@
-"""Then: the instance is "DELETED" """
+"""Then: the "rds" "instance" will be "DELETED" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the instance is "DELETED"')
+@then('the "rds" "instance" will be "DELETED"')
 def instance_is_deleted(world: dict):
     actual_result = world["result"]
     assert (

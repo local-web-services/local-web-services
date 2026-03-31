@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - A Synchronous Function Invocation Completes
+Feature: Lambda - A Synchronous "Lambda" "Function" Invocation Completes
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions
@@ -8,10 +8,10 @@ Feature: Lambda - A Synchronous Function Invocation Completes
     Given the system is initialized
 
   @minimal @happy @finish_invoke_function_sync @internal
-  Scenario: a synchronous function invocation completes
-    Given the function has active execution tracking
-    And the function has at least one active execution
-    When a synchronous function invocation completes
+  Scenario: a synchronous "lambda" "function" invocation completes
+    Given the "lambda" "function" had active execution tracking
+    And the "lambda" "function" had at least one active execution
+    When a synchronous "lambda" "function" invocation completes
     Then the active execution count decreases
     And every active event source mapping references an existing non-deleted function
     And no function in "DELETING" state has active executions
@@ -22,14 +22,14 @@ Feature: Lambda - A Synchronous Function Invocation Completes
     And all async slots reference known function IDs or are empty
 
   @guard @negative @finish_invoke_function_sync @internal
-  Scenario: a synchronous function invocation completes fails when the function does not have active execution tracking
-    Given the function does not have active execution tracking
-    When a synchronous function invocation completes
+  Scenario: a synchronous "lambda" "function" invocation completes fails when the "lambda" "function" did not have active execution tracking
+    Given the "lambda" "function" did not have active execution tracking
+    When a synchronous "lambda" "function" invocation completes
     Then the operation is rejected
 
   @guard @negative @finish_invoke_function_sync @internal
-  Scenario: a synchronous function invocation completes fails when the function has no active executions
-    Given the function has active execution tracking
-    And the function has no active executions
-    When a synchronous function invocation completes
+  Scenario: a synchronous "lambda" "function" invocation completes fails when the "lambda" "function" had no active executions
+    Given the "lambda" "function" had active execution tracking
+    And the "lambda" "function" had no active executions
+    When a synchronous "lambda" "function" invocation completes
     Then the operation is rejected

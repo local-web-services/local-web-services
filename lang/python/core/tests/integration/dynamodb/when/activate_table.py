@@ -1,4 +1,4 @@
-"""When: a table finishes creating and becomes active"""
+"""When: a "dynamodb" "table" finishes creating and becomes active"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import DynamodbTestClient
 from ..constants import TEST_TABLE, _try_json
 
 
-@when("a table finishes creating and becomes active")
+@when('a "dynamodb" "table" finishes creating and becomes active')
 def activate_table(client: TestClient, world: dict):
     r = DynamodbTestClient(client).post("DescribeTable", {"TableName": TEST_TABLE})
     if r.status_code != 200:

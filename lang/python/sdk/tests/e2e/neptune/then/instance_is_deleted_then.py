@@ -1,11 +1,13 @@
-"""Then: the instance is "DELETED" and the cluster primary is cleared if applicable"""
+"""Then: the "neptune" "INSTANCE" will be "DELETED" and the "neptune" "cluster" primary will be cleared if applicable"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the instance is "DELETED" and the cluster primary is cleared if applicable')
+@then(
+    'the "neptune" "INSTANCE" will be "DELETED" and the "neptune" "cluster" primary will be cleared if applicable'
+)
 def instance_is_deleted_then(world):
     expected_error = None
     actual_error = world["error"]

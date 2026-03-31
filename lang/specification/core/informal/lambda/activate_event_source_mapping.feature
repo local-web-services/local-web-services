@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - An Event Source Mapping Finishes Creating
+Feature: Lambda - A "Lambda" "Event Source Mapping" Finishes Creating
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions
@@ -8,11 +8,11 @@ Feature: Lambda - An Event Source Mapping Finishes Creating
     Given the system is initialized
 
   @minimal @happy @activate_event_source_mapping @internal
-  Scenario: an event source mapping finishes creating
-    Given the event source mapping exists
-    And the mapping is "CREATING"
-    When an event source mapping finishes creating
-    Then the mapping is "ENABLED"
+  Scenario: a "lambda" "event source mapping" finishes creating
+    Given the "lambda" "event source mapping" existed
+    And the mapping was "CREATING"
+    When a "lambda" "event source mapping" finishes creating
+    Then the mapping will be "ENABLED"
     And every active event source mapping references an existing non-deleted function
     And no function in "DELETING" state has active executions
     And active execution count never exceeds reserved concurrency when set
@@ -22,14 +22,14 @@ Feature: Lambda - An Event Source Mapping Finishes Creating
     And all async slots reference known function IDs or are empty
 
   @guard @negative @activate_event_source_mapping @internal
-  Scenario: an event source mapping finishes creating fails when the event source mapping does not exist
-    Given the event source mapping does not exist
-    When an event source mapping finishes creating
+  Scenario: a "lambda" "event source mapping" finishes creating fails when the "lambda" "event source mapping" did not exist
+    Given the "lambda" "event source mapping" did not exist
+    When a "lambda" "event source mapping" finishes creating
     Then the operation is rejected
 
   @guard @negative @activate_event_source_mapping @internal
-  Scenario: an event source mapping finishes creating fails when the mapping is not "CREATING"
-    Given the event source mapping exists
-    And the mapping is not "CREATING"
-    When an event source mapping finishes creating
+  Scenario: a "lambda" "event source mapping" finishes creating fails when the mapping was not "CREATING"
+    Given the "lambda" "event source mapping" existed
+    And the mapping was not "CREATING"
+    When a "lambda" "event source mapping" finishes creating
     Then the operation is rejected

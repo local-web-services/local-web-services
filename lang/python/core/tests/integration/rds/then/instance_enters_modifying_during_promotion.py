@@ -1,11 +1,11 @@
-"""Then: the instance enters "MODIFYING" state during promotion"""
+"""Then: the "rds" "instance" will be in "MODIFYING" state during promotion"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the instance enters "MODIFYING" state during promotion')
+@then('the "rds" "instance" will be in "MODIFYING" state during promotion')
 def instance_enters_modifying_during_promotion(world: dict):
     actual_result = world["result"]
     assert (

@@ -1,4 +1,4 @@
-"""When: a running execution reads an "ACTIVE" secret and the task succeeds"""
+"""When: a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_SECRET, _secretsmanager_get_secret_definition, _sm_arn
 
 
-@when('a running execution reads an "ACTIVE" secret and the task succeeds')
+@when('a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds')
 def execution_reads_secret_succeeds(lws_session, world):
     # Arrange
     if "execution_arn" not in world:

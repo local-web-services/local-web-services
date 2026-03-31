@@ -1,4 +1,4 @@
-"""Given: the policy is attached to the target"""
+"""Given: the "organizations" "policy" will be attached to the "organizations" "target" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..client import OrganizationsTestClient
 
 
-@given("the policy is attached to the target")
+@given('the "organizations" "policy" is attached to the "organizations" "target"')
 def policy_attached_to_target(lws_session, world):
     resp = OrganizationsTestClient(lws_session).create_org()
     world["org_id"] = resp["Organization"]["Id"]

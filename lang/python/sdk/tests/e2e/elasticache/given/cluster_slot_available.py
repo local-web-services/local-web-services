@@ -1,10 +1,10 @@
-"""Given: a cluster slot is available"""
+"""Given: an "elasticache" "cluster" slot is available"""
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given("a cluster slot is available")
+@given('an "elasticache" "cluster" slot is available')
 def cluster_slot_available():
     """No-op: always room for clusters."""

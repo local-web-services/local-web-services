@@ -1,4 +1,4 @@
-"""When: items are queried from the table by key"""
+"""When: "dynamodb" "item"s are queried from the "dynamodb" "table" by key"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import DynamodbTestClient
 from ..constants import TEST_ITEM_KEY, TEST_PK, TEST_TABLE, _store
 
 
-@when("items are queried from the table by key")
+@when('"dynamodb" "item"s are queried from the "dynamodb" "table" by key')
 def query_items_by_key(client: TestClient, world: dict):
     r = DynamodbTestClient(client).post(
         "Query",

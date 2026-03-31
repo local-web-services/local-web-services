@@ -1,4 +1,4 @@
-"""Then: the vault is "DELETED" and archive uploads will fail"""
+"""Then: the "glacier" "vault" will be deleted and archive uploads will fail"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import then
 from ..constants import TEST_VAULT
 
 
-@then('the vault is "DELETED" and archive uploads will fail')
+@then('the "glacier" "vault" will be deleted and archive uploads will fail')
 def vault_is_deleted_then(lws_session):
     try:
         lws_session.client("glacier").describe_vault(accountId="-", vaultName=TEST_VAULT)

@@ -1,4 +1,4 @@
-"""When: an "SNS" topic is created"""
+"""When: a "sns" "topic" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import LambdaSnsTestClient
 
 
-@when('an "SNS" topic is created')
+@when('a "sns" "topic" is created')
 def create_sns_topic(lws_session, world):
     try:
         topic_arn = LambdaSnsTestClient(lws_session).create_topic()

@@ -1,5 +1,5 @@
 @apigateway @generated
-Feature: Apigateway - A Rest Api Is Created With A Root Resource
+Feature: Apigateway - A "Api Gateway" "Rest Api" Is Created With A Root Resource
 
   # Generated from FizzBee spec: apigateway.fizz
   # Safety invariants: ResourcesBelongToExistingApis, MethodsBelongToExistingResources, IntegrationsBelongToExistingMethods, DeploymentsBelongToExistingApis, StagesReferenceExistingDeployments, StagesBelongToExistingApis, RootResourcePreserved
@@ -8,11 +8,11 @@ Feature: Apigateway - A Rest Api Is Created With A Root Resource
     Given the system is initialized
 
   @minimal @happy @create_rest_api
-  Scenario: a "REST" "API" is created with a root resource
-    Given the "API" does not already exist
-    And a resource slot is available
-    When a "REST" "API" is created with a root resource
-    Then the "API" is "ACTIVE" and its root resource is "ACTIVE"
+  Scenario: a "api gateway" "REST API" is created with a root resource
+    Given the "api gateway" "API" did not already exist
+    And a "api gateway" "resource" slot is available
+    When a "api gateway" "REST API" is created with a root resource
+    Then the "api gateway" "API" will be "ACTIVE" and its root resource will be "ACTIVE"
     And all "ACTIVE" resources belong to "ACTIVE" APIs
     And all "EXISTING" methods belong to "ACTIVE" resources
     And all "EXISTING" integrations correspond to "EXISTING" methods
@@ -22,14 +22,14 @@ Feature: Apigateway - A Rest Api Is Created With A Root Resource
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
   @guard @negative @create_rest_api
-  Scenario: a "REST" "API" is created with a root resource fails when the "API" already exists
-    Given the "API" already exists
-    When a "REST" "API" is created with a root resource
+  Scenario: a "api gateway" "REST API" is created with a root resource fails when the "api gateway" "API" already existed
+    Given the "api gateway" "API" already existed
+    When a "api gateway" "REST API" is created with a root resource
     Then the operation is rejected
 
-  @guard @negative @internal @create_rest_api @capacity
-  Scenario: a "REST" "API" is created with a root resource fails when no resource slot is available
-    Given the "API" does not already exist
+  @guard @negative @create_rest_api @capacity
+  Scenario: a "api gateway" "REST API" is created with a root resource fails when no resource slot is available
+    Given the "api gateway" "API" did not already exist
     And no resource slot is available
-    When a "REST" "API" is created with a root resource
+    When a "api gateway" "REST API" is created with a root resource
     Then the operation is rejected

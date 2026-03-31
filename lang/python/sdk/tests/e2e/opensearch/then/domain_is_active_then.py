@@ -1,4 +1,4 @@
-"""Then: the domain is "ACTIVE" and ready for use"""
+"""Then: the "opensearch" "domain" will be "ACTIVE" and ready for use"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_DOMAIN
 
 
-@then('the domain is "ACTIVE" and ready for use')
+@then('the "opensearch" "domain" will be "ACTIVE" and ready for use')
 def domain_is_active_then(lws_session):
     resp = lws_session.client("opensearch").describe_domain(DomainName=TEST_DOMAIN)
     actual_domain = resp.get("DomainStatus", {})

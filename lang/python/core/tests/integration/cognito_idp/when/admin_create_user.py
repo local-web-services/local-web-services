@@ -1,4 +1,4 @@
-"""When: a user is created by an admin in an active user pool"""
+"""When: a "cognito" "user" is created by an admin in an active "cognito" "user pool" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import CognitoIdpTestClient
 from ..constants import INT_POOL_ID, INT_USERNAME, _store
 
 
-@when("a user is created by an admin in an active user pool")
+@when('a "cognito" "user" is created by an admin in an active "cognito" "user pool"')
 def admin_create_user(client: TestClient, world):
     pool_id = world.get("pool_id", INT_POOL_ID)
     username = world.get("username", INT_USERNAME)

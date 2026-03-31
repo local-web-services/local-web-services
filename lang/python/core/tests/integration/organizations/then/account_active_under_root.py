@@ -1,4 +1,4 @@
-"""Then: the account is "ACTIVE" under the root"""
+"""Then: the "organizations" "account" will be "ACTIVE" under the root"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import OrganizationsTestClient
 
 
-@then('the account is "ACTIVE" under the root')
+@then('the "organizations" "account" will be "ACTIVE" under the root')
 def account_active_under_root(client: TestClient, world):
     assert world["error"] is None, f"Expected CreateAccount to succeed but got: {world['error']}"
     account_id = world["account_id"]

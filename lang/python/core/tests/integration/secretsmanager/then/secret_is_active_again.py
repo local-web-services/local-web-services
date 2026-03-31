@@ -1,4 +1,4 @@
-"""Then: the secret is "ACTIVE" again and the recovery window is closed"""
+"""Then: the "secrets manager" "secret" will be "ACTIVE" again and the recovery window will be closed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from starlette.testclient import TestClient
 from ..client import SecretsmanagerTestClient
 
 
-@then('the secret is "ACTIVE" again and the recovery window is closed')
+@then(
+    'the "secrets manager" "secret" will be "ACTIVE" again and the recovery window will be closed'
+)
 def secret_is_active_again(sync_client: TestClient):
     desc = SecretsmanagerTestClient(sync_client).describe_secret()
     assert (

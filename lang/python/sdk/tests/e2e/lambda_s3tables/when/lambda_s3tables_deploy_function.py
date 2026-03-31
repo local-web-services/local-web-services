@@ -1,4 +1,4 @@
-"""When: a Lambda function is deployed"""
+"""When: a "lambda" "function" is deployed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import ROLE_ARN, TEST_FUNC
 
 
-@when("a Lambda function is deployed")
+@when('a "lambda" "function" is deployed')
 def lambda_s3tables_deploy_function(lws_session, world):
     try:
         resp = lws_session.client("lambda").create_function(

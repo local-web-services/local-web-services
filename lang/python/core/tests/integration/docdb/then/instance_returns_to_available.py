@@ -1,4 +1,4 @@
-"""Then: the instance returns to "AVAILABLE" state"""
+"""Then: the "documentdb" "instance" returns to "AVAILABLE" state"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _DOCDB_TARGET, INT_INSTANCE_ID
 
 
-@then('the instance returns to "AVAILABLE" state')
+@then('the "documentdb" "instance" returns to "AVAILABLE" state')
 def instance_returns_to_available(client: TestClient):
     r = client.post(
         "/",

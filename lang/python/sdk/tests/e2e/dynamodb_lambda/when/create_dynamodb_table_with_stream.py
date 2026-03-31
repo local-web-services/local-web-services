@@ -1,4 +1,4 @@
-"""When: a DynamoDB table is created with streaming enabled"""
+"""When: a "dynamodb" "table" is created with streaming enabled"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_TABLE
 
 
-@when("a DynamoDB table is created with streaming enabled")
+@when('a "dynamodb" "table" is created with streaming enabled')
 def create_dynamodb_table_with_stream(lws_session, world):
     try:
         resp = lws_session.client("dynamodb").create_table(

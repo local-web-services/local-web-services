@@ -1,4 +1,4 @@
-"""Then: the vault is "ACTIVE" with zero archives"""
+"""Then: the "glacier" "vault" will be "ACTIVE" with zero archives"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_VAULT
 
 
-@then('the vault is "ACTIVE" with zero archives')
+@then('the "glacier" "vault" will be "ACTIVE" with zero archives')
 def vault_is_active_then(lws_session):
     resp = lws_session.client("glacier").list_vaults(accountId="-")
     actual_vaults = resp.get("VaultList", [])

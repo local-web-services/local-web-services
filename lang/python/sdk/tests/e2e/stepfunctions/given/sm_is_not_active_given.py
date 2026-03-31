@@ -1,4 +1,4 @@
-"""Given: the state machine is not "ACTIVE" """
+"""Given: the "step functions" "state machine" was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsTestClient
 from ..constants import TEST_SM, _sm_arn
 
 
-@given('the state machine is not "ACTIVE"')
+@given('the "step functions" "state machine" was not "ACTIVE"')
 def sm_is_not_active_given(lws_session, world):
     """Enable lifecycle simulation so state machine stays in CREATING state."""
     sm_name = world.get("state_machine_name") or TEST_SM

@@ -1,4 +1,4 @@
-"""Then: the callee function is "ACTIVE" """
+"""Then: the callee "lambda" "function" will be "ACTIVE" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_CALLEE
 
 
-@then('the callee function is "ACTIVE"')
+@then('the callee "lambda" "function" will be "ACTIVE"')
 def callee_func_is_active_then(lws_session):
     resp = lws_session.client("lambda").get_function(FunctionName=TEST_CALLEE)
     expected_state = "Active"

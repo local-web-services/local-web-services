@@ -1,4 +1,4 @@
-"""When: a database instance is created in an available cluster"""
+"""When: a "documentdb" "instance" is created in an available documentdb cluster"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from starlette.testclient import TestClient
 from ..constants import _DOCDB_TARGET, INT_CLUSTER_ID, INT_INSTANCE_ID
 
 
-@when("a database instance is created in an available cluster")
+@when('a "documentdb" "instance" is created in an available documentdb cluster')
 def create_database_instance(client: TestClient, world):
     r_check = client.post(
         "/",

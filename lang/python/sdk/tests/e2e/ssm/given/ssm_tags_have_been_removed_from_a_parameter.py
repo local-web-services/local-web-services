@@ -1,4 +1,4 @@
-"""Given: tags have been removed from a parameter"""
+"""Given: tags are removed from a "ssm" "parameter" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SsmTestClient
 from ..constants import TEST_PARAM, TEST_TAG_KEY, TEST_TAG_VALUE
 
 
-@given("tags have been removed from a parameter")
+@given('tags are removed from a "ssm" "parameter"')
 def ssm_tags_have_been_removed_from_a_parameter(lws_session):
     SsmTestClient(lws_session).create_param()
     try:

@@ -5,7 +5,9 @@ from __future__ import annotations
 from pytest_bdd import when
 
 
-@when('the Lambda function writes a record to the "AVAILABLE" MemoryDB cluster during invocation')
+@when(
+    'the "lambda" "function" writes a record to the "AVAILABLE" MemoryDB cluster during invocation'
+)
 def lambda_writes_record(lws_session, world):
     # Arrange
     invocation_id = world.get("invocation_id")

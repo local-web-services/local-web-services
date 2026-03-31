@@ -1,4 +1,4 @@
-"""Given: a MemoryDB cluster has been deleted"""
+"""Given: a "memorydb" "cluster" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import MemorydbTestClient
 from ..constants import TEST_CLUSTER
 
 
-@given("a MemoryDB cluster has been deleted")
+@given('a "memorydb" "cluster" is deleted')
 def memorydb_cluster_has_been_deleted_seq(lws_session):
     try:
         MemorydbTestClient(lws_session).create_cluster()

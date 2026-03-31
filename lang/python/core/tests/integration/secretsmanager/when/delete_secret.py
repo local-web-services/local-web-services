@@ -1,4 +1,4 @@
-"""When: a secret is deleted"""
+"""When: a "secrets manager" "secret" is deleted"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import SecretsmanagerTestClient
 from ..constants import _SM_TARGET_PREFIX, INT_SECRET
 
 
-@when("a secret is deleted")
+@when('a "secrets manager" "secret" is deleted')
 def delete_secret(sync_client: TestClient, world):
     desc = SecretsmanagerTestClient(sync_client).describe_secret()
     if desc and "DeletedDate" in desc:

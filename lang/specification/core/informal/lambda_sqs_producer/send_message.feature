@@ -1,5 +1,5 @@
 @lambdasqsproducer @generated
-Feature: LambdaSqsProducer - The Lambda Function Sends A Message To The Sqs Queue During Invocation
+Feature: LambdaSqsProducer - The "Lambda" "Function" Sends A Message To The "Sqs" "Queue" During Invocation
 
   # Generated from FizzBee spec: lambda_sqs_producer.fizz
   # Safety invariants: InvocationRequiresActiveFunction, MessageRequiresActiveQueue
@@ -8,42 +8,42 @@ Feature: LambdaSqsProducer - The Lambda Function Sends A Message To The Sqs Queu
     Given the system is initialized
 
   @minimal @happy @send_message
-  Scenario: the Lambda function sends a message to the "SQS" queue during invocation
-    Given an invocation is "IN_PROGRESS"
-    And the queue exists
-    And the queue is "ACTIVE"
+  Scenario: the "lambda" "function" sends a message to the "sqs" "queue" during invocation
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "sqs" "queue" existed
+    And the "sqs" "queue" was "ACTIVE"
     And a message slot is available
-    When the Lambda function sends a message to the "SQS" queue during invocation
-    Then the message is "AVAILABLE" in the queue
+    When the "lambda" "function" sends a message to the "sqs" "queue" during invocation
+    Then the message will be "AVAILABLE" in the queue
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "AVAILABLE" message belongs to an "ACTIVE" queue
 
   @guard @negative @send_message @lifecycle
-  Scenario: the Lambda function sends a message to the "SQS" queue during invocation fails when no invocation is "IN_PROGRESS"
-    Given no invocation is "IN_PROGRESS"
-    When the Lambda function sends a message to the "SQS" queue during invocation
+  Scenario: the "lambda" "function" sends a message to the "sqs" "queue" during invocation fails when no "lambda" "invocation" was "IN_PROGRESS"
+    Given no "lambda" "invocation" was "IN_PROGRESS"
+    When the "lambda" "function" sends a message to the "sqs" "queue" during invocation
     Then the operation is rejected
 
   @guard @negative @send_message
-  Scenario: the Lambda function sends a message to the "SQS" queue during invocation fails when the queue does not exist
-    Given an invocation is "IN_PROGRESS"
-    And the queue does not exist
-    When the Lambda function sends a message to the "SQS" queue during invocation
+  Scenario: the "lambda" "function" sends a message to the "sqs" "queue" during invocation fails when the "sqs" "queue" did not exist
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "sqs" "queue" did not exist
+    When the "lambda" "function" sends a message to the "sqs" "queue" during invocation
     Then the operation is rejected
 
   @guard @negative @send_message @lifecycle
-  Scenario: the Lambda function sends a message to the "SQS" queue during invocation fails when the queue is not "ACTIVE"
-    Given an invocation is "IN_PROGRESS"
-    And the queue exists
-    And the queue is not "ACTIVE"
-    When the Lambda function sends a message to the "SQS" queue during invocation
+  Scenario: the "lambda" "function" sends a message to the "sqs" "queue" during invocation fails when the "sqs" "queue" was not "ACTIVE"
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "sqs" "queue" existed
+    And the "sqs" "queue" was not "ACTIVE"
+    When the "lambda" "function" sends a message to the "sqs" "queue" during invocation
     Then the operation is rejected
 
-  @guard @negative @internal @send_message @capacity
-  Scenario: the Lambda function sends a message to the "SQS" queue during invocation fails when no message slot is available
-    Given an invocation is "IN_PROGRESS"
-    And the queue exists
-    And the queue is "ACTIVE"
+  @guard @negative @send_message @capacity
+  Scenario: the "lambda" "function" sends a message to the "sqs" "queue" during invocation fails when no message slot is available
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "sqs" "queue" existed
+    And the "sqs" "queue" was "ACTIVE"
     And no message slot is available
-    When the Lambda function sends a message to the "SQS" queue during invocation
+    When the "lambda" "function" sends a message to the "sqs" "queue" during invocation
     Then the operation is rejected

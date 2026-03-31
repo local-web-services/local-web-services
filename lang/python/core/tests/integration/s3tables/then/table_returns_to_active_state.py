@@ -1,4 +1,4 @@
-"""Then: the table returns to "ACTIVE" state"""
+"""Then: the "s3 tables" "table" returns to "ACTIVE" state"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_NAMESPACE, INT_TABLE
 
 
-@then('the table returns to "ACTIVE" state')
+@then('the "s3 tables" "table" returns to "ACTIVE" state')
 def table_returns_to_active_state(client: TestClient):
     r = client.get(
         "/get-table",

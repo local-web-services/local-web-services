@@ -1,4 +1,4 @@
-"""When: tags are removed from a domain"""
+"""When: tags are removed from an "elasticsearch" "domain" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ElasticsearchTestClient
 from ..constants import INT_DOMAIN, INT_TAG_KEY, _store
 
 
-@when("tags are removed from a domain")
+@when('tags are removed from an "elasticsearch" "domain"')
 def es_remove_tags_from_domain(client: TestClient, world: dict):
     arn = ElasticsearchTestClient(client).get_domain_arn()
     if not arn:

@@ -9,15 +9,15 @@ Feature: DynamodbLambda - The Lambda Invocation Fails And The Stream Record Is R
 
   @minimal @happy @invocation_fails @internal
   Scenario: the Lambda invocation fails and the stream record is retried
-    Given an invocation is "IN_PROGRESS"
+    Given a "lambda" "invocation" was "IN_PROGRESS"
     When the Lambda invocation fails and the stream record is retried
-    Then the invocation is "FAILED" and the record is "AVAILABLE" again for reprocessing
+    Then the invocation will be "FAILED" and the record will be "AVAILABLE" again for reprocessing
     And every "IN_PROGRESS" invocation was initiated by an "ENABLED" event source mapping
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "ENABLED" event source mapping references an "ACTIVE" table with streaming enabled
 
   @guard @negative @invocation_fails @internal
-  Scenario: the Lambda invocation fails and the stream record is retried fails when no invocation is "IN_PROGRESS"
-    Given no invocation is "IN_PROGRESS"
+  Scenario: the Lambda invocation fails and the stream record is retried fails when no "lambda" "invocation" was "IN_PROGRESS"
+    Given no "lambda" "invocation" was "IN_PROGRESS"
     When the Lambda invocation fails and the stream record is retried
     Then the operation is rejected

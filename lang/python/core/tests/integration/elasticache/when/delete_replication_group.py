@@ -1,4 +1,4 @@
-"""When: a replication group is deleted"""
+"""When: a "elasticache" "replication group" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_RG_ID
 
 
-@when("a replication group is deleted")
+@when('a "elasticache" "replication group" is deleted')
 def delete_replication_group(client: TestClient, world):
     r = client.post(
         "/",

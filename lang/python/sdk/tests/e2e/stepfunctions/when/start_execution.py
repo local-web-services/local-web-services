@@ -1,4 +1,4 @@
-"""When: an execution is started on a standard state machine"""
+"""When: an execution is started on a standard "step functions" "state machine" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_INPUT, TEST_SM, _sm_arn
 
 
-@when("an execution is started on a standard state machine")
+@when('an execution is started on a standard "step functions" "state machine"')
 def start_execution(lws_session, world):
     try:
         sm_name = world.get("state_machine_name") or TEST_SM

@@ -1,4 +1,4 @@
-"""Then: the topic is "ACTIVE" """
+"""Then: the "sns" "topic" will be "ACTIVE" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_TOPIC
 
 
-@then('the topic is "ACTIVE"')
+@then('the "sns" "topic" will be "ACTIVE"')
 def topic_is_active_then(client):
     r = client.post("/", data={"Action": "ListTopics"})
     expected_fragment = TEST_TOPIC

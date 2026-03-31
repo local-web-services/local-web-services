@@ -1,4 +1,4 @@
-"""Given: the account does not already exist"""
+"""Given: the "organizations" "account" did not already exist"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import OrganizationsTestClient
 
 
-@given("the account does not already exist")
+@given('the "organizations" "account" did not already exist')
 def account_not_already_exist(client: TestClient, world):
     """Create org so account operations have a valid context."""
     resp = OrganizationsTestClient(client).create_org()

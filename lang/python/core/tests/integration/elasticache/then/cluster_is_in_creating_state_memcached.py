@@ -1,4 +1,4 @@
-"""Then: the cluster is in "CREATING" state with the memcached engine"""
+"""Then: the "elasticache" "cluster" will be in "CREATING" state with the memcached engine"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_CLUSTER_ID
 
 
-@then('the cluster is in "CREATING" state with the memcached engine')
+@then('the "elasticache" "cluster" will be in "CREATING" state with the memcached engine')
 def cluster_is_in_creating_state_memcached(client: TestClient, world):
     actual_error = world["error"]
     assert actual_error is None, f"Expected cluster creation to succeed but got: {actual_error}"

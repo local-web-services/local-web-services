@@ -1,11 +1,11 @@
-"""Then: the prod stage points to the new deployment"""
+"""Then: the "api gateway" "prod stage" points to the new deployment"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the prod stage points to the new deployment")
+@then('the "api gateway" "prod stage" points to the new deployment')
 def prod_stage_points_to_new_deployment_then(world):
     actual_result = world["result"]
     assert actual_result is not None, "Expected redeploy result but got None"

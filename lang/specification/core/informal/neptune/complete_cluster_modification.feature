@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Database Cluster Modification Completes
+Feature: Neptune - A "Neptune" "Cluster" Modification Completes
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,11 +8,11 @@ Feature: Neptune - A Database Cluster Modification Completes
     Given the system is initialized
 
   @minimal @happy @complete_cluster_modification @internal
-  Scenario: a database cluster modification completes
-    Given the cluster exists
-    And the cluster is "MODIFYING"
-    When a database cluster modification completes
-    Then the cluster returns to "AVAILABLE" state
+  Scenario: a "neptune" "cluster" modification completes
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "MODIFYING"
+    When a "neptune" "cluster" modification completes
+    Then the "neptune" "cluster" returns to "AVAILABLE" state
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -23,14 +23,14 @@ Feature: Neptune - A Database Cluster Modification Completes
     And a failed cluster has no available instances
 
   @guard @negative @complete_cluster_modification @internal
-  Scenario: a database cluster modification completes fails when the cluster does not exist
-    Given the cluster does not exist
-    When a database cluster modification completes
+  Scenario: a "neptune" "cluster" modification completes fails when the "neptune" "cluster" did not exist
+    Given the "neptune" "cluster" did not exist
+    When a "neptune" "cluster" modification completes
     Then the operation is rejected
 
   @guard @negative @complete_cluster_modification @internal
-  Scenario: a database cluster modification completes fails when the cluster is not "MODIFYING"
-    Given the cluster exists
-    And the cluster is not "MODIFYING"
-    When a database cluster modification completes
+  Scenario: a "neptune" "cluster" modification completes fails when the "neptune" "cluster" was not "MODIFYING"
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was not "MODIFYING"
+    When a "neptune" "cluster" modification completes
     Then the operation is rejected

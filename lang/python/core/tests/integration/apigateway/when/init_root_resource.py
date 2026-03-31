@@ -1,4 +1,4 @@
-"""When: a root resource is initialized for an "API" """
+"""When: a root resource is initialized for an "api gateway" "API" """
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from pytest_bdd import when
 from starlette.testclient import TestClient
 
 
-@when('a root resource is initialized for an "API"')
+@when('a root resource is initialized for an "api gateway" "API"')
 def init_root_resource(client: TestClient, world):
     list_r = client.get("/restapis")
     items = list_r.json().get("item", [])

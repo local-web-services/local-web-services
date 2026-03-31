@@ -1,4 +1,4 @@
-"""When: all items in the table are scanned"""
+"""When: all "dynamodb" "item"s in the "dynamodb" "table" are scanned"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import DynamodbTestClient
 from ..constants import TEST_TABLE, _store
 
 
-@when("all items in the table are scanned")
+@when('all "dynamodb" "item"s in the "dynamodb" "table" are scanned')
 def scan_table(client: TestClient, world: dict):
     r = DynamodbTestClient(client).post("Scan", {"TableName": TEST_TABLE})
     _store(world, r)

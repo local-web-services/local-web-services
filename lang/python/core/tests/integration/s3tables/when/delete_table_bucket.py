@@ -1,4 +1,4 @@
-"""When: a table bucket is deleted"""
+"""When: a "s3 tables" "table" s3 tables bucket is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET
 
 
-@when("a table bucket is deleted")
+@when('a "s3 tables" "table" s3 tables bucket is deleted')
 def delete_table_bucket(client: TestClient, world: dict):
     r = client.delete(f"/buckets/{INT_BUCKET}")
     if r.status_code < 300:

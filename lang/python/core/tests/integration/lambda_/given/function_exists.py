@@ -1,4 +1,4 @@
-"""Given: the function exists"""
+"""Given: the "lambda" "function" existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import LambdaTestClient
 
 
-@given("the function exists")
+@given('the "lambda" "function" existed')
 def function_exists(client: TestClient):
     LambdaTestClient(client).create_function()

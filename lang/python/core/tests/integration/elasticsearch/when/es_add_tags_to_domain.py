@@ -1,4 +1,4 @@
-"""When: tags are added to a domain"""
+"""When: tags are added to an "elasticsearch" "domain" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ElasticsearchTestClient
 from ..constants import INT_DOMAIN, INT_TAG_KEY, INT_TAG_VALUE, _store
 
 
-@when("tags are added to a domain")
+@when('tags are added to an "elasticsearch" "domain"')
 def es_add_tags_to_domain(client: TestClient, world: dict):
     arn = ElasticsearchTestClient(client).get_domain_arn()
     if not arn:

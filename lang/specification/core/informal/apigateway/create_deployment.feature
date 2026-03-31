@@ -1,5 +1,5 @@
 @apigateway @generated
-Feature: Apigateway - An Api Deployment Is Created
+Feature: Apigateway - An "Api Gateway" "Api" Deployment Is Created
 
   # Generated from FizzBee spec: apigateway.fizz
   # Safety invariants: ResourcesBelongToExistingApis, MethodsBelongToExistingResources, IntegrationsBelongToExistingMethods, DeploymentsBelongToExistingApis, StagesReferenceExistingDeployments, StagesBelongToExistingApis, RootResourcePreserved
@@ -8,15 +8,15 @@ Feature: Apigateway - An Api Deployment Is Created
     Given the system is initialized
 
   @minimal @happy @create_deployment
-  Scenario: an "API" deployment is created
-    Given the deployment slot is available
-    And the method has an integration
-    And the integration "EXISTS"
-    And the method has an "API" association
-    And the "API" exists
-    And the "API" is "ACTIVE"
-    When an "API" deployment is created
-    Then the deployment is "ACTIVE"
+  Scenario: an "api gateway" "API" deployment is created
+    Given the "api gateway" "deployment" slot is available
+    And the "api gateway" "method" has an "api gateway" "integration"
+    And the "api gateway" "integration" existed
+    And the "api gateway" "method" has an "api gateway" "API" association
+    And the "api gateway" "API" existed
+    And the "api gateway" "API" was "ACTIVE"
+    When an "api gateway" "API" deployment is created
+    Then the "api gateway" "deployment" will be "ACTIVE"
     And all "ACTIVE" resources belong to "ACTIVE" APIs
     And all "EXISTING" methods belong to "ACTIVE" resources
     And all "EXISTING" integrations correspond to "EXISTING" methods
@@ -25,53 +25,53 @@ Feature: Apigateway - An Api Deployment Is Created
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @guard @negative @internal @create_deployment
-  Scenario: an "API" deployment is created fails when the deployment slot is already in use
-    Given the deployment slot is already in use
-    When an "API" deployment is created
+  @guard @negative @create_deployment
+  Scenario: an "api gateway" "API" deployment is created fails when the "api gateway" "deployment" slot is already in use
+    Given the "api gateway" "deployment" slot is already in use
+    When an "api gateway" "API" deployment is created
     Then the operation is rejected
 
   @guard @negative @create_deployment
-  Scenario: an "API" deployment is created fails when the method does not have an integration
-    Given the deployment slot is available
-    And the method does not have an integration
-    When an "API" deployment is created
+  Scenario: an "api gateway" "API" deployment is created fails when the "api gateway" "method" does not have an "api gateway" "integration"
+    Given the "api gateway" "deployment" slot is available
+    And the "api gateway" "method" does not have an "api gateway" "integration"
+    When an "api gateway" "API" deployment is created
     Then the operation is rejected
 
   @guard @negative @create_deployment
-  Scenario: an "API" deployment is created fails when the integration does not exist
-    Given the deployment slot is available
-    And the method has an integration
-    And the integration does not exist
-    When an "API" deployment is created
+  Scenario: an "api gateway" "API" deployment is created fails when the "api gateway" "integration" did not exist
+    Given the "api gateway" "deployment" slot is available
+    And the "api gateway" "method" has an "api gateway" "integration"
+    And the "api gateway" "integration" did not exist
+    When an "api gateway" "API" deployment is created
     Then the operation is rejected
 
   @guard @negative @create_deployment
-  Scenario: an "API" deployment is created fails when the method does not have an "API" association
-    Given the deployment slot is available
-    And the method has an integration
-    And the integration "EXISTS"
-    And the method does not have an "API" association
-    When an "API" deployment is created
+  Scenario: an "api gateway" "API" deployment is created fails when the "api gateway" "method" does not have an "api gateway" "API" association
+    Given the "api gateway" "deployment" slot is available
+    And the "api gateway" "method" has an "api gateway" "integration"
+    And the "api gateway" "integration" existed
+    And the "api gateway" "method" does not have an "api gateway" "API" association
+    When an "api gateway" "API" deployment is created
     Then the operation is rejected
 
   @guard @negative @create_deployment
-  Scenario: an "API" deployment is created fails when the "API" does not exist
-    Given the deployment slot is available
-    And the method has an integration
-    And the integration "EXISTS"
-    And the method has an "API" association
-    And the "API" does not exist
-    When an "API" deployment is created
+  Scenario: an "api gateway" "API" deployment is created fails when the "api gateway" "API" did not exist
+    Given the "api gateway" "deployment" slot is available
+    And the "api gateway" "method" has an "api gateway" "integration"
+    And the "api gateway" "integration" existed
+    And the "api gateway" "method" has an "api gateway" "API" association
+    And the "api gateway" "API" did not exist
+    When an "api gateway" "API" deployment is created
     Then the operation is rejected
 
   @guard @negative @create_deployment @lifecycle
-  Scenario: an "API" deployment is created fails when the "API" is not "ACTIVE"
-    Given the deployment slot is available
-    And the method has an integration
-    And the integration "EXISTS"
-    And the method has an "API" association
-    And the "API" exists
-    And the "API" is not "ACTIVE"
-    When an "API" deployment is created
+  Scenario: an "api gateway" "API" deployment is created fails when the "api gateway" "API" was not "ACTIVE"
+    Given the "api gateway" "deployment" slot is available
+    And the "api gateway" "method" has an "api gateway" "integration"
+    And the "api gateway" "integration" existed
+    And the "api gateway" "method" has an "api gateway" "API" association
+    And the "api gateway" "API" existed
+    And the "api gateway" "API" was not "ACTIVE"
+    When an "api gateway" "API" deployment is created
     Then the operation is rejected

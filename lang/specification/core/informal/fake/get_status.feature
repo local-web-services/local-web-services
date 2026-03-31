@@ -9,22 +9,22 @@ Feature: Fake - The Status Of A Fake Server Is Retrieved
 
   @minimal @happy @get_status
   Scenario: the status of a fake server is retrieved
-    Given the server exists
-    And the server is "ACTIVE"
+    Given the server existed
+    And the server was "ACTIVE"
     When the status of a fake server is retrieved
-    Then the server name, protocol, and route count are returned
+    Then the server name, protocol, and route count will be returned
     And every "ACTIVE" route belongs to an "ACTIVE" server
     And every server has a valid protocol
 
   @guard @negative @get_status
-  Scenario: the status of a fake server is retrieved fails when the server does not exist
-    Given the server does not exist
+  Scenario: the status of a fake server is retrieved fails when the server did not exist
+    Given the server did not exist
     When the status of a fake server is retrieved
     Then the operation is rejected
 
   @guard @negative @get_status
-  Scenario: the status of a fake server is retrieved fails when the server is not "ACTIVE"
-    Given the server exists
-    And the server is not "ACTIVE"
+  Scenario: the status of a fake server is retrieved fails when the server was not "ACTIVE"
+    Given the server existed
+    And the server was not "ACTIVE"
     When the status of a fake server is retrieved
     Then the operation is rejected

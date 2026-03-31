@@ -1,4 +1,4 @@
-"""When: an S3 task is configured on the state machine"""
+"""When: a S3 task is configured on the state machine"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import TEST_BODY, TEST_BUCKET, TEST_KEY, _s3_put_object_definition, _sm_arn
 
 
-@when("an S3 task is configured on the state machine")
+@when("a S3 task is configured on the state machine")
 def configure_s3_task(lws_session, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

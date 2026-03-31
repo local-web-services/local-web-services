@@ -1,5 +1,5 @@
 @rds @generated
-Feature: Rds - A Database Snapshot Is Created From An Instance
+Feature: Rds - A "Rds" "Snapshot" Is Created From A "Rds" "Instance"
 
   # Generated from FizzBee spec: rds.fizz
   # Safety invariants: ValidDBInstanceStatus, ValidDBSnapshotStatus, BackingUpInstanceHasSnapshot
@@ -8,33 +8,33 @@ Feature: Rds - A Database Snapshot Is Created From An Instance
     Given the system is initialized
 
   @minimal @happy @create_d_b_snapshot
-  Scenario: a database snapshot is created from an instance
-    Given the database instance exists
-    And the instance is "AVAILABLE"
-    And a snapshot slot is available
-    When a database snapshot is created from an instance
-    Then the snapshot is "CREATING" and the instance is in "BACKING_UP" state
+  Scenario: a "rds" "snapshot" is created from a "rds" "instance"
+    Given the "rds" "instance" existed
+    And the "rds" "instance" was "AVAILABLE"
+    And a "rds" "snapshot" slot is available
+    When a "rds" "snapshot" is created from a "rds" "instance"
+    Then the "rds" "snapshot" will be "CREATING" and the "rds" "instance" will be in "BACKING_UP" state
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
 
   @guard @negative @create_d_b_snapshot
-  Scenario: a database snapshot is created from an instance fails when the database instance does not exist
-    Given the database instance does not exist
-    When a database snapshot is created from an instance
+  Scenario: a "rds" "snapshot" is created from a "rds" "instance" fails when the "rds" "instance" did not exist
+    Given the "rds" "instance" did not exist
+    When a "rds" "snapshot" is created from a "rds" "instance"
     Then the operation is rejected
 
   @guard @negative @create_d_b_snapshot @lifecycle
-  Scenario: a database snapshot is created from an instance fails when the instance is not "AVAILABLE"
-    Given the database instance exists
-    And the instance is not "AVAILABLE"
-    When a database snapshot is created from an instance
+  Scenario: a "rds" "snapshot" is created from a "rds" "instance" fails when the "rds" "instance" was not "AVAILABLE"
+    Given the "rds" "instance" existed
+    And the "rds" "instance" was not "AVAILABLE"
+    When a "rds" "snapshot" is created from a "rds" "instance"
     Then the operation is rejected
 
-  @guard @negative @internal @create_d_b_snapshot
-  Scenario: a database snapshot is created from an instance fails when no snapshot slot is available
-    Given the database instance exists
-    And the instance is "AVAILABLE"
-    And no snapshot slot is available
-    When a database snapshot is created from an instance
+  @guard @negative @create_d_b_snapshot
+  Scenario: a "rds" "snapshot" is created from a "rds" "instance" fails when no "rds" "snapshot" slot is available
+    Given the "rds" "instance" existed
+    And the "rds" "instance" was "AVAILABLE"
+    And no "rds" "snapshot" slot is available
+    When a "rds" "snapshot" is created from a "rds" "instance"
     Then the operation is rejected

@@ -1,4 +1,4 @@
-"""Given: the user is already "DELETED" """
+"""Given: the "cognito" "user" is already "DELETED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import CognitoIdpTestClient
 from ..constants import TEST_TEMP_PASSWORD, TEST_USERNAME
 
 
-@given('the user is already "DELETED"')
+@given('the "cognito" "user" is already "DELETED"')
 def user_is_already_deleted(lws_session, world):
     if not world.get("pool_id"):
         world["pool_id"] = CognitoIdpTestClient(lws_session).create_pool()

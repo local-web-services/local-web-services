@@ -1,4 +1,4 @@
-"""Then: the table is in "CREATING" state"""
+"""Then: the "dynamodb" "table" will be in "CREATING" state"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_TABLE
 
 
-@then('the table is in "CREATING" state')
+@then('the "dynamodb" "table" will be in "CREATING" state')
 def table_is_creating_then(lws_session):
     """In lws, tables may be CREATING or ACTIVE. Accept either."""
     client = lws_session.client("dynamodb")

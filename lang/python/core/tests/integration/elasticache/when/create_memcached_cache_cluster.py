@@ -1,4 +1,4 @@
-"""When: a memcached cache cluster is created"""
+"""When: a memcached "elasticache" "cluster" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_CLUSTER_ID
 
 
-@when("a memcached cache cluster is created")
+@when('a memcached "elasticache" "cluster" is created')
 def create_memcached_cache_cluster(client: TestClient, world):
     r = client.post(
         "/",

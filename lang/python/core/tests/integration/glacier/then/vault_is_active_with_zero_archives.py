@@ -1,4 +1,4 @@
-"""Then: the vault is "ACTIVE" with zero archives"""
+"""Then: the "glacier" "vault" will be "ACTIVE" with zero archives"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_VAULT_NAME
 
 
-@then('the vault is "ACTIVE" with zero archives')
+@then('the "glacier" "vault" will be "ACTIVE" with zero archives')
 def vault_is_active_with_zero_archives(client: TestClient, world):
     actual_error = world.get("error")
     assert actual_error is None, f"Expected vault creation to succeed but got: {actual_error}"

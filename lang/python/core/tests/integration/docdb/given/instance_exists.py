@@ -1,4 +1,4 @@
-"""Given: the instance exists"""
+"""Given: the "documentdb" "instance" existed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import DocdbTestClient
 
 
-@given("the instance exists")
+@given('the "documentdb" "instance" existed')
 def instance_exists(client: TestClient):
     DocdbTestClient(client).create_cluster()
     DocdbTestClient(client).create_instance()

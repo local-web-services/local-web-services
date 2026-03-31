@@ -1,4 +1,4 @@
-"""Given: the domain is not "AVAILABLE" """
+"""Given: the "elasticsearch" "domain" was not "AVAILABLE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaElasticsearchTestClient
 from ..constants import TEST_DOMAIN
 
 
-@given('the domain is not "AVAILABLE"')
+@given('the "elasticsearch" "domain" was not "AVAILABLE"')
 def domain_is_not_available_given(lws_session, world):
     try:
         LambdaElasticsearchTestClient(lws_session)._es.delete_elasticsearch_domain(

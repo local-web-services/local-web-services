@@ -1,4 +1,4 @@
-"""Given: a search domain has been deleted"""
+"""Given: the "opensearch" "domain" is being deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import OpensearchTestClient
 from ..constants import TEST_DOMAIN
 
 
-@given("a search domain has been deleted")
+@given('the "opensearch" "domain" is being deleted')
 def opensearch_search_domain_deleted_seq(lws_session):
     try:
         OpensearchTestClient(lws_session).create_domain()

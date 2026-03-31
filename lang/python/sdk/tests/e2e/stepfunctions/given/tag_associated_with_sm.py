@@ -1,4 +1,4 @@
-"""Given: the tag is associated with the state machine"""
+"""Given: the tag was associated with the "step functions" "state machine" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsTestClient
 from ..constants import TEST_SM, TEST_TAG_KEY, TEST_TAG_VALUE, _sm_arn
 
 
-@given("the tag is associated with the state machine")
+@given('the tag was associated with the "step functions" "state machine"')
 def tag_associated_with_sm(lws_session, world):
     sm_name = world.get("state_machine_name") or TEST_SM
     StepfunctionsTestClient(lws_session).tag_resource(

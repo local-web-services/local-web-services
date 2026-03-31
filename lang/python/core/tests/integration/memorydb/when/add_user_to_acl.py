@@ -1,4 +1,4 @@
-"""When: a user is added to an "ACL" """
+"""When: a "memorydb" "user" is added to an "memorydb" "ACL" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_ACL_NAME, INT_USER_NAME
 
 
-@when('a user is added to an "ACL"')
+@when('a "memorydb" "user" is added to an "memorydb" "ACL"')
 def add_user_to_acl(client: TestClient, world):
     r = client.post(
         "/",

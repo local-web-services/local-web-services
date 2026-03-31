@@ -1,4 +1,4 @@
-"""When: an "ACL" finishes creating"""
+"""When: an "memorydb" "ACL" finishes creating"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_ACL_NAME
 
 
-@when('an "ACL" finishes creating')
+@when('an "memorydb" "ACL" finishes creating')
 def acl_finishes_creating(client: TestClient, world):
     r = client.post(
         "/",

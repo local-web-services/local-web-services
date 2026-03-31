@@ -1,4 +1,4 @@
-"""Given: a message has been consumed from the "SQS" queue"""
+"""Given: a message is consumed from the "sqs" "queue" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SnsSqsTestClient
 from ..constants import TEST_MESSAGE
 
 
-@given('a message has been consumed from the "SQS" queue')
+@given('a message is consumed from the "sqs" "queue"')
 def sns_sqs_a_message_has_been_consumed(lws_session):
     SnsSqsTestClient(lws_session).create_queue()
     url = SnsSqsTestClient(lws_session).queue_url()

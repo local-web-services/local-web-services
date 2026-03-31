@@ -1,4 +1,4 @@
-"""Given: versioning has been configured on a bucket"""
+"""Given: versioning is configured on a "s3" "bucket" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import S3apiTestClient
 from ..constants import TEST_BUCKET
 
 
-@given("versioning has been configured on a bucket")
+@given('versioning is configured on a "s3" "bucket"')
 def versioning_has_been_configured_on_a_bucket(lws_session):
     S3apiTestClient(lws_session).create_bucket()
     S3apiTestClient(lws_session).put_bucket_versioning(

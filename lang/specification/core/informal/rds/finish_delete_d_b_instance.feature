@@ -1,5 +1,5 @@
 @rds @generated
-Feature: Rds - A Database Instance Deletion Completes
+Feature: Rds - A "Rds" "Instance" Deletion Completes
 
   # Generated from FizzBee spec: rds.fizz
   # Safety invariants: ValidDBInstanceStatus, ValidDBSnapshotStatus, BackingUpInstanceHasSnapshot
@@ -8,24 +8,24 @@ Feature: Rds - A Database Instance Deletion Completes
     Given the system is initialized
 
   @minimal @happy @finish_delete_d_b_instance @internal
-  Scenario: a database instance deletion completes
-    Given the database instance exists
-    And the instance is "DELETING"
-    When a database instance deletion completes
-    Then the instance is "DELETED"
+  Scenario: a "rds" "instance" deletion completes
+    Given the "rds" "instance" existed
+    And the "rds" "instance" was "DELETING"
+    When a "rds" "instance" deletion completes
+    Then the "rds" "instance" will be "DELETED"
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
 
   @guard @negative @finish_delete_d_b_instance @internal
-  Scenario: a database instance deletion completes fails when the database instance does not exist
-    Given the database instance does not exist
-    When a database instance deletion completes
+  Scenario: a "rds" "instance" deletion completes fails when the "rds" "instance" did not exist
+    Given the "rds" "instance" did not exist
+    When a "rds" "instance" deletion completes
     Then the operation is rejected
 
   @guard @negative @finish_delete_d_b_instance @internal
-  Scenario: a database instance deletion completes fails when the instance is not "DELETING"
-    Given the database instance exists
-    And the instance is not "DELETING"
-    When a database instance deletion completes
+  Scenario: a "rds" "instance" deletion completes fails when the "rds" "instance" was not "DELETING"
+    Given the "rds" "instance" existed
+    And the "rds" "instance" was not "DELETING"
+    When a "rds" "instance" deletion completes
     Then the operation is rejected

@@ -21,32 +21,32 @@ action Init:
     inv_pool = {}               # inv_pool[iid] = pool_id (pool called by this invocation)
 
 
-# step: a Lambda function is deployed
-# result: the function is ACTIVE
-# guard: the function does not already exist
-# guard_violation: the function already exists
+# step: a "lambda" "function" is deployed
+# result: the "lambda" "function" will be "ACTIVE"
+# guard: the "lambda" "function" did not already exist
+# guard_violation: the "lambda" "function" already existed
 atomic action DeployFunction:
     oneof fid in FUNC_IDS:
         if fid not in func_status:
             func_status[fid] = "ACTIVE"
 
 
-# step: a Cognito user pool is created
-# result: the pool is ACTIVE
-# guard: the pool does not already exist
-# guard_violation: the pool already exists
+# step: a "cognito" "user pool" is created
+# result: the "cognito" "user pool" will be "ACTIVE"
+# guard: the "cognito" "user pool" did not already exist
+# guard_violation: the "cognito" "user pool" already existed
 atomic action CreateUserPool:
     oneof pid in POOL_IDS:
         if pid not in pool_status:
             pool_status[pid] = "ACTIVE"
 
 
-# step: a Cognito user pool is deleted
-# result: the pool is DELETED and Lambda calls targeting it will fail
-# guard: the pool exists
-# guard_violation: the pool does not exist
-# guard: the pool is ACTIVE
-# guard_violation_lifecycle: the pool is already DELETED
+# step: a "cognito" "user pool" is deleted
+# result: the "cognito" "user pool" will be deleted and Lambda calls targeting it will fail
+# guard: the "cognito" "user pool" existed
+# guard_violation: the "cognito" "user pool" did not exist
+# guard: the "cognito" "user pool" was "ACTIVE"
+# guard_violation_lifecycle: the "cognito" "user pool" is already "DELETED"
 atomic action DeleteUserPool:
     oneof pid in POOL_IDS:
         if pid in pool_status:
@@ -54,13 +54,13 @@ atomic action DeleteUserPool:
                 pool_status[pid] = "DELETED"
 
 
-# step: the Lambda function is invoked
-# result: the invocation is IN_PROGRESS
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
-# guard: an invocation slot is available
+# step: the "lambda" "function" is invoked
+# result: the invocation will be "IN_PROGRESS"
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
+# guard: a "lambda" "invocation" slot is available
 # guard_violation_capacity: no invocation slot is available
 atomic action InvokeFunction:
     oneof fid in FUNC_IDS:
@@ -73,12 +73,12 @@ atomic action InvokeFunction:
 
 
 # fake_skip: internal
-# step: the Lambda function calls a Cognito admin API on an ACTIVE pool and succeeds
-# result: the invocation is SUCCESS
-# guard: an invocation is IN_PROGRESS
-# guard_violation_lifecycle: no invocation is IN_PROGRESS
-# guard: the pool is ACTIVE
-# guard_violation_lifecycle: the pool does not exist or is DELETED
+# step: the "lambda" "function" calls a Cognito admin API on an ACTIVE pool and succeeds
+# result: the invocation will be "SUCCESS"
+# guard: a "lambda" "invocation" was "IN_PROGRESS"
+# guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
+# guard: the "cognito" "user pool" was "ACTIVE"
+# guard_violation_lifecycle: the "cognito" "user pool" did not exist or was "DELETED"
 atomic action InvocationSucceeds:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -90,12 +90,12 @@ atomic action InvocationSucceeds:
                             inv_pool[iid] = pid
 
 
-# step: the Lambda function fails to call Cognito because the pool has been deleted
-# result: the invocation is FAILED with a ResourceNotFoundException
-# guard: an invocation is IN_PROGRESS
-# guard_violation_lifecycle: no invocation is IN_PROGRESS
-# guard: the pool is DELETED
-# guard_violation_lifecycle: the pool is not DELETED
+# step: the "lambda" "function" fails to call Cognito because the "cognito" "user pool" has been deleted
+# result: the invocation will be "FAILED" with a ResourceNotFoundException
+# guard: a "lambda" "invocation" was "IN_PROGRESS"
+# guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
+# guard: the "cognito" "user pool" was "DELETED"
+# guard_violation_lifecycle: the "cognito" "user pool" was not "DELETED"
 atomic action InvocationFailsPoolDeleted:
     oneof iid in INV_IDS:
         if iid in inv_status:

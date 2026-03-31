@@ -1,4 +1,4 @@
-"""Given: the user has an enabled flag"""
+"""Given: the "cognito" "user" had an enabled flag"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import CognitoIdpTestClient
 from ..constants import INT_USERNAME
 
 
-@given("the user has an enabled flag")
+@given('the "cognito" "user" had an enabled flag')
 def user_has_enabled_flag(client: TestClient, world):
     CognitoIdpTestClient(client).create_user()
     world["username"] = INT_USERNAME

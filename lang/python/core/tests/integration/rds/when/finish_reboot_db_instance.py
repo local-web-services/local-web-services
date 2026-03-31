@@ -1,4 +1,4 @@
-"""When: a database instance reboot completes"""
+"""When: a "neptune" "instance" reboot completes"""
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import when
 from starlette.testclient import TestClient
 
 
-@when("a database instance reboot completes")
+@when('a "neptune" "instance" reboot completes')
 def finish_reboot_db_instance(client: TestClient, world: dict):
     pytest.skip("RebootDBInstance is not yet implemented in lws.")

@@ -1,4 +1,4 @@
-"""Given: the bucket exists"""
+"""Given: the "s3" "bucket" existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from starlette.testclient import TestClient
 from ..client import S3tablesTestClient
 
 
-@given("the bucket exists")
+@given('the "s3 tables" "bucket" existed')
+@given('the "s3" "bucket" existed')
 def bucket_exists(client: TestClient):
     S3tablesTestClient(client).create_bucket()

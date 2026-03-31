@@ -9,7 +9,7 @@ from pytest_bdd import then
 
 
 @then(
-    'the "API" is "DELETED" along with all its resources, methods, integrations, deployments, and stages'  # noqa: E501
+    'the "api gateway" "API" will be deleted along with all its resources, methods, integrations, deployments, and stages'
 )
 def api_is_deleted_with_all_resources(lws_session, world):
     actual_result = world["result"]

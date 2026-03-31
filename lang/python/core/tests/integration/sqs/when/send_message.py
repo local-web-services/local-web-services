@@ -1,4 +1,4 @@
-"""When: a message is sent to the queue"""
+"""When: a "sqs" "message" is sent to the "sqs" "queue" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import when
 from ..constants import QUEUE_URL, TEST_MESSAGE
 
 
-@when("a message is sent to the queue")
+@when('a "sqs" "message" is sent to the "sqs" "queue"')
 def send_message(client, world):
     r = client.post(
         "/",

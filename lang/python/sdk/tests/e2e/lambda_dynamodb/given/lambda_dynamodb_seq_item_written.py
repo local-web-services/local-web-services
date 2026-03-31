@@ -1,4 +1,4 @@
-"""Given: the Lambda function has written an item to the DynamoDB table during invocation"""
+"""Given: the "lambda" "function" writes an item to the "dynamodb" "table" during invocation"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import uuid
 from pytest_bdd import given
 
 
-@given("the Lambda function has written an item to the DynamoDB table during invocation")
+@given('the "lambda" "function" writes an item to the "dynamodb" "table" during invocation')
 def lambda_dynamodb_seq_item_written(lws_session, world):
     # Arrange
     invocation_id = str(uuid.uuid4())

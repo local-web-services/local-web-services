@@ -1,11 +1,11 @@
-"""Then: the method remains unchanged"""
+"""Then: the "api gateway" "method" remains unchanged"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the method remains unchanged")
+@then('the "api gateway" "method" remains unchanged')
 def method_remains_unchanged_then(world):
     actual_result = world["result"]
     assert actual_result is not None, "Expected method update result but got None"

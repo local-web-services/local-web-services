@@ -1,4 +1,4 @@
-"""When: multiple parameters are deleted from "SSM" """
+"""When: multiple "ssm" "parameter"s are deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SSM_TARGET, INT_PARAM
 
 
-@when('multiple parameters are deleted from "SSM"')
+@when('multiple "ssm" "parameter"s are deleted')
 def delete_parameters(client: TestClient, world):
     r = client.post(
         "/",

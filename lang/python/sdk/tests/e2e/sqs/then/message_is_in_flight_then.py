@@ -1,4 +1,4 @@
-"""Then: the message is "IN_FLIGHT" """
+"""Then: the "sqs" "message" will be "IN_FLIGHT" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..client import SqsTestClient
 
 
-@then('the message is "IN_FLIGHT"')
+@then('the "sqs" "message" will be "IN_FLIGHT"')
 def message_is_in_flight_then(lws_session):
     client = SqsTestClient(lws_session)
     resp = client.get_queue_attributes(

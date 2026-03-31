@@ -1,4 +1,4 @@
-"""When: a Glacier vault is created"""
+"""When: a "glacier" "vault" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import LambdaGlacierTestClient
 from ..constants import TEST_VAULT
 
 
-@when("a Glacier vault is created")
+@when('a "glacier" "vault" is created')
 def create_glacier_vault(lws_session, world):
     try:
         LambdaGlacierTestClient(lws_session).create_vault()

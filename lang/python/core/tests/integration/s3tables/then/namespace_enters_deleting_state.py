@@ -1,4 +1,4 @@
-"""Then: the namespace enters "DELETING" state"""
+"""Then: the "s3 tables" "namespace" will be in "DELETING" state"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_NAMESPACE
 
 
-@then('the namespace enters "DELETING" state')
+@then('the "s3 tables" "namespace" will be in "DELETING" state')
 def namespace_enters_deleting_state(client: TestClient):
     r = client.get(f"/namespaces/{INT_BUCKET}")
     actual_namespaces = [ns["namespace"] for ns in r.json().get("namespaces", [])]

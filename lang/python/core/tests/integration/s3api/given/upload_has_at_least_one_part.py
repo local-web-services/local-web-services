@@ -1,4 +1,4 @@
-"""Given: the upload has at least one part"""
+"""Given: the "s3" "upload" has at least one part"""
 
 from __future__ import annotations
 
@@ -8,7 +8,8 @@ from starlette.testclient import TestClient
 from ..constants import INT_BODY, INT_BUCKET, INT_KEY
 
 
-@given("the upload has at least one part")
+@given('the "s3" "upload" had at least one part')
+@given('the "s3" "upload" has at least one part')
 def upload_has_at_least_one_part(sync_client: TestClient, world):
     resp = sync_client.put(
         f"/{INT_BUCKET}/{INT_KEY}",

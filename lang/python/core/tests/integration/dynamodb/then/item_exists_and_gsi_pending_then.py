@@ -1,4 +1,4 @@
-"""Then: the item exists in the table and "GSI" propagation is pending"""
+"""Then: the "dynamodb" "item" will exist in the "dynamodb" "table" and "GSI" propagation will be pending"""
 
 from __future__ import annotations
 
@@ -9,7 +9,9 @@ from ..client import DynamodbTestClient
 from ..constants import TEST_ITEM_KEY, TEST_PK, TEST_TABLE
 
 
-@then('the item exists in the table and "GSI" propagation is pending')
+@then(
+    'the "dynamodb" "item" will exist in the "dynamodb" "table" and "GSI" propagation will be pending'
+)
 def item_exists_and_gsi_pending_then(client: TestClient):
     r = DynamodbTestClient(client).post(
         "GetItem", {"TableName": TEST_TABLE, "Key": {TEST_PK: {"S": TEST_ITEM_KEY}}}

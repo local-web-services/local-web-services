@@ -1,11 +1,11 @@
-"""Then: the object data is returned"""
+"""Then: the "s3" "object" data will be returned"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the object data is returned")
+@then('the "s3" "object" data will be returned')
 def object_data_is_returned_then(world):
     actual_result = world["result"]
     assert (

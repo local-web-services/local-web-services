@@ -1,4 +1,4 @@
-"""Given: the user membership entry does not exist"""
+"""Given: the "memorydb" "user" membership entry did not exist"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import MemorydbTestClient
 
 
-@given("the user membership entry does not exist")
+@given('the "memorydb" "user" membership entry did not exist')
 def user_membership_entry_does_not_exist(client: TestClient):
     MemorydbTestClient(client).create_user()
     MemorydbTestClient(client).create_acl()

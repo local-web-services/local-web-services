@@ -25,10 +25,10 @@ action Init:
     obj_exec = {}               # obj_exec[oid] = exec_id
 
 
-# step: a Step Functions state machine is created
-# result: the state machine is ACTIVE with no S3 task configured
-# guard: the state machine does not already exist
-# guard_violation: the state machine already exists
+# step: a "step functions" "state machine" is created
+# result: the "step functions" "state machine" will be "ACTIVE" with no S3 task configured
+# guard: the "step functions" "state machine" did not already exist
+# guard_violation: the "step functions" "state machine" already existed
 atomic action CreateStateMachine:
     oneof smid in SM_IDS:
         if smid not in sm_status:
@@ -36,28 +36,28 @@ atomic action CreateStateMachine:
             sm_bucket[smid] = ""
 
 
-# step: an S3 bucket is created
-# result: the bucket is ACTIVE
-# guard: the bucket does not already exist
-# guard_violation: the bucket already exists
+# step: a "s3" "bucket" is created
+# result: the bucket will be "ACTIVE"
+# guard: the bucket did not already exist
+# guard_violation: the bucket already existed
 atomic action CreateBucket:
     oneof bid in BUCKET_IDS:
         if bid not in bucket_status:
             bucket_status[bid] = "ACTIVE"
 
 
-# step: an S3 task is configured on the state machine
+# step: a S3 task is configured on the state machine
 # result: the state machine will read or write objects to the bucket when it reaches the task state
-# guard: the state machine exists
-# guard_violation: the state machine does not exist
-# guard: the state machine is ACTIVE
-# guard_violation_lifecycle: the state machine is not ACTIVE
+# guard: the "step functions" "state machine" existed
+# guard_violation: the "step functions" "state machine" did not exist
+# guard: the "step functions" "state machine" was "ACTIVE"
+# guard_violation_lifecycle: the "step functions" "state machine" was not "ACTIVE"
 # guard: the state machine has no S3 task configured
-# guard_violation: the state machine already has an S3 task configured
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
+# guard_violation: the state machine already has a S3 task configured
+# guard: the bucket existed
+# guard_violation: the bucket did not exist
+# guard: the bucket was "ACTIVE"
+# guard_violation_lifecycle: the bucket was not "ACTIVE"
 atomic action ConfigureS3Task:
     oneof smid in SM_IDS:
         if smid in sm_status:
@@ -69,15 +69,15 @@ atomic action ConfigureS3Task:
                                 sm_bucket[smid] = bid
 
 
-# step: an execution of the state machine is started
-# result: the execution is RUNNING
-# guard: the state machine exists
-# guard_violation: the state machine does not exist
-# guard: the state machine is ACTIVE
-# guard_violation_lifecycle: the state machine is not ACTIVE
-# guard: the state machine has an S3 task configured
+# step: an "step functions" "execution" of the "step functions" "state machine" is started
+# result: the "step functions" "execution" will be "RUNNING"
+# guard: the "step functions" "state machine" existed
+# guard_violation: the "step functions" "state machine" did not exist
+# guard: the "step functions" "state machine" was "ACTIVE"
+# guard_violation_lifecycle: the "step functions" "state machine" was not "ACTIVE"
+# guard: the state machine has a S3 task configured
 # guard_violation: the state machine has no S3 task configured
-# guard: an execution slot is available
+# guard: an "step functions" "execution" slot is available
 # guard_violation_capacity: no execution slot is available
 atomic action StartExecution:
     oneof smid in SM_IDS:
@@ -90,12 +90,12 @@ atomic action StartExecution:
                             exec_sm[eid] = smid
 
 
-# step: a running execution writes an object to the S3 bucket and succeeds
-# result: the object EXISTS in the bucket and the execution is SUCCEEDED
-# guard: an execution is RUNNING
-# guard_violation: no execution is RUNNING
-# guard: the target bucket is ACTIVE
-# guard_violation_lifecycle: the target bucket is not ACTIVE
+# step: a running "step functions" "execution" writes an object to the "s3" "bucket" and succeeds
+# result: the object will exist in the bucket and the "step functions" "execution" will be "SUCCEEDED"
+# guard: a "step functions" "execution" was "RUNNING"
+# guard_violation: no "step functions" "execution" was "RUNNING"
+# guard: the target bucket was "ACTIVE"
+# guard_violation_lifecycle: the target bucket was not "ACTIVE"
 # guard: an object slot is available
 # guard_violation_capacity: no object slot is available
 atomic action PutObjectTask:
@@ -116,12 +116,12 @@ atomic action PutObjectTask:
                                         exec_status[eid] = "SUCCEEDED"
 
 
-# step: a running execution reads an existing object from the S3 bucket and succeeds
-# result: the execution is SUCCEEDED
-# guard: an execution is RUNNING
-# guard_violation: no execution is RUNNING
-# guard: an object EXISTS in the target bucket
-# guard_violation: no object EXISTS in the target bucket
+# step: a running "step functions" "execution" reads an existing object from the "s3" "bucket" and succeeds
+# result: the "step functions" "execution" will be "SUCCEEDED"
+# guard: a "step functions" "execution" was "RUNNING"
+# guard_violation: no "step functions" "execution" was "RUNNING"
+# guard: an object existed in the target bucket
+# guard_violation: no object existed in the target bucket
 atomic action GetObjectTask:
     oneof eid in EXEC_IDS:
         if eid in exec_status:
@@ -139,12 +139,12 @@ atomic action GetObjectTask:
                             exec_status[eid] = "SUCCEEDED"
 
 
-# step: a running execution fails to read because no object exists in the bucket
-# result: the execution is FAILED with a NoSuchKey error
-# guard: an execution is RUNNING
-# guard_violation: no execution is RUNNING
-# guard: no object EXISTS in the target bucket
-# guard_violation: an object EXISTS in the target bucket
+# step: a running "step functions" "execution" fails to read because no object exists in the bucket
+# result: the "step functions" "execution" will be "FAILED" with a NoSuchKey error
+# guard: a "step functions" "execution" was "RUNNING"
+# guard_violation: no "step functions" "execution" was "RUNNING"
+# guard: no object existed in the target bucket
+# guard_violation: an object existed in the target bucket
 atomic action GetObjectNotFoundTask:
     oneof eid in EXEC_IDS:
         if eid in exec_status:

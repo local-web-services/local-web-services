@@ -1,4 +1,4 @@
-"""When: a database instance modification completes"""
+"""When: a "rds" "instance" modification completes"""
 
 from __future__ import annotations
 
@@ -6,6 +6,6 @@ import pytest
 from pytest_bdd import when
 
 
-@when("a database instance modification completes")
+@when('a "rds" "instance" modification completes')
 def instance_modification_completes(lws_session, world):
     pytest.skip("Cannot trigger internal RDS instance modification completion in lws")

@@ -1,4 +1,4 @@
-"""When: a node failure occurs in an active domain"""
+"""When: a node failure occurs in an active "elasticsearch" "domain" """
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import when
 from starlette.testclient import TestClient
 
 
-@when("a node failure occurs in an active domain")
+@when('a node failure occurs in an active "elasticsearch" "domain"')
 def es_node_failure(client: TestClient, world: dict):
     pytest.skip("Node failure simulation cannot be triggered in stateless integration tests.")

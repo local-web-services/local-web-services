@@ -1,4 +1,4 @@
-"""When: a state machine definition is validated"""
+"""When: a "step functions" "state machine" definition is validated"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import PASS_DEFINITION, TEST_SM, _sm_arn
 
 
-@when("a state machine definition is validated")
+@when('a "step functions" "state machine" definition is validated')
 def validate_state_machine_definition(lws_session, world):
     if world.get("state_machine_arn") is None and world.get("state_machine_name") is None:
         pytest.skip(

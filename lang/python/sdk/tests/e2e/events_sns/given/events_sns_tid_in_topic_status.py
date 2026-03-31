@@ -1,4 +1,4 @@
-"""Given: tid in topic_status"""
+"""Given: tid not in topic_status"""
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import given
 from ..client import EventsSnsTestClient
 
 
-@given("tid in topic_status")
+@given("tid not in topic_status")
 def events_sns_tid_in_topic_status(lws_session):
     EventsSnsTestClient(lws_session).create_topic()

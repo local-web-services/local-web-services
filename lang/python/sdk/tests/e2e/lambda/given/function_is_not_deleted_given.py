@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import given, parsers
+from pytest_bdd import given
 
 
-@given(parsers.re(r'^the function is not "DELETED"$'))
+@given('the "lambda" "function" was not "DELETED"')
 def function_is_not_deleted_given():
     """No-op: functions are not DELETED in fresh state."""

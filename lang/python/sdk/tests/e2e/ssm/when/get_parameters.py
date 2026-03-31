@@ -1,4 +1,4 @@
-"""When: multiple parameters are retrieved from "SSM" """
+"""When: multiple "ssm" "parameter"s are retrieved"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_PARAM
 
 
-@when('multiple parameters are retrieved from "SSM"')
+@when('multiple "ssm" "parameter"s are retrieved')
 def get_parameters(lws_session, world):
     try:
         resp = lws_session.client("ssm").get_parameters(Names=[TEST_PARAM])

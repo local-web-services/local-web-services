@@ -9,7 +9,7 @@ import uuid
 from pytest_bdd import given
 
 
-@given("an event has been published to the bus and has triggered an asynchronous Lambda invocation")
+@given("an event is published to the bus and triggers an asynchronous Lambda invocation")
 def events_lambda_seq_event_published_and_invoked(lws_session, world):
     # Arrange
     invocation_id = str(uuid.uuid4())

@@ -1,4 +1,4 @@
-"""When: a namespace is deleted from a table bucket"""
+"""When: a "s3 tables" "namespace" is deleted from a "s3 tables" "table" s3 tables bucket"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_NAMESPACE
 
 
-@when("a namespace is deleted from a table bucket")
+@when('a "s3 tables" "namespace" is deleted from a "s3 tables" "table" s3 tables bucket')
 def delete_namespace(client: TestClient, world: dict):
     r = client.delete(f"/namespaces/{INT_BUCKET}/{INT_NAMESPACE}")
     if r.status_code < 300:

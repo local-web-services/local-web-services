@@ -1,4 +1,4 @@
-"""Given: the tag does not exist on the function"""
+"""Given: the tag did not exist on the "lambda" "function" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import LambdaTestClient
 
 
-@given("the tag does not exist on the function")
+@given('the tag did not exist on the "lambda" "function"')
 def tag_does_not_exist_on_function(client: TestClient, world):
     LambdaTestClient(client).create_function()
     world["_skip"] = "lws does not enforce tag existence checks in stateless integration tests."

@@ -1,4 +1,4 @@
-"""Given: the table exists"""
+"""Given: the "dynamodb" "table" existed"""
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import given
 from ..client import StepfunctionsDynamodbTestClient
 
 
-@given("the table exists")
+@given('the "dynamodb" "table" existed')
 def table_exists(lws_session):
     StepfunctionsDynamodbTestClient(lws_session).create_table()

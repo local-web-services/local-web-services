@@ -1,4 +1,4 @@
-"""When: an object is deleted from a bucket"""
+"""When: a "s3" "object" is deleted from a "s3" "bucket" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_KEY
 
 
-@when("an object is deleted from a bucket")
+@when('a "s3" "object" is deleted from a "s3" "bucket"')
 def delete_object(sync_client: TestClient, world):
     r = sync_client.delete(f"/{INT_BUCKET}/{INT_KEY}")
     if r.status_code in (200, 204):

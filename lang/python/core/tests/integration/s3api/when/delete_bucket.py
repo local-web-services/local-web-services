@@ -1,4 +1,4 @@
-"""When: a bucket is deleted"""
+"""When: a "s3" "bucket" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET
 
 
-@when("a bucket is deleted")
+@when('a "s3" "bucket" is deleted')
 def delete_bucket(sync_client: TestClient, world):
     r = sync_client.delete(f"/{INT_BUCKET}")
     if r.status_code in (200, 204):

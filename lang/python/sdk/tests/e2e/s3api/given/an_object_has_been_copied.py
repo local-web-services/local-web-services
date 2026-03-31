@@ -1,4 +1,4 @@
-"""Given: an object has been copied from one bucket to another"""
+"""Given: a "s3" "object" is copied from one "s3" "bucket" to another"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import S3apiTestClient
 from ..constants import TEST_BUCKET, TEST_KEY, TEST_KEY2, TEST_SRC_BUCKET
 
 
-@given("an object has been copied from one bucket to another")
+@given('a "s3" "object" is copied from one "s3" "bucket" to another')
 def an_object_has_been_copied(lws_session):
     S3apiTestClient(lws_session).create_bucket()
     S3apiTestClient(lws_session).put_object(bucket=TEST_SRC_BUCKET, key=TEST_KEY)

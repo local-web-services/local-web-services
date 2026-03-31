@@ -1,4 +1,4 @@
-"""When: an "API" deployment is created"""
+"""When: an "api gateway" "API" deployment is created"""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from pytest_bdd import when
 from starlette.testclient import TestClient
 
 
-@when('an "API" deployment is created')
+@when('an "api gateway" "API" deployment is created')
 def create_deployment(client: TestClient, world):
     list_r = client.get("/restapis")
     items = list_r.json().get("item", [])

@@ -1,4 +1,4 @@
-"""Then: the queue is "ACTIVE" """
+"""Then: the "sqs" "queue" will be "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import S3apiSqsTestClient
 from ..constants import TEST_QUEUE
 
 
-@then('the queue is "ACTIVE"')
+@then('the "sqs" "queue" will be "ACTIVE"')
 def queue_is_active_then(lws_session):
     url = S3apiSqsTestClient(lws_session).queue_url()
     resp = lws_session.client("sqs").get_queue_attributes(QueueUrl=url, AttributeNames=["All"])

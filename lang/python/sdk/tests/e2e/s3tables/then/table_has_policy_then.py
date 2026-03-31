@@ -1,11 +1,11 @@
-"""Then: the table has a policy"""
+"""Then: the "s3 tables" "table" has a policy"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the table has a policy")
+@then('the "s3 tables" "table" has a policy')
 def table_has_policy_then(world):
     expected_error = None
     actual_error = world["error"]

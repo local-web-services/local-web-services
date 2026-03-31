@@ -35,10 +35,10 @@ action Init:
     throttle_reads = False
     throttle_writes = False
 
-# step: a table is created
-# result: the table is in CREATING state
-# guard: the table does not already exist
-# guard_violation: the table already exists
+# step: a "dynamodb" "table" is created
+# result: the "dynamodb" "table" will be in "CREATING" state
+# guard: the "dynamodb" "table" did not already exist
+# guard_violation: the "dynamodb" "table" already existed
 atomic action CreateTable:
     oneof name in TABLE_NAMES:
         if name not in table_status:
@@ -46,24 +46,24 @@ atomic action CreateTable:
             gsi_pending[name] = 0
 
 # fake_skip: internal
-# step: a table finishes creating and becomes active
-# result: the table is ACTIVE and ready for reads and writes
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is CREATING
-# guard_violation: the table is not CREATING
+# step: a "dynamodb" "table" finishes creating and becomes active
+# result: the "dynamodb" "table" will be "ACTIVE" and ready for reads and writes
+# guard: the "dynamodb" "table" existed
+# guard_violation: the "dynamodb" "table" did not exist
+# guard: the "dynamodb" "table" was "CREATING"
+# guard_violation: the "dynamodb" "table" was not "CREATING"
 atomic action ActivateTable:
     oneof name in TABLE_NAMES:
         if name in table_status:
             if table_status[name] == "CREATING":
                 table_status[name] = "ACTIVE"
 
-# step: a table is deleted
-# result: the table enters DELETING state and all its items are removed
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation_lifecycle: the table is not ACTIVE
+# step: a "dynamodb" "table" is deleted
+# result: the "dynamodb" "table" will be in "DELETING" state and all its items will be removed
+# guard: the "dynamodb" "table" existed
+# guard_violation: the "dynamodb" "table" did not exist
+# guard: the "dynamodb" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "dynamodb" "table" was not "ACTIVE"
 atomic action DeleteTable:
     oneof name in TABLE_NAMES:
         if name in table_status:
@@ -79,24 +79,24 @@ atomic action DeleteTable:
                     transaction_table = ""
 
 # fake_skip: internal
-# step: a table deletion completes
-# result: the table is DELETED
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is DELETING
-# guard_violation: the table is not DELETING
+# step: a "dynamodb" "table" deletion completes
+# result: the "dynamodb" "table" will be "DELETED"
+# guard: the "dynamodb" "table" existed
+# guard_violation: the "dynamodb" "table" did not exist
+# guard: the "dynamodb" "table" was "DELETING"
+# guard_violation: the "dynamodb" "table" was not "DELETING"
 atomic action FinishDeleteTable:
     oneof name in TABLE_NAMES:
         if name in table_status:
             if table_status[name] == "DELETING":
                 table_status[name] = "DELETED"
 
-# step: a table is described
-# result: the table metadata is returned
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation: the table is not ACTIVE
+# step: a "dynamodb" "table" is described
+# result: the "dynamodb" "table" metadata will be returned
+# guard: the "dynamodb" "table" existed
+# guard_violation: the "dynamodb" "table" did not exist
+# guard: the "dynamodb" "table" was "ACTIVE"
+# guard_violation: the "dynamodb" "table" was not "ACTIVE"
 atomic action DescribeTable:
     oneof name in TABLE_NAMES:
         if name in table_status:
@@ -104,18 +104,18 @@ atomic action DescribeTable:
                 pass
 
 # step: all tables are listed
-# result: the list of tables is returned
+# result: the list of tables will be returned
 atomic action ListTables:
     pass
 
-# step: an item is written to the table
-# result: the item exists in the table and GSI propagation is pending
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation_lifecycle: the table is not ACTIVE
-# guard: writes are not throttled
-# guard_violation_capacity: writes are throttled
+# step: a "dynamodb" "item" is written to the "dynamodb" "table"
+# result: the "dynamodb" "item" will exist in the "dynamodb" "table" and GSI propagation will be pending
+# guard: the "dynamodb" "table" existed
+# guard_violation: the "dynamodb" "table" did not exist
+# guard: the "dynamodb" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "dynamodb" "table" was not "ACTIVE"
+# guard: writes were not throttled
+# guard_violation_capacity: writes were throttled
 atomic action PutItem:
     oneof name in TABLE_NAMES:
         if name in table_status:
@@ -127,14 +127,14 @@ atomic action PutItem:
                             items[item_key] = True
                             gsi_pending[name] = gsi_pending[name] + 1
 
-# step: an item is conditionally written to the table
-# result: the item is written if the condition holds, otherwise the write is rejected
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation_lifecycle: the table is not ACTIVE
-# guard: writes are not throttled
-# guard_violation_capacity: writes are throttled
+# step: a "dynamodb" "item" is conditionally written to the "dynamodb" "table"
+# result: the "dynamodb" "item" will be written if the condition holds, otherwise the write will be rejected
+# guard: the "dynamodb" "table" existed
+# guard_violation: the "dynamodb" "table" did not exist
+# guard: the "dynamodb" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "dynamodb" "table" was not "ACTIVE"
+# guard: writes were not throttled
+# guard_violation_capacity: writes were throttled
 atomic action ConditionalPutItem:
     oneof name in TABLE_NAMES:
         if name in table_status:
@@ -147,14 +147,14 @@ atomic action ConditionalPutItem:
                                 items[item_key] = True
                                 pass
 
-# step: an item is read from the table
-# result: the item value is returned
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation_lifecycle: the table is not ACTIVE
-# guard: reads are not throttled
-# guard_violation_capacity: reads are throttled
+# step: a "dynamodb" "item" is read from the "dynamodb" "table"
+# result: the "dynamodb" "item" value will be returned
+# guard: the "dynamodb" "table" existed
+# guard_violation: the "dynamodb" "table" did not exist
+# guard: the "dynamodb" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "dynamodb" "table" was not "ACTIVE"
+# guard: reads were not throttled
+# guard_violation_capacity: reads were throttled
 atomic action GetItem:
     oneof name in TABLE_NAMES:
         if name in table_status:
@@ -162,18 +162,18 @@ atomic action GetItem:
                 if not throttle_reads:
                     pass
 
-# step: an existing item is updated in the table
-# result: the item is updated or unchanged (conditional update)
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation_lifecycle: the table is not ACTIVE
-# guard: writes are not throttled
-# guard_violation_capacity: writes are throttled
-# guard: the item exists
-# guard_violation: the item does not exist
-# guard: the item is present
-# guard_violation: the item is not present
+# step: an existing "dynamodb" "item" is updated in the "dynamodb" "table"
+# result: the "dynamodb" "item" will be updated or unchanged (conditional update)
+# guard: the "dynamodb" "table" existed
+# guard_violation: the "dynamodb" "table" did not exist
+# guard: the "dynamodb" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "dynamodb" "table" was not "ACTIVE"
+# guard: writes were not throttled
+# guard_violation_capacity: writes were throttled
+# guard: the "dynamodb" "item" existed
+# guard_violation: the "dynamodb" "item" did not exist
+# guard: the "dynamodb" "item" was present
+# guard_violation: the "dynamodb" "item" was not present
 atomic action UpdateItem:
     oneof name in TABLE_NAMES:
         if name in table_status:
@@ -188,18 +188,18 @@ atomic action UpdateItem:
                                         items[item_key] = True
                                         pass
 
-# step: an existing item is deleted from the table
-# result: the item is deleted or unchanged (conditional delete)
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation_lifecycle: the table is not ACTIVE
-# guard: writes are not throttled
-# guard_violation_capacity: writes are throttled
-# guard: the item exists
-# guard_violation: the item does not exist
-# guard: the item is present
-# guard_violation: the item is not present
+# step: an existing "dynamodb" "item" is deleted from the "dynamodb" "table"
+# result: the "dynamodb" "item" will be "DELETED" or unchanged (conditional delete)
+# guard: the "dynamodb" "table" existed
+# guard_violation: the "dynamodb" "table" did not exist
+# guard: the "dynamodb" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "dynamodb" "table" was not "ACTIVE"
+# guard: writes were not throttled
+# guard_violation_capacity: writes were throttled
+# guard: the "dynamodb" "item" existed
+# guard_violation: the "dynamodb" "item" did not exist
+# guard: the "dynamodb" "item" was present
+# guard_violation: the "dynamodb" "item" was not present
 atomic action DeleteItem:
     oneof name in TABLE_NAMES:
         if name in table_status:
@@ -214,14 +214,14 @@ atomic action DeleteItem:
                                         items[item_key] = False
                                         pass
 
-# step: items are queried from the table by key
-# result: matching items are returned
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation_lifecycle: the table is not ACTIVE
-# guard: reads are not throttled
-# guard_violation_capacity: reads are throttled
+# step: "dynamodb" "item"s are queried from the "dynamodb" "table" by key
+# result: matching items will be returned
+# guard: the "dynamodb" "table" existed
+# guard_violation: the "dynamodb" "table" did not exist
+# guard: the "dynamodb" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "dynamodb" "table" was not "ACTIVE"
+# guard: reads were not throttled
+# guard_violation_capacity: reads were throttled
 atomic action Query:
     oneof name in TABLE_NAMES:
         if name in table_status:
@@ -229,14 +229,14 @@ atomic action Query:
                 if not throttle_reads:
                     pass
 
-# step: all items in the table are scanned
-# result: all items are returned
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation_lifecycle: the table is not ACTIVE
-# guard: reads are not throttled
-# guard_violation_capacity: reads are throttled
+# step: all "dynamodb" "item"s in the "dynamodb" "table" are scanned
+# result: all items will be returned
+# guard: the "dynamodb" "table" existed
+# guard_violation: the "dynamodb" "table" did not exist
+# guard: the "dynamodb" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "dynamodb" "table" was not "ACTIVE"
+# guard: reads were not throttled
+# guard_violation_capacity: reads were throttled
 atomic action Scan:
     oneof name in TABLE_NAMES:
         if name in table_status:
@@ -244,16 +244,16 @@ atomic action Scan:
                 if not throttle_reads:
                     pass
 
-# step: a transactional write is initiated across one or more items
-# result: the transaction is PENDING
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation_lifecycle: the table is not ACTIVE
-# guard: writes are not throttled
-# guard_violation_capacity: writes are throttled
-# guard: no transaction is currently in progress
-# guard_violation: a transaction is currently in progress
+# step: a transactional write is initiated across one or more items in a "dynamodb" "table"
+# result: the transaction will be "PENDING"
+# guard: the "dynamodb" "table" existed
+# guard_violation: the "dynamodb" "table" did not exist
+# guard: the "dynamodb" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "dynamodb" "table" was not "ACTIVE"
+# guard: writes were not throttled
+# guard_violation_capacity: writes were throttled
+# guard: no transaction was currently in progress
+# guard_violation: a transaction was currently in progress
 atomic action TransactWriteItems:
     oneof name in TABLE_NAMES:
         if name in table_status:
@@ -265,13 +265,13 @@ atomic action TransactWriteItems:
 
 # fake_skip: internal
 # step: a pending transaction resolves non-deterministically
-# result: the transaction is COMMITTED or ROLLED_BACK
-# guard: a transaction is PENDING
-# guard_violation: no transaction is PENDING
-# guard: the transaction's table exists
-# guard_violation: the transaction's table does not exist
-# guard: the transaction's table is ACTIVE
-# guard_violation_lifecycle: the transaction's table is not ACTIVE
+# result: the transaction will be "COMMITTED" or "ROLLED_BACK"
+# guard: a transaction was "PENDING"
+# guard_violation: no transaction was "PENDING"
+# guard: the transaction's "dynamodb" "table" existed
+# guard_violation: the transaction's "dynamodb" "table" did not exist
+# guard: the transaction's "dynamodb" "table" was "ACTIVE"
+# guard_violation_lifecycle: the transaction's "dynamodb" "table" was not "ACTIVE"
 atomic action CommitTransaction:
     if transaction_status == "PENDING":
         if transaction_table in table_status:
@@ -282,9 +282,9 @@ atomic action CommitTransaction:
 
 # fake_skip: internal
 # step: a committed transaction is cleared
-# result: the transaction slot is free
-# guard: the transaction is COMMITTED
-# guard_violation: the transaction is not COMMITTED
+# result: the transaction slot will be free
+# guard: the transaction was "COMMITTED"
+# guard_violation: the transaction was not "COMMITTED"
 atomic action ClearTransaction:
     if transaction_status == "COMMITTED":
         transaction_status = ""
@@ -292,9 +292,9 @@ atomic action ClearTransaction:
 
 # fake_skip: internal
 # step: a rolled-back transaction is cleared
-# result: the transaction slot is free
-# guard: the transaction is ROLLED_BACK
-# guard_violation: the transaction is not ROLLED_BACK
+# result: the transaction slot will be free
+# guard: the transaction was "ROLLED_BACK"
+# guard_violation: the transaction was not "ROLLED_BACK"
 atomic action ClearRolledBack:
     if transaction_status == "ROLLED_BACK":
         transaction_status = ""
@@ -302,11 +302,11 @@ atomic action ClearRolledBack:
 
 # fake_skip: internal
 # step: a GSI catches up with pending write propagation
-# result: the GSI is consistent with the table
-# guard: the table has pending GSI propagation
-# guard_violation: the table does not have pending GSI propagation
-# guard: there are writes pending propagation to the GSI
-# guard_violation: there are no writes pending propagation to the GSI
+# result: the GSI will be consistent with the "dynamodb" "table"
+# guard: the "dynamodb" "table" had pending GSI propagation
+# guard_violation: the "dynamodb" "table" did not have pending GSI propagation
+# guard: there were writes pending propagation to the GSI
+# guard_violation: there were no writes pending propagation to the GSI
 atomic action PropagateGSI:
     oneof name in TABLE_NAMES:
         if name in gsi_pending:

@@ -9,14 +9,14 @@ Feature: LambdaSns - The Lambda Invocation Completes Successfully
 
   @minimal @happy @invocation_succeeds @internal
   Scenario: the Lambda invocation completes successfully
-    Given an invocation is "IN_PROGRESS"
+    Given a "lambda" "invocation" was "IN_PROGRESS"
     When the Lambda invocation completes successfully
-    Then the invocation is "SUCCESS"
+    Then the invocation will be "SUCCESS"
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And publishing requires an "ACTIVE" topic to be present
 
   @guard @negative @invocation_succeeds @internal
-  Scenario: the Lambda invocation completes successfully fails when no invocation is "IN_PROGRESS"
-    Given no invocation is "IN_PROGRESS"
+  Scenario: the Lambda invocation completes successfully fails when no "lambda" "invocation" was "IN_PROGRESS"
+    Given no "lambda" "invocation" was "IN_PROGRESS"
     When the Lambda invocation completes successfully
     Then the operation is rejected

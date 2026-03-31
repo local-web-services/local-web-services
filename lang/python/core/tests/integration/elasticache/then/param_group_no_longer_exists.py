@@ -1,4 +1,4 @@
-"""Then: the parameter group no longer exists"""
+"""Then: the "elasticache" parameter group no longer will exist"""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from pytest_bdd import then
 from starlette.testclient import TestClient
 
 
-@then("the parameter group no longer exists")
+@then('the "elasticache" parameter group no longer will exist')
 def param_group_no_longer_exists(client: TestClient, world):
     actual_error = world["error"]
     assert (

@@ -1,4 +1,4 @@
-"""Given: the user exists"""
+"""Given: the "cognito" "user" existed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import CognitoIdpTestClient
 from ..constants import TEST_TEMP_PASSWORD, TEST_USERNAME
 
 
-@given("the user exists")
+@given('the "cognito" "user" existed')
 def user_exists(lws_session, world):
     if not world.get("pool_id"):
         world["pool_id"] = CognitoIdpTestClient(lws_session).create_pool()

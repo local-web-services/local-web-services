@@ -1,4 +1,4 @@
-"""When: the prod stage is deleted"""
+"""When: the "api gateway" "prod stage" is deleted"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ApigatewayTestClient
 from ..constants import TEST_STAGE_PROD
 
 
-@when("the prod stage is deleted")
+@when('the "api gateway" "prod stage" is deleted')
 def delete_prod_stage(lws_session, world):
     try:
         api_id = ApigatewayTestClient(lws_session).get_api_id()

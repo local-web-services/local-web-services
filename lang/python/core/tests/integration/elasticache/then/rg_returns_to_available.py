@@ -1,4 +1,4 @@
-"""Then: the replication group returns to "AVAILABLE" state"""
+"""Then: the "elasticache" "replication group" returns to "AVAILABLE" state"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_RG_ID
 
 
-@then('the replication group returns to "AVAILABLE" state')
+@then('the "elasticache" "replication group" returns to "AVAILABLE" state')
 def rg_returns_to_available(client: TestClient):
     r = client.post(
         "/",

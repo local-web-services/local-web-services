@@ -6,6 +6,6 @@ import pytest
 from pytest_bdd import given
 
 
-@given("the dead-letter queue is empty")
+@given('the "eventbridge" "dead-letter queue" was empty')
 def dlq_is_empty():
     pytest.skip("Cannot reliably ensure dead-letter queue is empty in integration test context")

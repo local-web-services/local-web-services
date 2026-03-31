@@ -1,4 +1,4 @@
-"""Then: the object "EXISTS" and a notification message is "QUEUED" """
+"""Then: the object will exist and a notification message will be "QUEUED" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_BUCKET, TEST_KEY
 
 
-@then('the object "EXISTS" and a notification message is "QUEUED"')
+@then('the object will exist and a notification message will be "QUEUED"')
 def object_exists_and_notification_queued(lws_session, world):
     expected_error = None
     expected_key = TEST_KEY

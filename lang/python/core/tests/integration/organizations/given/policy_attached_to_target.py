@@ -1,4 +1,4 @@
-"""Given: the policy is attached to the target"""
+"""Given: the "organizations" "policy" will be attached to the "organizations" "target" """
 
 from __future__ import annotations
 
@@ -8,7 +8,8 @@ from starlette.testclient import TestClient
 from ..client import OrganizationsTestClient
 
 
-@given("the policy is attached to the target")
+@given('the "organizations" "policy" is attached to the "organizations" "target"')
+@given('the "organizations" "policy" will be attached to the "organizations" "target"')
 def policy_attached_to_target(client: TestClient, world):
     resp = OrganizationsTestClient(client).create_org()
     world["org_id"] = resp.get("Organization", {}).get("Id")

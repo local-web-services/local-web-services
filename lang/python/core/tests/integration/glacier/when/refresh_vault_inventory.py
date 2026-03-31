@@ -1,4 +1,4 @@
-"""When: a vault inventory is refreshed"""
+"""When: a "glacier" "vault" inventory is refreshed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_VAULT_NAME
 
 
-@when("a vault inventory is refreshed")
+@when('a "glacier" "vault" inventory is refreshed')
 def refresh_vault_inventory(client: TestClient, world):
     vault_name = world.get("vault_name", INT_VAULT_NAME)
     r = client.post(

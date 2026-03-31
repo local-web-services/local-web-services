@@ -1,4 +1,4 @@
-"""Then: the parameter is "DELETED" and will cause a ParameterNotFound error when read"""
+"""Then: the "ssm" "parameter" will be deleted and will cause a ParameterNotFound error when read"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import then
 from ..constants import TEST_PARAM
 
 
-@then('the parameter is "DELETED" and will cause a ParameterNotFound error when read')
+@then('the "ssm" "parameter" will be deleted and will cause a ParameterNotFound error when read')
 def param_is_deleted_then(lws_session):
     try:
         lws_session.client("ssm").get_parameter(Name=TEST_PARAM)

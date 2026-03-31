@@ -1,4 +1,4 @@
-"""When: an EventBridge rule is deleted"""
+"""When: an "eventbridge" "rule" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUS, TEST_RULE
 
 
-@when("an EventBridge rule is deleted")
+@when('an "eventbridge" "rule" is deleted')
 def delete_rule(lws_session, world):
     try:
         resp = lws_session.client("events").delete_rule(Name=TEST_RULE, EventBusName=TEST_BUS)

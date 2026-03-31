@@ -1,4 +1,4 @@
-"""When: a user is created"""
+"""When: a "memorydb" "user" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import TEST_USER
 
 
-@when("a user is created")
+@when('a "memorydb" "user" is created')
 def create_user(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:

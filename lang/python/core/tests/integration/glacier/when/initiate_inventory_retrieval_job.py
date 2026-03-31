@@ -1,4 +1,4 @@
-"""When: a vault inventory retrieval job is initiated"""
+"""When: a "glacier" "vault" inventory retrieval job is initiated"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_VAULT_NAME
 
 
-@when("a vault inventory retrieval job is initiated")
+@when('a "glacier" "vault" inventory retrieval job is initiated')
 def initiate_inventory_retrieval_job(client: TestClient, world):
     vault_name = world.get("vault_name", INT_VAULT_NAME)
     r = client.post(

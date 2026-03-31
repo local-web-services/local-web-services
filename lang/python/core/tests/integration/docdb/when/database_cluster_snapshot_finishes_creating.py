@@ -1,4 +1,4 @@
-"""When: a database cluster snapshot finishes creating"""
+"""When: a "documentdb" "cluster" documentdb snapshot finishes creating"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _DOCDB_TARGET, INT_SNAPSHOT_ID
 
 
-@when("a database cluster snapshot finishes creating")
+@when('a "documentdb" "cluster" documentdb snapshot finishes creating')
 def database_cluster_snapshot_finishes_creating(client: TestClient, world):
     r = client.post(
         "/",

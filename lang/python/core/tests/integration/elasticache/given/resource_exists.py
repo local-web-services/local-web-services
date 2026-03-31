@@ -1,4 +1,4 @@
-"""Given: the resource exists"""
+"""Given: the "api gateway" "resource" existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from starlette.testclient import TestClient
 from ..client import ElasticacheTestClient
 
 
-@given("the resource exists")
+@given('the "elasticache" "resource" existed')
+@given('the "api gateway" "resource" existed')
 def resource_exists(client: TestClient):
     ElasticacheTestClient(client).create_cluster()

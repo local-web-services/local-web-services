@@ -1,4 +1,4 @@
-"""When: a cache cluster configuration is modified"""
+"""When: an "elasticache" "cluster" configuration is modified"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import TEST_CLUSTER
 
 
-@when("a cache cluster configuration is modified")
+@when('an "elasticache" "cluster" configuration is modified')
 def modify_cache_cluster(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:

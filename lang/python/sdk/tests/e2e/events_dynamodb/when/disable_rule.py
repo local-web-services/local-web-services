@@ -1,4 +1,4 @@
-"""When: an EventBridge rule is disabled"""
+"""When: an "eventbridge" "rule" was "DISABLED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUS, TEST_RULE
 
 
-@when("an EventBridge rule is disabled")
+@when('an "eventbridge" "rule" was "DISABLED"')
 def disable_rule(lws_session, world):
     try:
         world["result"] = lws_session.client("events").disable_rule(

@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import pytest
-from pytest_bdd import parsers, then
+from pytest_bdd import then
 
 
-@then(parsers.re(r'^the mapping is "ENABLED"$'))
+@then('the mapping will be "ENABLED"')
 def mapping_is_enabled_then(world):
     pytest.skip("Cannot observe ESM ENABLED state in lws")

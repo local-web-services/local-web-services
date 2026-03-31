@@ -1,4 +1,4 @@
-"""When: an item is read from the table"""
+"""When: a "dynamodb" "item" is read from the "dynamodb" "table" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import DynamodbTestClient
 from ..constants import TEST_ITEM_KEY, TEST_PK, TEST_TABLE
 
 
-@when("an item is read from the table")
+@when('a "dynamodb" "item" is read from the "dynamodb" "table"')
 def get_item(lws_session, world):
     try:
         DynamodbTestClient(lws_session).put_item()

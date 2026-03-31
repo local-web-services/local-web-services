@@ -1,4 +1,4 @@
-"""When: message visibility timeout is changed"""
+"""When: "sqs" "message" visibility timeout is changed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import SqsTestClient
 
 
-@when("message visibility timeout is changed")
+@when('"sqs" "message" visibility timeout is changed')
 def change_message_visibility(lws_session, world):
     try:
         world["result"] = SqsTestClient(lws_session).change_message_visibility(

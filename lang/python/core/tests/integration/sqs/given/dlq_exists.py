@@ -1,4 +1,4 @@
-"""Given: the dead-letter queue exists"""
+"""Given: the dead-letter queue existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from ..client import SqsTestClient
 from ..constants import TEST_DLQ
 
 
-@given("the dead-letter queue exists")
+@given("the dead-letter queue existed")
 def dlq_exists(client):
     SqsTestClient(client).create_queue(TEST_DLQ)

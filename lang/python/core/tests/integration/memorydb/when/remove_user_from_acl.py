@@ -1,4 +1,4 @@
-"""When: a user is removed from an "ACL" """
+"""When: a "memorydb" "user" is removed from an "memorydb" "ACL" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_ACL_NAME, INT_USER_NAME
 
 
-@when('a user is removed from an "ACL"')
+@when('a "memorydb" "user" is removed from an "memorydb" "ACL"')
 def remove_user_from_acl(client: TestClient, world):
     r = client.post(
         "/",

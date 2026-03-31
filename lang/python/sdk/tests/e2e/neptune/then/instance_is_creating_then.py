@@ -1,11 +1,13 @@
-"""Then: the instance is in "CREATING" state and associated with the cluster"""
+"""Then: the "neptune" "INSTANCE" will be in "CREATING" state and associated with the "neptune" "cluster" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the instance is in "CREATING" state and associated with the cluster')
+@then(
+    'the "neptune" "INSTANCE" will be in "CREATING" state and associated with the "neptune" "cluster"'
+)
 def instance_is_creating_then(world):
     expected_error = None
     actual_error = world.get("error")

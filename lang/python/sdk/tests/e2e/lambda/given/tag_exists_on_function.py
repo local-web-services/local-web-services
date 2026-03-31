@@ -1,4 +1,4 @@
-"""Given: the tag exists on the function"""
+"""Given: the tag existed on the "lambda" "function" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaTestClient
 from ..constants import TEST_TAG_KEY, TEST_TAG_VALUE, _func_arn
 
 
-@given("the tag exists on the function")
+@given('the tag existed on the "lambda" "function"')
 def tag_exists_on_function(lws_session):
     LambdaTestClient(lws_session).tag_resource(
         Resource=_func_arn(), Tags={TEST_TAG_KEY: TEST_TAG_VALUE}

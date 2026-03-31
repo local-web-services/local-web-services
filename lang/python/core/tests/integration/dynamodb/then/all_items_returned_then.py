@@ -1,11 +1,11 @@
-"""Then: all items are returned"""
+"""Then: all items will be returned"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("all items are returned")
+@then("all items will be returned")
 def all_items_returned_then(world: dict):
     expected_field = "Items"
     actual_result = world["result"]

@@ -1,4 +1,4 @@
-"""When: a synchronous function invocation completes"""
+"""When: a synchronous "lambda" "function" invocation completes"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_FUNCTION_NAME
 
 
-@when("a synchronous function invocation completes")
+@when('a synchronous "lambda" "function" invocation completes')
 def sync_invocation_completes(client: TestClient, world):
     r = client.get(f"/2015-03-31/functions/{INT_FUNCTION_NAME}")
     if r.status_code < 300:

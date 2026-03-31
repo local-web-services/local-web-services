@@ -1,4 +1,4 @@
-"""When: maintenance configuration is applied to a table"""
+"""When: maintenance configuration is applied to a "s3 tables" "table" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUCKET, TEST_NAMESPACE, TEST_TABLE
 
 
-@when("maintenance configuration is applied to a table")
+@when('maintenance configuration is applied to a "s3 tables" "table"')
 def put_table_maintenance_configuration(lws_session, world):
     try:
         resp = lws_session.client("s3tables").get_table_bucket(tableBucketARN=TEST_BUCKET)

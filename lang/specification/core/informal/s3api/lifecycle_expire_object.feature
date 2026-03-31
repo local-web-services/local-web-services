@@ -1,5 +1,5 @@
 @s3api @generated
-Feature: S3api - A Lifecycle Rule Expires An Object
+Feature: S3api - A Lifecycle "S3" Rule Expires A "S3" "Object"
 
   # Generated from FizzBee spec: s3api.fizz
   # Safety invariants: BucketStatusValid, VersioningStateValid, MultipartUploadStatusValid, DeleteBucketRequiresEmpty
@@ -8,44 +8,44 @@ Feature: S3api - A Lifecycle Rule Expires An Object
     Given the system is initialized
 
   @minimal @happy @lifecycle_expire_object @internal
-  Scenario: a lifecycle rule expires an object
-    Given the bucket exists
-    And the bucket is "ACTIVE"
-    And the object exists in the bucket
-    And the object is not deleted
-    When a lifecycle rule expires an object
-    Then the object is "DELETED" by the lifecycle policy
+  Scenario: a lifecycle "s3" rule expires a "s3" "object"
+    Given the "s3" "bucket" existed
+    And the "s3" "bucket" was "ACTIVE"
+    And the "s3" "object" existed in the "s3" "bucket"
+    And the "s3" "object" was not "deleted"
+    When a lifecycle "s3" rule expires a "s3" "object"
+    Then the "s3" "object" will be "DELETED" by the lifecycle policy
     And every bucket has a valid status ("ACTIVE" or "DELETED")
     And every bucket versioning state is valid ("DISABLED", "ENABLED", or "SUSPENDED")
     And every multipart upload has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
     And deleting a bucket requires it to be empty
 
   @guard @negative @lifecycle_expire_object @internal
-  Scenario: a lifecycle rule expires an object fails when the bucket does not exist
-    Given the bucket does not exist
-    When a lifecycle rule expires an object
+  Scenario: a lifecycle "s3" rule expires a "s3" "object" fails when the "s3" "bucket" did not exist
+    Given the "s3" "bucket" did not exist
+    When a lifecycle "s3" rule expires a "s3" "object"
     Then the operation is rejected
 
   @guard @negative @lifecycle_expire_object @internal
-  Scenario: a lifecycle rule expires an object fails when the bucket is not "ACTIVE"
-    Given the bucket exists
-    And the bucket is not "ACTIVE"
-    When a lifecycle rule expires an object
+  Scenario: a lifecycle "s3" rule expires a "s3" "object" fails when the "s3" "bucket" was not "ACTIVE"
+    Given the "s3" "bucket" existed
+    And the "s3" "bucket" was not "ACTIVE"
+    When a lifecycle "s3" rule expires a "s3" "object"
     Then the operation is rejected
 
   @guard @negative @lifecycle_expire_object @internal
-  Scenario: a lifecycle rule expires an object fails when the object does not exist in the bucket
-    Given the bucket exists
-    And the bucket is "ACTIVE"
-    And the object does not exist in the bucket
-    When a lifecycle rule expires an object
+  Scenario: a lifecycle "s3" rule expires a "s3" "object" fails when the "s3" "object" did not exist in the "s3" "bucket"
+    Given the "s3" "bucket" existed
+    And the "s3" "bucket" was "ACTIVE"
+    And the "s3" "object" did not exist in the "s3" "bucket"
+    When a lifecycle "s3" rule expires a "s3" "object"
     Then the operation is rejected
 
   @guard @negative @lifecycle_expire_object @internal
-  Scenario: a lifecycle rule expires an object fails when the object is deleted
-    Given the bucket exists
-    And the bucket is "ACTIVE"
-    And the object exists in the bucket
-    And the object is deleted
-    When a lifecycle rule expires an object
+  Scenario: a lifecycle "s3" rule expires a "s3" "object" fails when the "s3" "object" was "deleted"
+    Given the "s3" "bucket" existed
+    And the "s3" "bucket" was "ACTIVE"
+    And the "s3" "object" existed in the "s3" "bucket"
+    And the "s3" "object" was "deleted"
+    When a lifecycle "s3" rule expires a "s3" "object"
     Then the operation is rejected

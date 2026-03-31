@@ -1,4 +1,4 @@
-"""When: a deployment is deleted when no stage references it"""
+"""When: a "api gateway" "deployment" is deleted when no stage references it"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import when
 from starlette.testclient import TestClient
 
 
-@when("a deployment is deleted when no stage references it")
+@when('a "api gateway" "deployment" is deleted when no stage references it')
 def delete_deployment(client: TestClient, world):
     pytest.skip(
         "lws has no route for DELETE /restapis/{id}/deployments/{id}; deployment "

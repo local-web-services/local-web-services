@@ -1,5 +1,5 @@
 @stepfunctionsdynamodb @generated
-Feature: StepfunctionsDynamodb - A Running Execution Writes An Item To The Dynamodb Table And Succeeds
+Feature: StepfunctionsDynamodb - A Running "Step Functions" "Execution" Writes An Item To The "Dynamodb" "Table" And Succeeds
 
   # Generated from FizzBee spec: stepfunctions_dynamodb.fizz
   # Safety invariants: ExecutionRequiresActiveStateMachine, ItemRequiresActiveTable
@@ -8,32 +8,32 @@ Feature: StepfunctionsDynamodb - A Running Execution Writes An Item To The Dynam
     Given the system is initialized
 
   @minimal @happy @put_item_task
-  Scenario: a running execution writes an item to the DynamoDB table and succeeds
-    Given an execution is "RUNNING"
-    And the target table is "ACTIVE"
+  Scenario: a running "step functions" "execution" writes an item to the "dynamodb" "table" and succeeds
+    Given a "step functions" "execution" was "RUNNING"
+    And the target "dynamodb" "table" was "ACTIVE"
     And an item slot is available
-    When a running execution writes an item to the DynamoDB table and succeeds
-    Then the item "EXISTS" in the table and the execution is "SUCCEEDED"
+    When a running "step functions" "execution" writes an item to the "dynamodb" "table" and succeeds
+    Then the item will exist in the "dynamodb" "table" and the "step functions" "execution" will be "SUCCEEDED"
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every existing item belongs to an "ACTIVE" table
 
   @guard @negative @put_item_task
-  Scenario: a running execution writes an item to the DynamoDB table and succeeds fails when no execution is "RUNNING"
-    Given no execution is "RUNNING"
-    When a running execution writes an item to the DynamoDB table and succeeds
+  Scenario: a running "step functions" "execution" writes an item to the "dynamodb" "table" and succeeds fails when no "step functions" "execution" was "RUNNING"
+    Given no "step functions" "execution" was "RUNNING"
+    When a running "step functions" "execution" writes an item to the "dynamodb" "table" and succeeds
     Then the operation is rejected
 
   @guard @negative @put_item_task @lifecycle
-  Scenario: a running execution writes an item to the DynamoDB table and succeeds fails when the target table is not "ACTIVE"
-    Given an execution is "RUNNING"
-    And the target table is not "ACTIVE"
-    When a running execution writes an item to the DynamoDB table and succeeds
+  Scenario: a running "step functions" "execution" writes an item to the "dynamodb" "table" and succeeds fails when the target "dynamodb" "table" was not "ACTIVE"
+    Given a "step functions" "execution" was "RUNNING"
+    And the target "dynamodb" "table" was not "ACTIVE"
+    When a running "step functions" "execution" writes an item to the "dynamodb" "table" and succeeds
     Then the operation is rejected
 
-  @guard @negative @internal @put_item_task @capacity
-  Scenario: a running execution writes an item to the DynamoDB table and succeeds fails when no item slot is available
-    Given an execution is "RUNNING"
-    And the target table is "ACTIVE"
+  @guard @negative @put_item_task @capacity
+  Scenario: a running "step functions" "execution" writes an item to the "dynamodb" "table" and succeeds fails when no item slot is available
+    Given a "step functions" "execution" was "RUNNING"
+    And the target "dynamodb" "table" was "ACTIVE"
     And no item slot is available
-    When a running execution writes an item to the DynamoDB table and succeeds
+    When a running "step functions" "execution" writes an item to the "dynamodb" "table" and succeeds
     Then the operation is rejected

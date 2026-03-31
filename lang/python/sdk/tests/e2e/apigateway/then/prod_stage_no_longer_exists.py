@@ -1,4 +1,4 @@
-"""Then: the prod stage no longer exists"""
+"""Then: the "api gateway" "prod stage" no longer will exist"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_STAGE_PROD
 
 
-@then("the prod stage no longer exists")
+@then('the "api gateway" "prod stage" no longer will exist')
 def prod_stage_no_longer_exists(lws_session, world):
     assert (
         world["error"] is None

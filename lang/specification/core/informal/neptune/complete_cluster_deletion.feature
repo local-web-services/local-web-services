@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Database Cluster Deletion Completes
+Feature: Neptune - A "Neptune" "Cluster" Deletion Completes
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,11 +8,11 @@ Feature: Neptune - A Database Cluster Deletion Completes
     Given the system is initialized
 
   @minimal @happy @complete_cluster_deletion @internal
-  Scenario: a database cluster deletion completes
-    Given the cluster exists
-    And the cluster is "DELETING"
-    When a database cluster deletion completes
-    Then the cluster is "DELETED"
+  Scenario: a "neptune" "cluster" deletion completes
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "DELETING"
+    When a "neptune" "cluster" deletion completes
+    Then the "neptune" "cluster" will be "DELETED"
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -23,14 +23,14 @@ Feature: Neptune - A Database Cluster Deletion Completes
     And a failed cluster has no available instances
 
   @guard @negative @complete_cluster_deletion @internal
-  Scenario: a database cluster deletion completes fails when the cluster does not exist
-    Given the cluster does not exist
-    When a database cluster deletion completes
+  Scenario: a "neptune" "cluster" deletion completes fails when the "neptune" "cluster" did not exist
+    Given the "neptune" "cluster" did not exist
+    When a "neptune" "cluster" deletion completes
     Then the operation is rejected
 
   @guard @negative @complete_cluster_deletion @internal
-  Scenario: a database cluster deletion completes fails when the cluster is not "DELETING"
-    Given the cluster exists
-    And the cluster is not "DELETING"
-    When a database cluster deletion completes
+  Scenario: a "neptune" "cluster" deletion completes fails when the "neptune" "cluster" was not "DELETING"
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was not "DELETING"
+    When a "neptune" "cluster" deletion completes
     Then the operation is rejected

@@ -1,4 +1,4 @@
-"""Given: the mapping is "DELETING" """
+"""Given: the mapping was "DELETING" """
 
 from __future__ import annotations
 
@@ -6,6 +6,6 @@ import pytest
 from pytest_bdd import given
 
 
-@given('the mapping is "DELETING"')
+@given('the mapping was "DELETING"')
 def mapping_is_deleting(world):
     pytest.skip("Lifecycle-dependent state not supported in stateless integration tests.")

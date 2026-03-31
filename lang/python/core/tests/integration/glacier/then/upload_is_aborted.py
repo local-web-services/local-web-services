@@ -1,11 +1,11 @@
-"""Then: the upload is Aborted"""
+"""Then: the "glacier" "upload" will be "Aborted" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the upload is Aborted")
+@then('the "glacier" "upload" will be "Aborted"')
 def upload_is_aborted(world):
     actual_error = world.get("error")
     assert (

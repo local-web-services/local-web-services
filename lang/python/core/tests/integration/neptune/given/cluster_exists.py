@@ -1,4 +1,4 @@
-"""Given: the cluster exists"""
+"""Given: the "documentdb" "cluster" existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from starlette.testclient import TestClient
 from ..client import NeptuneTestClient
 
 
-@given("the cluster exists")
+@given('the "neptune" "cluster" existed')
+@given('the "documentdb" "cluster" existed')
 def cluster_exists(client: TestClient):
     NeptuneTestClient(client).create_cluster()

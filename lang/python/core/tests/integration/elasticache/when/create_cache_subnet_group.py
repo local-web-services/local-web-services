@@ -1,4 +1,4 @@
-"""When: a cache subnet group is created"""
+"""When: an "elasticache" subnet group is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_SUBNET_GROUP_ID
 
 
-@when("a cache subnet group is created")
+@when('an "elasticache" subnet group is created')
 def create_cache_subnet_group(client: TestClient, world):
     r = client.post(
         "/",

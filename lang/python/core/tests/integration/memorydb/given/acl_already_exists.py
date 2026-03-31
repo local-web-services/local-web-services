@@ -1,4 +1,4 @@
-"""Given: the "ACL" already exists"""
+"""Given: the "memorydb" "ACL" already existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import MemorydbTestClient
 
 
-@given('the "ACL" already exists')
+@given('the "memorydb" "ACL" already existed')
 def acl_already_exists(client: TestClient):
     MemorydbTestClient(client).create_acl()

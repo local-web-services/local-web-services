@@ -1,4 +1,4 @@
-"""When: a vault is created"""
+"""When: a "glacier" "vault" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_VAULT_NAME
 
 
-@when("a vault is created")
+@when('a "glacier" "vault" is created')
 def create_vault(client: TestClient, world):
     vault_name = world.get("vault_name", INT_VAULT_NAME)
     r = client.put(f"/-/vaults/{vault_name}")

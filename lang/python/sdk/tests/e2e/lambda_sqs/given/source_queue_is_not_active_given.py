@@ -1,4 +1,4 @@
-"""Given: the source queue is not "ACTIVE" """
+"""Given: the source queue was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..client import LambdaSqsTestClient
 
 
-@given('the source queue is not "ACTIVE"')
+@given('the source queue was not "ACTIVE"')
 def source_queue_is_not_active_given(lws_session, world):
     try:
         LambdaSqsTestClient(lws_session)._sqs.delete_queue(

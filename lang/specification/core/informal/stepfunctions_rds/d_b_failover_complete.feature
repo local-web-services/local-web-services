@@ -9,14 +9,14 @@ Feature: StepfunctionsRds - The Db Instance Failover Completes
 
   @minimal @happy @d_b_failover_complete @internal
   Scenario: the "DB" instance failover completes
-    Given the "DB" instance is "FAILING_OVER"
+    Given the "rds" "DB instance" was "FAILING_OVER"
     When the "DB" instance failover completes
-    Then the "DB" instance is "AVAILABLE" again
+    Then the "DB" instance will be "AVAILABLE" again
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which "DB" instance it queried
 
   @guard @negative @d_b_failover_complete @internal
-  Scenario: the "DB" instance failover completes fails when the "DB" instance is not "FAILING_OVER"
-    Given the "DB" instance is not "FAILING_OVER"
+  Scenario: the "DB" instance failover completes fails when the "rds" "DB instance" was not "FAILING_OVER"
+    Given the "rds" "DB instance" was not "FAILING_OVER"
     When the "DB" instance failover completes
     Then the operation is rejected

@@ -1,4 +1,4 @@
-"""Given: a state machine definition has been validated"""
+"""Given: a "step functions" "state machine" definition is validated"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsTestClient
 from ..constants import TEST_SM
 
 
-@given("a state machine definition has been validated")
+@given('a "step functions" "state machine" definition is validated')
 def sm_definition_validated_given(lws_session, world):
     world["state_machine_name"] = TEST_SM
     world["state_machine_arn"] = StepfunctionsTestClient(lws_session).create_sm()

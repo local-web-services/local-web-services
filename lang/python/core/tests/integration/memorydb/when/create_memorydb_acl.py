@@ -1,4 +1,4 @@
-"""When: an "ACL" is created"""
+"""When: an "memorydb" "ACL" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_ACL_NAME
 
 
-@when('an "ACL" is created')
+@when('an "memorydb" "ACL" is created')
 def create_memorydb_acl(client: TestClient, world):
     r = client.post(
         "/",

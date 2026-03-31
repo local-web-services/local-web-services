@@ -8,799 +8,799 @@ Feature: CognitoLambda - Action Sequences
     Given the system is initialized
 
   @sequence
-  Scenario: a Cognito User Pool is created then a Lambda function is deployed
+  Scenario: a "cognito" "user pool" is created then a "lambda" "function" is deployed
     Given pid not in pool_status
-    Given a Cognito User Pool has been created
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "cognito" "user pool" is created
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Cognito User Pool is created then a Lambda pre-signup trigger is configured on the Cognito User Pool
+  Scenario: a "cognito" "user pool" is created then a Lambda pre-signup trigger is configured on the "cognito" "user pool"
     Given pid not in pool_status
-    Given a Cognito User Pool has been created
-    When a Lambda pre-signup trigger is configured on the Cognito User Pool
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "cognito" "user pool" is created
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Cognito User Pool is created then a user signs up to a pool that has no pre-signup trigger configured
+  Scenario: a "cognito" "user pool" is created then a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
     Given pid not in pool_status
-    Given a Cognito User Pool has been created
-    When a user signs up to a pool that has no pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "cognito" "user pool" is created
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Cognito User Pool is created then a user initiates signup to a pool that has a pre-signup trigger configured
+  Scenario: a "cognito" "user pool" is created then a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
     Given pid not in pool_status
-    Given a Cognito User Pool has been created
-    When a user initiates signup to a pool that has a pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "cognito" "user pool" is created
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Cognito User Pool is created then the pre-signup Lambda allows the signup
+  Scenario: a "cognito" "user pool" is created then the pre-signup Lambda allows the signup
     Given pid not in pool_status
-    Given a Cognito User Pool has been created
+    When a "cognito" "user pool" is created
     When the pre-signup Lambda allows the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Cognito User Pool is created then the pre-signup Lambda denies the signup
+  Scenario: a "cognito" "user pool" is created then the pre-signup Lambda denies the signup
     Given pid not in pool_status
-    Given a Cognito User Pool has been created
+    When a "cognito" "user pool" is created
     When the pre-signup Lambda denies the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda function is deployed then a Cognito User Pool is created
+  Scenario: a "lambda" "function" is deployed then a "cognito" "user pool" is created
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When a Cognito User Pool is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When a "cognito" "user pool" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda function is deployed then a Lambda pre-signup trigger is configured on the Cognito User Pool
+  Scenario: a "lambda" "function" is deployed then a Lambda pre-signup trigger is configured on the "cognito" "user pool"
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When a Lambda pre-signup trigger is configured on the Cognito User Pool
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda function is deployed then a user signs up to a pool that has no pre-signup trigger configured
+  Scenario: a "lambda" "function" is deployed then a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When a user signs up to a pool that has no pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda function is deployed then a user initiates signup to a pool that has a pre-signup trigger configured
+  Scenario: a "lambda" "function" is deployed then a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When a user initiates signup to a pool that has a pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda function is deployed then the pre-signup Lambda allows the signup
+  Scenario: a "lambda" "function" is deployed then the pre-signup Lambda allows the signup
     Given fid not in func_status
-    Given a Lambda function has been deployed
+    When a "lambda" "function" is deployed
     When the pre-signup Lambda allows the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda function is deployed then the pre-signup Lambda denies the signup
+  Scenario: a "lambda" "function" is deployed then the pre-signup Lambda denies the signup
     Given fid not in func_status
-    Given a Lambda function has been deployed
+    When a "lambda" "function" is deployed
     When the pre-signup Lambda denies the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda pre-signup trigger is configured on the Cognito User Pool then a Cognito User Pool is created
+  Scenario: a Lambda pre-signup trigger is configured on the "cognito" "user pool" then a "cognito" "user pool" is created
     Given pid in pool_status
-    Given a Lambda pre-signup trigger has been configured on the Cognito User Pool
-    When a Cognito User Pool is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    When a "cognito" "user pool" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda pre-signup trigger is configured on the Cognito User Pool then a Lambda function is deployed
+  Scenario: a Lambda pre-signup trigger is configured on the "cognito" "user pool" then a "lambda" "function" is deployed
     Given pid in pool_status
-    Given a Lambda pre-signup trigger has been configured on the Cognito User Pool
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda pre-signup trigger is configured on the Cognito User Pool then a user signs up to a pool that has no pre-signup trigger configured
+  Scenario: a Lambda pre-signup trigger is configured on the "cognito" "user pool" then a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
     Given pid in pool_status
-    Given a Lambda pre-signup trigger has been configured on the Cognito User Pool
-    When a user signs up to a pool that has no pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda pre-signup trigger is configured on the Cognito User Pool then a user initiates signup to a pool that has a pre-signup trigger configured
+  Scenario: a Lambda pre-signup trigger is configured on the "cognito" "user pool" then a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
     Given pid in pool_status
-    Given a Lambda pre-signup trigger has been configured on the Cognito User Pool
-    When a user initiates signup to a pool that has a pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda pre-signup trigger is configured on the Cognito User Pool then the pre-signup Lambda allows the signup
+  Scenario: a Lambda pre-signup trigger is configured on the "cognito" "user pool" then the pre-signup Lambda allows the signup
     Given pid in pool_status
-    Given a Lambda pre-signup trigger has been configured on the Cognito User Pool
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
     When the pre-signup Lambda allows the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda pre-signup trigger is configured on the Cognito User Pool then the pre-signup Lambda denies the signup
+  Scenario: a Lambda pre-signup trigger is configured on the "cognito" "user pool" then the pre-signup Lambda denies the signup
     Given pid in pool_status
-    Given a Lambda pre-signup trigger has been configured on the Cognito User Pool
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
     When the pre-signup Lambda denies the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a user signs up to a pool that has no pre-signup trigger configured then a Cognito User Pool is created
+  Scenario: a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured then a "cognito" "user pool" is created
     Given pid in pool_status
-    Given a user has signed up to a pool that has no pre-signup trigger configured
-    When a Cognito User Pool is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    When a "cognito" "user pool" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a user signs up to a pool that has no pre-signup trigger configured then a Lambda function is deployed
+  Scenario: a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured then a "lambda" "function" is deployed
     Given pid in pool_status
-    Given a user has signed up to a pool that has no pre-signup trigger configured
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a user signs up to a pool that has no pre-signup trigger configured then a Lambda pre-signup trigger is configured on the Cognito User Pool
+  Scenario: a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured then a Lambda pre-signup trigger is configured on the "cognito" "user pool"
     Given pid in pool_status
-    Given a user has signed up to a pool that has no pre-signup trigger configured
-    When a Lambda pre-signup trigger is configured on the Cognito User Pool
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a user signs up to a pool that has no pre-signup trigger configured then a user initiates signup to a pool that has a pre-signup trigger configured
+  Scenario: a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured then a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
     Given pid in pool_status
-    Given a user has signed up to a pool that has no pre-signup trigger configured
-    When a user initiates signup to a pool that has a pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a user signs up to a pool that has no pre-signup trigger configured then the pre-signup Lambda allows the signup
+  Scenario: a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured then the pre-signup Lambda allows the signup
     Given pid in pool_status
-    Given a user has signed up to a pool that has no pre-signup trigger configured
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
     When the pre-signup Lambda allows the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a user signs up to a pool that has no pre-signup trigger configured then the pre-signup Lambda denies the signup
+  Scenario: a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured then the pre-signup Lambda denies the signup
     Given pid in pool_status
-    Given a user has signed up to a pool that has no pre-signup trigger configured
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
     When the pre-signup Lambda denies the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a user initiates signup to a pool that has a pre-signup trigger configured then a Cognito User Pool is created
+  Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured then a "cognito" "user pool" is created
     Given pid in pool_status
-    Given a user has initiated signup to a pool that has a pre-signup trigger configured
-    When a Cognito User Pool is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    When a "cognito" "user pool" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a user initiates signup to a pool that has a pre-signup trigger configured then a Lambda function is deployed
+  Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured then a "lambda" "function" is deployed
     Given pid in pool_status
-    Given a user has initiated signup to a pool that has a pre-signup trigger configured
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a user initiates signup to a pool that has a pre-signup trigger configured then a Lambda pre-signup trigger is configured on the Cognito User Pool
+  Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured then a Lambda pre-signup trigger is configured on the "cognito" "user pool"
     Given pid in pool_status
-    Given a user has initiated signup to a pool that has a pre-signup trigger configured
-    When a Lambda pre-signup trigger is configured on the Cognito User Pool
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a user initiates signup to a pool that has a pre-signup trigger configured then a user signs up to a pool that has no pre-signup trigger configured
+  Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured then a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
     Given pid in pool_status
-    Given a user has initiated signup to a pool that has a pre-signup trigger configured
-    When a user signs up to a pool that has no pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a user initiates signup to a pool that has a pre-signup trigger configured then the pre-signup Lambda allows the signup
+  Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured then the pre-signup Lambda allows the signup
     Given pid in pool_status
-    Given a user has initiated signup to a pool that has a pre-signup trigger configured
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
     When the pre-signup Lambda allows the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a user initiates signup to a pool that has a pre-signup trigger configured then the pre-signup Lambda denies the signup
+  Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured then the pre-signup Lambda denies the signup
     Given pid in pool_status
-    Given a user has initiated signup to a pool that has a pre-signup trigger configured
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
     When the pre-signup Lambda denies the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: the pre-signup Lambda allows the signup then a Cognito User Pool is created
+  Scenario: the pre-signup Lambda allows the signup then a "cognito" "user pool" is created
     Given iid in inv_status
-    Given the pre-signup Lambda has allowed the signup
-    When a Cognito User Pool is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the pre-signup Lambda allows the signup
+    When a "cognito" "user pool" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: the pre-signup Lambda allows the signup then a Lambda function is deployed
+  Scenario: the pre-signup Lambda allows the signup then a "lambda" "function" is deployed
     Given iid in inv_status
-    Given the pre-signup Lambda has allowed the signup
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the pre-signup Lambda allows the signup
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: the pre-signup Lambda allows the signup then a Lambda pre-signup trigger is configured on the Cognito User Pool
+  Scenario: the pre-signup Lambda allows the signup then a Lambda pre-signup trigger is configured on the "cognito" "user pool"
     Given iid in inv_status
-    Given the pre-signup Lambda has allowed the signup
-    When a Lambda pre-signup trigger is configured on the Cognito User Pool
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the pre-signup Lambda allows the signup
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: the pre-signup Lambda allows the signup then a user signs up to a pool that has no pre-signup trigger configured
+  Scenario: the pre-signup Lambda allows the signup then a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
     Given iid in inv_status
-    Given the pre-signup Lambda has allowed the signup
-    When a user signs up to a pool that has no pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the pre-signup Lambda allows the signup
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: the pre-signup Lambda allows the signup then a user initiates signup to a pool that has a pre-signup trigger configured
+  Scenario: the pre-signup Lambda allows the signup then a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
     Given iid in inv_status
-    Given the pre-signup Lambda has allowed the signup
-    When a user initiates signup to a pool that has a pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the pre-signup Lambda allows the signup
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
   Scenario: the pre-signup Lambda allows the signup then the pre-signup Lambda denies the signup
     Given iid in inv_status
-    Given the pre-signup Lambda has allowed the signup
+    When the pre-signup Lambda allows the signup
     When the pre-signup Lambda denies the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: the pre-signup Lambda denies the signup then a Cognito User Pool is created
+  Scenario: the pre-signup Lambda denies the signup then a "cognito" "user pool" is created
     Given iid in inv_status
-    Given the pre-signup Lambda has denied the signup
-    When a Cognito User Pool is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the pre-signup Lambda denies the signup
+    When a "cognito" "user pool" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: the pre-signup Lambda denies the signup then a Lambda function is deployed
+  Scenario: the pre-signup Lambda denies the signup then a "lambda" "function" is deployed
     Given iid in inv_status
-    Given the pre-signup Lambda has denied the signup
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the pre-signup Lambda denies the signup
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: the pre-signup Lambda denies the signup then a Lambda pre-signup trigger is configured on the Cognito User Pool
+  Scenario: the pre-signup Lambda denies the signup then a Lambda pre-signup trigger is configured on the "cognito" "user pool"
     Given iid in inv_status
-    Given the pre-signup Lambda has denied the signup
-    When a Lambda pre-signup trigger is configured on the Cognito User Pool
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the pre-signup Lambda denies the signup
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: the pre-signup Lambda denies the signup then a user signs up to a pool that has no pre-signup trigger configured
+  Scenario: the pre-signup Lambda denies the signup then a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
     Given iid in inv_status
-    Given the pre-signup Lambda has denied the signup
-    When a user signs up to a pool that has no pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the pre-signup Lambda denies the signup
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: the pre-signup Lambda denies the signup then a user initiates signup to a pool that has a pre-signup trigger configured
+  Scenario: the pre-signup Lambda denies the signup then a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
     Given iid in inv_status
-    Given the pre-signup Lambda has denied the signup
-    When a user initiates signup to a pool that has a pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the pre-signup Lambda denies the signup
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
   Scenario: the pre-signup Lambda denies the signup then the pre-signup Lambda allows the signup
     Given iid in inv_status
-    Given the pre-signup Lambda has denied the signup
-    When the pre-signup Lambda allows the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: a Cognito User Pool is created then a Lambda function is deployed then a Lambda pre-signup trigger is configured on the Cognito User Pool
-    Given pid not in pool_status
-    Given a Cognito User Pool has been created
-    Given a Lambda function has been deployed
-    When a Lambda pre-signup trigger is configured on the Cognito User Pool
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: a Cognito User Pool is created then a Lambda pre-signup trigger is configured on the Cognito User Pool then a user signs up to a pool that has no pre-signup trigger configured
-    Given pid not in pool_status
-    Given a Cognito User Pool has been created
-    Given a Lambda pre-signup trigger has been configured on the Cognito User Pool
-    When a user signs up to a pool that has no pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: a Cognito User Pool is created then a user signs up to a pool that has no pre-signup trigger configured then a user initiates signup to a pool that has a pre-signup trigger configured
-    Given pid not in pool_status
-    Given a Cognito User Pool has been created
-    Given a user has signed up to a pool that has no pre-signup trigger configured
-    When a user initiates signup to a pool that has a pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: a Cognito User Pool is created then a user initiates signup to a pool that has a pre-signup trigger configured then the pre-signup Lambda allows the signup
-    Given pid not in pool_status
-    Given a Cognito User Pool has been created
-    Given a user has initiated signup to a pool that has a pre-signup trigger configured
-    When the pre-signup Lambda allows the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: a Cognito User Pool is created then the pre-signup Lambda allows the signup then the pre-signup Lambda denies the signup
-    Given pid not in pool_status
-    Given a Cognito User Pool has been created
-    Given the pre-signup Lambda has allowed the signup
     When the pre-signup Lambda denies the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the pre-signup Lambda allows the signup
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Cognito User Pool is created then the pre-signup Lambda denies the signup then a Lambda function is deployed
+  Scenario: a "cognito" "user pool" is created then a "lambda" "function" is deployed then a Lambda pre-signup trigger is configured on the "cognito" "user pool"
     Given pid not in pool_status
-    Given a Cognito User Pool has been created
-    Given the pre-signup Lambda has denied the signup
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "cognito" "user pool" is created
+    When a "lambda" "function" is deployed
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda function is deployed then a Cognito User Pool is created then a user signs up to a pool that has no pre-signup trigger configured
-    Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given a Cognito User Pool has been created
-    When a user signs up to a pool that has no pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+  Scenario: a "cognito" "user pool" is created then a Lambda pre-signup trigger is configured on the "cognito" "user pool" then a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    Given pid not in pool_status
+    When a "cognito" "user pool" is created
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda function is deployed then a Lambda pre-signup trigger is configured on the Cognito User Pool then a user initiates signup to a pool that has a pre-signup trigger configured
-    Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given a Lambda pre-signup trigger has been configured on the Cognito User Pool
-    When a user initiates signup to a pool that has a pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+  Scenario: a "cognito" "user pool" is created then a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured then a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    Given pid not in pool_status
+    When a "cognito" "user pool" is created
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda function is deployed then a user signs up to a pool that has no pre-signup trigger configured then the pre-signup Lambda allows the signup
-    Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given a user has signed up to a pool that has no pre-signup trigger configured
+  Scenario: a "cognito" "user pool" is created then a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured then the pre-signup Lambda allows the signup
+    Given pid not in pool_status
+    When a "cognito" "user pool" is created
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
     When the pre-signup Lambda allows the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda function is deployed then a user initiates signup to a pool that has a pre-signup trigger configured then the pre-signup Lambda denies the signup
+  Scenario: a "cognito" "user pool" is created then the pre-signup Lambda allows the signup then the pre-signup Lambda denies the signup
+    Given pid not in pool_status
+    When a "cognito" "user pool" is created
+    When the pre-signup Lambda allows the signup
+    When the pre-signup Lambda denies the signup
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: a "cognito" "user pool" is created then the pre-signup Lambda denies the signup then a "lambda" "function" is deployed
+    Given pid not in pool_status
+    When a "cognito" "user pool" is created
+    When the pre-signup Lambda denies the signup
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: a "lambda" "function" is deployed then a "cognito" "user pool" is created then a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given a user has initiated signup to a pool that has a pre-signup trigger configured
-    When the pre-signup Lambda denies the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When a "cognito" "user pool" is created
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda function is deployed then the pre-signup Lambda allows the signup then a Cognito User Pool is created
+  Scenario: a "lambda" "function" is deployed then a Lambda pre-signup trigger is configured on the "cognito" "user pool" then a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given the pre-signup Lambda has allowed the signup
-    When a Cognito User Pool is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda function is deployed then the pre-signup Lambda denies the signup then a Lambda pre-signup trigger is configured on the Cognito User Pool
+  Scenario: a "lambda" "function" is deployed then a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured then the pre-signup Lambda allows the signup
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given the pre-signup Lambda has denied the signup
-    When a Lambda pre-signup trigger is configured on the Cognito User Pool
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: a Lambda pre-signup trigger is configured on the Cognito User Pool then a Cognito User Pool is created then a user initiates signup to a pool that has a pre-signup trigger configured
-    Given pid in pool_status
-    Given a Lambda pre-signup trigger has been configured on the Cognito User Pool
-    Given a Cognito User Pool has been created
-    When a user initiates signup to a pool that has a pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: a Lambda pre-signup trigger is configured on the Cognito User Pool then a Lambda function is deployed then the pre-signup Lambda allows the signup
-    Given pid in pool_status
-    Given a Lambda pre-signup trigger has been configured on the Cognito User Pool
-    Given a Lambda function has been deployed
+    When a "lambda" "function" is deployed
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
     When the pre-signup Lambda allows the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda pre-signup trigger is configured on the Cognito User Pool then a user signs up to a pool that has no pre-signup trigger configured then the pre-signup Lambda denies the signup
-    Given pid in pool_status
-    Given a Lambda pre-signup trigger has been configured on the Cognito User Pool
-    Given a user has signed up to a pool that has no pre-signup trigger configured
+  Scenario: a "lambda" "function" is deployed then a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured then the pre-signup Lambda denies the signup
+    Given fid not in func_status
+    When a "lambda" "function" is deployed
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
     When the pre-signup Lambda denies the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a Lambda pre-signup trigger is configured on the Cognito User Pool then a user initiates signup to a pool that has a pre-signup trigger configured then a Cognito User Pool is created
-    Given pid in pool_status
-    Given a Lambda pre-signup trigger has been configured on the Cognito User Pool
-    Given a user has initiated signup to a pool that has a pre-signup trigger configured
-    When a Cognito User Pool is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: a Lambda pre-signup trigger is configured on the Cognito User Pool then the pre-signup Lambda allows the signup then a Lambda function is deployed
-    Given pid in pool_status
-    Given a Lambda pre-signup trigger has been configured on the Cognito User Pool
-    Given the pre-signup Lambda has allowed the signup
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: a Lambda pre-signup trigger is configured on the Cognito User Pool then the pre-signup Lambda denies the signup then a user signs up to a pool that has no pre-signup trigger configured
-    Given pid in pool_status
-    Given a Lambda pre-signup trigger has been configured on the Cognito User Pool
-    Given the pre-signup Lambda has denied the signup
-    When a user signs up to a pool that has no pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: a user signs up to a pool that has no pre-signup trigger configured then a Cognito User Pool is created then the pre-signup Lambda allows the signup
-    Given pid in pool_status
-    Given a user has signed up to a pool that has no pre-signup trigger configured
-    Given a Cognito User Pool has been created
+  Scenario: a "lambda" "function" is deployed then the pre-signup Lambda allows the signup then a "cognito" "user pool" is created
+    Given fid not in func_status
+    When a "lambda" "function" is deployed
     When the pre-signup Lambda allows the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "cognito" "user pool" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a user signs up to a pool that has no pre-signup trigger configured then a Lambda function is deployed then the pre-signup Lambda denies the signup
-    Given pid in pool_status
-    Given a user has signed up to a pool that has no pre-signup trigger configured
-    Given a Lambda function has been deployed
+  Scenario: a "lambda" "function" is deployed then the pre-signup Lambda denies the signup then a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    Given fid not in func_status
+    When a "lambda" "function" is deployed
     When the pre-signup Lambda denies the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a user signs up to a pool that has no pre-signup trigger configured then a Lambda pre-signup trigger is configured on the Cognito User Pool then a Cognito User Pool is created
+  Scenario: a Lambda pre-signup trigger is configured on the "cognito" "user pool" then a "cognito" "user pool" is created then a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
     Given pid in pool_status
-    Given a user has signed up to a pool that has no pre-signup trigger configured
-    Given a Lambda pre-signup trigger has been configured on the Cognito User Pool
-    When a Cognito User Pool is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    When a "cognito" "user pool" is created
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: a user signs up to a pool that has no pre-signup trigger configured then a user initiates signup to a pool that has a pre-signup trigger configured then a Lambda function is deployed
+  Scenario: a Lambda pre-signup trigger is configured on the "cognito" "user pool" then a "lambda" "function" is deployed then the pre-signup Lambda allows the signup
     Given pid in pool_status
-    Given a user has signed up to a pool that has no pre-signup trigger configured
-    Given a user has initiated signup to a pool that has a pre-signup trigger configured
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: a user signs up to a pool that has no pre-signup trigger configured then the pre-signup Lambda allows the signup then a Lambda pre-signup trigger is configured on the Cognito User Pool
-    Given pid in pool_status
-    Given a user has signed up to a pool that has no pre-signup trigger configured
-    Given the pre-signup Lambda has allowed the signup
-    When a Lambda pre-signup trigger is configured on the Cognito User Pool
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: a user signs up to a pool that has no pre-signup trigger configured then the pre-signup Lambda denies the signup then a user initiates signup to a pool that has a pre-signup trigger configured
-    Given pid in pool_status
-    Given a user has signed up to a pool that has no pre-signup trigger configured
-    Given the pre-signup Lambda has denied the signup
-    When a user initiates signup to a pool that has a pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: a user initiates signup to a pool that has a pre-signup trigger configured then a Cognito User Pool is created then the pre-signup Lambda denies the signup
-    Given pid in pool_status
-    Given a user has initiated signup to a pool that has a pre-signup trigger configured
-    Given a Cognito User Pool has been created
-    When the pre-signup Lambda denies the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: a user initiates signup to a pool that has a pre-signup trigger configured then a Lambda function is deployed then a Cognito User Pool is created
-    Given pid in pool_status
-    Given a user has initiated signup to a pool that has a pre-signup trigger configured
-    Given a Lambda function has been deployed
-    When a Cognito User Pool is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: a user initiates signup to a pool that has a pre-signup trigger configured then a Lambda pre-signup trigger is configured on the Cognito User Pool then a Lambda function is deployed
-    Given pid in pool_status
-    Given a user has initiated signup to a pool that has a pre-signup trigger configured
-    Given a Lambda pre-signup trigger has been configured on the Cognito User Pool
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: a user initiates signup to a pool that has a pre-signup trigger configured then a user signs up to a pool that has no pre-signup trigger configured then a Lambda pre-signup trigger is configured on the Cognito User Pool
-    Given pid in pool_status
-    Given a user has initiated signup to a pool that has a pre-signup trigger configured
-    Given a user has signed up to a pool that has no pre-signup trigger configured
-    When a Lambda pre-signup trigger is configured on the Cognito User Pool
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: a user initiates signup to a pool that has a pre-signup trigger configured then the pre-signup Lambda allows the signup then a user signs up to a pool that has no pre-signup trigger configured
-    Given pid in pool_status
-    Given a user has initiated signup to a pool that has a pre-signup trigger configured
-    Given the pre-signup Lambda has allowed the signup
-    When a user signs up to a pool that has no pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: a user initiates signup to a pool that has a pre-signup trigger configured then the pre-signup Lambda denies the signup then the pre-signup Lambda allows the signup
-    Given pid in pool_status
-    Given a user has initiated signup to a pool that has a pre-signup trigger configured
-    Given the pre-signup Lambda has denied the signup
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    When a "lambda" "function" is deployed
     When the pre-signup Lambda allows the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: the pre-signup Lambda allows the signup then a Cognito User Pool is created then a Lambda function is deployed
-    Given iid in inv_status
-    Given the pre-signup Lambda has allowed the signup
-    Given a Cognito User Pool has been created
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: the pre-signup Lambda allows the signup then a Lambda function is deployed then a Lambda pre-signup trigger is configured on the Cognito User Pool
-    Given iid in inv_status
-    Given the pre-signup Lambda has allowed the signup
-    Given a Lambda function has been deployed
-    When a Lambda pre-signup trigger is configured on the Cognito User Pool
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: the pre-signup Lambda allows the signup then a Lambda pre-signup trigger is configured on the Cognito User Pool then a user signs up to a pool that has no pre-signup trigger configured
-    Given iid in inv_status
-    Given the pre-signup Lambda has allowed the signup
-    Given a Lambda pre-signup trigger has been configured on the Cognito User Pool
-    When a user signs up to a pool that has no pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: the pre-signup Lambda allows the signup then a user signs up to a pool that has no pre-signup trigger configured then a user initiates signup to a pool that has a pre-signup trigger configured
-    Given iid in inv_status
-    Given the pre-signup Lambda has allowed the signup
-    Given a user has signed up to a pool that has no pre-signup trigger configured
-    When a user initiates signup to a pool that has a pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: the pre-signup Lambda allows the signup then a user initiates signup to a pool that has a pre-signup trigger configured then the pre-signup Lambda denies the signup
-    Given iid in inv_status
-    Given the pre-signup Lambda has allowed the signup
-    Given a user has initiated signup to a pool that has a pre-signup trigger configured
+  Scenario: a Lambda pre-signup trigger is configured on the "cognito" "user pool" then a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured then the pre-signup Lambda denies the signup
+    Given pid in pool_status
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
     When the pre-signup Lambda denies the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: the pre-signup Lambda allows the signup then the pre-signup Lambda denies the signup then a Cognito User Pool is created
-    Given iid in inv_status
-    Given the pre-signup Lambda has allowed the signup
-    Given the pre-signup Lambda has denied the signup
-    When a Cognito User Pool is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+  Scenario: a Lambda pre-signup trigger is configured on the "cognito" "user pool" then a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured then a "cognito" "user pool" is created
+    Given pid in pool_status
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    When a "cognito" "user pool" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: the pre-signup Lambda denies the signup then a Cognito User Pool is created then a Lambda pre-signup trigger is configured on the Cognito User Pool
-    Given iid in inv_status
-    Given the pre-signup Lambda has denied the signup
-    Given a Cognito User Pool has been created
-    When a Lambda pre-signup trigger is configured on the Cognito User Pool
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: the pre-signup Lambda denies the signup then a Lambda function is deployed then a user signs up to a pool that has no pre-signup trigger configured
-    Given iid in inv_status
-    Given the pre-signup Lambda has denied the signup
-    Given a Lambda function has been deployed
-    When a user signs up to a pool that has no pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: the pre-signup Lambda denies the signup then a Lambda pre-signup trigger is configured on the Cognito User Pool then a user initiates signup to a pool that has a pre-signup trigger configured
-    Given iid in inv_status
-    Given the pre-signup Lambda has denied the signup
-    Given a Lambda pre-signup trigger has been configured on the Cognito User Pool
-    When a user initiates signup to a pool that has a pre-signup trigger configured
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
-
-  @sequence
-  Scenario: the pre-signup Lambda denies the signup then a user signs up to a pool that has no pre-signup trigger configured then the pre-signup Lambda allows the signup
-    Given iid in inv_status
-    Given the pre-signup Lambda has denied the signup
-    Given a user has signed up to a pool that has no pre-signup trigger configured
+  Scenario: a Lambda pre-signup trigger is configured on the "cognito" "user pool" then the pre-signup Lambda allows the signup then a "lambda" "function" is deployed
+    Given pid in pool_status
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
     When the pre-signup Lambda allows the signup
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: the pre-signup Lambda denies the signup then a user initiates signup to a pool that has a pre-signup trigger configured then a Cognito User Pool is created
-    Given iid in inv_status
-    Given the pre-signup Lambda has denied the signup
-    Given a user has initiated signup to a pool that has a pre-signup trigger configured
-    When a Cognito User Pool is created
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+  Scenario: a Lambda pre-signup trigger is configured on the "cognito" "user pool" then the pre-signup Lambda denies the signup then a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    Given pid in pool_status
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    When the pre-signup Lambda denies the signup
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
 
   @sequence
-  Scenario: the pre-signup Lambda denies the signup then the pre-signup Lambda allows the signup then a Lambda function is deployed
+  Scenario: a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured then a "cognito" "user pool" is created then the pre-signup Lambda allows the signup
+    Given pid in pool_status
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    When a "cognito" "user pool" is created
+    When the pre-signup Lambda allows the signup
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured then a "lambda" "function" is deployed then the pre-signup Lambda denies the signup
+    Given pid in pool_status
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    When a "lambda" "function" is deployed
+    When the pre-signup Lambda denies the signup
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured then a Lambda pre-signup trigger is configured on the "cognito" "user pool" then a "cognito" "user pool" is created
+    Given pid in pool_status
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    When a "cognito" "user pool" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured then a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured then a "lambda" "function" is deployed
+    Given pid in pool_status
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured then the pre-signup Lambda allows the signup then a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    Given pid in pool_status
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    When the pre-signup Lambda allows the signup
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured then the pre-signup Lambda denies the signup then a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    Given pid in pool_status
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    When the pre-signup Lambda denies the signup
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured then a "cognito" "user pool" is created then the pre-signup Lambda denies the signup
+    Given pid in pool_status
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    When a "cognito" "user pool" is created
+    When the pre-signup Lambda denies the signup
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured then a "lambda" "function" is deployed then a "cognito" "user pool" is created
+    Given pid in pool_status
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    When a "lambda" "function" is deployed
+    When a "cognito" "user pool" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured then a Lambda pre-signup trigger is configured on the "cognito" "user pool" then a "lambda" "function" is deployed
+    Given pid in pool_status
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured then a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured then a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    Given pid in pool_status
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured then the pre-signup Lambda allows the signup then a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    Given pid in pool_status
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    When the pre-signup Lambda allows the signup
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured then the pre-signup Lambda denies the signup then the pre-signup Lambda allows the signup
+    Given pid in pool_status
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    When the pre-signup Lambda denies the signup
+    When the pre-signup Lambda allows the signup
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: the pre-signup Lambda allows the signup then a "cognito" "user pool" is created then a "lambda" "function" is deployed
     Given iid in inv_status
-    Given the pre-signup Lambda has denied the signup
-    Given the pre-signup Lambda has allowed the signup
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the pre-signup Lambda allows the signup
+    When a "cognito" "user pool" is created
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: the pre-signup Lambda allows the signup then a "lambda" "function" is deployed then a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    Given iid in inv_status
+    When the pre-signup Lambda allows the signup
+    When a "lambda" "function" is deployed
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: the pre-signup Lambda allows the signup then a Lambda pre-signup trigger is configured on the "cognito" "user pool" then a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    Given iid in inv_status
+    When the pre-signup Lambda allows the signup
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: the pre-signup Lambda allows the signup then a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured then a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    Given iid in inv_status
+    When the pre-signup Lambda allows the signup
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: the pre-signup Lambda allows the signup then a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured then the pre-signup Lambda denies the signup
+    Given iid in inv_status
+    When the pre-signup Lambda allows the signup
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    When the pre-signup Lambda denies the signup
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: the pre-signup Lambda allows the signup then the pre-signup Lambda denies the signup then a "cognito" "user pool" is created
+    Given iid in inv_status
+    When the pre-signup Lambda allows the signup
+    When the pre-signup Lambda denies the signup
+    When a "cognito" "user pool" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: the pre-signup Lambda denies the signup then a "cognito" "user pool" is created then a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    Given iid in inv_status
+    When the pre-signup Lambda denies the signup
+    When a "cognito" "user pool" is created
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: the pre-signup Lambda denies the signup then a "lambda" "function" is deployed then a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    Given iid in inv_status
+    When the pre-signup Lambda denies the signup
+    When a "lambda" "function" is deployed
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: the pre-signup Lambda denies the signup then a Lambda pre-signup trigger is configured on the "cognito" "user pool" then a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    Given iid in inv_status
+    When the pre-signup Lambda denies the signup
+    When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: the pre-signup Lambda denies the signup then a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured then the pre-signup Lambda allows the signup
+    Given iid in inv_status
+    When the pre-signup Lambda denies the signup
+    When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+    When the pre-signup Lambda allows the signup
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: the pre-signup Lambda denies the signup then a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured then a "cognito" "user pool" is created
+    Given iid in inv_status
+    When the pre-signup Lambda denies the signup
+    When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+    When a "cognito" "user pool" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" invocation is for a "PENDING" user
+    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+
+  @sequence
+  Scenario: the pre-signup Lambda denies the signup then the pre-signup Lambda allows the signup then a "lambda" "function" is deployed
+    Given iid in inv_status
+    When the pre-signup Lambda denies the signup
+    When the pre-signup Lambda allows the signup
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation is for a "PENDING" user
     And every "PENDING" user has a corresponding "IN_PROGRESS" invocation

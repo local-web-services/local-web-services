@@ -1,4 +1,4 @@
-"""Given: the function has active executions tracked"""
+"""Given: the "lambda" "function" had active executions tracked"""
 
 from __future__ import annotations
 
@@ -6,6 +6,6 @@ import pytest
 from pytest_bdd import given
 
 
-@given("the function has active executions tracked")
+@given('the "lambda" "function" had active executions tracked')
 def function_has_active_executions_tracked(world):
     pytest.skip("Cannot force tracked executions in integration tests.")

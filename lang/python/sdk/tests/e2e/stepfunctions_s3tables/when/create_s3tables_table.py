@@ -1,4 +1,4 @@
-"""When: an S3 Tables table is created"""
+"""When: a S3 Tables table is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUCKET
 
 
-@when("an S3 Tables table is created")
+@when("a S3 Tables table is created")
 def create_s3tables_table(lws_session, world):
     try:
         resp = lws_session.client("s3tables").create_table_bucket(name=TEST_BUCKET)

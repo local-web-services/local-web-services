@@ -1,11 +1,11 @@
-"""Given: the mapping is not "CREATING" """
+"""Given: the mapping was not "CREATING" """
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given('the mapping is not "CREATING"')
+@given('the mapping was not "CREATING"')
 def mapping_is_not_creating(world):
     """Signal that lws does not enforce CREATING lifecycle state."""
     world["_skip"] = (

@@ -1,11 +1,11 @@
-"""Then: the instance is in "CREATING" state"""
+"""Then: the "rds" "instance" will be in "CREATING" state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the instance is in "CREATING" state')
+@then('the "rds" "instance" will be in "CREATING" state')
 def instance_is_in_creating_state(world: dict):
     actual_result = world["result"]
     assert (

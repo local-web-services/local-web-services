@@ -1,11 +1,11 @@
-"""Then: the job is "IN_PROGRESS" """
+"""Then: the "glacier" "job" will be "IN_PROGRESS" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the job is "IN_PROGRESS"')
+@then('the "glacier" "job" will be "IN_PROGRESS"')
 def glacier_job_is_in_progress_then(world):
     expected_error = None
     actual_error = world["error"]

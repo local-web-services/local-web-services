@@ -1,4 +1,4 @@
-"""Given: a confirmed subscription exists for the topic"""
+"""Given: a confirmed subscription existed for the "sns" "topic" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import SnsTestClient
 from ..constants import TEST_SUB_ENDPOINT
 
 
-@given("a confirmed subscription exists for the topic")
+@given('a confirmed subscription existed for the "sns" "topic"')
 def confirmed_subscription_exists(client, world):
     """Subscribe via SQS ARN endpoint which is auto-confirmed in lws."""
     if not world.get("topic_arn"):

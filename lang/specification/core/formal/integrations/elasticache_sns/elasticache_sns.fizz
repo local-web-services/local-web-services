@@ -24,10 +24,10 @@ action Init:
     msg_cluster = {}            # msg_cluster[mid] = cluster_id
 
 
-# step: an ElastiCache cluster is created
-# result: the cluster is AVAILABLE with no SNS notification configured
-# guard: the cluster does not already exist
-# guard_violation: the cluster already exists
+# step: an "elasticache" "cluster" is created
+# result: the "elasticache" "cluster" will be "AVAILABLE" with no SNS notification configured
+# guard: the "elasticache" "cluster" did not already exist
+# guard_violation: the "elasticache" "cluster" already existed
 atomic action CreateCluster:
     oneof cid in CLUSTER_IDS:
         if cid not in cluster_status:
@@ -35,22 +35,22 @@ atomic action CreateCluster:
             cluster_topic[cid] = ""
 
 
-# step: an SNS topic is created
-# result: the topic is ACTIVE
-# guard: the topic does not already exist
-# guard_violation: the topic already exists
+# step: a "sns" "topic" is created
+# result: the "sns" "topic" will be "ACTIVE"
+# guard: the "sns" "topic" did not already exist
+# guard_violation: the "sns" "topic" already existed
 atomic action CreateTopic:
     oneof tid in TOPIC_IDS:
         if tid not in topic_status:
             topic_status[tid] = "ACTIVE"
 
 
-# step: the SNS topic is deleted
-# result: the topic is DELETED and ElastiCache event notifications will fail
-# guard: the topic exists
-# guard_violation: the topic does not exist
-# guard: the topic is ACTIVE
-# guard_violation_lifecycle: the topic is already DELETED
+# step: the "sns" "topic" is deleted
+# result: the "sns" "topic" will be deleted and ElastiCache event notifications will fail
+# guard: the "sns" "topic" existed
+# guard_violation: the "sns" "topic" did not exist
+# guard: the "sns" "topic" was "ACTIVE"
+# guard_violation_lifecycle: the "sns" "topic" is already "DELETED"
 atomic action DeleteTopic:
     oneof tid in TOPIC_IDS:
         if tid in topic_status:
@@ -58,14 +58,14 @@ atomic action DeleteTopic:
                 topic_status[tid] = "DELETED"
 
 
-# step: an SNS notification is configured on the ElastiCache cluster
-# result: the cluster will publish lifecycle events to the topic
-# guard: the cluster exists and is AVAILABLE
-# guard_violation_lifecycle: the cluster does not exist or is not AVAILABLE
-# guard: the cluster has no SNS notification configured
-# guard_violation: the cluster already has an SNS notification configured
-# guard: the topic exists and is ACTIVE
-# guard_violation: the topic does not exist or is not ACTIVE
+# step: a SNS notification is configured on the "elasticache" "cluster"
+# result: the "elasticache" "cluster" will publish lifecycle events to the "sns" "topic"
+# guard: the "elasticache" "cluster" existed and was "AVAILABLE"
+# guard_violation_lifecycle: the "elasticache" "cluster" did not exist or was "AVAILABLE"
+# guard: the "elasticache" "cluster" has no SNS notification configured
+# guard_violation: the "elasticache" "cluster" already has a SNS notification configured
+# guard: the "sns" "topic" existed and was "ACTIVE"
+# guard_violation: the "sns" "topic" did not exist or was "ACTIVE"
 atomic action ConfigureNotification:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -78,14 +78,14 @@ atomic action ConfigureNotification:
 
 
 # fake_skip: internal
-# step: a cluster modification event occurs and ElastiCache publishes a notification to the SNS topic
-# result: the cluster is MODIFYING and the notification is PUBLISHED to the topic
-# guard: the cluster exists and is AVAILABLE
-# guard_violation_lifecycle: the cluster does not exist or is not AVAILABLE
-# guard: the cluster has an SNS notification configured
-# guard_violation: the cluster has no SNS notification configured
-# guard: the topic is ACTIVE
-# guard_violation_lifecycle: the topic is DELETED
+# step: a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+# result: the "elasticache" "cluster" will be "MODIFYING" and the notification will be "PUBLISHED" to the "sns" "topic"
+# guard: the "elasticache" "cluster" existed and was "AVAILABLE"
+# guard_violation_lifecycle: the "elasticache" "cluster" did not exist or was "AVAILABLE"
+# guard: the "elasticache" "cluster" has a SNS notification configured
+# guard_violation: the "elasticache" "cluster" has no SNS notification configured
+# guard: the "sns" "topic" was "ACTIVE"
+# guard_violation_lifecycle: the "sns" "topic" was "DELETED"
 # guard: a message slot is available
 # guard_violation_capacity: no message slot is available
 atomic action ClusterEventNotificationDelivered:
@@ -105,14 +105,14 @@ atomic action ClusterEventNotificationDelivered:
 
 
 # fake_skip: internal
-# step: a cluster event occurs but the SNS notification fails because the topic has been deleted
-# result: the cluster is MODIFYING but no notification is published
-# guard: the cluster exists and is AVAILABLE
-# guard_violation_lifecycle: the cluster does not exist or is not AVAILABLE
-# guard: the cluster has an SNS notification configured
-# guard_violation: the cluster has no SNS notification configured
-# guard: the topic is DELETED
-# guard_violation_lifecycle: the topic is not DELETED
+# step: a cluster event occurs but the SNS notification fails because the "sns" "topic" has been deleted
+# result: the "elasticache" "cluster" will be "MODIFYING" but no notification will be published
+# guard: the "elasticache" "cluster" existed and was "AVAILABLE"
+# guard_violation_lifecycle: the "elasticache" "cluster" did not exist or was "AVAILABLE"
+# guard: the "elasticache" "cluster" has a SNS notification configured
+# guard_violation: the "elasticache" "cluster" has no SNS notification configured
+# guard: the "sns" "topic" was "DELETED"
+# guard_violation_lifecycle: the "sns" "topic" was not "DELETED"
 atomic action ClusterEventNotificationFails:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -125,10 +125,10 @@ atomic action ClusterEventNotificationFails:
 
 
 # fake_skip: internal
-# step: the cluster modification completes
-# result: the cluster is AVAILABLE again
-# guard: the cluster is MODIFYING
-# guard_violation_lifecycle: the cluster is not MODIFYING
+# step: the "elasticache" "cluster" modification completes
+# result: the "elasticache" "cluster" will be "AVAILABLE" again
+# guard: the "elasticache" "cluster" was "MODIFYING"
+# guard_violation_lifecycle: the "elasticache" "cluster" was not "MODIFYING"
 atomic action ClusterModificationComplete:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -146,7 +146,7 @@ always assertion PublishedNotificationReferencesExistingCluster:
     return True
 
 
-# check: every PUBLISHED notification references a topic that exists
+# check: every PUBLISHED notification references a "sns" "topic" that exists
 always assertion PublishedNotificationReferencesExistingTopic:
     for mid in msg_status:
         if msg_status[mid] == "PUBLISHED":

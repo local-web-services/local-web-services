@@ -1,4 +1,4 @@
-"""When: a database cluster finishes creating"""
+"""When: a "documentdb" "cluster" finishes creating"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _DOCDB_TARGET, INT_CLUSTER_ID
 
 
-@when("a database cluster finishes creating")
+@when('a "documentdb" "cluster" finishes creating')
 def database_cluster_finishes_creating(client: TestClient, world):
     r = client.post(
         "/",

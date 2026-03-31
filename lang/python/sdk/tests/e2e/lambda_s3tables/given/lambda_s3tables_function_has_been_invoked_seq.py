@@ -1,4 +1,4 @@
-"""Given: the Lambda function has been invoked"""
+"""Given: the "lambda" "function" is invoked"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import uuid
 from pytest_bdd import given
 
 
-@given("the Lambda function has been invoked")
+@given('the "lambda" "function" is invoked')
 def lambda_s3tables_function_has_been_invoked_seq(lws_session, world):
     # Arrange
     invocation_id = str(uuid.uuid4())

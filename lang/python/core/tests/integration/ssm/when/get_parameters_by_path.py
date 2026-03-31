@@ -1,4 +1,4 @@
-"""When: parameters under a path are retrieved from "SSM" """
+"""When: "ssm" "parameter"s under a path are retrieved"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SSM_TARGET, INT_PATH
 
 
-@when('parameters under a path are retrieved from "SSM"')
+@when('"ssm" "parameter"s under a path are retrieved')
 def get_parameters_by_path(client: TestClient, world):
     r = client.post(
         "/",

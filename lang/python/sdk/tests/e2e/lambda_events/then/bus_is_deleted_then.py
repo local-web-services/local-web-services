@@ -1,4 +1,4 @@
-"""Then: the bus is "DELETED" and Lambda PutEvents calls targeting it will fail"""
+"""Then: the bus will be deleted and Lambda PutEvents calls targeting it will fail"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import then
 from ..constants import TEST_BUS
 
 
-@then('the bus is "DELETED" and Lambda PutEvents calls targeting it will fail')
+@then("the bus will be deleted and Lambda PutEvents calls targeting it will fail")
 def bus_is_deleted_then(lws_session):
     try:
         lws_session.client("events").describe_event_bus(Name=TEST_BUS)

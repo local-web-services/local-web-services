@@ -1,4 +1,4 @@
-"""Then: the object "EXISTS" in the destination bucket"""
+"""Then: the "s3" "object" will exist in the destination "s3" "bucket" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_KEY2
 
 
-@then('the object "EXISTS" in the destination bucket')
+@then('the "s3" "object" will exist in the destination "s3" "bucket"')
 def object_exists_in_destination_bucket_then(sync_client: TestClient):
     r = sync_client.get(f"/{INT_BUCKET}", params={"list-type": "2"})
     actual_body = r.text

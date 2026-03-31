@@ -1,4 +1,4 @@
-"""Given: the vault exists"""
+"""Given: the "glacier" "vault" existed"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import GlacierTestClient
 from ..constants import INT_VAULT_NAME
 
 
-@given("the vault exists")
+@given('the "glacier" "vault" existed')
 def vault_exists(client: TestClient, world):
     GlacierTestClient(client).create_vault()
     world["vault_name"] = INT_VAULT_NAME

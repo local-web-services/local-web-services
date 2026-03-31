@@ -1,4 +1,4 @@
-"""When: a MemoryDB cluster is deleted"""
+"""When: a "memorydb" "cluster" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_CLUSTER_NAME
 
 
-@when("a MemoryDB cluster is deleted")
+@when('a "memorydb" "cluster" is deleted')
 def delete_memorydb_cluster(client: TestClient, world):
     r = client.post(
         "/",

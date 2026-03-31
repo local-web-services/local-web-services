@@ -1,4 +1,4 @@
-"""Given: a database instance has finished creating"""
+"""Given: a "documentdb" "instance" finishes creating"""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import pytest
 from pytest_bdd import given
 
 
-@given("a database instance has finished creating")
+@given('a "documentdb" "instance" finishes creating')
 def docdb_instance_has_finished_creating():
     pytest.skip(
         "Cannot represent a completed DocumentDB instance creation as sequence setup in lws"

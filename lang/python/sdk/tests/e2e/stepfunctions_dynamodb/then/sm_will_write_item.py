@@ -1,11 +1,13 @@
-"""Then: the state machine will write an item to the table when it reaches the task state"""
+"""Then: the state machine will write an item to the "dynamodb" "table" when it reaches the task state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the state machine will write an item to the table when it reaches the task state")
+@then(
+    'the state machine will write an item to the "dynamodb" "table" when it reaches the task state'
+)
 def sm_will_write_item(world):
     # Arrange
     expected_error = None

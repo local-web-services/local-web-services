@@ -1,4 +1,4 @@
-"""When: an integration is deleted"""
+"""When: an "api gateway" "integration" is deleted"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ApigatewayTestClient
 from ..constants import TEST_HTTP_METHOD
 
 
-@when("an integration is deleted")
+@when('an "api gateway" "integration" is deleted')
 def delete_integration(lws_session, world):
     try:
         api_id = ApigatewayTestClient(lws_session).get_api_id()

@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import pytest
-from pytest_bdd import given, parsers
+from pytest_bdd import given
 
 
-@given(parsers.re(r'^the mapping is not "DISABLED"$'))
+@given('the mapping was not "DISABLED"')
 def mapping_is_not_disabled():
     pytest.skip("Cannot observe ESM state in lws without real event source")

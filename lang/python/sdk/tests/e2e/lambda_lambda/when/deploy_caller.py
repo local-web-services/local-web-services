@@ -1,4 +1,4 @@
-"""When: a caller Lambda function is deployed"""
+"""When: a caller "lambda" "function" is deployed"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import LambdaLambdaTestClient
 from ..constants import TEST_CALLER
 
 
-@when("a caller Lambda function is deployed")
+@when('a caller "lambda" "function" is deployed')
 def deploy_caller(lws_session, world):
     try:
         LambdaLambdaTestClient(lws_session).create_function(TEST_CALLER)

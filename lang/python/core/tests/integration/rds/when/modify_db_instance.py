@@ -1,4 +1,4 @@
-"""When: a database instance configuration is modified"""
+"""When: a "documentdb" "instance" configuration is modified"""
 
 from __future__ import annotations
 
@@ -9,7 +9,8 @@ from ..client import RdsTestClient
 from ..constants import INT_DB_INSTANCE, _store
 
 
-@when("a database instance configuration is modified")
+@when('a "rds" "instance" configuration is modified')
+@when('a "documentdb" "instance" configuration is modified')
 def modify_db_instance(client: TestClient, world: dict):
     r = RdsTestClient(client).post(
         "ModifyDBInstance",

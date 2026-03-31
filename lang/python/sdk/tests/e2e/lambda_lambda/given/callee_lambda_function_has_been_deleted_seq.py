@@ -1,4 +1,4 @@
-"""Given: the callee Lambda function has been deleted"""
+"""Given: the callee "lambda" "function" was not "DELETED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaLambdaTestClient
 from ..constants import TEST_CALLEE
 
 
-@given("the callee Lambda function has been deleted")
+@given('the callee "lambda" "function" was not "DELETED"')
 def callee_lambda_function_has_been_deleted_seq(lws_session):
     try:
         LambdaLambdaTestClient(lws_session).create_function(TEST_CALLEE)

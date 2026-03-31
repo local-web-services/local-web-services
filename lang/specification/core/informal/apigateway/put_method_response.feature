@@ -9,10 +9,10 @@ Feature: Apigateway - A 200 Method Response Is Configured
 
   @minimal @happy @put_method_response
   Scenario: a 200 method response is configured
-    Given the method exists
-    And the method "EXISTS"
+    Given the "api gateway" "method" existed
+    And the "api gateway" "method" existed
     When a 200 method response is configured
-    Then the method response exists
+    Then the "api gateway" "method" response will exist
     And all "ACTIVE" resources belong to "ACTIVE" APIs
     And all "EXISTING" methods belong to "ACTIVE" resources
     And all "EXISTING" integrations correspond to "EXISTING" methods
@@ -22,14 +22,14 @@ Feature: Apigateway - A 200 Method Response Is Configured
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
   @guard @negative @put_method_response
-  Scenario: a 200 method response is configured fails when the method does not exist
-    Given the method does not exist
+  Scenario: a 200 method response is configured fails when the "api gateway" "method" did not exist
+    Given the "api gateway" "method" did not exist
     When a 200 method response is configured
     Then the operation is rejected
 
   @guard @negative @put_method_response
-  Scenario: a 200 method response is configured fails when the method does not exist
-    Given the method exists
-    And the method does not exist
+  Scenario: a 200 method response is configured fails when the "api gateway" "method" did not exist
+    Given the "api gateway" "method" existed
+    And the "api gateway" "method" did not exist
     When a 200 method response is configured
     Then the operation is rejected

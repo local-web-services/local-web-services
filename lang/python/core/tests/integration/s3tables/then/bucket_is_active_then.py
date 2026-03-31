@@ -1,4 +1,4 @@
-"""Then: the bucket is "ACTIVE" """
+"""Then: the "s3" "bucket" will be "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET
 
 
-@then('the bucket is "ACTIVE"')
+@then('the "s3" "bucket" will be "ACTIVE"')
 def bucket_is_active_then(client: TestClient):
     r = client.get("/buckets")
     actual_names = [b["name"] for b in r.json().get("tableBuckets", [])]

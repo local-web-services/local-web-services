@@ -1,4 +1,4 @@
-"""Then: the function has the tag set"""
+"""Then: the "lambda" "function" has the tag set"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_FUNCTION_ARN, INT_TAG_KEY
 
 
-@then("the function has the tag set")
+@then('the "lambda" "function" has the tag set')
 def function_has_tag_set(client: TestClient, world):
     actual_error = world["error"]
     assert actual_error is None, f"Expected tag to be added but got: {actual_error}"

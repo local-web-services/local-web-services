@@ -1,4 +1,4 @@
-"""When: a database instance finishes creating"""
+"""When: a "documentdb" "instance" finishes creating"""
 
 from __future__ import annotations
 
@@ -6,6 +6,6 @@ import pytest
 from pytest_bdd import when
 
 
-@when("a database instance finishes creating")
+@when('a "documentdb" "instance" finishes creating')
 def instance_finishes_creating(lws_session, world):
     pytest.skip("Cannot trigger internal DocumentDB instance creation completion in lws")

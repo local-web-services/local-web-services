@@ -1,11 +1,11 @@
-"""Then: the replication group is "DELETED" and its tags are removed"""
+"""Then: the "elasticache" "replication group" will be "DELETED" and its tags will be removed"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the replication group is "DELETED" and its tags are removed')
+@then('the "elasticache" "replication group" will be "DELETED" and its tags will be removed')
 def rg_is_deleted_then(world):
     expected_error = None
     actual_error = world["error"]

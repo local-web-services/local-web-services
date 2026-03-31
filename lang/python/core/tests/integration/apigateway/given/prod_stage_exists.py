@@ -1,4 +1,4 @@
-"""Given: the prod stage exists"""
+"""Given: the "api gateway" "prod stage" existed"""
 
 from __future__ import annotations
 
@@ -9,6 +9,6 @@ from ..client import ApigatewayTestClient
 from ..constants import INT_API_NAME_PROD, INT_STAGE_PROD
 
 
-@given("the prod stage exists")
+@given('the "api gateway" "prod stage" existed')
 def prod_stage_exists(client: TestClient):
     ApigatewayTestClient(client).setup_api_with_stage(INT_STAGE_PROD, INT_API_NAME_PROD)

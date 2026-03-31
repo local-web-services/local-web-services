@@ -1,11 +1,11 @@
-"""Then: the upload is "IN_PROGRESS" with no parts"""
+"""Then: the "s3" "upload" will be "IN_PROGRESS" with no parts"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the upload is "IN_PROGRESS" with no parts')
+@then('the "s3" "upload" will be "IN_PROGRESS" with no parts')
 def upload_in_progress_no_parts_then(world):
     expected_field = "UploadId"
     actual_result = world["result"]

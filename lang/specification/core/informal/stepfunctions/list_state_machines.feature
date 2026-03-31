@@ -10,7 +10,7 @@ Feature: Stepfunctions - All State Machines Are Listed
   @minimal @happy @list_state_machines
   Scenario: all state machines are listed
     When all state machines are listed
-    Then the list of state machines is returned
+    Then the list of state machines will be returned
     And every state machine has a valid status ("ACTIVE", "DELETING", or "DELETED")
     And every execution has a valid status ("RUNNING", "SUCCEEDED", "FAILED", "TIMED_OUT", or "ABORTED")
     And every state machine has a valid type ("STANDARD" or "EXPRESS")

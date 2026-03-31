@@ -1,11 +1,11 @@
-"""Then: the domain is in "PROCESSING" state with a pending config change"""
+"""Then: the "elasticsearch" "domain" will be in "PROCESSING" state with a pending config change"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the domain is in "PROCESSING" state with a pending config change')
+@then('the "elasticsearch" "domain" will be in "PROCESSING" state with a pending config change')
 def es_domain_is_in_processing_state(world: dict):
     actual_result = world["result"]
     assert (

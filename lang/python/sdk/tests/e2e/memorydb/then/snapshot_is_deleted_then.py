@@ -1,11 +1,11 @@
-"""Then: the snapshot is "DELETED" and its tags are removed"""
+"""Then: the "memorydb" "snapshot" will be "DELETED" and its tags will be removed"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the snapshot is "DELETED" and its tags are removed')
+@then('the "memorydb" "snapshot" will be "DELETED" and its tags will be removed')
 def snapshot_is_deleted_then(world):
     expected_error = None
     actual_error = world["error"]

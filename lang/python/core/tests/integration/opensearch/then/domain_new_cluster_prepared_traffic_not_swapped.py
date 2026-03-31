@@ -1,11 +1,13 @@
-"""Then: the domain has a new cluster prepared but traffic is not yet swapped"""
+"""Then: the "opensearch" "domain" will have a new cluster prepared but traffic will not yet be swapped"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the domain has a new cluster prepared but traffic is not yet swapped")
+@then(
+    'the "opensearch" "domain" will have a new cluster prepared but traffic will not yet be swapped'
+)
 def domain_new_cluster_prepared_traffic_not_swapped(world: dict):
     actual_result = world["result"]
     assert (

@@ -1,4 +1,4 @@
-"""When: a table is created"""
+"""When: a "dynamodb" "table" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import DynamodbTestClient
 from ..constants import TEST_PK, TEST_TABLE, _store
 
 
-@when("a table is created")
+@when('a "dynamodb" "table" is created')
 def create_table(client: TestClient, world: dict):
     r = DynamodbTestClient(client).post(
         "CreateTable",

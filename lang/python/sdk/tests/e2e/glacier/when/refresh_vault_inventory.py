@@ -1,4 +1,4 @@
-"""When: a vault inventory is refreshed"""
+"""When: a "glacier" "vault" inventory is refreshed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_VAULT
 
 
-@when("a vault inventory is refreshed")
+@when('a "glacier" "vault" inventory is refreshed')
 def refresh_vault_inventory(lws_session, world):
     try:
         result = lws_session.client("glacier").initiate_job(

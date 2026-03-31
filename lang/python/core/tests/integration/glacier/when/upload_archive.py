@@ -1,4 +1,4 @@
-"""When: an archive is uploaded to a vault"""
+"""When: a "glacier" "archive" is uploaded to a "glacier" "vault" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_ARCHIVE_BODY, INT_VAULT_NAME
 
 
-@when("an archive is uploaded to a vault")
+@when('a "glacier" "archive" is uploaded to a "glacier" "vault"')
 def upload_archive(client: TestClient, world):
     vault_name = world.get("vault_name", INT_VAULT_NAME)
     r = client.post(

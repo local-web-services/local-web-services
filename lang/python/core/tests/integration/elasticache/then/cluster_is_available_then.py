@@ -1,4 +1,4 @@
-"""Then: the cluster is "AVAILABLE" """
+"""Then: the "documentdb" "cluster" will be "AVAILABLE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_CLUSTER_ID
 
 
-@then('the cluster is "AVAILABLE"')
+@then('the "documentdb" "cluster" will be "AVAILABLE"')
 def cluster_is_available_then(client: TestClient):
     r = client.post(
         "/",

@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-import pytest
-from pytest_bdd import given, parsers
+from pytest_bdd import given
+
+from ..client import LambdaTestClient
 
 
-@given(parsers.re(r'^the function is "PENDING"$'))
-def function_is_pending_given():
-    pytest.skip("Cannot observe Lambda PENDING state in lws without lifecycle dwell")
+@given('the "lambda" "function" was "PENDING"')
+def function_is_pending_given(lws_session):
+    lws_session.lifecycle("lambda").create_dwell_ms(5000).apply()
+    LambdaTestClient(lws_session).create_function()

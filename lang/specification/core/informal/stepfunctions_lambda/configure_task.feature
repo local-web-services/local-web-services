@@ -9,11 +9,11 @@ Feature: StepfunctionsLambda - A Lambda Task Is Configured On The State Machine
 
   @minimal @happy @configure_task
   Scenario: a Lambda task is configured on the state machine
-    Given the state machine exists
-    And the state machine is "ACTIVE"
+    Given the "step functions" "state machine" existed
+    And the "step functions" "state machine" was "ACTIVE"
     And the state machine has no Lambda task configured
-    And the function exists
-    And the function is "ACTIVE"
+    And the "lambda" "function" existed
+    And the "lambda" "function" was "ACTIVE"
     When a Lambda task is configured on the state machine
     Then the state machine will invoke the function when it reaches the task state
     And every "RUNNING" execution references an "ACTIVE" state machine
@@ -21,41 +21,41 @@ Feature: StepfunctionsLambda - A Lambda Task Is Configured On The State Machine
     And every "IN_PROGRESS" invocation has a corresponding "RUNNING" execution
 
   @guard @negative @configure_task
-  Scenario: a Lambda task is configured on the state machine fails when the state machine does not exist
-    Given the state machine does not exist
+  Scenario: a Lambda task is configured on the state machine fails when the "step functions" "state machine" did not exist
+    Given the "step functions" "state machine" did not exist
     When a Lambda task is configured on the state machine
     Then the operation is rejected
 
   @guard @negative @configure_task @lifecycle
-  Scenario: a Lambda task is configured on the state machine fails when the state machine is not "ACTIVE"
-    Given the state machine exists
-    And the state machine is not "ACTIVE"
+  Scenario: a Lambda task is configured on the state machine fails when the "step functions" "state machine" was not "ACTIVE"
+    Given the "step functions" "state machine" existed
+    And the "step functions" "state machine" was not "ACTIVE"
     When a Lambda task is configured on the state machine
     Then the operation is rejected
 
   @guard @negative @configure_task
   Scenario: a Lambda task is configured on the state machine fails when the state machine already has a Lambda task configured
-    Given the state machine exists
-    And the state machine is "ACTIVE"
+    Given the "step functions" "state machine" existed
+    And the "step functions" "state machine" was "ACTIVE"
     And the state machine already has a Lambda task configured
     When a Lambda task is configured on the state machine
     Then the operation is rejected
 
   @guard @negative @configure_task
-  Scenario: a Lambda task is configured on the state machine fails when the function does not exist
-    Given the state machine exists
-    And the state machine is "ACTIVE"
+  Scenario: a Lambda task is configured on the state machine fails when the "lambda" "function" did not exist
+    Given the "step functions" "state machine" existed
+    And the "step functions" "state machine" was "ACTIVE"
     And the state machine has no Lambda task configured
-    And the function does not exist
+    And the "lambda" "function" did not exist
     When a Lambda task is configured on the state machine
     Then the operation is rejected
 
   @guard @negative @configure_task @lifecycle
-  Scenario: a Lambda task is configured on the state machine fails when the function is not "ACTIVE"
-    Given the state machine exists
-    And the state machine is "ACTIVE"
+  Scenario: a Lambda task is configured on the state machine fails when the "lambda" "function" was not "ACTIVE"
+    Given the "step functions" "state machine" existed
+    And the "step functions" "state machine" was "ACTIVE"
     And the state machine has no Lambda task configured
-    And the function exists
-    And the function is not "ACTIVE"
+    And the "lambda" "function" existed
+    And the "lambda" "function" was not "ACTIVE"
     When a Lambda task is configured on the state machine
     Then the operation is rejected

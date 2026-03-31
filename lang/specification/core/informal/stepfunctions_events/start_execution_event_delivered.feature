@@ -9,52 +9,52 @@ Feature: StepfunctionsEvents - An Execution Starts And Step Functions Delivers A
 
   @minimal @happy @start_execution_event_delivered
   Scenario: an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus
-    Given the state machine exists and is "ACTIVE"
+    Given the "step functions" "state machine" existed and was "ACTIVE"
     And the state machine has an EventBridge bus configured
-    And the bus is "ACTIVE"
-    And an execution slot is available
+    And the bus was "ACTIVE"
+    And an "step functions" "execution" slot is available
     And an event slot is available
     When an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus
-    Then the execution is "RUNNING" and the "STARTED" event is "DELIVERED"
+    Then the "step functions" "execution" will be "RUNNING" and the "STARTED" event will be "DELIVERED"
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every "DELIVERED" event references an execution that exists
 
   @guard @negative @start_execution_event_delivered @lifecycle
-  Scenario: an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus fails when the state machine does not exist or is not "ACTIVE"
-    Given the state machine does not exist or is not "ACTIVE"
+  Scenario: an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus fails when the "step functions" "state machine" did not exist or was "ACTIVE"
+    Given the "step functions" "state machine" did not exist or was "ACTIVE"
     When an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus
     Then the operation is rejected
 
   @guard @negative @start_execution_event_delivered
   Scenario: an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus fails when the state machine has no EventBridge bus configured
-    Given the state machine exists and is "ACTIVE"
+    Given the "step functions" "state machine" existed and was "ACTIVE"
     And the state machine has no EventBridge bus configured
     When an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus
     Then the operation is rejected
 
   @guard @negative @start_execution_event_delivered @lifecycle
-  Scenario: an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus fails when the bus is "DELETED"
-    Given the state machine exists and is "ACTIVE"
+  Scenario: an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus fails when the bus was "DELETED"
+    Given the "step functions" "state machine" existed and was "ACTIVE"
     And the state machine has an EventBridge bus configured
-    And the bus is "DELETED"
+    And the bus was "DELETED"
     When an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus
     Then the operation is rejected
 
-  @guard @negative @internal @start_execution_event_delivered @capacity
+  @guard @negative @start_execution_event_delivered @capacity
   Scenario: an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus fails when no execution slot is available
-    Given the state machine exists and is "ACTIVE"
+    Given the "step functions" "state machine" existed and was "ACTIVE"
     And the state machine has an EventBridge bus configured
-    And the bus is "ACTIVE"
+    And the bus was "ACTIVE"
     And no execution slot is available
     When an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus
     Then the operation is rejected
 
-  @guard @negative @internal @start_execution_event_delivered @capacity
+  @guard @negative @start_execution_event_delivered @capacity
   Scenario: an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus fails when no event slot is available
-    Given the state machine exists and is "ACTIVE"
+    Given the "step functions" "state machine" existed and was "ACTIVE"
     And the state machine has an EventBridge bus configured
-    And the bus is "ACTIVE"
-    And an execution slot is available
+    And the bus was "ACTIVE"
+    And an "step functions" "execution" slot is available
     And no event slot is available
     When an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus
     Then the operation is rejected

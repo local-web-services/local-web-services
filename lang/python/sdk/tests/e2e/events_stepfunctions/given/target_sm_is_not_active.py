@@ -1,4 +1,4 @@
-"""Given: the target state machine is not "ACTIVE" """
+"""Given: the target state machine was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import EventsStepfunctionsTestClient
 from ..constants import _sm_arn
 
 
-@given('the target state machine is not "ACTIVE"')
+@given('the target state machine was not "ACTIVE"')
 def target_sm_is_not_active(lws_session, world):
     lws_session.lifecycle("stepfunctions").create_dwell_ms(5000).apply()
     try:

@@ -1,11 +1,11 @@
-"""When: the Lambda function fails to connect because the Neptune cluster is stopped"""
+"""When: the "lambda" "function" fails to connect because the "neptune" "cluster" is stopped"""
 
 from __future__ import annotations
 
 from pytest_bdd import when
 
 
-@when("the Lambda function fails to connect because the Neptune cluster is stopped")
+@when('the "lambda" "function" fails to connect because the "neptune" "cluster" is stopped')
 def invocation_fails_cluster_stopped(lws_session, world):
     # Arrange
     invocation_id = world.get("invocation_id")

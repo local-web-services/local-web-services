@@ -1,4 +1,4 @@
-"""Then: the secret is "PENDING_DELETION" and will cause task failures when read"""
+"""Then: the "secrets manager" "secret" will be "PENDING_DELETION" and will cause task failures when read"""
 
 from __future__ import annotations
 
@@ -7,7 +7,9 @@ from pytest_bdd import then
 from ..constants import TEST_SECRET
 
 
-@then('the secret is "PENDING_DELETION" and will cause task failures when read')
+@then(
+    'the "secrets manager" "secret" will be "PENDING_DELETION" and will cause task failures when read'
+)
 def secret_is_pending_deletion_then(lws_session):
     resp = lws_session.client("secretsmanager").list_secrets(IncludePlannedDeletion=True)
     actual_names = [s["Name"] for s in resp.get("SecretList", [])]

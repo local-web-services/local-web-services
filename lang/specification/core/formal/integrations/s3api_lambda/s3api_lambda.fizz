@@ -24,10 +24,10 @@ action Init:
     inv_obj = {}                # inv_obj[iid] = obj_id
 
 
-# step: an S3 bucket is created
-# result: the bucket is ACTIVE with no event notification configured
-# guard: the bucket does not already exist
-# guard_violation: the bucket already exists
+# step: a "s3" "bucket" is created
+# result: the bucket will be "ACTIVE" with no event notification configured
+# guard: the bucket did not already exist
+# guard_violation: the bucket already existed
 atomic action CreateBucket:
     oneof bid in BUCKET_IDS:
         if bid not in bucket_status:
@@ -35,28 +35,28 @@ atomic action CreateBucket:
             bucket_func[bid] = ""
 
 
-# step: a Lambda function is deployed
-# result: the function is ACTIVE
-# guard: the function does not already exist
-# guard_violation: the function already exists
+# step: a "lambda" "function" is deployed
+# result: the "lambda" "function" will be "ACTIVE"
+# guard: the "lambda" "function" did not already exist
+# guard_violation: the "lambda" "function" already existed
 atomic action DeployFunction:
     oneof fid in FUNC_IDS:
         if fid not in func_status:
             func_status[fid] = "ACTIVE"
 
 
-# step: an S3 event notification is configured to invoke a Lambda function on object PUT
+# step: a S3 event notification is configured to invoke a "lambda" "function" on object PUT
 # result: the bucket will asynchronously invoke the function when an object is put
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
+# guard: the bucket existed
+# guard_violation: the bucket did not exist
+# guard: the bucket was "ACTIVE"
+# guard_violation_lifecycle: the bucket was not "ACTIVE"
 # guard: the bucket has no notification configured
 # guard_violation: the bucket already has a notification configured
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
 atomic action ConfigureNotification:
     oneof bid in BUCKET_IDS:
         if bid in bucket_status:
@@ -69,18 +69,18 @@ atomic action ConfigureNotification:
 
 
 # step: an object is put into the bucket and asynchronously invokes the configured Lambda function
-# result: the object EXISTS in the bucket and an invocation is IN_PROGRESS
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
+# result: the object will exist in the bucket and an invocation will be "IN_PROGRESS"
+# guard: the bucket existed
+# guard_violation: the bucket did not exist
+# guard: the bucket was "ACTIVE"
+# guard_violation_lifecycle: the bucket was not "ACTIVE"
 # guard: the bucket has a notification configured
 # guard_violation: the bucket has no notification configured
-# guard: the notification target function is ACTIVE
-# guard_violation_lifecycle: the notification target function is not ACTIVE
+# guard: the notification target function was "ACTIVE"
+# guard_violation_lifecycle: the notification target function was not "ACTIVE"
 # guard: an object slot is available
 # guard_violation_capacity: no object slot is available
-# guard: an invocation slot is available
+# guard: a "lambda" "invocation" slot is available
 # guard_violation_capacity: no invocation slot is available
 atomic action PutObjectAndNotify:
     oneof bid in BUCKET_IDS:
@@ -103,9 +103,9 @@ atomic action PutObjectAndNotify:
 
 # fake_skip: internal
 # step: the Lambda invocation completes successfully
-# result: the invocation is SUCCESS
-# guard: an invocation is IN_PROGRESS
-# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# result: the invocation will be "SUCCESS"
+# guard: a "lambda" "invocation" was "IN_PROGRESS"
+# guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationSucceeds:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -115,9 +115,9 @@ atomic action InvocationSucceeds:
 
 # fake_skip: internal
 # step: the Lambda invocation fails
-# result: the invocation is FAILED
-# guard: an invocation is IN_PROGRESS
-# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# result: the invocation will be "FAILED"
+# guard: a "lambda" "invocation" was "IN_PROGRESS"
+# guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationFails:
     oneof iid in INV_IDS:
         if iid in inv_status:

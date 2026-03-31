@@ -1,4 +1,4 @@
-"""Given: the table already exists"""
+"""Given: the "dynamodb" "table" already existed"""
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import given
 from ..client import EventsDynamodbTestClient
 
 
-@given("the table already exists")
+@given('the "dynamodb" "table" already existed')
 def table_already_exists(lws_session):
     EventsDynamodbTestClient(lws_session).create_table()

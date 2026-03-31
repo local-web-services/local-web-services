@@ -1,4 +1,4 @@
-"""When: metadata or description for an active secret is updated"""
+"""When: metadata or description for an active "secrets manager" "secret" is updated"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SM_TARGET_PREFIX, INT_DESCRIPTION, INT_SECRET
 
 
-@when("metadata or description for an active secret is updated")
+@when('metadata or description for an active "secrets manager" "secret" is updated')
 def update_secret(sync_client: TestClient, world):
     r = sync_client.post(
         "/",

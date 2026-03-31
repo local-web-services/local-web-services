@@ -1,4 +1,4 @@
-"""When: an existing parameter value is updated"""
+"""When: an existing "ssm" "parameter" value is updated"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SSM_TARGET, INT_PARAM, INT_VALUE2
 
 
-@when("an existing parameter value is updated")
+@when('an existing "ssm" "parameter" value is updated')
 def put_parameter_overwrite(client: TestClient, world):
     # Check parameter existence — lws creates the param even when absent
     desc_r = client.post(

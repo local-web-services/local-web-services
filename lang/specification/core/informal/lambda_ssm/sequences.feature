@@ -8,511 +8,511 @@ Feature: LambdaSsm - Action Sequences
     Given the system is initialized
 
   @sequence
-  Scenario: a Lambda function is deployed then a parameter is created in "SSM" Parameter Store
+  Scenario: a "lambda" "function" is deployed then a "ssm" "parameter" is created
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When a parameter is created in "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When a "ssm" "parameter" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a Lambda function is deployed then a parameter is deleted from "SSM" Parameter Store
+  Scenario: a "lambda" "function" is deployed then a "ssm" "parameter" is deleted
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When a parameter is deleted from "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When a "ssm" "parameter" is deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function is invoked
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" is invoked
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function reads an existing parameter and completes successfully
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" reads an existing parameter and completes successfully
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When the Lambda function reads an existing parameter and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function fails because the parameter has been deleted
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" fails because the parameter has been deleted
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    When the Lambda function fails because the parameter has been deleted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" fails because the parameter has been deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is created in "SSM" Parameter Store then a Lambda function is deployed
+  Scenario: a "ssm" "parameter" is created then a "lambda" "function" is deployed
     Given pid not in param_status
-    Given a parameter has been created in "SSM" Parameter Store
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is created
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is created in "SSM" Parameter Store then a parameter is deleted from "SSM" Parameter Store
+  Scenario: a "ssm" "parameter" is created then a "ssm" "parameter" is deleted
     Given pid not in param_status
-    Given a parameter has been created in "SSM" Parameter Store
-    When a parameter is deleted from "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is created
+    When a "ssm" "parameter" is deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is created in "SSM" Parameter Store then the Lambda function is invoked
+  Scenario: a "ssm" "parameter" is created then the "lambda" "function" is invoked
     Given pid not in param_status
-    Given a parameter has been created in "SSM" Parameter Store
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is created
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is created in "SSM" Parameter Store then the Lambda function reads an existing parameter and completes successfully
+  Scenario: a "ssm" "parameter" is created then the "lambda" "function" reads an existing parameter and completes successfully
     Given pid not in param_status
-    Given a parameter has been created in "SSM" Parameter Store
-    When the Lambda function reads an existing parameter and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is created
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is created in "SSM" Parameter Store then the Lambda function fails because the parameter has been deleted
+  Scenario: a "ssm" "parameter" is created then the "lambda" "function" fails because the parameter has been deleted
     Given pid not in param_status
-    Given a parameter has been created in "SSM" Parameter Store
-    When the Lambda function fails because the parameter has been deleted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is created
+    When the "lambda" "function" fails because the parameter has been deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" Parameter Store then a Lambda function is deployed
+  Scenario: a "ssm" "parameter" is deleted then a "lambda" "function" is deployed
     Given pid in param_status
-    Given a parameter has been deleted from "SSM" Parameter Store
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is deleted
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" Parameter Store then a parameter is created in "SSM" Parameter Store
+  Scenario: a "ssm" "parameter" is deleted then a "ssm" "parameter" is created
     Given pid in param_status
-    Given a parameter has been deleted from "SSM" Parameter Store
-    When a parameter is created in "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is deleted
+    When a "ssm" "parameter" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" Parameter Store then the Lambda function is invoked
+  Scenario: a "ssm" "parameter" is deleted then the "lambda" "function" is invoked
     Given pid in param_status
-    Given a parameter has been deleted from "SSM" Parameter Store
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is deleted
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" Parameter Store then the Lambda function reads an existing parameter and completes successfully
+  Scenario: a "ssm" "parameter" is deleted then the "lambda" "function" reads an existing parameter and completes successfully
     Given pid in param_status
-    Given a parameter has been deleted from "SSM" Parameter Store
-    When the Lambda function reads an existing parameter and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is deleted
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" Parameter Store then the Lambda function fails because the parameter has been deleted
+  Scenario: a "ssm" "parameter" is deleted then the "lambda" "function" fails because the parameter has been deleted
     Given pid in param_status
-    Given a parameter has been deleted from "SSM" Parameter Store
-    When the Lambda function fails because the parameter has been deleted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is deleted
+    When the "lambda" "function" fails because the parameter has been deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function is invoked then a Lambda function is deployed
+  Scenario: the "lambda" "function" is invoked then a "lambda" "function" is deployed
     Given fid in func_status
-    Given the Lambda function has been invoked
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function is invoked then a parameter is created in "SSM" Parameter Store
+  Scenario: the "lambda" "function" is invoked then a "ssm" "parameter" is created
     Given fid in func_status
-    Given the Lambda function has been invoked
-    When a parameter is created in "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When a "ssm" "parameter" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function is invoked then a parameter is deleted from "SSM" Parameter Store
+  Scenario: the "lambda" "function" is invoked then a "ssm" "parameter" is deleted
     Given fid in func_status
-    Given the Lambda function has been invoked
-    When a parameter is deleted from "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When a "ssm" "parameter" is deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function is invoked then the Lambda function reads an existing parameter and completes successfully
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" reads an existing parameter and completes successfully
     Given fid in func_status
-    Given the Lambda function has been invoked
-    When the Lambda function reads an existing parameter and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function is invoked then the Lambda function fails because the parameter has been deleted
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" fails because the parameter has been deleted
     Given fid in func_status
-    Given the Lambda function has been invoked
-    When the Lambda function fails because the parameter has been deleted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" fails because the parameter has been deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function reads an existing parameter and completes successfully then a Lambda function is deployed
+  Scenario: the "lambda" "function" reads an existing parameter and completes successfully then a "lambda" "function" is deployed
     Given iid in inv_status
-    Given the Lambda function has read an existing parameter and completed successfully
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function reads an existing parameter and completes successfully then a parameter is created in "SSM" Parameter Store
+  Scenario: the "lambda" "function" reads an existing parameter and completes successfully then a "ssm" "parameter" is created
     Given iid in inv_status
-    Given the Lambda function has read an existing parameter and completed successfully
-    When a parameter is created in "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    When a "ssm" "parameter" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function reads an existing parameter and completes successfully then a parameter is deleted from "SSM" Parameter Store
+  Scenario: the "lambda" "function" reads an existing parameter and completes successfully then a "ssm" "parameter" is deleted
     Given iid in inv_status
-    Given the Lambda function has read an existing parameter and completed successfully
-    When a parameter is deleted from "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    When a "ssm" "parameter" is deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function reads an existing parameter and completes successfully then the Lambda function is invoked
+  Scenario: the "lambda" "function" reads an existing parameter and completes successfully then the "lambda" "function" is invoked
     Given iid in inv_status
-    Given the Lambda function has read an existing parameter and completed successfully
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function reads an existing parameter and completes successfully then the Lambda function fails because the parameter has been deleted
+  Scenario: the "lambda" "function" reads an existing parameter and completes successfully then the "lambda" "function" fails because the parameter has been deleted
     Given iid in inv_status
-    Given the Lambda function has read an existing parameter and completed successfully
-    When the Lambda function fails because the parameter has been deleted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    When the "lambda" "function" fails because the parameter has been deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function fails because the parameter has been deleted then a Lambda function is deployed
+  Scenario: the "lambda" "function" fails because the parameter has been deleted then a "lambda" "function" is deployed
     Given iid in inv_status
-    Given the Lambda function has failed because the parameter has been deleted
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the parameter has been deleted
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function fails because the parameter has been deleted then a parameter is created in "SSM" Parameter Store
+  Scenario: the "lambda" "function" fails because the parameter has been deleted then a "ssm" "parameter" is created
     Given iid in inv_status
-    Given the Lambda function has failed because the parameter has been deleted
-    When a parameter is created in "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the parameter has been deleted
+    When a "ssm" "parameter" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function fails because the parameter has been deleted then a parameter is deleted from "SSM" Parameter Store
+  Scenario: the "lambda" "function" fails because the parameter has been deleted then a "ssm" "parameter" is deleted
     Given iid in inv_status
-    Given the Lambda function has failed because the parameter has been deleted
-    When a parameter is deleted from "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the parameter has been deleted
+    When a "ssm" "parameter" is deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function fails because the parameter has been deleted then the Lambda function is invoked
+  Scenario: the "lambda" "function" fails because the parameter has been deleted then the "lambda" "function" is invoked
     Given iid in inv_status
-    Given the Lambda function has failed because the parameter has been deleted
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the parameter has been deleted
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function fails because the parameter has been deleted then the Lambda function reads an existing parameter and completes successfully
+  Scenario: the "lambda" "function" fails because the parameter has been deleted then the "lambda" "function" reads an existing parameter and completes successfully
     Given iid in inv_status
-    Given the Lambda function has failed because the parameter has been deleted
-    When the Lambda function reads an existing parameter and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the parameter has been deleted
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a Lambda function is deployed then a parameter is created in "SSM" Parameter Store then a parameter is deleted from "SSM" Parameter Store
+  Scenario: a "lambda" "function" is deployed then a "ssm" "parameter" is created then a "ssm" "parameter" is deleted
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given a parameter has been created in "SSM" Parameter Store
-    When a parameter is deleted from "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When a "ssm" "parameter" is created
+    When a "ssm" "parameter" is deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a Lambda function is deployed then a parameter is deleted from "SSM" Parameter Store then the Lambda function is invoked
+  Scenario: a "lambda" "function" is deployed then a "ssm" "parameter" is deleted then the "lambda" "function" is invoked
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given a parameter has been deleted from "SSM" Parameter Store
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When a "ssm" "parameter" is deleted
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function is invoked then the Lambda function reads an existing parameter and completes successfully
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" is invoked then the "lambda" "function" reads an existing parameter and completes successfully
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given the Lambda function has been invoked
-    When the Lambda function reads an existing parameter and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function reads an existing parameter and completes successfully then the Lambda function fails because the parameter has been deleted
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" reads an existing parameter and completes successfully then the "lambda" "function" fails because the parameter has been deleted
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given the Lambda function has read an existing parameter and completed successfully
-    When the Lambda function fails because the parameter has been deleted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    When the "lambda" "function" fails because the parameter has been deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a Lambda function is deployed then the Lambda function fails because the parameter has been deleted then a parameter is created in "SSM" Parameter Store
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" fails because the parameter has been deleted then a "ssm" "parameter" is created
     Given fid not in func_status
-    Given a Lambda function has been deployed
-    Given the Lambda function has failed because the parameter has been deleted
-    When a parameter is created in "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" fails because the parameter has been deleted
+    When a "ssm" "parameter" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is created in "SSM" Parameter Store then a Lambda function is deployed then the Lambda function is invoked
+  Scenario: a "ssm" "parameter" is created then a "lambda" "function" is deployed then the "lambda" "function" is invoked
     Given pid not in param_status
-    Given a parameter has been created in "SSM" Parameter Store
-    Given a Lambda function has been deployed
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is created
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is created in "SSM" Parameter Store then a parameter is deleted from "SSM" Parameter Store then the Lambda function reads an existing parameter and completes successfully
+  Scenario: a "ssm" "parameter" is created then a "ssm" "parameter" is deleted then the "lambda" "function" reads an existing parameter and completes successfully
     Given pid not in param_status
-    Given a parameter has been created in "SSM" Parameter Store
-    Given a parameter has been deleted from "SSM" Parameter Store
-    When the Lambda function reads an existing parameter and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is created
+    When a "ssm" "parameter" is deleted
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is created in "SSM" Parameter Store then the Lambda function is invoked then the Lambda function fails because the parameter has been deleted
+  Scenario: a "ssm" "parameter" is created then the "lambda" "function" is invoked then the "lambda" "function" fails because the parameter has been deleted
     Given pid not in param_status
-    Given a parameter has been created in "SSM" Parameter Store
-    Given the Lambda function has been invoked
-    When the Lambda function fails because the parameter has been deleted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is created
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" fails because the parameter has been deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is created in "SSM" Parameter Store then the Lambda function reads an existing parameter and completes successfully then a Lambda function is deployed
+  Scenario: a "ssm" "parameter" is created then the "lambda" "function" reads an existing parameter and completes successfully then a "lambda" "function" is deployed
     Given pid not in param_status
-    Given a parameter has been created in "SSM" Parameter Store
-    Given the Lambda function has read an existing parameter and completed successfully
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is created
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is created in "SSM" Parameter Store then the Lambda function fails because the parameter has been deleted then a parameter is deleted from "SSM" Parameter Store
+  Scenario: a "ssm" "parameter" is created then the "lambda" "function" fails because the parameter has been deleted then a "ssm" "parameter" is deleted
     Given pid not in param_status
-    Given a parameter has been created in "SSM" Parameter Store
-    Given the Lambda function has failed because the parameter has been deleted
-    When a parameter is deleted from "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is created
+    When the "lambda" "function" fails because the parameter has been deleted
+    When a "ssm" "parameter" is deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" Parameter Store then a Lambda function is deployed then the Lambda function reads an existing parameter and completes successfully
+  Scenario: a "ssm" "parameter" is deleted then a "lambda" "function" is deployed then the "lambda" "function" reads an existing parameter and completes successfully
     Given pid in param_status
-    Given a parameter has been deleted from "SSM" Parameter Store
-    Given a Lambda function has been deployed
-    When the Lambda function reads an existing parameter and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is deleted
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" Parameter Store then a parameter is created in "SSM" Parameter Store then the Lambda function fails because the parameter has been deleted
+  Scenario: a "ssm" "parameter" is deleted then a "ssm" "parameter" is created then the "lambda" "function" fails because the parameter has been deleted
     Given pid in param_status
-    Given a parameter has been deleted from "SSM" Parameter Store
-    Given a parameter has been created in "SSM" Parameter Store
-    When the Lambda function fails because the parameter has been deleted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is deleted
+    When a "ssm" "parameter" is created
+    When the "lambda" "function" fails because the parameter has been deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" Parameter Store then the Lambda function is invoked then a Lambda function is deployed
+  Scenario: a "ssm" "parameter" is deleted then the "lambda" "function" is invoked then a "lambda" "function" is deployed
     Given pid in param_status
-    Given a parameter has been deleted from "SSM" Parameter Store
-    Given the Lambda function has been invoked
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is deleted
+    When the "lambda" "function" is invoked
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" Parameter Store then the Lambda function reads an existing parameter and completes successfully then a parameter is created in "SSM" Parameter Store
+  Scenario: a "ssm" "parameter" is deleted then the "lambda" "function" reads an existing parameter and completes successfully then a "ssm" "parameter" is created
     Given pid in param_status
-    Given a parameter has been deleted from "SSM" Parameter Store
-    Given the Lambda function has read an existing parameter and completed successfully
-    When a parameter is created in "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is deleted
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    When a "ssm" "parameter" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: a parameter is deleted from "SSM" Parameter Store then the Lambda function fails because the parameter has been deleted then the Lambda function is invoked
+  Scenario: a "ssm" "parameter" is deleted then the "lambda" "function" fails because the parameter has been deleted then the "lambda" "function" is invoked
     Given pid in param_status
-    Given a parameter has been deleted from "SSM" Parameter Store
-    Given the Lambda function has failed because the parameter has been deleted
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When a "ssm" "parameter" is deleted
+    When the "lambda" "function" fails because the parameter has been deleted
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function is invoked then a Lambda function is deployed then the Lambda function fails because the parameter has been deleted
+  Scenario: the "lambda" "function" is invoked then a "lambda" "function" is deployed then the "lambda" "function" fails because the parameter has been deleted
     Given fid in func_status
-    Given the Lambda function has been invoked
-    Given a Lambda function has been deployed
-    When the Lambda function fails because the parameter has been deleted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When a "lambda" "function" is deployed
+    When the "lambda" "function" fails because the parameter has been deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function is invoked then a parameter is created in "SSM" Parameter Store then a Lambda function is deployed
+  Scenario: the "lambda" "function" is invoked then a "ssm" "parameter" is created then a "lambda" "function" is deployed
     Given fid in func_status
-    Given the Lambda function has been invoked
-    Given a parameter has been created in "SSM" Parameter Store
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When a "ssm" "parameter" is created
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function is invoked then a parameter is deleted from "SSM" Parameter Store then a parameter is created in "SSM" Parameter Store
+  Scenario: the "lambda" "function" is invoked then a "ssm" "parameter" is deleted then a "ssm" "parameter" is created
     Given fid in func_status
-    Given the Lambda function has been invoked
-    Given a parameter has been deleted from "SSM" Parameter Store
-    When a parameter is created in "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When a "ssm" "parameter" is deleted
+    When a "ssm" "parameter" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function is invoked then the Lambda function reads an existing parameter and completes successfully then a parameter is deleted from "SSM" Parameter Store
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" reads an existing parameter and completes successfully then a "ssm" "parameter" is deleted
     Given fid in func_status
-    Given the Lambda function has been invoked
-    Given the Lambda function has read an existing parameter and completed successfully
-    When a parameter is deleted from "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    When a "ssm" "parameter" is deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function is invoked then the Lambda function fails because the parameter has been deleted then the Lambda function reads an existing parameter and completes successfully
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" fails because the parameter has been deleted then the "lambda" "function" reads an existing parameter and completes successfully
     Given fid in func_status
-    Given the Lambda function has been invoked
-    Given the Lambda function has failed because the parameter has been deleted
-    When the Lambda function reads an existing parameter and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" fails because the parameter has been deleted
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function reads an existing parameter and completes successfully then a Lambda function is deployed then a parameter is created in "SSM" Parameter Store
+  Scenario: the "lambda" "function" reads an existing parameter and completes successfully then a "lambda" "function" is deployed then a "ssm" "parameter" is created
     Given iid in inv_status
-    Given the Lambda function has read an existing parameter and completed successfully
-    Given a Lambda function has been deployed
-    When a parameter is created in "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    When a "lambda" "function" is deployed
+    When a "ssm" "parameter" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function reads an existing parameter and completes successfully then a parameter is created in "SSM" Parameter Store then a parameter is deleted from "SSM" Parameter Store
+  Scenario: the "lambda" "function" reads an existing parameter and completes successfully then a "ssm" "parameter" is created then a "ssm" "parameter" is deleted
     Given iid in inv_status
-    Given the Lambda function has read an existing parameter and completed successfully
-    Given a parameter has been created in "SSM" Parameter Store
-    When a parameter is deleted from "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    When a "ssm" "parameter" is created
+    When a "ssm" "parameter" is deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function reads an existing parameter and completes successfully then a parameter is deleted from "SSM" Parameter Store then the Lambda function is invoked
+  Scenario: the "lambda" "function" reads an existing parameter and completes successfully then a "ssm" "parameter" is deleted then the "lambda" "function" is invoked
     Given iid in inv_status
-    Given the Lambda function has read an existing parameter and completed successfully
-    Given a parameter has been deleted from "SSM" Parameter Store
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    When a "ssm" "parameter" is deleted
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function reads an existing parameter and completes successfully then the Lambda function is invoked then the Lambda function fails because the parameter has been deleted
+  Scenario: the "lambda" "function" reads an existing parameter and completes successfully then the "lambda" "function" is invoked then the "lambda" "function" fails because the parameter has been deleted
     Given iid in inv_status
-    Given the Lambda function has read an existing parameter and completed successfully
-    Given the Lambda function has been invoked
-    When the Lambda function fails because the parameter has been deleted
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    When the "lambda" "function" is invoked
+    When the "lambda" "function" fails because the parameter has been deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function reads an existing parameter and completes successfully then the Lambda function fails because the parameter has been deleted then a Lambda function is deployed
+  Scenario: the "lambda" "function" reads an existing parameter and completes successfully then the "lambda" "function" fails because the parameter has been deleted then a "lambda" "function" is deployed
     Given iid in inv_status
-    Given the Lambda function has read an existing parameter and completed successfully
-    Given the Lambda function has failed because the parameter has been deleted
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    When the "lambda" "function" fails because the parameter has been deleted
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function fails because the parameter has been deleted then a Lambda function is deployed then a parameter is deleted from "SSM" Parameter Store
+  Scenario: the "lambda" "function" fails because the parameter has been deleted then a "lambda" "function" is deployed then a "ssm" "parameter" is deleted
     Given iid in inv_status
-    Given the Lambda function has failed because the parameter has been deleted
-    Given a Lambda function has been deployed
-    When a parameter is deleted from "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the parameter has been deleted
+    When a "lambda" "function" is deployed
+    When a "ssm" "parameter" is deleted
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function fails because the parameter has been deleted then a parameter is created in "SSM" Parameter Store then the Lambda function is invoked
+  Scenario: the "lambda" "function" fails because the parameter has been deleted then a "ssm" "parameter" is created then the "lambda" "function" is invoked
     Given iid in inv_status
-    Given the Lambda function has failed because the parameter has been deleted
-    Given a parameter has been created in "SSM" Parameter Store
-    When the Lambda function is invoked
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the parameter has been deleted
+    When a "ssm" "parameter" is created
+    When the "lambda" "function" is invoked
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function fails because the parameter has been deleted then a parameter is deleted from "SSM" Parameter Store then the Lambda function reads an existing parameter and completes successfully
+  Scenario: the "lambda" "function" fails because the parameter has been deleted then a "ssm" "parameter" is deleted then the "lambda" "function" reads an existing parameter and completes successfully
     Given iid in inv_status
-    Given the Lambda function has failed because the parameter has been deleted
-    Given a parameter has been deleted from "SSM" Parameter Store
-    When the Lambda function reads an existing parameter and completes successfully
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the parameter has been deleted
+    When a "ssm" "parameter" is deleted
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function fails because the parameter has been deleted then the Lambda function is invoked then a Lambda function is deployed
+  Scenario: the "lambda" "function" fails because the parameter has been deleted then the "lambda" "function" is invoked then a "lambda" "function" is deployed
     Given iid in inv_status
-    Given the Lambda function has failed because the parameter has been deleted
-    Given the Lambda function has been invoked
-    When a Lambda function is deployed
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the parameter has been deleted
+    When the "lambda" "function" is invoked
+    When a "lambda" "function" is deployed
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @sequence
-  Scenario: the Lambda function fails because the parameter has been deleted then the Lambda function reads an existing parameter and completes successfully then a parameter is created in "SSM" Parameter Store
+  Scenario: the "lambda" "function" fails because the parameter has been deleted then the "lambda" "function" reads an existing parameter and completes successfully then a "ssm" "parameter" is created
     Given iid in inv_status
-    Given the Lambda function has failed because the parameter has been deleted
-    Given the Lambda function has read an existing parameter and completed successfully
-    When a parameter is created in "SSM" Parameter Store
-    Then every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    When the "lambda" "function" fails because the parameter has been deleted
+    When the "lambda" "function" reads an existing parameter and completes successfully
+    When a "ssm" "parameter" is created
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read

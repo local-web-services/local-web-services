@@ -1,4 +1,4 @@
-"""When: the new cluster for a blue-green deployment becomes ready"""
+"""When: the new "opensearch" "cluster" for a blue-green deployment becomes ready"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import when
 from starlette.testclient import TestClient
 
 
-@when("the new cluster for a blue-green deployment becomes ready")
+@when('the new "opensearch" "cluster" for a blue-green deployment becomes ready')
 def blue_green_new_cluster_ready(client: TestClient, world: dict):
     pytest.skip(
         "Blue-green new cluster readiness cannot be triggered in stateless integration tests."

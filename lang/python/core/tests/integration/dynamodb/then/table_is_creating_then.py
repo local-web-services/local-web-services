@@ -1,4 +1,4 @@
-"""Then: the table is in "CREATING" state"""
+"""Then: the "dynamodb" "table" will be in "CREATING" state"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import DynamodbTestClient
 from ..constants import TEST_TABLE
 
 
-@then('the table is in "CREATING" state')
+@then('the "dynamodb" "table" will be in "CREATING" state')
 def table_is_creating_then(client: TestClient):
     r = DynamodbTestClient(client).post("DescribeTable", {"TableName": TEST_TABLE})
     actual_status = r.json().get("Table", {}).get("TableStatus", "")

@@ -1,4 +1,4 @@
-"""Given: the tag is set"""
+"""Given: the tag was set"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import LambdaTestClient
 from ..constants import INT_FUNCTION_ARN, INT_TAG_KEY, INT_TAG_VALUE
 
 
-@given("the tag is set")
+@given("the tag was set")
 def tag_is_set(client: TestClient):
     LambdaTestClient(client).create_function()
     client.post(f"/2015-03-31/tags/{INT_FUNCTION_ARN}", json={"Tags": {INT_TAG_KEY: INT_TAG_VALUE}})

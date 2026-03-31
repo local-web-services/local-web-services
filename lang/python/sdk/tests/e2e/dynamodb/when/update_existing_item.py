@@ -1,4 +1,4 @@
-"""When: an existing item is updated in the table"""
+"""When: an existing "dynamodb" "item" is updated in the "dynamodb" "table" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_ITEM_KEY, TEST_PK, TEST_TABLE, TEST_UPDATED_VAL
 
 
-@when("an existing item is updated in the table")
+@when('an existing "dynamodb" "item" is updated in the "dynamodb" "table"')
 def update_existing_item(lws_session, world):
     try:
         existing = lws_session.client("dynamodb").get_item(

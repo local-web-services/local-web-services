@@ -1,4 +1,4 @@
-"""When: a database instance is deleted"""
+"""When: a "documentdb" "instance" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _DOCDB_TARGET, INT_INSTANCE_ID
 
 
-@when("a database instance is deleted")
+@when('a "documentdb" "instance" is deleted')
 def delete_database_instance(client: TestClient, world):
     r = client.post(
         "/",

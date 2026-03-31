@@ -1,4 +1,4 @@
-"""When: a deleted secret is restored within the recovery window"""
+"""When: a deleted "secrets manager" "secret" is restored within the recovery window"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_SECRET
 
 
-@when("a deleted secret is restored within the recovery window")
+@when('a deleted "secrets manager" "secret" is restored within the recovery window')
 def restore_secret(lws_session, world):
     try:
         resp = lws_session.client("secretsmanager").restore_secret(SecretId=TEST_SECRET)

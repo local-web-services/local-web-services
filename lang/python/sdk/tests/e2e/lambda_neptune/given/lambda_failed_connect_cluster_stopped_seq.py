@@ -1,4 +1,4 @@
-"""Given: the Lambda function has failed to connect because the Neptune cluster is stopped"""
+"""Given: the "lambda" "function" fails to connect because the "neptune" "cluster" is stopped"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import uuid
 from pytest_bdd import given
 
 
-@given("the Lambda function has failed to connect because the Neptune cluster is stopped")
+@given('the "lambda" "function" fails to connect because the "neptune" "cluster" is stopped')
 def lambda_failed_connect_cluster_stopped_seq(lws_session, world):
     # Arrange
     invocation_id = str(uuid.uuid4())

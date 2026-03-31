@@ -1,11 +1,11 @@
-"""Then: the chaos configuration for each service is returned"""
+"""Then: the chaos configuration for each service will be returned"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the chaos configuration for each service is returned")
+@then("the chaos configuration for each service will be returned")
 def then_chaos_config_returned(world):
     """Verify that the chaos status result is a non-empty mapping."""
     expected_error = None

@@ -1,4 +1,4 @@
-"""Given: the vault is "DELETED" """
+"""Given: the "glacier" "vault" was "DELETED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsGlacierTestClient
 from ..constants import TEST_VAULT
 
 
-@given('the vault is "DELETED"')
+@given('the "glacier" "vault" was "DELETED"')
 def vault_is_deleted_given(lws_session, world):
     try:
         StepfunctionsGlacierTestClient(lws_session).create_vault()

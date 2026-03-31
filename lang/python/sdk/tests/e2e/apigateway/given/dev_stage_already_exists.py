@@ -1,4 +1,4 @@
-"""Given: the dev stage already exists for this "API" """
+"""Given: the "api gateway" "prod stage" already existed for this "API" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..client import ApigatewayTestClient
 
 
-@given('the dev stage already exists for this "API"')
+@given('the "api gateway" "prod stage" already existed for this "API"')
 def dev_stage_already_exists(lws_session, world):
     """Set up the dev stage and mark it as pre-existing in world state."""
     ApigatewayTestClient(lws_session).setup_dev_stage()

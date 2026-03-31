@@ -1,4 +1,4 @@
-"""When: a snapshot is deleted"""
+"""When: a "memorydb" "snapshot" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_SNAPSHOT_NAME
 
 
-@when("a snapshot is deleted")
+@when('a "memorydb" "snapshot" is deleted')
 def delete_memorydb_snapshot(client: TestClient, world):
     r = client.post(
         "/",

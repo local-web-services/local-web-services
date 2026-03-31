@@ -1,4 +1,4 @@
-"""Given: the subscribed queue is not "ACTIVE" """
+"""Given: the subscribed queue was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..client import SnsSqsTestClient
 
 
-@given('the subscribed queue is not "ACTIVE"')
+@given('the subscribed queue was not "ACTIVE"')
 def subscribed_queue_is_not_active(lws_session, world):
     try:
         SnsSqsTestClient(lws_session)._sqs.delete_queue(

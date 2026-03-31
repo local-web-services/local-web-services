@@ -1,4 +1,4 @@
-"""When: a message is received from the queue"""
+"""When: a "sqs" "message" is received from the "sqs" "queue" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import SqsTestClient
 
 
-@when("a message is received from the queue")
+@when('a "sqs" "message" is received from the "sqs" "queue"')
 def receive_message(lws_session, world):
     try:
         resp = lws_session.client("sqs").receive_message(

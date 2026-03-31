@@ -1,4 +1,4 @@
-"""Given: the bucket is "CREATING" """
+"""Given: the "s3 tables" "bucket" was "CREATING" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import S3tablesTestClient
 from ..constants import TEST_BUCKET
 
 
-@given('the bucket is "CREATING"')
+@given('the "s3 tables" "bucket" was "CREATING"')
 def bucket_is_creating_given(lws_session):
     try:
         S3tablesTestClient(lws_session).delete_table_bucket(tableBucketARN=TEST_BUCKET)

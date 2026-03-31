@@ -1,4 +1,4 @@
-"""Then: the cluster is "AVAILABLE" """
+"""Then: the "neptune" "cluster" will be "AVAILABLE" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_CLUSTER
 
 
-@then('the cluster is "AVAILABLE"')
+@then('the "neptune" "cluster" will be "AVAILABLE"')
 def cluster_is_available_then(lws_session, world):
     expected_status = "available"
     cluster_id = world.get("cluster_id", TEST_CLUSTER)

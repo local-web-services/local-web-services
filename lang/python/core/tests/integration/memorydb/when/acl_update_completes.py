@@ -1,4 +1,4 @@
-"""When: an "ACL" update completes"""
+"""When: an "memorydb" "ACL" update completes"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_ACL_NAME
 
 
-@when('an "ACL" update completes')
+@when('an "memorydb" "ACL" update completes')
 def acl_update_completes(client: TestClient, world):
     r = client.post(
         "/",

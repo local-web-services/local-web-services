@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EVENTS_TARGET, INT_BUS, INT_RULE
 
 
-@then('the rule is "ENABLED"')
+@then('the "eventbridge" "rule" will be "ENABLED"')
 def rule_is_enabled_then(client: TestClient):
     r = client.post(
         "/",

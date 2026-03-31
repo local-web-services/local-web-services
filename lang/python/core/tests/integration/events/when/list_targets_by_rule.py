@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EVENTS_TARGET, INT_BUS, INT_RULE, _store
 
 
-@when("targets for a rule are listed")
+@when('targets for an "eventbridge" "rule" are listed')
 def list_targets_by_rule(client: TestClient, world):
     r = client.post(
         "/",

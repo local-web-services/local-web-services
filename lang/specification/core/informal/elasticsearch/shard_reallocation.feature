@@ -1,5 +1,5 @@
 @elasticsearch @generated
-Feature: Elasticsearch - Shards Are Reallocated Across Nodes In An Active Domain
+Feature: Elasticsearch - Shards Are Reallocated Across Nodes In An Active "Elasticsearch" "Domain"
 
   # Generated from FizzBee spec: elasticsearch.fizz
   # Safety invariants: IndicesHaveParentDomain, TagsHaveParentDomain, PendingConfigOnlyOnProcessingDomain
@@ -8,43 +8,43 @@ Feature: Elasticsearch - Shards Are Reallocated Across Nodes In An Active Domain
     Given the system is initialized
 
   @minimal @happy @shard_reallocation @internal
-  Scenario: shards are reallocated across nodes in an active domain
-    Given the domain exists
-    And the domain is "ACTIVE"
-    And the index exists
-    And the index is "ACTIVE"
-    When shards are reallocated across nodes in an active domain
-    Then the domain shard layout is updated without changing document counts
+  Scenario: shards are reallocated across nodes in an active "elasticsearch" "domain"
+    Given the "elasticsearch" "domain" existed
+    And the "elasticsearch" "domain" was "ACTIVE"
+    And the "elasticsearch" "index" existed
+    And the "elasticsearch" "index" was "ACTIVE"
+    When shards are reallocated across nodes in an active "elasticsearch" "domain"
+    Then the "elasticsearch" "domain" shard layout will be updated without changing document counts
     And every active index belongs to an existing non-deleted domain
     And every active tag belongs to an existing non-deleted domain
-    And a pending config change only exists on a domain that is "PROCESSING"
+    And a pending config change only exists on a "elasticsearch" "domain" that is "PROCESSING"
 
   @guard @negative @shard_reallocation @internal
-  Scenario: shards are reallocated across nodes in an active domain fails when the domain does not exist
-    Given the domain does not exist
-    When shards are reallocated across nodes in an active domain
+  Scenario: shards are reallocated across nodes in an active "elasticsearch" "domain" fails when the "elasticsearch" "domain" did not exist
+    Given the "elasticsearch" "domain" did not exist
+    When shards are reallocated across nodes in an active "elasticsearch" "domain"
     Then the operation is rejected
 
   @guard @negative @shard_reallocation @internal
-  Scenario: shards are reallocated across nodes in an active domain fails when the domain is not "ACTIVE"
-    Given the domain exists
-    And the domain is not "ACTIVE"
-    When shards are reallocated across nodes in an active domain
+  Scenario: shards are reallocated across nodes in an active "elasticsearch" "domain" fails when the "elasticsearch" "domain" was not "ACTIVE"
+    Given the "elasticsearch" "domain" existed
+    And the "elasticsearch" "domain" was not "ACTIVE"
+    When shards are reallocated across nodes in an active "elasticsearch" "domain"
     Then the operation is rejected
 
   @guard @negative @shard_reallocation @internal
-  Scenario: shards are reallocated across nodes in an active domain fails when the index does not exist
-    Given the domain exists
-    And the domain is "ACTIVE"
-    And the index does not exist
-    When shards are reallocated across nodes in an active domain
+  Scenario: shards are reallocated across nodes in an active "elasticsearch" "domain" fails when the "elasticsearch" "index" did not exist
+    Given the "elasticsearch" "domain" existed
+    And the "elasticsearch" "domain" was "ACTIVE"
+    And the "elasticsearch" "index" did not exist
+    When shards are reallocated across nodes in an active "elasticsearch" "domain"
     Then the operation is rejected
 
   @guard @negative @shard_reallocation @internal
-  Scenario: shards are reallocated across nodes in an active domain fails when the index is not "ACTIVE"
-    Given the domain exists
-    And the domain is "ACTIVE"
-    And the index exists
-    And the index is not "ACTIVE"
-    When shards are reallocated across nodes in an active domain
+  Scenario: shards are reallocated across nodes in an active "elasticsearch" "domain" fails when the "elasticsearch" "index" was not "ACTIVE"
+    Given the "elasticsearch" "domain" existed
+    And the "elasticsearch" "domain" was "ACTIVE"
+    And the "elasticsearch" "index" existed
+    And the "elasticsearch" "index" was not "ACTIVE"
+    When shards are reallocated across nodes in an active "elasticsearch" "domain"
     Then the operation is rejected

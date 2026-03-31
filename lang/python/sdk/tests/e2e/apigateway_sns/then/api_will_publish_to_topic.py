@@ -1,4 +1,4 @@
-"""Then: the "API" will publish to the topic when requests are received"""
+"""Then: the "api gateway" "API" will publish to the "sns" "topic" when requests are received"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import ApigatewaySnsTestClient
 from ..constants import _topic_arn
 
 
-@then('the "API" will publish to the topic when requests are received')
+@then('the "api gateway" "API" will publish to the "sns" "topic" when requests are received')
 def api_will_publish_to_topic(lws_session, world):
     api_id = world.get("api_id") or ApigatewaySnsTestClient(lws_session).get_api_id()
     assert api_id is not None, "Expected API to exist"

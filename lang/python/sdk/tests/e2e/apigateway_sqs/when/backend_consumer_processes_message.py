@@ -1,4 +1,4 @@
-"""When: a backend consumer processes the message from the queue"""
+"""When: a backend consumer processes the "sqs" "message" from the "sqs" "queue" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ApigatewaySqsTestClient
 from ..constants import TEST_QUEUE
 
 
-@when("a backend consumer processes the message from the queue")
+@when('a backend consumer processes the "sqs" "message" from the "sqs" "queue"')
 def backend_consumer_processes_message(lws_session, world):
     try:
         q_url = ApigatewaySqsTestClient(lws_session).queue_url(TEST_QUEUE)

@@ -1,11 +1,11 @@
-"""Then: the function returns to "PENDING" state for redeployment"""
+"""Then: the "lambda" "function" returns to "PENDING" state for redeployment"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the function returns to "PENDING" state for redeployment')
+@then('the "lambda" "function" returns to "PENDING" state for redeployment')
 def function_returns_to_pending(world):
     assert (
         world["error"] is None

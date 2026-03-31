@@ -1,5 +1,5 @@
 @lambdassm @generated
-Feature: LambdaSsm - The Lambda Function Fails Because The Parameter Has Been Deleted
+Feature: LambdaSsm - The "Lambda" "Function" Fails Because The Parameter Has Been Deleted
 
   # Generated from FizzBee spec: lambda_ssm.fizz
   # Safety invariants: InvocationRequiresActiveFunction, SuccessfulInvocationReadAParameter
@@ -8,23 +8,23 @@ Feature: LambdaSsm - The Lambda Function Fails Because The Parameter Has Been De
     Given the system is initialized
 
   @minimal @happy @invocation_fails_parameter_not_found @internal
-  Scenario: the Lambda function fails because the parameter has been deleted
-    Given an invocation is "IN_PROGRESS"
-    And the parameter is "DELETED"
-    When the Lambda function fails because the parameter has been deleted
-    Then the invocation is "FAILED" with a ParameterNotFound error
+  Scenario: the "lambda" "function" fails because the parameter has been deleted
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "ssm" "parameter" was "DELETED"
+    When the "lambda" "function" fails because the parameter has been deleted
+    Then the invocation will be "FAILED" with a ParameterNotFound error
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which parameter it read
 
   @guard @negative @invocation_fails_parameter_not_found @internal
-  Scenario: the Lambda function fails because the parameter has been deleted fails when no invocation is "IN_PROGRESS"
-    Given no invocation is "IN_PROGRESS"
-    When the Lambda function fails because the parameter has been deleted
+  Scenario: the "lambda" "function" fails because the parameter has been deleted fails when no "lambda" "invocation" was "IN_PROGRESS"
+    Given no "lambda" "invocation" was "IN_PROGRESS"
+    When the "lambda" "function" fails because the parameter has been deleted
     Then the operation is rejected
 
   @guard @negative @invocation_fails_parameter_not_found @internal
-  Scenario: the Lambda function fails because the parameter has been deleted fails when the parameter is not "DELETED"
-    Given an invocation is "IN_PROGRESS"
-    And the parameter is not "DELETED"
-    When the Lambda function fails because the parameter has been deleted
+  Scenario: the "lambda" "function" fails because the parameter has been deleted fails when the "ssm" "parameter" was not "DELETED"
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "ssm" "parameter" was not "DELETED"
+    When the "lambda" "function" fails because the parameter has been deleted
     Then the operation is rejected

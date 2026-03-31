@@ -1,4 +1,4 @@
-"""Then: the "API" will proxy requests to the S3 bucket"""
+"""Then: the "api gateway" "API" will proxy requests to the "s3" "bucket" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..client import ApigatewayS3apiTestClient
 
 
-@then('the "API" will proxy requests to the S3 bucket')
+@then('the "api gateway" "API" will proxy requests to the "s3" "bucket"')
 def api_will_proxy_to_s3(lws_session, world):
     api_id = world.get("api_id") or ApigatewayS3apiTestClient(lws_session).get_api_id()
     assert api_id is not None, "Expected API to exist"

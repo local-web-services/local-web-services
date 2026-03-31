@@ -1,4 +1,4 @@
-"""Given: the resource exists"""
+"""Given: the "api gateway" "resource" existed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import ApigatewayTestClient
 
 
-@given("the resource exists")
+@given('the "api gateway" "resource" existed')
 def resource_exists(client: TestClient):
     api_body = ApigatewayTestClient(client).create_rest_api()
     api_id = api_body["id"]

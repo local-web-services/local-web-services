@@ -1,4 +1,4 @@
-"""Then: the replication group is in "MODIFYING" state"""
+"""Then: the "elasticache" "replication group" will be in "MODIFYING" state"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_REPLICATION_GROUP
 
 
-@then('the replication group is in "MODIFYING" state')
+@then('the "elasticache" "replication group" will be in "MODIFYING" state')
 def rg_is_modifying_then(lws_session, world):
     # Arrange
     replication_group_id = world.get("replication_group_id", TEST_REPLICATION_GROUP)

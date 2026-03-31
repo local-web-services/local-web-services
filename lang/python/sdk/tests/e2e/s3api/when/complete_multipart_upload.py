@@ -1,4 +1,4 @@
-"""When: a multipart upload is completed"""
+"""When: a multipart "s3" "upload" is completed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUCKET, TEST_KEY
 
 
-@when("a multipart upload is completed")
+@when('a multipart "s3" "upload" is completed')
 def complete_multipart_upload(lws_session, world):
     try:
         parts = world.get("etags") or [{"ETag": "etag1", "PartNumber": 1}]

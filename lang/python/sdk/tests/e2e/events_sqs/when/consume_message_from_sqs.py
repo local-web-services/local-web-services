@@ -1,4 +1,4 @@
-"""When: a message is consumed from the "SQS" queue"""
+"""When: a message is consumed from the "sqs" "queue" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import EventsSqsTestClient
 
 
-@when('a message is consumed from the "SQS" queue')
+@when('a message is consumed from the "sqs" "queue"')
 def consume_message_from_sqs(lws_session, world):
     try:
         resp = lws_session.client("sqs").receive_message(

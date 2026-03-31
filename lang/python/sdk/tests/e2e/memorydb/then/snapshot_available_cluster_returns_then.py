@@ -1,4 +1,4 @@
-"""Then: the snapshot is "AVAILABLE" and the cluster returns to "AVAILABLE" state"""
+"""Then: the "memorydb" "snapshot" will be "AVAILABLE" and the "memorydb" "cluster" returns to "AVAILABLE" state"""
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from pytest_bdd import then
 from ..constants import TEST_SNAPSHOT
 
 
-@then('the snapshot is "AVAILABLE" and the cluster returns to "AVAILABLE" state')
+@then(
+    'the "memorydb" "snapshot" will be "AVAILABLE" and the "memorydb" "cluster" returns to "AVAILABLE" state'
+)
 def snapshot_available_cluster_returns_then(lws_session):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     resp = lws_session.client("memorydb").describe_snapshots(SnapshotName=TEST_SNAPSHOT)

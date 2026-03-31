@@ -1,4 +1,4 @@
-"""When: a user initiates signup to a pool that has a pre-signup trigger configured"""
+"""When: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured"""
 
 from __future__ import annotations
 
@@ -6,6 +6,8 @@ import pytest
 from pytest_bdd import when
 
 
-@when("a user initiates signup to a pool that has a pre-signup trigger configured")
+@when(
+    'a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured'
+)
 def user_initiates_signup_with_trigger(world):
     pytest.skip("Cannot trigger Cognito->Lambda invocation in lws")

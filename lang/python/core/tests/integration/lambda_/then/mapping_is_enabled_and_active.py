@@ -1,4 +1,4 @@
-"""Then: the mapping is "ENABLED" and active"""
+"""Then: the mapping will be "ENABLED" and active"""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from pytest_bdd import then
 from starlette.testclient import TestClient
 
 
-@then('the mapping is "ENABLED" and active')
+@then('the mapping will be "ENABLED" and active')
 def mapping_is_enabled_and_active(client: TestClient, world):
     actual_error = world["error"]
     assert (

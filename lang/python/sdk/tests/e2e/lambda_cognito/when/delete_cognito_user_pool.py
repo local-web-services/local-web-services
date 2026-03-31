@@ -1,4 +1,4 @@
-"""When: a Cognito user pool is deleted"""
+"""When: a "cognito" "user pool" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import LambdaCognitoTestClient
 
 
-@when("a Cognito user pool is deleted")
+@when('a "cognito" "user pool" is deleted')
 def delete_cognito_user_pool(lws_session, world):
     try:
         pool_id = LambdaCognitoTestClient(lws_session).pool_id()

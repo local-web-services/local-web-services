@@ -1,4 +1,4 @@
-"""Then: the current secret value is returned"""
+"""Then: the current "secrets manager" "secret" value will be returned"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import INT_VALUE
 
 
-@then("the current secret value is returned")
+@then('the current "secrets manager" "secret" value will be returned')
 def current_secret_value_returned(world):
     actual_error = world.get("error")
     assert actual_error is None, f"Expected get_secret_value to succeed but got: {actual_error}"

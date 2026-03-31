@@ -1,4 +1,4 @@
-"""Then: the state machine is "ACTIVE" """
+"""Then: the "step functions" "state machine" will be "ACTIVE" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import _sm_arn
 
 
-@then('the state machine is "ACTIVE"')
+@then('the "step functions" "state machine" will be "ACTIVE"')
 def sm_is_active_then(lws_session, world):
     sm_arn = world.get("state_machine_arn", _sm_arn())
     resp = lws_session.client("stepfunctions").describe_state_machine(stateMachineArn=sm_arn)

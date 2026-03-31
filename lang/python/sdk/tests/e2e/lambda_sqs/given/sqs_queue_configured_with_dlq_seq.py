@@ -1,4 +1,4 @@
-"""Given: the "SQS" queue has been configured with a dead-letter queue"""
+"""Given: the "sqs" "queue" is configured with a dead-letter queue"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaSqsTestClient
 from ..constants import TEST_DLQ, _queue_arn
 
 
-@given('the "SQS" queue has been configured with a dead-letter queue')
+@given('the "sqs" "queue" is configured with a dead-letter queue')
 def sqs_queue_configured_with_dlq_seq(lws_session):
     import json
 

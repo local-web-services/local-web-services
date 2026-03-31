@@ -1,4 +1,4 @@
-"""Then: all messages in the queue are "DELETED" """
+"""Then: all messages in the "sqs" "queue" will be "DELETED" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..client import SqsTestClient
 
 
-@then('all messages in the queue are "DELETED"')
+@then('all messages in the "sqs" "queue" will be "DELETED"')
 def all_messages_deleted_then(lws_session):
     client = SqsTestClient(lws_session)
     resp = client.get_queue_attributes(

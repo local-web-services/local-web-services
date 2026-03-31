@@ -1,5 +1,5 @@
 @organizations @generated
-Feature: Organizations - An Account Is Created In The Organization
+Feature: Organizations - An "Organizations" "Account" Is Created In The "Organizations" "Organization"
 
   # Generated from FizzBee spec: organizations.fizz
   # Safety invariants: OrgRootConsistency, AccountParentValid, OuParentValid, NoChildOfDeletedOu, PolicyAttachmentTargetValid
@@ -8,26 +8,26 @@ Feature: Organizations - An Account Is Created In The Organization
     Given the system is initialized
 
   @minimal @happy @create_account
-  Scenario: an account is created in the organization
-    Given the organization exists
-    And the account does not already exist
-    When an account is created in the organization
-    Then the account is "ACTIVE" under the root
-    And the root is "ACTIVE" whenever the organization exists
+  Scenario: an "organizations" "account" is created in the "organizations" "organization"
+    Given the "organizations" "organization" existed
+    And the "organizations" "account" did not already exist
+    When an "organizations" "account" is created in the "organizations" "organization"
+    Then the "organizations" "account" will be "ACTIVE" under the root
+    And the root was "ACTIVE" whenever the "organizations" "organization" exists
     And every active account has an "ACTIVE" parent
     And every active organizational unit has an "ACTIVE" parent
     And no active node is a child of a deleted organizational unit
     And every active policy attachment targets an "ACTIVE" node
 
   @guard @negative @create_account
-  Scenario: an account is created in the organization fails when the organization does not exist
-    Given the organization does not exist
-    When an account is created in the organization
+  Scenario: an "organizations" "account" is created in the "organizations" "organization" fails when the "organizations" "organization" did not exist
+    Given the "organizations" "organization" did not exist
+    When an "organizations" "account" is created in the "organizations" "organization"
     Then the operation is rejected
 
   @guard @negative @create_account
-  Scenario: an account is created in the organization fails when the account already exists
-    Given the organization exists
-    And the account already exists
-    When an account is created in the organization
+  Scenario: an "organizations" "account" is created in the "organizations" "organization" fails when the "organizations" "account" already existed
+    Given the "organizations" "organization" existed
+    And the "organizations" "account" already existed
+    When an "organizations" "account" is created in the "organizations" "organization"
     Then the operation is rejected

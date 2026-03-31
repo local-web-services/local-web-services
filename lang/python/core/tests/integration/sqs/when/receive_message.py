@@ -1,4 +1,4 @@
-"""When: a message is received from the queue"""
+"""When: a "sqs" "message" is received from the "sqs" "queue" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import when
 from ..constants import QUEUE_URL, _extract_xml_tag
 
 
-@when("a message is received from the queue")
+@when('a "sqs" "message" is received from the "sqs" "queue"')
 def receive_message(client, world):
     r = client.post(
         "/",

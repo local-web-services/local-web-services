@@ -1,4 +1,4 @@
-"""Then: the parameter has a new value and an incremented version"""
+"""Then: the "ssm" "parameter" has a new value and an incremented version"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SSM_TARGET, INT_PARAM, INT_VALUE2
 
 
-@then("the parameter has a new value and an incremented version")
+@then('the "ssm" "parameter" has a new value and an incremented version')
 def parameter_has_new_value_and_version(client: TestClient):
     r = client.post(
         "/",

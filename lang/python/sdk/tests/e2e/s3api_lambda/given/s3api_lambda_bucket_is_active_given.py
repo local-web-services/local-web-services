@@ -1,10 +1,10 @@
-"""Given: the bucket is "ACTIVE" """
+"""Given: the bucket was "ACTIVE" """
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given('the bucket is "ACTIVE"')
+@given('the bucket was "ACTIVE"')
 def s3api_lambda_bucket_is_active_given():
     """No-op: buckets are ACTIVE by default after creation."""

@@ -1,4 +1,4 @@
-"""When: a database cluster is deleted"""
+"""When: a "documentdb" "cluster" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _DOCDB_TARGET, INT_CLUSTER_ID
 
 
-@when("a database cluster is deleted")
+@when('a "documentdb" "cluster" is deleted')
 def delete_database_cluster(client: TestClient, world):
     r = client.post(
         "/",

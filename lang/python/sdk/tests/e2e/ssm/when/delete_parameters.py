@@ -1,4 +1,4 @@
-"""When: multiple parameters are deleted from "SSM" """
+"""When: multiple "ssm" "parameter"s are deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_PARAM
 
 
-@when('multiple parameters are deleted from "SSM"')
+@when('multiple "ssm" "parameter"s are deleted')
 def delete_parameters(lws_session, world):
     try:
         resp = lws_session.client("ssm").delete_parameters(Names=[TEST_PARAM])

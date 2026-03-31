@@ -1,4 +1,4 @@
-"""When: an Elasticsearch domain is created and becomes "AVAILABLE" """
+"""When: an "elasticsearch" "domain" is created and becomes "AVAILABLE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_DOMAIN
 
 
-@when('an Elasticsearch domain is created and becomes "AVAILABLE"')
+@when('an "elasticsearch" "domain" is created and becomes "AVAILABLE"')
 def create_elasticsearch_domain(lws_session, world):
     try:
         resp = lws_session.client("es").create_elasticsearch_domain(DomainName=TEST_DOMAIN)

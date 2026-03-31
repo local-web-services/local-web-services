@@ -1,4 +1,4 @@
-"""When: a secret is scheduled for deletion"""
+"""When: a "secretsmanager" "secret" is scheduled for deletion"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import StepfunctionsSecretsmanagerTestClient
 from ..constants import TEST_SECRET
 
 
-@when("a secret is scheduled for deletion")
+@when('a "secretsmanager" "secret" is scheduled for deletion')
 def schedule_secret_deletion(lws_session, world):
     try:
         world["result"] = StepfunctionsSecretsmanagerTestClient(

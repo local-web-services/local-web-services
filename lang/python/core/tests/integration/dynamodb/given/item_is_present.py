@@ -1,4 +1,4 @@
-"""Given: the item is present"""
+"""Given: the "dynamodb" "item" was present"""
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import DynamodbTestClient
 
 
-@given("the item is present")
+@given('the "dynamodb" "item" was present')
 def item_is_present(client: TestClient):
     DynamodbTestClient(client).put_item()

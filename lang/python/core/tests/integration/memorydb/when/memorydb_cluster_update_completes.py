@@ -1,4 +1,4 @@
-"""When: a MemoryDB cluster update completes"""
+"""When: a "memorydb" "cluster" update completes"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_CLUSTER_NAME
 
 
-@when("a MemoryDB cluster update completes")
+@when('a "memorydb" "cluster" update completes')
 def memorydb_cluster_update_completes(client: TestClient, world):
     r = client.post(
         "/",

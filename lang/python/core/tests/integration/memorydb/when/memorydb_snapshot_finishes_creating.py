@@ -1,4 +1,4 @@
-"""When: a snapshot finishes creating"""
+"""When: a "memorydb" "snapshot" finishes creating"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_SNAPSHOT_NAME
 
 
-@when("a snapshot finishes creating")
+@when('a "memorydb" "snapshot" finishes creating')
 def memorydb_snapshot_finishes_creating(client: TestClient, world):
     r = client.post(
         "/",

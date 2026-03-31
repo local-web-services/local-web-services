@@ -1,4 +1,4 @@
-"""When: a shard failover is triggered on a multi-"AZ" cluster"""
+"""When: a shard failover is triggered on a multi-"AZ" "memorydb" "cluster" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_CLUSTER_NAME
 
 
-@when('a shard failover is triggered on a multi-"AZ" cluster')
+@when('a shard failover is triggered on a multi-"AZ" "memorydb" "cluster"')
 def trigger_shard_failover(client: TestClient, world):
     r = client.post(
         "/",

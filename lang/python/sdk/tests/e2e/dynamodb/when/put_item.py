@@ -1,4 +1,4 @@
-"""When: an item is written to the table"""
+"""When: a "dynamodb" "item" is written to the "dynamodb" "table" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_ATTR_VAL, TEST_ITEM_KEY, TEST_PK, TEST_TABLE
 
 
-@when("an item is written to the table")
+@when('a "dynamodb" "item" is written to the "dynamodb" "table"')
 def put_item(lws_session, world):
     try:
         world["result"] = lws_session.client("dynamodb").put_item(

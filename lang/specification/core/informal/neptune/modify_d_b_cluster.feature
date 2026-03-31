@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Database Cluster Configuration Is Modified
+Feature: Neptune - A "Neptune" "Cluster" Configuration Is Modified
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,11 +8,11 @@ Feature: Neptune - A Database Cluster Configuration Is Modified
     Given the system is initialized
 
   @minimal @happy @modify_d_b_cluster
-  Scenario: a database cluster configuration is modified
-    Given the cluster exists
-    And the cluster is "AVAILABLE"
-    When a database cluster configuration is modified
-    Then the cluster is in "MODIFYING" state
+  Scenario: a "neptune" "cluster" configuration is modified
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "AVAILABLE"
+    When a "neptune" "cluster" configuration is modified
+    Then the "neptune" "cluster" will be in "MODIFYING" state
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -23,14 +23,14 @@ Feature: Neptune - A Database Cluster Configuration Is Modified
     And a failed cluster has no available instances
 
   @guard @negative @modify_d_b_cluster
-  Scenario: a database cluster configuration is modified fails when the cluster does not exist
-    Given the cluster does not exist
-    When a database cluster configuration is modified
+  Scenario: a "neptune" "cluster" configuration is modified fails when the "neptune" "cluster" did not exist
+    Given the "neptune" "cluster" did not exist
+    When a "neptune" "cluster" configuration is modified
     Then the operation is rejected
 
   @guard @negative @modify_d_b_cluster @lifecycle
-  Scenario: a database cluster configuration is modified fails when the cluster is not "AVAILABLE"
-    Given the cluster exists
-    And the cluster is not "AVAILABLE"
-    When a database cluster configuration is modified
+  Scenario: a "neptune" "cluster" configuration is modified fails when the "neptune" "cluster" was not "AVAILABLE"
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was not "AVAILABLE"
+    When a "neptune" "cluster" configuration is modified
     Then the operation is rejected

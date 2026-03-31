@@ -1,4 +1,4 @@
-"""Given: the replication group exists"""
+"""Given: the "elasticache" "replication group" existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import ElasticacheTestClient
 
 
-@given("the replication group exists")
+@given('the "elasticache" "replication group" existed')
 def rg_exists(client: TestClient):
     ElasticacheTestClient(client).create_replication_group()

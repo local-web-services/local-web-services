@@ -1,4 +1,4 @@
-"""When: an empty vault is deleted"""
+"""When: an empty "glacier" "vault" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_VAULT
 
 
-@when("an empty vault is deleted")
+@when('an empty "glacier" "vault" is deleted')
 def delete_vault(lws_session, world):
     try:
         world["result"] = lws_session.client("glacier").delete_vault(

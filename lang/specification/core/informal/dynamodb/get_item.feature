@@ -1,5 +1,5 @@
 @dynamodb @generated
-Feature: Dynamodb - An Item Is Read From The Table
+Feature: Dynamodb - A "Dynamodb" "Item" Is Read From The "Dynamodb" "Table"
 
   # Generated from FizzBee spec: dynamodb.fizz
   # Safety invariants: TableStatusValid, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
@@ -8,12 +8,12 @@ Feature: Dynamodb - An Item Is Read From The Table
     Given the system is initialized
 
   @minimal @happy @get_item
-  Scenario: an item is read from the table
-    Given the table exists
-    And the table is "ACTIVE"
-    And reads are not throttled
-    When an item is read from the table
-    Then the item value is returned
+  Scenario: a "dynamodb" "item" is read from the "dynamodb" "table"
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was "ACTIVE"
+    And reads were not throttled
+    When a "dynamodb" "item" is read from the "dynamodb" "table"
+    Then the "dynamodb" "item" value will be returned
     And every table has a valid status ("CREATING", "ACTIVE", or "DELETED")
     And "GSI" pending write count is never negative
     And transaction status is always a valid value
@@ -22,22 +22,22 @@ Feature: Dynamodb - An Item Is Read From The Table
     And deleted tables are never the target of a pending transaction
 
   @guard @negative @get_item
-  Scenario: an item is read from the table fails when the table does not exist
-    Given the table does not exist
-    When an item is read from the table
+  Scenario: a "dynamodb" "item" is read from the "dynamodb" "table" fails when the "dynamodb" "table" did not exist
+    Given the "dynamodb" "table" did not exist
+    When a "dynamodb" "item" is read from the "dynamodb" "table"
     Then the operation is rejected
 
   @guard @negative @get_item @lifecycle
-  Scenario: an item is read from the table fails when the table is not "ACTIVE"
-    Given the table exists
-    And the table is not "ACTIVE"
-    When an item is read from the table
+  Scenario: a "dynamodb" "item" is read from the "dynamodb" "table" fails when the "dynamodb" "table" was not "ACTIVE"
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was not "ACTIVE"
+    When a "dynamodb" "item" is read from the "dynamodb" "table"
     Then the operation is rejected
 
   @guard @negative @get_item @capacity
-  Scenario: an item is read from the table fails when reads are throttled
-    Given the table exists
-    And the table is "ACTIVE"
-    And reads are throttled
-    When an item is read from the table
+  Scenario: a "dynamodb" "item" is read from the "dynamodb" "table" fails when reads were throttled
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was "ACTIVE"
+    And reads were throttled
+    When a "dynamodb" "item" is read from the "dynamodb" "table"
     Then the operation is rejected

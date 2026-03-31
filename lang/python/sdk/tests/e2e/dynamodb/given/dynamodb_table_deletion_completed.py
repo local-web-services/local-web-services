@@ -1,4 +1,4 @@
-"""Given: a table deletion has completed"""
+"""Given: a "dynamodb" "table" deletion completes"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import DynamodbTestClient
 from ..constants import TEST_TABLE
 
 
-@given("a table deletion has completed")
+@given('a "dynamodb" "table" deletion completes')
 def dynamodb_table_deletion_completed(lws_session):
     DynamodbTestClient(lws_session).create_table()
     DynamodbTestClient(lws_session).delete_table(TableName=TEST_TABLE)

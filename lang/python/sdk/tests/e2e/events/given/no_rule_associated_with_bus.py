@@ -1,4 +1,4 @@
-"""Given: no rule is associated with the event bus"""
+"""Given: no eventbridge rule is associated with the "eventbridge" "bus" """
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import pytest
 from pytest_bdd import given
 
 
-@given("no rule is associated with the event bus")
+@given('no eventbridge rule is associated with the "eventbridge" "bus"')
 def no_rule_associated_with_bus():
     """No-op: fresh state has no rules on the bus.
 

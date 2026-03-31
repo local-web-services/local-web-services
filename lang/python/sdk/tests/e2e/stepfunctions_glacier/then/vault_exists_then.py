@@ -1,4 +1,4 @@
-"""Then: the vault "EXISTS" """
+"""Then: the "glacier" "vault" will exist"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsGlacierTestClient
 from ..constants import TEST_VAULT
 
 
-@then('the vault "EXISTS"')
+@then('the "glacier" "vault" will exist')
 def vault_exists_then(lws_session):
     expected_vault_name = TEST_VAULT
     actual_exists = StepfunctionsGlacierTestClient(lws_session).vault_exists()

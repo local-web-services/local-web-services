@@ -20,24 +20,24 @@ action Init:
     upload_status = {}
     upload_has_parts = {}
 
-# step: a bucket is created
-# result: the bucket is ACTIVE with versioning disabled
-# guard: the bucket does not already exist
-# guard_violation: the bucket already exists
+# step: a "s3" "bucket" is created
+# result: the "s3" "bucket" will be "ACTIVE" with versioning disabled
+# guard: the "s3" "bucket" did not already exist
+# guard_violation: the "s3" "bucket" already existed
 atomic action CreateBucket:
     oneof bname in BUCKET_NAMES:
         if bname not in bucket_status:
             bucket_status[bname] = "ACTIVE"
             bucket_versioning[bname] = "DISABLED"
 
-# step: a bucket is deleted
-# result: the bucket is DELETED
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
-# guard: the bucket is empty
-# guard_violation: the bucket is not empty
+# step: a "s3" "bucket" is deleted
+# result: the "s3" "bucket" will be "DELETED"
+# guard: the "s3" "bucket" existed
+# guard_violation: the "s3" "bucket" did not exist
+# guard: the "s3" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3" "bucket" was not "ACTIVE"
+# guard: the "s3" "bucket" was empty
+# guard_violation: the "s3" "bucket" was not empty
 atomic action DeleteBucket:
     oneof bname in BUCKET_NAMES:
         if bname in bucket_status:
@@ -45,17 +45,17 @@ atomic action DeleteBucket:
                 if all([(bname + "#" + key) not in object_status or object_status[bname + "#" + key] != "EXISTS" for key in OBJECT_KEYS]):
                     bucket_status[bname] = "DELETED"
 
-# step: the list of buckets is retrieved
-# result: the available buckets are returned
+# step: the list of "s3" "buckets" is retrieved
+# result: the available "s3" "buckets" will be returned
 atomic action ListBuckets:
     pass
 
-# step: versioning is configured on a bucket
-# result: the bucket versioning state is ENABLED or SUSPENDED non-deterministically
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
+# step: versioning is configured on a "s3" "bucket"
+# result: the "s3" "bucket" versioning state will be "ENABLED" or "SUSPENDED" non-deterministically
+# guard: the "s3" "bucket" existed
+# guard_violation: the "s3" "bucket" did not exist
+# guard: the "s3" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3" "bucket" was not "ACTIVE"
 atomic action PutBucketVersioning:
     oneof bname in BUCKET_NAMES:
         if bname in bucket_status:
@@ -64,12 +64,12 @@ atomic action PutBucketVersioning:
                     bucket_versioning[bname] = "ENABLED"
                     bucket_versioning[bname] = "SUSPENDED"
 
-# step: an object is uploaded to a bucket
-# result: the object EXISTS in the bucket
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
+# step: a "s3" "object" is uploaded to a "s3" "bucket"
+# result: the "s3" "object" will exist in the "s3" "bucket"
+# guard: the "s3" "bucket" existed
+# guard_violation: the "s3" "bucket" did not exist
+# guard: the "s3" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3" "bucket" was not "ACTIVE"
 atomic action PutObject:
     oneof bname in BUCKET_NAMES:
         if bname in bucket_status:
@@ -78,16 +78,16 @@ atomic action PutObject:
                     obj_key = bname + "#" + key
                     object_status[obj_key] = "EXISTS"
 
-# step: an object is retrieved from a bucket
-# result: the object data is returned
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
-# guard: the object exists in the bucket
-# guard_violation: the object does not exist in the bucket
-# guard: the object is not deleted
-# guard_violation: the object is deleted
+# step: a "s3" "object" is retrieved from a "s3" "bucket"
+# result: the "s3" "object" data will be returned
+# guard: the "s3" "bucket" existed
+# guard_violation: the "s3" "bucket" did not exist
+# guard: the "s3" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3" "bucket" was not "ACTIVE"
+# guard: the "s3" "object" existed in the "s3" "bucket"
+# guard_violation: the "s3" "object" did not exist in the "s3" "bucket"
+# guard: the "s3" "object" was not "deleted"
+# guard_violation: the "s3" "object" was "deleted"
 atomic action GetObject:
     oneof bname in BUCKET_NAMES:
         if bname in bucket_status:
@@ -98,16 +98,16 @@ atomic action GetObject:
                         if object_status[obj_key] == "EXISTS":
                             pass
 
-# step: an object is deleted from a bucket
-# result: the object is DELETED
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
-# guard: the object exists in the bucket
-# guard_violation: the object does not exist in the bucket
-# guard: the object is not deleted
-# guard_violation: the object is deleted
+# step: a "s3" "object" is deleted from a "s3" "bucket"
+# result: the "s3" "object" will be "DELETED"
+# guard: the "s3" "bucket" existed
+# guard_violation: the "s3" "bucket" did not exist
+# guard: the "s3" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3" "bucket" was not "ACTIVE"
+# guard: the "s3" "object" existed in the "s3" "bucket"
+# guard_violation: the "s3" "object" did not exist in the "s3" "bucket"
+# guard: the "s3" "object" was not "deleted"
+# guard_violation: the "s3" "object" was "deleted"
 atomic action DeleteObject:
     oneof bname in BUCKET_NAMES:
         if bname in bucket_status:
@@ -118,16 +118,16 @@ atomic action DeleteObject:
                         if object_status[obj_key] == "EXISTS":
                             object_status[obj_key] = "DELETED"
 
-# step: object metadata is retrieved from a bucket
-# result: the object metadata is returned
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
-# guard: the object exists in the bucket
-# guard_violation: the object does not exist in the bucket
-# guard: the object is not deleted
-# guard_violation: the object is deleted
+# step: "s3" "object" metadata is retrieved from a "s3" "bucket"
+# result: the "s3" "object" metadata will be returned
+# guard: the "s3" "bucket" existed
+# guard_violation: the "s3" "bucket" did not exist
+# guard: the "s3" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3" "bucket" was not "ACTIVE"
+# guard: the "s3" "object" existed in the "s3" "bucket"
+# guard_violation: the "s3" "object" did not exist in the "s3" "bucket"
+# guard: the "s3" "object" was not "deleted"
+# guard_violation: the "s3" "object" was "deleted"
 atomic action HeadObject:
     oneof bname in BUCKET_NAMES:
         if bname in bucket_status:
@@ -138,32 +138,32 @@ atomic action HeadObject:
                         if object_status[obj_key] == "EXISTS":
                             pass
 
-# step: objects in a bucket are listed
-# result: the list of objects in the bucket is returned
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
+# step: objects in a "s3" "bucket" are listed
+# result: the list of objects in the "s3" "bucket" will be returned
+# guard: the "s3" "bucket" existed
+# guard_violation: the "s3" "bucket" did not exist
+# guard: the "s3" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3" "bucket" was not "ACTIVE"
 atomic action ListObjectsV2:
     oneof bname in BUCKET_NAMES:
         if bname in bucket_status:
             if bucket_status[bname] == "ACTIVE":
                 pass
 
-# step: an object is copied from one bucket to another
-# result: the object EXISTS in the destination bucket
-# guard: the source bucket exists
-# guard_violation: the source bucket does not exist
-# guard: the source bucket is ACTIVE
-# guard_violation_lifecycle: the source bucket is not ACTIVE
-# guard: the source object exists
-# guard_violation: the source object does not exist
-# guard: the source object is not deleted
-# guard_violation: the source object is deleted
-# guard: the destination bucket exists
-# guard_violation: the destination bucket does not exist
-# guard: the destination bucket is ACTIVE
-# guard_violation_lifecycle: the destination bucket is not ACTIVE
+# step: a "s3" "object" is copied from one "s3" "bucket" to another
+# result: the "s3" "object" will exist in the destination "s3" "bucket"
+# guard: the source "s3" "bucket" existed
+# guard_violation: the source "s3" "bucket" did not exist
+# guard: the source "s3" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the source "s3" "bucket" was not "ACTIVE"
+# guard: the source "s3" "object" existed
+# guard_violation: the source "s3" "object" did not exist
+# guard: the source "s3" "object" is not "DELETED"
+# guard_violation: the source "s3" "object" is "DELETED"
+# guard: the destination "s3" "bucket" existed
+# guard_violation: the destination "s3" "bucket" did not exist
+# guard: the destination "s3" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the destination "s3" "bucket" was not "ACTIVE"
 atomic action CopyObject:
     oneof src_bname in BUCKET_NAMES:
         if src_bname in bucket_status:
@@ -178,14 +178,14 @@ atomic action CopyObject:
                                         dst_key = dst_bname + "#" + key
                                         object_status[dst_key] = "EXISTS"
 
-# step: a multipart upload is initiated
-# result: the upload is IN_PROGRESS with no parts
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
-# guard: the upload does not already exist
-# guard_violation: the upload already exists
+# step: a multipart "s3" "upload" is initiated
+# result: the "s3" "upload" will be "IN_PROGRESS" with no parts
+# guard: the "s3" "bucket" existed
+# guard_violation: the "s3" "bucket" did not exist
+# guard: the "s3" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3" "bucket" was not "ACTIVE"
+# guard: the "s3" "upload" did not already exist
+# guard_violation: the "s3" "upload" already existed
 atomic action CreateMultipartUpload:
     oneof bname in BUCKET_NAMES:
         if bname in bucket_status:
@@ -196,16 +196,16 @@ atomic action CreateMultipartUpload:
                         upload_status[upload_key] = "IN_PROGRESS"
                         upload_has_parts[upload_key] = False
 
-# step: a part is uploaded for a multipart upload
-# result: the upload has at least one part
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
-# guard: the upload exists
-# guard_violation: the upload does not exist
-# guard: the upload is IN_PROGRESS
-# guard_violation: the upload is not IN_PROGRESS
+# step: a part is uploaded for a multipart "s3" "upload"
+# result: the "s3" "upload" has at least one part
+# guard: the "s3" "bucket" existed
+# guard_violation: the "s3" "bucket" did not exist
+# guard: the "s3" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3" "bucket" was not "ACTIVE"
+# guard: the "s3" "upload" existed
+# guard_violation: the "s3" "upload" did not exist
+# guard: the "s3" "upload" was "IN_PROGRESS"
+# guard_violation: the "s3" "upload" was not "IN_PROGRESS"
 atomic action UploadPart:
     oneof bname in BUCKET_NAMES:
         if bname in bucket_status:
@@ -216,18 +216,18 @@ atomic action UploadPart:
                         if upload_status[upload_key] == "IN_PROGRESS":
                             upload_has_parts[upload_key] = True
 
-# step: a multipart upload is completed
-# result: the upload is COMPLETED and the assembled object EXISTS in the bucket
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
-# guard: the upload exists
-# guard_violation: the upload does not exist
-# guard: the upload is IN_PROGRESS
-# guard_violation: the upload is not IN_PROGRESS
-# guard: the upload has at least one part
-# guard_violation: the upload has no parts
+# step: a multipart "s3" "upload" is completed
+# result: the "s3" "upload" will be "COMPLETED" and the assembled "s3" "object" will exist in the "s3" "bucket"
+# guard: the "s3" "bucket" existed
+# guard_violation: the "s3" "bucket" did not exist
+# guard: the "s3" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3" "bucket" was not "ACTIVE"
+# guard: the "s3" "upload" existed
+# guard_violation: the "s3" "upload" did not exist
+# guard: the "s3" "upload" was "IN_PROGRESS"
+# guard_violation: the "s3" "upload" was not "IN_PROGRESS"
+# guard: the "s3" "upload" had at least one part
+# guard_violation: the "s3" "upload" had no parts
 atomic action CompleteMultipartUpload:
     oneof bname in BUCKET_NAMES:
         if bname in bucket_status:
@@ -241,16 +241,16 @@ atomic action CompleteMultipartUpload:
                                 obj_key = bname + "#" + "multipart-" + uid
                                 object_status[obj_key] = "EXISTS"
 
-# step: a multipart upload is aborted
-# result: the upload is ABORTED
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
-# guard: the upload exists
-# guard_violation: the upload does not exist
-# guard: the upload is IN_PROGRESS
-# guard_violation: the upload is not IN_PROGRESS
+# step: a multipart "s3" "upload" is aborted
+# result: the "s3" "upload" will be "ABORTED"
+# guard: the "s3" "bucket" existed
+# guard_violation: the "s3" "bucket" did not exist
+# guard: the "s3" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3" "bucket" was not "ACTIVE"
+# guard: the "s3" "upload" existed
+# guard_violation: the "s3" "upload" did not exist
+# guard: the "s3" "upload" was "IN_PROGRESS"
+# guard_violation: the "s3" "upload" was not "IN_PROGRESS"
 atomic action AbortMultipartUpload:
     oneof bname in BUCKET_NAMES:
         if bname in bucket_status:
@@ -262,16 +262,16 @@ atomic action AbortMultipartUpload:
                             upload_status[upload_key] = "ABORTED"
 
 # fake_skip: internal
-# step: a lifecycle rule expires an object
-# result: the object is DELETED by the lifecycle policy
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
-# guard: the object exists in the bucket
-# guard_violation: the object does not exist in the bucket
-# guard: the object is not deleted
-# guard_violation: the object is deleted
+# step: a lifecycle "s3" rule expires a "s3" "object"
+# result: the "s3" "object" will be "DELETED" by the lifecycle policy
+# guard: the "s3" "bucket" existed
+# guard_violation: the "s3" "bucket" did not exist
+# guard: the "s3" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3" "bucket" was not "ACTIVE"
+# guard: the "s3" "object" existed in the "s3" "bucket"
+# guard_violation: the "s3" "object" did not exist in the "s3" "bucket"
+# guard: the "s3" "object" was not "deleted"
+# guard_violation: the "s3" "object" was "deleted"
 atomic action LifecycleExpireObject:
     oneof bname in BUCKET_NAMES:
         if bname in bucket_status:

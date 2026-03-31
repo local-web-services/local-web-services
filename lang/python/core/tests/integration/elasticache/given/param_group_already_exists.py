@@ -1,4 +1,4 @@
-"""Given: the parameter group already exists"""
+"""Given: the "elasticache" parameter group already existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import ElasticacheTestClient
 
 
-@given("the parameter group already exists")
+@given('the "elasticache" parameter group already existed')
 def param_group_already_exists(client: TestClient):
     ElasticacheTestClient(client).create_param_group()

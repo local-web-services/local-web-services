@@ -1,4 +1,4 @@
-"""When: a database cluster snapshot finishes creating"""
+"""When: a "documentdb" "cluster" documentdb snapshot finishes creating"""
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import when
 from starlette.testclient import TestClient
 
 
-@when("a database cluster snapshot finishes creating")
+@when('a "documentdb" "cluster" documentdb snapshot finishes creating')
 def finish_creating_cluster_snapshot(client: TestClient, world: dict):
     pytest.skip("CreateDBClusterSnapshot is not yet implemented in lws.")

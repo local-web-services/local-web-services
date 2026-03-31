@@ -1,4 +1,4 @@
-"""Then: the replication group is in "CREATING" state"""
+"""Then: the "elasticache" "replication group" will be in "CREATING" state"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_RG_ID
 
 
-@then('the replication group is in "CREATING" state')
+@then('the "elasticache" "replication group" will be in "CREATING" state')
 def rg_is_in_creating_state(client: TestClient, world):
     actual_error = world["error"]
     assert (

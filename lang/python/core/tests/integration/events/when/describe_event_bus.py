@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EVENTS_TARGET, INT_BUS, _store
 
 
-@when("an event bus is described")
+@when('an "eventbridge" "bus" is described')
 def describe_event_bus(client: TestClient, world):
     r = client.post(
         "/", headers={"X-Amz-Target": f"{_EVENTS_TARGET}.DescribeEventBus"}, json={"Name": INT_BUS}

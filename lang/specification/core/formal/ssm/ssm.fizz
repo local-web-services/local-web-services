@@ -19,10 +19,10 @@ action Init:
     param_tag = {}
     errors = []
 
-# step: a parameter is stored in SSM
-# result: the parameter exists with version 1
-# guard: the parameter does not already exist or has been deleted
-# guard_violation: the parameter already exists
+# step: a "ssm" "parameter" is stored
+# result: the "ssm" "parameter" will exist with version 1
+# guard: the "ssm" "parameter" did not already exist or has been deleted
+# guard_violation: the "ssm" "parameter" already existed
 atomic action PutParameterCreate:
     oneof pname in PARAM_NAMES:
         if pname not in param_exists or param_exists[pname] == False:
@@ -32,12 +32,12 @@ atomic action PutParameterCreate:
                 param_type[pname] = ptype
                 param_version[pname] = 1
 
-# step: an existing parameter value is updated
-# result: the parameter has a new value and an incremented version
-# guard: the parameter exists
-# guard_violation: the parameter does not exist
-# guard: the parameter is active
-# guard_violation: the parameter is not active
+# step: an existing "ssm" "parameter" value is updated
+# result: the "ssm" "parameter" has a new value and an incremented version
+# guard: the "ssm" "parameter" existed
+# guard_violation: the "ssm" "parameter" did not exist
+# guard: the "ssm" "parameter" was "active"
+# guard_violation: the "ssm" "parameter" was not "active"
 atomic action PutParameterOverwrite:
     oneof pname in PARAM_NAMES:
         if pname in param_exists:
@@ -45,75 +45,75 @@ atomic action PutParameterOverwrite:
                 param_value[pname] = "value2"
                 param_version[pname] = param_version[pname] + 1
 
-# step: a parameter is written without overwrite when it already exists
-# result: a ParameterAlreadyExists error is recorded
-# guard: the parameter exists
-# guard_violation: the parameter does not exist
-# guard: the parameter is active
-# guard_violation: the parameter is not active
+# step: a "ssm" "parameter" is written without overwrite when it already exists
+# result: a ParameterAlreadyExists error will be recorded
+# guard: the "ssm" "parameter" existed
+# guard_violation: the "ssm" "parameter" did not exist
+# guard: the "ssm" "parameter" was "active"
+# guard_violation: the "ssm" "parameter" was not "active"
 atomic action PutParameterNoOverwriteConflict:
     oneof pname in PARAM_NAMES:
         if pname in param_exists:
             if param_exists[pname] == True:
                 errors.append("ParameterAlreadyExists:" + pname)
 
-# step: a parameter is retrieved from SSM
-# result: the parameter value is returned
-# guard: the parameter exists
-# guard_violation: the parameter does not exist
-# guard: the parameter is active
-# guard_violation: the parameter is not active
+# step: a "ssm" "parameter" is retrieved
+# result: the "ssm" "parameter" value will be returned
+# guard: the "ssm" "parameter" existed
+# guard_violation: the "ssm" "parameter" did not exist
+# guard: the "ssm" "parameter" was "active"
+# guard_violation: the "ssm" "parameter" was not "active"
 atomic action GetParameter:
     oneof pname in PARAM_NAMES:
         if pname in param_exists:
             if param_exists[pname] == True:
                 pass
 
-# step: multiple parameters are retrieved from SSM
-# result: the parameter values are returned
+# step: multiple "ssm" "parameter"s are retrieved
+# result: the "ssm" "parameter" values will be returned
 atomic action GetParameters:
     pass
 
-# step: parameters under a path are retrieved from SSM
-# result: the parameters under the path are returned
+# step: "ssm" "parameter"s under a path are retrieved
+# result: the "ssm" "parameter"s under the path will be returned
 atomic action GetParametersByPath:
     pass
 
-# step: parameters are described
-# result: the parameter metadata is returned
+# step: "ssm" "parameter"s are described
+# result: the "ssm" "parameter" metadata will be returned
 atomic action DescribeParameters:
     pass
 
-# step: a parameter is deleted from SSM
-# result: the parameter no longer exists
-# guard: the parameter exists
-# guard_violation: the parameter does not exist
-# guard: the parameter is active
-# guard_violation: the parameter is not active
+# step: a "ssm" "parameter" is deleted
+# result: the "ssm" "parameter" no longer will exist
+# guard: the "ssm" "parameter" existed
+# guard_violation: the "ssm" "parameter" did not exist
+# guard: the "ssm" "parameter" was "active"
+# guard_violation: the "ssm" "parameter" was not "active"
 atomic action DeleteParameter:
     oneof pname in PARAM_NAMES:
         if pname in param_exists:
             if param_exists[pname] == True:
                 param_exists[pname] = False
 
-# step: multiple parameters are deleted from SSM
-# result: the parameters no longer exist
-# guard: the parameter exists
-# guard_violation: the parameter does not exist
-# guard: the parameter is active
-# guard_violation: the parameter is not active
+# step: multiple "ssm" "parameter"s are deleted
+# result: the "ssm" "parameter"s no longer exist
+# guard: the "ssm" "parameter" existed
+# guard_violation: the "ssm" "parameter" did not exist
+# guard: the "ssm" "parameter" was "active"
+# guard_violation: the "ssm" "parameter" was not "active"
 atomic action DeleteParameters:
     oneof pname in PARAM_NAMES:
         if pname in param_exists:
             if param_exists[pname] == True:
                 param_exists[pname] = False
 
-# step: tags are added to a parameter
-# result: the tags are associated with the parameter
-# guard: the parameter exists
-# guard_violation: the parameter does not exist
-# guard: the parameter is active
-# guard_violation: the parameter is not active
+# step: tags are added to a "ssm" "parameter"
+# result: the tags are associated with the "ssm" "parameter"
+# guard: the "ssm" "parameter" existed
+# guard_violation: the "ssm" "parameter" did not exist
+# guard: the "ssm" "parameter" was "active"
+# guard_violation: the "ssm" "parameter" was not "active"
 atomic action AddTagsToResource:
     oneof pname in PARAM_NAMES:
         if pname in param_exists:
@@ -121,16 +121,16 @@ atomic action AddTagsToResource:
                 oneof tkey in TAG_KEYS:
                     param_tag[pname + "#" + tkey] = True
 
-# step: tags are removed from a parameter
-# result: the tags are disassociated from the parameter
-# guard: the parameter exists
-# guard_violation: the parameter does not exist
-# guard: the parameter is active
-# guard_violation: the parameter is not active
-# guard: the tag is associated with the parameter
-# guard_violation: the tag is not associated with the parameter
-# guard: the tag association is active
-# guard_violation: the tag association is not active
+# step: tags are removed from a "ssm" "parameter"
+# result: the tags are disassociated from the "ssm" "parameter"
+# guard: the "ssm" "parameter" existed
+# guard_violation: the "ssm" "parameter" did not exist
+# guard: the "ssm" "parameter" was "active"
+# guard_violation: the "ssm" "parameter" was not "active"
+# guard: the tag was associated with the "ssm" "parameter"
+# guard_violation: the tag was not associated with the "ssm" "parameter"
+# guard: the tag association was "ACTIVE"
+# guard_violation: the tag association was not "ACTIVE"
 atomic action RemoveTagsFromResource:
     oneof pname in PARAM_NAMES:
         if pname in param_exists:
@@ -140,12 +140,12 @@ atomic action RemoveTagsFromResource:
                         if param_tag[pname + "#" + tkey] == True:
                             param_tag[pname + "#" + tkey] = False
 
-# step: tags for a parameter are listed
-# result: the list of tags is returned
-# guard: the parameter exists
-# guard_violation: the parameter does not exist
-# guard: the parameter is active
-# guard_violation: the parameter is not active
+# step: tags for a "ssm" "parameter" are listed
+# result: the list of tags will be returned
+# guard: the "ssm" "parameter" existed
+# guard_violation: the "ssm" "parameter" did not exist
+# guard: the "ssm" "parameter" was "active"
+# guard_violation: the "ssm" "parameter" was not "active"
 atomic action ListTagsForResource:
     oneof pname in PARAM_NAMES:
         if pname in param_exists:

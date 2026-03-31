@@ -1,5 +1,5 @@
 @cognitoidp @generated
-Feature: CognitoIdp - An Admin Adds A User To A Group In The Same Pool
+Feature: CognitoIdp - An Admin Adds A "Cognito" "User" To A "Cognito" "Group" In The Same Pool
 
   # Generated from FizzBee spec: cognito_idp.fizz
   # Safety invariants: ValidUserPoolStatus, ValidUserStatus, UserGroupMembershipEntryExists, GroupMembershipReferencesExistingGroups, ValidAuthSessionStatus, DeletedUsersNotAuthenticated, DisabledUsersNotAuthenticated
@@ -8,14 +8,14 @@ Feature: CognitoIdp - An Admin Adds A User To A Group In The Same Pool
     Given the system is initialized
 
   @minimal @happy @admin_add_user_to_group
-  Scenario: an admin adds a user to a group in the same pool
-    Given the user exists
-    And the user is not "DELETED"
-    And the group exists
-    And the group is "ACTIVE"
-    And the user and group belong to the same pool
-    When an admin adds a user to a group in the same pool
-    Then the user is a member of the group
+  Scenario: an admin adds a "cognito" "user" to a "cognito" "group" in the same pool
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was not "DELETED"
+    And the "cognito" "group" existed
+    And the "cognito" "group" was "ACTIVE"
+    And the "cognito" "user" and group belonged to the same pool
+    When an admin adds a "cognito" "user" to a "cognito" "group" in the same pool
+    Then the "cognito" "user" will be a member of the "cognito" "group"
     And every user pool has a valid status ("ACTIVE" or "DELETED")
     And every user has a valid status
     And every non-deleted user has an enabled flag set
@@ -25,41 +25,41 @@ Feature: CognitoIdp - An Admin Adds A User To A Group In The Same Pool
     And disabled users do not have active authenticated sessions
 
   @guard @negative @admin_add_user_to_group
-  Scenario: an admin adds a user to a group in the same pool fails when the user does not exist
-    Given the user does not exist
-    When an admin adds a user to a group in the same pool
+  Scenario: an admin adds a "cognito" "user" to a "cognito" "group" in the same pool fails when the "cognito" "user" did not exist
+    Given the "cognito" "user" did not exist
+    When an admin adds a "cognito" "user" to a "cognito" "group" in the same pool
     Then the operation is rejected
 
   @guard @negative @admin_add_user_to_group
-  Scenario: an admin adds a user to a group in the same pool fails when the user is "DELETED"
-    Given the user exists
-    And the user is "DELETED"
-    When an admin adds a user to a group in the same pool
+  Scenario: an admin adds a "cognito" "user" to a "cognito" "group" in the same pool fails when the "cognito" "user" was "DELETED"
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was "DELETED"
+    When an admin adds a "cognito" "user" to a "cognito" "group" in the same pool
     Then the operation is rejected
 
   @guard @negative @admin_add_user_to_group
-  Scenario: an admin adds a user to a group in the same pool fails when the group does not exist
-    Given the user exists
-    And the user is not "DELETED"
-    And the group does not exist
-    When an admin adds a user to a group in the same pool
+  Scenario: an admin adds a "cognito" "user" to a "cognito" "group" in the same pool fails when the "cognito" "group" did not exist
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was not "DELETED"
+    And the "cognito" "group" did not exist
+    When an admin adds a "cognito" "user" to a "cognito" "group" in the same pool
     Then the operation is rejected
 
   @guard @negative @admin_add_user_to_group
-  Scenario: an admin adds a user to a group in the same pool fails when the group is not "ACTIVE"
-    Given the user exists
-    And the user is not "DELETED"
-    And the group exists
-    And the group is not "ACTIVE"
-    When an admin adds a user to a group in the same pool
+  Scenario: an admin adds a "cognito" "user" to a "cognito" "group" in the same pool fails when the "cognito" "group" was not "ACTIVE"
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was not "DELETED"
+    And the "cognito" "group" existed
+    And the "cognito" "group" was not "ACTIVE"
+    When an admin adds a "cognito" "user" to a "cognito" "group" in the same pool
     Then the operation is rejected
 
   @guard @negative @admin_add_user_to_group
-  Scenario: an admin adds a user to a group in the same pool fails when the user and group belong to different pools
-    Given the user exists
-    And the user is not "DELETED"
-    And the group exists
-    And the group is "ACTIVE"
-    And the user and group belong to different pools
-    When an admin adds a user to a group in the same pool
+  Scenario: an admin adds a "cognito" "user" to a "cognito" "group" in the same pool fails when the "cognito" "user" and group belonged to different pools
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was not "DELETED"
+    And the "cognito" "group" existed
+    And the "cognito" "group" was "ACTIVE"
+    And the "cognito" "user" and group belonged to different pools
+    When an admin adds a "cognito" "user" to a "cognito" "group" in the same pool
     Then the operation is rejected

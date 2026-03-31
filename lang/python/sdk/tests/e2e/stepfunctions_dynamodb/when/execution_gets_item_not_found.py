@@ -1,4 +1,4 @@
-"""When: a running execution attempts to get an item that does not exist and the execution fails"""
+"""When: a running "step functions" "execution" attempts to get an item that does not exist and the execution fails"""
 
 from __future__ import annotations
 
@@ -9,7 +9,9 @@ from ..client import StepfunctionsDynamodbTestClient
 from ..constants import TEST_INPUT, TEST_PK, TEST_TABLE, _dynamodb_get_item_definition, _sm_arn
 
 
-@when("a running execution attempts to get an item that does not exist and the execution fails")
+@when(
+    'a running "step functions" "execution" attempts to get an item that does not exist and the execution fails'
+)
 def execution_gets_item_not_found(lws_session, world):
     try:
         StepfunctionsDynamodbTestClient(lws_session).create_table()

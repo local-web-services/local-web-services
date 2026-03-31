@@ -1,4 +1,4 @@
-"""Given: no target is associated with the rule"""
+"""Given: no target is associated with the "eventbridge" "rule" """
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import pytest
 from pytest_bdd import given
 
 
-@given("no target is associated with the rule")
+@given('no target is associated with the "eventbridge" "rule"')
 def no_target_associated_with_rule():
     """No-op: fresh rules have no targets.
 

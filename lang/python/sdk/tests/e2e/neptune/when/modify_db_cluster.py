@@ -1,4 +1,4 @@
-"""When: a database cluster configuration is modified"""
+"""When: a "neptune" "cluster" configuration is modified"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_CLUSTER
 
 
-@when("a database cluster configuration is modified")
+@when('a "neptune" "cluster" configuration is modified')
 def modify_db_cluster(lws_session, world):
     try:
         cluster_id = world.get("cluster_id", TEST_CLUSTER)

@@ -1,4 +1,4 @@
-"""When: a user is updated"""
+"""When: a "memorydb" "user" is updated"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import TEST_USER
 
 
-@when("a user is updated")
+@when('a "memorydb" "user" is updated')
 def update_user(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:

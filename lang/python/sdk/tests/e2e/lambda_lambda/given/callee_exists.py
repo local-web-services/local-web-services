@@ -1,4 +1,4 @@
-"""Given: the callee exists"""
+"""Given: the callee "lambda" "function" existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from ..client import LambdaLambdaTestClient
 from ..constants import TEST_CALLEE
 
 
-@given("the callee exists")
+@given('the callee "lambda" "function" existed')
 def callee_exists(lws_session):
     LambdaLambdaTestClient(lws_session).create_function(TEST_CALLEE)

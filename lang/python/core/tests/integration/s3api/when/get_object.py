@@ -1,4 +1,4 @@
-"""When: an object is retrieved from a bucket"""
+"""When: a "s3" "object" is retrieved from a "s3" "bucket" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_KEY
 
 
-@when("an object is retrieved from a bucket")
+@when('a "s3" "object" is retrieved from a "s3" "bucket"')
 def get_object(sync_client: TestClient, world):
     r = sync_client.get(f"/{INT_BUCKET}/{INT_KEY}")
     if r.status_code == 200:

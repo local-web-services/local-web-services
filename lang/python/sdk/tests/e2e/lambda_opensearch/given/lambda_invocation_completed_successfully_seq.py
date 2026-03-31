@@ -1,4 +1,4 @@
-"""Given: the Lambda invocation has completed successfully"""
+"""Given: the Lambda invocation completes successfully"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import uuid
 from pytest_bdd import given
 
 
-@given("the Lambda invocation has completed successfully")
+@given("the Lambda invocation completes successfully")
 def lambda_invocation_completed_successfully_seq(lws_session, world):
     # Arrange
     invocation_id = str(uuid.uuid4())

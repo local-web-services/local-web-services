@@ -1,4 +1,4 @@
-"""Then: the item "EXISTS" and the request is "SUCCESS" """
+"""Then: the item will exist and the request will be "SUCCESS" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import _ITEM_KEY, TEST_TABLE
 
 
-@then('the item "EXISTS" and the request is "SUCCESS"')
+@then('the item will exist and the request will be "SUCCESS"')
 def item_exists_request_success(lws_session, world):
     expected_status = 200
     actual_status = world.get("invoke_status")

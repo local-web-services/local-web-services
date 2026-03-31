@@ -1,4 +1,4 @@
-"""Given: the transaction's table is "ACTIVE" """
+"""Given: the transaction's "dynamodb" "table" was "ACTIVE" """
 
 from __future__ import annotations
 

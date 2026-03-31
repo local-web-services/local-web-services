@@ -1,4 +1,4 @@
-"""Given: the tag is associated with the parameter"""
+"""Given: the tag was associated with the "ssm" "parameter" """
 
 from __future__ import annotations
 
@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import SsmTestClient
 
 
-@given("the tag is associated with the parameter")
+@given('the tag was associated with the "ssm" "parameter"')
 def tag_associated_with_parameter(client: TestClient):
     SsmTestClient(client).add_tag()

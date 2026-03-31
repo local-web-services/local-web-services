@@ -1,4 +1,4 @@
-"""Then: the table enters "DELETING" state and all its items are removed"""
+"""Then: the "dynamodb" "table" will be in "DELETING" state and all its items will be removed"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_TABLE
 
 
-@then('the table enters "DELETING" state and all its items are removed')
+@then('the "dynamodb" "table" will be in "DELETING" state and all its items will be removed')
 def table_enters_deleting_state_then(lws_session, world):
     expected_error = None
     actual_error = world["error"]

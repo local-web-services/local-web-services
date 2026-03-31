@@ -1,4 +1,4 @@
-"""When: a user is added to an "ACL" """
+"""When: a "memorydb" "user" is added to an "memorydb" "ACL" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import TEST_ACL, TEST_USER
 
 
-@when('a user is added to an "ACL"')
+@when('a "memorydb" "user" is added to an "memorydb" "ACL"')
 def add_user_to_acl(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:

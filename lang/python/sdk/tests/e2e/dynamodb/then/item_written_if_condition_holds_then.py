@@ -1,11 +1,13 @@
-"""Then: the item is written if the condition holds, otherwise the write is rejected"""
+"""Then: the "dynamodb" "item" will be written if the condition holds, otherwise the write will be rejected"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the item is written if the condition holds, otherwise the write is rejected")
+@then(
+    'the "dynamodb" "item" will be written if the condition holds, otherwise the write will be rejected'
+)
 def item_written_if_condition_holds_then(world):
     """Conditional write either succeeds or raises ConditionalCheckFailedException."""
     actual_error = world["error"]

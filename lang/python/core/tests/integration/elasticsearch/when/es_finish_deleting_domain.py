@@ -1,4 +1,4 @@
-"""When: a search domain finishes deleting"""
+"""When: an "elasticsearch" "domain" finishes deleting"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ElasticsearchTestClient
 from ..constants import INT_DOMAIN, _store
 
 
-@when("a search domain finishes deleting")
+@when('an "elasticsearch" "domain" finishes deleting')
 def es_finish_deleting_domain(client: TestClient, world: dict):
     r = ElasticsearchTestClient(client).post(
         "DeleteElasticsearchDomain", {"DomainName": INT_DOMAIN}

@@ -8,511 +8,511 @@ Feature: StepfunctionsCognito - Action Sequences
     Given the system is initialized
 
   @sequence
-  Scenario: a Step Functions state machine is created then a Cognito user pool is created
+  Scenario: a "step functions" "state machine" is created then a "cognito" "user pool" is created
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When a Cognito user pool is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a "cognito" "user pool" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Step Functions state machine is created then a Cognito user pool is deleted
+  Scenario: a "step functions" "state machine" is created then a "cognito" "user pool" is deleted
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When a Cognito user pool is deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a "cognito" "user pool" is deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Step Functions state machine is created then an execution of the state machine is started
+  Scenario: a "step functions" "state machine" is created then an "step functions" "execution" of the "step functions" "state machine" is started
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Step Functions state machine is created then a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
+  Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Step Functions state machine is created then a running execution fails because the Cognito user pool has been deleted
+  Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    When a running execution fails because the Cognito user pool has been deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is created then a Step Functions state machine is created
+  Scenario: a "cognito" "user pool" is created then a "step functions" "state machine" is created
     Given pid not in pool_status
-    Given a Cognito user pool has been created
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is created
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is created then a Cognito user pool is deleted
+  Scenario: a "cognito" "user pool" is created then a "cognito" "user pool" is deleted
     Given pid not in pool_status
-    Given a Cognito user pool has been created
-    When a Cognito user pool is deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is created
+    When a "cognito" "user pool" is deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is created then an execution of the state machine is started
+  Scenario: a "cognito" "user pool" is created then an "step functions" "execution" of the "step functions" "state machine" is started
     Given pid not in pool_status
-    Given a Cognito user pool has been created
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is created then a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
+  Scenario: a "cognito" "user pool" is created then a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
     Given pid not in pool_status
-    Given a Cognito user pool has been created
-    When a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is created
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is created then a running execution fails because the Cognito user pool has been deleted
+  Scenario: a "cognito" "user pool" is created then a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
     Given pid not in pool_status
-    Given a Cognito user pool has been created
-    When a running execution fails because the Cognito user pool has been deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is created
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is deleted then a Step Functions state machine is created
+  Scenario: a "cognito" "user pool" is deleted then a "step functions" "state machine" is created
     Given pid in pool_status
-    Given a Cognito user pool has been deleted
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is deleted
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is deleted then a Cognito user pool is created
+  Scenario: a "cognito" "user pool" is deleted then a "cognito" "user pool" is created
     Given pid in pool_status
-    Given a Cognito user pool has been deleted
-    When a Cognito user pool is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is deleted
+    When a "cognito" "user pool" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is deleted then an execution of the state machine is started
+  Scenario: a "cognito" "user pool" is deleted then an "step functions" "execution" of the "step functions" "state machine" is started
     Given pid in pool_status
-    Given a Cognito user pool has been deleted
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is deleted
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is deleted then a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
+  Scenario: a "cognito" "user pool" is deleted then a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
     Given pid in pool_status
-    Given a Cognito user pool has been deleted
-    When a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is deleted
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is deleted then a running execution fails because the Cognito user pool has been deleted
+  Scenario: a "cognito" "user pool" is deleted then a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
     Given pid in pool_status
-    Given a Cognito user pool has been deleted
-    When a running execution fails because the Cognito user pool has been deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is deleted
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: an execution of the state machine is started then a Step Functions state machine is created
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "step functions" "state machine" is created
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: an execution of the state machine is started then a Cognito user pool is created
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "cognito" "user pool" is created
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a Cognito user pool is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "cognito" "user pool" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: an execution of the state machine is started then a Cognito user pool is deleted
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "cognito" "user pool" is deleted
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a Cognito user pool is deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "cognito" "user pool" is deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: an execution of the state machine is started then a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: an execution of the state machine is started then a running execution fails because the Cognito user pool has been deleted
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    When a running execution fails because the Cognito user pool has been deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution calls an "ACTIVE" Cognito user pool and the task succeeds then a Step Functions state machine is created
+  Scenario: a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds then a "step functions" "state machine" is created
     Given eid in exec_status
-    Given a running execution has called an "ACTIVE" Cognito user pool and the task succeeded
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution calls an "ACTIVE" Cognito user pool and the task succeeds then a Cognito user pool is created
+  Scenario: a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds then a "cognito" "user pool" is created
     Given eid in exec_status
-    Given a running execution has called an "ACTIVE" Cognito user pool and the task succeeded
-    When a Cognito user pool is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    When a "cognito" "user pool" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution calls an "ACTIVE" Cognito user pool and the task succeeds then a Cognito user pool is deleted
+  Scenario: a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds then a "cognito" "user pool" is deleted
     Given eid in exec_status
-    Given a running execution has called an "ACTIVE" Cognito user pool and the task succeeded
-    When a Cognito user pool is deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    When a "cognito" "user pool" is deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution calls an "ACTIVE" Cognito user pool and the task succeeds then an execution of the state machine is started
+  Scenario: a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds then an "step functions" "execution" of the "step functions" "state machine" is started
     Given eid in exec_status
-    Given a running execution has called an "ACTIVE" Cognito user pool and the task succeeded
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution calls an "ACTIVE" Cognito user pool and the task succeeds then a running execution fails because the Cognito user pool has been deleted
+  Scenario: a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds then a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
     Given eid in exec_status
-    Given a running execution has called an "ACTIVE" Cognito user pool and the task succeeded
-    When a running execution fails because the Cognito user pool has been deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution fails because the Cognito user pool has been deleted then a Step Functions state machine is created
+  Scenario: a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted then a "step functions" "state machine" is created
     Given eid in exec_status
-    Given a running execution has failed because the Cognito user pool has been deleted
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution fails because the Cognito user pool has been deleted then a Cognito user pool is created
+  Scenario: a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted then a "cognito" "user pool" is created
     Given eid in exec_status
-    Given a running execution has failed because the Cognito user pool has been deleted
-    When a Cognito user pool is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    When a "cognito" "user pool" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution fails because the Cognito user pool has been deleted then a Cognito user pool is deleted
+  Scenario: a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted then a "cognito" "user pool" is deleted
     Given eid in exec_status
-    Given a running execution has failed because the Cognito user pool has been deleted
-    When a Cognito user pool is deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    When a "cognito" "user pool" is deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution fails because the Cognito user pool has been deleted then an execution of the state machine is started
+  Scenario: a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted then an "step functions" "execution" of the "step functions" "state machine" is started
     Given eid in exec_status
-    Given a running execution has failed because the Cognito user pool has been deleted
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution fails because the Cognito user pool has been deleted then a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
+  Scenario: a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted then a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
     Given eid in exec_status
-    Given a running execution has failed because the Cognito user pool has been deleted
-    When a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Step Functions state machine is created then a Cognito user pool is created then a Cognito user pool is deleted
+  Scenario: a "step functions" "state machine" is created then a "cognito" "user pool" is created then a "cognito" "user pool" is deleted
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given a Cognito user pool has been created
-    When a Cognito user pool is deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a "cognito" "user pool" is created
+    When a "cognito" "user pool" is deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Step Functions state machine is created then a Cognito user pool is deleted then an execution of the state machine is started
+  Scenario: a "step functions" "state machine" is created then a "cognito" "user pool" is deleted then an "step functions" "execution" of the "step functions" "state machine" is started
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given a Cognito user pool has been deleted
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a "cognito" "user pool" is deleted
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Step Functions state machine is created then an execution of the state machine is started then a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
+  Scenario: a "step functions" "state machine" is created then an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given an execution of the state machine has been started
-    When a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Step Functions state machine is created then a running execution calls an "ACTIVE" Cognito user pool and the task succeeds then a running execution fails because the Cognito user pool has been deleted
+  Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds then a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given a running execution has called an "ACTIVE" Cognito user pool and the task succeeded
-    When a running execution fails because the Cognito user pool has been deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Step Functions state machine is created then a running execution fails because the Cognito user pool has been deleted then a Cognito user pool is created
+  Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted then a "cognito" "user pool" is created
     Given smid not in sm_status
-    Given a Step Functions state machine has been created
-    Given a running execution has failed because the Cognito user pool has been deleted
-    When a Cognito user pool is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    When a "cognito" "user pool" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is created then a Step Functions state machine is created then an execution of the state machine is started
+  Scenario: a "cognito" "user pool" is created then a "step functions" "state machine" is created then an "step functions" "execution" of the "step functions" "state machine" is started
     Given pid not in pool_status
-    Given a Cognito user pool has been created
-    Given a Step Functions state machine has been created
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is created
+    When a "step functions" "state machine" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is created then a Cognito user pool is deleted then a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
+  Scenario: a "cognito" "user pool" is created then a "cognito" "user pool" is deleted then a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
     Given pid not in pool_status
-    Given a Cognito user pool has been created
-    Given a Cognito user pool has been deleted
-    When a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is created
+    When a "cognito" "user pool" is deleted
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is created then an execution of the state machine is started then a running execution fails because the Cognito user pool has been deleted
+  Scenario: a "cognito" "user pool" is created then an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
     Given pid not in pool_status
-    Given a Cognito user pool has been created
-    Given an execution of the state machine has been started
-    When a running execution fails because the Cognito user pool has been deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is created then a running execution calls an "ACTIVE" Cognito user pool and the task succeeds then a Step Functions state machine is created
+  Scenario: a "cognito" "user pool" is created then a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds then a "step functions" "state machine" is created
     Given pid not in pool_status
-    Given a Cognito user pool has been created
-    Given a running execution has called an "ACTIVE" Cognito user pool and the task succeeded
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is created
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is created then a running execution fails because the Cognito user pool has been deleted then a Cognito user pool is deleted
+  Scenario: a "cognito" "user pool" is created then a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted then a "cognito" "user pool" is deleted
     Given pid not in pool_status
-    Given a Cognito user pool has been created
-    Given a running execution has failed because the Cognito user pool has been deleted
-    When a Cognito user pool is deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is created
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    When a "cognito" "user pool" is deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is deleted then a Step Functions state machine is created then a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
+  Scenario: a "cognito" "user pool" is deleted then a "step functions" "state machine" is created then a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
     Given pid in pool_status
-    Given a Cognito user pool has been deleted
-    Given a Step Functions state machine has been created
-    When a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is deleted
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is deleted then a Cognito user pool is created then a running execution fails because the Cognito user pool has been deleted
+  Scenario: a "cognito" "user pool" is deleted then a "cognito" "user pool" is created then a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
     Given pid in pool_status
-    Given a Cognito user pool has been deleted
-    Given a Cognito user pool has been created
-    When a running execution fails because the Cognito user pool has been deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is deleted
+    When a "cognito" "user pool" is created
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is deleted then an execution of the state machine is started then a Step Functions state machine is created
+  Scenario: a "cognito" "user pool" is deleted then an "step functions" "execution" of the "step functions" "state machine" is started then a "step functions" "state machine" is created
     Given pid in pool_status
-    Given a Cognito user pool has been deleted
-    Given an execution of the state machine has been started
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is deleted
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is deleted then a running execution calls an "ACTIVE" Cognito user pool and the task succeeds then a Cognito user pool is created
+  Scenario: a "cognito" "user pool" is deleted then a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds then a "cognito" "user pool" is created
     Given pid in pool_status
-    Given a Cognito user pool has been deleted
-    Given a running execution has called an "ACTIVE" Cognito user pool and the task succeeded
-    When a Cognito user pool is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is deleted
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    When a "cognito" "user pool" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a Cognito user pool is deleted then a running execution fails because the Cognito user pool has been deleted then an execution of the state machine is started
+  Scenario: a "cognito" "user pool" is deleted then a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted then an "step functions" "execution" of the "step functions" "state machine" is started
     Given pid in pool_status
-    Given a Cognito user pool has been deleted
-    Given a running execution has failed because the Cognito user pool has been deleted
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a "cognito" "user pool" is deleted
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: an execution of the state machine is started then a Step Functions state machine is created then a running execution fails because the Cognito user pool has been deleted
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "step functions" "state machine" is created then a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a Step Functions state machine has been created
-    When a running execution fails because the Cognito user pool has been deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "step functions" "state machine" is created
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: an execution of the state machine is started then a Cognito user pool is created then a Step Functions state machine is created
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "cognito" "user pool" is created then a "step functions" "state machine" is created
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a Cognito user pool has been created
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "cognito" "user pool" is created
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: an execution of the state machine is started then a Cognito user pool is deleted then a Cognito user pool is created
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a "cognito" "user pool" is deleted then a "cognito" "user pool" is created
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a Cognito user pool has been deleted
-    When a Cognito user pool is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "cognito" "user pool" is deleted
+    When a "cognito" "user pool" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: an execution of the state machine is started then a running execution calls an "ACTIVE" Cognito user pool and the task succeeds then a Cognito user pool is deleted
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds then a "cognito" "user pool" is deleted
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a running execution has called an "ACTIVE" Cognito user pool and the task succeeded
-    When a Cognito user pool is deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    When a "cognito" "user pool" is deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: an execution of the state machine is started then a running execution fails because the Cognito user pool has been deleted then a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted then a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
     Given smid in sm_status
-    Given an execution of the state machine has been started
-    Given a running execution has failed because the Cognito user pool has been deleted
-    When a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution calls an "ACTIVE" Cognito user pool and the task succeeds then a Step Functions state machine is created then a Cognito user pool is created
+  Scenario: a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds then a "step functions" "state machine" is created then a "cognito" "user pool" is created
     Given eid in exec_status
-    Given a running execution has called an "ACTIVE" Cognito user pool and the task succeeded
-    Given a Step Functions state machine has been created
-    When a Cognito user pool is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    When a "step functions" "state machine" is created
+    When a "cognito" "user pool" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution calls an "ACTIVE" Cognito user pool and the task succeeds then a Cognito user pool is created then a Cognito user pool is deleted
+  Scenario: a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds then a "cognito" "user pool" is created then a "cognito" "user pool" is deleted
     Given eid in exec_status
-    Given a running execution has called an "ACTIVE" Cognito user pool and the task succeeded
-    Given a Cognito user pool has been created
-    When a Cognito user pool is deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    When a "cognito" "user pool" is created
+    When a "cognito" "user pool" is deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution calls an "ACTIVE" Cognito user pool and the task succeeds then a Cognito user pool is deleted then an execution of the state machine is started
+  Scenario: a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds then a "cognito" "user pool" is deleted then an "step functions" "execution" of the "step functions" "state machine" is started
     Given eid in exec_status
-    Given a running execution has called an "ACTIVE" Cognito user pool and the task succeeded
-    Given a Cognito user pool has been deleted
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    When a "cognito" "user pool" is deleted
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution calls an "ACTIVE" Cognito user pool and the task succeeds then an execution of the state machine is started then a running execution fails because the Cognito user pool has been deleted
+  Scenario: a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds then an "step functions" "execution" of the "step functions" "state machine" is started then a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
     Given eid in exec_status
-    Given a running execution has called an "ACTIVE" Cognito user pool and the task succeeded
-    Given an execution of the state machine has been started
-    When a running execution fails because the Cognito user pool has been deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution calls an "ACTIVE" Cognito user pool and the task succeeds then a running execution fails because the Cognito user pool has been deleted then a Step Functions state machine is created
+  Scenario: a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds then a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted then a "step functions" "state machine" is created
     Given eid in exec_status
-    Given a running execution has called an "ACTIVE" Cognito user pool and the task succeeded
-    Given a running execution has failed because the Cognito user pool has been deleted
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution fails because the Cognito user pool has been deleted then a Step Functions state machine is created then a Cognito user pool is deleted
+  Scenario: a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted then a "step functions" "state machine" is created then a "cognito" "user pool" is deleted
     Given eid in exec_status
-    Given a running execution has failed because the Cognito user pool has been deleted
-    Given a Step Functions state machine has been created
-    When a Cognito user pool is deleted
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    When a "step functions" "state machine" is created
+    When a "cognito" "user pool" is deleted
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution fails because the Cognito user pool has been deleted then a Cognito user pool is created then an execution of the state machine is started
+  Scenario: a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted then a "cognito" "user pool" is created then an "step functions" "execution" of the "step functions" "state machine" is started
     Given eid in exec_status
-    Given a running execution has failed because the Cognito user pool has been deleted
-    Given a Cognito user pool has been created
-    When an execution of the state machine is started
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    When a "cognito" "user pool" is created
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution fails because the Cognito user pool has been deleted then a Cognito user pool is deleted then a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
+  Scenario: a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted then a "cognito" "user pool" is deleted then a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
     Given eid in exec_status
-    Given a running execution has failed because the Cognito user pool has been deleted
-    Given a Cognito user pool has been deleted
-    When a running execution calls an "ACTIVE" Cognito user pool and the task succeeds
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    When a "cognito" "user pool" is deleted
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution fails because the Cognito user pool has been deleted then an execution of the state machine is started then a Step Functions state machine is created
+  Scenario: a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted then an "step functions" "execution" of the "step functions" "state machine" is started then a "step functions" "state machine" is created
     Given eid in exec_status
-    Given a running execution has failed because the Cognito user pool has been deleted
-    Given an execution of the state machine has been started
-    When a Step Functions state machine is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    When an "step functions" "execution" of the "step functions" "state machine" is started
+    When a "step functions" "state machine" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called
 
   @sequence
-  Scenario: a running execution fails because the Cognito user pool has been deleted then a running execution calls an "ACTIVE" Cognito user pool and the task succeeds then a Cognito user pool is created
+  Scenario: a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted then a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds then a "cognito" "user pool" is created
     Given eid in exec_status
-    Given a running execution has failed because the Cognito user pool has been deleted
-    Given a running execution has called an "ACTIVE" Cognito user pool and the task succeeded
-    When a Cognito user pool is created
-    Then every "RUNNING" execution references an "ACTIVE" state machine
+    When a running "step functions" "execution" fails because the "cognito" "user pool" has been deleted
+    When a running "step functions" "execution" calls an "ACTIVE" Cognito user pool and the task succeeds
+    When a "cognito" "user pool" is created
+    And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which pool it called

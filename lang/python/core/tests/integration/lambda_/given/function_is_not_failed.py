@@ -1,11 +1,11 @@
-"""Given: the function is not "FAILED" """
+"""Given: the "lambda" "function" was not "FAILED" """
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given('the function is not "FAILED"')
+@given('the "lambda" "function" was not "FAILED"')
 def function_is_not_failed(world):
     """Signal that lws does not enforce FAILED lifecycle state."""
     world["_skip"] = (

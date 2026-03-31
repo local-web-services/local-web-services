@@ -1,4 +1,4 @@
-"""Then: the topic is "ACTIVE" """
+"""Then: the "sns" "topic" will be "ACTIVE" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import _topic_arn
 
 
-@then('the topic is "ACTIVE"')
+@then('the "sns" "topic" will be "ACTIVE"')
 def topic_is_active_then(lws_session):
     resp = lws_session.client("sns").list_topics()
     actual_arns = [t["TopicArn"] for t in resp.get("Topics", [])]

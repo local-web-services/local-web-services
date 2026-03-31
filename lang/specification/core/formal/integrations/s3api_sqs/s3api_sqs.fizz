@@ -27,10 +27,10 @@ action Init:
     msg_obj = {}                # msg_obj[mid] = obj_id
 
 
-# step: an S3 bucket is created
-# result: the bucket is ACTIVE with no notification configuration
-# guard: the bucket does not already exist
-# guard_violation: the bucket already exists
+# step: a "s3" "bucket" is created
+# result: the bucket will be "ACTIVE" with no notification configuration
+# guard: the bucket did not already exist
+# guard_violation: the bucket already existed
 atomic action CreateBucket:
     oneof bid in BUCKET_IDS:
         if bid not in bucket_status:
@@ -38,22 +38,22 @@ atomic action CreateBucket:
             bucket_queue[bid] = ""
 
 
-# step: an SQS queue is created
-# result: the queue is ACTIVE
-# guard: the queue does not already exist
-# guard_violation: the queue already exists
+# step: a "sqs" "queue" is created
+# result: the "sqs" "queue" will be "ACTIVE"
+# guard: the queue did not already exist
+# guard_violation: the queue already existed
 atomic action CreateQueue:
     oneof qid in QUEUE_IDS:
         if qid not in queue_status:
             queue_status[qid] = "ACTIVE"
 
 
-# step: the SQS queue is deleted
-# result: the queue is DELETED and notification delivery to it will fail
-# guard: the queue exists
-# guard_violation: the queue does not exist
-# guard: the queue is ACTIVE
-# guard_violation_lifecycle: the queue is already DELETED
+# step: the "sqs" "queue" is deleted
+# result: the "sqs" "queue" will be deleted and notification delivery to it will fail
+# guard: the "sqs" "queue" existed
+# guard_violation: the "sqs" "queue" did not exist
+# guard: the "sqs" "queue" was "ACTIVE"
+# guard_violation_lifecycle: the queue is already "DELETED"
 atomic action DeleteQueue:
     oneof qid in QUEUE_IDS:
         if qid in queue_status:
@@ -61,14 +61,14 @@ atomic action DeleteQueue:
                 queue_status[qid] = "DELETED"
 
 
-# step: an SQS notification configuration is added to the bucket
+# step: a SQS notification configuration is added to the bucket
 # result: the bucket will send notifications to the queue when objects are uploaded
-# guard: the bucket exists and is ACTIVE
-# guard_violation: the bucket does not exist or is not ACTIVE
+# guard: the bucket existed and was "ACTIVE"
+# guard_violation: the bucket did not exist or was "ACTIVE"
 # guard: the bucket has no notification configuration
 # guard_violation: the bucket already has a notification configuration
-# guard: the queue exists and is ACTIVE
-# guard_violation: the queue does not exist or is not ACTIVE
+# guard: the "sqs" "queue" existed and was "ACTIVE"
+# guard_violation: the "sqs" "queue" did not exist or was "ACTIVE"
 atomic action ConfigureNotification:
     oneof bid in BUCKET_IDS:
         if bid in bucket_status:
@@ -80,14 +80,14 @@ atomic action ConfigureNotification:
                                 bucket_queue[bid] = qid
 
 
-# step: an object is uploaded to the bucket and S3 delivers a notification to the SQS queue
-# result: the object EXISTS and a notification message is QUEUED
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
+# step: an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
+# result: the object will exist and a notification message will be "QUEUED"
+# guard: the bucket was "ACTIVE"
+# guard_violation_lifecycle: the bucket was not "ACTIVE"
 # guard: the bucket has a notification configuration
 # guard_violation: the bucket has no notification configuration
-# guard: the target queue is ACTIVE
-# guard_violation_lifecycle: the target queue is DELETED
+# guard: the target queue was "ACTIVE"
+# guard_violation_lifecycle: the target queue was "DELETED"
 # guard: an object slot is available
 # guard_violation_capacity: no object slot is available
 # guard: a message slot is available
@@ -112,13 +112,13 @@ atomic action PutObjectWithNotification:
 
 
 # step: an object is uploaded but notification delivery fails because the queue has been deleted
-# result: the object EXISTS but no notification message is delivered
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
+# result: the object will exist but no notification message will be delivered
+# guard: the bucket was "ACTIVE"
+# guard_violation_lifecycle: the bucket was not "ACTIVE"
 # guard: the bucket has a notification configuration
 # guard_violation: the bucket has no notification configuration
-# guard: the target queue is DELETED
-# guard_violation_lifecycle: the target queue is not DELETED
+# guard: the target queue was "DELETED"
+# guard_violation_lifecycle: the target queue was not "DELETED"
 # guard: an object slot is available
 # guard_violation_capacity: no object slot is available
 atomic action PutObjectNotificationFails:

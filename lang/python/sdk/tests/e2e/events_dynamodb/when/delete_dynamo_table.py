@@ -1,4 +1,4 @@
-"""When: a table deletion is initiated"""
+"""When: a "dynamodb" "table" deletion is initiated"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_TABLE
 
 
-@when("a table deletion is initiated")
+@when('a "dynamodb" "table" deletion is initiated')
 def delete_dynamo_table(lws_session, world):
     try:
         world["result"] = lws_session.client("dynamodb").delete_table(TableName=TEST_TABLE)

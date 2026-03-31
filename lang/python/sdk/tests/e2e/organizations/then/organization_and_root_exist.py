@@ -1,11 +1,11 @@
-"""Then: the organization and its root exist"""
+"""Then: the "organizations" "organization" and its root will exist"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the organization and its root exist")
+@then('the "organizations" "organization" and its root will exist')
 def organization_and_root_exist(lws_session, world):
     assert (
         world["error"] is None

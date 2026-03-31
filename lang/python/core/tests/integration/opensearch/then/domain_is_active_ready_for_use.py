@@ -1,11 +1,11 @@
-"""Then: the domain is "ACTIVE" and ready for use"""
+"""Then: the "elasticsearch" "domain" will be "ACTIVE" and ready for use"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the domain is "ACTIVE" and ready for use')
+@then('the "elasticsearch" "domain" will be "ACTIVE" and ready for use')
 def domain_is_active_ready_for_use(world: dict):
     actual_result = world["result"]
     assert (

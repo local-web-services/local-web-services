@@ -1,4 +1,4 @@
-"""When: an "ACL" is associated with a cluster"""
+"""When: an "memorydb" "ACL" is associated with a "memorydb" "cluster" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _MDB_TARGET, INT_ACL_NAME, INT_CLUSTER_NAME
 
 
-@when('an "ACL" is associated with a cluster')
+@when('an "memorydb" "ACL" is associated with a "memorydb" "cluster"')
 def associate_acl_with_cluster(client: TestClient, world):
     r = client.post(
         "/",

@@ -1,4 +1,4 @@
-"""Given: the table is not "ACTIVE" """
+"""Given: the "dynamodb" "table" was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import DynamodbLambdaTestClient
 from ..constants import TEST_TABLE
 
 
-@given('the table is not "ACTIVE"')
+@given('the "dynamodb" "table" was not "ACTIVE"')
 def dynamodb_lambda_table_is_not_active_given(lws_session, world):
     try:
         DynamodbLambdaTestClient(lws_session)._dynamodb.delete_table(TableName=TEST_TABLE)

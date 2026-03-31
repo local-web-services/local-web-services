@@ -1,4 +1,4 @@
-"""When: an empty vault is deleted"""
+"""When: an empty "glacier" "vault" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_VAULT_NAME
 
 
-@when("an empty vault is deleted")
+@when('an empty "glacier" "vault" is deleted')
 def delete_vault(client: TestClient, world):
     vault_name = world.get("vault_name", INT_VAULT_NAME)
     r = client.delete(f"/-/vaults/{vault_name}")

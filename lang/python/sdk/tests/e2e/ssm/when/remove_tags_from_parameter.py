@@ -1,4 +1,4 @@
-"""When: tags are removed from a parameter"""
+"""When: tags are removed from a "ssm" "parameter" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_PARAM, TEST_TAG_KEY
 
 
-@when("tags are removed from a parameter")
+@when('tags are removed from a "ssm" "parameter"')
 def remove_tags_from_parameter(lws_session, world):
     try:
         tag_resp = lws_session.client("ssm").list_tags_for_resource(

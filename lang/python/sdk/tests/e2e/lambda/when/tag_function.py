@@ -1,4 +1,4 @@
-"""When: a tag is added to a function"""
+"""When: a tag is added to a "lambda" "function" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_TAG_KEY, TEST_TAG_VALUE, _func_arn
 
 
-@when("a tag is added to a function")
+@when('a tag is added to a "lambda" "function"')
 def tag_function(lws_session, world):
     try:
         resp = lws_session.client("lambda").tag_resource(

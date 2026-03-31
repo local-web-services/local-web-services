@@ -1,4 +1,4 @@
-"""When: a database cluster is stopped"""
+"""When: a stopped neptune database neptune cluster is started"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_CLUSTER
 
 
-@when("a database cluster is stopped")
+@when('a "neptune" "cluster" is stopped')
 def stop_db_cluster(lws_session, world):
     try:
         cluster_id = world.get("cluster_id", TEST_CLUSTER)

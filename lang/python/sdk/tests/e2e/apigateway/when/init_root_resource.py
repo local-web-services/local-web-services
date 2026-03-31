@@ -1,4 +1,4 @@
-"""When: a root resource is initialized for an "API" """
+"""When: a root resource is initialized for an "api gateway" "API" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import ApigatewayTestClient
 
 
-@when('a root resource is initialized for an "API"')
+@when('a root resource is initialized for an "api gateway" "API"')
 def init_root_resource(lws_session, world):
     """Map to get_rest_api + get_resources — requires API to exist and be ACTIVE."""
     try:

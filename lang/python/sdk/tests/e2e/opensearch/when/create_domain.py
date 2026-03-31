@@ -1,4 +1,4 @@
-"""When: a search domain is created"""
+"""When: an "opensearch" "domain" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_DOMAIN
 
 
-@when("a search domain is created")
+@when('an "opensearch" "domain" is created')
 def create_domain(lws_session, world):
     try:
         world["result"] = lws_session.client("opensearch").create_domain(DomainName=TEST_DOMAIN)

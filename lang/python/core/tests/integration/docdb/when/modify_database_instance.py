@@ -1,4 +1,4 @@
-"""When: a database instance configuration is modified"""
+"""When: a "documentdb" "instance" configuration is modified"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _DOCDB_TARGET, INT_INSTANCE_ID
 
 
-@when("a database instance configuration is modified")
+@when('a "documentdb" "instance" configuration is modified')
 def modify_database_instance(client: TestClient, world):
     r = client.post(
         "/",

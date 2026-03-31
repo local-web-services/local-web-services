@@ -1,4 +1,4 @@
-"""When: a database instance finishes creating"""
+"""When: a "documentdb" "instance" finishes creating"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _DOCDB_TARGET, INT_INSTANCE_ID
 
 
-@when("a database instance finishes creating")
+@when('a "documentdb" "instance" finishes creating')
 def database_instance_finishes_creating(client: TestClient, world):
     r = client.post(
         "/",

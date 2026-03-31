@@ -1,4 +1,4 @@
-"""When: an EventBridge rule is described"""
+"""When: an "eventbridge" "rule" is described"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUS, TEST_RULE
 
 
-@when("an EventBridge rule is described")
+@when('an "eventbridge" "rule" is described')
 def describe_rule(lws_session, world):
     try:
         resp = lws_session.client("events").describe_rule(Name=TEST_RULE, EventBusName=TEST_BUS)

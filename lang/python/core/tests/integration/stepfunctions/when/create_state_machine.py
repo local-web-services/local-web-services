@@ -1,4 +1,4 @@
-"""When: a Step Functions state machine is created"""
+"""When: a "step functions" "state machine" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SFN_TARGET, INT_SM, PASS_DEFINITION, ROLE_ARN, _sm_arn
 
 
-@when("a Step Functions state machine is created")
+@when('a "step functions" "state machine" is created')
 def create_state_machine(client: TestClient, world):
     r = client.post(
         "/",

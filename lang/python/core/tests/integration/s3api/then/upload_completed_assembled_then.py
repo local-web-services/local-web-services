@@ -1,4 +1,4 @@
-"""Then: the upload is "COMPLETED" and the assembled object "EXISTS" in the bucket"""
+"""Then: the "s3" "upload" will be "COMPLETED" and the assembled "s3" "object" will exist in the "s3" "bucket" """
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_KEY
 
 
-@then('the upload is "COMPLETED" and the assembled object "EXISTS" in the bucket')
+@then(
+    'the "s3" "upload" will be "COMPLETED" and the assembled "s3" "object" will exist in the "s3" "bucket"'
+)
 def upload_completed_assembled_then(sync_client: TestClient):
     r = sync_client.get(f"/{INT_BUCKET}", params={"list-type": "2"})
     actual_body = r.text

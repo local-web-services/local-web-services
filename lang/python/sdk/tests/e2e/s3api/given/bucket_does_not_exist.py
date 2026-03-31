@@ -1,4 +1,4 @@
-"""Given: the bucket does not exist"""
+"""Given: the "s3" "bucket" did not exist"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..client import S3apiTestClient
 
 
-@given("the bucket does not exist")
+@given('the "s3" "bucket" did not exist')
 def bucket_does_not_exist(lws_session):
     """Ensure the bucket does not exist by deleting it if present."""
     S3apiTestClient(lws_session).empty_and_delete_bucket()

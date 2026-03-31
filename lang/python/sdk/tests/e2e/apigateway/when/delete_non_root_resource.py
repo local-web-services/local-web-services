@@ -1,4 +1,4 @@
-"""When: a non-root resource is deleted along with its methods and integrations"""
+"""When: a non-root "api gateway" "resource" is deleted along with its methods and integrations"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import ApigatewayTestClient
 
 
-@when("a non-root resource is deleted along with its methods and integrations")
+@when('a non-root "api gateway" "resource" is deleted along with its methods and integrations')
 def delete_non_root_resource(lws_session, world):
     try:
         api_id = ApigatewayTestClient(lws_session).get_api_id()

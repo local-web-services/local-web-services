@@ -1,4 +1,4 @@
-"""Then: the vault is "DELETED" """
+"""Then: the "glacier" "vault" will be "DELETED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_VAULT_NAME
 
 
-@then('the vault is "DELETED"')
+@then('the "glacier" "vault" will be "DELETED"')
 def vault_is_deleted(client: TestClient, world):
     actual_error = world.get("error")
     assert actual_error is None, f"Expected vault deletion to succeed but got: {actual_error}"

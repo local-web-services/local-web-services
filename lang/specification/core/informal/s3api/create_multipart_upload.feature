@@ -1,5 +1,5 @@
 @s3api @generated
-Feature: S3api - A Multipart Upload Is Initiated
+Feature: S3api - A Multipart "S3" "Upload" Is Initiated
 
   # Generated from FizzBee spec: s3api.fizz
   # Safety invariants: BucketStatusValid, VersioningStateValid, MultipartUploadStatusValid, DeleteBucketRequiresEmpty
@@ -8,34 +8,34 @@ Feature: S3api - A Multipart Upload Is Initiated
     Given the system is initialized
 
   @minimal @happy @create_multipart_upload
-  Scenario: a multipart upload is initiated
-    Given the bucket exists
-    And the bucket is "ACTIVE"
-    And the upload does not already exist
-    When a multipart upload is initiated
-    Then the upload is "IN_PROGRESS" with no parts
+  Scenario: a multipart "s3" "upload" is initiated
+    Given the "s3" "bucket" existed
+    And the "s3" "bucket" was "ACTIVE"
+    And the "s3" "upload" did not already exist
+    When a multipart "s3" "upload" is initiated
+    Then the "s3" "upload" will be "IN_PROGRESS" with no parts
     And every bucket has a valid status ("ACTIVE" or "DELETED")
     And every bucket versioning state is valid ("DISABLED", "ENABLED", or "SUSPENDED")
     And every multipart upload has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
     And deleting a bucket requires it to be empty
 
   @guard @negative @create_multipart_upload
-  Scenario: a multipart upload is initiated fails when the bucket does not exist
-    Given the bucket does not exist
-    When a multipart upload is initiated
+  Scenario: a multipart "s3" "upload" is initiated fails when the "s3" "bucket" did not exist
+    Given the "s3" "bucket" did not exist
+    When a multipart "s3" "upload" is initiated
     Then the operation is rejected
 
   @guard @negative @create_multipart_upload @lifecycle
-  Scenario: a multipart upload is initiated fails when the bucket is not "ACTIVE"
-    Given the bucket exists
-    And the bucket is not "ACTIVE"
-    When a multipart upload is initiated
+  Scenario: a multipart "s3" "upload" is initiated fails when the "s3" "bucket" was not "ACTIVE"
+    Given the "s3" "bucket" existed
+    And the "s3" "bucket" was not "ACTIVE"
+    When a multipart "s3" "upload" is initiated
     Then the operation is rejected
 
   @guard @negative @create_multipart_upload
-  Scenario: a multipart upload is initiated fails when the upload already exists
-    Given the bucket exists
-    And the bucket is "ACTIVE"
-    And the upload already exists
-    When a multipart upload is initiated
+  Scenario: a multipart "s3" "upload" is initiated fails when the "s3" "upload" already existed
+    Given the "s3" "bucket" existed
+    And the "s3" "bucket" was "ACTIVE"
+    And the "s3" "upload" already existed
+    When a multipart "s3" "upload" is initiated
     Then the operation is rejected

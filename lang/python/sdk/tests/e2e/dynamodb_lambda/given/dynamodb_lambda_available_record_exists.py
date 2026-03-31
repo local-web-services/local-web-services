@@ -1,4 +1,4 @@
-"""Given: an "AVAILABLE" record exists in the mapped table's stream"""
+"""Given: an "AVAILABLE" record existed in the mapped table's stream"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import DynamodbLambdaTestClient
 from ..constants import TEST_TABLE
 
 
-@given('an "AVAILABLE" record exists in the mapped table\'s stream')
+@given('an "AVAILABLE" record existed in the mapped table\'s stream')
 def dynamodb_lambda_available_record_exists(lws_session):
     DynamodbLambdaTestClient(lws_session).create_table_with_stream()
     DynamodbLambdaTestClient(lws_session).create_function()

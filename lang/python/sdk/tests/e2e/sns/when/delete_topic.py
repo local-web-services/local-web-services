@@ -1,4 +1,4 @@
-"""When: an "SNS" topic is deleted"""
+"""When: a "sns" "topic" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import SnsTestClient
 
 
-@when('an "SNS" topic is deleted')
+@when('a "sns" "topic" is deleted')
 def delete_topic(lws_session, world):
     try:
         world["result"] = SnsTestClient(lws_session).delete_topic(

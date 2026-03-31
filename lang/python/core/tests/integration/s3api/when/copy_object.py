@@ -1,4 +1,4 @@
-"""When: an object is copied from one bucket to another"""
+"""When: a "s3" "object" is copied from one "s3" "bucket" to another"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET, INT_KEY, INT_KEY2, INT_SRC_BUCKET
 
 
-@when("an object is copied from one bucket to another")
+@when('a "s3" "object" is copied from one "s3" "bucket" to another')
 def copy_object(sync_client: TestClient, world):
     r = sync_client.put(
         f"/{INT_BUCKET}/{INT_KEY2}",

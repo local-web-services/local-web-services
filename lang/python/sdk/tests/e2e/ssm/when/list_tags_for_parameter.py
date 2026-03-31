@@ -1,4 +1,4 @@
-"""When: tags for a parameter are listed"""
+"""When: tags for a "ssm" "parameter" are listed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_PARAM
 
 
-@when("tags for a parameter are listed")
+@when('tags for a "ssm" "parameter" are listed')
 def list_tags_for_parameter(lws_session, world):
     try:
         desc = lws_session.client("ssm").describe_parameters(

@@ -1,4 +1,4 @@
-"""Given: the target table is "DELETING" """
+"""Given: the target "dynamodb" "table" was "DELETING" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import EventsDynamodbTestClient
 from ..constants import TEST_TABLE
 
 
-@given('the target table is "DELETING"')
+@given('the target "dynamodb" "table" was "DELETING"')
 def target_table_is_deleting(lws_session, world):
     try:
         EventsDynamodbTestClient(lws_session)._dynamo.delete_table(TableName=TEST_TABLE)

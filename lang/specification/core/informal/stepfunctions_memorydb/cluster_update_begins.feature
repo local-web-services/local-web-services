@@ -1,5 +1,5 @@
 @stepfunctionsmemorydb @generated
-Feature: StepfunctionsMemorydb - A Memorydb Cluster Update Begins
+Feature: StepfunctionsMemorydb - A "Memorydb" "Cluster" Update Begins
 
   # Generated from FizzBee spec: stepfunctions_memorydb.fizz
   # Safety invariants: ExecutionRequiresActiveStateMachine, SuccessfulExecutionConnectedToACluster
@@ -8,23 +8,23 @@ Feature: StepfunctionsMemorydb - A Memorydb Cluster Update Begins
     Given the system is initialized
 
   @minimal @happy @cluster_update_begins
-  Scenario: a MemoryDB cluster update begins
-    Given the cluster exists
-    And the cluster is "AVAILABLE"
-    When a MemoryDB cluster update begins
-    Then the cluster is "UPDATING" and connections may be refused
+  Scenario: a "memorydb" "cluster" update begins
+    Given the "memorydb" "cluster" existed
+    And the "memorydb" "cluster" was "AVAILABLE"
+    When a "memorydb" "cluster" update begins
+    Then the "memorydb" "cluster" will be "UPDATING" and connections may be refused
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
   @guard @negative @cluster_update_begins
-  Scenario: a MemoryDB cluster update begins fails when the cluster does not exist
-    Given the cluster does not exist
-    When a MemoryDB cluster update begins
+  Scenario: a "memorydb" "cluster" update begins fails when the "memorydb" "cluster" did not exist
+    Given the "memorydb" "cluster" did not exist
+    When a "memorydb" "cluster" update begins
     Then the operation is rejected
 
   @guard @negative @cluster_update_begins @lifecycle
-  Scenario: a MemoryDB cluster update begins fails when the cluster is not "AVAILABLE"
-    Given the cluster exists
-    And the cluster is not "AVAILABLE"
-    When a MemoryDB cluster update begins
+  Scenario: a "memorydb" "cluster" update begins fails when the "memorydb" "cluster" was not "AVAILABLE"
+    Given the "memorydb" "cluster" existed
+    And the "memorydb" "cluster" was not "AVAILABLE"
+    When a "memorydb" "cluster" update begins
     Then the operation is rejected

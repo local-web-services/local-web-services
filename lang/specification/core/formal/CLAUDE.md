@@ -229,16 +229,77 @@ Every action and assertion **must** have structured comment annotations immediat
 These are parsed by `tools/fizz_to_gherkin.py` to generate human-readable Gherkin feature files
 without any hardcoded mappings.
 
-| Annotation | Placed before | Used as |
-|---|---|---|
-| `# step: <description>` | every `action` | Gherkin `When` step |
-| `# result: <description>` | every `action` | Gherkin `Then` step |
-| `# check: <description>` | every `assertion` | Gherkin `And` invariant step |
-| `# guard: <description>` | every action with guard conditions | Gherkin `Given` step (happy path) |
-| `# guard_violation: <description>` | every action with guard conditions | Gherkin `Given` step (negative scenario) |
-| `# guard_violation_lifecycle: <description>` | guard violations for transient lifecycle states | Gherkin `Given` step + `@lifecycle` tag on negative scenario |
-| `# guard_violation_capacity: <description>` | guard violations for slot/quota limits | Gherkin `Given` step + `@capacity` tag on negative scenario |
-| `# fake_skip: internal` | system/timer-driven actions only | adds `@internal` tag to ALL scenarios for that action |
+| Annotation | Placed before | Used as | Tense |
+|---|---|---|---|
+| `# step: <description>` | every `action` | Gherkin `When` step | **present** |
+| `# result: <description>` | every `action` | Gherkin `Then` step | **future** ("will be") |
+| `# check: <description>` | every `assertion` | Gherkin `And` invariant step | present |
+| `# guard: <description>` | every action with guard conditions | Gherkin `Given` step (happy path) | **past** |
+| `# guard_violation: <description>` | every action with guard conditions | Gherkin `Given` step (negative scenario) | **past** |
+| `# guard_violation_lifecycle: <description>` | guard violations for transient lifecycle states | Gherkin `Given` step + `@lifecycle` tag on negative scenario | **past** |
+| `# guard_violation_capacity: <description>` | guard violations for slot/quota limits | Gherkin `Given` step + `@capacity` tag on negative scenario | **past** |
+| `# fake_skip: internal` | system/timer-driven actions only | adds `@internal` tag to ALL scenarios for that action | — |
+
+### Tense Rules
+
+Each annotation maps to a Gherkin keyword with a required grammatical tense:
+
+- **`# step:` → present tense** (`When`) — describes the action as it happens now
+  - `a dynamodb table is created`
+  - `an sqs message is sent to the queue`
+- **`# result:` → future tense** (`Then`) — uses "will be" or "will" to describe what happens next
+  - `the "dynamodb" "table" will be in "CREATING" state`
+  - `the "sqs" "message" will be "AVAILABLE" for delivery`
+- **`# guard:` and `# guard_violation:` → past tense** (`Given`) — describes preconditions that were true before the action
+  - `the dynamodb table existed`
+  - `the dynamodb table did not exist`
+  - `the "dynamodb" "table" was "ACTIVE"`
+  - `the "dynamodb" "table" was not "ACTIVE"`
+
+### Service Naming Rule
+
+When a resource type is mentioned in an annotation, always prefix it with the service name.
+Never refer to a bare "table", "bucket", "queue", etc. — always say "dynamodb table", "s3 bucket", "sqs queue".
+
+| Service directory | Service name to use |
+|---|---|
+| `dynamodb/` | dynamodb |
+| `s3api/` | s3 |
+| `s3tables/` | s3 tables |
+| `sqs/` | sqs |
+| `sns/` | sns |
+| `lambda/` | lambda |
+| `rds/` | rds |
+| `elasticache/` | elasticache |
+| `memorydb/` | memorydb |
+| `opensearch/` | opensearch |
+| `elasticsearch/` | elasticsearch |
+| `secretsmanager/` | secrets manager |
+| `ssm/` | ssm |
+| `stepfunctions/` | step functions |
+| `cognito_idp/` | cognito |
+| `events/` | eventbridge |
+| `docdb/` | documentdb |
+| `apigateway/` | api gateway |
+| `glacier/` | glacier |
+| `neptune/` | neptune |
+| `organizations/` | organizations |
+
+For integration specs (under `integrations/`), use the correct service name for each resource based on context.
+
+### Property/Value Quoting Rule
+
+When an annotation describes a **status or state value** being set on a service resource, wrap the service name, resource type, and value in double quotes:
+
+- `the "dynamodb" "table" was "ACTIVE"` ← service, resource type, and status all quoted
+- `the "dynamodb" "table" will be in "CREATING" state`
+- `the "sqs" "queue" was not "ACTIVE"`
+
+**Do quote** when describing a status/lifecycle state (ACTIVE, CREATING, DELETED, DELETING, PENDING, COMMITTED, ROLLED_BACK, DISABLED, ENABLED, SUSPENDED, IN_PROGRESS, COMPLETED, ABORTED, AVAILABLE, FAILED, MODIFYING, etc.).
+
+**Do not quote** for plain existence or emptiness checks:
+- `the dynamodb table existed` ← no quoting needed
+- `the s3 bucket was empty` ← no quoting needed
 
 Rules:
 - Place annotations on lines immediately preceding the `action`/`assertion` header (blank lines between are OK)
@@ -248,7 +309,7 @@ Rules:
 - Describe the *observable outcome*, not internal state details
 - One `# guard:` + one `# guard_violation:` (or `_lifecycle`/`_capacity` variant) pair per `if` condition in the action, in order
 - Actions with no guard conditions need no guard annotations
-- The pair should read as natural opposites: "the API does not already exist" / "the API already exists"
+- Each guard/guard_violation pair must read as natural opposites (negations of each other)
 
 **Choosing the right guard_violation variant:**
 - `# guard_violation:` — for existence checks ("already exists", "does not exist") and config checks ("has no X configured") — these are **always testable**
@@ -261,10 +322,10 @@ Use this on actions that are **never triggered by an API call** — only by time
 Place `# fake_skip: internal` as the **first** annotation, immediately before `# step:`.
 
 ```fizzbee
-# step: a REST API is created
-# result: the API is ACTIVE
-# guard: the API does not already exist
-# guard_violation: the API already exists
+# step: an api gateway rest api is created
+# result: the "api gateway" "api" will be "ACTIVE"
+# guard: the api gateway api did not already exist
+# guard_violation: the api gateway api already existed
 atomic action CreateRestApi:
     any aid in API_IDS:
         if aid not in api_status:
@@ -281,24 +342,24 @@ always assertion TableStatusValid:
 Example using all annotation variants:
 
 ```fizzbee
-# step: a message is sent to the queue
-# result: the message is AVAILABLE for delivery
-# guard: the queue exists
-# guard_violation: the queue does not exist
-# guard: the queue is ACTIVE
-# guard_violation_lifecycle: the queue is not ACTIVE
-# guard: a message slot is available
-# guard_violation_capacity: no message slot is available
+# step: an sqs message is sent to the sqs queue
+# result: the "sqs" "message" will be "AVAILABLE" for delivery
+# guard: the sqs queue existed
+# guard_violation: the sqs queue did not exist
+# guard: the "sqs" "queue" was "ACTIVE"
+# guard_violation_lifecycle: the "sqs" "queue" was not "ACTIVE"
+# guard: a message slot was available
+# guard_violation_capacity: no message slot was available
 atomic action SendMessage:
     ...
 
 # fake_skip: internal
 # step: the visibility timeout expires
-# result: the message becomes AVAILABLE again
-# guard: the message exists
-# guard_violation: the message does not exist
-# guard: the message is IN_FLIGHT
-# guard_violation_lifecycle: the message is not IN_FLIGHT
+# result: the "sqs" "message" will be "AVAILABLE" again
+# guard: the sqs message existed
+# guard_violation: the sqs message did not exist
+# guard: the "sqs" "message" was "IN_FLIGHT"
+# guard_violation_lifecycle: the "sqs" "message" was not "IN_FLIGHT"
 atomic action VisibilityTimeoutExpires:
     ...
 ```

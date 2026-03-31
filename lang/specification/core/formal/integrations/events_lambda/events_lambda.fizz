@@ -30,37 +30,37 @@ action Init:
 
 
 # step: an EventBridge event bus is created
-# result: the event bus is ACTIVE
-# guard: the event bus does not already exist
-# guard_violation: the event bus already exists
+# result: the event bus will be "ACTIVE"
+# guard: the event bus did not already exist
+# guard_violation: the event bus already existed
 atomic action CreateEventBus:
     oneof bid in BUS_IDS:
         if bid not in bus_status:
             bus_status[bid] = "ACTIVE"
 
 
-# step: a Lambda function is deployed
-# result: the function is ACTIVE
-# guard: the function does not already exist
-# guard_violation: the function already exists
+# step: a "lambda" "function" is deployed
+# result: the "lambda" "function" will be "ACTIVE"
+# guard: the "lambda" "function" did not already exist
+# guard_violation: the "lambda" "function" already existed
 atomic action DeployFunction:
     oneof fid in FUNC_IDS:
         if fid not in func_status:
             func_status[fid] = "ACTIVE"
 
 
-# step: an EventBridge rule is created to asynchronously invoke a Lambda function on matching events
-# result: the rule is ENABLED and will trigger the function when matching events are published
-# guard: the event bus exists
-# guard_violation: the event bus does not exist
-# guard: the event bus is ACTIVE
-# guard_violation_lifecycle: the event bus is not ACTIVE
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
-# guard: the rule does not already exist
-# guard_violation: the rule already exists
+# step: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
+# result: the rule will be "ENABLED" and will trigger the function when matching events are published
+# guard: the event bus existed
+# guard_violation: the event bus did not exist
+# guard: the event bus was "ACTIVE"
+# guard_violation_lifecycle: the event bus was not "ACTIVE"
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
+# guard: the rule did not already exist
+# guard_violation: the rule already existed
 atomic action PutRule:
     oneof rid in RULE_IDS:
         if rid not in rule_status:
@@ -76,16 +76,16 @@ atomic action PutRule:
 
 
 # step: an event is published to the bus and triggers an asynchronous Lambda invocation
-# result: the invocation is IN_PROGRESS
-# guard: the event bus exists
-# guard_violation: the event bus does not exist
-# guard: the event bus is ACTIVE
-# guard_violation_lifecycle: the event bus is not ACTIVE
-# guard: an ENABLED rule exists on the bus targeting a function
-# guard_violation_lifecycle: no ENABLED rule exists on the bus targeting a function
-# guard: the target function is ACTIVE
-# guard_violation_lifecycle: the target function is not ACTIVE
-# guard: an invocation slot is available
+# result: the invocation will be "IN_PROGRESS"
+# guard: the event bus existed
+# guard_violation: the event bus did not exist
+# guard: the event bus was "ACTIVE"
+# guard_violation_lifecycle: the event bus was not "ACTIVE"
+# guard: an ENABLED rule existed on the bus targeting a function
+# guard_violation_lifecycle: no ENABLED rule existed on the bus targeting a function
+# guard: the target function was "ACTIVE"
+# guard_violation_lifecycle: the target function was not "ACTIVE"
+# guard: a "lambda" "invocation" slot is available
 # guard_violation_capacity: no invocation slot is available
 atomic action PutEvent:
     oneof bid in BUS_IDS:
@@ -107,9 +107,9 @@ atomic action PutEvent:
 
 # fake_skip: internal
 # step: the Lambda invocation completes successfully
-# result: the invocation is SUCCESS
-# guard: an invocation is IN_PROGRESS
-# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# result: the invocation will be "SUCCESS"
+# guard: a "lambda" "invocation" was "IN_PROGRESS"
+# guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationSucceeds:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -119,9 +119,9 @@ atomic action InvocationSucceeds:
 
 # fake_skip: internal
 # step: the Lambda invocation fails
-# result: the invocation is FAILED
-# guard: an invocation is IN_PROGRESS
-# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# result: the invocation will be "FAILED"
+# guard: a "lambda" "invocation" was "IN_PROGRESS"
+# guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationFails:
     oneof iid in INV_IDS:
         if iid in inv_status:

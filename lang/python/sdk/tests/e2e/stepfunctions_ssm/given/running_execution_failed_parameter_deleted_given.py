@@ -1,4 +1,4 @@
-"""Given: a running execution has failed to read the parameter because it has been deleted"""
+"""Given: a running "step functions" "execution" fails to read the parameter because it has been deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from ..client import StepfunctionsSsmTestClient
 from ..constants import TEST_PARAM, _sm_arn, _ssm_get_parameter_definition
 
 
-@given("a running execution has failed to read the parameter because it has been deleted")
+@given(
+    'a running "step functions" "execution" fails to read the parameter because it has been deleted'
+)
 def running_execution_failed_parameter_deleted_given(lws_session, world):
     client = StepfunctionsSsmTestClient(lws_session)
     try:

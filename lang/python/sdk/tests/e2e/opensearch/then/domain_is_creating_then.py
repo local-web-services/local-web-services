@@ -1,4 +1,4 @@
-"""Then: the domain is in "CREATING" state"""
+"""Then: the "opensearch" "domain" will be in "CREATING" state"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_DOMAIN
 
 
-@then('the domain is in "CREATING" state')
+@then('the "opensearch" "domain" will be in "CREATING" state')
 def domain_is_creating_then(lws_session):
     resp = lws_session.client("opensearch").describe_domain(DomainName=TEST_DOMAIN)
     actual_domain = resp.get("DomainStatus", {})

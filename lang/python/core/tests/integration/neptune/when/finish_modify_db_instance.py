@@ -1,4 +1,4 @@
-"""When: a database instance modification completes"""
+"""When: a "documentdb" "instance" modification completes"""
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import when
 from starlette.testclient import TestClient
 
 
-@when("a database instance modification completes")
+@when('a "documentdb" "instance" modification completes')
 def finish_modify_db_instance(client: TestClient, world: dict):
     pytest.skip("ModifyDBInstance is not yet implemented in lws.")

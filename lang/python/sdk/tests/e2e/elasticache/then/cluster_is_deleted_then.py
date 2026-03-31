@@ -1,11 +1,11 @@
-"""Then: the cluster is "DELETED" and its tags are removed"""
+"""Then: the "elasticache" "cluster" will be "DELETED" and its tags will be removed"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the cluster is "DELETED" and its tags are removed')
+@then('the "elasticache" "cluster" will be "DELETED" and its tags will be removed')
 def cluster_is_deleted_then(world):
     expected_error = None
     actual_error = world["error"]

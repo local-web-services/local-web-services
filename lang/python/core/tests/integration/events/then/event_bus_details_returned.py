@@ -5,7 +5,7 @@ from __future__ import annotations
 from pytest_bdd import then
 
 
-@then("the event bus details are returned")
+@then('the "eventbridge" "bus" details will be returned')
 def event_bus_details_returned(world):
     assert (
         world["error"] is None

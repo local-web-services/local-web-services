@@ -1,4 +1,4 @@
-"""Given: the cluster exists"""
+"""Given: the "documentdb" "cluster" existed"""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from starlette.testclient import TestClient
 from ..client import MemorydbTestClient
 
 
-@given("the cluster exists")
+@given('the "memorydb" "cluster" existed')
+@given('the "documentdb" "cluster" existed')
 def cluster_exists(client: TestClient):
     MemorydbTestClient(client).create_cluster()

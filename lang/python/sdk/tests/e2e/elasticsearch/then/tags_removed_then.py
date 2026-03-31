@@ -1,11 +1,11 @@
-"""Then: the specified tags are no longer associated with the domain"""
+"""Then: the specified tags are no longer associated with the "elasticsearch" "domain" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the specified tags are no longer associated with the domain")
+@then('the specified tags are no longer associated with the "elasticsearch" "domain"')
 def tags_removed_then(world):
     expected_error = None
     actual_error = world["error"]

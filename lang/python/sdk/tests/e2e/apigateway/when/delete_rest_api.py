@@ -1,4 +1,4 @@
-"""When: a REST API is deleted"""
+"""When: a "api gateway" "REST API" is deleted"""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from botocore.exceptions import ClientError
 from pytest_bdd import when
 
 
-@when("a REST API is deleted")
+@when('a "api gateway" "REST API" is deleted')
 def delete_rest_api(lws_session, world):
     try:
         apis = lws_session.client("apigateway").get_rest_apis()

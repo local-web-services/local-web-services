@@ -1,4 +1,4 @@
-"""When: an S3 bucket is created"""
+"""When: a "s3" "bucket" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import LambdaS3apiTestClient
 from ..constants import TEST_BUCKET
 
 
-@when("an S3 bucket is created")
+@when('a "s3" "bucket" is created')
 def create_s3_bucket(lws_session, world):
     try:
         LambdaS3apiTestClient(lws_session).create_bucket()

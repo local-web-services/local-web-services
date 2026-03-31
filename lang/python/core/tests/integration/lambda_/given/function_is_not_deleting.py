@@ -1,11 +1,11 @@
-"""Given: the function is not "DELETING" """
+"""Given: the "lambda" "function" was not "DELETING" """
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given('the function is not "DELETING"')
+@given('the "lambda" "function" was not "DELETING"')
 def function_is_not_deleting(world):
     """Signal that lws does not enforce DELETING lifecycle state."""
     world["_skip"] = (

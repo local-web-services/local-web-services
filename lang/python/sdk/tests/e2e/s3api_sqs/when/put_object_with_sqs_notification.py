@@ -1,4 +1,4 @@
-"""When: an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue"""
+"""When: an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BODY, TEST_BUCKET, TEST_KEY
 
 
-@when('an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue')
+@when('an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"')
 def put_object_with_sqs_notification(lws_session, world):
     if world.get("_target_queue_deleted"):
         pytest.skip(

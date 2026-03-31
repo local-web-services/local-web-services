@@ -1,4 +1,4 @@
-"""When: a function is invoked synchronously within its concurrency limit"""
+"""When: a "lambda" "function" is invoked synchronously within its concurrency limit"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_FUNCTION_NAME
 
 
-@when("a function is invoked synchronously within its concurrency limit")
+@when('a "lambda" "function" is invoked synchronously within its concurrency limit')
 def invoke_function_sync_within_limit(client: TestClient, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

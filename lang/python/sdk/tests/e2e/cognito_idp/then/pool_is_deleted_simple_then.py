@@ -1,4 +1,4 @@
-"""Then: the user pool is deleted"""
+"""Then: a "cognito" "user pool" is deleted"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_POOL_NAME
 
 
-@then("the user pool is deleted")
+@then('a "cognito" "user pool" is deleted')
 def pool_is_deleted_simple_then(lws_session):
     client = lws_session.client("cognito-idp")
     resp = client.list_user_pools(MaxResults=10)

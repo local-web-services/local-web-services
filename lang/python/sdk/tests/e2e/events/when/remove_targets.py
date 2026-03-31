@@ -1,4 +1,4 @@
-"""When: targets are removed from a rule"""
+"""When: targets are removed from an "eventbridge" "rule" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUS, TEST_RULE, TEST_TARGET_ID
 
 
-@when("targets are removed from a rule")
+@when('targets are removed from an "eventbridge" "rule"')
 def remove_targets(lws_session, world):
     try:
         resp = lws_session.client("events").remove_targets(

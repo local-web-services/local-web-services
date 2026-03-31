@@ -1,4 +1,4 @@
-"""When: a bucket is deleted"""
+"""When: a "s3" "bucket" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUCKET
 
 
-@when("a bucket is deleted")
+@when('a "s3" "bucket" is deleted')
 def delete_bucket(lws_session, world):
     try:
         world["result"] = lws_session.client("s3").delete_bucket(Bucket=TEST_BUCKET)

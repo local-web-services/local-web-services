@@ -1,4 +1,4 @@
-"""When: all messages in a queue are purged"""
+"""When: all "sqs" "message"s in a "sqs" "queue" are purged"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..client import SqsTestClient
 
 
-@when("all messages in a queue are purged")
+@when('all "sqs" "message"s in a "sqs" "queue" are purged')
 def purge_queue(lws_session, world):
     try:
         world["result"] = SqsTestClient(lws_session).purge_queue(

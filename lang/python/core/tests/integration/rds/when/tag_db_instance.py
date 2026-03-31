@@ -1,4 +1,4 @@
-"""When: a tag is applied to a database instance"""
+"""When: a tag is applied to a "rds" "instance" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import RdsTestClient
 from ..constants import INT_DB_INSTANCE, INT_TAG_KEY, INT_TAG_VALUE, _store
 
 
-@when("a tag is applied to a database instance")
+@when('a tag is applied to a "rds" "instance"')
 def tag_db_instance(client: TestClient, world: dict):
     describe_r = RdsTestClient(client).post(
         "DescribeDBInstances", {"DBInstanceIdentifier": INT_DB_INSTANCE}

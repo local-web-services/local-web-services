@@ -1,11 +1,11 @@
-"""Then: the "ACL" is "DELETED" """
+"""Then: the "memorydb" "ACL" will be deleted"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the "ACL" is "DELETED"')
+@then('the "memorydb" "ACL" will be deleted')
 def acl_is_deleted_then(world):
     expected_error = None
     actual_error = world["error"]

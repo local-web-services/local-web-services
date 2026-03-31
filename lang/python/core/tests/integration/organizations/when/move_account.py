@@ -1,4 +1,4 @@
-"""When: an account is moved to a new parent"""
+"""When: an "organizations" "account" is moved to a new parent"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import OrganizationsTestClient
 
 
-@when("an account is moved to a new parent")
+@when('an "organizations" "account" is moved to a new parent')
 def move_account(client: TestClient, world):
     status, body = OrganizationsTestClient(client).post(
         "MoveAccount",

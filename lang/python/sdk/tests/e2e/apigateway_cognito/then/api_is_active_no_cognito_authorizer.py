@@ -1,4 +1,4 @@
-"""Then: the "API" is "ACTIVE" with no Cognito authorizer configured"""
+"""Then: the "api gateway" "api" will be "ACTIVE" with no Cognito authorizer configured"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import ApigatewayCognitoTestClient
 from ..constants import TEST_API
 
 
-@then('the "API" is "ACTIVE" with no Cognito authorizer configured')
+@then('the "api gateway" "api" will be "ACTIVE" with no Cognito authorizer configured')
 def api_is_active_no_cognito_authorizer(lws_session):
     api_id = ApigatewayCognitoTestClient(lws_session).get_api_id()
     expected_api_id = api_id

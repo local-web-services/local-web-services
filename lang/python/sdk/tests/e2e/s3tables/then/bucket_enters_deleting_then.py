@@ -1,11 +1,11 @@
-"""Then: the bucket enters "DELETING" state"""
+"""Then: the "s3 tables" "bucket" will be in "DELETING" state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the bucket enters "DELETING" state')
+@then('the "s3 tables" "bucket" will be in "DELETING" state')
 def bucket_enters_deleting_then(world):
     expected_error = None
     actual_error = world["error"]

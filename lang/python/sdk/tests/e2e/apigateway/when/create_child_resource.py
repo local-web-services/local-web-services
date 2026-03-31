@@ -1,4 +1,4 @@
-"""When: a child resource is created under an existing resource"""
+"""When: a child "api gateway" "resource" is created under an existing "api gateway" "resource" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ApigatewayTestClient
 from ..constants import TEST_CHILD_PATH
 
 
-@when("a child resource is created under an existing resource")
+@when('a child "api gateway" "resource" is created under an existing "api gateway" "resource"')
 def create_child_resource(lws_session, world):
     try:
         api_id = ApigatewayTestClient(lws_session).get_api_id()

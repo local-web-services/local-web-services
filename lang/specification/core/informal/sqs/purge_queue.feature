@@ -1,5 +1,5 @@
 @sqs @generated
-Feature: Sqs - All Messages In A Queue Are Purged
+Feature: Sqs - All "Sqs" "Message"S In A "Sqs" "Queue" Are Purged
 
   # Generated from FizzBee spec: sqs.fizz
   # Safety invariants: MessagesReferValidQueues, InFlightMessagesBelongToActiveQueues, ReceiveCountNonNegative
@@ -8,24 +8,24 @@ Feature: Sqs - All Messages In A Queue Are Purged
     Given the system is initialized
 
   @minimal @happy @purge_queue
-  Scenario: all messages in a queue are purged
-    Given the queue exists
-    And the queue is "ACTIVE"
-    When all messages in a queue are purged
-    Then all messages in the queue are "DELETED"
+  Scenario: all "sqs" "message"s in a "sqs" "queue" are purged
+    Given the "sqs" "queue" existed
+    And the "sqs" "queue" was "ACTIVE"
+    When all "sqs" "message"s in a "sqs" "queue" are purged
+    Then all messages in the "sqs" "queue" will be "DELETED"
     And every non-deleted message belongs to an "ACTIVE" queue
     And every in-flight message belongs to an "ACTIVE" queue
     And every message has a non-negative receive count
 
   @guard @negative @purge_queue
-  Scenario: all messages in a queue are purged fails when the queue does not exist
-    Given the queue does not exist
-    When all messages in a queue are purged
+  Scenario: all "sqs" "message"s in a "sqs" "queue" are purged fails when the "sqs" "queue" did not exist
+    Given the "sqs" "queue" did not exist
+    When all "sqs" "message"s in a "sqs" "queue" are purged
     Then the operation is rejected
 
   @guard @negative @purge_queue @lifecycle
-  Scenario: all messages in a queue are purged fails when the queue is not "ACTIVE"
-    Given the queue exists
-    And the queue is not "ACTIVE"
-    When all messages in a queue are purged
+  Scenario: all "sqs" "message"s in a "sqs" "queue" are purged fails when the "sqs" "queue" was not "ACTIVE"
+    Given the "sqs" "queue" existed
+    And the "sqs" "queue" was not "ACTIVE"
+    When all "sqs" "message"s in a "sqs" "queue" are purged
     Then the operation is rejected

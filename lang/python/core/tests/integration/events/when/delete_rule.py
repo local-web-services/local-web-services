@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EVENTS_TARGET, INT_BUS, INT_RULE, _store
 
 
-@when("an EventBridge rule is deleted")
+@when('an "eventbridge" "rule" is deleted')
 def delete_rule(client: TestClient, world):
     r = client.post(
         "/",

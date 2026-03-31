@@ -1,4 +1,4 @@
-"""Then: the state machine is "ACTIVE" with no EventBridge bus configured"""
+"""Then: the "step functions" "state machine" will be "ACTIVE" with no EventBridge bus configured"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import _sm_arn
 
 
-@then('the state machine is "ACTIVE" with no EventBridge bus configured')
+@then('the "step functions" "state machine" will be "ACTIVE" with no EventBridge bus configured')
 def sm_active_no_eventbridge_bus(lws_session):
     resp = lws_session.client("stepfunctions").describe_state_machine(stateMachineArn=_sm_arn())
     expected_status = "ACTIVE"

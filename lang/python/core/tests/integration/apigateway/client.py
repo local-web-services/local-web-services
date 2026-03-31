@@ -48,11 +48,22 @@ class ApigatewayTestClient:
         )
         return r.json()
 
+    def get_existing_api(self, api_name: str = INT_API_NAME) -> dict | None:
+        """Return existing API body if one with api_name exists, else None."""
+        r = self._client.get("/restapis")
+        for item in r.json().get("item", []):
+            if item.get("name") == api_name:
+                return item
+        return None
+
     def setup_api_with_integration(self, api_name: str = INT_API_NAME):
-        """Create a full API with resource, method, and integration.
+        """Create a full API with resource, method, and integration (idempotent).
 
         Returns (api_id, resource_id).
         """
+        existing = self.get_existing_api(api_name)
+        if existing:
+            return (existing["id"], None)
         api_body = self.create_rest_api(api_name)
         api_id = api_body["id"]
         root_resource_id = api_body["rootResourceId"]

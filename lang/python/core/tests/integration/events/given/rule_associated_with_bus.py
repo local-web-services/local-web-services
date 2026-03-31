@@ -8,6 +8,6 @@ from starlette.testclient import TestClient
 from ..client import EventsTestClient
 
 
-@given("a rule is associated with the event bus")
+@given('an "eventbridge" "rule" is associated with the "eventbridge" "bus"')
 def rule_associated_with_bus(client: TestClient):
     EventsTestClient(client).create_rule()

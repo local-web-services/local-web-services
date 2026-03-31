@@ -1,4 +1,4 @@
-"""When: an Elasticsearch domain is created and becomes "AVAILABLE" """
+"""When: an "elasticsearch" "domain" is created and becomes "AVAILABLE" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import LambdaElasticsearchTestClient
 from ..constants import TEST_DOMAIN
 
 
-@when('an Elasticsearch domain is created and becomes "AVAILABLE"')
+@when('an "elasticsearch" "domain" is created and becomes "AVAILABLE"')
 def create_elasticsearch_domain(lws_session, world):
     try:
         LambdaElasticsearchTestClient(lws_session).create_domain()

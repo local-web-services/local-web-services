@@ -1,4 +1,4 @@
-"""Then: all messages in the queue are "DELETED" """
+"""Then: all messages in the "sqs" "queue" will be "DELETED" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import QUEUE_URL
 
 
-@then('all messages in the queue are "DELETED"')
+@then('all messages in the "sqs" "queue" will be "DELETED"')
 def all_messages_deleted_then(client):
     r = client.post(
         "/",

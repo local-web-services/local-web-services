@@ -1,4 +1,4 @@
-"""Given: the user is "CONFIRMED" """
+"""Given: the "cognito" "user" will be "CONFIRMED" """
 
 from __future__ import annotations
 
@@ -9,7 +9,8 @@ from ..client import CognitoIdpTestClient
 from ..constants import _COGNITO_TARGET, INT_CLIENT_ID, INT_PASSWORD, INT_POOL_ID, INT_USERNAME
 
 
-@given('the user is "CONFIRMED"')
+@given('the "cognito" "user" was "CONFIRMED"')
+@given('the "cognito" "user" will be "CONFIRMED"')
 def user_is_confirmed(client: TestClient, world):
     if world.get("username") == INT_USERNAME:
         CognitoIdpTestClient(client).cognito_post(

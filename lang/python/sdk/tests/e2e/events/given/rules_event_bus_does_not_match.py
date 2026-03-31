@@ -1,4 +1,4 @@
-"""Given: the rule's event bus does not match"""
+"""Given: the "eventbridge" "rule"'s event eventbridge bus does not match"""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import pytest
 from pytest_bdd import given
 
 
-@given("the rule's event bus does not match")
+@given('the "eventbridge" "rule"\'s event eventbridge bus does not match')
 def rules_event_bus_does_not_match():
     """No-op: put_events silently skips non-matching rules; skip negative test."""
     pytest.skip(

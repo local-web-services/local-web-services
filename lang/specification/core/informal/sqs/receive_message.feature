@@ -1,5 +1,5 @@
 @sqs @generated
-Feature: Sqs - A Message Is Received From The Queue
+Feature: Sqs - A "Sqs" "Message" Is Received From The "Sqs" "Queue"
 
   # Generated from FizzBee spec: sqs.fizz
   # Safety invariants: MessagesReferValidQueues, InFlightMessagesBelongToActiveQueues, ReceiveCountNonNegative
@@ -8,43 +8,43 @@ Feature: Sqs - A Message Is Received From The Queue
     Given the system is initialized
 
   @minimal @happy @receive_message
-  Scenario: a message is received from the queue
-    Given the message exists
-    And the message is "AVAILABLE"
-    And the message's queue exists
-    And the message's queue is "ACTIVE"
-    When a message is received from the queue
-    Then the message is "IN_FLIGHT"
+  Scenario: a "sqs" "message" is received from the "sqs" "queue"
+    Given the "sqs" "message" existed
+    And the "sqs" "message" was "AVAILABLE"
+    And the "sqs" "message"'s "sqs" "queue" existed
+    And the "sqs" "message"'s "sqs" "queue" was "ACTIVE"
+    When a "sqs" "message" is received from the "sqs" "queue"
+    Then the "sqs" "message" will be "IN_FLIGHT"
     And every non-deleted message belongs to an "ACTIVE" queue
     And every in-flight message belongs to an "ACTIVE" queue
     And every message has a non-negative receive count
 
   @guard @negative @receive_message
-  Scenario: a message is received from the queue fails when the message does not exist
-    Given the message does not exist
-    When a message is received from the queue
+  Scenario: a "sqs" "message" is received from the "sqs" "queue" fails when the "sqs" "message" did not exist
+    Given the "sqs" "message" did not exist
+    When a "sqs" "message" is received from the "sqs" "queue"
     Then the operation is rejected
 
   @guard @negative @receive_message
-  Scenario: a message is received from the queue fails when the message is not "AVAILABLE"
-    Given the message exists
-    And the message is not "AVAILABLE"
-    When a message is received from the queue
+  Scenario: a "sqs" "message" is received from the "sqs" "queue" fails when the "sqs" "message" was not "AVAILABLE"
+    Given the "sqs" "message" existed
+    And the "sqs" "message" was not "AVAILABLE"
+    When a "sqs" "message" is received from the "sqs" "queue"
     Then the operation is rejected
 
   @guard @negative @receive_message
-  Scenario: a message is received from the queue fails when the message's queue does not exist
-    Given the message exists
-    And the message is "AVAILABLE"
-    And the message's queue does not exist
-    When a message is received from the queue
+  Scenario: a "sqs" "message" is received from the "sqs" "queue" fails when the "sqs" "message"'s "sqs" "queue" did not exist
+    Given the "sqs" "message" existed
+    And the "sqs" "message" was "AVAILABLE"
+    And the "sqs" "message"'s "sqs" "queue" did not exist
+    When a "sqs" "message" is received from the "sqs" "queue"
     Then the operation is rejected
 
   @guard @negative @receive_message @lifecycle
-  Scenario: a message is received from the queue fails when the message's queue is not "ACTIVE"
-    Given the message exists
-    And the message is "AVAILABLE"
-    And the message's queue exists
-    And the message's queue is not "ACTIVE"
-    When a message is received from the queue
+  Scenario: a "sqs" "message" is received from the "sqs" "queue" fails when the "sqs" "message"'s "sqs" "queue" was not "ACTIVE"
+    Given the "sqs" "message" existed
+    And the "sqs" "message" was "AVAILABLE"
+    And the "sqs" "message"'s "sqs" "queue" existed
+    And the "sqs" "message"'s "sqs" "queue" was not "ACTIVE"
+    When a "sqs" "message" is received from the "sqs" "queue"
     Then the operation is rejected

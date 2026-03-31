@@ -1,4 +1,4 @@
-"""Then: the record is being processed and a Lambda invocation is "IN_PROGRESS" """
+"""Then: the record will be being processed and a Lambda invocation will be "IN_PROGRESS" """
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import pytest
 from pytest_bdd import then
 
 
-@then('the record is being processed and a Lambda invocation is "IN_PROGRESS"')
+@then('the record will be being processed and a Lambda invocation will be "IN_PROGRESS"')
 def record_being_processed(lws_session, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])
