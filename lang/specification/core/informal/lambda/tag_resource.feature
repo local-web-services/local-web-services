@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - A Tag Is Added To A "Lambda" "Function"
+Feature: lambda - A Tag Is Added To A "Lambda" "Function"
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions
@@ -10,8 +10,8 @@ Feature: Lambda - A Tag Is Added To A "Lambda" "Function"
   @minimal @happy @tag_resource
   Scenario: a tag is added to a "lambda" "function"
     Given the "lambda" "function" existed
-    And the "lambda" "function" was "DELETING"
-    And the "lambda" "function" was "DELETED"
+    And the "lambda" "function" was not "DELETING"
+    And the "lambda" "function" was not "DELETED"
     When a tag is added to a "lambda" "function"
     Then the "lambda" "function" has the tag set
     And every active event source mapping references an existing non-deleted function
@@ -29,16 +29,16 @@ Feature: Lambda - A Tag Is Added To A "Lambda" "Function"
     Then the operation is rejected
 
   @guard @negative @tag_resource @lifecycle
-  Scenario: a tag is added to a "lambda" "function" fails when the "lambda" "function" was not "DELETING"
+  Scenario: a tag is added to a "lambda" "function" fails when the "lambda" "function" was "DELETING"
     Given the "lambda" "function" existed
-    And the "lambda" "function" was not "DELETING"
+    And the "lambda" "function" was "DELETING"
     When a tag is added to a "lambda" "function"
     Then the operation is rejected
 
   @guard @negative @tag_resource @lifecycle
-  Scenario: a tag is added to a "lambda" "function" fails when the "lambda" "function" was not "DELETED"
+  Scenario: a tag is added to a "lambda" "function" fails when the "lambda" "function" was "DELETED"
     Given the "lambda" "function" existed
-    And the "lambda" "function" was "DELETING"
-    And the "lambda" "function" was not "DELETED"
+    And the "lambda" "function" was not "DELETING"
+    And the "lambda" "function" was "DELETED"
     When a tag is added to a "lambda" "function"
     Then the operation is rejected

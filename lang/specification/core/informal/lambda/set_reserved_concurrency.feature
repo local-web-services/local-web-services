@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - Reserved Concurrency Is Set For A "Lambda" "Function"
+Feature: lambda - Reserved Concurrency Is Set For A "Lambda" "Function"
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions

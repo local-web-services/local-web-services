@@ -30,7 +30,6 @@ from .elasticsearch_lambda_invoked import *  # noqa: F401,F403
 from .elasticsearch_seq_document_indexed_in_active_index import *  # noqa: F401,F403
 from .elasticsearch_seq_domain_config_update_requested import *  # noqa: F401,F403
 from .elasticsearch_seq_domain_created import *  # noqa: F401,F403
-from .elasticsearch_seq_domain_deleted import *  # noqa: F401,F403
 from .elasticsearch_seq_domain_finished_deleting import *  # noqa: F401,F403
 from .elasticsearch_seq_domain_finished_processing_config_update import *  # noqa: F401,F403
 from .elasticsearch_seq_index_created_in_active_domain import *  # noqa: F401,F403

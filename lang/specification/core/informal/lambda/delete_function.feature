@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - An Active "Lambda" "Function" Is Deleted
+Feature: lambda - An Active "Lambda" "Function" Is Deleted
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions

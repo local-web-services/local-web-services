@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - A Permission Is Removed From A "Lambda" "Function"'S Resource Policy
+Feature: lambda - A Permission Is Removed From A "Lambda" "Function"'S Resource Policy
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions

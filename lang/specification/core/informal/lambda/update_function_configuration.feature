@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - A "Lambda" "Function"'S Configuration Is Updated
+Feature: lambda - A "Lambda" "Function"'S Configuration Is Updated
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions

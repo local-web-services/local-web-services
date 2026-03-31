@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("all version identifiers are unique across secrets")
+@step("all version identifiers are unique across secrets")
 def all_version_ids_unique():
     """No-op invariant: trivially satisfied in an isolated test context."""

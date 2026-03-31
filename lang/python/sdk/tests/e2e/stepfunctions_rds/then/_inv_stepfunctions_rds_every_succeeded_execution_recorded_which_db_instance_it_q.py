@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then('every succeeded execution recorded which "DB" instance it queried')
+@step('every succeeded execution recorded which "DB" instance it queried')
 def _inv_stepfunctions_rds_every_succeeded_execution_recorded_which_db_instance_it_q():
     """Invariant step: trivially satisfied in isolated test context."""

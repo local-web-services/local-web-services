@@ -7,7 +7,7 @@ STEP_DIR_NAMES: frozenset[str] = frozenset({"given", "when", "then"})
 SESSION_PARAM_NAMES: frozenset[str] = frozenset(
     {"client", "lws_session", "session", "aws_client", "sync_client"}
 )
-STEP_DECORATOR_NAMES: frozenset[str] = frozenset({"given", "when", "then"})
+STEP_DECORATOR_NAMES: frozenset[str] = frozenset({"given", "when", "then", "step"})
 
 
 def find_step_service_dirs(root: Path) -> list[Path]:

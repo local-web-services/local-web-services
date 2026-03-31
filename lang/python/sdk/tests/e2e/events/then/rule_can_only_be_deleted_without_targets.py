@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("a rule can only be deleted when it has no targets")
+@step("a rule can only be deleted when it has no targets")
 def rule_can_only_be_deleted_without_targets(lws_session):
     """Invariant: the provider enforces that rules with targets cannot be deleted.
 

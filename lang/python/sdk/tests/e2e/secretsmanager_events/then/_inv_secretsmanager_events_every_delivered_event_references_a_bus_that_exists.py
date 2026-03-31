@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then('every "DELIVERED" event references a bus that exists')
+@step('every "DELIVERED" event references a bus that exists')
 def _inv_secretsmanager_events_every_delivered_event_references_a_bus_that_exists():
     """Invariant step: trivially satisfied in isolated test context."""

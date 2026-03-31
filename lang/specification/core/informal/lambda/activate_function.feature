@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - A Pending "Lambda" "Function" Resolves Its Deployment
+Feature: lambda - A Pending "Lambda" "Function" Resolves Its Deployment
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions

@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then('all "EXISTING" integrations correspond to "EXISTING" methods')
+@step('all "EXISTING" integrations correspond to "EXISTING" methods')
 def all_existing_integrations_correspond_to_existing_methods():
     """No-op: integration-method correspondence is an internal invariant in lws; always passes."""

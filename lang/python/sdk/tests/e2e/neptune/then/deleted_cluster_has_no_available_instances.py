@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("a deleted cluster has no available instances")
+@step("a deleted cluster has no available instances")
 def deleted_cluster_has_no_available_instances():
     """No-op: cluster-instance consistency is an internal invariant; always passes."""

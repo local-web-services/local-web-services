@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("async retry count never exceeds two")
+@step("async retry count never exceeds two")
 def _inv_lambda_async_retry_count_never_exceeds_two():
     """Invariant step: trivially satisfied in isolated test context."""

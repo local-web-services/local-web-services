@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("schema version is always at least one")
+@step("schema version is always at least one")
 def schema_version_at_least_one():
     """No-op: schema version invariant; always passes."""

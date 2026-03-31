@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then('every "ENABLED" event source mapping references an "ACTIVE" queue')
+@step('every "ENABLED" event source mapping references an "ACTIVE" queue')
 def every_enabled_esm_references_active_queue():
     """Invariant step: trivially satisfied in isolated test context."""

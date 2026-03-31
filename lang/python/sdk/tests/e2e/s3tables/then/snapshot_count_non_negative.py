@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("snapshot count is never negative")
+@step("snapshot count is never negative")
 def snapshot_count_non_negative():
     """No-op: snapshot count invariant; always passes."""

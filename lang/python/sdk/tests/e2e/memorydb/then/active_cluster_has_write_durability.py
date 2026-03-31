@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("every active cluster has write durability enabled")
+@step("every active cluster has write durability enabled")
 def active_cluster_has_write_durability():
     """No-op: write durability invariant; always passes."""

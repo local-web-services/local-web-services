@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - A Tag Is Removed From A "Lambda" "Function"
+Feature: lambda - A Tag Is Removed From A "Lambda" "Function"
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions

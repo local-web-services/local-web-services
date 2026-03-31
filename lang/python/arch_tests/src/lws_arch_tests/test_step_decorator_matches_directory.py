@@ -35,6 +35,8 @@ class TestStepDecoratorMatchesDirectory:
                     if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                         continue
                     for dec_name in _decorator_names(node):
+                        if dec_name == "step":
+                            continue  # @step is keyword-agnostic; allowed in any directory
                         if dec_name != expected_dir:
                             rel = step_file.relative_to(root)
                             violations.append(

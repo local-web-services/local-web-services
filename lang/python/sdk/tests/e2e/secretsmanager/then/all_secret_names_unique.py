@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("all secret names are unique")
+@step("all secret names are unique")
 def all_secret_names_unique():
     """No-op invariant: trivially satisfied in an isolated test context."""

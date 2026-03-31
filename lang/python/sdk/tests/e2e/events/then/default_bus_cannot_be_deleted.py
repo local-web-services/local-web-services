@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("the default event bus cannot be deleted")
+@step("the default event bus cannot be deleted")
 def default_bus_cannot_be_deleted(lws_session):
     """Invariant: attempting to delete the default bus always raises an error."""
     try:

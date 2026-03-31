@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("every rule references an event bus that exists")
+@step("every rule references an event bus that exists")
 def every_rule_references_existing_bus(lws_session):
     """Invariant: no rule references a non-existent event bus.
 

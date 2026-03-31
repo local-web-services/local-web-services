@@ -44,6 +44,7 @@ from .function_is_not_failed import *  # noqa: F401,F403
 from .function_is_not_pending import *  # noqa: F401,F403
 from .function_is_pending import *  # noqa: F401,F403
 from .function_not_already_exist import *  # noqa: F401,F403
+from .function_was_not_deleted import *  # noqa: F401,F403
 from .mapping_is_creating import *  # noqa: F401,F403
 from .mapping_is_deleting import *  # noqa: F401,F403
 from .mapping_is_disabled import *  # noqa: F401,F403

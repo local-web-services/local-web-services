@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - A Disabled Lambda Event Source Mapping Was "Enabled"
+Feature: lambda - A Disabled Lambda Event Source Mapping Was "Enabled"
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions

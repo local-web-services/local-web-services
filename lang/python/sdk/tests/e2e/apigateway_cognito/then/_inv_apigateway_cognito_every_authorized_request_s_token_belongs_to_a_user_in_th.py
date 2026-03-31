@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then(
+@step(
     'every "AUTHORIZED" request\'s token belongs to a "cognito" "user" in the "api gateway" "API"\'s configured pool'
 )
 def _inv_apigateway_cognito_every_authorized_request_s_token_belongs_to_a_user_in_th():

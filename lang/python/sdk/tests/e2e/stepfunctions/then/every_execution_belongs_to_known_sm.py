@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("every execution belongs to a known state machine")
+@step("every execution belongs to a known state machine")
 def every_execution_belongs_to_known_sm():
     """Invariant: trivially satisfied in isolated lws context."""

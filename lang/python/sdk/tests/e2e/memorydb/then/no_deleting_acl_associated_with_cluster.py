@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then('no "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"')
+@step('no "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"')
 def no_deleting_acl_associated_with_cluster():
     """No-op: ACL-cluster association invariant; always passes."""

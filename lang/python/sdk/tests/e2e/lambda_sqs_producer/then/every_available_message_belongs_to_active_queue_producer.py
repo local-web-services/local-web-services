@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then('every "AVAILABLE" message belongs to an "ACTIVE" queue')
+@step('every "AVAILABLE" message belongs to an "ACTIVE" queue')
 def every_available_message_belongs_to_active_queue_producer():
     """Invariant step: trivially satisfied in isolated test context."""

@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("every cluster has a valid status")
+@step("every cluster has a valid status")
 def every_cluster_has_valid_status():
     """No-op: cluster status validity is an internal invariant; always passes."""

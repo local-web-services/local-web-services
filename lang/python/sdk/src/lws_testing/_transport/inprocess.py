@@ -298,7 +298,19 @@ def _build_service_apps(
                 _apigateway_app := create_apigateway_management_app(
                     lifecycle=lifecycle_configs["apigateway"],
                     service_providers={
-                        k: providers[k] for k in ("dynamodb", "sqs", "s3", "sns", "stepfunctions")
+                        **{
+                            k: providers[k]
+                            for k in ("dynamodb", "sqs", "s3", "sns", "stepfunctions")
+                        },
+                        "dynamodb_tracker": _unbox(_dynamodb_tracker_ref),
+                        "dynamodb_capacity": _cap.get("dynamodb"),
+                        "sqs_tracker": _unbox(_sqs_tracker_ref),
+                        "sqs_capacity": _cap.get("sqs"),
+                        "s3_tracker": _unbox(_s3_tracker_ref),
+                        "sns_tracker": _unbox(_sns_tracker_ref),
+                        "sns_capacity": _cap.get("sns"),
+                        "stepfunctions_tracker": _unbox(_sf_tracker_ref),
+                        "stepfunctions_capacity": _cap.get("stepfunctions"),
                     },
                     capacity=_cap.get("apigateway"),
                 )

@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("every database instance has a valid status")
+@step("every database instance has a valid status")
 def every_db_instance_has_valid_status():
     """No-op: instance status validity is an internal invariant; always passes."""

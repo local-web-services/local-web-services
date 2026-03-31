@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - An Async Invocation Exhausts All Retries
+Feature: lambda - An Async Invocation Exhausts All Retries
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions

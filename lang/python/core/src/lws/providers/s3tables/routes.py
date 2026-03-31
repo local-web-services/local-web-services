@@ -89,6 +89,160 @@ async def _s3tables_delete_table_bucket(
     return resp
 
 
+def _ns_tracker_key(bucket_arn: str, namespace: str) -> str:
+    return f"{bucket_arn}#{namespace}"
+
+
+def _table_tracker_key(bucket_arn: str, namespace: str, name: str) -> str:
+    return f"{bucket_arn}/table/{namespace}/{name}"
+
+
+async def _s3tables_create_namespace(
+    table_bucket_arn: str,
+    request: Request,
+    state: _S3TablesState,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Handle lifecycle-aware CreateNamespace."""
+    ns_name = ""
+    if lc.enabled:
+        try:
+            raw = await request.body()
+            namespaces = json.loads(raw).get("namespace", [])
+            ns_name = namespaces[0] if namespaces else ""
+        except Exception:
+            ns_name = ""
+    resp = await _create_namespace(table_bucket_arn, request, state)
+    if lc.enabled and resp.status_code == 200 and ns_name:
+        key = _ns_tracker_key(table_bucket_arn, ns_name)
+        tracker.set_state(key, "CREATING")
+        tracker.schedule_transition(key, "ACTIVE", lc.create_dwell_ms)
+    return resp
+
+
+async def _s3tables_delete_namespace(
+    table_bucket_arn: str,
+    namespace: str,
+    state: _S3TablesState,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Handle lifecycle-aware DeleteNamespace."""
+    if lc.enabled:
+        key = _ns_tracker_key(table_bucket_arn, namespace)
+        if tracker.get_state(key) == "CREATING":
+            return _error_response(
+                "ConflictException",
+                f"Namespace '{namespace}' is still being created",
+                status_code=409,
+            )
+    return await _delete_namespace(table_bucket_arn, namespace, state)
+
+
+async def _s3tables_create_table(
+    table_bucket_arn: str,
+    namespace: str,
+    request: Request,
+    state: _S3TablesState,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Handle lifecycle-aware CreateTable."""
+    if lc.enabled:
+        if tracker.get_state(table_bucket_arn) == "CREATING":
+            return _error_response(
+                "NotFoundException",
+                f"Table bucket '{table_bucket_arn}' not found",
+                status_code=404,
+            )
+        ns_key = _ns_tracker_key(table_bucket_arn, namespace)
+        if tracker.get_state(ns_key) == "CREATING":
+            return _error_response(
+                "ConflictException",
+                f"Namespace '{namespace}' is still being created",
+                status_code=409,
+            )
+    table_name = ""
+    if lc.enabled:
+        try:
+            raw = await request.body()
+            table_name = json.loads(raw).get("name", "")
+        except Exception:
+            table_name = ""
+    resp = await _create_table(table_bucket_arn, namespace, request, state)
+    if lc.enabled and resp.status_code == 200 and table_name:
+        key = _table_tracker_key(table_bucket_arn, namespace, table_name)
+        tracker.set_state(key, "CREATING")
+        tracker.schedule_transition(key, "ACTIVE", lc.create_dwell_ms)
+    return resp
+
+
+async def _s3tables_delete_table(
+    table_bucket_arn: str,
+    namespace: str,
+    table_name: str,
+    state: _S3TablesState,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Handle lifecycle-aware DeleteTable."""
+    if lc.enabled:
+        key = _table_tracker_key(table_bucket_arn, namespace, table_name)
+        if tracker.get_state(key) == "CREATING":
+            return _error_response(
+                "ConflictException",
+                f"Table '{table_name}' is still being created",
+                status_code=409,
+            )
+    return await _delete_table(table_bucket_arn, namespace, table_name, state)
+
+
+async def _s3tables_put_table_policy(
+    table_bucket_arn: str,
+    namespace: str,
+    table_name: str,
+    request: Request,
+    state: _S3TablesState,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Handle lifecycle-aware PutTablePolicy."""
+    if lc.enabled:
+        key = _table_tracker_key(table_bucket_arn, namespace, table_name)
+        if tracker.get_state(key) == "CREATING":
+            return _error_response(
+                "ConflictException",
+                f"Table '{table_name}' is still being created",
+                status_code=409,
+            )
+    return await _put_table_policy(table_bucket_arn, namespace, table_name, request, state)
+
+
+async def _s3tables_put_table_maintenance_configuration(
+    table_bucket_arn: str,
+    namespace: str,
+    table_name: str,
+    maintenance_type: str,
+    request: Request,
+    state: _S3TablesState,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Handle lifecycle-aware PutTableMaintenanceConfiguration."""
+    if lc.enabled:
+        key = _table_tracker_key(table_bucket_arn, namespace, table_name)
+        if tracker.get_state(key) == "CREATING":
+            return _error_response(
+                "ConflictException",
+                f"Table '{table_name}' is still being created",
+                status_code=409,
+            )
+    return await _put_table_maintenance_configuration(
+        table_bucket_arn, namespace, table_name, maintenance_type, request, state
+    )
+
+
 def _split_arn_and_suffix(path: str, n: int) -> tuple[str, ...]:
     """Split a decoded path into (tableBucketARN, *n_trailing_parts).
 
@@ -146,13 +300,15 @@ def _register_bucket_routes(
         return _error_response("BadRequestException", f"Unsupported bucket operation: {path}")
 
 
-def _register_namespace_routes(app: FastAPI, state: _S3TablesState) -> None:
+def _register_namespace_routes(
+    app: FastAPI, state: _S3TablesState, tracker: ResourceStateTracker, lc: ResourceLifecycleConfig
+) -> None:
     """Register namespace CRUD routes."""
 
     @app.put("/namespaces/{path:path}")
     async def create_namespace(path: str, request: Request) -> Response:
         tableBucketARN = path
-        return await _create_namespace(tableBucketARN, request, state)
+        return await _s3tables_create_namespace(tableBucketARN, request, state, lc, tracker)
 
     @app.get("/namespaces/{path:path}")
     async def list_or_get_namespace(path: str) -> Response:
@@ -178,10 +334,12 @@ def _register_namespace_routes(app: FastAPI, state: _S3TablesState) -> None:
     @app.delete("/namespaces/{path:path}")
     async def delete_namespace(path: str) -> Response:
         tableBucketARN, namespace = _split_arn_and_suffix(path, 1)[:2]
-        return await _delete_namespace(tableBucketARN, namespace, state)
+        return await _s3tables_delete_namespace(tableBucketARN, namespace, state, lc, tracker)
 
 
-def _register_table_routes(app: FastAPI, state: _S3TablesState) -> None:
+def _register_table_routes(
+    app: FastAPI, state: _S3TablesState, tracker: ResourceStateTracker, lc: ResourceLifecycleConfig
+) -> None:
     """Register table CRUD routes."""
 
     @app.put("/tables/{path:path}")
@@ -193,15 +351,17 @@ def _register_table_routes(app: FastAPI, state: _S3TablesState) -> None:
             parts = path.rsplit("/maintenance/", 1)
             inner, maintenance_type = parts[0], parts[1]
             tableBucketARN, namespace, name = _split_arn_and_suffix(inner, 2)[:3]
-            return await _put_table_maintenance_configuration(
-                tableBucketARN, namespace, name, maintenance_type, request, state
+            return await _s3tables_put_table_maintenance_configuration(
+                tableBucketARN, namespace, name, maintenance_type, request, state, lc, tracker
             )
         if path.endswith("/policy"):
             inner = path[: -len("/policy")]
             tableBucketARN, namespace, name = _split_arn_and_suffix(inner, 2)[:3]
-            return await _put_table_policy(tableBucketARN, namespace, name, request, state)
+            return await _s3tables_put_table_policy(
+                tableBucketARN, namespace, name, request, state, lc, tracker
+            )
         tableBucketARN, namespace = _split_arn_and_suffix(path, 1)[:2]
-        return await _create_table(tableBucketARN, namespace, request, state)
+        return await _s3tables_create_table(tableBucketARN, namespace, request, state, lc, tracker)
 
     @app.get("/tables/{tableBucketARN:path}")
     async def list_tables(tableBucketARN: str, namespace: str = Query(default=None)) -> Response:
@@ -232,7 +392,7 @@ def _register_table_routes(app: FastAPI, state: _S3TablesState) -> None:
             tableBucketARN, namespace, name = _split_arn_and_suffix(inner, 2)[:3]
             return await _delete_table_policy(tableBucketARN, namespace, name, state)
         tableBucketARN, namespace, name = _split_arn_and_suffix(path, 2)[:3]
-        return await _delete_table(tableBucketARN, namespace, name, state)
+        return await _s3tables_delete_table(tableBucketARN, namespace, name, state, lc, tracker)
 
 
 def create_s3tables_app(
@@ -247,7 +407,7 @@ def create_s3tables_app(
     state = _S3TablesState()
 
     _register_bucket_routes(app, state, _tracker, _lc)
-    _register_namespace_routes(app, state)
-    _register_table_routes(app, state)
+    _register_namespace_routes(app, state, _tracker, _lc)
+    _register_table_routes(app, state, _tracker, _lc)
 
     return app, state

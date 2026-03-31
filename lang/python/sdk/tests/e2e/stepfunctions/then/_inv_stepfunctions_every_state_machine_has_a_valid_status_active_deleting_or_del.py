@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then('every state machine has a valid status ("ACTIVE", "DELETING", or "DELETED")')
+@step('every state machine has a valid status ("ACTIVE", "DELETING", or "DELETED")')
 def _inv_stepfunctions_every_state_machine_has_a_valid_status_active_deleting_or_del():
     """Invariant step: trivially satisfied in isolated test context."""

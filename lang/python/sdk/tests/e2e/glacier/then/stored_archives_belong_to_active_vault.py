@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then('all stored archives belong to an "ACTIVE" vault')
+@step('all stored archives belong to an "ACTIVE" vault')
 def stored_archives_belong_to_active_vault():
     """No-op: archive-vault ownership invariant; always passes."""

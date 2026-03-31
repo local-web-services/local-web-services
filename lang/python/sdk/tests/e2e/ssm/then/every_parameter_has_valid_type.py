@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("every parameter has a valid type (String, SecureString, or StringList)")
+@step("every parameter has a valid type (String, SecureString, or StringList)")
 def every_parameter_has_valid_type():
     """No-op invariant: trivially satisfied in an isolated test context."""

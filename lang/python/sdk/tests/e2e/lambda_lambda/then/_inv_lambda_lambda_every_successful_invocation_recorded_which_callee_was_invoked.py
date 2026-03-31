@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("every successful invocation recorded which callee was invoked")
+@step("every successful invocation recorded which callee was invoked")
 def _inv_lambda_lambda_every_successful_invocation_recorded_which_callee_was_invoked():
     """Invariant step: trivially satisfied in isolated test context."""

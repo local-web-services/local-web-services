@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("every available replication group has a primary cluster assigned")
+@step("every available replication group has a primary cluster assigned")
 def available_rg_has_primary():
     """No-op: replication group primary invariant; always passes."""

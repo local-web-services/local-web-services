@@ -5,10 +5,10 @@ authorizer
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then(
+@step(
     'every "REJECTED" request\'s token belongs to a "cognito" "user" in a different pool than the configured authorizer'
 )  # noqa: E501
 def _inv_apigateway_cognito_every_rejected_request_s_token_belongs_to_a_user_in_a_di():

@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("the dead-letter queue never exceeds its bounded capacity")
+@step("the dead-letter queue never exceeds its bounded capacity")
 def dlq_never_exceeds_capacity():
     """Invariant: not observable in this implementation; trivially passes."""

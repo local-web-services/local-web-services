@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - A "Lambda" "Function" Finishes Being Deleted
+Feature: lambda - A "Lambda" "Function" Finishes Being Deleted
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions

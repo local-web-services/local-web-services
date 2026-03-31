@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("synchronous executions only run on express state machines")
+@step("synchronous executions only run on express state machines")
 def sync_executions_only_for_express():
     """Invariant: trivially satisfied in isolated lws context."""

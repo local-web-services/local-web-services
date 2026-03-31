@@ -6,7 +6,6 @@ from .callee_is_active_given import *  # noqa: F401,F403
 from .callee_is_already_deleted import *  # noqa: F401,F403
 from .callee_is_deleted_given import *  # noqa: F401,F403
 from .callee_is_not_deleted_given import *  # noqa: F401,F403
-from .callee_lambda_function_has_been_deleted_seq import *  # noqa: F401,F403
 from .callee_lambda_function_has_been_deployed_seq import *  # noqa: F401,F403
 from .callee_not_exist_or_deleted import *  # noqa: F401,F403
 from .caller_does_not_exist import *  # noqa: F401,F403

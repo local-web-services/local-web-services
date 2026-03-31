@@ -11,7 +11,7 @@ from pytest_bdd import when
 
 @when(
     "a cluster modification event occurs and ElastiCache publishes a notification "
-    'to the "SNS" topic'
+    'to the "sns" "topic"'
 )
 def cluster_event_notification_delivered(lws_session, world):
     pytest.skip(

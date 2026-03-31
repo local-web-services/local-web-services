@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - A Synchronous "Lambda" "Function" Invocation Completes
+Feature: lambda - A Synchronous "Lambda" "Function" Invocation Completes
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions

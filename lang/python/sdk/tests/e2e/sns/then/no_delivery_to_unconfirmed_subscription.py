@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("no delivery is in-flight to an unconfirmed subscription")
+@step("no delivery is in-flight to an unconfirmed subscription")
 def no_delivery_to_unconfirmed_subscription():
     """Invariant: trivially satisfied in isolated lws context."""

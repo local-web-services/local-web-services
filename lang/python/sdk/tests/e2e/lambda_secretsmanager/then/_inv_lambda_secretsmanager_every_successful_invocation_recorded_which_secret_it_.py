@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("every successful invocation recorded which secret it read")
+@step("every successful invocation recorded which secret it read")
 def _inv_lambda_secretsmanager_every_successful_invocation_recorded_which_secret_it_():
     """Invariant step: trivially satisfied in isolated test context."""

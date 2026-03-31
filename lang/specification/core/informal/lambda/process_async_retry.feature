@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - An Async Invocation Fails And Is Retried
+Feature: lambda - An Async Invocation Fails And Is Retried
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions

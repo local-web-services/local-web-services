@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("every delivery retry count is within the allowed limit")
+@step("every delivery retry count is within the allowed limit")
 def delivery_retry_count_within_limit():
     """Invariant: trivially true in isolated context."""

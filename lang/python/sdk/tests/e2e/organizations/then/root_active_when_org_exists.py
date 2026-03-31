@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then('the root was "ACTIVE" whenever the "organizations" "organization" exists')
+@step('the root was "ACTIVE" whenever the "organizations" "organization" exists')
 def root_active_when_org_exists(lws_session):
     roots_resp = lws_session.client("organizations").list_roots()
     actual_roots = roots_resp["Roots"]

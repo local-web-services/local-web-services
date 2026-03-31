@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then('every existing document references a "documentdb" "cluster" that exists')
+@step('every existing document references a "documentdb" "cluster" that exists')
 def _inv_lambda_docdb_every_existing_document_references_a_cluster_that_exists():
     """Invariant step: trivially satisfied in isolated test context."""

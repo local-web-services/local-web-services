@@ -59,7 +59,7 @@ class ApiGatewayManagementRouter:
         self._lifecycle = lifecycle or ResourceLifecycleConfig()
         self._tracker = ResourceStateTracker(self._lifecycle)
         self.router = APIRouter()
-        self._resource_router = ApiGatewayResourceRouter(self._state)
+        self._resource_router = ApiGatewayResourceRouter(self._state, tracker=self._tracker)
         self._service_providers: dict[str, Any] = {}
         self._lambda_registry: LambdaRegistry | None = None
         self._cognito_authorizer: CognitoAuthorizer | None = None
@@ -327,6 +327,12 @@ class ApiGatewayManagementRouter:
         if route is None:
             return None
         rest_api_id, stage_name, resource_path = route
+
+        # Reject requests when the REST API is in a transient lifecycle state
+        lifecycle_err = self._get_lifecycle_error(rest_api_id)
+        if lifecycle_err is not None:
+            return lifecycle_err
+
         http_method = request.method.upper()
 
         method_config, err = self._find_v1_method_config(

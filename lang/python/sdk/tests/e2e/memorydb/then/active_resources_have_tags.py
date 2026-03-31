@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("every active cluster and snapshot has tags")
+@step("every active cluster and snapshot has tags")
 def active_resources_have_tags():
     """No-op: tag existence invariant; always passes."""

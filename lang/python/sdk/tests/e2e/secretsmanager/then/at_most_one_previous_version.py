@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("at most one previous version exists per secret")
+@step("at most one previous version exists per secret")
 def at_most_one_previous_version():
     """No-op invariant: trivially satisfied in an isolated test context."""

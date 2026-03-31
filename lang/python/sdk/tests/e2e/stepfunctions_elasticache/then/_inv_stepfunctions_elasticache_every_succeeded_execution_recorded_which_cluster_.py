@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("every succeeded execution recorded which cluster it read")
+@step("every succeeded execution recorded which cluster it read")
 def _inv_stepfunctions_elasticache_every_succeeded_execution_recorded_which_cluster_():
     """Invariant step: trivially satisfied in isolated test context."""

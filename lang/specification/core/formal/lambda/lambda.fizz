@@ -415,10 +415,10 @@ atomic action FinishDeleteEventSourceMapping:
 # result: the "lambda" "function" has the tag set
 # guard: the "lambda" "function" existed
 # guard_violation: the "lambda" "function" did not exist
-# guard: the "lambda" "function" was "DELETING"
-# guard_violation_lifecycle: the "lambda" "function" was not "DELETING"
-# guard: the "lambda" "function" was "DELETED"
-# guard_violation_lifecycle: the "lambda" "function" was not "DELETED"
+# guard: the "lambda" "function" was not "DELETING"
+# guard_violation_lifecycle: the "lambda" "function" was "DELETING"
+# guard: the "lambda" "function" was not "DELETED"
+# guard_violation_lifecycle: the "lambda" "function" was "DELETED"
 # TagResource: set a tag on an active function using compound key fid+"#env"
 atomic action TagResource:
     oneof fid in FUNC_IDS:

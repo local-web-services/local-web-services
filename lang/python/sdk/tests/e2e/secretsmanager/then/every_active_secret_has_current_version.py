@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("every active secret has a current version assigned")
+@step("every active secret has a current version assigned")
 def every_active_secret_has_current_version():
     """No-op invariant: trivially satisfied in an isolated test context."""

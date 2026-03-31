@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - A "Lambda" Event Source Mapping Is Created
+Feature: lambda - A "Lambda" Event Source Mapping Is Created
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions

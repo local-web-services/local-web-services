@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("every server has a valid protocol")
+@step("every server has a valid protocol")
 def _inv_fake_every_server_has_a_valid_protocol():
     """Invariant step: trivially satisfied in isolated test context."""

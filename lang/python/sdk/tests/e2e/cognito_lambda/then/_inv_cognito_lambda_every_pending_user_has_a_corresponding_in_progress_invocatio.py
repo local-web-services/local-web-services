@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then('every "PENDING" user has a corresponding "IN_PROGRESS" invocation')
+@step('every "PENDING" user has a corresponding "IN_PROGRESS" invocation')
 def _inv_cognito_lambda_every_pending_user_has_a_corresponding_in_progress_invocatio():
     """Invariant step: trivially satisfied in isolated test context."""

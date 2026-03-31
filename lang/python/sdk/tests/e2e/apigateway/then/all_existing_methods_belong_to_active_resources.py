@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then('all "EXISTING" methods belong to "ACTIVE" resources')
+@step('all "EXISTING" methods belong to "ACTIVE" resources')
 def all_existing_methods_belong_to_active_resources():
     """No-op: method-resource membership is an internal invariant in lws; always passes."""

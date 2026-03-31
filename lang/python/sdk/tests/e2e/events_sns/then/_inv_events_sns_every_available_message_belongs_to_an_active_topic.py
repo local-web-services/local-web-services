@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then('every "AVAILABLE" message belongs to an "ACTIVE" topic')
+@step('every "AVAILABLE" message belongs to an "ACTIVE" topic')
 def _inv_events_sns_every_available_message_belongs_to_an_active_topic():
     """Invariant step: trivially satisfied in isolated test context."""

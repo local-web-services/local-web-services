@@ -16,6 +16,12 @@ def namespace_is_not_active_given(lws_session):
         pass
     resp = lws_session.client("s3tables").get_table_bucket(tableBucketARN=TEST_BUCKET)
     bucket_arn = resp.get("arn", TEST_BUCKET)
+    try:
+        lws_session.client("s3tables").delete_namespace(
+            tableBucketARN=bucket_arn, namespace=TEST_NAMESPACE
+        )
+    except Exception:
+        pass
     lws_session.lifecycle("s3tables").create_dwell_ms(5000).apply()
     lws_session.client("s3tables").create_namespace(
         tableBucketARN=bucket_arn, namespace=[TEST_NAMESPACE]

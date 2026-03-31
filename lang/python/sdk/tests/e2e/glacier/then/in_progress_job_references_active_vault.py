@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("every in-progress job references an active vault")
+@step("every in-progress job references an active vault")
 def in_progress_job_references_active_vault():
     """No-op: job-vault reference integrity is an internal invariant; always passes."""

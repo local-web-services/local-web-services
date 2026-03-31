@@ -26,9 +26,24 @@ class ApiGatewayResourceRouter(_ApiGatewayAuthorizerMixin):
     the host class before ``register_resource_routes`` is called.
     """
 
-    def __init__(self, state: _ApiGatewayState) -> None:
+    def __init__(self, state: _ApiGatewayState, tracker: Any = None) -> None:
         self._res_state = state
+        self._tracker = tracker
         self._service_providers: dict[str, Any] = {}
+
+    def _get_api_lifecycle_error(self, rest_api_id: str) -> Response | None:
+        """Return an error response if the REST API is in a transient lifecycle state."""
+        if self._tracker is None:
+            return None
+        status = self._tracker.get_state(rest_api_id)
+        if status == "CREATING":
+            return _json_response(
+                {"message": f"REST API '{rest_api_id}' is not yet ACTIVE"},
+                status_code=409,
+            )
+        if status == "DELETING":
+            return _not_found("RestApi", rest_api_id)
+        return None
 
     def set_service_providers(self, providers: dict[str, Any]) -> None:
         """Register backend service providers for integration dispatch."""
@@ -286,6 +301,9 @@ class ApiGatewayResourceRouter(_ApiGatewayAuthorizerMixin):
         http_method: str,
         request: Request,
     ) -> Response:
+        err = self._get_api_lifecycle_error(rest_api_id)
+        if err is not None:
+            return err
         api = self._res_state.get_rest_api(rest_api_id)
         if api is None:
             return _not_found("RestApi", rest_api_id)

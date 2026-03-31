@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then("the error log only contains ParameterAlreadyExists entries")
+@step("the error log only contains ParameterAlreadyExists entries")
 def error_log_only_parameter_already_exists():
     """No-op invariant: trivially satisfied in an isolated test context."""

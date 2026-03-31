@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - An Enabled Lambda Event Source Mapping Is Deleted
+Feature: lambda - An Enabled Lambda Event Source Mapping Is Deleted
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions
