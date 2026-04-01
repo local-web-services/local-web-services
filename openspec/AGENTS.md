@@ -66,6 +66,8 @@ After deployment, create separate PR to:
 - Use `openspec archive <change-id> --skip-specs --yes` for tooling-only changes (always pass the change ID explicitly)
 - Run `openspec validate --strict --no-interactive` to confirm the archived change passes checks
 
+**PR title:** Use the proposal name from `proposal.md` (the `# Change: ...` header, trimmed to ≤70 characters) as the PR title.
+
 ## Before Any Task
 
 **Context Checklist:**

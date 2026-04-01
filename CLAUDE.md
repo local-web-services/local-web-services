@@ -38,6 +38,10 @@ When adding a new feature:
 - No magic strings in assertions — use `expected_*` and `actual_*` variables
 - E2E tests must never be skipped — no `@skip`/`@wip`/`@xfail` tags, no `pytest.mark.skip` decorators. If a test needs Docker or other dependencies, configure CI to provide them instead of skipping.
 
+# Pull Request Conventions
+
+- Use the proposal name from `openspec/changes/<id>/proposal.md` (the `# Change: ...` header) as the PR title, trimmed to ≤70 characters.
+
 # Quality Check Policy
 
 Never work around a failing quality check (lint, formatting, CPD, tests) by disguising the violation rather than fixing the root cause. Examples of cheating that are not permitted:
