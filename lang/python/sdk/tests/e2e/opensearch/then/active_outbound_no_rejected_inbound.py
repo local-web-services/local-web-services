@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step
 
 
-@then(
+@step(
     'an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" inbound connection'
 )
 def active_outbound_no_rejected_inbound():
