@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, FastAPI, Request, Response
 
+from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_capacity import AwsCapacityConfig
@@ -16,6 +17,7 @@ from lws.providers._shared.aws_chaos import (
     AwsChaosMiddleware,
     ErrorFormat,
 )
+from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_lifecycle import (
     ResourceLifecycleConfig,
@@ -34,6 +36,7 @@ from lws.providers.stepfunctions._stepfunctions_helpers import (
     _format_execution_summary,
     _json_response,
     _parse_input,
+    _unimplemented_sfn_action_response,
     check_sm_lifecycle,
 )
 from lws.providers.stepfunctions._stepfunctions_sqs_validator import check_sqs_task_targets
@@ -75,11 +78,7 @@ class StepFunctionsRouter:
 
         handler = self._handlers().get(action)
         if handler is None:
-            _logger.warning("Unknown Step Functions action: %s", action)
-            return _error_response(
-                "UnknownOperationException",
-                f"lws: StepFunctions operation '{action}' is not yet implemented",
-            )
+            return _unimplemented_sfn_action_response(action)
         return await handler(body)
 
     def _handlers(self) -> dict:
@@ -464,6 +463,7 @@ def create_stepfunctions_app(
     capacity: AwsCapacityConfig | None = None,
     sqs_provider: SqsProvider | None = None,
     sqs_tracker: ResourceStateTracker | None = None,
+    cloudtrail_provider: ICloudTrail | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the Step Functions wire protocol.
 
@@ -496,4 +496,5 @@ def create_stepfunctions_app(
     if tracker_ref is not None:
         tracker_ref.append(sfn_router.tracker)
     app.include_router(sfn_router.router)
+    apply_cloudtrail_middleware(app, cloudtrail_provider, "stepfunctions")
     return app

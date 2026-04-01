@@ -10,8 +10,10 @@ import uuid
 
 from fastapi import FastAPI, Request, Response
 
+from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
 
 _logger = get_logger("ldk.sts")
 
@@ -74,7 +76,9 @@ _ACTION_HANDLERS = {
 }
 
 
-def create_sts_app() -> FastAPI:
+def create_sts_app(
+    cloudtrail_provider: ICloudTrail | None = None,
+) -> FastAPI:
     """Create a FastAPI application that speaks the STS wire protocol."""
     app = FastAPI(title="LDK STS")
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="sts")
@@ -100,4 +104,5 @@ def create_sts_app() -> FastAPI:
 
         return await handler(params)
 
+    apply_cloudtrail_middleware(app, cloudtrail_provider, "sts")
     return app

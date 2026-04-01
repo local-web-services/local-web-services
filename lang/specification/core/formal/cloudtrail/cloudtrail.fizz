@@ -1,0 +1,144 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 14
+---
+# CloudTrail Formal Specification
+# Models trail lifecycle, capacity limit, event buffering, and S3 delivery invariants.
+
+MAX_TRAILS = 5
+TRAIL_NAMES = ["trail-1", "trail-2", "trail-3", "trail-4", "trail-5", "trail-6"]
+EVENT_IDS = ["e1", "e2", "e3", "e4", "e5"]
+
+action Init:
+    trail_status = {}
+    trail_logging = {}
+    trail_s3_bucket = {}
+    trail_eb_bus = {}
+
+    event_status = {}
+    event_trail = {}
+    event_delivered = {}
+
+    active_trail_count = 0
+
+# step: a "cloudtrail" "trail" is created
+# result: the "cloudtrail" "trail" will be "CREATED"
+# guard: the "cloudtrail" "trail" did not already exist
+# guard_violation: the "cloudtrail" "trail" already existed
+# guard: the active trail count is below the maximum (5)
+# guard_violation: the active trail count has reached the maximum (5)
+atomic action CreateTrail:
+    oneof tname in TRAIL_NAMES:
+        if tname not in trail_status:
+            if active_trail_count < MAX_TRAILS:
+                trail_status[tname] = "CREATED"
+                trail_logging[tname] = False
+                trail_s3_bucket[tname] = "default-bucket"
+                trail_eb_bus[tname] = ""
+                active_trail_count = active_trail_count + 1
+
+# step: "StartLogging" is called on a "cloudtrail" "trail"
+# result: the "cloudtrail" "trail" will be "LOGGING"
+# guard: the "cloudtrail" "trail" existed
+# guard_violation: the "cloudtrail" "trail" did not exist
+# guard: the "cloudtrail" "trail" was not "DELETED"
+# guard_violation: the "cloudtrail" "trail" was "DELETED"
+atomic action StartLogging:
+    oneof tname in TRAIL_NAMES:
+        if tname in trail_status:
+            if trail_status[tname] != "DELETED":
+                trail_logging[tname] = True
+
+# step: "StopLogging" is called on a "cloudtrail" "trail"
+# result: the "cloudtrail" "trail" logging will be disabled
+# guard: the "cloudtrail" "trail" existed
+# guard_violation: the "cloudtrail" "trail" did not exist
+# guard: the "cloudtrail" "trail" was "LOGGING"
+# guard_violation: the "cloudtrail" "trail" was not "LOGGING"
+atomic action StopLogging:
+    oneof tname in TRAIL_NAMES:
+        if tname in trail_status:
+            if trail_status[tname] != "DELETED":
+                if trail_logging[tname]:
+                    trail_logging[tname] = False
+
+# step: a "cloudtrail" "trail" is deleted
+# result: the "cloudtrail" "trail" will be "DELETED"
+# guard: the "cloudtrail" "trail" existed
+# guard_violation: the "cloudtrail" "trail" did not exist
+atomic action DeleteTrail:
+    oneof tname in TRAIL_NAMES:
+        if tname in trail_status:
+            if trail_status[tname] != "DELETED":
+                trail_status[tname] = "DELETED"
+                trail_logging[tname] = False
+                active_trail_count = active_trail_count - 1
+
+# step: a "cloudtrail" "event" is recorded
+# result: the "cloudtrail" "event" will be "BUFFERED"
+# guard: at least one "cloudtrail" "trail" is logging
+atomic action RecordEvent:
+    oneof eid in EVENT_IDS:
+        if eid not in event_status:
+            oneof tname in TRAIL_NAMES:
+                if tname in trail_logging:
+                    if trail_logging[tname]:
+                        event_status[eid] = "BUFFERED"
+                        event_trail[eid] = tname
+                        event_delivered[eid] = False
+
+# step: a "cloudtrail" "event" is delivered to S3
+# result: the "cloudtrail" "event" will be "DELIVERED"
+# guard: the "cloudtrail" "event" was "BUFFERED"
+# guard: the associated "cloudtrail" "trail" is "LOGGING"
+atomic action DeliverToS3:
+    oneof eid in EVENT_IDS:
+        if eid in event_status:
+            if event_status[eid] == "BUFFERED":
+                if event_trail[eid] in trail_logging:
+                    if trail_logging[event_trail[eid]]:
+                        event_delivered[eid] = True
+                        event_status[eid] = "DELIVERED"
+
+# check: the active trail count never exceeds MAX_TRAILS
+always assertion CapacityLimitRespected:
+    if active_trail_count > MAX_TRAILS:
+        return False
+    return True
+
+# check: active_trail_count matches the number of non-DELETED trails
+always assertion TrailCountConsistent:
+    counted = 0
+    for tname in trail_status:
+        if trail_status[tname] != "DELETED":
+            counted = counted + 1
+    if counted != active_trail_count:
+        return False
+    return True
+
+# check: a deleted trail is never in LOGGING state
+always assertion DeletedTrailNotLogging:
+    for tname in trail_status:
+        if trail_status[tname] == "DELETED":
+            if tname in trail_logging:
+                if trail_logging[tname]:
+                    return False
+    return True
+
+# check: every buffered or delivered event references an existing trail
+always assertion EventsReferValidTrails:
+    for eid in event_status:
+        if event_status[eid] in ["BUFFERED", "DELIVERED"]:
+            if event_trail[eid] not in trail_status:
+                return False
+    return True
+
+# check: events are only delivered when the trail is logging (at time of delivery)
+always assertion DeliveredEventsFromLoggingTrails:
+    for eid in event_status:
+        if event_status[eid] == "BUFFERED":
+            if event_delivered[eid]:
+                return False
+    return True

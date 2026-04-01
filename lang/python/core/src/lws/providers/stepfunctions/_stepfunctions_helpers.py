@@ -3,10 +3,22 @@
 from __future__ import annotations
 
 import json
+import logging
 import uuid
 from typing import Any
 
 from fastapi import Response
+
+_logger = logging.getLogger("ldk.stepfunctions")
+
+
+def _unimplemented_sfn_action_response(action: str) -> Response:
+    """Log and return error response for an unimplemented StepFunctions action."""
+    _logger.warning("Unknown Step Functions action: %s", action)
+    return _error_response(
+        "UnknownOperationException",
+        f"lws: StepFunctions operation '{action}' is not yet implemented",
+    )
 
 
 def _extract_state_machine_name(body: dict) -> str:

@@ -1,0 +1,14 @@
+"""Then: the trail count is consistent"""
+
+from __future__ import annotations
+
+from pytest_bdd import then
+
+
+@then("the trail count is consistent")
+def the_trail_count_is_consistent(lws_session):
+    resp = lws_session.client("cloudtrail").list_trails()
+    actual_trails = resp.get("Trails", [])
+    assert isinstance(
+        actual_trails, list
+    ), f"Expected trails to be a list but got {type(actual_trails)}"

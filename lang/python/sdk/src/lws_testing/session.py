@@ -332,6 +332,11 @@ class LwsSession:
 
         return S3Helper(bucket_name, self.client("s3"))
 
+    @property
+    def management_url(self) -> str:
+        """Return the base URL for the LWS management API (``/_ldk/…``)."""
+        return f"http://127.0.0.1:{self._mgmt_port}"
+
     def port_for(self, service: str) -> int:
         """Return the local port number for the given service.
 

@@ -11,6 +11,7 @@ def build_extended_service_apps(
     capacity_configs: dict[str, Any] | None = None,
     dynamodb_tracker_ref: list | None = None,
     tracker_registry: dict | None = None,
+    cloudtrail_provider: Any | None = None,
 ) -> tuple[list[tuple[str, Any]], dict[str, Any]]:
     """Build FastAPI apps for cognito, docdb, neptune, rds, elasticache, memorydb,
     elasticsearch, opensearch, glacier, s3tables, and lambda services.
@@ -72,26 +73,35 @@ def build_extended_service_apps(
     glacier_app, glacier_state = create_glacier_app(
         lifecycle=lifecycle_configs["glacier"],
         capacity=_cap.get("glacier"),
+        cloudtrail_provider=cloudtrail_provider,
     )
     s3tables_app, s3tables_state = create_s3tables_app(
-        lifecycle=lifecycle_configs["s3tables"], registry=tracker_registry
+        lifecycle=lifecycle_configs["s3tables"],
+        registry=tracker_registry,
+        cloudtrail_provider=cloudtrail_provider,
     )
     elasticsearch_app, elasticsearch_state = create_elasticsearch_app(
-        lifecycle=lifecycle_configs["es"], registry=tracker_registry
+        lifecycle=lifecycle_configs["es"],
+        registry=tracker_registry,
+        cloudtrail_provider=cloudtrail_provider,
     )
     opensearch_app, opensearch_state = create_opensearch_app(
-        lifecycle=lifecycle_configs["opensearch"], registry=tracker_registry
+        lifecycle=lifecycle_configs["opensearch"],
+        registry=tracker_registry,
+        cloudtrail_provider=cloudtrail_provider,
     )
 
     docdb_app, docdb_state = create_docdb_app(
         lifecycle=lifecycle_configs["docdb"],
         capacity=_cap.get("docdb"),
         registry=tracker_registry,
+        cloudtrail_provider=cloudtrail_provider,
     )
     neptune_app, neptune_state = create_neptune_app(
         lifecycle=lifecycle_configs["neptune"],
         capacity=_cap.get("neptune"),
         registry=tracker_registry,
+        cloudtrail_provider=cloudtrail_provider,
     )
 
     apps = [
@@ -101,20 +111,34 @@ def build_extended_service_apps(
                 providers["cognito-idp"],
                 lifecycle=lifecycle_configs["cognito-idp"],
                 capacity=_cap.get("cognito-idp"),
+                cloudtrail_provider=cloudtrail_provider,
             ),
         ),
         ("docdb", docdb_app),
         ("neptune", neptune_app),
-        ("rds", create_rds_app(lifecycle=lifecycle_configs["rds"], registry=tracker_registry)),
+        (
+            "rds",
+            create_rds_app(
+                lifecycle=lifecycle_configs["rds"],
+                registry=tracker_registry,
+                cloudtrail_provider=cloudtrail_provider,
+            ),
+        ),
         (
             "elasticache",
             create_elasticache_app(
-                lifecycle=lifecycle_configs["elasticache"], registry=tracker_registry
+                lifecycle=lifecycle_configs["elasticache"],
+                registry=tracker_registry,
+                cloudtrail_provider=cloudtrail_provider,
             ),
         ),
         (
             "memorydb",
-            create_memorydb_app(lifecycle=lifecycle_configs["memorydb"], registry=tracker_registry),
+            create_memorydb_app(
+                lifecycle=lifecycle_configs["memorydb"],
+                registry=tracker_registry,
+                cloudtrail_provider=cloudtrail_provider,
+            ),
         ),
         ("es", elasticsearch_app),
         ("opensearch", opensearch_app),

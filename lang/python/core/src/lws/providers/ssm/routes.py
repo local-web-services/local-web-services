@@ -12,9 +12,11 @@ from typing import Any
 
 from fastapi import FastAPI, Request, Response
 
+from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
+from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
@@ -467,6 +469,7 @@ def create_ssm_app(
     iam_auth: IamAuthBundle | None = None,
     state: _SsmState | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
+    cloudtrail_provider: ICloudTrail | None = None,
 ) -> tuple[FastAPI, _SsmState]:
     """Create a FastAPI application that speaks the SSM wire protocol.
 
@@ -493,4 +496,5 @@ def create_ssm_app(
     async def dispatch(request: Request) -> Response:
         return await _ssm_dispatch(request, state, _lc, _tracker)
 
+    apply_cloudtrail_middleware(app, cloudtrail_provider, "ssm")
     return app, state
