@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - A Permission Is Added To A Function'S Resource Policy
+Feature: lambda - A Permission Is Added To A "Lambda" "Function"'S Resource Policy
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions
@@ -8,11 +8,11 @@ Feature: Lambda - A Permission Is Added To A Function'S Resource Policy
     Given the system is initialized
 
   @minimal @happy @add_permission
-  Scenario: a permission is added to a function's resource policy
-    Given the function exists
-    And the function is "ACTIVE"
-    When a permission is added to a function's resource policy
-    Then the function has a resource policy
+  Scenario: a permission is added to a "lambda" "function"'s resource policy
+    Given the "lambda" "function" existed
+    And the "lambda" "function" was "ACTIVE"
+    When a permission is added to a "lambda" "function"'s resource policy
+    Then the "lambda" "function" has a resource policy
     And every active event source mapping references an existing non-deleted function
     And no function in "DELETING" state has active executions
     And active execution count never exceeds reserved concurrency when set
@@ -21,15 +21,15 @@ Feature: Lambda - A Permission Is Added To A Function'S Resource Policy
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @add_permission
-  Scenario: a permission is added to a function's resource policy fails when the function does not exist
-    Given the function does not exist
-    When a permission is added to a function's resource policy
+  @guard @negative @add_permission
+  Scenario: a permission is added to a "lambda" "function"'s resource policy fails when the "lambda" "function" did not exist
+    Given the "lambda" "function" did not exist
+    When a permission is added to a "lambda" "function"'s resource policy
     Then the operation is rejected
 
-  @standard @negative @add_permission @lifecycle
-  Scenario: a permission is added to a function's resource policy fails when the function is not "ACTIVE"
-    Given the function exists
-    And the function is not "ACTIVE"
-    When a permission is added to a function's resource policy
+  @guard @negative @add_permission @lifecycle
+  Scenario: a permission is added to a "lambda" "function"'s resource policy fails when the "lambda" "function" was not "ACTIVE"
+    Given the "lambda" "function" existed
+    And the "lambda" "function" was not "ACTIVE"
+    When a permission is added to a "lambda" "function"'s resource policy
     Then the operation is rejected

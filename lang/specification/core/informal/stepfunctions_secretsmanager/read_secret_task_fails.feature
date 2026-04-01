@@ -1,5 +1,5 @@
 @stepfunctionssecretsmanager @generated
-Feature: StepfunctionsSecretsmanager - A Running Execution Fails To Read The Secret Because It Is Pending Deletion
+Feature: StepfunctionsSecretsmanager - A Running "Step Functions" "Execution" Fails To Read The "Secretsmanager" "Secret" Because It Is Pending Deletion
 
   # Generated from FizzBee spec: stepfunctions_secretsmanager.fizz
   # Safety invariants: ExecutionRequiresActiveStateMachine, SuccessfulExecutionReadASecret
@@ -8,23 +8,23 @@ Feature: StepfunctionsSecretsmanager - A Running Execution Fails To Read The Sec
     Given the system is initialized
 
   @minimal @happy @read_secret_task_fails @internal
-  Scenario: a running execution fails to read the secret because it is pending deletion
-    Given an execution is "RUNNING"
-    And the secret is "PENDING_DELETION"
-    When a running execution fails to read the secret because it is pending deletion
-    Then the execution is "FAILED" with a ResourceNotFoundException
+  Scenario: a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    Given a "step functions" "execution" was "RUNNING"
+    And the "secretsmanager" "secret" was "PENDING_DELETION"
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
+    Then the "step functions" "execution" will be "FAILED" with a ResourceNotFoundException
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which secret it read
 
-  @standard @negative @read_secret_task_fails @internal
-  Scenario: a running execution fails to read the secret because it is pending deletion fails when no execution is "RUNNING"
-    Given no execution is "RUNNING"
-    When a running execution fails to read the secret because it is pending deletion
+  @guard @negative @read_secret_task_fails @internal
+  Scenario: a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion fails when no "step functions" "execution" was "RUNNING"
+    Given no "step functions" "execution" was "RUNNING"
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
     Then the operation is rejected
 
-  @standard @negative @read_secret_task_fails @internal
-  Scenario: a running execution fails to read the secret because it is pending deletion fails when the secret is not pending deletion
-    Given an execution is "RUNNING"
-    And the secret is not pending deletion
-    When a running execution fails to read the secret because it is pending deletion
+  @guard @negative @read_secret_task_fails @internal
+  Scenario: a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion fails when the "secretsmanager" "secret" is not pending deletion
+    Given a "step functions" "execution" was "RUNNING"
+    And the "secretsmanager" "secret" is not pending deletion
+    When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
     Then the operation is rejected

@@ -1,5 +1,5 @@
 @sqs @generated
-Feature: Sqs - A Message Exceeding Its Receive Count Is Moved To The Dead-Letter Queue
+Feature: Sqs - A "Sqs" "Message" Exceeding Its Receive Count Is Moved To The Dead-Letter "Sqs" "Queue"
 
   # Generated from FizzBee spec: sqs.fizz
   # Safety invariants: MessagesReferValidQueues, InFlightMessagesBelongToActiveQueues, ReceiveCountNonNegative
@@ -8,79 +8,79 @@ Feature: Sqs - A Message Exceeding Its Receive Count Is Moved To The Dead-Letter
     Given the system is initialized
 
   @minimal @happy @redrive_to_dead_letter_queue @internal
-  Scenario: a message exceeding its receive count is moved to the dead-letter queue
-    Given the message exists
-    And the message is "AVAILABLE"
-    And the message's queue exists
-    And the queue has a maximum receive count configured
-    And the message has exceeded the maximum receive count
-    And the dead-letter queue exists
-    And the dead-letter queue is "ACTIVE"
-    When a message exceeding its receive count is moved to the dead-letter queue
-    Then the message is "AVAILABLE" in the dead-letter queue
+  Scenario: a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue"
+    Given the "sqs" "message" existed
+    And the "sqs" "message" was "AVAILABLE"
+    And the "sqs" "message"'s "sqs" "queue" existed
+    And the "sqs" "queue" had a maximum receive count configured
+    And the "sqs" "message" had exceeded the maximum receive count
+    And the dead-letter "sqs" "queue" existed
+    And the dead-letter "sqs" "queue" was "ACTIVE"
+    When a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue"
+    Then the "sqs" "message" will be "AVAILABLE" in the dead-letter "sqs" "queue"
     And every non-deleted message belongs to an "ACTIVE" queue
     And every in-flight message belongs to an "ACTIVE" queue
     And every message has a non-negative receive count
 
-  @standard @negative @redrive_to_dead_letter_queue @internal
-  Scenario: a message exceeding its receive count is moved to the dead-letter queue fails when the message does not exist
-    Given the message does not exist
-    When a message exceeding its receive count is moved to the dead-letter queue
+  @guard @negative @redrive_to_dead_letter_queue @internal
+  Scenario: a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue" fails when the "sqs" "message" did not exist
+    Given the "sqs" "message" did not exist
+    When a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue"
     Then the operation is rejected
 
-  @standard @negative @redrive_to_dead_letter_queue @internal
-  Scenario: a message exceeding its receive count is moved to the dead-letter queue fails when the message is not "AVAILABLE"
-    Given the message exists
-    And the message is not "AVAILABLE"
-    When a message exceeding its receive count is moved to the dead-letter queue
+  @guard @negative @redrive_to_dead_letter_queue @internal
+  Scenario: a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue" fails when the "sqs" "message" was not "AVAILABLE"
+    Given the "sqs" "message" existed
+    And the "sqs" "message" was not "AVAILABLE"
+    When a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue"
     Then the operation is rejected
 
-  @standard @negative @redrive_to_dead_letter_queue @internal
-  Scenario: a message exceeding its receive count is moved to the dead-letter queue fails when the message's queue does not exist
-    Given the message exists
-    And the message is "AVAILABLE"
-    And the message's queue does not exist
-    When a message exceeding its receive count is moved to the dead-letter queue
+  @guard @negative @redrive_to_dead_letter_queue @internal
+  Scenario: a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue" fails when the "sqs" "message"'s "sqs" "queue" did not exist
+    Given the "sqs" "message" existed
+    And the "sqs" "message" was "AVAILABLE"
+    And the "sqs" "message"'s "sqs" "queue" did not exist
+    When a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue"
     Then the operation is rejected
 
-  @standard @negative @redrive_to_dead_letter_queue @internal
-  Scenario: a message exceeding its receive count is moved to the dead-letter queue fails when the queue does not have a maximum receive count configured
-    Given the message exists
-    And the message is "AVAILABLE"
-    And the message's queue exists
-    And the queue does not have a maximum receive count configured
-    When a message exceeding its receive count is moved to the dead-letter queue
+  @guard @negative @redrive_to_dead_letter_queue @internal
+  Scenario: a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue" fails when the "sqs" "queue" did not have a maximum receive count configured
+    Given the "sqs" "message" existed
+    And the "sqs" "message" was "AVAILABLE"
+    And the "sqs" "message"'s "sqs" "queue" existed
+    And the "sqs" "queue" did not have a maximum receive count configured
+    When a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue"
     Then the operation is rejected
 
-  @standard @negative @redrive_to_dead_letter_queue @internal
-  Scenario: a message exceeding its receive count is moved to the dead-letter queue fails when the message has not exceeded the maximum receive count
-    Given the message exists
-    And the message is "AVAILABLE"
-    And the message's queue exists
-    And the queue has a maximum receive count configured
-    And the message has not exceeded the maximum receive count
-    When a message exceeding its receive count is moved to the dead-letter queue
+  @guard @negative @redrive_to_dead_letter_queue @internal
+  Scenario: a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue" fails when the "sqs" "message" had not exceeded the maximum receive count
+    Given the "sqs" "message" existed
+    And the "sqs" "message" was "AVAILABLE"
+    And the "sqs" "message"'s "sqs" "queue" existed
+    And the "sqs" "queue" had a maximum receive count configured
+    And the "sqs" "message" had not exceeded the maximum receive count
+    When a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue"
     Then the operation is rejected
 
-  @standard @negative @redrive_to_dead_letter_queue @internal
-  Scenario: a message exceeding its receive count is moved to the dead-letter queue fails when the dead-letter queue does not exist
-    Given the message exists
-    And the message is "AVAILABLE"
-    And the message's queue exists
-    And the queue has a maximum receive count configured
-    And the message has exceeded the maximum receive count
-    And the dead-letter queue does not exist
-    When a message exceeding its receive count is moved to the dead-letter queue
+  @guard @negative @redrive_to_dead_letter_queue @internal
+  Scenario: a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue" fails when the dead-letter "sqs" "queue" did not exist
+    Given the "sqs" "message" existed
+    And the "sqs" "message" was "AVAILABLE"
+    And the "sqs" "message"'s "sqs" "queue" existed
+    And the "sqs" "queue" had a maximum receive count configured
+    And the "sqs" "message" had exceeded the maximum receive count
+    And the dead-letter "sqs" "queue" did not exist
+    When a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue"
     Then the operation is rejected
 
-  @standard @negative @redrive_to_dead_letter_queue @internal
-  Scenario: a message exceeding its receive count is moved to the dead-letter queue fails when the dead-letter queue is not "ACTIVE"
-    Given the message exists
-    And the message is "AVAILABLE"
-    And the message's queue exists
-    And the queue has a maximum receive count configured
-    And the message has exceeded the maximum receive count
-    And the dead-letter queue exists
-    And the dead-letter queue is not "ACTIVE"
-    When a message exceeding its receive count is moved to the dead-letter queue
+  @guard @negative @redrive_to_dead_letter_queue @internal
+  Scenario: a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue" fails when the dead-letter "sqs" "queue" was not "ACTIVE"
+    Given the "sqs" "message" existed
+    And the "sqs" "message" was "AVAILABLE"
+    And the "sqs" "message"'s "sqs" "queue" existed
+    And the "sqs" "queue" had a maximum receive count configured
+    And the "sqs" "message" had exceeded the maximum receive count
+    And the dead-letter "sqs" "queue" existed
+    And the dead-letter "sqs" "queue" was not "ACTIVE"
+    When a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue"
     Then the operation is rejected

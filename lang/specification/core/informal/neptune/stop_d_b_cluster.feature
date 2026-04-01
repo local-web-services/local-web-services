@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Database Cluster Is Stopped
+Feature: Neptune - A "Neptune" "Cluster" Is Stopped
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,11 +8,11 @@ Feature: Neptune - A Database Cluster Is Stopped
     Given the system is initialized
 
   @minimal @happy @stop_d_b_cluster
-  Scenario: a database cluster is stopped
-    Given the cluster exists
-    And the cluster is "AVAILABLE"
-    When a database cluster is stopped
-    Then the cluster is in "STOPPING" state
+  Scenario: a "neptune" "cluster" is stopped
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "AVAILABLE"
+    When a "neptune" "cluster" is stopped
+    Then the "neptune" "cluster" will be in "STOPPING" state
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -22,15 +22,15 @@ Feature: Neptune - A Database Cluster Is Stopped
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @stop_d_b_cluster
-  Scenario: a database cluster is stopped fails when the cluster does not exist
-    Given the cluster does not exist
-    When a database cluster is stopped
+  @guard @negative @stop_d_b_cluster
+  Scenario: a "neptune" "cluster" is stopped fails when the "neptune" "cluster" did not exist
+    Given the "neptune" "cluster" did not exist
+    When a "neptune" "cluster" is stopped
     Then the operation is rejected
 
-  @standard @negative @stop_d_b_cluster @lifecycle
-  Scenario: a database cluster is stopped fails when the cluster is not "AVAILABLE"
-    Given the cluster exists
-    And the cluster is not "AVAILABLE"
-    When a database cluster is stopped
+  @guard @negative @stop_d_b_cluster @lifecycle
+  Scenario: a "neptune" "cluster" is stopped fails when the "neptune" "cluster" was not "AVAILABLE"
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was not "AVAILABLE"
+    When a "neptune" "cluster" is stopped
     Then the operation is rejected

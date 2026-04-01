@@ -1,5 +1,5 @@
 @sns @generated
-Feature: Sns - All Delivery Retries Are Exhausted
+Feature: Sns - All "Sns" "Delivery" Retries Are Exhausted
 
   # Generated from FizzBee spec: sns.fizz
   # Safety invariants: NoDeliveryToDeletedSubscription, NoDeliveryToUnconfirmedSubscription, SubscriptionsReferActiveTopic, RetryCountBounded
@@ -8,34 +8,34 @@ Feature: Sns - All Delivery Retries Are Exhausted
     Given the system is initialized
 
   @minimal @happy @retry_exhausted @internal
-  Scenario: all delivery retries are exhausted
-    Given the delivery exists
-    And the delivery is "IN_FLIGHT"
-    And the retry count has reached the limit
-    When all delivery retries are exhausted
-    Then the delivery is marked "DONE"
+  Scenario: all "sns" "delivery" retries are exhausted
+    Given the delivery existed
+    And the "sns" "delivery" was "IN_FLIGHT"
+    And the retry count had reached the limit
+    When all "sns" "delivery" retries are exhausted
+    Then the "sns" "delivery" will be marked "DONE"
     And no delivery is in-flight to a deleted subscription
     And no delivery is in-flight to an unconfirmed subscription
     And every active subscription references an "ACTIVE" topic
     And every delivery retry count is within the allowed limit
 
-  @standard @negative @retry_exhausted @internal
-  Scenario: all delivery retries are exhausted fails when the delivery does not exist
-    Given the delivery does not exist
-    When all delivery retries are exhausted
+  @guard @negative @retry_exhausted @internal
+  Scenario: all "sns" "delivery" retries are exhausted fails when the delivery did not exist
+    Given the delivery did not exist
+    When all "sns" "delivery" retries are exhausted
     Then the operation is rejected
 
-  @standard @negative @retry_exhausted @internal
-  Scenario: all delivery retries are exhausted fails when the delivery is not "IN_FLIGHT"
-    Given the delivery exists
-    And the delivery is not "IN_FLIGHT"
-    When all delivery retries are exhausted
+  @guard @negative @retry_exhausted @internal
+  Scenario: all "sns" "delivery" retries are exhausted fails when the "sns" "delivery" was not "IN_FLIGHT"
+    Given the delivery existed
+    And the "sns" "delivery" was not "IN_FLIGHT"
+    When all "sns" "delivery" retries are exhausted
     Then the operation is rejected
 
-  @standard @negative @retry_exhausted @internal
-  Scenario: all delivery retries are exhausted fails when the retry count is below the limit
-    Given the delivery exists
-    And the delivery is "IN_FLIGHT"
-    And the retry count is below the limit
-    When all delivery retries are exhausted
+  @guard @negative @retry_exhausted @internal
+  Scenario: all "sns" "delivery" retries are exhausted fails when the retry count was below the limit
+    Given the delivery existed
+    And the "sns" "delivery" was "IN_FLIGHT"
+    And the retry count was below the limit
+    When all "sns" "delivery" retries are exhausted
     Then the operation is rejected

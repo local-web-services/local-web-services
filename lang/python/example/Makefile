@@ -1,23 +1,35 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help install lint format format-check complexity cpd pylint unit-test architecture-test e2e-test test check
+.PHONY: help install lint format format-check complexity cpd pylint \
+        test-unit test-architecture test-e2e-minimal test-e2e-guard test-e2e-sequence \
+        unit-test architecture-test e2e-test test check
 
 help: ## Show available targets
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-24s %s\n", $$1, $$2}'
 
 install: ## Install dependencies
 	uv sync --all-groups
 
-lint: ## Run linter
-	uvx ruff check src tests
+# ── Static analysis ──────────────────────────────────────────────────────────
+
+lint: ## Run all static analysis: ruff, black --check, radon, cpd, pylint
+	uvx ruff check --quiet src tests
+	uvx black --check --quiet src tests
+	@output=$$(uvx radon cc src -a -nc); \
+	echo "$$output"; \
+	echo "$$output" | grep -qE '^ +[A-Z]' && { echo "FAIL: complexity grade C or worse detected"; exit 1; } || true
+	@output=$$(uvx --from pylint symilar -d 5 --ignore-imports --ignore-docstrings --ignore-signatures $$(find src -name "*.py")); \
+	echo "$$output" | tail -1; \
+	echo "$$output" | tail -1 | grep -q "duplicates=0 " || { echo "$$output"; exit 1; }
+	uvx --from pylint pylint src --recursive=y
 
 format: ## Auto-format code
 	uvx black src tests
 
 format-check: ## Check formatting without changing files
-	uvx black --check src tests
+	uvx black --check --quiet src tests
 
-complexity: ## Check cyclomatic complexity (all functions must be grade B or better)
+complexity: ## Check cyclomatic complexity (grade B or better)
 	@output=$$(uvx radon cc src -a -nc); \
 	echo "$$output"; \
 	echo "$$output" | grep -qE '^ +[A-Z]' && { echo "FAIL: complexity grade C or worse detected"; exit 1; } || true
@@ -27,18 +39,36 @@ cpd: ## Check for copy-pasted code (5+ similar lines)
 	echo "$$output" | tail -1; \
 	echo "$$output" | tail -1 | grep -q "duplicates=0 " || { echo "$$output"; exit 1; }
 
-pylint: ## Run pylint checks
+pylint: ## Run pylint
 	uvx --from pylint pylint src --recursive=y
 
-unit-test: ## Run unit tests
-	uv run pytest tests/unit
+# ── Tests ─────────────────────────────────────────────────────────────────────
 
-architecture-test: ## Run architecture constraint tests
-	uv run pytest tests/architecture
+test-unit: ## Run unit tests
+	uv run pytest -q tests/unit
 
-e2e-test: ## Run e2e tests (requires Docker)
-	uv run pytest tests/e2e -v -m "not internal"
+test-architecture: ## Run architecture constraint tests
+	uv run pytest -q tests/architecture
 
-test: unit-test architecture-test ## Run all tests (unit + architecture)
+test-e2e-minimal: ## Run @minimal e2e scenarios (requires Docker)
+	uv run pytest tests/e2e -v -m minimal --junitxml=test-results/junit-minimal.xml
 
-check: lint format-check complexity cpd pylint test ## Run all checks (what CI runs)
+test-e2e-guard: ## Run @guard e2e scenarios (requires Docker)
+	uv run pytest tests/e2e -v -m guard --junitxml=test-results/junit-guard.xml
+
+test-e2e-sequence: ## Run @sequence e2e scenarios (requires Docker)
+	uv run pytest tests/e2e -v -m sequence --junitxml=test-results/junit-sequence.xml
+
+# ── Aliases (backward-compatible) ─────────────────────────────────────────────
+
+unit-test: test-unit ## Alias for test-unit
+
+architecture-test: test-architecture ## Alias for test-architecture
+
+e2e-test: test-e2e-minimal test-e2e-guard test-e2e-sequence ## Run all e2e scenarios (requires Docker)
+
+test: test-unit test-architecture ## Run all non-e2e tests
+
+# ── Composite ─────────────────────────────────────────────────────────────────
+
+check: lint test-unit test-architecture ## Run all checks (what CI runs)

@@ -12,7 +12,7 @@ from lws.providers.neptune.routes import create_neptune_app
 
 @pytest.fixture()
 def client() -> TestClient:
-    app = create_neptune_app()
+    app, _ = create_neptune_app()
     return TestClient(app)
 
 
@@ -35,6 +35,11 @@ class TestCreateDBInstance:
         cluster_id = "neptune-cluster"
         expected_engine = "neptune"
         expected_status = "available"
+        _post(
+            client,
+            "CreateDBCluster",
+            {"DBClusterIdentifier": cluster_id, "Engine": "neptune"},
+        )
 
         # Act
         result = _post(

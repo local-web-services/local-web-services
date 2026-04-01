@@ -1,5 +1,5 @@
 @secretsmanager @generated
-Feature: Secretsmanager - A Deleted Secret Is Restored Within The Recovery Window
+Feature: Secretsmanager - A Deleted "Secrets Manager" "Secret" Is Restored Within The Recovery Window
 
   # Generated from FizzBee spec: secretsmanager.fizz
   # Safety invariants: ActiveSecretHasCurrentVersion, AtMostOneCurrentVersionPerSecret, AtMostOnePreviousVersionPerSecret, DeletedSecretWithClosedWindowNotRestored, SecretNamesAreUnique, VersionIdsAreUnique, DeletedSecretRecoveryWindowIsOpen, ActiveSecretHasVersion
@@ -8,12 +8,12 @@ Feature: Secretsmanager - A Deleted Secret Is Restored Within The Recovery Windo
     Given the system is initialized
 
   @minimal @happy @restore_secret
-  Scenario: a deleted secret is restored within the recovery window
-    Given the secret exists
-    And the secret is "DELETED"
-    And the recovery window is open
-    When a deleted secret is restored within the recovery window
-    Then the secret is "ACTIVE" again and the recovery window is closed
+  Scenario: a deleted "secrets manager" "secret" is restored within the recovery window
+    Given the "secrets manager" "secret" existed
+    And the "secrets manager" "secret" was "DELETED"
+    And the recovery window was open
+    When a deleted "secrets manager" "secret" is restored within the recovery window
+    Then the "secrets manager" "secret" will be "ACTIVE" again and the recovery window will be closed
     And every "ACTIVE" secret has a current version assigned
     And at most one current version exists per secret
     And at most one previous version exists per secret
@@ -23,23 +23,23 @@ Feature: Secretsmanager - A Deleted Secret Is Restored Within The Recovery Windo
     And every deleted secret with an open recovery window can still be restored or expired
     And every active secret has a current version assigned
 
-  @standard @negative @restore_secret
-  Scenario: a deleted secret is restored within the recovery window fails when the secret does not exist
-    Given the secret does not exist
-    When a deleted secret is restored within the recovery window
+  @guard @negative @restore_secret
+  Scenario: a deleted "secrets manager" "secret" is restored within the recovery window fails when the "secrets manager" "secret" did not exist
+    Given the "secrets manager" "secret" did not exist
+    When a deleted "secrets manager" "secret" is restored within the recovery window
     Then the operation is rejected
 
-  @standard @negative @restore_secret @lifecycle
-  Scenario: a deleted secret is restored within the recovery window fails when the secret is not "DELETED"
-    Given the secret exists
-    And the secret is not "DELETED"
-    When a deleted secret is restored within the recovery window
+  @guard @negative @restore_secret @lifecycle
+  Scenario: a deleted "secrets manager" "secret" is restored within the recovery window fails when the "secrets manager" "secret" was not "DELETED"
+    Given the "secrets manager" "secret" existed
+    And the "secrets manager" "secret" was not "DELETED"
+    When a deleted "secrets manager" "secret" is restored within the recovery window
     Then the operation is rejected
 
-  @standard @negative @restore_secret @lifecycle
-  Scenario: a deleted secret is restored within the recovery window fails when the recovery window is not open
-    Given the secret exists
-    And the secret is "DELETED"
-    And the recovery window is not open
-    When a deleted secret is restored within the recovery window
+  @guard @negative @restore_secret @lifecycle
+  Scenario: a deleted "secrets manager" "secret" is restored within the recovery window fails when the recovery window was not open
+    Given the "secrets manager" "secret" existed
+    And the "secrets manager" "secret" was "DELETED"
+    And the recovery window was not open
+    When a deleted "secrets manager" "secret" is restored within the recovery window
     Then the operation is rejected

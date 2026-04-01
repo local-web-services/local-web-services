@@ -1,5 +1,5 @@
 @docdb @generated
-Feature: Docdb - A Database Cluster Modification Completes
+Feature: Docdb - A "Documentdb" "Cluster" Modification Completes
 
   # Generated from FizzBee spec: docdb.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, NoNonDeletedInstancesOnDeletedCluster, NoAvailableInstancesOnFailedCluster, DeletingClusterGetsNoNewInstances, SnapshotHasValidClusterReference
@@ -8,11 +8,11 @@ Feature: Docdb - A Database Cluster Modification Completes
     Given the system is initialized
 
   @minimal @happy @complete_cluster_modification @internal
-  Scenario: a database cluster modification completes
-    Given the cluster exists
-    And the cluster is "MODIFYING"
-    When a database cluster modification completes
-    Then the cluster returns to "AVAILABLE" state
+  Scenario: a "documentdb" "cluster" modification completes
+    Given the "documentdb" "cluster" existed
+    And the "documentdb" "cluster" was "MODIFYING"
+    When a "documentdb" "cluster" modification completes
+    Then the "documentdb" "cluster" returns to "AVAILABLE" state
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -21,15 +21,15 @@ Feature: Docdb - A Database Cluster Modification Completes
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @complete_cluster_modification @internal
-  Scenario: a database cluster modification completes fails when the cluster does not exist
-    Given the cluster does not exist
-    When a database cluster modification completes
+  @guard @negative @complete_cluster_modification @internal
+  Scenario: a "documentdb" "cluster" modification completes fails when the "documentdb" "cluster" did not exist
+    Given the "documentdb" "cluster" did not exist
+    When a "documentdb" "cluster" modification completes
     Then the operation is rejected
 
-  @standard @negative @complete_cluster_modification @internal
-  Scenario: a database cluster modification completes fails when the cluster is not "MODIFYING"
-    Given the cluster exists
-    And the cluster is not "MODIFYING"
-    When a database cluster modification completes
+  @guard @negative @complete_cluster_modification @internal
+  Scenario: a "documentdb" "cluster" modification completes fails when the "documentdb" "cluster" was not "MODIFYING"
+    Given the "documentdb" "cluster" existed
+    And the "documentdb" "cluster" was not "MODIFYING"
+    When a "documentdb" "cluster" modification completes
     Then the operation is rejected

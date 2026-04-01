@@ -1,5 +1,5 @@
 @stepfunctionselasticsearch @generated
-Feature: StepfunctionsElasticsearch - A Running Execution Calls An Available Elasticsearch Domain And The Task Succeeds
+Feature: StepfunctionsElasticsearch - A Running "Step Functions" "Execution" Calls An Available Elasticsearch Domain And The Task Succeeds
 
   # Generated from FizzBee spec: stepfunctions_elasticsearch.fizz
   # Safety invariants: ExecutionRequiresActiveStateMachine, SuccessfulExecutionCalledADomain
@@ -8,23 +8,23 @@ Feature: StepfunctionsElasticsearch - A Running Execution Calls An Available Ela
     Given the system is initialized
 
   @minimal @happy @search_task_succeeds @internal
-  Scenario: a running execution calls an "AVAILABLE" Elasticsearch domain and the task succeeds
-    Given an execution is "RUNNING"
-    And the domain is "AVAILABLE"
-    When a running execution calls an "AVAILABLE" Elasticsearch domain and the task succeeds
-    Then the execution is "SUCCEEDED"
+  Scenario: a running "step functions" "execution" calls an "AVAILABLE" Elasticsearch domain and the task succeeds
+    Given a "step functions" "execution" was "RUNNING"
+    And the "elasticsearch" "domain" was "AVAILABLE"
+    When a running "step functions" "execution" calls an "AVAILABLE" Elasticsearch domain and the task succeeds
+    Then the "step functions" "execution" will be "SUCCEEDED"
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which domain it called
 
-  @standard @negative @search_task_succeeds @internal
-  Scenario: a running execution calls an "AVAILABLE" Elasticsearch domain and the task succeeds fails when no execution is "RUNNING"
-    Given no execution is "RUNNING"
-    When a running execution calls an "AVAILABLE" Elasticsearch domain and the task succeeds
+  @guard @negative @search_task_succeeds @internal
+  Scenario: a running "step functions" "execution" calls an "AVAILABLE" Elasticsearch domain and the task succeeds fails when no "step functions" "execution" was "RUNNING"
+    Given no "step functions" "execution" was "RUNNING"
+    When a running "step functions" "execution" calls an "AVAILABLE" Elasticsearch domain and the task succeeds
     Then the operation is rejected
 
-  @standard @negative @search_task_succeeds @internal
-  Scenario: a running execution calls an "AVAILABLE" Elasticsearch domain and the task succeeds fails when the domain is not "AVAILABLE"
-    Given an execution is "RUNNING"
-    And the domain is not "AVAILABLE"
-    When a running execution calls an "AVAILABLE" Elasticsearch domain and the task succeeds
+  @guard @negative @search_task_succeeds @internal
+  Scenario: a running "step functions" "execution" calls an "AVAILABLE" Elasticsearch domain and the task succeeds fails when the "elasticsearch" "domain" was not "AVAILABLE"
+    Given a "step functions" "execution" was "RUNNING"
+    And the "elasticsearch" "domain" was not "AVAILABLE"
+    When a running "step functions" "execution" calls an "AVAILABLE" Elasticsearch domain and the task succeeds
     Then the operation is rejected

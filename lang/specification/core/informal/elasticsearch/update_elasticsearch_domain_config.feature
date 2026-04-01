@@ -1,5 +1,5 @@
 @elasticsearch @generated
-Feature: Elasticsearch - A Domain Configuration Update Is Requested
+Feature: Elasticsearch - An "Elasticsearch" "Domain" Configuration Update Is Requested
 
   # Generated from FizzBee spec: elasticsearch.fizz
   # Safety invariants: IndicesHaveParentDomain, TagsHaveParentDomain, PendingConfigOnlyOnProcessingDomain
@@ -8,24 +8,24 @@ Feature: Elasticsearch - A Domain Configuration Update Is Requested
     Given the system is initialized
 
   @minimal @happy @update_elasticsearch_domain_config
-  Scenario: a domain configuration update is requested
-    Given the domain exists
-    And the domain is "ACTIVE"
-    When a domain configuration update is requested
-    Then the domain is in "PROCESSING" state with a pending config change
+  Scenario: an "elasticsearch" "domain" configuration update is requested
+    Given the "elasticsearch" "domain" existed
+    And the "elasticsearch" "domain" was "ACTIVE"
+    When an "elasticsearch" "domain" configuration update is requested
+    Then the "elasticsearch" "domain" will be in "PROCESSING" state with a pending config change
     And every active index belongs to an existing non-deleted domain
     And every active tag belongs to an existing non-deleted domain
-    And a pending config change only exists on a domain that is "PROCESSING"
+    And a pending config change only exists on a "elasticsearch" "domain" that is "PROCESSING"
 
-  @standard @negative @update_elasticsearch_domain_config
-  Scenario: a domain configuration update is requested fails when the domain does not exist
-    Given the domain does not exist
-    When a domain configuration update is requested
+  @guard @negative @update_elasticsearch_domain_config
+  Scenario: an "elasticsearch" "domain" configuration update is requested fails when the "elasticsearch" "domain" did not exist
+    Given the "elasticsearch" "domain" did not exist
+    When an "elasticsearch" "domain" configuration update is requested
     Then the operation is rejected
 
-  @standard @negative @update_elasticsearch_domain_config @lifecycle
-  Scenario: a domain configuration update is requested fails when the domain is not "ACTIVE"
-    Given the domain exists
-    And the domain is not "ACTIVE"
-    When a domain configuration update is requested
+  @guard @negative @update_elasticsearch_domain_config @lifecycle
+  Scenario: an "elasticsearch" "domain" configuration update is requested fails when the "elasticsearch" "domain" was not "ACTIVE"
+    Given the "elasticsearch" "domain" existed
+    And the "elasticsearch" "domain" was not "ACTIVE"
+    When an "elasticsearch" "domain" configuration update is requested
     Then the operation is rejected

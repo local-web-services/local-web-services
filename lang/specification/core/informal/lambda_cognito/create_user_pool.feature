@@ -1,5 +1,5 @@
 @lambdacognito @generated
-Feature: LambdaCognito - A Cognito User Pool Is Created
+Feature: LambdaCognito - A "Cognito" "User Pool" Is Created
 
   # Generated from FizzBee spec: lambda_cognito.fizz
   # Safety invariants: InvocationRequiresActiveFunction, SuccessfulInvocationCalledAPool
@@ -8,15 +8,15 @@ Feature: LambdaCognito - A Cognito User Pool Is Created
     Given the system is initialized
 
   @minimal @happy @create_user_pool
-  Scenario: a Cognito user pool is created
-    Given the pool does not already exist
-    When a Cognito user pool is created
-    Then the pool is "ACTIVE"
+  Scenario: a "cognito" "user pool" is created
+    Given the "cognito" "user pool" did not already exist
+    When a "cognito" "user pool" is created
+    Then the "cognito" "user pool" will be "ACTIVE"
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which pool it called
 
-  @standard @negative @create_user_pool
-  Scenario: a Cognito user pool is created fails when the pool already exists
-    Given the pool already exists
-    When a Cognito user pool is created
+  @guard @negative @create_user_pool
+  Scenario: a "cognito" "user pool" is created fails when the "cognito" "user pool" already existed
+    Given the "cognito" "user pool" already existed
+    When a "cognito" "user pool" is created
     Then the operation is rejected

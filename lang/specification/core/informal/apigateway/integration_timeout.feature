@@ -9,10 +9,10 @@ Feature: Apigateway - A Backend Integration Is Called
 
   @minimal @happy @integration_timeout @internal
   Scenario: a backend integration is called
-    Given the integration exists
-    And the integration "EXISTS"
+    Given the "api gateway" "integration" existed
+    And the "api gateway" "integration" existed
     When a backend integration is called
-    Then the integration times out or responds non-deterministically
+    Then the "api gateway" "integration" times out or responds non-deterministically
     And all "ACTIVE" resources belong to "ACTIVE" APIs
     And all "EXISTING" methods belong to "ACTIVE" resources
     And all "EXISTING" integrations correspond to "EXISTING" methods
@@ -21,15 +21,15 @@ Feature: Apigateway - A Backend Integration Is Called
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @integration_timeout @internal
-  Scenario: a backend integration is called fails when the integration does not exist
-    Given the integration does not exist
+  @guard @negative @integration_timeout @internal
+  Scenario: a backend integration is called fails when the "api gateway" "integration" did not exist
+    Given the "api gateway" "integration" did not exist
     When a backend integration is called
     Then the operation is rejected
 
-  @standard @negative @integration_timeout @internal
-  Scenario: a backend integration is called fails when the integration does not exist
-    Given the integration exists
-    And the integration does not exist
+  @guard @negative @integration_timeout @internal
+  Scenario: a backend integration is called fails when the "api gateway" "integration" did not exist
+    Given the "api gateway" "integration" existed
+    And the "api gateway" "integration" did not exist
     When a backend integration is called
     Then the operation is rejected

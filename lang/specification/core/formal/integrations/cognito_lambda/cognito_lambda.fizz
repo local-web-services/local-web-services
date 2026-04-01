@@ -26,10 +26,10 @@ action Init:
     user_inv = {}               # user_inv[uid] = inv_id (invocation for this pending signup)
 
 
-# step: a Cognito User Pool is created
-# result: the pool is ACTIVE with no pre-signup trigger configured
-# guard: the pool does not already exist
-# guard_violation: the pool already exists
+# step: a "cognito" "user pool" is created
+# result: the "cognito" "user pool" will be "ACTIVE" with no pre-signup trigger configured
+# guard: the "cognito" "user pool" did not already exist
+# guard_violation: the "cognito" "user pool" already existed
 atomic action CreateUserPool:
     oneof pid in POOL_IDS:
         if pid not in pool_status:
@@ -37,28 +37,28 @@ atomic action CreateUserPool:
             pool_trigger[pid] = ""
 
 
-# step: a Lambda function is deployed
-# result: the function is ACTIVE
-# guard: the function does not already exist
-# guard_violation: the function already exists
+# step: a "lambda" "function" is deployed
+# result: the "lambda" "function" will be "ACTIVE"
+# guard: the "lambda" "function" did not already exist
+# guard_violation: the "lambda" "function" already existed
 atomic action DeployFunction:
     oneof fid in FUNC_IDS:
         if fid not in func_status:
             func_status[fid] = "ACTIVE"
 
 
-# step: a Lambda pre-signup trigger is configured on the Cognito User Pool
+# step: a Lambda pre-signup trigger is configured on the "cognito" "user pool"
 # result: all subsequent signups will synchronously invoke the function before confirming
-# guard: the pool exists
-# guard_violation: the pool does not exist
-# guard: the pool is ACTIVE
-# guard_violation_lifecycle: the pool is not ACTIVE
-# guard: the pool has no trigger configured
-# guard_violation: the pool already has a trigger configured
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
+# guard: the "cognito" "user pool" existed
+# guard_violation: the "cognito" "user pool" did not exist
+# guard: the "cognito" "user pool" was "ACTIVE"
+# guard_violation_lifecycle: the "cognito" "user pool" was not "ACTIVE"
+# guard: the "cognito" "user pool" has no trigger configured
+# guard_violation: the "cognito" "user pool" already has a trigger configured
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
 atomic action ConfigureTrigger:
     oneof pid in POOL_IDS:
         if pid in pool_status:
@@ -70,15 +70,15 @@ atomic action ConfigureTrigger:
                                 pool_trigger[pid] = fid
 
 
-# step: a user signs up to a pool that has no pre-signup trigger configured
-# result: the user is immediately CONFIRMED
-# guard: the pool exists
-# guard_violation: the pool does not exist
-# guard: the pool is ACTIVE
-# guard_violation_lifecycle: the pool is not ACTIVE
-# guard: the pool has no pre-signup trigger configured
-# guard_violation: the pool has a pre-signup trigger configured
-# guard: the user slot is available
+# step: a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
+# result: the cognito user will be immediately "CONFIRMED"
+# guard: the "cognito" "user pool" existed
+# guard_violation: the "cognito" "user pool" did not exist
+# guard: the "cognito" "user pool" was "ACTIVE"
+# guard_violation_lifecycle: the "cognito" "user pool" was not "ACTIVE"
+# guard: the "cognito" "user pool" has no pre-signup trigger configured
+# guard_violation: the "cognito" "user pool" has a pre-signup trigger configured
+# guard: the "cognito" "user" slot is available
 # guard_violation_capacity: no user slot is available
 atomic action SignupWithoutTrigger:
     oneof pid in POOL_IDS:
@@ -91,19 +91,19 @@ atomic action SignupWithoutTrigger:
                             user_pool[uid] = pid
 
 
-# step: a user initiates signup to a pool that has a pre-signup trigger configured
-# result: the user is PENDING and the trigger Lambda is invoked synchronously
-# guard: the pool exists
-# guard_violation: the pool does not exist
-# guard: the pool is ACTIVE
-# guard_violation_lifecycle: the pool is not ACTIVE
-# guard: the pool has a pre-signup trigger configured
-# guard_violation: the pool has no pre-signup trigger configured
-# guard: the trigger function is ACTIVE
-# guard_violation_lifecycle: the trigger function is not ACTIVE
-# guard: the user slot is available
+# step: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
+# result: the "cognito" "user" will be "PENDING" and the trigger Lambda will be invoked synchronously
+# guard: the "cognito" "user pool" existed
+# guard_violation: the "cognito" "user pool" did not exist
+# guard: the "cognito" "user pool" was "ACTIVE"
+# guard_violation_lifecycle: the "cognito" "user pool" was not "ACTIVE"
+# guard: the "cognito" "user pool" has a pre-signup trigger configured
+# guard_violation: the "cognito" "user pool" has no pre-signup trigger configured
+# guard: the trigger function was "ACTIVE"
+# guard_violation_lifecycle: the trigger function was not "ACTIVE"
+# guard: the "cognito" "user" slot is available
 # guard_violation_capacity: no user slot is available
-# guard: an invocation slot is available
+# guard: a "lambda" "invocation" slot is available
 # guard_violation_capacity: no invocation slot is available
 atomic action InitiateSignupWithTrigger:
     oneof pid in POOL_IDS:
@@ -126,9 +126,9 @@ atomic action InitiateSignupWithTrigger:
 
 # fake_skip: internal
 # step: the pre-signup Lambda allows the signup
-# result: the invocation is SUCCESS and the user is CONFIRMED
-# guard: an invocation is IN_PROGRESS
-# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# result: the invocation will be "SUCCESS" and the "cognito" "user" will be "CONFIRMED"
+# guard: a "lambda" "invocation" was "IN_PROGRESS"
+# guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action TriggerAllows:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -140,9 +140,9 @@ atomic action TriggerAllows:
 
 # fake_skip: internal
 # step: the pre-signup Lambda denies the signup
-# result: the invocation is FAILED and the user is REJECTED
-# guard: an invocation is IN_PROGRESS
-# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# result: the invocation will be "FAILED" and the "cognito" "user" will be rejected
+# guard: a "lambda" "invocation" was "IN_PROGRESS"
+# guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action TriggerDenies:
     oneof iid in INV_IDS:
         if iid in inv_status:

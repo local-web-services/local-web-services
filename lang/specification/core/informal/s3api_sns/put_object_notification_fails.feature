@@ -9,41 +9,41 @@ Feature: S3apiSns - An Object Is Uploaded But Notification Delivery Fails Becaus
 
   @minimal @happy @put_object_notification_fails
   Scenario: an object is uploaded but notification delivery fails because the topic has been deleted
-    Given the bucket is "ACTIVE"
+    Given the bucket was "ACTIVE"
     And the bucket has a notification configuration
-    And the target topic is "DELETED"
+    And the target topic was "DELETED"
     And an object slot is available
     When an object is uploaded but notification delivery fails because the topic has been deleted
-    Then the object "EXISTS" but no notification is published
+    Then the object will exist but no notification will be published
     And every "PUBLISHED" notification references an object that exists
     And every "PUBLISHED" notification references a topic that exists
 
-  @standard @negative @put_object_notification_fails @lifecycle
-  Scenario: an object is uploaded but notification delivery fails because the topic has been deleted fails when the bucket is not "ACTIVE"
-    Given the bucket is not "ACTIVE"
+  @guard @negative @put_object_notification_fails @lifecycle
+  Scenario: an object is uploaded but notification delivery fails because the topic has been deleted fails when the bucket was not "ACTIVE"
+    Given the bucket was not "ACTIVE"
     When an object is uploaded but notification delivery fails because the topic has been deleted
     Then the operation is rejected
 
-  @standard @negative @put_object_notification_fails
+  @guard @negative @put_object_notification_fails
   Scenario: an object is uploaded but notification delivery fails because the topic has been deleted fails when the bucket has no notification configuration
-    Given the bucket is "ACTIVE"
+    Given the bucket was "ACTIVE"
     And the bucket has no notification configuration
     When an object is uploaded but notification delivery fails because the topic has been deleted
     Then the operation is rejected
 
-  @standard @negative @put_object_notification_fails @lifecycle
-  Scenario: an object is uploaded but notification delivery fails because the topic has been deleted fails when the target topic is not "DELETED"
-    Given the bucket is "ACTIVE"
+  @guard @negative @put_object_notification_fails @lifecycle
+  Scenario: an object is uploaded but notification delivery fails because the topic has been deleted fails when the target topic was not "DELETED"
+    Given the bucket was "ACTIVE"
     And the bucket has a notification configuration
-    And the target topic is not "DELETED"
+    And the target topic was not "DELETED"
     When an object is uploaded but notification delivery fails because the topic has been deleted
     Then the operation is rejected
 
-  @standard @negative @put_object_notification_fails @capacity
+  @guard @negative @put_object_notification_fails @capacity
   Scenario: an object is uploaded but notification delivery fails because the topic has been deleted fails when no object slot is available
-    Given the bucket is "ACTIVE"
+    Given the bucket was "ACTIVE"
     And the bucket has a notification configuration
-    And the target topic is "DELETED"
+    And the target topic was "DELETED"
     And no object slot is available
     When an object is uploaded but notification delivery fails because the topic has been deleted
     Then the operation is rejected

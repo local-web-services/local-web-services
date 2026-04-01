@@ -1,0 +1,11 @@
+"""When: a "sns" "subscription" confirmation token expires"""
+
+from __future__ import annotations
+
+import pytest
+from pytest_bdd import when
+
+
+@when('a "sns" "subscription" confirmation token expires')
+def confirmation_token_expires_when(world):
+    pytest.skip("Cannot expire confirmation token in this context")

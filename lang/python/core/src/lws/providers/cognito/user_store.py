@@ -28,6 +28,7 @@ from lws.providers.cognito._cognito_errors import (
     UserNotConfirmedException,
     UserNotFoundException,
 )
+from lws.providers.cognito._user_store_admin_ops import _AdminUserOpsMixin
 
 # Re-export for external consumers
 __all__ = [
@@ -51,7 +52,7 @@ __all__ = [
 # ---------------------------------------------------------------------------
 
 
-class UserStore:
+class UserStore(_AdminUserOpsMixin):
     """SQLite-backed Cognito user store.
 
     Provides async methods for user sign-up, confirmation, and authentication.
@@ -88,9 +89,17 @@ class UserStore:
             "  password_hash TEXT NOT NULL,"
             "  password_salt TEXT NOT NULL,"
             "  confirmed INTEGER NOT NULL DEFAULT 0,"
-            "  attributes TEXT NOT NULL DEFAULT '{}'"
+            "  enabled INTEGER NOT NULL DEFAULT 1,"
+            "  attributes TEXT NOT NULL DEFAULT '{}',"
+            "  reset_required INTEGER NOT NULL DEFAULT 0"
             ")"
         )
+        try:
+            await self._conn.execute(
+                "ALTER TABLE users ADD COLUMN reset_required INTEGER NOT NULL DEFAULT 0"
+            )
+        except Exception:
+            pass
         await self._conn.execute(
             "CREATE TABLE IF NOT EXISTS refresh_tokens ("
             "  token TEXT PRIMARY KEY,"
@@ -182,6 +191,9 @@ class UserStore:
         if not _verify_password(password, stored_hash, stored_salt):
             raise NotAuthorizedException()
 
+        if not user["enabled"]:
+            raise NotAuthorizedException()
+
         if not user["confirmed"]:
             raise UserNotConfirmedException()
 
@@ -222,87 +234,6 @@ class UserStore:
         )
         row = await cursor.fetchone()
         return row[0] if row else None
-
-    async def admin_create_user(
-        self,
-        username: str,
-        temporary_password: str | None = None,
-        attributes: dict[str, str] | None = None,
-    ) -> dict:
-        """Create a user as an admin. Returns user info dict.
-
-        The user is created as confirmed. If no temporary password is provided,
-        a random one is generated.
-
-        Raises UsernameExistsException.
-        """
-        assert self._conn is not None
-        attributes = attributes or {}
-
-        await self._check_username_available(username)
-
-        password = temporary_password or uuid.uuid4().hex + "Aa1!"
-        if temporary_password:
-            validate_password(password, self._config.password_policy)
-
-        sub = str(uuid.uuid4())
-        pw_hash, pw_salt = _hash_password(password)
-
-        await self._conn.execute(
-            "INSERT INTO users (username, sub, password_hash, password_salt, confirmed, attributes)"
-            " VALUES (?, ?, ?, ?, ?, ?)",
-            (username, sub, pw_hash, pw_salt, 1, json.dumps(attributes)),
-        )
-        await self._conn.commit()
-        return {
-            "username": username,
-            "sub": sub,
-            "confirmed": True,
-            "attributes": attributes,
-        }
-
-    async def admin_delete_user(self, username: str) -> None:
-        """Delete a user as an admin.
-
-        Raises UserNotFoundException if the user does not exist.
-        """
-        assert self._conn is not None
-        user = await self._get_user_row(username)
-        if user is None:
-            raise UserNotFoundException(username)
-        await self._conn.execute("DELETE FROM users WHERE username = ?", (username,))
-        await self._conn.commit()
-
-    async def admin_get_user(self, username: str) -> dict:
-        """Get user info as an admin.
-
-        Raises UserNotFoundException if the user does not exist.
-        """
-        assert self._conn is not None
-        user = await self._get_user_row(username)
-        if user is None:
-            raise UserNotFoundException(username)
-        return {
-            "username": user["username"],
-            "sub": user["sub"],
-            "confirmed": bool(user["confirmed"]),
-            "attributes": json.loads(user["attributes"]),
-        }
-
-    async def list_users(self) -> list[dict]:
-        """List all users in the user pool."""
-        assert self._conn is not None
-        cursor = await self._conn.execute("SELECT username, sub, confirmed, attributes FROM users")
-        rows = await cursor.fetchall()
-        return [
-            {
-                "username": row[0],
-                "sub": row[1],
-                "confirmed": bool(row[2]),
-                "attributes": json.loads(row[3]),
-            }
-            for row in rows
-        ]
 
     # -- Password reset --------------------------------------------------------
 
@@ -400,8 +331,8 @@ class UserStore:
         """Fetch a user row as a dict."""
         assert self._conn is not None
         cursor = await self._conn.execute(
-            "SELECT username, sub, password_hash, password_salt, confirmed, attributes "
-            "FROM users WHERE username = ?",
+            "SELECT username, sub, password_hash, password_salt, confirmed, enabled, attributes,"
+            " reset_required FROM users WHERE username = ?",
             (username,),
         )
         row = await cursor.fetchone()
@@ -413,5 +344,7 @@ class UserStore:
             "password_hash": row[2],
             "password_salt": row[3],
             "confirmed": row[4],
-            "attributes": row[5],
+            "enabled": row[5],
+            "attributes": row[6],
+            "reset_required": row[7],
         }

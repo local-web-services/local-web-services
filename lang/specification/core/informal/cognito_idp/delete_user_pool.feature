@@ -1,5 +1,5 @@
 @cognitoidp @generated
-Feature: CognitoIdp - A User Pool Is Deleted
+Feature: CognitoIdp - A "Cognito" "User Pool" Is Deleted
 
   # Generated from FizzBee spec: cognito_idp.fizz
   # Safety invariants: ValidUserPoolStatus, ValidUserStatus, UserGroupMembershipEntryExists, GroupMembershipReferencesExistingGroups, ValidAuthSessionStatus, DeletedUsersNotAuthenticated, DisabledUsersNotAuthenticated
@@ -8,11 +8,11 @@ Feature: CognitoIdp - A User Pool Is Deleted
     Given the system is initialized
 
   @minimal @happy @delete_user_pool
-  Scenario: a user pool is deleted
-    Given the user pool exists
-    And the user pool is "ACTIVE"
-    When a user pool is deleted
-    Then the user pool is "DELETED" along with all its users and groups
+  Scenario: a "cognito" "user pool" is deleted
+    Given the "cognito" "user pool" existed
+    And the "cognito" "user pool" was "ACTIVE"
+    When a "cognito" "user pool" is deleted
+    Then the "cognito" "user pool" will be "DELETED" along with all its users and groups
     And every user pool has a valid status ("ACTIVE" or "DELETED")
     And every user has a valid status
     And every non-deleted user has an enabled flag set
@@ -21,15 +21,15 @@ Feature: CognitoIdp - A User Pool Is Deleted
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @delete_user_pool
-  Scenario: a user pool is deleted fails when the user pool does not exist
-    Given the user pool does not exist
-    When a user pool is deleted
+  @guard @negative @delete_user_pool
+  Scenario: a "cognito" "user pool" is deleted fails when the "cognito" "user pool" did not exist
+    Given the "cognito" "user pool" did not exist
+    When a "cognito" "user pool" is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_user_pool
-  Scenario: a user pool is deleted fails when the user pool is not "ACTIVE"
-    Given the user pool exists
-    And the user pool is not "ACTIVE"
-    When a user pool is deleted
+  @guard @negative @delete_user_pool
+  Scenario: a "cognito" "user pool" is deleted fails when the "cognito" "user pool" was not "ACTIVE"
+    Given the "cognito" "user pool" existed
+    And the "cognito" "user pool" was not "ACTIVE"
+    When a "cognito" "user pool" is deleted
     Then the operation is rejected

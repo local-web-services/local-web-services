@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - A Function'S Configuration Is Updated
+Feature: lambda - A "Lambda" "Function"'S Configuration Is Updated
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions
@@ -8,11 +8,11 @@ Feature: Lambda - A Function'S Configuration Is Updated
     Given the system is initialized
 
   @minimal @happy @update_function_configuration
-  Scenario: a function's configuration is updated
-    Given the function exists
-    And the function is "ACTIVE"
-    When a function's configuration is updated
-    Then the function configuration is updated while remaining "ACTIVE"
+  Scenario: a "lambda" "function"'s configuration is updated
+    Given the "lambda" "function" existed
+    And the "lambda" "function" was "ACTIVE"
+    When a "lambda" "function"'s configuration is updated
+    Then the "lambda" "function" configuration will be updated while remaining "ACTIVE"
     And every active event source mapping references an existing non-deleted function
     And no function in "DELETING" state has active executions
     And active execution count never exceeds reserved concurrency when set
@@ -21,15 +21,15 @@ Feature: Lambda - A Function'S Configuration Is Updated
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @update_function_configuration
-  Scenario: a function's configuration is updated fails when the function does not exist
-    Given the function does not exist
-    When a function's configuration is updated
+  @guard @negative @update_function_configuration
+  Scenario: a "lambda" "function"'s configuration is updated fails when the "lambda" "function" did not exist
+    Given the "lambda" "function" did not exist
+    When a "lambda" "function"'s configuration is updated
     Then the operation is rejected
 
-  @standard @negative @update_function_configuration @lifecycle
-  Scenario: a function's configuration is updated fails when the function is not "ACTIVE"
-    Given the function exists
-    And the function is not "ACTIVE"
-    When a function's configuration is updated
+  @guard @negative @update_function_configuration @lifecycle
+  Scenario: a "lambda" "function"'s configuration is updated fails when the "lambda" "function" was not "ACTIVE"
+    Given the "lambda" "function" existed
+    And the "lambda" "function" was not "ACTIVE"
+    When a "lambda" "function"'s configuration is updated
     Then the operation is rejected

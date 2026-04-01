@@ -61,27 +61,30 @@ protocol. No running server is required — they are not e2e tests.
 
 | Target | Description |
 |---|---|
-| `unit-test` | `uv run pytest tests/unit` |
-| `architecture-test` | `uv run pytest tests/architecture` |
-| `e2e-test` | `uv run pytest tests/e2e` (sdk and example only; no-op in core) |
-| `test` | `unit-test` + `architecture-test` |
-| `lint` | `uvx ruff check src tests` |
-| `format` | `uvx black src tests` |
-| `format-check` | `uvx black --check src tests` |
-| `complexity` | `uvx radon cc src -a -nc` (grade B or better) |
-| `cpd` | `uvx --from pylint symilar -d 5` (no duplicates) |
-| `pylint` | `uvx --from pylint pylint src/...` |
-| `check` | `lint` + `format-check` + `complexity` + `cpd` + `pylint` + `test` |
+| `lint` | ruff check + black --check + radon cc + cpd (symilar) + pylint |
+| `test-unit` | `uv run pytest tests/unit` (+ `tests/integration` in core) |
+| `test-architecture` | `uv run pytest tests/architecture` |
+| `test-e2e-minimal` | E2E happy-path scenarios (`-m minimal`); no-op in core |
+| `test-e2e-guard` | E2E guard-violation scenarios (`-m guard`); no-op in core |
+| `test-e2e-sequence` | E2E multi-action chain scenarios (`-m sequence`); no-op in core |
+| `e2e-test` | `test-e2e-minimal` + `test-e2e-guard` + `test-e2e-sequence` |
+| `check` | `lint` + `test-unit` + `test-architecture` |
 | `install` | `uv sync` |
 | `help` | Print available targets |
 
-### Additional target — `core/` only
+Each tier writes JUnit XML to `test-results/junit-{tier}.xml` (e.g. `junit-minimal.xml`).
 
-| Target | Description |
-|---|---|
-| `integration-test` | `uv run pytest tests/integration` |
+### SDK `SUITE` variable
 
-`make test` in core runs `unit-test` + `integration-test` + `architecture-test`.
+The SDK `test-e2e-*` targets accept a `SUITE` variable to restrict the run to a
+single service directory. Defaults to the full `tests/e2e/` tree:
+
+```sh
+make -C lang/python/sdk test-e2e-minimal                          # all suites
+make -C lang/python/sdk test-e2e-minimal SUITE=tests/e2e/dynamodb # one suite
+```
+
+CI uses this to parallelise e2e across suites in a matrix job.
 
 ### Root `lang/python/Makefile` cascading behaviour
 
@@ -89,9 +92,12 @@ Calling a target at the root delegates to each sub-project in order:
 
 | Root target | Delegates to |
 |---|---|
-| `unit-test` | core, sdk, example |
-| `integration-test` | core |
-| `architecture-test` | core, sdk, example |
+| `lint` | core, sdk, example |
+| `test-unit` | core, sdk, example |
+| `test-architecture` | core, sdk, example |
+| `test-e2e-minimal` | sdk, example |
+| `test-e2e-guard` | sdk, example |
+| `test-e2e-sequence` | sdk, example |
 | `e2e-test` | sdk, example |
 | `check` | core, sdk, example |
 
@@ -99,9 +105,9 @@ Example:
 
 ```sh
 # From repo root
-make -C lang/python unit-test       # runs unit-test in core, sdk, example
-make -C lang/python e2e-test        # runs e2e-test in sdk, example
-make -C lang/python/sdk e2e-test    # runs sdk e2e only
+make -C lang/python test-unit           # runs test-unit in core, sdk, example
+make -C lang/python test-e2e-minimal    # runs minimal e2e in sdk, example
+make -C lang/python/sdk test-e2e-guard  # runs guard e2e in sdk only
 ```
 
 ---
@@ -119,7 +125,7 @@ dev dependency in `core/`, `sdk/`, and `example/`.
 | `test_aaa_comments.py` | All test functions have `# Arrange` / `# Act` / `# Assert` comments |
 | `test_no_bare_except.py` | No bare `except:` in `src/` |
 | `test_no_magic_strings_in_assertions.py` | Assertions use `expected_*` / `actual_*` variables, no literals |
-| `test_file_naming.py` | Test files named `test_<subject>_<scenario>.py` |
+| `test_file_naming.py` | Test files named `test_<subject>_<scenario>.py`; also allows `__init__`, `conftest`, `constants`, `client`, `_helpers` |
 | `tests/unit/test_one_class_per_file.py` | One test class per file in `tests/unit/` |
 
 ### Universal e2e tests (run in sdk and example only)
@@ -163,28 +169,37 @@ Job name format: `python-{project}-{target}`
 
 | Job | Make target | Needs Docker | Depends on |
 |---|---|---|---|
-| `python-core-lint` | `make -C lang/python/core lint format-check complexity cpd pylint` | No | — |
-| `python-core-unit-test` | `make -C lang/python/core unit-test` | No | — |
-| `python-core-integration-test` | `make -C lang/python/core integration-test` | No | — |
-| `python-core-architecture-test` | `make -C lang/python/core architecture-test` | No | — |
+| `python-core-lint` | `make -C lang/python/core lint` | No | — |
+| `python-core-test-unit` | `make -C lang/python/core test-unit` | No | — |
+| `python-core-test-architecture` | `make -C lang/python/core test-architecture` | No | — |
 
 ### SDK jobs
 
 | Job | Make target | Needs Docker | Depends on |
 |---|---|---|---|
-| `python-sdk-lint` | `make -C lang/python/sdk lint format-check complexity cpd pylint` | No | — |
-| `python-sdk-unit-test` | `make -C lang/python/sdk unit-test` | No | — |
-| `python-sdk-architecture-test` | `make -C lang/python/sdk architecture-test` | No | — |
-| `python-sdk-e2e-test` | `make -C lang/python/sdk e2e-test` | Yes | `python-core-unit-test` |
+| `python-sdk-lint` | `make -C lang/python/sdk lint` | No | — |
+| `python-sdk-test-unit` | `make -C lang/python/sdk test-unit` | No | — |
+| `python-sdk-test-architecture` | `make -C lang/python/sdk test-architecture` | No | — |
+| `python-sdk-e2e-suites` | discover e2e suite directories | No | `python-core-test-unit` |
+| `python-sdk-test-e2e-minimal` | `make -C lang/python/sdk test-e2e-minimal SUITE=tests/e2e/${{ matrix.suite }}` | Yes | `python-sdk-e2e-suites` |
+| `python-sdk-test-e2e-guard` | `make -C lang/python/sdk test-e2e-guard SUITE=tests/e2e/${{ matrix.suite }}` | Yes | `python-sdk-e2e-suites` |
+| `python-sdk-test-e2e-sequence` | `make -C lang/python/sdk test-e2e-sequence SUITE=tests/e2e/${{ matrix.suite }}` | Yes | `python-sdk-e2e-suites` |
+| `python-sdk-e2e-summary` | aggregate JUnit XML results | No | all three sdk e2e tier jobs |
+
+The three `python-sdk-test-e2e-*` jobs run as a matrix (one job per suite directory),
+parallelising e2e across all service suites.
 
 ### Example jobs
 
 | Job | Make target | Needs Docker | Depends on |
 |---|---|---|---|
-| `python-example-lint` | `make -C lang/python/example lint format-check complexity cpd pylint` | No | — |
-| `python-example-unit-test` | `make -C lang/python/example unit-test` | No | — |
-| `python-example-architecture-test` | `make -C lang/python/example architecture-test` | No | — |
-| `python-example-e2e-test` | `make -C lang/python/example e2e-test` | Yes | `python-sdk-e2e-test` |
+| `python-example-lint` | `make -C lang/python/example lint` | No | — |
+| `python-example-test-unit` | `make -C lang/python/example test-unit` | No | — |
+| `python-example-test-architecture` | `make -C lang/python/example test-architecture` | No | — |
+| `python-example-test-e2e-minimal` | `make -C lang/python/example test-e2e-minimal` | Yes | `python-sdk-e2e-summary` |
+| `python-example-test-e2e-guard` | `make -C lang/python/example test-e2e-guard` | Yes | `python-sdk-e2e-summary` |
+| `python-example-test-e2e-sequence` | `make -C lang/python/example test-e2e-sequence` | Yes | `python-sdk-e2e-summary` |
+| `python-example-e2e-summary` | aggregate JUnit XML results | No | all three example e2e tier jobs |
 
 ### Change detection gating
 
@@ -203,17 +218,31 @@ E2e jobs that need Docker must pull Lambda base images before running:
 - run: docker pull public.ecr.aws/lambda/nodejs:20
 ```
 
-The SDK e2e job also installs core as a local editable dependency:
+The SDK e2e jobs also install core as a local editable dependency:
 
 ```yaml
 - run: uv pip install -e lang/python/core
 ```
 
-The example e2e job installs both core and sdk:
+The example e2e jobs install both core and sdk:
 
 ```yaml
 - run: uv pip install -e lang/python/core -e lang/python/sdk
 ```
+
+## Pre-commit Hooks (lefthook)
+
+`lefthook.yml` at the repo root configures a parallel pre-commit hook that runs
+four checks simultaneously from `lang/python/`:
+
+| Hook command | Make target |
+|---|---|
+| `python-lint` | `make lint` |
+| `python-test-unit` | `make test-unit` |
+| `python-test-architecture` | `make test-architecture` |
+| `python-test-e2e-minimal` | `make test-e2e-minimal` |
+
+Install hooks after cloning: `lefthook install`
 
 ---
 
@@ -223,11 +252,41 @@ E2e suites live in `lang/python/sdk/tests/e2e/<service>/`. Each suite must conta
 
 ```
 tests/e2e/<service>/
-├── conftest.py      Step definitions (Given/When/Then); no httpx imports
-└── test_scenarios.py  pytest-bdd scenario runner; imports feature file
+├── __init__.py
+├── client.py            PascalCaseTestClient (session helpers — boto3 calls)
+├── conftest.py          fixtures + step registration (wildcard imports)
+├── constants.py         constants (TEST_*) + pure helpers
+├── test_scenarios.py    pytest-bdd scenario runner; loads feature files
+├── given/
+│   ├── __init__.py      aggregates: from .step_name import *  # noqa: F401,F403
+│   └── <step_name>.py   one file per step
+├── when/
+│   ├── __init__.py
+│   └── <step_name>.py
+└── then/
+    ├── __init__.py
+    └── <step_name>.py
 ```
 
 Feature files (`.feature`) live in `lang/specification/core/informal/<service>/`.
 
 After adding a suite, `test_provider_feature_e2e_coverage.py` will automatically
 verify it is wired up.
+
+### client.py convention
+
+Session helper functions (those taking `lws_session` as first param) belong in `client.py`,
+not in `constants.py`. Name the class `<PascalCaseService>TestClient`. Step files import
+from `..client`:
+
+```python
+# given/table_exists.py
+from ..client import DynamodbTestClient
+
+@given("the table exists")
+def table_exists(lws_session):
+    DynamodbTestClient(lws_session).create_table()
+```
+
+Use `tools/client_refactor.py` to generate `client.py` automatically from an existing
+`constants.py`.

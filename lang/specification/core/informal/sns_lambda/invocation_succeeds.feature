@@ -9,15 +9,15 @@ Feature: SnsLambda - The Lambda Invocation Completes Successfully
 
   @minimal @happy @invocation_succeeds @internal
   Scenario: the Lambda invocation completes successfully
-    Given an invocation is "IN_PROGRESS"
+    Given a "lambda" "invocation" was "IN_PROGRESS"
     When the Lambda invocation completes successfully
-    Then the invocation is "SUCCESS"
+    Then the invocation will be "SUCCESS"
     And every "CONFIRMED" subscription references an "ACTIVE" "SNS" topic
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation was triggered by a "CONFIRMED" subscription
 
-  @standard @negative @invocation_succeeds @internal
-  Scenario: the Lambda invocation completes successfully fails when no invocation is "IN_PROGRESS"
-    Given no invocation is "IN_PROGRESS"
+  @guard @negative @invocation_succeeds @internal
+  Scenario: the Lambda invocation completes successfully fails when no "lambda" "invocation" was "IN_PROGRESS"
+    Given no "lambda" "invocation" was "IN_PROGRESS"
     When the Lambda invocation completes successfully
     Then the operation is rejected

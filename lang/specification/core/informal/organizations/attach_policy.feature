@@ -1,5 +1,5 @@
 @organizations @generated
-Feature: Organizations - A Policy Is Attached To A Target
+Feature: Organizations - An "Organizations" "Policy" Is Attached To A Target
 
   # Generated from FizzBee spec: organizations.fizz
   # Safety invariants: OrgRootConsistency, AccountParentValid, OuParentValid, NoChildOfDeletedOu, PolicyAttachmentTargetValid
@@ -8,35 +8,35 @@ Feature: Organizations - A Policy Is Attached To A Target
     Given the system is initialized
 
   @minimal @happy @attach_policy
-  Scenario: a policy is attached to a target
-    Given the policy exists and is "ACTIVE"
-    And the target exists and is "ACTIVE"
-    And the policy is not already attached to the target
-    When a policy is attached to a target
-    Then the policy is attached to the target
-    And the root is "ACTIVE" whenever the organization exists
+  Scenario: an "organizations" "policy" is attached to a target
+    Given the "organizations" "policy" existed and was "ACTIVE"
+    And the "organizations" "target" existed and was "ACTIVE"
+    And the "organizations" "policy" was not already attached to the "organizations" "target"
+    When an "organizations" "policy" is attached to a target
+    Then the "organizations" "policy" will be attached to the "organizations" "target"
+    And the root was "ACTIVE" whenever the "organizations" "organization" exists
     And every active account has an "ACTIVE" parent
     And every active organizational unit has an "ACTIVE" parent
     And no active node is a child of a deleted organizational unit
     And every active policy attachment targets an "ACTIVE" node
 
-  @standard @negative @attach_policy
-  Scenario: a policy is attached to a target fails when the policy does not exist or is not "ACTIVE"
-    Given the policy does not exist or is not "ACTIVE"
-    When a policy is attached to a target
+  @guard @negative @attach_policy
+  Scenario: an "organizations" "policy" is attached to a target fails when the "organizations" "policy" did not exist or was "ACTIVE"
+    Given the "organizations" "policy" did not exist or was "ACTIVE"
+    When an "organizations" "policy" is attached to a target
     Then the operation is rejected
 
-  @standard @negative @attach_policy
-  Scenario: a policy is attached to a target fails when the target does not exist or is not "ACTIVE"
-    Given the policy exists and is "ACTIVE"
-    And the target does not exist or is not "ACTIVE"
-    When a policy is attached to a target
+  @guard @negative @attach_policy
+  Scenario: an "organizations" "policy" is attached to a target fails when the "organizations" "target" did not exist or was "ACTIVE"
+    Given the "organizations" "policy" existed and was "ACTIVE"
+    And the "organizations" "target" did not exist or was "ACTIVE"
+    When an "organizations" "policy" is attached to a target
     Then the operation is rejected
 
-  @standard @negative @attach_policy
-  Scenario: a policy is attached to a target fails when the policy is already attached to the target
-    Given the policy exists and is "ACTIVE"
-    And the target exists and is "ACTIVE"
-    And the policy is already attached to the target
-    When a policy is attached to a target
+  @guard @negative @attach_policy
+  Scenario: an "organizations" "policy" is attached to a target fails when the "organizations" "policy" was already attached to the "organizations" "target"
+    Given the "organizations" "policy" existed and was "ACTIVE"
+    And the "organizations" "target" existed and was "ACTIVE"
+    And the "organizations" "policy" was already attached to the "organizations" "target"
+    When an "organizations" "policy" is attached to a target
     Then the operation is rejected

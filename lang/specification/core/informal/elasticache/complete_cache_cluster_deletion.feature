@@ -1,5 +1,5 @@
 @elasticache @generated
-Feature: Elasticache - A Cache Cluster Deletion Completes
+Feature: Elasticache - An "Elasticache" "Cluster" Deletion Completes
 
   # Generated from FizzBee spec: elasticache.fizz
   # Safety invariants: MemcachedNotInReplicationGroup, SnapshotOnlyFromRedis, AvailableRGHasPrimary, TagsExistForResources, SnapshottingClusterHasSnapshot
@@ -8,26 +8,26 @@ Feature: Elasticache - A Cache Cluster Deletion Completes
     Given the system is initialized
 
   @minimal @happy @complete_cache_cluster_deletion @internal
-  Scenario: a cache cluster deletion completes
-    Given the cluster exists
-    And the cluster is "DELETING"
-    When a cache cluster deletion completes
-    Then the cluster is "DELETED" and its tags are removed
-    And memcached clusters are never associated with a replication group
+  Scenario: an "elasticache" "cluster" deletion completes
+    Given the "elasticache" "cluster" existed
+    And the "elasticache" "cluster" was "DELETING"
+    When an "elasticache" "cluster" deletion completes
+    Then the "elasticache" "cluster" will be "DELETED" and its tags will be removed
+    And memcached clusters are never associated with a "elasticache" "replication group"
     And all snapshots reference redis clusters only
     And every available replication group has a primary cluster assigned
     And every active cluster, replication group, and snapshot has tags
     And every snapshotting cluster has a corresponding in-progress snapshot
 
-  @standard @negative @complete_cache_cluster_deletion @internal
-  Scenario: a cache cluster deletion completes fails when the cluster does not exist
-    Given the cluster does not exist
-    When a cache cluster deletion completes
+  @guard @negative @complete_cache_cluster_deletion @internal
+  Scenario: an "elasticache" "cluster" deletion completes fails when the "elasticache" "cluster" did not exist
+    Given the "elasticache" "cluster" did not exist
+    When an "elasticache" "cluster" deletion completes
     Then the operation is rejected
 
-  @standard @negative @complete_cache_cluster_deletion @internal
-  Scenario: a cache cluster deletion completes fails when the cluster is not "DELETING"
-    Given the cluster exists
-    And the cluster is not "DELETING"
-    When a cache cluster deletion completes
+  @guard @negative @complete_cache_cluster_deletion @internal
+  Scenario: an "elasticache" "cluster" deletion completes fails when the "elasticache" "cluster" was not "DELETING"
+    Given the "elasticache" "cluster" existed
+    And the "elasticache" "cluster" was not "DELETING"
+    When an "elasticache" "cluster" deletion completes
     Then the operation is rejected

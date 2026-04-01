@@ -1,5 +1,5 @@
 @lambdadocdb @generated
-Feature: LambdaDocdb - The Lambda Function Writes A Document To The Available Documentdb Cluster And Succeeds
+Feature: LambdaDocdb - The "Lambda" "Function" Writes A Document To The "Documentdb" "Cluster" That Was "Available" And Succeeds
 
   # Generated from FizzBee spec: lambda_docdb.fizz
   # Safety invariants: InvocationRequiresActiveFunction, DocumentReferencesExistingCluster
@@ -8,32 +8,32 @@ Feature: LambdaDocdb - The Lambda Function Writes A Document To The Available Do
     Given the system is initialized
 
   @minimal @happy @write_document @internal
-  Scenario: the Lambda function writes a document to the "AVAILABLE" DocumentDB cluster and succeeds
-    Given an invocation is "IN_PROGRESS"
-    And the cluster is "AVAILABLE"
+  Scenario: the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "documentdb" "cluster" was "AVAILABLE"
     And a document slot is available
-    When the Lambda function writes a document to the "AVAILABLE" DocumentDB cluster and succeeds
-    Then the document "EXISTS" and the invocation is "SUCCESS"
+    When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
+    Then the document will exist and the invocation will be "SUCCESS"
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing document references a cluster that exists
+    And every existing document references a "documentdb" "cluster" that exists
 
-  @standard @negative @write_document @internal
-  Scenario: the Lambda function writes a document to the "AVAILABLE" DocumentDB cluster and succeeds fails when no invocation is "IN_PROGRESS"
-    Given no invocation is "IN_PROGRESS"
-    When the Lambda function writes a document to the "AVAILABLE" DocumentDB cluster and succeeds
+  @guard @negative @write_document @internal
+  Scenario: the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds fails when no "lambda" "invocation" was "IN_PROGRESS"
+    Given no "lambda" "invocation" was "IN_PROGRESS"
+    When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     Then the operation is rejected
 
-  @standard @negative @write_document @internal
-  Scenario: the Lambda function writes a document to the "AVAILABLE" DocumentDB cluster and succeeds fails when the cluster is not "AVAILABLE"
-    Given an invocation is "IN_PROGRESS"
-    And the cluster is not "AVAILABLE"
-    When the Lambda function writes a document to the "AVAILABLE" DocumentDB cluster and succeeds
+  @guard @negative @write_document @internal
+  Scenario: the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds fails when the "documentdb" "cluster" was not "AVAILABLE"
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "documentdb" "cluster" was not "AVAILABLE"
+    When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     Then the operation is rejected
 
-  @standard @negative @write_document @internal
-  Scenario: the Lambda function writes a document to the "AVAILABLE" DocumentDB cluster and succeeds fails when no document slot is available
-    Given an invocation is "IN_PROGRESS"
-    And the cluster is "AVAILABLE"
+  @guard @negative @write_document @internal
+  Scenario: the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds fails when no document slot is available
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "documentdb" "cluster" was "AVAILABLE"
     And no document slot is available
-    When the Lambda function writes a document to the "AVAILABLE" DocumentDB cluster and succeeds
+    When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     Then the operation is rejected

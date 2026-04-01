@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Database Cluster Snapshot Finishes Creating
+Feature: Neptune - A "Neptune" "Cluster" Neptune Snapshot Finishes Creating
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,11 +8,11 @@ Feature: Neptune - A Database Cluster Snapshot Finishes Creating
     Given the system is initialized
 
   @minimal @happy @complete_snapshot_creation @internal
-  Scenario: a database cluster snapshot finishes creating
-    Given the snapshot exists
-    And the snapshot is "CREATING"
-    When a database cluster snapshot finishes creating
-    Then the snapshot is "AVAILABLE" and the cluster returns to "AVAILABLE" if it was backing up
+  Scenario: a "neptune" "cluster" neptune snapshot finishes creating
+    Given the "neptune" "snapshot" existed
+    And the "neptune" "snapshot" was "CREATING"
+    When a "neptune" "cluster" neptune snapshot finishes creating
+    Then the "neptune" "SNAPSHOT" will be "AVAILABLE" and the "neptune" "cluster" returns to "AVAILABLE" if it was backing up
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -22,15 +22,15 @@ Feature: Neptune - A Database Cluster Snapshot Finishes Creating
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @complete_snapshot_creation @internal
-  Scenario: a database cluster snapshot finishes creating fails when the snapshot does not exist
-    Given the snapshot does not exist
-    When a database cluster snapshot finishes creating
+  @guard @negative @complete_snapshot_creation @internal
+  Scenario: a "neptune" "cluster" neptune snapshot finishes creating fails when the "neptune" "snapshot" did not exist
+    Given the "neptune" "snapshot" did not exist
+    When a "neptune" "cluster" neptune snapshot finishes creating
     Then the operation is rejected
 
-  @standard @negative @complete_snapshot_creation @internal
-  Scenario: a database cluster snapshot finishes creating fails when the snapshot is not "CREATING"
-    Given the snapshot exists
-    And the snapshot is not "CREATING"
-    When a database cluster snapshot finishes creating
+  @guard @negative @complete_snapshot_creation @internal
+  Scenario: a "neptune" "cluster" neptune snapshot finishes creating fails when the "neptune" "snapshot" was not "CREATING"
+    Given the "neptune" "snapshot" existed
+    And the "neptune" "snapshot" was not "CREATING"
+    When a "neptune" "cluster" neptune snapshot finishes creating
     Then the operation is rejected

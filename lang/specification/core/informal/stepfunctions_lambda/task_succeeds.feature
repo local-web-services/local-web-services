@@ -9,15 +9,15 @@ Feature: StepfunctionsLambda - The Lambda Task Completes Successfully And The Ex
 
   @minimal @happy @task_succeeds @internal
   Scenario: the Lambda task completes successfully and the execution succeeds
-    Given an invocation is "IN_PROGRESS"
+    Given a "lambda" "invocation" was "IN_PROGRESS"
     When the Lambda task completes successfully and the execution succeeds
-    Then the invocation is "SUCCESS" and the execution is "SUCCEEDED"
+    Then the invocation will be "SUCCESS" and the "step functions" "execution" will be "SUCCEEDED"
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation has a corresponding "RUNNING" execution
 
-  @standard @negative @task_succeeds @internal
-  Scenario: the Lambda task completes successfully and the execution succeeds fails when no invocation is "IN_PROGRESS"
-    Given no invocation is "IN_PROGRESS"
+  @guard @negative @task_succeeds @internal
+  Scenario: the Lambda task completes successfully and the execution succeeds fails when no "lambda" "invocation" was "IN_PROGRESS"
+    Given no "lambda" "invocation" was "IN_PROGRESS"
     When the Lambda task completes successfully and the execution succeeds
     Then the operation is rejected

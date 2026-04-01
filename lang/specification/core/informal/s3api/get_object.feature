@@ -1,5 +1,5 @@
 @s3api @generated
-Feature: S3api - An Object Is Retrieved From A Bucket
+Feature: S3api - A "S3" "Object" Is Retrieved From A "S3" "Bucket"
 
   # Generated from FizzBee spec: s3api.fizz
   # Safety invariants: BucketStatusValid, VersioningStateValid, MultipartUploadStatusValid, DeleteBucketRequiresEmpty
@@ -8,44 +8,44 @@ Feature: S3api - An Object Is Retrieved From A Bucket
     Given the system is initialized
 
   @minimal @happy @get_object
-  Scenario: an object is retrieved from a bucket
-    Given the bucket exists
-    And the bucket is "ACTIVE"
-    And the object exists in the bucket
-    And the object is not deleted
-    When an object is retrieved from a bucket
-    Then the object data is returned
+  Scenario: a "s3" "object" is retrieved from a "s3" "bucket"
+    Given the "s3" "bucket" existed
+    And the "s3" "bucket" was "ACTIVE"
+    And the "s3" "object" existed in the "s3" "bucket"
+    And the "s3" "object" was not "deleted"
+    When a "s3" "object" is retrieved from a "s3" "bucket"
+    Then the "s3" "object" data will be returned
     And every bucket has a valid status ("ACTIVE" or "DELETED")
     And every bucket versioning state is valid ("DISABLED", "ENABLED", or "SUSPENDED")
     And every multipart upload has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
     And deleting a bucket requires it to be empty
 
-  @standard @negative @get_object
-  Scenario: an object is retrieved from a bucket fails when the bucket does not exist
-    Given the bucket does not exist
-    When an object is retrieved from a bucket
+  @guard @negative @get_object
+  Scenario: a "s3" "object" is retrieved from a "s3" "bucket" fails when the "s3" "bucket" did not exist
+    Given the "s3" "bucket" did not exist
+    When a "s3" "object" is retrieved from a "s3" "bucket"
     Then the operation is rejected
 
-  @standard @negative @get_object @lifecycle
-  Scenario: an object is retrieved from a bucket fails when the bucket is not "ACTIVE"
-    Given the bucket exists
-    And the bucket is not "ACTIVE"
-    When an object is retrieved from a bucket
+  @guard @negative @get_object @lifecycle
+  Scenario: a "s3" "object" is retrieved from a "s3" "bucket" fails when the "s3" "bucket" was not "ACTIVE"
+    Given the "s3" "bucket" existed
+    And the "s3" "bucket" was not "ACTIVE"
+    When a "s3" "object" is retrieved from a "s3" "bucket"
     Then the operation is rejected
 
-  @standard @negative @get_object
-  Scenario: an object is retrieved from a bucket fails when the object does not exist in the bucket
-    Given the bucket exists
-    And the bucket is "ACTIVE"
-    And the object does not exist in the bucket
-    When an object is retrieved from a bucket
+  @guard @negative @get_object
+  Scenario: a "s3" "object" is retrieved from a "s3" "bucket" fails when the "s3" "object" did not exist in the "s3" "bucket"
+    Given the "s3" "bucket" existed
+    And the "s3" "bucket" was "ACTIVE"
+    And the "s3" "object" did not exist in the "s3" "bucket"
+    When a "s3" "object" is retrieved from a "s3" "bucket"
     Then the operation is rejected
 
-  @standard @negative @get_object
-  Scenario: an object is retrieved from a bucket fails when the object is deleted
-    Given the bucket exists
-    And the bucket is "ACTIVE"
-    And the object exists in the bucket
-    And the object is deleted
-    When an object is retrieved from a bucket
+  @guard @negative @get_object
+  Scenario: a "s3" "object" is retrieved from a "s3" "bucket" fails when the "s3" "object" was "deleted"
+    Given the "s3" "bucket" existed
+    And the "s3" "bucket" was "ACTIVE"
+    And the "s3" "object" existed in the "s3" "bucket"
+    And the "s3" "object" was "deleted"
+    When a "s3" "object" is retrieved from a "s3" "bucket"
     Then the operation is rejected

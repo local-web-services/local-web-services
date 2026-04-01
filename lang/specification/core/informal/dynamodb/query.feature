@@ -1,5 +1,5 @@
 @dynamodb @generated
-Feature: Dynamodb - Items Are Queried From The Table By Key
+Feature: Dynamodb - "Dynamodb" "Item"S Are Queried From The "Dynamodb" "Table" By Key
 
   # Generated from FizzBee spec: dynamodb.fizz
   # Safety invariants: TableStatusValid, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
@@ -8,12 +8,12 @@ Feature: Dynamodb - Items Are Queried From The Table By Key
     Given the system is initialized
 
   @minimal @happy @query
-  Scenario: items are queried from the table by key
-    Given the table exists
-    And the table is "ACTIVE"
-    And reads are not throttled
-    When items are queried from the table by key
-    Then matching items are returned
+  Scenario: "dynamodb" "item"s are queried from the "dynamodb" "table" by key
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was "ACTIVE"
+    And reads were not throttled
+    When "dynamodb" "item"s are queried from the "dynamodb" "table" by key
+    Then matching items will be returned
     And every table has a valid status ("CREATING", "ACTIVE", or "DELETED")
     And "GSI" pending write count is never negative
     And transaction status is always a valid value
@@ -21,23 +21,23 @@ Feature: Dynamodb - Items Are Queried From The Table By Key
     And items only exist in non-deleted tables
     And deleted tables are never the target of a pending transaction
 
-  @standard @negative @query
-  Scenario: items are queried from the table by key fails when the table does not exist
-    Given the table does not exist
-    When items are queried from the table by key
+  @guard @negative @query
+  Scenario: "dynamodb" "item"s are queried from the "dynamodb" "table" by key fails when the "dynamodb" "table" did not exist
+    Given the "dynamodb" "table" did not exist
+    When "dynamodb" "item"s are queried from the "dynamodb" "table" by key
     Then the operation is rejected
 
-  @standard @negative @query @lifecycle
-  Scenario: items are queried from the table by key fails when the table is not "ACTIVE"
-    Given the table exists
-    And the table is not "ACTIVE"
-    When items are queried from the table by key
+  @guard @negative @query @lifecycle
+  Scenario: "dynamodb" "item"s are queried from the "dynamodb" "table" by key fails when the "dynamodb" "table" was not "ACTIVE"
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was not "ACTIVE"
+    When "dynamodb" "item"s are queried from the "dynamodb" "table" by key
     Then the operation is rejected
 
-  @standard @negative @query @capacity
-  Scenario: items are queried from the table by key fails when reads are throttled
-    Given the table exists
-    And the table is "ACTIVE"
-    And reads are throttled
-    When items are queried from the table by key
+  @guard @negative @query @capacity
+  Scenario: "dynamodb" "item"s are queried from the "dynamodb" "table" by key fails when reads were throttled
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was "ACTIVE"
+    And reads were throttled
+    When "dynamodb" "item"s are queried from the "dynamodb" "table" by key
     Then the operation is rejected

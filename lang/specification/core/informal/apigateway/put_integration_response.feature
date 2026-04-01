@@ -9,10 +9,10 @@ Feature: Apigateway - A 200 Integration Response Is Configured
 
   @minimal @happy @put_integration_response
   Scenario: a 200 integration response is configured
-    Given the integration exists
-    And the integration "EXISTS"
+    Given the "api gateway" "integration" existed
+    And the "api gateway" "integration" existed
     When a 200 integration response is configured
-    Then the integration response exists
+    Then the "api gateway" "integration" response will exist
     And all "ACTIVE" resources belong to "ACTIVE" APIs
     And all "EXISTING" methods belong to "ACTIVE" resources
     And all "EXISTING" integrations correspond to "EXISTING" methods
@@ -21,15 +21,15 @@ Feature: Apigateway - A 200 Integration Response Is Configured
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @put_integration_response
-  Scenario: a 200 integration response is configured fails when the integration does not exist
-    Given the integration does not exist
+  @guard @negative @put_integration_response
+  Scenario: a 200 integration response is configured fails when the "api gateway" "integration" did not exist
+    Given the "api gateway" "integration" did not exist
     When a 200 integration response is configured
     Then the operation is rejected
 
-  @standard @negative @put_integration_response
-  Scenario: a 200 integration response is configured fails when the integration does not exist
-    Given the integration exists
-    And the integration does not exist
+  @guard @negative @put_integration_response
+  Scenario: a 200 integration response is configured fails when the "api gateway" "integration" did not exist
+    Given the "api gateway" "integration" existed
+    And the "api gateway" "integration" did not exist
     When a 200 integration response is configured
     Then the operation is rejected

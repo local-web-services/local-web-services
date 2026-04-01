@@ -9,6 +9,7 @@ from typing import Any
 from fastapi import Response
 
 from lws.providers.secretsmanager._secretsmanager_state import (
+    _demote_current_to_previous,
     _find_secret,
     _format_secret_description,
     _resolve_version,
@@ -156,6 +157,12 @@ async def _handle_delete_secret(state: _SecretsState, body: dict) -> Response:
             f"Secret {secret_id} not found.",
         )
 
+    if secret.deleted_date is not None:
+        return _error_response(
+            "InvalidRequestException",
+            f"Secret {secret_id} is already scheduled for deletion.",
+        )
+
     if force_delete:
         state.secrets.pop(secret.name, None)
     else:
@@ -269,6 +276,85 @@ async def _handle_list_secret_version_ids(state: _SecretsState, body: dict) -> R
         for v in secret.versions.values()
     ]
     return _json_response({"ARN": secret.arn, "Name": secret.name, "Versions": versions})
+
+
+_ROTATION_PHASES = ("createSecret", "setSecret", "testSecret", "finishSecret")
+
+
+def _promote_rotation_version(secret: _Secret, new_version_id: str, pending_version: Any) -> None:
+    """Promote a pending rotation version to AWSCURRENT."""
+    _demote_current_to_previous(secret)
+    pending_version.stages = ["AWSCURRENT"]
+    secret.current_version_id = new_version_id
+
+
+async def _handle_rotate_secret(
+    state: _SecretsState, body: dict, lambda_registry: Any = None
+) -> Response:
+    """Handle RotateSecret by invoking the configured Lambda through four phases."""
+    import uuid as _uuid  # pylint: disable=import-outside-toplevel
+
+    from lws.providers._shared.lambda_helpers import (  # pylint: disable=import-outside-toplevel
+        build_default_lambda_context,
+    )
+    from lws.providers.secretsmanager._secretsmanager_state import (  # pylint: disable=import-outside-toplevel
+        _SecretVersion,
+    )
+
+    secret_id = body.get("SecretId", "")
+    rotation_lambda_arn = body.get("RotationLambdaARN")
+
+    secret = _find_secret(state, secret_id)
+    if secret is None or secret.deleted_date is not None:
+        return _error_response("ResourceNotFoundException", f"Secret {secret_id} not found.")
+
+    if rotation_lambda_arn:
+        secret.rotation_lambda_arn = rotation_lambda_arn
+
+    if not secret.rotation_lambda_arn:
+        return _error_response(
+            "InvalidRequestException",
+            f"Secret {secret_id} does not have a rotation Lambda configured.",
+        )
+
+    function_name = secret.rotation_lambda_arn.rsplit(":", 1)[-1]
+    if lambda_registry is None:
+        return _error_response("InvalidRequestException", "No Lambda registry available.")
+
+    compute = lambda_registry.get_compute(function_name)
+    if compute is None:
+        return _error_response(
+            "ResourceNotFoundException",
+            f"Rotation Lambda function not found: {function_name}",
+        )
+
+    # Create a new AWSPENDING version for the Lambda to populate
+    new_version_id = str(_uuid.uuid4())
+    pending_version = _SecretVersion(
+        version_id=new_version_id,
+        stages=["AWSPENDING"],
+    )
+    secret.versions[new_version_id] = pending_version
+
+    context = build_default_lambda_context(function_name)
+
+    for step in _ROTATION_PHASES:
+        rotation_event = {
+            "SecretId": secret.arn,
+            "ClientRequestToken": new_version_id,
+            "Step": step,
+        }
+        result = await compute.invoke(rotation_event, context)
+        if result.error:
+            secret.versions.pop(new_version_id, None)
+            return _error_response(
+                "InvalidRequestException",
+                f"Rotation Lambda failed at step {step}: {result.error}",
+            )
+
+    _promote_rotation_version(secret, new_version_id, pending_version)
+    secret.last_changed_date = time.time()
+    return _json_response({"ARN": secret.arn, "Name": secret.name, "VersionId": new_version_id})
 
 
 _ACTION_HANDLERS: dict[str, Any] = {

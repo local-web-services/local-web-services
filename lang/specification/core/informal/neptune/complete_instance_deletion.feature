@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Database Instance Deletion Completes
+Feature: Neptune - A "Neptune" "Instance" Deletion Completes
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,13 +8,13 @@ Feature: Neptune - A Database Instance Deletion Completes
     Given the system is initialized
 
   @minimal @happy @complete_instance_deletion @internal
-  Scenario: a database instance deletion completes
-    Given the instance exists
-    And the instance is "DELETING"
-    And the cluster exists
-    And the instance is the primary of the cluster
-    When a database instance deletion completes
-    Then the instance is "DELETED" and the cluster primary is cleared if applicable
+  Scenario: a "neptune" "instance" deletion completes
+    Given the "neptune" "instance" existed
+    And the "neptune" "instance" was "DELETING"
+    And the "neptune" "cluster" existed
+    And the "neptune" "instance" is the primary of the "neptune" "cluster"
+    When a "neptune" "instance" deletion completes
+    Then the "neptune" "INSTANCE" will be "DELETED" and the "neptune" "cluster" primary will be cleared if applicable
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -24,32 +24,32 @@ Feature: Neptune - A Database Instance Deletion Completes
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @complete_instance_deletion @internal
-  Scenario: a database instance deletion completes fails when the instance does not exist
-    Given the instance does not exist
-    When a database instance deletion completes
+  @guard @negative @complete_instance_deletion @internal
+  Scenario: a "neptune" "instance" deletion completes fails when the "neptune" "instance" did not exist
+    Given the "neptune" "instance" did not exist
+    When a "neptune" "instance" deletion completes
     Then the operation is rejected
 
-  @standard @negative @complete_instance_deletion @internal
-  Scenario: a database instance deletion completes fails when the instance is not "DELETING"
-    Given the instance exists
-    And the instance is not "DELETING"
-    When a database instance deletion completes
+  @guard @negative @complete_instance_deletion @internal
+  Scenario: a "neptune" "instance" deletion completes fails when the "neptune" "instance" was not "DELETING"
+    Given the "neptune" "instance" existed
+    And the "neptune" "instance" was not "DELETING"
+    When a "neptune" "instance" deletion completes
     Then the operation is rejected
 
-  @standard @negative @complete_instance_deletion @internal
-  Scenario: a database instance deletion completes fails when the cluster does not exist
-    Given the instance exists
-    And the instance is "DELETING"
-    And the cluster does not exist
-    When a database instance deletion completes
+  @guard @negative @complete_instance_deletion @internal
+  Scenario: a "neptune" "instance" deletion completes fails when the "neptune" "cluster" did not exist
+    Given the "neptune" "instance" existed
+    And the "neptune" "instance" was "DELETING"
+    And the "neptune" "cluster" did not exist
+    When a "neptune" "instance" deletion completes
     Then the operation is rejected
 
-  @standard @negative @complete_instance_deletion @internal
-  Scenario: a database instance deletion completes fails when the instance is not the primary of the cluster
-    Given the instance exists
-    And the instance is "DELETING"
-    And the cluster exists
-    And the instance is not the primary of the cluster
-    When a database instance deletion completes
+  @guard @negative @complete_instance_deletion @internal
+  Scenario: a "neptune" "instance" deletion completes fails when the "neptune" "instance" is not the primary of the "neptune" "cluster"
+    Given the "neptune" "instance" existed
+    And the "neptune" "instance" was "DELETING"
+    And the "neptune" "cluster" existed
+    And the "neptune" "instance" is not the primary of the "neptune" "cluster"
+    When a "neptune" "instance" deletion completes
     Then the operation is rejected

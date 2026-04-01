@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Database Cluster Snapshot Deletion Completes
+Feature: Neptune - A "Neptune" "Cluster" Neptune Snapshot Deletion Completes
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,11 +8,11 @@ Feature: Neptune - A Database Cluster Snapshot Deletion Completes
     Given the system is initialized
 
   @minimal @happy @complete_snapshot_deletion @internal
-  Scenario: a database cluster snapshot deletion completes
-    Given the snapshot exists
-    And the snapshot is "DELETING"
-    When a database cluster snapshot deletion completes
-    Then the snapshot is "DELETED"
+  Scenario: a "neptune" "cluster" neptune snapshot deletion completes
+    Given the "neptune" "snapshot" existed
+    And the "neptune" "snapshot" was "DELETING"
+    When a "neptune" "cluster" neptune snapshot deletion completes
+    Then the "neptune" "SNAPSHOT" will be "DELETED"
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -22,15 +22,15 @@ Feature: Neptune - A Database Cluster Snapshot Deletion Completes
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @complete_snapshot_deletion @internal
-  Scenario: a database cluster snapshot deletion completes fails when the snapshot does not exist
-    Given the snapshot does not exist
-    When a database cluster snapshot deletion completes
+  @guard @negative @complete_snapshot_deletion @internal
+  Scenario: a "neptune" "cluster" neptune snapshot deletion completes fails when the "neptune" "snapshot" did not exist
+    Given the "neptune" "snapshot" did not exist
+    When a "neptune" "cluster" neptune snapshot deletion completes
     Then the operation is rejected
 
-  @standard @negative @complete_snapshot_deletion @internal
-  Scenario: a database cluster snapshot deletion completes fails when the snapshot is not "DELETING"
-    Given the snapshot exists
-    And the snapshot is not "DELETING"
-    When a database cluster snapshot deletion completes
+  @guard @negative @complete_snapshot_deletion @internal
+  Scenario: a "neptune" "cluster" neptune snapshot deletion completes fails when the "neptune" "snapshot" was not "DELETING"
+    Given the "neptune" "snapshot" existed
+    And the "neptune" "snapshot" was not "DELETING"
+    When a "neptune" "cluster" neptune snapshot deletion completes
     Then the operation is rejected

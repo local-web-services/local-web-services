@@ -1,5 +1,5 @@
 @apigateways3api @generated
-Feature: ApigatewayS3api - A Request Fails Because The S3 Bucket Has Been Deleted
+Feature: ApigatewayS3api - A Request Fails Because The "S3" "Bucket" Has Been Deleted
 
   # Generated from FizzBee spec: apigateway_s3api.fizz
   # Safety invariants: ObjectReferencesExistingBucket, SuccessfulRequestReferencesExistingAPI
@@ -8,42 +8,42 @@ Feature: ApigatewayS3api - A Request Fails Because The S3 Bucket Has Been Delete
     Given the system is initialized
 
   @minimal @happy @request_fails
-  Scenario: a request fails because the S3 bucket has been deleted
-    Given the "API" is "ACTIVE"
-    And the "API" has an S3 integration configured
-    And the bucket is "DELETED"
+  Scenario: a request fails because the "s3" "bucket" has been deleted
+    Given the "api gateway" "api" was "ACTIVE"
+    And the "api gateway" "api" has a S3 integration configured
+    And the "s3" "bucket" was "DELETED"
     And a request slot is available
-    When a request fails because the S3 bucket has been deleted
-    Then the request is "FAILED" with a NoSuchBucket error
-    And every existing object references a bucket that exists
-    And every successful request references an "API" that exists
+    When a request fails because the "s3" "bucket" has been deleted
+    Then the request will be "FAILED" with a NoSuchBucket error
+    And every existing object references a "s3" "bucket" that exists
+    And every successful request references an "api gateway" "API" that exists
 
-  @standard @negative @request_fails @lifecycle
-  Scenario: a request fails because the S3 bucket has been deleted fails when the "API" is not "ACTIVE"
-    Given the "API" is not "ACTIVE"
-    When a request fails because the S3 bucket has been deleted
+  @guard @negative @request_fails @lifecycle
+  Scenario: a request fails because the "s3" "bucket" has been deleted fails when the "api gateway" "api" was not "ACTIVE"
+    Given the "api gateway" "api" was not "ACTIVE"
+    When a request fails because the "s3" "bucket" has been deleted
     Then the operation is rejected
 
-  @standard @negative @request_fails
-  Scenario: a request fails because the S3 bucket has been deleted fails when the "API" has no S3 integration configured
-    Given the "API" is "ACTIVE"
-    And the "API" has no S3 integration configured
-    When a request fails because the S3 bucket has been deleted
+  @guard @negative @request_fails
+  Scenario: a request fails because the "s3" "bucket" has been deleted fails when the "api gateway" "api" has no S3 integration configured
+    Given the "api gateway" "api" was "ACTIVE"
+    And the "api gateway" "api" has no S3 integration configured
+    When a request fails because the "s3" "bucket" has been deleted
     Then the operation is rejected
 
-  @standard @negative @request_fails @lifecycle
-  Scenario: a request fails because the S3 bucket has been deleted fails when the bucket is not "DELETED"
-    Given the "API" is "ACTIVE"
-    And the "API" has an S3 integration configured
-    And the bucket is not "DELETED"
-    When a request fails because the S3 bucket has been deleted
+  @guard @negative @request_fails @lifecycle
+  Scenario: a request fails because the "s3" "bucket" has been deleted fails when the "s3" "bucket" was not "DELETED"
+    Given the "api gateway" "api" was "ACTIVE"
+    And the "api gateway" "api" has a S3 integration configured
+    And the "s3" "bucket" was not "DELETED"
+    When a request fails because the "s3" "bucket" has been deleted
     Then the operation is rejected
 
-  @standard @negative @request_fails @capacity
-  Scenario: a request fails because the S3 bucket has been deleted fails when no request slot is available
-    Given the "API" is "ACTIVE"
-    And the "API" has an S3 integration configured
-    And the bucket is "DELETED"
+  @guard @negative @request_fails @capacity
+  Scenario: a request fails because the "s3" "bucket" has been deleted fails when no request slot is available
+    Given the "api gateway" "api" was "ACTIVE"
+    And the "api gateway" "api" has a S3 integration configured
+    And the "s3" "bucket" was "DELETED"
     And no request slot is available
-    When a request fails because the S3 bucket has been deleted
+    When a request fails because the "s3" "bucket" has been deleted
     Then the operation is rejected

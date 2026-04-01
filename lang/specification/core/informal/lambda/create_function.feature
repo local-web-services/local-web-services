@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - A Function Is Created
+Feature: lambda - A "Lambda" "Function" Is Created
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions
@@ -8,10 +8,10 @@ Feature: Lambda - A Function Is Created
     Given the system is initialized
 
   @minimal @happy @create_function
-  Scenario: a function is created
-    Given the function does not already exist
-    When a function is created
-    Then the function is in "PENDING" state
+  Scenario: a "lambda" "function" is created
+    Given the "lambda" "function" did not already exist
+    When a "lambda" "function" is created
+    Then the "lambda" "function" will be in "PENDING" state
     And every active event source mapping references an existing non-deleted function
     And no function in "DELETING" state has active executions
     And active execution count never exceeds reserved concurrency when set
@@ -20,8 +20,8 @@ Feature: Lambda - A Function Is Created
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @create_function
-  Scenario: a function is created fails when the function already exists
-    Given the function already exists
-    When a function is created
+  @guard @negative @create_function
+  Scenario: a "lambda" "function" is created fails when the "lambda" "function" already existed
+    Given the "lambda" "function" already existed
+    When a "lambda" "function" is created
     Then the operation is rejected

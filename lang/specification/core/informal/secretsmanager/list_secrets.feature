@@ -10,7 +10,7 @@ Feature: Secretsmanager - All Secrets Are Listed
   @minimal @happy @list_secrets
   Scenario: all secrets are listed
     When all secrets are listed
-    Then the list of secrets is returned
+    Then the list of secrets will be returned
     And every "ACTIVE" secret has a current version assigned
     And at most one current version exists per secret
     And at most one previous version exists per secret

@@ -19,25 +19,25 @@ action Init:
     rule_target = {}
     dlq = []
 
-# step: an event bus is created
-# result: the event bus is ACTIVE
-# guard: the event bus does not already exist
-# guard_violation: the event bus already exists
+# step: an "eventbridge" "bus" is created
+# result: the "eventbridge" "bus" will be "ACTIVE"
+# guard: the "eventbridge" "bus" did not already exist
+# guard_violation: the "eventbridge" "bus" already existed
 atomic action CreateEventBus:
     oneof name in BUS_NAMES:
         if name not in bus_status:
             bus_status[name] = "ACTIVE"
 
-# step: an event bus is deleted
-# result: the event bus is DELETED
-# guard: the event bus is not the default bus
-# guard_violation: the event bus is the default bus
-# guard: the event bus exists
-# guard_violation: the event bus does not exist
-# guard: the event bus is ACTIVE
-# guard_violation_lifecycle: the event bus is not ACTIVE
-# guard: the event bus has no rules
-# guard_violation: the event bus has rules
+# step: an "eventbridge" "bus" is deleted
+# result: the "eventbridge" "bus" will be deleted
+# guard: the "eventbridge" "bus" is not the default eventbridge bus
+# guard_violation: the "eventbridge" "bus" is the default eventbridge bus
+# guard: the "eventbridge" "bus" existed
+# guard_violation: the "eventbridge" "bus" did not exist
+# guard: the "eventbridge" "bus" was "ACTIVE"
+# guard_violation_lifecycle: the "eventbridge" "bus" was not "ACTIVE"
+# guard: the "eventbridge" "bus" has no rules
+# guard_violation: the "eventbridge" "bus" has rules
 atomic action DeleteEventBus:
     oneof name in BUS_NAMES:
         if name != "default":
@@ -46,12 +46,12 @@ atomic action DeleteEventBus:
                     if all([rule_name not in rule_bus or rule_bus[rule_name] != name for rule_name in RULE_NAMES]):
                         bus_status[name] = "DELETED"
 
-# step: an event bus is described
-# result: the event bus details are returned
-# guard: the event bus exists
-# guard_violation: the event bus does not exist
-# guard: the event bus is ACTIVE
-# guard_violation: the event bus is not ACTIVE
+# step: an "eventbridge" "bus" is described
+# result: the "eventbridge" "bus" details will be returned
+# guard: the "eventbridge" "bus" existed
+# guard_violation: the "eventbridge" "bus" did not exist
+# guard: the "eventbridge" "bus" was "ACTIVE"
+# guard_violation: the "eventbridge" "bus" was not "ACTIVE"
 atomic action DescribeEventBus:
     oneof name in BUS_NAMES:
         if name in bus_status:
@@ -59,18 +59,18 @@ atomic action DescribeEventBus:
                 pass
 
 # step: all event buses are listed
-# result: the list of event buses is returned
+# result: the list of event buses will be returned
 atomic action ListEventBuses:
     pass
 
-# step: an EventBridge rule is created
-# result: the rule is ENABLED
-# guard: the rule does not already exist
-# guard_violation: the rule already exists
-# guard: the event bus exists
-# guard_violation: the event bus does not exist
-# guard: the event bus is ACTIVE
-# guard_violation: the event bus is not ACTIVE
+# step: an "eventbridge" "rule" is created
+# result: the "eventbridge" "rule" will be "ENABLED"
+# guard: the "eventbridge" "rule" did not already exist
+# guard_violation: the "eventbridge" "rule" already existed
+# guard: the "eventbridge" "bus" existed
+# guard_violation: the "eventbridge" "bus" did not exist
+# guard: the "eventbridge" "bus" was "ACTIVE"
+# guard_violation: the "eventbridge" "bus" was not "ACTIVE"
 atomic action PutRule:
     oneof rule_name in RULE_NAMES:
         if rule_name not in rule_status:
@@ -87,14 +87,14 @@ atomic action PutRule:
                                 rule_bus[rule_name] = bus_name
                                 rule_pattern_type[rule_name] = "SCHEDULE"
 
-# step: an EventBridge rule is deleted
-# result: the rule is DELETED
-# guard: the rule exists
-# guard_violation: the rule does not exist
-# guard: the rule is not already DELETED
-# guard_violation: the rule is already DELETED
-# guard: the rule has no active targets
-# guard_violation: the rule has active targets
+# step: an "eventbridge" "rule" is deleted
+# result: the "eventbridge" "rule" will be "DELETED"
+# guard: the "eventbridge" "rule" existed
+# guard_violation: the "eventbridge" "rule" did not exist
+# guard: the "eventbridge" "rule" is not already "DELETED"
+# guard_violation: the "eventbridge" "rule" is already "DELETED"
+# guard: the "eventbridge" "rule" has no active targets
+# guard_violation: the "eventbridge" "rule" has active targets
 atomic action DeleteRule:
     oneof rule_name in RULE_NAMES:
         if rule_name in rule_status:
@@ -102,60 +102,60 @@ atomic action DeleteRule:
                 if all([(rule_name + "#" + tid) not in rule_target or rule_target[rule_name + "#" + tid] == False for tid in TARGET_IDS]):
                     rule_status[rule_name] = "DELETED"
 
-# step: an EventBridge rule is described
-# result: the rule details are returned
-# guard: the rule exists
-# guard_violation: the rule does not exist
-# guard: the rule is not DELETED
-# guard_violation: the rule is DELETED
+# step: an "eventbridge" "rule" is described
+# result: the "eventbridge" "rule" details will be returned
+# guard: the "eventbridge" "rule" existed
+# guard_violation: the "eventbridge" "rule" did not exist
+# guard: the "eventbridge" "rule" was not "DELETED"
+# guard_violation: the "eventbridge" "rule" was "DELETED"
 atomic action DescribeRule:
     oneof rule_name in RULE_NAMES:
         if rule_name in rule_status:
             if rule_status[rule_name] != "DELETED":
                 pass
 
-# step: all rules on an event bus are listed
-# result: the list of rules is returned
-# guard: the event bus exists
-# guard_violation: the event bus does not exist
-# guard: the event bus is ACTIVE
-# guard_violation: the event bus is not ACTIVE
+# step: all rules on an "eventbridge" "bus" are listed
+# result: the list of rules will be returned
+# guard: the "eventbridge" "bus" existed
+# guard_violation: the "eventbridge" "bus" did not exist
+# guard: the "eventbridge" "bus" was "ACTIVE"
+# guard_violation: the "eventbridge" "bus" was not "ACTIVE"
 atomic action ListRules:
     oneof bus_name in BUS_NAMES:
         if bus_name in bus_status:
             if bus_status[bus_name] == "ACTIVE":
                 pass
 
-# step: a rule is enabled
-# result: the rule is ENABLED
-# guard: the rule exists
-# guard_violation: the rule does not exist
-# guard: the rule is DISABLED
-# guard_violation: the rule is not DISABLED
+# step: an "eventbridge" "rule" was "ENABLED"
+# result: the "eventbridge" "rule" will be "ENABLED"
+# guard: the "eventbridge" "rule" existed
+# guard_violation: the "eventbridge" "rule" did not exist
+# guard: the "eventbridge" "rule" was "DISABLED"
+# guard_violation: the "eventbridge" "rule" was not "DISABLED"
 atomic action EnableRule:
     oneof rule_name in RULE_NAMES:
         if rule_name in rule_status:
             if rule_status[rule_name] == "DISABLED":
                 rule_status[rule_name] = "ENABLED"
 
-# step: a rule is disabled
-# result: the rule is DISABLED
-# guard: the rule exists
-# guard_violation: the rule does not exist
-# guard: the rule is ENABLED
-# guard_violation: the rule is not ENABLED
+# step: an "eventbridge" "rule" was "DISABLED"
+# result: the "eventbridge" "rule" will be "DISABLED"
+# guard: the "eventbridge" "rule" existed
+# guard_violation: the "eventbridge" "rule" did not exist
+# guard: the "eventbridge" "rule" was "ENABLED"
+# guard_violation: the "eventbridge" "rule" was not "ENABLED"
 atomic action DisableRule:
     oneof rule_name in RULE_NAMES:
         if rule_name in rule_status:
             if rule_status[rule_name] == "ENABLED":
                 rule_status[rule_name] = "DISABLED"
 
-# step: targets are added to a rule
-# result: the targets are associated with the rule
-# guard: the rule exists
-# guard_violation: the rule does not exist
-# guard: the rule is not DELETED
-# guard_violation: the rule is DELETED
+# step: targets are added to an "eventbridge" "rule"
+# result: the targets are associated with the "eventbridge" "rule"
+# guard: the "eventbridge" "rule" existed
+# guard_violation: the "eventbridge" "rule" did not exist
+# guard: the "eventbridge" "rule" was not "DELETED"
+# guard_violation: the "eventbridge" "rule" was "DELETED"
 atomic action PutTargets:
     oneof rule_name in RULE_NAMES:
         if rule_name in rule_status:
@@ -163,16 +163,16 @@ atomic action PutTargets:
                 oneof target_id in TARGET_IDS:
                     rule_target[rule_name + "#" + target_id] = True
 
-# step: targets are removed from a rule
-# result: the targets are disassociated from the rule
-# guard: the rule exists
-# guard_violation: the rule does not exist
-# guard: the rule is not DELETED
-# guard_violation: the rule is DELETED
-# guard: the target is associated with the rule
-# guard_violation: the target is not associated with the rule
-# guard: the target association is active
-# guard_violation: the target association is not active
+# step: targets are removed from an "eventbridge" "rule"
+# result: the targets are disassociated from the "eventbridge" "rule"
+# guard: the "eventbridge" "rule" existed
+# guard_violation: the "eventbridge" "rule" did not exist
+# guard: the "eventbridge" "rule" was not "DELETED"
+# guard_violation: the "eventbridge" "rule" was "DELETED"
+# guard: the target is associated with the "eventbridge" "rule"
+# guard_violation: the target is not associated with the "eventbridge" "rule"
+# guard: the target association was "ACTIVE"
+# guard_violation: the target association was not "ACTIVE"
 atomic action RemoveTargets:
     oneof rule_name in RULE_NAMES:
         if rule_name in rule_status:
@@ -182,34 +182,34 @@ atomic action RemoveTargets:
                         if rule_target[rule_name + "#" + target_id] == True:
                             rule_target[rule_name + "#" + target_id] = False
 
-# step: targets for a rule are listed
-# result: the list of targets is returned
-# guard: the rule exists
-# guard_violation: the rule does not exist
-# guard: the rule is not DELETED
-# guard_violation: the rule is DELETED
+# step: targets for an "eventbridge" "rule" are listed
+# result: the list of targets will be returned
+# guard: the "eventbridge" "rule" existed
+# guard_violation: the "eventbridge" "rule" did not exist
+# guard: the "eventbridge" "rule" was not "DELETED"
+# guard_violation: the "eventbridge" "rule" was "DELETED"
 atomic action ListTargetsByRule:
     oneof rule_name in RULE_NAMES:
         if rule_name in rule_status:
             if rule_status[rule_name] != "DELETED":
                 pass
 
-# step: events are published to an event bus
+# step: events are published to an "eventbridge" "bus"
 # result: matching enabled rules route the event to their targets
-# guard: the event bus exists
-# guard_violation: the event bus does not exist
-# guard: the event bus is ACTIVE
-# guard_violation: the event bus is not ACTIVE
-# guard: a rule is associated with the event bus
-# guard_violation: no rule is associated with the event bus
-# guard: the rule's event bus matches
-# guard_violation: the rule's event bus does not match
-# guard: the rule is ENABLED
-# guard_violation: the rule is not ENABLED
-# guard: a target is associated with the rule
-# guard_violation: no target is associated with the rule
-# guard: the target association is active
-# guard_violation: the target association is not active
+# guard: the "eventbridge" "bus" existed
+# guard_violation: the "eventbridge" "bus" did not exist
+# guard: the "eventbridge" "bus" was "ACTIVE"
+# guard_violation: the "eventbridge" "bus" was not "ACTIVE"
+# guard: an "eventbridge" "rule" is associated with the "eventbridge" "bus"
+# guard_violation: no eventbridge rule is associated with the "eventbridge" "bus"
+# guard: the "eventbridge" "rule"'s event eventbridge bus matches
+# guard_violation: the "eventbridge" "rule"'s event eventbridge bus does not match
+# guard: the "eventbridge" "rule" was "ENABLED"
+# guard_violation: the "eventbridge" "rule" was not "ENABLED"
+# guard: a target is associated with the "eventbridge" "rule"
+# guard_violation: no target is associated with the "eventbridge" "rule"
+# guard: the target association was "ACTIVE"
+# guard_violation: the target association was not "ACTIVE"
 atomic action PutEvents:
     oneof bus_name in BUS_NAMES:
         if bus_name in bus_status:
@@ -227,10 +227,10 @@ atomic action PutEvents:
                                                     dlq.append(rule_name + "#" + target_id)
 
 # fake_skip: internal
-# step: a dead-letter queue entry is retried or discarded
-# result: the entry is removed from the dead-letter queue
-# guard: the dead-letter queue is not empty
-# guard_violation: the dead-letter queue is empty
+# step: a dead-letter eventbridge queue entry is retried or discarded
+# result: the entry will be removed from the "eventbridge" "dead-letter queue"
+# guard: the "eventbridge" "dead-letter queue" was not empty
+# guard_violation: the "eventbridge" "dead-letter queue" was empty
 atomic action RetryDeadLetter:
     if len(dlq) > 0:
         oneof entry in dlq:

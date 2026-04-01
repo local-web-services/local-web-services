@@ -1,5 +1,5 @@
 @events @generated
-Feature: Events - An Event Bus Is Deleted
+Feature: events - An "Eventbridge" "Bus" Is Deleted
 
   # Generated from FizzBee spec: events.fizz
   # Safety invariants: EventBusStatusValid, RuleStatusValid, RulePatternTypeValid, RuleBusExists, DefaultBusCannotBeDeleted, DeleteRuleRequiresNoTargets, RuleOnlyEnabledOnActiveBus, DeadLetterQueueBounded
@@ -8,13 +8,13 @@ Feature: Events - An Event Bus Is Deleted
     Given the system is initialized
 
   @minimal @happy @delete_event_bus
-  Scenario: an event bus is deleted
-    Given the event bus is not the default bus
-    And the event bus exists
-    And the event bus is "ACTIVE"
-    And the event bus has no rules
-    When an event bus is deleted
-    Then the event bus is "DELETED"
+  Scenario: an "eventbridge" "bus" is deleted
+    Given the "eventbridge" "bus" is not the default eventbridge bus
+    And the "eventbridge" "bus" existed
+    And the "eventbridge" "bus" was "ACTIVE"
+    And the "eventbridge" "bus" has no rules
+    When an "eventbridge" "bus" is deleted
+    Then the "eventbridge" "bus" will be deleted
     And every event bus has a valid status ("ACTIVE" or "DELETED")
     And every rule has a valid status ("ENABLED", "DISABLED", or "DELETED")
     And every rule has a valid pattern type ("EVENT_PATTERN" or "SCHEDULE")
@@ -24,32 +24,32 @@ Feature: Events - An Event Bus Is Deleted
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @delete_event_bus
-  Scenario: an event bus is deleted fails when the event bus is the default bus
-    Given the event bus is the default bus
-    When an event bus is deleted
+  @guard @negative @delete_event_bus
+  Scenario: an "eventbridge" "bus" is deleted fails when the "eventbridge" "bus" is the default eventbridge bus
+    Given the "eventbridge" "bus" is the default eventbridge bus
+    When an "eventbridge" "bus" is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_event_bus
-  Scenario: an event bus is deleted fails when the event bus does not exist
-    Given the event bus is not the default bus
-    And the event bus does not exist
-    When an event bus is deleted
+  @guard @negative @delete_event_bus
+  Scenario: an "eventbridge" "bus" is deleted fails when the "eventbridge" "bus" did not exist
+    Given the "eventbridge" "bus" is not the default eventbridge bus
+    And the "eventbridge" "bus" did not exist
+    When an "eventbridge" "bus" is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_event_bus @lifecycle
-  Scenario: an event bus is deleted fails when the event bus is not "ACTIVE"
-    Given the event bus is not the default bus
-    And the event bus exists
-    And the event bus is not "ACTIVE"
-    When an event bus is deleted
+  @guard @negative @delete_event_bus @lifecycle
+  Scenario: an "eventbridge" "bus" is deleted fails when the "eventbridge" "bus" was not "ACTIVE"
+    Given the "eventbridge" "bus" is not the default eventbridge bus
+    And the "eventbridge" "bus" existed
+    And the "eventbridge" "bus" was not "ACTIVE"
+    When an "eventbridge" "bus" is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_event_bus
-  Scenario: an event bus is deleted fails when the event bus has rules
-    Given the event bus is not the default bus
-    And the event bus exists
-    And the event bus is "ACTIVE"
-    And the event bus has rules
-    When an event bus is deleted
+  @guard @negative @delete_event_bus
+  Scenario: an "eventbridge" "bus" is deleted fails when the "eventbridge" "bus" has rules
+    Given the "eventbridge" "bus" is not the default eventbridge bus
+    And the "eventbridge" "bus" existed
+    And the "eventbridge" "bus" was "ACTIVE"
+    And the "eventbridge" "bus" has rules
+    When an "eventbridge" "bus" is deleted
     Then the operation is rejected

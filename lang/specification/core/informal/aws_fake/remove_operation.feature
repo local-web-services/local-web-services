@@ -9,22 +9,22 @@ Feature: AwsFake - An Operation Is Removed From An Aws Fake
 
   @minimal @happy @remove_operation
   Scenario: an operation is removed from an "AWS" fake
-    Given the operation exists
-    And the operation is "ACTIVE"
+    Given the operation existed
+    And the operation was "ACTIVE"
     When an operation is removed from an "AWS" fake
-    Then the operation is "DELETED"
+    Then the operation will be deleted
     And every "ACTIVE" operation belongs to an "ACTIVE" "AWS" fake
     And every "AWS" fake is tied to a known service
 
-  @standard @negative @remove_operation
-  Scenario: an operation is removed from an "AWS" fake fails when the operation does not exist
-    Given the operation does not exist
+  @guard @negative @remove_operation
+  Scenario: an operation is removed from an "AWS" fake fails when the operation did not exist
+    Given the operation did not exist
     When an operation is removed from an "AWS" fake
     Then the operation is rejected
 
-  @standard @negative @remove_operation
-  Scenario: an operation is removed from an "AWS" fake fails when the operation is not "ACTIVE"
-    Given the operation exists
-    And the operation is not "ACTIVE"
+  @guard @negative @remove_operation
+  Scenario: an operation is removed from an "AWS" fake fails when the operation was not "ACTIVE"
+    Given the operation existed
+    And the operation was not "ACTIVE"
     When an operation is removed from an "AWS" fake
     Then the operation is rejected

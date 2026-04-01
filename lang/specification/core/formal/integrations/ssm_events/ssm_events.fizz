@@ -25,9 +25,9 @@ action Init:
 
 
 # step: an EventBridge event bus is created
-# result: the bus is ACTIVE
-# guard: the bus does not already exist
-# guard_violation: the bus already exists
+# result: the bus will be "ACTIVE"
+# guard: the bus did not already exist
+# guard_violation: the bus already existed
 atomic action CreateEventBus:
     oneof busid in BUS_IDS:
         if busid not in bus_status:
@@ -35,11 +35,11 @@ atomic action CreateEventBus:
 
 
 # step: the EventBridge event bus is deleted
-# result: the bus is DELETED and SSM event delivery will fail
-# guard: the bus exists
-# guard_violation: the bus does not exist
-# guard: the bus is ACTIVE
-# guard_violation_lifecycle: the bus is already DELETED
+# result: the bus will be deleted and SSM event delivery will fail
+# guard: the bus existed
+# guard_violation: the bus did not exist
+# guard: the bus was "ACTIVE"
+# guard_violation_lifecycle: the bus is already "DELETED"
 atomic action DeleteEventBus:
     oneof busid in BUS_IDS:
         if busid in bus_status:
@@ -49,11 +49,11 @@ atomic action DeleteEventBus:
 
 # fake_skip: internal
 # step: a parameter is created and SSM delivers a CREATED event to the EventBridge bus
-# result: the parameter EXISTS and the CREATED event is DELIVERED
-# guard: the parameter does not already exist
-# guard_violation: the parameter already exists
-# guard: the bus is ACTIVE
-# guard_violation_lifecycle: the bus is DELETED
+# result: the parameter will exist and the CREATED event will be "DELIVERED"
+# guard: the "ssm" "parameter" did not already exist
+# guard_violation: the "ssm" "parameter" already existed
+# guard: the bus was "ACTIVE"
+# guard_violation_lifecycle: the bus was "DELETED"
 # guard: an event slot is available
 # guard_violation_capacity: no event slot is available
 atomic action PutParameterEventDelivered:
@@ -73,11 +73,11 @@ atomic action PutParameterEventDelivered:
 
 # fake_skip: internal
 # step: a parameter is created but the CREATED event delivery fails because the bus is deleted
-# result: the parameter EXISTS but no event is delivered
-# guard: the parameter does not already exist
-# guard_violation: the parameter already exists
-# guard: the bus is DELETED
-# guard_violation_lifecycle: the bus is not DELETED
+# result: the parameter will exist but no event will be delivered
+# guard: the "ssm" "parameter" did not already exist
+# guard_violation: the "ssm" "parameter" already existed
+# guard: the bus was "DELETED"
+# guard_violation_lifecycle: the bus was not "DELETED"
 atomic action PutParameterEventFails:
     oneof pid in PARAM_IDS:
         if pid not in param_status:
@@ -89,13 +89,13 @@ atomic action PutParameterEventFails:
 
 # fake_skip: internal
 # step: a parameter is deleted and SSM delivers a DELETED event to the EventBridge bus
-# result: the parameter is DELETED and the DELETED event is DELIVERED
-# guard: the parameter exists
-# guard_violation: the parameter does not exist
-# guard: the parameter EXISTS (not already DELETED)
-# guard_violation_lifecycle: the parameter is already DELETED
-# guard: the bus is ACTIVE
-# guard_violation_lifecycle: the bus is DELETED
+# result: the "ssm" "parameter" will be deleted and the "DELETED" event will be "DELIVERED"
+# guard: the "ssm" "parameter" existed
+# guard_violation: the "ssm" "parameter" did not exist
+# guard: the "ssm" "parameter" existed (not already "DELETED")
+# guard_violation_lifecycle: the parameter is already "DELETED"
+# guard: the bus was "ACTIVE"
+# guard_violation_lifecycle: the bus was "DELETED"
 # guard: an event slot is available
 # guard_violation_capacity: no event slot is available
 atomic action DeleteParameterEventDelivered:

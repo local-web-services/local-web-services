@@ -117,6 +117,7 @@ class TestSnsRoutes:
     async def test_publish_action(self) -> None:
         # Arrange
         provider = await _started_provider()
+        await provider.subscribe(topic_name="my-topic", protocol="lambda", endpoint="my-func")
         app = create_sns_app(provider)
         expected_status = 200
 
@@ -275,6 +276,7 @@ class TestSnsRoutes:
     async def test_publish_with_message_attributes(self) -> None:
         # Arrange
         provider = await _started_provider()
+        await provider.subscribe(topic_name="my-topic", protocol="lambda", endpoint="my-func")
         app = create_sns_app(provider)
         expected_status = 200
 

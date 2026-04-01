@@ -6,7 +6,10 @@ import re
 
 from lws_arch_tests._root import project_root
 
-ALLOWED_PATTERN = re.compile(r"^(__init__|conftest|test_.+|_helpers)\.py$")
+ALLOWED_PATTERN = re.compile(r"^(__init__|conftest|test_.+|_helpers|constants|client)\.py$")
+
+# BDD step directories contain one-step-per-file modules — any snake_case name is valid
+STEP_DIRS = {"given", "when", "then"}
 
 
 class TestFileNaming:
@@ -26,6 +29,9 @@ class TestFileNaming:
             if not test_dir.exists():
                 continue
             for path in sorted(test_dir.rglob("*.py")):
+                # Files inside given/when/then step directories follow their own convention
+                if path.parent.name in STEP_DIRS:
+                    continue
                 if not ALLOWED_PATTERN.match(path.name):
                     rel = path.relative_to(tests_root)
                     violations.append(str(rel))

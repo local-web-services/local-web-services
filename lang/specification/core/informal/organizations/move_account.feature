@@ -1,5 +1,5 @@
 @organizations @generated
-Feature: Organizations - An Account Is Moved To A New Parent
+Feature: Organizations - An "Organizations" "Account" Is Moved To A New Parent
 
   # Generated from FizzBee spec: organizations.fizz
   # Safety invariants: OrgRootConsistency, AccountParentValid, OuParentValid, NoChildOfDeletedOu, PolicyAttachmentTargetValid
@@ -8,35 +8,35 @@ Feature: Organizations - An Account Is Moved To A New Parent
     Given the system is initialized
 
   @minimal @happy @move_account
-  Scenario: an account is moved to a new parent
-    Given the account exists and is "ACTIVE"
-    And the source parent matches the account's current parent
-    And the destination parent is "ACTIVE"
-    When an account is moved to a new parent
-    Then the account is under the new parent
-    And the root is "ACTIVE" whenever the organization exists
+  Scenario: an "organizations" "account" is moved to a new parent
+    Given the "organizations" "account" existed and was "ACTIVE"
+    And the source parent matched the "organizations" "account"'s current parent
+    And the destination "organizations" "parent" was "ACTIVE"
+    When an "organizations" "account" is moved to a new parent
+    Then the "organizations" "account" will be under the new parent
+    And the root was "ACTIVE" whenever the "organizations" "organization" exists
     And every active account has an "ACTIVE" parent
     And every active organizational unit has an "ACTIVE" parent
     And no active node is a child of a deleted organizational unit
     And every active policy attachment targets an "ACTIVE" node
 
-  @standard @negative @move_account
-  Scenario: an account is moved to a new parent fails when the account does not exist or is not "ACTIVE"
-    Given the account does not exist or is not "ACTIVE"
-    When an account is moved to a new parent
+  @guard @negative @move_account
+  Scenario: an "organizations" "account" is moved to a new parent fails when the "organizations" "account" did not exist or was "ACTIVE"
+    Given the "organizations" "account" did not exist or was "ACTIVE"
+    When an "organizations" "account" is moved to a new parent
     Then the operation is rejected
 
-  @standard @negative @move_account
-  Scenario: an account is moved to a new parent fails when the source parent does not match the account's current parent
-    Given the account exists and is "ACTIVE"
-    And the source parent does not match the account's current parent
-    When an account is moved to a new parent
+  @guard @negative @move_account
+  Scenario: an "organizations" "account" is moved to a new parent fails when the source parent did not match the "organizations" "account"'s current parent
+    Given the "organizations" "account" existed and was "ACTIVE"
+    And the source parent did not match the "organizations" "account"'s current parent
+    When an "organizations" "account" is moved to a new parent
     Then the operation is rejected
 
-  @standard @negative @move_account
-  Scenario: an account is moved to a new parent fails when the destination parent is not "ACTIVE"
-    Given the account exists and is "ACTIVE"
-    And the source parent matches the account's current parent
-    And the destination parent is not "ACTIVE"
-    When an account is moved to a new parent
+  @guard @negative @move_account
+  Scenario: an "organizations" "account" is moved to a new parent fails when the destination "organizations" "parent" was not "ACTIVE"
+    Given the "organizations" "account" existed and was "ACTIVE"
+    And the source parent matched the "organizations" "account"'s current parent
+    And the destination "organizations" "parent" was not "ACTIVE"
+    When an "organizations" "account" is moved to a new parent
     Then the operation is rejected

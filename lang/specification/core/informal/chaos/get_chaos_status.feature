@@ -10,5 +10,5 @@ Feature: Chaos - The Chaos Status For All Services Is Retrieved
   @minimal @happy @get_chaos_status
   Scenario: the chaos status for all services is retrieved
     When the chaos status for all services is retrieved
-    Then the chaos configuration for each service is returned
+    Then the chaos configuration for each service will be returned
     And every chaos-configured service is a known service

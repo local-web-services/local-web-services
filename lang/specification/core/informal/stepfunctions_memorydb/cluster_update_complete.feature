@@ -1,5 +1,5 @@
 @stepfunctionsmemorydb @generated
-Feature: StepfunctionsMemorydb - The Memorydb Cluster Update Completes
+Feature: StepfunctionsMemorydb - The "Memorydb" "Cluster" Update Completes
 
   # Generated from FizzBee spec: stepfunctions_memorydb.fizz
   # Safety invariants: ExecutionRequiresActiveStateMachine, SuccessfulExecutionConnectedToACluster
@@ -8,15 +8,15 @@ Feature: StepfunctionsMemorydb - The Memorydb Cluster Update Completes
     Given the system is initialized
 
   @minimal @happy @cluster_update_complete @internal
-  Scenario: the MemoryDB cluster update completes
-    Given the cluster is "UPDATING"
-    When the MemoryDB cluster update completes
-    Then the cluster is "AVAILABLE" again
+  Scenario: the "memorydb" "cluster" update completes
+    Given the "memorydb" "cluster" was "UPDATING"
+    When the "memorydb" "cluster" update completes
+    Then the "memorydb" "cluster" will be "AVAILABLE" again
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
-  @standard @negative @cluster_update_complete @internal
-  Scenario: the MemoryDB cluster update completes fails when the cluster is not "UPDATING"
-    Given the cluster is not "UPDATING"
-    When the MemoryDB cluster update completes
+  @guard @negative @cluster_update_complete @internal
+  Scenario: the "memorydb" "cluster" update completes fails when the "memorydb" "cluster" was not "UPDATING"
+    Given the "memorydb" "cluster" was not "UPDATING"
+    When the "memorydb" "cluster" update completes
     Then the operation is rejected

@@ -1,5 +1,5 @@
 @events @generated
-Feature: Events - An Event Bus Is Described
+Feature: events - An "Eventbridge" "Bus" Is Described
 
   # Generated from FizzBee spec: events.fizz
   # Safety invariants: EventBusStatusValid, RuleStatusValid, RulePatternTypeValid, RuleBusExists, DefaultBusCannotBeDeleted, DeleteRuleRequiresNoTargets, RuleOnlyEnabledOnActiveBus, DeadLetterQueueBounded
@@ -8,11 +8,11 @@ Feature: Events - An Event Bus Is Described
     Given the system is initialized
 
   @minimal @happy @describe_event_bus
-  Scenario: an event bus is described
-    Given the event bus exists
-    And the event bus is "ACTIVE"
-    When an event bus is described
-    Then the event bus details are returned
+  Scenario: an "eventbridge" "bus" is described
+    Given the "eventbridge" "bus" existed
+    And the "eventbridge" "bus" was "ACTIVE"
+    When an "eventbridge" "bus" is described
+    Then the "eventbridge" "bus" details will be returned
     And every event bus has a valid status ("ACTIVE" or "DELETED")
     And every rule has a valid status ("ENABLED", "DISABLED", or "DELETED")
     And every rule has a valid pattern type ("EVENT_PATTERN" or "SCHEDULE")
@@ -22,15 +22,15 @@ Feature: Events - An Event Bus Is Described
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @describe_event_bus
-  Scenario: an event bus is described fails when the event bus does not exist
-    Given the event bus does not exist
-    When an event bus is described
+  @guard @negative @describe_event_bus
+  Scenario: an "eventbridge" "bus" is described fails when the "eventbridge" "bus" did not exist
+    Given the "eventbridge" "bus" did not exist
+    When an "eventbridge" "bus" is described
     Then the operation is rejected
 
-  @standard @negative @describe_event_bus
-  Scenario: an event bus is described fails when the event bus is not "ACTIVE"
-    Given the event bus exists
-    And the event bus is not "ACTIVE"
-    When an event bus is described
+  @guard @negative @describe_event_bus
+  Scenario: an "eventbridge" "bus" is described fails when the "eventbridge" "bus" was not "ACTIVE"
+    Given the "eventbridge" "bus" existed
+    And the "eventbridge" "bus" was not "ACTIVE"
+    When an "eventbridge" "bus" is described
     Then the operation is rejected

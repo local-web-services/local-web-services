@@ -20,10 +20,10 @@ action Init:
     msg_queue = {}
     msg_receive_count = {}
 
-# step: a queue is created
-# result: the queue is ACTIVE
-# guard: the queue does not already exist
-# guard_violation: the queue already exists
+# step: a "sqs" "queue" is created
+# result: the "sqs" "queue" will be "ACTIVE"
+# guard: the "sqs" "queue" did not already exist
+# guard_violation: the "sqs" "queue" already existed
 atomic action CreateQueue:
     oneof qname in QUEUE_NAMES:
         if qname not in queue_status:
@@ -44,12 +44,12 @@ atomic action CreateQueue:
                     queue_dlq[qname] = ""
                     queue_max_receive[qname] = 0
 
-# step: a queue is deleted
-# result: the queue is DELETED and its messages are removed
-# guard: the queue exists
-# guard_violation: the queue does not exist
-# guard: the queue is ACTIVE
-# guard_violation_lifecycle: the queue is not ACTIVE
+# step: a "sqs" "queue" is deleted
+# result: the "sqs" "queue" will be "DELETED" and its messages will be removed
+# guard: the "sqs" "queue" existed
+# guard_violation: the "sqs" "queue" did not exist
+# guard: the "sqs" "queue" was "ACTIVE"
+# guard_violation_lifecycle: the "sqs" "queue" was not "ACTIVE"
 atomic action DeleteQueue:
     oneof qname in QUEUE_NAMES:
         if qname in queue_status:
@@ -60,12 +60,12 @@ atomic action DeleteQueue:
                         if msg_queue[mid] == qname:
                             msg_status[mid] = "DELETED"
 
-# step: a message is sent to the queue
-# result: the message is AVAILABLE for delivery
-# guard: the queue exists
-# guard_violation: the queue does not exist
-# guard: the queue is ACTIVE
-# guard_violation_lifecycle: the queue is not ACTIVE
+# step: a "sqs" "message" is sent to the "sqs" "queue"
+# result: the "sqs" "message" will be "AVAILABLE" for delivery
+# guard: the "sqs" "queue" existed
+# guard_violation: the "sqs" "queue" did not exist
+# guard: the "sqs" "queue" was "ACTIVE"
+# guard_violation_lifecycle: the "sqs" "queue" was not "ACTIVE"
 # guard: the message slot is available
 # guard_violation_capacity: the message slot is not available
 atomic action SendMessage:
@@ -78,16 +78,16 @@ atomic action SendMessage:
                         msg_receive_count[mid] = 0
                         msg_status[mid] = "AVAILABLE"
 
-# step: a message is received from the queue
-# result: the message is IN_FLIGHT
-# guard: the message exists
-# guard_violation: the message does not exist
-# guard: the message is AVAILABLE
-# guard_violation: the message is not AVAILABLE
-# guard: the message's queue exists
-# guard_violation: the message's queue does not exist
-# guard: the message's queue is ACTIVE
-# guard_violation_lifecycle: the message's queue is not ACTIVE
+# step: a "sqs" "message" is received from the "sqs" "queue"
+# result: the "sqs" "message" will be "IN_FLIGHT"
+# guard: the "sqs" "message" existed
+# guard_violation: the "sqs" "message" did not exist
+# guard: the "sqs" "message" was "AVAILABLE"
+# guard_violation: the "sqs" "message" was not "AVAILABLE"
+# guard: the "sqs" "message"'s "sqs" "queue" existed
+# guard_violation: the "sqs" "message"'s "sqs" "queue" did not exist
+# guard: the "sqs" "message"'s "sqs" "queue" was "ACTIVE"
+# guard_violation_lifecycle: the "sqs" "message"'s "sqs" "queue" was not "ACTIVE"
 atomic action ReceiveMessage:
     oneof mid in MSG_IDS:
         if mid in msg_status:
@@ -97,36 +97,36 @@ atomic action ReceiveMessage:
                         msg_status[mid] = "IN_FLIGHT"
                         msg_receive_count[mid] = msg_receive_count[mid] + 1
 
-# step: an in-flight message is deleted
-# result: the message is removed from the queue
-# guard: the message exists
-# guard_violation: the message does not exist
-# guard: the message is IN_FLIGHT
-# guard_violation: the message is not IN_FLIGHT
+# step: an in-flight "sqs" "message" is deleted
+# result: the "sqs" "message" will be removed from the "sqs" "queue"
+# guard: the "sqs" "message" existed
+# guard_violation: the "sqs" "message" did not exist
+# guard: the "sqs" "message" was "IN_FLIGHT"
+# guard_violation: the "sqs" "message" was not "IN_FLIGHT"
 atomic action DeleteMessage:
     oneof mid in MSG_IDS:
         if mid in msg_status:
             if msg_status[mid] == "IN_FLIGHT":
                 msg_status[mid] = "DELETED"
 
-# step: message visibility timeout is changed
-# result: the message visibility is updated
-# guard: the message exists
-# guard_violation: the message does not exist
-# guard: the message is IN_FLIGHT
-# guard_violation: the message is not IN_FLIGHT
+# step: "sqs" "message" visibility timeout is changed
+# result: the "sqs" "message" visibility will be updated
+# guard: the "sqs" "message" existed
+# guard_violation: the "sqs" "message" did not exist
+# guard: the "sqs" "message" was "IN_FLIGHT"
+# guard_violation: the "sqs" "message" was not "IN_FLIGHT"
 atomic action ChangeMessageVisibility:
     oneof mid in MSG_IDS:
         if mid in msg_status:
             if msg_status[mid] == "IN_FLIGHT":
                 pass
 
-# step: all messages in a queue are purged
-# result: all messages in the queue are DELETED
-# guard: the queue exists
-# guard_violation: the queue does not exist
-# guard: the queue is ACTIVE
-# guard_violation_lifecycle: the queue is not ACTIVE
+# step: all "sqs" "message"s in a "sqs" "queue" are purged
+# result: all messages in the "sqs" "queue" will be "DELETED"
+# guard: the "sqs" "queue" existed
+# guard_violation: the "sqs" "queue" did not exist
+# guard: the "sqs" "queue" was "ACTIVE"
+# guard_violation_lifecycle: the "sqs" "queue" was not "ACTIVE"
 atomic action PurgeQueue:
     oneof qname in QUEUE_NAMES:
         if qname in queue_status:
@@ -136,12 +136,12 @@ atomic action PurgeQueue:
                         if msg_queue[mid] == qname:
                             msg_status[mid] = "DELETED"
 
-# step: queue attributes are retrieved
-# result: the queue attributes are returned
-# guard: the queue exists
-# guard_violation: the queue does not exist
-# guard: the queue is ACTIVE
-# guard_violation_lifecycle: the queue is not ACTIVE
+# step: "sqs" "queue" attributes are retrieved
+# result: the "sqs" "queue" attributes will be returned
+# guard: the "sqs" "queue" existed
+# guard_violation: the "sqs" "queue" did not exist
+# guard: the "sqs" "queue" was "ACTIVE"
+# guard_violation_lifecycle: the "sqs" "queue" was not "ACTIVE"
 atomic action GetQueueAttributes:
     oneof qname in QUEUE_NAMES:
         if qname in queue_status:
@@ -149,12 +149,12 @@ atomic action GetQueueAttributes:
                 pass
 
 # fake_skip: internal
-# step: a message visibility timeout expires
-# result: the message becomes AVAILABLE again
-# guard: the message exists
-# guard_violation: the message does not exist
-# guard: the message is IN_FLIGHT
-# guard_violation: the message is not IN_FLIGHT
+# step: a "sqs" "message" visibility timeout expires
+# result: the "sqs" "message" becomes "AVAILABLE" again
+# guard: the "sqs" "message" existed
+# guard_violation: the "sqs" "message" did not exist
+# guard: the "sqs" "message" was "IN_FLIGHT"
+# guard_violation: the "sqs" "message" was not "IN_FLIGHT"
 atomic action VisibilityTimeoutExpires:
     oneof mid in MSG_IDS:
         if mid in msg_status:
@@ -162,22 +162,22 @@ atomic action VisibilityTimeoutExpires:
                 msg_status[mid] = "AVAILABLE"
 
 # fake_skip: internal
-# step: a message exceeding its receive count is moved to the dead-letter queue
-# result: the message is AVAILABLE in the dead-letter queue
-# guard: the message exists
-# guard_violation: the message does not exist
-# guard: the message is AVAILABLE
-# guard_violation: the message is not AVAILABLE
-# guard: the message's queue exists
-# guard_violation: the message's queue does not exist
-# guard: the queue has a maximum receive count configured
-# guard_violation: the queue does not have a maximum receive count configured
-# guard: the message has exceeded the maximum receive count
-# guard_violation: the message has not exceeded the maximum receive count
-# guard: the dead-letter queue exists
-# guard_violation: the dead-letter queue does not exist
-# guard: the dead-letter queue is ACTIVE
-# guard_violation: the dead-letter queue is not ACTIVE
+# step: a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue"
+# result: the "sqs" "message" will be "AVAILABLE" in the dead-letter "sqs" "queue"
+# guard: the "sqs" "message" existed
+# guard_violation: the "sqs" "message" did not exist
+# guard: the "sqs" "message" was "AVAILABLE"
+# guard_violation: the "sqs" "message" was not "AVAILABLE"
+# guard: the "sqs" "message"'s "sqs" "queue" existed
+# guard_violation: the "sqs" "message"'s "sqs" "queue" did not exist
+# guard: the "sqs" "queue" had a maximum receive count configured
+# guard_violation: the "sqs" "queue" did not have a maximum receive count configured
+# guard: the "sqs" "message" had exceeded the maximum receive count
+# guard_violation: the "sqs" "message" had not exceeded the maximum receive count
+# guard: the dead-letter "sqs" "queue" existed
+# guard_violation: the dead-letter "sqs" "queue" did not exist
+# guard: the dead-letter "sqs" "queue" was "ACTIVE"
+# guard_violation: the dead-letter "sqs" "queue" was not "ACTIVE"
 atomic action RedriveToDeadLetterQueue:
     oneof mid in MSG_IDS:
         if mid in msg_status:

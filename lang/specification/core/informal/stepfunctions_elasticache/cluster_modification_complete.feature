@@ -9,14 +9,14 @@ Feature: StepfunctionsElasticache - The Cluster Modification Completes
 
   @minimal @happy @cluster_modification_complete @internal
   Scenario: the cluster modification completes
-    Given the cluster is "MODIFYING"
+    Given the "elasticache" "cluster" was "MODIFYING"
     When the cluster modification completes
-    Then the cluster is "AVAILABLE" again
+    Then the "elasticache" "cluster" will be "AVAILABLE" again
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it read
 
-  @standard @negative @cluster_modification_complete @internal
-  Scenario: the cluster modification completes fails when the cluster is not "MODIFYING"
-    Given the cluster is not "MODIFYING"
+  @guard @negative @cluster_modification_complete @internal
+  Scenario: the cluster modification completes fails when the "elasticache" "cluster" was not "MODIFYING"
+    Given the "elasticache" "cluster" was not "MODIFYING"
     When the cluster modification completes
     Then the operation is rejected

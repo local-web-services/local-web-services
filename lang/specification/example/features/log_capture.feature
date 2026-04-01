@@ -1,7 +1,7 @@
 @stepfunctions @log_capture @dataplane
 Feature: Log capture records and filters AWS API calls
 
-  @happy
+  @happy @minimal
   Scenario: Log capture records StartExecution call
     Given an OrderProcessor state machine is running
     And log capture is active
@@ -9,7 +9,7 @@ Feature: Log capture records and filters AWS API calls
     Then the log capture will have recorded a "stepfunctions" "StartExecution" call
     And no errors will appear in the log capture
 
-  @happy
+  @happy @sequence
   Scenario: Log filtering returns entries by service and operation
     Given an OrderProcessor state machine is running
     When I process order "order-filter-001"

@@ -1,5 +1,5 @@
 @events @generated
-Feature: Events - A Dead-Letter Queue Entry Is Retried Or Discarded
+Feature: events - A Dead-Letter Eventbridge Queue Entry Is Retried Or Discarded
 
   # Generated from FizzBee spec: events.fizz
   # Safety invariants: EventBusStatusValid, RuleStatusValid, RulePatternTypeValid, RuleBusExists, DefaultBusCannotBeDeleted, DeleteRuleRequiresNoTargets, RuleOnlyEnabledOnActiveBus, DeadLetterQueueBounded
@@ -8,10 +8,10 @@ Feature: Events - A Dead-Letter Queue Entry Is Retried Or Discarded
     Given the system is initialized
 
   @minimal @happy @retry_dead_letter @internal
-  Scenario: a dead-letter queue entry is retried or discarded
-    Given the dead-letter queue is not empty
-    When a dead-letter queue entry is retried or discarded
-    Then the entry is removed from the dead-letter queue
+  Scenario: a dead-letter eventbridge queue entry is retried or discarded
+    Given the "eventbridge" "dead-letter queue" was not empty
+    When a dead-letter eventbridge queue entry is retried or discarded
+    Then the entry will be removed from the "eventbridge" "dead-letter queue"
     And every event bus has a valid status ("ACTIVE" or "DELETED")
     And every rule has a valid status ("ENABLED", "DISABLED", or "DELETED")
     And every rule has a valid pattern type ("EVENT_PATTERN" or "SCHEDULE")
@@ -21,8 +21,8 @@ Feature: Events - A Dead-Letter Queue Entry Is Retried Or Discarded
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @retry_dead_letter @internal
-  Scenario: a dead-letter queue entry is retried or discarded fails when the dead-letter queue is empty
-    Given the dead-letter queue is empty
-    When a dead-letter queue entry is retried or discarded
+  @guard @negative @retry_dead_letter @internal
+  Scenario: a dead-letter eventbridge queue entry is retried or discarded fails when the "eventbridge" "dead-letter queue" was empty
+    Given the "eventbridge" "dead-letter queue" was empty
+    When a dead-letter eventbridge queue entry is retried or discarded
     Then the operation is rejected

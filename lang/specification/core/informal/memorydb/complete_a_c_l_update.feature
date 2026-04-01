@@ -1,5 +1,5 @@
 @memorydb @generated
-Feature: Memorydb - An Acl Update Completes
+Feature: Memorydb - An "Memorydb" "Acl" Update Completes
 
   # Generated from FizzBee spec: memorydb.fizz
   # Safety invariants: AllClustersHaveDurability, SnapshottingClusterHasSnapshot, ACLNotDeletedWhileInUse, UserNotDeletedWhileInACL, TagsExistForResources
@@ -8,26 +8,26 @@ Feature: Memorydb - An Acl Update Completes
     Given the system is initialized
 
   @minimal @happy @complete_a_c_l_update @internal
-  Scenario: an "ACL" update completes
-    Given the "ACL" exists
-    And the "ACL" is "MODIFYING"
-    When an "ACL" update completes
-    Then the "ACL" returns to "ACTIVE" state
+  Scenario: an "memorydb" "ACL" update completes
+    Given the "memorydb" "ACL" existed
+    And the "memorydb" "ACL" was "MODIFYING"
+    When an "memorydb" "ACL" update completes
+    Then the "memorydb" "ACL" returns to "ACTIVE" state
     And every active cluster has write durability enabled
     And every snapshotting cluster has a corresponding in-progress snapshot
-    And no "ACL" in "DELETING" state is currently associated with a cluster
-    And no user in "DELETING" state is currently a member of an "ACL"
+    And no "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"
+    And no user in "DELETING" state is currently a member of an "memorydb" "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @complete_a_c_l_update @internal
-  Scenario: an "ACL" update completes fails when the "ACL" does not exist
-    Given the "ACL" does not exist
-    When an "ACL" update completes
+  @guard @negative @complete_a_c_l_update @internal
+  Scenario: an "memorydb" "ACL" update completes fails when the "memorydb" "ACL" did not exist
+    Given the "memorydb" "ACL" did not exist
+    When an "memorydb" "ACL" update completes
     Then the operation is rejected
 
-  @standard @negative @complete_a_c_l_update @internal
-  Scenario: an "ACL" update completes fails when the "ACL" is not "MODIFYING"
-    Given the "ACL" exists
-    And the "ACL" is not "MODIFYING"
-    When an "ACL" update completes
+  @guard @negative @complete_a_c_l_update @internal
+  Scenario: an "memorydb" "ACL" update completes fails when the "memorydb" "ACL" was not "MODIFYING"
+    Given the "memorydb" "ACL" existed
+    And the "memorydb" "ACL" was not "MODIFYING"
+    When an "memorydb" "ACL" update completes
     Then the operation is rejected

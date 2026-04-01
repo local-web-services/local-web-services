@@ -1,5 +1,5 @@
 @dynamodb @generated
-Feature: Dynamodb - All Items In The Table Are Scanned
+Feature: Dynamodb - All "Dynamodb" "Item"S In The "Dynamodb" "Table" Are Scanned
 
   # Generated from FizzBee spec: dynamodb.fizz
   # Safety invariants: TableStatusValid, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
@@ -8,12 +8,12 @@ Feature: Dynamodb - All Items In The Table Are Scanned
     Given the system is initialized
 
   @minimal @happy @scan
-  Scenario: all items in the table are scanned
-    Given the table exists
-    And the table is "ACTIVE"
-    And reads are not throttled
-    When all items in the table are scanned
-    Then all items are returned
+  Scenario: all "dynamodb" "item"s in the "dynamodb" "table" are scanned
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was "ACTIVE"
+    And reads were not throttled
+    When all "dynamodb" "item"s in the "dynamodb" "table" are scanned
+    Then all items will be returned
     And every table has a valid status ("CREATING", "ACTIVE", or "DELETED")
     And "GSI" pending write count is never negative
     And transaction status is always a valid value
@@ -21,23 +21,23 @@ Feature: Dynamodb - All Items In The Table Are Scanned
     And items only exist in non-deleted tables
     And deleted tables are never the target of a pending transaction
 
-  @standard @negative @scan
-  Scenario: all items in the table are scanned fails when the table does not exist
-    Given the table does not exist
-    When all items in the table are scanned
+  @guard @negative @scan
+  Scenario: all "dynamodb" "item"s in the "dynamodb" "table" are scanned fails when the "dynamodb" "table" did not exist
+    Given the "dynamodb" "table" did not exist
+    When all "dynamodb" "item"s in the "dynamodb" "table" are scanned
     Then the operation is rejected
 
-  @standard @negative @scan @lifecycle
-  Scenario: all items in the table are scanned fails when the table is not "ACTIVE"
-    Given the table exists
-    And the table is not "ACTIVE"
-    When all items in the table are scanned
+  @guard @negative @scan @lifecycle
+  Scenario: all "dynamodb" "item"s in the "dynamodb" "table" are scanned fails when the "dynamodb" "table" was not "ACTIVE"
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was not "ACTIVE"
+    When all "dynamodb" "item"s in the "dynamodb" "table" are scanned
     Then the operation is rejected
 
-  @standard @negative @scan @capacity
-  Scenario: all items in the table are scanned fails when reads are throttled
-    Given the table exists
-    And the table is "ACTIVE"
-    And reads are throttled
-    When all items in the table are scanned
+  @guard @negative @scan @capacity
+  Scenario: all "dynamodb" "item"s in the "dynamodb" "table" are scanned fails when reads were throttled
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was "ACTIVE"
+    And reads were throttled
+    When all "dynamodb" "item"s in the "dynamodb" "table" are scanned
     Then the operation is rejected

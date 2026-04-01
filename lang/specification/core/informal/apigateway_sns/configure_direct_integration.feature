@@ -1,5 +1,5 @@
 @apigatewaysns @generated
-Feature: ApigatewaySns - A Direct Sns Integration Is Configured On The Api
+Feature: ApigatewaySns - A Direct Sns Integration Is Configured On The "Api Gateway" "Api"
 
   # Generated from FizzBee spec: apigateway_sns.fizz
   # Safety invariants: PublishedMessageReferencesExistingTopic, SuccessfulRequestReferencesExistingAPI
@@ -8,32 +8,32 @@ Feature: ApigatewaySns - A Direct Sns Integration Is Configured On The Api
     Given the system is initialized
 
   @minimal @happy @configure_direct_integration
-  Scenario: a direct "SNS" integration is configured on the "API"
-    Given the "API" exists and is "ACTIVE"
-    And the "API" has no "SNS" integration configured
-    And the topic exists and is "ACTIVE"
-    When a direct "SNS" integration is configured on the "API"
-    Then the "API" will publish to the topic when requests are received
-    And every "PUBLISHED" message references a topic that exists
-    And every successful request references an "API" that exists
+  Scenario: a direct "SNS" integration is configured on the "api gateway" "API"
+    Given the "api gateway" "API" existed and was "ACTIVE"
+    And the "api gateway" "api" has no "SNS" integration configured
+    And the "sns" "topic" existed and was "ACTIVE"
+    When a direct "SNS" integration is configured on the "api gateway" "API"
+    Then the "api gateway" "API" will publish to the "sns" "topic" when requests are received
+    And every "PUBLISHED" message references a "sns" "topic" that exists
+    And every successful request references an "api gateway" "API" that exists
 
-  @standard @negative @configure_direct_integration
-  Scenario: a direct "SNS" integration is configured on the "API" fails when the "API" does not exist or is not "ACTIVE"
-    Given the "API" does not exist or is not "ACTIVE"
-    When a direct "SNS" integration is configured on the "API"
+  @guard @negative @configure_direct_integration
+  Scenario: a direct "SNS" integration is configured on the "api gateway" "API" fails when the "api gateway" "API" did not exist or was "ACTIVE"
+    Given the "api gateway" "API" did not exist or was "ACTIVE"
+    When a direct "SNS" integration is configured on the "api gateway" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_direct_integration
-  Scenario: a direct "SNS" integration is configured on the "API" fails when the "API" already has an "SNS" integration configured
-    Given the "API" exists and is "ACTIVE"
-    And the "API" already has an "SNS" integration configured
-    When a direct "SNS" integration is configured on the "API"
+  @guard @negative @configure_direct_integration
+  Scenario: a direct "SNS" integration is configured on the "api gateway" "API" fails when the "api gateway" "API" already has a "SNS" integration configured
+    Given the "api gateway" "API" existed and was "ACTIVE"
+    And the "api gateway" "API" already has a "SNS" integration configured
+    When a direct "SNS" integration is configured on the "api gateway" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_direct_integration
-  Scenario: a direct "SNS" integration is configured on the "API" fails when the topic does not exist or is not "ACTIVE"
-    Given the "API" exists and is "ACTIVE"
-    And the "API" has no "SNS" integration configured
-    And the topic does not exist or is not "ACTIVE"
-    When a direct "SNS" integration is configured on the "API"
+  @guard @negative @configure_direct_integration
+  Scenario: a direct "SNS" integration is configured on the "api gateway" "API" fails when the "sns" "topic" did not exist or was "ACTIVE"
+    Given the "api gateway" "API" existed and was "ACTIVE"
+    And the "api gateway" "api" has no "SNS" integration configured
+    And the "sns" "topic" did not exist or was "ACTIVE"
+    When a direct "SNS" integration is configured on the "api gateway" "API"
     Then the operation is rejected

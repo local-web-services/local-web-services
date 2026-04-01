@@ -22,29 +22,29 @@ action Init:
     session_user = {}
     session_pool = {}
 
-# step: a user pool is created
-# result: the user pool is ACTIVE
-# guard: the user pool does not already exist
-# guard_violation: the user pool already exists
+# step: a "cognito" "user pool" is created
+# result: the "cognito" "user pool" will be "ACTIVE"
+# guard: the "cognito" "user pool" did not already exist
+# guard_violation: the "cognito" "user pool" already existed
 atomic action CreateUserPool:
     oneof pool_id in POOL_IDS:
         if pool_id not in pool_status:
             pool_status[pool_id] = "ACTIVE"
 
-# step: a user pool is deleted
-# result: the user pool is DELETED along with all its users and groups
-# guard: the user pool exists
-# guard_violation: the user pool does not exist
-# guard: the user pool is ACTIVE
-# guard_violation: the user pool is not ACTIVE
-# guard: the user belongs to a pool
-# guard_violation: the user does not belong to a pool
-# guard: the user belongs to this pool
-# guard_violation: the user belongs to a different pool
-# guard: the group belongs to a pool
-# guard_violation: the group does not belong to a pool
-# guard: the group belongs to this pool
-# guard_violation: the group belongs to a different pool
+# step: a "cognito" "user pool" is deleted
+# result: the "cognito" "user pool" will be "DELETED" along with all its users and groups
+# guard: the "cognito" "user pool" existed
+# guard_violation: the "cognito" "user pool" did not exist
+# guard: the "cognito" "user pool" was "ACTIVE"
+# guard_violation: the "cognito" "user pool" was not "ACTIVE"
+# guard: the "cognito" "user" belonged to a "cognito" "user pool"
+# guard_violation: the "cognito" "user" did not belong to a "cognito" "user pool"
+# guard: the "cognito" "user" belonged to this pool
+# guard_violation: the "cognito" "user" belonged to a different pool
+# guard: the "cognito" "group" belonged to a "cognito" "user pool"
+# guard_violation: the "cognito" "group" did not belong to a "cognito" "user pool"
+# guard: the "cognito" "group" belonged to this pool
+# guard_violation: the "cognito" "group" belonged to a different pool
 atomic action DeleteUserPool:
     oneof pool_id in POOL_IDS:
         if pool_id in pool_status:
@@ -64,14 +64,14 @@ atomic action DeleteUserPool:
                         if group_pool[group_id] == pool_id:
                             group_status[group_id] = "DELETED"
 
-# step: a user is created by an admin in an active user pool
-# result: the user exists in FORCE_CHANGE_PASSWORD state and is enabled
-# guard: the user pool exists
-# guard_violation: the user pool does not exist
-# guard: the user pool is ACTIVE
-# guard_violation: the user pool is not ACTIVE
-# guard: the user does not already exist
-# guard_violation: the user already exists
+# step: a "cognito" "user" is created by an admin in an active "cognito" "user pool"
+# result: the "cognito" "user" will exist in "FORCE_CHANGE_PASSWORD" state and will be enabled
+# guard: the "cognito" "user pool" existed
+# guard_violation: the "cognito" "user pool" did not exist
+# guard: the "cognito" "user pool" was "ACTIVE"
+# guard_violation: the "cognito" "user pool" was not "ACTIVE"
+# guard: the "cognito" "user" did not already exist
+# guard_violation: the "cognito" "user" already existed
 atomic action AdminCreateUser:
     oneof pool_id in POOL_IDS:
         if pool_id in pool_status:
@@ -82,12 +82,12 @@ atomic action AdminCreateUser:
                         user_pool[user_id] = pool_id
                         user_enabled[user_id] = True
 
-# step: a user is deleted by an admin
-# result: the user is DELETED, their sessions are expired, and group memberships are cleared
-# guard: the user exists
-# guard_violation: the user does not exist
-# guard: the user is not already DELETED
-# guard_violation: the user is already DELETED
+# step: a "cognito" "user" is deleted by an admin
+# result: the "cognito" "user" will be deleted, their sessions are expired, and group memberships are cleared
+# guard: the "cognito" "user" existed
+# guard_violation: the "cognito" "user" did not exist
+# guard: the "cognito" "user" is not already "DELETED"
+# guard_violation: the "cognito" "user" is already "DELETED"
 atomic action AdminDeleteUser:
     oneof user_id in USER_IDS:
         if user_id in user_status:
@@ -101,38 +101,38 @@ atomic action AdminDeleteUser:
                 for group_id in GROUP_IDS:
                     user_in_group[user_id + "#" + group_id] = False
 
-# step: an admin confirms a user registration
-# result: the user is CONFIRMED
-# guard: the user exists
-# guard_violation: the user does not exist
-# guard: the user is UNCONFIRMED
-# guard_violation: the user is not UNCONFIRMED
+# step: an admin confirms a "cognito" "user" registration
+# result: the "cognito" "user" will be "CONFIRMED"
+# guard: the "cognito" "user" existed
+# guard_violation: the "cognito" "user" did not exist
+# guard: the "cognito" "user" was "UNCONFIRMED"
+# guard_violation: the "cognito" "user" was not "UNCONFIRMED"
 atomic action AdminConfirmSignUp:
     oneof user_id in USER_IDS:
         if user_id in user_status:
             if user_status[user_id] == "UNCONFIRMED":
                 user_status[user_id] = "CONFIRMED"
 
-# step: an admin resets a user password
-# result: the user is in RESET_REQUIRED state
-# guard: the user exists
-# guard_violation: the user does not exist
-# guard: the user is CONFIRMED
-# guard_violation: the user is not CONFIRMED
+# step: an admin resets a "cognito" "user" password
+# result: the "cognito" "user" will be in "RESET_REQUIRED" state
+# guard: the "cognito" "user" existed
+# guard_violation: the "cognito" "user" did not exist
+# guard: the "cognito" "user" was "CONFIRMED"
+# guard_violation: the "cognito" "user" was not "CONFIRMED"
 atomic action AdminResetUserPassword:
     oneof user_id in USER_IDS:
         if user_id in user_status:
             if user_status[user_id] == "CONFIRMED":
                 user_status[user_id] = "RESET_REQUIRED"
 
-# step: an admin sets a user password
-# result: the user is CONFIRMED
-# guard: the user exists
-# guard_violation: the user does not exist
-# guard: the user is in RESET_REQUIRED state
-# guard_violation: the user is not in RESET_REQUIRED state
-# guard: the user is in FORCE_CHANGE_PASSWORD state
-# guard_violation: the user is not in FORCE_CHANGE_PASSWORD state
+# step: an admin sets a "cognito" "user" password
+# result: the "cognito" "user" will be "CONFIRMED"
+# guard: the "cognito" "user" existed
+# guard_violation: the "cognito" "user" did not exist
+# guard: the "cognito" "user" is in "RESET_REQUIRED" state
+# guard_violation: the "cognito" "user" is not in "RESET_REQUIRED" state
+# guard: the "cognito" "user" is in "FORCE_CHANGE_PASSWORD" state
+# guard_violation: the "cognito" "user" is not in "FORCE_CHANGE_PASSWORD" state
 atomic action AdminSetUserPassword:
     oneof user_id in USER_IDS:
         if user_id in user_status:
@@ -141,24 +141,24 @@ atomic action AdminSetUserPassword:
             if user_status[user_id] == "FORCE_CHANGE_PASSWORD":
                 user_status[user_id] = "CONFIRMED"
 
-# step: a user account is disabled by an admin
-# result: the user is disabled
-# guard: the user has an enabled flag
-# guard_violation: the user does not have an enabled flag
-# guard: the user is enabled
-# guard_violation: the user is not enabled
+# step: a "cognito" "user" was "DISABLED" by an admin
+# result: the "cognito" "user" will be "DISABLED"
+# guard: the "cognito" "user" had an enabled flag
+# guard_violation: the "cognito" "user" did not have an enabled flag
+# guard: the "cognito" "user" was "ENABLED"
+# guard_violation: the "cognito" "user" was not "ENABLED"
 atomic action AdminDisableUser:
     oneof user_id in USER_IDS:
         if user_id in user_enabled:
             if user_enabled[user_id]:
                 user_enabled[user_id] = False
 
-# step: a user account is enabled by an admin
-# result: the user is enabled
-# guard: the user has an enabled flag
-# guard_violation: the user does not have an enabled flag
-# guard: the user is disabled
-# guard_violation: the user is not disabled
+# step: a "cognito" "user" was "ENABLED" by an admin
+# result: the "cognito" "user" will be "ENABLED"
+# guard: the "cognito" "user" had an enabled flag
+# guard_violation: the "cognito" "user" did not have an enabled flag
+# guard: the "cognito" "user" was "DISABLED"
+# guard_violation: the "cognito" "user" was not "DISABLED"
 atomic action AdminEnableUser:
     oneof user_id in USER_IDS:
         if user_id in user_enabled:
@@ -166,11 +166,11 @@ atomic action AdminEnableUser:
                 user_enabled[user_id] = True
 
 # step: an admin updates attributes for a confirmed user
-# result: the user attributes are updated
-# guard: the user exists
-# guard_violation: the user does not exist
-# guard: the user is CONFIRMED
-# guard_violation: the user is not CONFIRMED
+# result: the "cognito" "user" attributes are updated
+# guard: the "cognito" "user" existed
+# guard_violation: the "cognito" "user" did not exist
+# guard: the "cognito" "user" was "CONFIRMED"
+# guard_violation: the "cognito" "user" was not "CONFIRMED"
 atomic action AdminUpdateUserAttributes:
     oneof user_id in USER_IDS:
         if user_id in user_status:
@@ -178,26 +178,26 @@ atomic action AdminUpdateUserAttributes:
                 user_attr_updated[user_id] = True
 
 # fake_skip: internal
-# step: a user account is marked as compromised
-# result: the user is in COMPROMISED state
-# guard: the user exists
-# guard_violation: the user does not exist
-# guard: the user is CONFIRMED
-# guard_violation: the user is not CONFIRMED
+# step: a "cognito" "user" is marked as compromised
+# result: the "cognito" "user" will be in "COMPROMISED" state
+# guard: the "cognito" "user" existed
+# guard_violation: the "cognito" "user" did not exist
+# guard: the "cognito" "user" was "CONFIRMED"
+# guard_violation: the "cognito" "user" was not "CONFIRMED"
 atomic action MarkUserCompromised:
     oneof user_id in USER_IDS:
         if user_id in user_status:
             if user_status[user_id] == "CONFIRMED":
                 user_status[user_id] = "COMPROMISED"
 
-# step: a group is created in an active user pool
-# result: the group is ACTIVE and associated with the pool
-# guard: the user pool exists
-# guard_violation: the user pool does not exist
-# guard: the user pool is ACTIVE
-# guard_violation: the user pool is not ACTIVE
-# guard: the group does not already exist
-# guard_violation: the group already exists
+# step: a "cognito" "group" is created in an active "cognito" "user pool"
+# result: the "cognito" "group" will be "ACTIVE" and associated with the "cognito" "user pool"
+# guard: the "cognito" "user pool" existed
+# guard_violation: the "cognito" "user pool" did not exist
+# guard: the "cognito" "user pool" was "ACTIVE"
+# guard_violation: the "cognito" "user pool" was not "ACTIVE"
+# guard: the "cognito" "group" did not already exist
+# guard_violation: the "cognito" "group" already existed
 atomic action CreateGroup:
     oneof pool_id in POOL_IDS:
         if pool_id in pool_status:
@@ -207,12 +207,12 @@ atomic action CreateGroup:
                         group_pool[group_id] = pool_id
                         group_status[group_id] = "ACTIVE"
 
-# step: a group is deleted
-# result: the group is DELETED and all users are removed from it
-# guard: the group exists
-# guard_violation: the group does not exist
-# guard: the group is ACTIVE
-# guard_violation: the group is not ACTIVE
+# step: a "cognito" "group" is deleted
+# result: the "cognito" "group" will be deleted and all users will be removed from it
+# guard: the "cognito" "group" existed
+# guard_violation: the "cognito" "group" did not exist
+# guard: the "cognito" "group" was "ACTIVE"
+# guard_violation: the "cognito" "group" was not "ACTIVE"
 atomic action DeleteGroup:
     oneof group_id in GROUP_IDS:
         if group_id in group_status:
@@ -221,18 +221,18 @@ atomic action DeleteGroup:
                 for user_id in USER_IDS:
                     user_in_group[user_id + "#" + group_id] = False
 
-# step: an admin adds a user to a group in the same pool
-# result: the user is a member of the group
-# guard: the user exists
-# guard_violation: the user does not exist
-# guard: the user is not DELETED
-# guard_violation: the user is DELETED
-# guard: the group exists
-# guard_violation: the group does not exist
-# guard: the group is ACTIVE
-# guard_violation: the group is not ACTIVE
-# guard: the user and group belong to the same pool
-# guard_violation: the user and group belong to different pools
+# step: an admin adds a "cognito" "user" to a "cognito" "group" in the same pool
+# result: the "cognito" "user" will be a member of the "cognito" "group"
+# guard: the "cognito" "user" existed
+# guard_violation: the "cognito" "user" did not exist
+# guard: the "cognito" "user" was not "DELETED"
+# guard_violation: the "cognito" "user" was "DELETED"
+# guard: the "cognito" "group" existed
+# guard_violation: the "cognito" "group" did not exist
+# guard: the "cognito" "group" was "ACTIVE"
+# guard_violation: the "cognito" "group" was not "ACTIVE"
+# guard: the "cognito" "user" and group belonged to the same pool
+# guard_violation: the "cognito" "user" and group belonged to different pools
 atomic action AdminAddUserToGroup:
     oneof user_id in USER_IDS:
         if user_id in user_status:
@@ -243,16 +243,16 @@ atomic action AdminAddUserToGroup:
                             if user_pool[user_id] == group_pool[group_id]:
                                 user_in_group[user_id + "#" + group_id] = True
 
-# step: an admin removes a user from a group
-# result: the user is no longer a member of the group
-# guard: the user exists
-# guard_violation: the user does not exist
-# guard: the user is not DELETED
-# guard_violation: the user is DELETED
-# guard: the group exists
-# guard_violation: the group does not exist
-# guard: the group is ACTIVE
-# guard_violation: the group is not ACTIVE
+# step: an admin removes a "cognito" "user" from a "cognito" "group"
+# result: the "cognito" "user" will no longer be a member of the "cognito" "group"
+# guard: the "cognito" "user" existed
+# guard_violation: the "cognito" "user" did not exist
+# guard: the "cognito" "user" was not "DELETED"
+# guard_violation: the "cognito" "user" was "DELETED"
+# guard: the "cognito" "group" existed
+# guard_violation: the "cognito" "group" did not exist
+# guard: the "cognito" "group" was "ACTIVE"
+# guard_violation: the "cognito" "group" was not "ACTIVE"
 atomic action AdminRemoveUserFromGroup:
     oneof user_id in USER_IDS:
         if user_id in user_status:
@@ -263,15 +263,15 @@ atomic action AdminRemoveUserFromGroup:
                             user_in_group[user_id + "#" + group_id] = False
 
 # step: a confirmed enabled user initiates authentication
-# result: a session is created in CHALLENGE_REQUIRED state
-# guard: the user exists
-# guard_violation: the user does not exist
-# guard: the user is CONFIRMED
-# guard_violation: the user is not CONFIRMED
-# guard: the user is enabled
-# guard_violation: the user is not enabled
-# guard: the session slot is available
-# guard_violation_capacity: the session slot is not available
+# result: a "cognito" "session" will be created in "CHALLENGE_REQUIRED" state
+# guard: the "cognito" "user" existed
+# guard_violation: the "cognito" "user" did not exist
+# guard: the "cognito" "user" was "CONFIRMED"
+# guard_violation: the "cognito" "user" was not "CONFIRMED"
+# guard: the "cognito" "user" was "ENABLED"
+# guard_violation: the "cognito" "user" was not "ENABLED"
+# guard: the "cognito" "session" slot is available
+# guard_violation_capacity: the "cognito" "session" slot is not available
 atomic action InitiateAuth:
     oneof user_id in USER_IDS:
         if user_id in user_status:
@@ -283,12 +283,12 @@ atomic action InitiateAuth:
                             session_user[session_id] = user_id
                             session_pool[session_id] = user_pool[user_id]
 
-# step: a user responds to an auth challenge
-# result: the session is either AUTHENTICATED or CHALLENGE_FAILED
-# guard: the session exists
-# guard_violation: the session does not exist
-# guard: the session is CHALLENGE_REQUIRED
-# guard_violation: the session is not CHALLENGE_REQUIRED
+# step: a "cognito" "user" responds to an auth challenge
+# result: the "cognito" "session" will be either "AUTHENTICATED" or "CHALLENGE_FAILED"
+# guard: the "cognito" "session" existed
+# guard_violation: the "cognito" "session" did not exist
+# guard: the "cognito" "session" was "CHALLENGE_REQUIRED"
+# guard_violation: the "cognito" "session" was not "CHALLENGE_REQUIRED"
 atomic action RespondToAuthChallenge:
     oneof session_id in SESSION_IDS:
         if session_id in session_status:
@@ -298,15 +298,15 @@ atomic action RespondToAuthChallenge:
                     session_status[session_id] = "CHALLENGE_FAILED"
 
 # step: an admin initiates authentication on behalf of a confirmed enabled user
-# result: a session is created in AUTHENTICATED state
-# guard: the user exists
-# guard_violation: the user does not exist
-# guard: the user is CONFIRMED
-# guard_violation: the user is not CONFIRMED
-# guard: the user is enabled
-# guard_violation: the user is not enabled
-# guard: the session slot is available
-# guard_violation_capacity: the session slot is not available
+# result: a "cognito" "session" will be created in "AUTHENTICATED" state
+# guard: the "cognito" "user" existed
+# guard_violation: the "cognito" "user" did not exist
+# guard: the "cognito" "user" was "CONFIRMED"
+# guard_violation: the "cognito" "user" was not "CONFIRMED"
+# guard: the "cognito" "user" was "ENABLED"
+# guard_violation: the "cognito" "user" was not "ENABLED"
+# guard: the "cognito" "session" slot is available
+# guard_violation_capacity: the "cognito" "session" slot is not available
 atomic action AdminInitiateAuth:
     oneof user_id in USER_IDS:
         if user_id in user_status:
@@ -320,11 +320,11 @@ atomic action AdminInitiateAuth:
 
 # fake_skip: internal
 # step: an authenticated session expires
-# result: the session is in EXPIRED state
-# guard: the session exists
-# guard_violation: the session does not exist
-# guard: the session is AUTHENTICATED
-# guard_violation: the session is not AUTHENTICATED
+# result: the "cognito" "session" will be in "EXPIRED" state
+# guard: the "cognito" "session" existed
+# guard_violation: the "cognito" "session" did not exist
+# guard: the "cognito" "session" was "AUTHENTICATED"
+# guard_violation: the "cognito" "session" was not "AUTHENTICATED"
 atomic action ExpireAuthSession:
     oneof session_id in SESSION_IDS:
         if session_id in session_status:
@@ -332,11 +332,11 @@ atomic action ExpireAuthSession:
                 session_status[session_id] = "EXPIRED"
 
 # step: a verification code delivery fails for an unconfirmed user
-# result: the user remains in UNCONFIRMED state
-# guard: the user exists
-# guard_violation: the user does not exist
-# guard: the user is UNCONFIRMED
-# guard_violation: the user is not UNCONFIRMED
+# result: the "cognito" "user" remains in "UNCONFIRMED" state
+# guard: the "cognito" "user" existed
+# guard_violation: the "cognito" "user" did not exist
+# guard: the "cognito" "user" was "UNCONFIRMED"
+# guard_violation: the "cognito" "user" was not "UNCONFIRMED"
 atomic action VerificationCodeDeliveryFailure:
     oneof user_id in USER_IDS:
         if user_id in user_status:

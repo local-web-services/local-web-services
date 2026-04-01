@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Database Instance Modification Completes
+Feature: Neptune - A "Neptune" "Instance" Modification Completes
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,11 +8,11 @@ Feature: Neptune - A Database Instance Modification Completes
     Given the system is initialized
 
   @minimal @happy @complete_instance_modification @internal
-  Scenario: a database instance modification completes
-    Given the instance exists
-    And the instance is "MODIFYING"
-    When a database instance modification completes
-    Then the instance returns to "AVAILABLE" state
+  Scenario: a "neptune" "instance" modification completes
+    Given the "neptune" "instance" existed
+    And the "neptune" "instance" was "MODIFYING"
+    When a "neptune" "instance" modification completes
+    Then the "neptune" "instance" returns to "AVAILABLE" state
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -22,15 +22,15 @@ Feature: Neptune - A Database Instance Modification Completes
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @complete_instance_modification @internal
-  Scenario: a database instance modification completes fails when the instance does not exist
-    Given the instance does not exist
-    When a database instance modification completes
+  @guard @negative @complete_instance_modification @internal
+  Scenario: a "neptune" "instance" modification completes fails when the "neptune" "instance" did not exist
+    Given the "neptune" "instance" did not exist
+    When a "neptune" "instance" modification completes
     Then the operation is rejected
 
-  @standard @negative @complete_instance_modification @internal
-  Scenario: a database instance modification completes fails when the instance is not "MODIFYING"
-    Given the instance exists
-    And the instance is not "MODIFYING"
-    When a database instance modification completes
+  @guard @negative @complete_instance_modification @internal
+  Scenario: a "neptune" "instance" modification completes fails when the "neptune" "instance" was not "MODIFYING"
+    Given the "neptune" "instance" existed
+    And the "neptune" "instance" was not "MODIFYING"
+    When a "neptune" "instance" modification completes
     Then the operation is rejected

@@ -9,22 +9,22 @@ Feature: LambdaElasticache - The Lambda Invocation Reads An Existing Cache Entry
 
   @minimal @happy @invocation_succeeds_cache_hit @internal
   Scenario: the Lambda invocation reads an existing cache entry and completes successfully
-    Given an invocation is "IN_PROGRESS"
-    And a "CACHED" entry exists in the cluster
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And a "CACHED" entry existed in the cluster
     When the Lambda invocation reads an existing cache entry and completes successfully
-    Then the invocation is "SUCCESS"
+    Then the invocation will be "SUCCESS"
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "CACHED" entry belongs to an "AVAILABLE" cluster
 
-  @standard @negative @invocation_succeeds_cache_hit @internal
-  Scenario: the Lambda invocation reads an existing cache entry and completes successfully fails when no invocation is "IN_PROGRESS"
-    Given no invocation is "IN_PROGRESS"
+  @guard @negative @invocation_succeeds_cache_hit @internal
+  Scenario: the Lambda invocation reads an existing cache entry and completes successfully fails when no "lambda" "invocation" was "IN_PROGRESS"
+    Given no "lambda" "invocation" was "IN_PROGRESS"
     When the Lambda invocation reads an existing cache entry and completes successfully
     Then the operation is rejected
 
-  @standard @negative @invocation_succeeds_cache_hit @internal
-  Scenario: the Lambda invocation reads an existing cache entry and completes successfully fails when no "CACHED" entry exists in the cluster
-    Given an invocation is "IN_PROGRESS"
-    And no "CACHED" entry exists in the cluster
+  @guard @negative @invocation_succeeds_cache_hit @internal
+  Scenario: the Lambda invocation reads an existing cache entry and completes successfully fails when no "CACHED" entry existed in the cluster
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And no "CACHED" entry existed in the cluster
     When the Lambda invocation reads an existing cache entry and completes successfully
     Then the operation is rejected

@@ -1,5 +1,5 @@
 @stepfunctionsdocdb @generated
-Feature: StepfunctionsDocdb - A Documentdb Cluster Is Created
+Feature: StepfunctionsDocdb - A "Documentdb" "Cluster" Is Created
 
   # Generated from FizzBee spec: stepfunctions_docdb.fizz
   # Safety invariants: ExecutionRequiresActiveStateMachine, SuccessfulExecutionConnectedToACluster
@@ -8,15 +8,15 @@ Feature: StepfunctionsDocdb - A Documentdb Cluster Is Created
     Given the system is initialized
 
   @minimal @happy @create_cluster
-  Scenario: a DocumentDB cluster is created
-    Given the cluster does not already exist
-    When a DocumentDB cluster is created
-    Then the cluster is "AVAILABLE"
+  Scenario: a "documentdb" "cluster" is created
+    Given the "documentdb" "cluster" did not already exist
+    When a "documentdb" "cluster" is created
+    Then the "documentdb" "cluster" will be "AVAILABLE"
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
-  @standard @negative @create_cluster
-  Scenario: a DocumentDB cluster is created fails when the cluster already exists
-    Given the cluster already exists
-    When a DocumentDB cluster is created
+  @guard @negative @create_cluster
+  Scenario: a "documentdb" "cluster" is created fails when the "documentdb" "cluster" already existed
+    Given the "documentdb" "cluster" already existed
+    When a "documentdb" "cluster" is created
     Then the operation is rejected

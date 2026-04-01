@@ -1,5 +1,5 @@
 @dynamodb @generated
-Feature: Dynamodb - A Table Is Created
+Feature: Dynamodb - A "Dynamodb" "Table" Is Created
 
   # Generated from FizzBee spec: dynamodb.fizz
   # Safety invariants: TableStatusValid, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
@@ -8,10 +8,10 @@ Feature: Dynamodb - A Table Is Created
     Given the system is initialized
 
   @minimal @happy @create_table
-  Scenario: a table is created
-    Given the table does not already exist
-    When a table is created
-    Then the table is in "CREATING" state
+  Scenario: a "dynamodb" "table" is created
+    Given the "dynamodb" "table" did not already exist
+    When a "dynamodb" "table" is created
+    Then the "dynamodb" "table" will be in "CREATING" state
     And every table has a valid status ("CREATING", "ACTIVE", or "DELETED")
     And "GSI" pending write count is never negative
     And transaction status is always a valid value
@@ -19,8 +19,8 @@ Feature: Dynamodb - A Table Is Created
     And items only exist in non-deleted tables
     And deleted tables are never the target of a pending transaction
 
-  @standard @negative @create_table
-  Scenario: a table is created fails when the table already exists
-    Given the table already exists
-    When a table is created
+  @guard @negative @create_table
+  Scenario: a "dynamodb" "table" is created fails when the "dynamodb" "table" already existed
+    Given the "dynamodb" "table" already existed
+    When a "dynamodb" "table" is created
     Then the operation is rejected

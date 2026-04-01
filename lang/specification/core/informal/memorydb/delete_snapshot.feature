@@ -1,5 +1,5 @@
 @memorydb @generated
-Feature: Memorydb - A Snapshot Is Deleted
+Feature: Memorydb - A "Memorydb" "Snapshot" Is Deleted
 
   # Generated from FizzBee spec: memorydb.fizz
   # Safety invariants: AllClustersHaveDurability, SnapshottingClusterHasSnapshot, ACLNotDeletedWhileInUse, UserNotDeletedWhileInACL, TagsExistForResources
@@ -8,26 +8,26 @@ Feature: Memorydb - A Snapshot Is Deleted
     Given the system is initialized
 
   @minimal @happy @delete_snapshot
-  Scenario: a snapshot is deleted
-    Given the snapshot exists
-    And the snapshot is "AVAILABLE"
-    When a snapshot is deleted
-    Then the snapshot is in "DELETING" state
+  Scenario: a "memorydb" "snapshot" is deleted
+    Given the "memorydb" "snapshot" existed
+    And the "memorydb" "snapshot" was "AVAILABLE"
+    When a "memorydb" "snapshot" is deleted
+    Then the "memorydb" "snapshot" will be in "DELETING" state
     And every active cluster has write durability enabled
     And every snapshotting cluster has a corresponding in-progress snapshot
-    And no "ACL" in "DELETING" state is currently associated with a cluster
-    And no user in "DELETING" state is currently a member of an "ACL"
+    And no "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"
+    And no user in "DELETING" state is currently a member of an "memorydb" "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @delete_snapshot
-  Scenario: a snapshot is deleted fails when the snapshot does not exist
-    Given the snapshot does not exist
-    When a snapshot is deleted
+  @guard @negative @delete_snapshot
+  Scenario: a "memorydb" "snapshot" is deleted fails when the "memorydb" "snapshot" did not exist
+    Given the "memorydb" "snapshot" did not exist
+    When a "memorydb" "snapshot" is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_snapshot @lifecycle
-  Scenario: a snapshot is deleted fails when the snapshot is not "AVAILABLE"
-    Given the snapshot exists
-    And the snapshot is not "AVAILABLE"
-    When a snapshot is deleted
+  @guard @negative @delete_snapshot @lifecycle
+  Scenario: a "memorydb" "snapshot" is deleted fails when the "memorydb" "snapshot" was not "AVAILABLE"
+    Given the "memorydb" "snapshot" existed
+    And the "memorydb" "snapshot" was not "AVAILABLE"
+    When a "memorydb" "snapshot" is deleted
     Then the operation is rejected

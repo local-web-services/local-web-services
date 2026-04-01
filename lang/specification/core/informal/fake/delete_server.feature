@@ -9,22 +9,22 @@ Feature: Fake - A Fake Server Is Deleted
 
   @minimal @happy @delete_server
   Scenario: a fake server is deleted
-    Given the server exists
-    And the server is "ACTIVE"
+    Given the server existed
+    And the server was "ACTIVE"
     When a fake server is deleted
-    Then the server is "DELETED" and its routes are removed
+    Then the server will be deleted and its routes will be removed
     And every "ACTIVE" route belongs to an "ACTIVE" server
     And every server has a valid protocol
 
-  @standard @negative @delete_server
-  Scenario: a fake server is deleted fails when the server does not exist
-    Given the server does not exist
+  @guard @negative @delete_server
+  Scenario: a fake server is deleted fails when the server did not exist
+    Given the server did not exist
     When a fake server is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_server
-  Scenario: a fake server is deleted fails when the server is not "ACTIVE"
-    Given the server exists
-    And the server is not "ACTIVE"
+  @guard @negative @delete_server
+  Scenario: a fake server is deleted fails when the server was not "ACTIVE"
+    Given the server existed
+    And the server was not "ACTIVE"
     When a fake server is deleted
     Then the operation is rejected

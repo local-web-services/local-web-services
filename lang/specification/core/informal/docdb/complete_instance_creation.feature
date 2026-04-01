@@ -1,5 +1,5 @@
 @docdb @generated
-Feature: Docdb - A Database Instance Finishes Creating
+Feature: Docdb - A "Documentdb" "Instance" Finishes Creating
 
   # Generated from FizzBee spec: docdb.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, NoNonDeletedInstancesOnDeletedCluster, NoAvailableInstancesOnFailedCluster, DeletingClusterGetsNoNewInstances, SnapshotHasValidClusterReference
@@ -8,13 +8,13 @@ Feature: Docdb - A Database Instance Finishes Creating
     Given the system is initialized
 
   @minimal @happy @complete_instance_creation @internal
-  Scenario: a database instance finishes creating
-    Given the instance exists
-    And the instance is "CREATING"
-    And the cluster exists
-    And the instance is the primary
-    When a database instance finishes creating
-    Then the instance is "AVAILABLE" and the cluster primary is updated if applicable
+  Scenario: a "documentdb" "instance" finishes creating
+    Given the "documentdb" "instance" existed
+    And the "documentdb" "instance" was "CREATING"
+    And the "documentdb" "cluster" existed
+    And the "documentdb" "instance" is the primary
+    When a "documentdb" "instance" finishes creating
+    Then the "documentdb" "INSTANCE" will be "AVAILABLE" and the "documentdb" "cluster" primary will be updated if applicable
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -23,32 +23,32 @@ Feature: Docdb - A Database Instance Finishes Creating
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @complete_instance_creation @internal
-  Scenario: a database instance finishes creating fails when the instance does not exist
-    Given the instance does not exist
-    When a database instance finishes creating
+  @guard @negative @complete_instance_creation @internal
+  Scenario: a "documentdb" "instance" finishes creating fails when the "documentdb" "instance" did not exist
+    Given the "documentdb" "instance" did not exist
+    When a "documentdb" "instance" finishes creating
     Then the operation is rejected
 
-  @standard @negative @complete_instance_creation @internal
-  Scenario: a database instance finishes creating fails when the instance is not "CREATING"
-    Given the instance exists
-    And the instance is not "CREATING"
-    When a database instance finishes creating
+  @guard @negative @complete_instance_creation @internal
+  Scenario: a "documentdb" "instance" finishes creating fails when the "documentdb" "instance" was not "CREATING"
+    Given the "documentdb" "instance" existed
+    And the "documentdb" "instance" was not "CREATING"
+    When a "documentdb" "instance" finishes creating
     Then the operation is rejected
 
-  @standard @negative @complete_instance_creation @internal
-  Scenario: a database instance finishes creating fails when the cluster does not exist
-    Given the instance exists
-    And the instance is "CREATING"
-    And the cluster does not exist
-    When a database instance finishes creating
+  @guard @negative @complete_instance_creation @internal
+  Scenario: a "documentdb" "instance" finishes creating fails when the "documentdb" "cluster" did not exist
+    Given the "documentdb" "instance" existed
+    And the "documentdb" "instance" was "CREATING"
+    And the "documentdb" "cluster" did not exist
+    When a "documentdb" "instance" finishes creating
     Then the operation is rejected
 
-  @standard @negative @complete_instance_creation @internal
-  Scenario: a database instance finishes creating fails when the instance is not the primary
-    Given the instance exists
-    And the instance is "CREATING"
-    And the cluster exists
-    And the instance is not the primary
-    When a database instance finishes creating
+  @guard @negative @complete_instance_creation @internal
+  Scenario: a "documentdb" "instance" finishes creating fails when the "documentdb" "instance" is not the primary
+    Given the "documentdb" "instance" existed
+    And the "documentdb" "instance" was "CREATING"
+    And the "documentdb" "cluster" existed
+    And the "documentdb" "instance" is not the primary
+    When a "documentdb" "instance" finishes creating
     Then the operation is rejected

@@ -1,5 +1,5 @@
 @opensearch @generated
-Feature: Opensearch - Tags Are Added To A Domain
+Feature: Opensearch - Tags Are Added To An "Opensearch" "Domain"
 
   # Generated from FizzBee spec: opensearch.fizz
   # Safety invariants: ActiveConnectionsReferenceActiveDomains, TrafficSwapRequiresNewCluster, ConnectionStatusConsistency, PendingConfigOnlyOnProcessingDomain
@@ -8,34 +8,34 @@ Feature: Opensearch - Tags Are Added To A Domain
     Given the system is initialized
 
   @minimal @happy @add_tags
-  Scenario: tags are added to a domain
-    Given the domain exists
-    And the domain is not being deleted
-    And the domain is not deleted
-    When tags are added to a domain
-    Then the specified tags are associated with the domain
+  Scenario: tags are added to an "opensearch" "domain"
+    Given the "opensearch" "domain" existed
+    And the "opensearch" "domain" is not being deleted
+    And the "opensearch" "domain" was not "DELETED"
+    When tags are added to an "opensearch" "domain"
+    Then the specified tags are associated with the "opensearch" "domain"
     And no active connection references a deleted domain
-    And traffic can only be swapped after the new cluster is ready
-    And an outbound connection that is "ACTIVE" cannot have a "REJECTED" inbound connection
-    And a pending config change only exists on a domain that is "PROCESSING"
+    And traffic can only be swapped after the new "opensearch" "cluster" was ready
+    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" inbound connection
+    And a pending config change only exists on a "opensearch" "domain" that is "PROCESSING"
 
-  @standard @negative @add_tags
-  Scenario: tags are added to a domain fails when the domain does not exist
-    Given the domain does not exist
-    When tags are added to a domain
+  @guard @negative @add_tags
+  Scenario: tags are added to an "opensearch" "domain" fails when the "opensearch" "domain" did not exist
+    Given the "opensearch" "domain" did not exist
+    When tags are added to an "opensearch" "domain"
     Then the operation is rejected
 
-  @standard @negative @add_tags @lifecycle
-  Scenario: tags are added to a domain fails when the domain is being deleted
-    Given the domain exists
-    And the domain is being deleted
-    When tags are added to a domain
+  @guard @negative @add_tags @lifecycle
+  Scenario: tags are added to an "opensearch" "domain" fails when the "opensearch" "domain" is being deleted
+    Given the "opensearch" "domain" existed
+    And the "opensearch" "domain" is being deleted
+    When tags are added to an "opensearch" "domain"
     Then the operation is rejected
 
-  @standard @negative @add_tags
-  Scenario: tags are added to a domain fails when the domain is deleted
-    Given the domain exists
-    And the domain is not being deleted
-    And the domain is deleted
-    When tags are added to a domain
+  @guard @negative @add_tags
+  Scenario: tags are added to an "opensearch" "domain" fails when the "opensearch" "domain" was "DELETED"
+    Given the "opensearch" "domain" existed
+    And the "opensearch" "domain" is not being deleted
+    And the "opensearch" "domain" was "DELETED"
+    When tags are added to an "opensearch" "domain"
     Then the operation is rejected

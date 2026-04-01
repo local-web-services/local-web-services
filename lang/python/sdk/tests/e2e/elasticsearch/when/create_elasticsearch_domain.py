@@ -1,0 +1,20 @@
+"""When: an "elasticsearch" "domain" is created"""
+
+from __future__ import annotations
+
+from botocore.exceptions import ClientError
+from pytest_bdd import when
+
+from ..constants import TEST_DOMAIN
+
+
+@when('an "elasticsearch" "domain" is created')
+def create_elasticsearch_domain(lws_session, world):
+    try:
+        world["result"] = lws_session.client("es").create_elasticsearch_domain(
+            DomainName=TEST_DOMAIN
+        )
+        world["error"] = None
+    except (ClientError, Exception) as exc:
+        world["result"] = None
+        world["error"] = exc

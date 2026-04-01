@@ -9,14 +9,14 @@ Feature: RdsEvents - The Db Instance Finishes Stopping
 
   @minimal @happy @d_b_stop_complete @internal
   Scenario: the "DB" instance finishes stopping
-    Given the "DB" instance is "STOPPING"
+    Given the "DB" instance was "STOPPING"
     When the "DB" instance finishes stopping
-    Then the "DB" instance is "STOPPED"
+    Then the "DB" instance will be "STOPPED"
     And every "DELIVERED" event references a "DB" instance that exists
     And every "DELIVERED" event references a bus that exists
 
-  @standard @negative @d_b_stop_complete @internal
-  Scenario: the "DB" instance finishes stopping fails when the "DB" instance is not "STOPPING"
-    Given the "DB" instance is not "STOPPING"
+  @guard @negative @d_b_stop_complete @internal
+  Scenario: the "DB" instance finishes stopping fails when the "DB" instance was not "STOPPING"
+    Given the "DB" instance was not "STOPPING"
     When the "DB" instance finishes stopping
     Then the operation is rejected

@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Database Instance Reboot Completes
+Feature: Neptune - A "Neptune" "Instance" Reboot Completes
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,11 +8,11 @@ Feature: Neptune - A Database Instance Reboot Completes
     Given the system is initialized
 
   @minimal @happy @complete_instance_reboot @internal
-  Scenario: a database instance reboot completes
-    Given the instance exists
-    And the instance is "REBOOTING"
-    When a database instance reboot completes
-    Then the instance returns to "AVAILABLE" state
+  Scenario: a "neptune" "instance" reboot completes
+    Given the "neptune" "instance" existed
+    And the "neptune" "instance" was "REBOOTING"
+    When a "neptune" "instance" reboot completes
+    Then the "neptune" "instance" returns to "AVAILABLE" state
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -22,15 +22,15 @@ Feature: Neptune - A Database Instance Reboot Completes
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @complete_instance_reboot @internal
-  Scenario: a database instance reboot completes fails when the instance does not exist
-    Given the instance does not exist
-    When a database instance reboot completes
+  @guard @negative @complete_instance_reboot @internal
+  Scenario: a "neptune" "instance" reboot completes fails when the "neptune" "instance" did not exist
+    Given the "neptune" "instance" did not exist
+    When a "neptune" "instance" reboot completes
     Then the operation is rejected
 
-  @standard @negative @complete_instance_reboot @internal
-  Scenario: a database instance reboot completes fails when the instance is not "REBOOTING"
-    Given the instance exists
-    And the instance is not "REBOOTING"
-    When a database instance reboot completes
+  @guard @negative @complete_instance_reboot @internal
+  Scenario: a "neptune" "instance" reboot completes fails when the "neptune" "instance" was not "REBOOTING"
+    Given the "neptune" "instance" existed
+    And the "neptune" "instance" was not "REBOOTING"
+    When a "neptune" "instance" reboot completes
     Then the operation is rejected

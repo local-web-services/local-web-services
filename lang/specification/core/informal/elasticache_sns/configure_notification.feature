@@ -1,5 +1,5 @@
 @elasticachesns @generated
-Feature: ElasticacheSns - An Sns Notification Is Configured On The Elasticache Cluster
+Feature: ElasticacheSns - A Sns Notification Is Configured On The "Elasticache" "Cluster"
 
   # Generated from FizzBee spec: elasticache_sns.fizz
   # Safety invariants: PublishedNotificationReferencesExistingCluster, PublishedNotificationReferencesExistingTopic
@@ -8,32 +8,32 @@ Feature: ElasticacheSns - An Sns Notification Is Configured On The Elasticache C
     Given the system is initialized
 
   @minimal @happy @configure_notification
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster
-    Given the cluster exists and is "AVAILABLE"
-    And the cluster has no "SNS" notification configured
-    And the topic exists and is "ACTIVE"
-    When an "SNS" notification is configured on the ElastiCache cluster
-    Then the cluster will publish lifecycle events to the topic
+  Scenario: a "SNS" notification is configured on the "elasticache" "cluster"
+    Given the "elasticache" "cluster" existed and was "AVAILABLE"
+    And the "elasticache" "cluster" has no "SNS" notification configured
+    And the "sns" "topic" existed and was "ACTIVE"
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    Then the "elasticache" "cluster" will publish lifecycle events to the "sns" "topic"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @standard @negative @configure_notification @lifecycle
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster fails when the cluster does not exist or is not "AVAILABLE"
-    Given the cluster does not exist or is not "AVAILABLE"
-    When an "SNS" notification is configured on the ElastiCache cluster
+  @guard @negative @configure_notification @lifecycle
+  Scenario: a "SNS" notification is configured on the "elasticache" "cluster" fails when the "elasticache" "cluster" did not exist or was "AVAILABLE"
+    Given the "elasticache" "cluster" did not exist or was "AVAILABLE"
+    When a "SNS" notification is configured on the "elasticache" "cluster"
     Then the operation is rejected
 
-  @standard @negative @configure_notification
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster fails when the cluster already has an "SNS" notification configured
-    Given the cluster exists and is "AVAILABLE"
-    And the cluster already has an "SNS" notification configured
-    When an "SNS" notification is configured on the ElastiCache cluster
+  @guard @negative @configure_notification
+  Scenario: a "SNS" notification is configured on the "elasticache" "cluster" fails when the "elasticache" "cluster" already has a "SNS" notification configured
+    Given the "elasticache" "cluster" existed and was "AVAILABLE"
+    And the "elasticache" "cluster" already has a "SNS" notification configured
+    When a "SNS" notification is configured on the "elasticache" "cluster"
     Then the operation is rejected
 
-  @standard @negative @configure_notification
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster fails when the topic does not exist or is not "ACTIVE"
-    Given the cluster exists and is "AVAILABLE"
-    And the cluster has no "SNS" notification configured
-    And the topic does not exist or is not "ACTIVE"
-    When an "SNS" notification is configured on the ElastiCache cluster
+  @guard @negative @configure_notification
+  Scenario: a "SNS" notification is configured on the "elasticache" "cluster" fails when the "sns" "topic" did not exist or was "ACTIVE"
+    Given the "elasticache" "cluster" existed and was "AVAILABLE"
+    And the "elasticache" "cluster" has no "SNS" notification configured
+    And the "sns" "topic" did not exist or was "ACTIVE"
+    When a "SNS" notification is configured on the "elasticache" "cluster"
     Then the operation is rejected

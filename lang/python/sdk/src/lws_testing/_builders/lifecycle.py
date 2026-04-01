@@ -28,6 +28,11 @@ class LifecycleBuilder:
         self._config["delete_dwell_ms"] = int(ms)
         return self
 
+    def modify_dwell_ms(self, ms: int) -> LifecycleBuilder:
+        """Set the time resources spend in a MODIFYING/STOPPING/STARTING/etc. state."""
+        self._config["modify_dwell_ms"] = int(ms)
+        return self
+
     def apply(self) -> None:
         """Push the lifecycle configuration to the management API."""
         httpx.post(

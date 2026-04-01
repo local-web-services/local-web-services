@@ -20,23 +20,8 @@ jobs:
       python-sdk: ${{ steps.filter.outputs.python-sdk }}
       python-example: ${{ steps.filter.outputs.python-example }}
       core: ${{ steps.filter.outputs.core }}
-      typescript-core: ${{ steps.filter.outputs.typescript-core }}
-      typescript-sdk: ${{ steps.filter.outputs.typescript-sdk }}
-      typescript-example: ${{ steps.filter.outputs.typescript-example }}
-      java-core: ${{ steps.filter.outputs.java-core }}
-      java-sdk: ${{ steps.filter.outputs.java-sdk }}
-      java-example: ${{ steps.filter.outputs.java-example }}
-      go-core: ${{ steps.filter.outputs.go-core }}
-      go-sdk: ${{ steps.filter.outputs.go-sdk }}
-      go-example: ${{ steps.filter.outputs.go-example }}
       python-sample-cdk: ${{ steps.filter.outputs.python-sample-cdk }}
       python-sample-hcl: ${{ steps.filter.outputs.python-sample-hcl }}
-      typescript-sample-cdk: ${{ steps.filter.outputs.typescript-sample-cdk }}
-      typescript-sample-hcl: ${{ steps.filter.outputs.typescript-sample-hcl }}
-      java-sample-cdk: ${{ steps.filter.outputs.java-sample-cdk }}
-      java-sample-hcl: ${{ steps.filter.outputs.java-sample-hcl }}
-      go-sample-cdk: ${{ steps.filter.outputs.go-sample-cdk }}
-      go-sample-hcl: ${{ steps.filter.outputs.go-sample-hcl }}
       specification: ${{ steps.filter.outputs.specification }}
     steps:
       - uses: actions/checkout@v4
@@ -64,51 +49,6 @@ jobs:
               - 'lang/specification/**'
             core:
               - 'lang/python/core/**'
-            typescript-core:
-              - 'lang/typescript/core/**'
-              - 'lang/typescript/arch_tests/**'
-              - 'lang/specification/**'
-            typescript-sdk:
-              - 'lang/typescript/sdk/**'
-              - 'lang/typescript/core/**'
-              - 'lang/typescript/arch_tests/**'
-              - 'lang/specification/**'
-            typescript-example:
-              - 'lang/typescript/example/**'
-              - 'lang/typescript/sdk/**'
-              - 'lang/typescript/core/**'
-              - 'lang/typescript/arch_tests/**'
-              - 'lang/specification/**'
-            java-core:
-              - 'lang/java/core/**'
-              - 'lang/java/arch_tests/**'
-              - 'lang/java/config/**'
-              - 'lang/specification/**'
-            java-sdk:
-              - 'lang/java/sdk/**'
-              - 'lang/java/core/**'
-              - 'lang/java/arch_tests/**'
-              - 'lang/java/config/**'
-              - 'lang/specification/**'
-            java-example:
-              - 'lang/java/example/**'
-              - 'lang/java/sdk/**'
-              - 'lang/java/core/**'
-              - 'lang/java/arch_tests/**'
-              - 'lang/java/config/**'
-              - 'lang/specification/**'
-            go-core:
-              - 'lang/go/core/**'
-              - 'lang/specification/**'
-            go-sdk:
-              - 'lang/go/sdk/**'
-              - 'lang/go/core/**'
-              - 'lang/specification/**'
-            go-example:
-              - 'lang/go/example/**'
-              - 'lang/go/sdk/**'
-              - 'lang/go/core/**'
-              - 'lang/specification/**'
             python-sample-cdk:
               - 'lang/python/sample/cdk/**'
               - 'lang/python/core/**'
@@ -117,30 +57,6 @@ jobs:
               - 'lang/python/sample/hcl/**'
               - 'lang/python/core/**'
               - 'lang/python/sdk/**'
-            typescript-sample-cdk:
-              - 'lang/typescript/sample/cdk/**'
-              - 'lang/typescript/core/**'
-              - 'lang/typescript/sdk/**'
-            typescript-sample-hcl:
-              - 'lang/typescript/sample/hcl/**'
-              - 'lang/typescript/core/**'
-              - 'lang/typescript/sdk/**'
-            java-sample-cdk:
-              - 'lang/java/sample/cdk/**'
-              - 'lang/java/core/**'
-              - 'lang/java/sdk/**'
-            java-sample-hcl:
-              - 'lang/java/sample/hcl/**'
-              - 'lang/java/core/**'
-              - 'lang/java/sdk/**'
-            go-sample-cdk:
-              - 'lang/go/sample/cdk/**'
-              - 'lang/go/core/**'
-              - 'lang/go/sdk/**'
-            go-sample-hcl:
-              - 'lang/go/sample/hcl/**'
-              - 'lang/go/core/**'
-              - 'lang/go/sdk/**'
             specification:
               - 'lang/specification/core/formal/**'
 
@@ -175,7 +91,7 @@ jobs:
             fi
           done
 
-  # ── Python Core ────────────────────────────────────────────────────────────
+  # ── Python Core ─────────────────────────────────────────────────────────────
   python-core-lint:
     needs: [changes]
     if: needs.changes.outputs.python-core == 'true'
@@ -190,10 +106,10 @@ jobs:
           python-version: ${{ steps.pyver.outputs.version }}
       - run: make install
         working-directory: lang/python/core
-      - run: make lint format-check complexity cpd pylint
+      - run: make lint
         working-directory: lang/python/core
 
-  python-core-unit-test:
+  python-core-test-unit:
     needs: [changes]
     if: needs.changes.outputs.python-core == 'true'
     runs-on: ubuntu-latest
@@ -207,10 +123,10 @@ jobs:
           python-version: ${{ steps.pyver.outputs.version }}
       - run: make install
         working-directory: lang/python/core
-      - run: make unit-test
+      - run: make test-unit
         working-directory: lang/python/core
 
-  python-core-integration-test:
+  python-core-test-architecture:
     needs: [changes]
     if: needs.changes.outputs.python-core == 'true'
     runs-on: ubuntu-latest
@@ -224,47 +140,19 @@ jobs:
           python-version: ${{ steps.pyver.outputs.version }}
       - run: make install
         working-directory: lang/python/core
-      - run: make integration-test
+      - run: make test-architecture
         working-directory: lang/python/core
 
-  python-core-architecture-test:
-    needs: [changes]
-    if: needs.changes.outputs.python-core == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - id: pyver
-        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ steps.pyver.outputs.version }}
-      - run: make install
-        working-directory: lang/python/core
-      - run: make architecture-test
-        working-directory: lang/python/core
-
-  # ── Python SDK ─────────────────────────────────────────────────────────────
+  # ── Python SDK ──────────────────────────────────────────────────────────────
   python-sdk-lint:
-    needs: [changes, python-core-lint, python-core-unit-test, python-core-integration-test, python-core-architecture-test]
-    if: needs.changes.outputs.python-sdk == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - id: pyver
-        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ steps.pyver.outputs.version }}
-      - run: make install
-        working-directory: lang/python/sdk
-      - run: make lint format-check complexity cpd pylint
-        working-directory: lang/python/sdk
-
-  python-sdk-unit-test:
-    needs: [changes, python-core-lint, python-core-unit-test, python-core-integration-test, python-core-architecture-test]
-    if: needs.changes.outputs.python-sdk == 'true'
+    needs: [changes, python-core-lint, python-core-test-unit, python-core-test-architecture]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.python-sdk == 'true' &&
+      (needs.python-core-lint.result == 'success' || needs.python-core-lint.result == 'skipped') &&
+      (needs.python-core-test-unit.result == 'success' || needs.python-core-test-unit.result == 'skipped') &&
+      (needs.python-core-test-architecture.result == 'success' || needs.python-core-test-architecture.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -277,12 +165,18 @@ jobs:
       - run: uv pip install --system -e lang/python/core
       - run: make install
         working-directory: lang/python/sdk
-      - run: make unit-test
+      - run: make lint
         working-directory: lang/python/sdk
 
-  python-sdk-architecture-test:
-    needs: [changes, python-core-lint, python-core-unit-test, python-core-integration-test, python-core-architecture-test]
-    if: needs.changes.outputs.python-sdk == 'true'
+  python-sdk-test-unit:
+    needs: [changes, python-core-lint, python-core-test-unit, python-core-test-architecture]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.python-sdk == 'true' &&
+      (needs.python-core-lint.result == 'success' || needs.python-core-lint.result == 'skipped') &&
+      (needs.python-core-test-unit.result == 'success' || needs.python-core-test-unit.result == 'skipped') &&
+      (needs.python-core-test-architecture.result == 'success' || needs.python-core-test-architecture.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -295,12 +189,42 @@ jobs:
       - run: uv pip install --system -e lang/python/core
       - run: make install
         working-directory: lang/python/sdk
-      - run: make architecture-test
+      - run: make test-unit
         working-directory: lang/python/sdk
 
-  python-sdk-e2e-test:
-    needs: [changes, python-core-lint, python-core-unit-test, python-core-integration-test, python-core-architecture-test]
-    if: needs.changes.outputs.python-sdk == 'true'
+  python-sdk-test-architecture:
+    needs: [changes, python-core-lint, python-core-test-unit, python-core-test-architecture]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.python-sdk == 'true' &&
+      (needs.python-core-lint.result == 'success' || needs.python-core-lint.result == 'skipped') &&
+      (needs.python-core-test-unit.result == 'success' || needs.python-core-test-unit.result == 'skipped') &&
+      (needs.python-core-test-architecture.result == 'success' || needs.python-core-test-architecture.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
+      - run: uv pip install --system -e lang/python/core
+      - run: make install
+        working-directory: lang/python/sdk
+      - run: make test-architecture
+        working-directory: lang/python/sdk
+
+  python-sdk-test-e2e-minimal:
+    needs: [changes, python-sdk-lint, python-sdk-test-unit, python-sdk-test-architecture]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.python-sdk == 'true' &&
+      (needs.python-sdk-lint.result == 'success' || needs.python-sdk-lint.result == 'skipped') &&
+      (needs.python-sdk-test-unit.result == 'success' || needs.python-sdk-test-unit.result == 'skipped') &&
+      (needs.python-sdk-test-architecture.result == 'success' || needs.python-sdk-test-architecture.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -313,484 +237,170 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Pull Lambda Docker images
+      - name: Cache Lambda Docker images
+        id: cache-lambda-images
+        uses: actions/cache@v4
+        with:
+          path: /tmp/lambda-docker-images
+          key: lambda-docker-python3.12-nodejs20
+      - name: Load cached Lambda Docker images
+        if: steps.cache-lambda-images.outputs.cache-hit == 'true'
+        run: |
+          docker load -i /tmp/lambda-docker-images/python312.tar
+          docker load -i /tmp/lambda-docker-images/nodejs20.tar
+      - name: Pull and cache Lambda Docker images
+        if: steps.cache-lambda-images.outputs.cache-hit != 'true'
         run: |
           docker pull public.ecr.aws/lambda/python:3.12
           docker pull public.ecr.aws/lambda/nodejs:20
+          mkdir -p /tmp/lambda-docker-images
+          docker save public.ecr.aws/lambda/python:3.12 -o /tmp/lambda-docker-images/python312.tar
+          docker save public.ecr.aws/lambda/nodejs:20 -o /tmp/lambda-docker-images/nodejs20.tar
       - run: uv pip install --system -e lang/python/core
       - run: make install
         working-directory: lang/python/sdk
-      - run: make e2e-test
+      - run: make test-e2e-minimal
         working-directory: lang/python/sdk
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: python-sdk-test-e2e-results-minimal
+          path: lang/python/sdk/test-results/junit-minimal.xml
 
-  # ── TypeScript Core ─────────────────────────────────────────────────────────
-  typescript-core-lint:
-    needs: [changes]
-    if: needs.changes.outputs.typescript-core == 'true'
+  python-sdk-test-e2e-guard:
+    needs: [changes, python-sdk-lint, python-sdk-test-unit, python-sdk-test-architecture]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.python-sdk == 'true' &&
+      (needs.python-sdk-lint.result == 'success' || needs.python-sdk-lint.result == 'skipped') &&
+      (needs.python-sdk-test-unit.result == 'success' || needs.python-sdk-test-unit.result == 'skipped') &&
+      (needs.python-sdk-test-architecture.result == 'success' || needs.python-sdk-test-architecture.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Install
-        working-directory: lang/typescript/core
-        run: npm ci
-      - name: Lint / format / complexity / cpd / type-check
-        working-directory: lang/typescript/core
-        run: make lint format-check complexity cpd type-check
+      - name: Cache Lambda Docker images
+        id: cache-lambda-images
+        uses: actions/cache@v4
+        with:
+          path: /tmp/lambda-docker-images
+          key: lambda-docker-python3.12-nodejs20
+      - name: Load cached Lambda Docker images
+        if: steps.cache-lambda-images.outputs.cache-hit == 'true'
+        run: |
+          docker load -i /tmp/lambda-docker-images/python312.tar
+          docker load -i /tmp/lambda-docker-images/nodejs20.tar
+      - name: Pull and cache Lambda Docker images
+        if: steps.cache-lambda-images.outputs.cache-hit != 'true'
+        run: |
+          docker pull public.ecr.aws/lambda/python:3.12
+          docker pull public.ecr.aws/lambda/nodejs:20
+          mkdir -p /tmp/lambda-docker-images
+          docker save public.ecr.aws/lambda/python:3.12 -o /tmp/lambda-docker-images/python312.tar
+          docker save public.ecr.aws/lambda/nodejs:20 -o /tmp/lambda-docker-images/nodejs20.tar
+      - run: uv pip install --system -e lang/python/core
+      - run: make install
+        working-directory: lang/python/sdk
+      - run: make test-e2e-guard
+        working-directory: lang/python/sdk
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: python-sdk-test-e2e-results-guard
+          path: lang/python/sdk/test-results/junit-guard.xml
 
-  typescript-core-integration-test:
-    needs: [changes]
-    if: needs.changes.outputs.typescript-core == 'true'
+  python-sdk-test-e2e-sequence:
+    needs: [changes, python-sdk-lint, python-sdk-test-unit, python-sdk-test-architecture]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.python-sdk == 'true' &&
+      (needs.python-sdk-lint.result == 'success' || needs.python-sdk-lint.result == 'skipped') &&
+      (needs.python-sdk-test-unit.result == 'success' || needs.python-sdk-test-unit.result == 'skipped') &&
+      (needs.python-sdk-test-architecture.result == 'success' || needs.python-sdk-test-architecture.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Install
-        working-directory: lang/typescript/core
-        run: npm ci
-      - name: Integration test
-        working-directory: lang/typescript/core
-        run: make integration-test
-
-  typescript-core-architecture-test:
-    needs: [changes]
-    if: needs.changes.outputs.typescript-core == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Cache Lambda Docker images
+        id: cache-lambda-images
+        uses: actions/cache@v4
         with:
-          node-version: "20"
-      - name: Install
-        working-directory: lang/typescript/core
-        run: npm ci
-      - name: Architecture test
-        working-directory: lang/typescript/core
-        run: make architecture-test
-
-  # ── TypeScript SDK ─────────────────────────────────────────────────────────
-  typescript-sdk-lint:
-    needs: [changes, typescript-core-lint, typescript-core-integration-test, typescript-core-architecture-test]
-    if: needs.changes.outputs.typescript-sdk == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+          path: /tmp/lambda-docker-images
+          key: lambda-docker-python3.12-nodejs20
+      - name: Load cached Lambda Docker images
+        if: steps.cache-lambda-images.outputs.cache-hit == 'true'
+        run: |
+          docker load -i /tmp/lambda-docker-images/python312.tar
+          docker load -i /tmp/lambda-docker-images/nodejs20.tar
+      - name: Pull and cache Lambda Docker images
+        if: steps.cache-lambda-images.outputs.cache-hit != 'true'
+        run: |
+          docker pull public.ecr.aws/lambda/python:3.12
+          docker pull public.ecr.aws/lambda/nodejs:20
+          mkdir -p /tmp/lambda-docker-images
+          docker save public.ecr.aws/lambda/python:3.12 -o /tmp/lambda-docker-images/python312.tar
+          docker save public.ecr.aws/lambda/nodejs:20 -o /tmp/lambda-docker-images/nodejs20.tar
+      - run: uv pip install --system -e lang/python/core
+      - run: make install
+        working-directory: lang/python/sdk
+      - run: make test-e2e-sequence
+        working-directory: lang/python/sdk
+      - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          node-version: "20"
-      - name: Install and build core
-        working-directory: lang/typescript/core
-        run: npm ci && npm run build
-      - name: Install
-        working-directory: lang/typescript/sdk
-        run: npm ci
-      - name: Lint / format / complexity / cpd / type-check
-        working-directory: lang/typescript/sdk
-        run: make lint format-check complexity cpd type-check
+          name: python-sdk-test-e2e-results-sequence
+          path: lang/python/sdk/test-results/junit-sequence.xml
 
-  typescript-sdk-unit-test:
-    needs: [changes, typescript-core-lint, typescript-core-integration-test, typescript-core-architecture-test]
-    if: needs.changes.outputs.typescript-sdk == 'true'
+  python-sdk-e2e-summary:
+    needs: [python-sdk-test-e2e-minimal, python-sdk-test-e2e-guard, python-sdk-test-e2e-sequence]
+    if: |
+      always() &&
+      (needs.python-sdk-test-e2e-minimal.result != 'skipped' ||
+       needs.python-sdk-test-e2e-guard.result != 'skipped' ||
+       needs.python-sdk-test-e2e-sequence.result != 'skipped')
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/download-artifact@v4
         with:
-          node-version: "20"
-      - name: Install core
-        working-directory: lang/typescript/core
-        run: npm ci
-      - name: Build core
-        working-directory: lang/typescript/core
-        run: npm run build
-      - name: Install sdk
-        working-directory: lang/typescript/sdk
-        run: npm ci
-      - name: Unit test
-        working-directory: lang/typescript/sdk
-        run: make unit-test
-
-  typescript-sdk-architecture-test:
-    needs: [changes, typescript-core-lint, typescript-core-integration-test, typescript-core-architecture-test]
-    if: needs.changes.outputs.typescript-sdk == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+          pattern: python-sdk-test-e2e-results-*
+          merge-multiple: true
+          path: all-results/
+      - uses: EnricoMi/publish-unit-test-result-action@v2
         with:
-          node-version: "20"
-      - name: Install core
-        working-directory: lang/typescript/core
-        run: npm ci
-      - name: Build core
-        working-directory: lang/typescript/core
-        run: npm run build
-      - name: Install sdk
-        working-directory: lang/typescript/sdk
-        run: npm ci
-      - name: Architecture test
-        working-directory: lang/typescript/sdk
-        run: make architecture-test
+          files: all-results/**/*.xml
+          check_name: Python SDK E2E Tests
 
-  typescript-sdk-e2e-test:
-    needs: [changes, typescript-core-lint, typescript-core-integration-test, typescript-core-architecture-test]
-    if: needs.changes.outputs.typescript-sdk == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Install core
-        working-directory: lang/typescript/core
-        run: npm ci
-      - name: Build core
-        working-directory: lang/typescript/core
-        run: npm run build
-      - name: Install sdk
-        working-directory: lang/typescript/sdk
-        run: npm ci
-      - name: E2E test
-        working-directory: lang/typescript/sdk
-        run: make e2e-test
-
-  # ── TypeScript Example ──────────────────────────────────────────────────────
-  typescript-example-lint:
-    needs: [changes, typescript-sdk-lint, typescript-sdk-unit-test, typescript-sdk-architecture-test, typescript-sdk-e2e-test]
-    if: needs.changes.outputs.typescript-example == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Install and build core
-        working-directory: lang/typescript/core
-        run: npm ci && npm run build
-      - name: Install and build sdk
-        working-directory: lang/typescript/sdk
-        run: npm ci && npm run build
-      - name: Install
-        working-directory: lang/typescript/example
-        run: npm ci
-      - name: Lint / format / complexity / cpd / type-check
-        working-directory: lang/typescript/example
-        run: make lint format-check complexity cpd type-check
-
-  typescript-example-unit-test:
-    needs: [changes, typescript-sdk-lint, typescript-sdk-unit-test, typescript-sdk-architecture-test, typescript-sdk-e2e-test]
-    if: needs.changes.outputs.typescript-example == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Install and build core
-        working-directory: lang/typescript/core
-        run: npm ci && npm run build
-      - name: Build SDK
-        working-directory: lang/typescript/sdk
-        run: npm ci && npm run build
-      - name: Install
-        working-directory: lang/typescript/example
-        run: npm ci
-      - name: Unit test
-        working-directory: lang/typescript/example
-        run: make unit-test
-
-  typescript-example-architecture-test:
-    needs: [changes, typescript-sdk-lint, typescript-sdk-unit-test, typescript-sdk-architecture-test, typescript-sdk-e2e-test]
-    if: needs.changes.outputs.typescript-example == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Install and build core
-        working-directory: lang/typescript/core
-        run: npm ci && npm run build
-      - name: Build SDK
-        working-directory: lang/typescript/sdk
-        run: npm ci && npm run build
-      - name: Install
-        working-directory: lang/typescript/example
-        run: npm ci
-      - name: Architecture test
-        working-directory: lang/typescript/example
-        run: make architecture-test
-
-  typescript-example-e2e-test:
-    needs: [changes, typescript-sdk-lint, typescript-sdk-unit-test, typescript-sdk-architecture-test, typescript-sdk-e2e-test]
-    if: needs.changes.outputs.typescript-example == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Install and build core
-        working-directory: lang/typescript/core
-        run: npm ci && npm run build
-      - name: Build SDK
-        working-directory: lang/typescript/sdk
-        run: npm ci && npm run build
-      - name: Install
-        working-directory: lang/typescript/example
-        run: npm ci
-      - name: E2E test
-        working-directory: lang/typescript/example
-        run: make e2e-test
-
-  # ── Go Core ─────────────────────────────────────────────────────────────────
-  # ── Go Core ─────────────────────────────────────────────────────────────────
-  go-core-lint:
-    needs: [changes]
-    if: needs.changes.outputs.go-core == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: "1.23"
-      - name: Lint
-        working-directory: lang/go/core
-        run: make format-check
-
-  go-core-test:
-    needs: [changes]
-    if: needs.changes.outputs.go-core == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: "1.23"
-      - name: Test
-        working-directory: lang/go/core
-        run: make test
-
-  # ── Java Core ───────────────────────────────────────────────────────────────
-  java-core-lint:
-    needs: [changes]
-    if: needs.changes.outputs.java-core == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
-      - name: Lint
-        working-directory: lang/java/core
-        run: make lint format-check cpd spotbugs
-
-  java-core-integration-test:
-    needs: [changes]
-    if: needs.changes.outputs.java-core == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
-      - name: Integration test
-        working-directory: lang/java/core
-        run: make integration-test
-
-  java-core-architecture-test:
-    needs: [changes]
-    if: needs.changes.outputs.java-core == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
-      - name: Build arch_tests JAR
-        working-directory: lang/java/arch_tests
-        run: ./gradlew jar
-      - name: Architecture test
-        working-directory: lang/java/core
-        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew architectureTest
-
-  java-core-unit-test:
-    needs: [changes]
-    if: needs.changes.outputs.java-core == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
-      - name: Build arch_tests JAR
-        working-directory: lang/java/arch_tests
-        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-arch-tests" ./gradlew jar
-      - name: Build core JAR
-        working-directory: lang/java/core
-        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew jar
-      - name: Run unit tests
-        working-directory: lang/java/core
-        run: make unit-test
-
-  # ── Java SDK ────────────────────────────────────────────────────────────────
-  java-sdk-lint:
-    needs: [changes, java-core-lint, java-core-integration-test, java-core-architecture-test, java-core-unit-test]
-    if: needs.changes.outputs.java-sdk == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
-      - name: Build Java core JAR
-        working-directory: lang/java/core
-        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew jar
-      - name: Lint
-        working-directory: lang/java/sdk
-        run: make lint format-check cpd spotbugs
-
-  java-sdk-e2e-test:
-    needs: [changes, java-core-lint, java-core-integration-test, java-core-architecture-test, java-core-unit-test]
-    if: needs.changes.outputs.java-sdk == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
-      - name: Build Java core JAR
-        working-directory: lang/java/core
-        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew jar
-      - name: E2E test
-        working-directory: lang/java/sdk
-        run: make e2e-test
-
-  java-sdk-architecture-test:
-    needs: [changes, java-core-lint, java-core-integration-test, java-core-architecture-test, java-core-unit-test]
-    if: needs.changes.outputs.java-sdk == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
-      - name: Build arch_tests JAR
-        working-directory: lang/java/arch_tests
-        run: ./gradlew jar
-      - name: Build Java core JAR
-        working-directory: lang/java/core
-        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew jar
-      - name: Architecture test
-        working-directory: lang/java/sdk
-        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-sdk" ./gradlew architectureTest
-
-  # ── Java Example ────────────────────────────────────────────────────────────
-  java-example-lint:
-    needs: [changes, java-sdk-lint, java-sdk-e2e-test, java-sdk-architecture-test]
-    if: needs.changes.outputs.java-example == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
-      - name: Build Java core JAR
-        working-directory: lang/java/core
-        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew jar
-      - name: Build Java SDK JAR
-        working-directory: lang/java/sdk
-        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-sdk" ./gradlew jar
-      - name: Lint
-        working-directory: lang/java/example
-        run: make lint format-check cpd spotbugs
-
-  java-example-e2e-test:
-    needs: [changes, java-sdk-lint, java-sdk-e2e-test, java-sdk-architecture-test]
-    if: needs.changes.outputs.java-example == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
-      - name: Build Java core JAR
-        working-directory: lang/java/core
-        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew jar
-      - name: Build Java SDK JAR
-        working-directory: lang/java/sdk
-        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-sdk" ./gradlew jar
-      - name: E2E test
-        working-directory: lang/java/example
-        run: make e2e-test
-
-  java-example-architecture-test:
-    needs: [changes, java-sdk-lint, java-sdk-e2e-test, java-sdk-architecture-test]
-    if: needs.changes.outputs.java-example == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
-      - name: Build arch_tests JAR
-        working-directory: lang/java/arch_tests
-        run: ./gradlew jar
-      - name: Build Java core JAR
-        working-directory: lang/java/core
-        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew jar
-      - name: Build Java SDK JAR
-        working-directory: lang/java/sdk
-        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-sdk" ./gradlew jar
-      - name: Architecture test
-        working-directory: lang/java/example
-        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-example" ./gradlew architectureTest
-
-  # ── Go SDK ─────────────────────────────────────────────────────────────────
-  go-sdk-lint:
-    needs: [changes, go-core-lint, go-core-test]
-    if: needs.changes.outputs.go-sdk == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: "1.23"
-      - name: Lint
-        working-directory: lang/go/sdk
-        run: make lint format-check
-
-  go-sdk-test:
-    needs: [changes, go-core-lint, go-core-test]
-    if: needs.changes.outputs.go-sdk == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: "1.23"
-      - name: Test
-        working-directory: lang/go/sdk
-        run: make test
-
-  # ── Python Example ─────────────────────────────────────────────────────────
+  # ── Python Example ──────────────────────────────────────────────────────────
   python-example-lint:
-    needs: [changes, python-sdk-lint, python-sdk-unit-test, python-sdk-architecture-test, python-sdk-e2e-test]
-    if: needs.changes.outputs.python-example == 'true'
+    needs: [changes, python-sdk-lint, python-sdk-test-unit, python-sdk-test-architecture]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.python-example == 'true' &&
+      (needs.python-sdk-lint.result == 'success' || needs.python-sdk-lint.result == 'skipped') &&
+      (needs.python-sdk-test-unit.result == 'success' || needs.python-sdk-test-unit.result == 'skipped') &&
+      (needs.python-sdk-test-architecture.result == 'success' || needs.python-sdk-test-architecture.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -800,80 +410,248 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ steps.pyver.outputs.version }}
-      - run: make install
-        working-directory: lang/python/example
-      - run: make lint format-check complexity cpd pylint
-        working-directory: lang/python/example
-
-  python-example-unit-test:
-    needs: [changes, python-sdk-lint, python-sdk-unit-test, python-sdk-architecture-test, python-sdk-e2e-test]
-    if: needs.changes.outputs.python-example == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - id: pyver
-        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ steps.pyver.outputs.version }}
-      - run: make install
-        working-directory: lang/python/example
-      - run: make unit-test
-        working-directory: lang/python/example
-
-  python-example-architecture-test:
-    needs: [changes, python-sdk-lint, python-sdk-unit-test, python-sdk-architecture-test, python-sdk-e2e-test]
-    if: needs.changes.outputs.python-example == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - id: pyver
-        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ steps.pyver.outputs.version }}
-      - run: make install
-        working-directory: lang/python/example
-      - run: make architecture-test
-        working-directory: lang/python/example
-
-  python-example-e2e-test:
-    needs: [changes, python-sdk-lint, python-sdk-unit-test, python-sdk-architecture-test, python-sdk-e2e-test]
-    if: needs.changes.outputs.python-example == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - id: pyver
-        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ steps.pyver.outputs.version }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Pull Lambda Docker images
-        run: |
-          docker pull public.ecr.aws/lambda/python:3.12
-          docker pull public.ecr.aws/lambda/nodejs:20
       - run: uv pip install --system -e lang/python/core -e lang/python/sdk
       - run: make install
         working-directory: lang/python/example
-      - run: make e2e-test
+      - run: make lint
         working-directory: lang/python/example
+
+  python-example-test-unit:
+    needs: [changes, python-sdk-lint, python-sdk-test-unit, python-sdk-test-architecture]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.python-example == 'true' &&
+      (needs.python-sdk-lint.result == 'success' || needs.python-sdk-lint.result == 'skipped') &&
+      (needs.python-sdk-test-unit.result == 'success' || needs.python-sdk-test-unit.result == 'skipped') &&
+      (needs.python-sdk-test-architecture.result == 'success' || needs.python-sdk-test-architecture.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
+      - run: uv pip install --system -e lang/python/core -e lang/python/sdk
+      - run: make install
+        working-directory: lang/python/example
+      - run: make test-unit
+        working-directory: lang/python/example
+
+  python-example-test-architecture:
+    needs: [changes, python-sdk-lint, python-sdk-test-unit, python-sdk-test-architecture]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.python-example == 'true' &&
+      (needs.python-sdk-lint.result == 'success' || needs.python-sdk-lint.result == 'skipped') &&
+      (needs.python-sdk-test-unit.result == 'success' || needs.python-sdk-test-unit.result == 'skipped') &&
+      (needs.python-sdk-test-architecture.result == 'success' || needs.python-sdk-test-architecture.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
+      - run: uv pip install --system -e lang/python/core -e lang/python/sdk
+      - run: make install
+        working-directory: lang/python/example
+      - run: make test-architecture
+        working-directory: lang/python/example
+
+  python-example-test-e2e-minimal:
+    needs: [changes, python-sdk-e2e-summary, python-example-lint, python-example-test-unit, python-example-test-architecture]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.python-example == 'true' &&
+      (needs.python-sdk-e2e-summary.result == 'success' || needs.python-sdk-e2e-summary.result == 'skipped') &&
+      (needs.python-example-lint.result == 'success' || needs.python-example-lint.result == 'skipped') &&
+      (needs.python-example-test-unit.result == 'success' || needs.python-example-test-unit.result == 'skipped') &&
+      (needs.python-example-test-architecture.result == 'success' || needs.python-example-test-architecture.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Cache Lambda Docker images
+        id: cache-lambda-images
+        uses: actions/cache@v4
+        with:
+          path: /tmp/lambda-docker-images
+          key: lambda-docker-python3.12-nodejs20
+      - name: Load cached Lambda Docker images
+        if: steps.cache-lambda-images.outputs.cache-hit == 'true'
+        run: |
+          docker load -i /tmp/lambda-docker-images/python312.tar
+          docker load -i /tmp/lambda-docker-images/nodejs20.tar
+      - name: Pull and cache Lambda Docker images
+        if: steps.cache-lambda-images.outputs.cache-hit != 'true'
+        run: |
+          docker pull public.ecr.aws/lambda/python:3.12
+          docker pull public.ecr.aws/lambda/nodejs:20
+          mkdir -p /tmp/lambda-docker-images
+          docker save public.ecr.aws/lambda/python:3.12 -o /tmp/lambda-docker-images/python312.tar
+          docker save public.ecr.aws/lambda/nodejs:20 -o /tmp/lambda-docker-images/nodejs20.tar
+      - run: uv pip install --system -e lang/python/core -e lang/python/sdk
+      - run: make install
+        working-directory: lang/python/example
+      - run: make test-e2e-minimal
+        working-directory: lang/python/example
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: python-example-test-e2e-results-minimal
+          path: lang/python/example/test-results/junit-minimal.xml
+
+  python-example-test-e2e-guard:
+    needs: [changes, python-sdk-e2e-summary, python-example-lint, python-example-test-unit, python-example-test-architecture]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.python-example == 'true' &&
+      (needs.python-sdk-e2e-summary.result == 'success' || needs.python-sdk-e2e-summary.result == 'skipped') &&
+      (needs.python-example-lint.result == 'success' || needs.python-example-lint.result == 'skipped') &&
+      (needs.python-example-test-unit.result == 'success' || needs.python-example-test-unit.result == 'skipped') &&
+      (needs.python-example-test-architecture.result == 'success' || needs.python-example-test-architecture.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Cache Lambda Docker images
+        id: cache-lambda-images
+        uses: actions/cache@v4
+        with:
+          path: /tmp/lambda-docker-images
+          key: lambda-docker-python3.12-nodejs20
+      - name: Load cached Lambda Docker images
+        if: steps.cache-lambda-images.outputs.cache-hit == 'true'
+        run: |
+          docker load -i /tmp/lambda-docker-images/python312.tar
+          docker load -i /tmp/lambda-docker-images/nodejs20.tar
+      - name: Pull and cache Lambda Docker images
+        if: steps.cache-lambda-images.outputs.cache-hit != 'true'
+        run: |
+          docker pull public.ecr.aws/lambda/python:3.12
+          docker pull public.ecr.aws/lambda/nodejs:20
+          mkdir -p /tmp/lambda-docker-images
+          docker save public.ecr.aws/lambda/python:3.12 -o /tmp/lambda-docker-images/python312.tar
+          docker save public.ecr.aws/lambda/nodejs:20 -o /tmp/lambda-docker-images/nodejs20.tar
+      - run: uv pip install --system -e lang/python/core -e lang/python/sdk
+      - run: make install
+        working-directory: lang/python/example
+      - run: make test-e2e-guard
+        working-directory: lang/python/example
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: python-example-test-e2e-results-guard
+          path: lang/python/example/test-results/junit-guard.xml
+
+  python-example-test-e2e-sequence:
+    needs: [changes, python-sdk-e2e-summary, python-example-lint, python-example-test-unit, python-example-test-architecture]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.python-example == 'true' &&
+      (needs.python-sdk-e2e-summary.result == 'success' || needs.python-sdk-e2e-summary.result == 'skipped') &&
+      (needs.python-example-lint.result == 'success' || needs.python-example-lint.result == 'skipped') &&
+      (needs.python-example-test-unit.result == 'success' || needs.python-example-test-unit.result == 'skipped') &&
+      (needs.python-example-test-architecture.result == 'success' || needs.python-example-test-architecture.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Cache Lambda Docker images
+        id: cache-lambda-images
+        uses: actions/cache@v4
+        with:
+          path: /tmp/lambda-docker-images
+          key: lambda-docker-python3.12-nodejs20
+      - name: Load cached Lambda Docker images
+        if: steps.cache-lambda-images.outputs.cache-hit == 'true'
+        run: |
+          docker load -i /tmp/lambda-docker-images/python312.tar
+          docker load -i /tmp/lambda-docker-images/nodejs20.tar
+      - name: Pull and cache Lambda Docker images
+        if: steps.cache-lambda-images.outputs.cache-hit != 'true'
+        run: |
+          docker pull public.ecr.aws/lambda/python:3.12
+          docker pull public.ecr.aws/lambda/nodejs:20
+          mkdir -p /tmp/lambda-docker-images
+          docker save public.ecr.aws/lambda/python:3.12 -o /tmp/lambda-docker-images/python312.tar
+          docker save public.ecr.aws/lambda/nodejs:20 -o /tmp/lambda-docker-images/nodejs20.tar
+      - run: uv pip install --system -e lang/python/core -e lang/python/sdk
+      - run: make install
+        working-directory: lang/python/example
+      - run: make test-e2e-sequence
+        working-directory: lang/python/example
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: python-example-test-e2e-results-sequence
+          path: lang/python/example/test-results/junit-sequence.xml
+
+  python-example-e2e-summary:
+    needs: [python-example-test-e2e-minimal, python-example-test-e2e-guard, python-example-test-e2e-sequence]
+    if: |
+      always() &&
+      (needs.python-example-test-e2e-minimal.result != 'skipped' ||
+       needs.python-example-test-e2e-guard.result != 'skipped' ||
+       needs.python-example-test-e2e-sequence.result != 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: python-example-test-e2e-results-*
+          merge-multiple: true
+          path: all-results/
+      - uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: all-results/**/*.xml
+          check_name: Python Example E2E Tests
 
   # ── Python Sample CDK ───────────────────────────────────────────────────────
   python-sample-cdk-build:
-    needs: [changes, python-example-lint, python-example-unit-test, python-example-architecture-test, python-example-e2e-test]
+    needs: [changes, python-example-lint, python-example-test-unit, python-example-test-architecture, python-example-e2e-summary]
     if: |
       always() &&
       needs.changes.outputs.python-sample-cdk == 'true' &&
       (needs.python-example-lint.result == 'success' || needs.python-example-lint.result == 'skipped') &&
-      (needs.python-example-unit-test.result == 'success' || needs.python-example-unit-test.result == 'skipped') &&
-      (needs.python-example-architecture-test.result == 'success' || needs.python-example-architecture-test.result == 'skipped') &&
-      (needs.python-example-e2e-test.result == 'success' || needs.python-example-e2e-test.result == 'skipped')
+      (needs.python-example-test-unit.result == 'success' || needs.python-example-test-unit.result == 'skipped') &&
+      (needs.python-example-test-architecture.result == 'success' || needs.python-example-test-architecture.result == 'skipped') &&
+      (needs.python-example-e2e-summary.result == 'success' || needs.python-example-e2e-summary.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -914,14 +692,14 @@ jobs:
 
   # ── Python Sample HCL ───────────────────────────────────────────────────────
   python-sample-hcl-build:
-    needs: [changes, python-example-lint, python-example-unit-test, python-example-architecture-test, python-example-e2e-test]
+    needs: [changes, python-example-lint, python-example-test-unit, python-example-test-architecture, python-example-e2e-summary]
     if: |
       always() &&
       needs.changes.outputs.python-sample-hcl == 'true' &&
       (needs.python-example-lint.result == 'success' || needs.python-example-lint.result == 'skipped') &&
-      (needs.python-example-unit-test.result == 'success' || needs.python-example-unit-test.result == 'skipped') &&
-      (needs.python-example-architecture-test.result == 'success' || needs.python-example-architecture-test.result == 'skipped') &&
-      (needs.python-example-e2e-test.result == 'success' || needs.python-example-e2e-test.result == 'skipped')
+      (needs.python-example-test-unit.result == 'success' || needs.python-example-test-unit.result == 'skipped') &&
+      (needs.python-example-test-architecture.result == 'success' || needs.python-example-test-architecture.result == 'skipped') &&
+      (needs.python-example-e2e-summary.result == 'success' || needs.python-example-e2e-summary.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -957,352 +735,3 @@ jobs:
       - name: Run test-orders.sh
         working-directory: lang/python/sample/hcl
         run: ./test-orders.sh
-
-  # ── TypeScript Sample CDK ────────────────────────────────────────────────────
-  typescript-sample-cdk-build:
-    needs: [changes, typescript-example-lint, typescript-example-unit-test, typescript-example-architecture-test, typescript-example-e2e-test]
-    if: |
-      always() &&
-      needs.changes.outputs.typescript-sample-cdk == 'true' &&
-      (needs.typescript-example-lint.result == 'success' || needs.typescript-example-lint.result == 'skipped') &&
-      (needs.typescript-example-unit-test.result == 'success' || needs.typescript-example-unit-test.result == 'skipped') &&
-      (needs.typescript-example-architecture-test.result == 'success' || needs.typescript-example-architecture-test.result == 'skipped') &&
-      (needs.typescript-example-e2e-test.result == 'success' || needs.typescript-example-e2e-test.result == 'skipped')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Pull Lambda Docker images
-        run: |
-          docker pull public.ecr.aws/lambda/nodejs:20
-      - name: Install ldk and lws
-        run: uv pip install --system -e lang/python/core
-      - name: Install CDK dependencies
-        working-directory: lang/typescript/sample/cdk
-        run: npm ci
-      - name: CDK Synth
-        working-directory: lang/typescript/sample/cdk
-        run: npx cdk synth
-      - name: Start ldk dev
-        working-directory: lang/typescript/sample/cdk
-        run: ldk dev &
-      - name: Wait for ldk to be ready
-        run: |
-          for i in $(seq 1 60); do
-            if curl -sf http://localhost:3000/_ldk/status | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if d.get('running') else 1)" 2>/dev/null; then
-              echo "ldk is ready"
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "ldk failed to start" && exit 1
-      - name: Run test-orders.sh
-        working-directory: lang/typescript/sample/cdk
-        run: ./test-orders.sh
-
-  # ── TypeScript Sample HCL ────────────────────────────────────────────────────
-  typescript-sample-hcl-build:
-    needs: [changes, typescript-example-lint, typescript-example-unit-test, typescript-example-architecture-test, typescript-example-e2e-test]
-    if: |
-      always() &&
-      needs.changes.outputs.typescript-sample-hcl == 'true' &&
-      (needs.typescript-example-lint.result == 'success' || needs.typescript-example-lint.result == 'skipped') &&
-      (needs.typescript-example-unit-test.result == 'success' || needs.typescript-example-unit-test.result == 'skipped') &&
-      (needs.typescript-example-architecture-test.result == 'success' || needs.typescript-example-architecture-test.result == 'skipped') &&
-      (needs.typescript-example-e2e-test.result == 'success' || needs.typescript-example-e2e-test.result == 'skipped')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - uses: opentofu/setup-opentofu@v1
-      - name: Pull Lambda Docker images
-        run: |
-          docker pull public.ecr.aws/lambda/nodejs:20
-      - name: Install ldk and lws
-        run: uv pip install --system -e lang/python/core
-      - name: Build TypeScript lambdas
-        working-directory: lang/typescript/sample/hcl
-        run: npm ci && npm run build
-      - name: Start ldk dev
-        working-directory: lang/typescript/sample/hcl
-        run: ldk dev &
-      - name: Wait for ldk to be ready
-        run: |
-          for i in $(seq 1 60); do
-            if curl -sf http://localhost:3000/_ldk/status | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if d.get('running') else 1)" 2>/dev/null; then
-              echo "ldk is ready"
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "ldk failed to start" && exit 1
-      - name: OpenTofu Init
-        working-directory: lang/typescript/sample/hcl
-        run: tofu init
-      - name: OpenTofu Apply
-        working-directory: lang/typescript/sample/hcl
-        run: tofu apply -auto-approve
-      - name: Run test-orders.sh
-        working-directory: lang/typescript/sample/hcl
-        run: ./test-orders.sh
-
-  # ── Java Sample CDK ──────────────────────────────────────────────────────────
-  java-sample-cdk-build:
-    needs: [changes, java-example-lint, java-example-e2e-test, java-example-architecture-test]
-    if: |
-      always() &&
-      needs.changes.outputs.java-sample-cdk == 'true' &&
-      (needs.java-example-lint.result == 'success' || needs.java-example-lint.result == 'skipped') &&
-      (needs.java-example-e2e-test.result == 'success' || needs.java-example-e2e-test.result == 'skipped') &&
-      (needs.java-example-architecture-test.result == 'success' || needs.java-example-architecture-test.result == 'skipped')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - uses: actions/setup-java@v4
-        with:
-          java-version: "21"
-          distribution: "temurin"
-      - name: Pull Lambda Docker images
-        run: |
-          docker pull public.ecr.aws/lambda/java:21
-      - name: Install ldk and lws
-        run: uv pip install --system -e lang/python/core
-      - name: Build fat JAR
-        working-directory: lang/java/sample/cdk/lambda
-        run: mvn package -q
-      - name: Install CDK dependencies
-        working-directory: lang/java/sample/cdk
-        run: npm ci
-      - name: CDK Synth
-        working-directory: lang/java/sample/cdk
-        run: npx cdk synth
-      - name: Start ldk dev
-        working-directory: lang/java/sample/cdk
-        run: ldk dev &
-      - name: Wait for ldk to be ready
-        run: |
-          for i in $(seq 1 60); do
-            if curl -sf http://localhost:3000/_ldk/status | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if d.get('running') else 1)" 2>/dev/null; then
-              echo "ldk is ready"
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "ldk failed to start" && exit 1
-      - name: Run test-orders.sh
-        working-directory: lang/java/sample/cdk
-        run: ./test-orders.sh
-
-  # ── Java Sample HCL ──────────────────────────────────────────────────────────
-  java-sample-hcl-build:
-    needs: [changes, java-example-lint, java-example-e2e-test, java-example-architecture-test]
-    if: |
-      always() &&
-      needs.changes.outputs.java-sample-hcl == 'true' &&
-      (needs.java-example-lint.result == 'success' || needs.java-example-lint.result == 'skipped') &&
-      (needs.java-example-e2e-test.result == 'success' || needs.java-example-e2e-test.result == 'skipped') &&
-      (needs.java-example-architecture-test.result == 'success' || needs.java-example-architecture-test.result == 'skipped')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - uses: actions/setup-java@v4
-        with:
-          java-version: "21"
-          distribution: "temurin"
-      - uses: opentofu/setup-opentofu@v1
-      - name: Pull Lambda Docker images
-        run: |
-          docker pull public.ecr.aws/lambda/java:21
-      - name: Install ldk and lws
-        run: uv pip install --system -e lang/python/core
-      - name: Build fat JAR
-        working-directory: lang/java/sample/hcl/lambda
-        run: mvn package -q
-      - name: Start ldk dev
-        working-directory: lang/java/sample/hcl
-        run: ldk dev &
-      - name: Wait for ldk to be ready
-        run: |
-          for i in $(seq 1 60); do
-            if curl -sf http://localhost:3000/_ldk/status | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if d.get('running') else 1)" 2>/dev/null; then
-              echo "ldk is ready"
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "ldk failed to start" && exit 1
-      - name: OpenTofu Init
-        working-directory: lang/java/sample/hcl
-        run: tofu init
-      - name: OpenTofu Apply
-        working-directory: lang/java/sample/hcl
-        run: tofu apply -auto-approve
-      - name: Run test-orders.sh
-        working-directory: lang/java/sample/hcl
-        run: ./test-orders.sh
-
-  # ── Go Sample CDK ────────────────────────────────────────────────────────────
-  go-sample-cdk-build:
-    needs: [changes, go-example-lint, go-example-test]
-    if: |
-      always() &&
-      needs.changes.outputs.go-sample-cdk == 'true' &&
-      (needs.go-example-lint.result == 'success' || needs.go-example-lint.result == 'skipped') &&
-      (needs.go-example-test.result == 'success' || needs.go-example-test.result == 'skipped')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - uses: actions/setup-go@v5
-        with:
-          go-version: "1.23"
-      - name: Pull Lambda Docker images
-        run: |
-          docker pull public.ecr.aws/lambda/provided:al2023
-      - name: Install ldk and lws
-        run: uv pip install --system -e lang/python/core
-      - name: Build Go lambda binaries
-        run: |
-          for fn in create-order get-order process-order generate-receipt; do
-            pushd lang/go/sample/cdk/lambda/$fn
-            go mod tidy
-            GOOS=linux GOARCH=amd64 go build -o bootstrap .
-            zip bootstrap.zip bootstrap
-            rm bootstrap
-            popd
-          done
-      - name: Install CDK dependencies
-        working-directory: lang/go/sample/cdk
-        run: npm ci
-      - name: CDK Synth
-        working-directory: lang/go/sample/cdk
-        run: npx cdk synth
-      - name: Start ldk dev
-        working-directory: lang/go/sample/cdk
-        run: ldk dev &
-      - name: Wait for ldk to be ready
-        run: |
-          for i in $(seq 1 60); do
-            if curl -sf http://localhost:3000/_ldk/status | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if d.get('running') else 1)" 2>/dev/null; then
-              echo "ldk is ready"
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "ldk failed to start" && exit 1
-      - name: Run test-orders.sh
-        working-directory: lang/go/sample/cdk
-        run: ./test-orders.sh
-
-  # ── Go Sample HCL ────────────────────────────────────────────────────────────
-  go-sample-hcl-build:
-    needs: [changes, go-example-lint, go-example-test]
-    if: |
-      always() &&
-      needs.changes.outputs.go-sample-hcl == 'true' &&
-      (needs.go-example-lint.result == 'success' || needs.go-example-lint.result == 'skipped') &&
-      (needs.go-example-test.result == 'success' || needs.go-example-test.result == 'skipped')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - uses: actions/setup-go@v5
-        with:
-          go-version: "1.23"
-      - uses: opentofu/setup-opentofu@v1
-      - name: Pull Lambda Docker images
-        run: |
-          docker pull public.ecr.aws/lambda/provided:al2023
-      - name: Install ldk and lws
-        run: uv pip install --system -e lang/python/core
-      - name: Build Go lambda binaries
-        run: |
-          for fn in create-order get-order process-order generate-receipt; do
-            pushd lang/go/sample/hcl/lambda/$fn
-            go mod tidy
-            GOOS=linux GOARCH=amd64 go build -o bootstrap .
-            zip bootstrap.zip bootstrap
-            rm bootstrap
-            popd
-          done
-      - name: Start ldk dev
-        working-directory: lang/go/sample/hcl
-        run: ldk dev &
-      - name: Wait for ldk to be ready
-        run: |
-          for i in $(seq 1 60); do
-            if curl -sf http://localhost:3000/_ldk/status | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if d.get('running') else 1)" 2>/dev/null; then
-              echo "ldk is ready"
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "ldk failed to start" && exit 1
-      - name: OpenTofu Init
-        working-directory: lang/go/sample/hcl
-        run: tofu init
-      - name: OpenTofu Apply
-        working-directory: lang/go/sample/hcl
-        run: tofu apply -auto-approve
-      - name: Run test-orders.sh
-        working-directory: lang/go/sample/hcl
-        run: ./test-orders.sh
-
-  # ── Go Example ──────────────────────────────────────────────────────────────
-  go-example-lint:
-    needs: [changes, go-sdk-lint, go-sdk-test]
-    if: needs.changes.outputs.go-example == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: "1.23"
-      - name: Lint
-        working-directory: lang/go/example
-        run: make format-check
-
-  go-example-test:
-    needs: [changes, go-sdk-lint, go-sdk-test]
-    if: needs.changes.outputs.go-example == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: "1.23"
-      - name: Test
-        working-directory: lang/go/example
-        run: make test

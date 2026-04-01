@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Multi-Az Failover Is Triggered On A Cluster
+Feature: Neptune - A Multi-Az Failover Is Triggered On A "Neptune" "Cluster"
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,12 +8,12 @@ Feature: Neptune - A Multi-Az Failover Is Triggered On A Cluster
     Given the system is initialized
 
   @minimal @happy @multi_a_z_failover
-  Scenario: a multi-"AZ" failover is triggered on a cluster
-    Given the cluster exists
-    And the cluster is "AVAILABLE"
-    And multi-"AZ" is enabled for the cluster
-    When a multi-"AZ" failover is triggered on a cluster
-    Then the cluster enters "MODIFYING" state for primary promotion
+  Scenario: a multi-"AZ" failover is triggered on a "neptune" "cluster"
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "AVAILABLE"
+    And multi-"AZ" was "ENABLED" for the "neptune" "cluster"
+    When a multi-"AZ" failover is triggered on a "neptune" "cluster"
+    Then the "neptune" "cluster" will be in "MODIFYING" state for primary promotion
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -23,23 +23,23 @@ Feature: Neptune - A Multi-Az Failover Is Triggered On A Cluster
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @multi_a_z_failover
-  Scenario: a multi-"AZ" failover is triggered on a cluster fails when the cluster does not exist
-    Given the cluster does not exist
-    When a multi-"AZ" failover is triggered on a cluster
+  @guard @negative @multi_a_z_failover
+  Scenario: a multi-"AZ" failover is triggered on a "neptune" "cluster" fails when the "neptune" "cluster" did not exist
+    Given the "neptune" "cluster" did not exist
+    When a multi-"AZ" failover is triggered on a "neptune" "cluster"
     Then the operation is rejected
 
-  @standard @negative @multi_a_z_failover @lifecycle
-  Scenario: a multi-"AZ" failover is triggered on a cluster fails when the cluster is not "AVAILABLE"
-    Given the cluster exists
-    And the cluster is not "AVAILABLE"
-    When a multi-"AZ" failover is triggered on a cluster
+  @guard @negative @multi_a_z_failover @lifecycle
+  Scenario: a multi-"AZ" failover is triggered on a "neptune" "cluster" fails when the "neptune" "cluster" was not "AVAILABLE"
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was not "AVAILABLE"
+    When a multi-"AZ" failover is triggered on a "neptune" "cluster"
     Then the operation is rejected
 
-  @standard @negative @multi_a_z_failover
-  Scenario: a multi-"AZ" failover is triggered on a cluster fails when multi-"AZ" is not enabled for the cluster
-    Given the cluster exists
-    And the cluster is "AVAILABLE"
-    And multi-"AZ" is not enabled for the cluster
-    When a multi-"AZ" failover is triggered on a cluster
+  @guard @negative @multi_a_z_failover
+  Scenario: a multi-"AZ" failover is triggered on a "neptune" "cluster" fails when multi-"AZ" was not "ENABLED" for the "neptune" "cluster"
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "AVAILABLE"
+    And multi-"AZ" was not "ENABLED" for the "neptune" "cluster"
+    When a multi-"AZ" failover is triggered on a "neptune" "cluster"
     Then the operation is rejected

@@ -10,5 +10,5 @@ Feature: Chaos - The Chaos Error Rate Is Configured For A Service
   @minimal @happy @set_error_rate
   Scenario: the chaos error rate is configured for a service
     When the chaos error rate is configured for a service
-    Then the error rate configuration is updated
+    Then the error rate configuration will be updated
     And every chaos-configured service is a known service

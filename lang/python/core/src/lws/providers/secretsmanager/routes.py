@@ -22,6 +22,7 @@ from lws.providers._shared.request_helpers import parse_json_body, resolve_api_a
 from lws.providers.secretsmanager._secretsmanager_handlers import (  # pylint: disable=unused-import
     _ACTION_HANDLERS,
     _error_response,
+    _handle_rotate_secret,
     _json_response,  # noqa: F401
 )
 from lws.providers.secretsmanager._secretsmanager_state import (
@@ -79,6 +80,7 @@ async def _secretsmanager_dispatch(
     state: _SecretsState,
     lc: ResourceLifecycleConfig,
     tracker: ResourceStateTracker,
+    lambda_registry: Any = None,
 ) -> Response:
     target = request.headers.get("x-amz-target", "")
     body = await parse_json_body(request)
@@ -87,6 +89,9 @@ async def _secretsmanager_dispatch(
     err = _check_secret_lifecycle(action, body, lc, tracker)
     if err is not None:
         return err
+
+    if action == "RotateSecret":
+        return await _handle_rotate_secret(state, body, lambda_registry)
 
     handler = _ACTION_HANDLERS.get(action)
     if handler is None:
@@ -176,6 +181,7 @@ def create_secretsmanager_app(
     iam_auth: IamAuthBundle | None = None,
     state: _SecretsState | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
+    lambda_registry: Any = None,
 ) -> tuple[FastAPI, _SecretsState]:
     """Create a FastAPI application that speaks the Secrets Manager wire protocol.
 
@@ -217,6 +223,6 @@ def create_secretsmanager_app(
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:
-        return await _secretsmanager_dispatch(request, state, _lc, _tracker)
+        return await _secretsmanager_dispatch(request, state, _lc, _tracker, lambda_registry)
 
     return app, state

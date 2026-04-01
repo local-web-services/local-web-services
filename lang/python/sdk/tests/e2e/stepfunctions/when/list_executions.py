@@ -1,0 +1,20 @@
+"""When: executions for a "step functions" "state machine" are listed"""
+
+from __future__ import annotations
+
+from botocore.exceptions import ClientError
+from pytest_bdd import when
+
+from ..constants import TEST_SM, _sm_arn
+
+
+@when('executions for a "step functions" "state machine" are listed')
+def list_executions(lws_session, world):
+    try:
+        sm_name = world.get("state_machine_name") or TEST_SM
+        resp = lws_session.client("stepfunctions").list_executions(stateMachineArn=_sm_arn(sm_name))
+        world["result"] = resp
+        world["error"] = None
+    except (ClientError, Exception) as exc:
+        world["result"] = None
+        world["error"] = exc

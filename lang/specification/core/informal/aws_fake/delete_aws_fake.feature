@@ -9,22 +9,22 @@ Feature: AwsFake - An Aws Fake Is Deleted
 
   @minimal @happy @delete_aws_fake
   Scenario: an "AWS" fake is deleted
-    Given the "AWS" fake exists
-    And the "AWS" fake is "ACTIVE"
+    Given the "AWS" fake existed
+    And the "AWS" fake was "ACTIVE"
     When an "AWS" fake is deleted
-    Then the "AWS" fake is "DELETED" and its operations are removed
+    Then the "AWS" fake will be deleted and its operations will be removed
     And every "ACTIVE" operation belongs to an "ACTIVE" "AWS" fake
     And every "AWS" fake is tied to a known service
 
-  @standard @negative @delete_aws_fake
-  Scenario: an "AWS" fake is deleted fails when the "AWS" fake does not exist
-    Given the "AWS" fake does not exist
+  @guard @negative @delete_aws_fake
+  Scenario: an "AWS" fake is deleted fails when the "AWS" fake did not exist
+    Given the "AWS" fake did not exist
     When an "AWS" fake is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_aws_fake
-  Scenario: an "AWS" fake is deleted fails when the "AWS" fake is not "ACTIVE"
-    Given the "AWS" fake exists
-    And the "AWS" fake is not "ACTIVE"
+  @guard @negative @delete_aws_fake
+  Scenario: an "AWS" fake is deleted fails when the "AWS" fake was not "ACTIVE"
+    Given the "AWS" fake existed
+    And the "AWS" fake was not "ACTIVE"
     When an "AWS" fake is deleted
     Then the operation is rejected

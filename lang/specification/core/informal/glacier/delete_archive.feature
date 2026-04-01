@@ -1,5 +1,5 @@
 @glacier @generated
-Feature: Glacier - An Archive Is Deleted From A Vault
+Feature: Glacier - A "Glacier" "Archive" Is Deleted From A "Glacier" "Vault"
 
   # Generated from FizzBee spec: glacier.fizz
   # Safety invariants: InProgressJobReferencesActiveVault, VaultArchiveCountNonNegative, ArchivesHaveActiveParentVault, JobOutputOnlyOnSuccess, ArchiveRetrievalJobHasArchive
@@ -8,45 +8,45 @@ Feature: Glacier - An Archive Is Deleted From A Vault
     Given the system is initialized
 
   @minimal @happy @delete_archive
-  Scenario: an archive is deleted from a vault
-    Given the vault exists
-    And the vault is "ACTIVE"
-    And the archive exists
-    And the archive is "STORED"
-    When an archive is deleted from a vault
-    Then the archive is "DELETED" and the vault archive count decreases
+  Scenario: a "glacier" "archive" is deleted from a "glacier" "vault"
+    Given the "glacier" "vault" existed
+    And the "glacier" "vault" was "ACTIVE"
+    And the "glacier" "archive" existed
+    And the "glacier" "archive" was "STORED"
+    When a "glacier" "archive" is deleted from a "glacier" "vault"
+    Then the "glacier" "archive" will be deleted and the "glacier" "vault" archive count decreases
     And every in-progress job references an active vault
     And vault archive count is never negative
     And all stored archives belong to an "ACTIVE" vault
     And job output is only available for succeeded jobs
     And every archive retrieval job references a non-empty archive "ID"
 
-  @standard @negative @delete_archive
-  Scenario: an archive is deleted from a vault fails when the vault does not exist
-    Given the vault does not exist
-    When an archive is deleted from a vault
+  @guard @negative @delete_archive
+  Scenario: a "glacier" "archive" is deleted from a "glacier" "vault" fails when the "glacier" "vault" did not exist
+    Given the "glacier" "vault" did not exist
+    When a "glacier" "archive" is deleted from a "glacier" "vault"
     Then the operation is rejected
 
-  @standard @negative @delete_archive @lifecycle
-  Scenario: an archive is deleted from a vault fails when the vault is not "ACTIVE"
-    Given the vault exists
-    And the vault is not "ACTIVE"
-    When an archive is deleted from a vault
+  @guard @negative @delete_archive @lifecycle
+  Scenario: a "glacier" "archive" is deleted from a "glacier" "vault" fails when the "glacier" "vault" was not "ACTIVE"
+    Given the "glacier" "vault" existed
+    And the "glacier" "vault" was not "ACTIVE"
+    When a "glacier" "archive" is deleted from a "glacier" "vault"
     Then the operation is rejected
 
-  @standard @negative @delete_archive
-  Scenario: an archive is deleted from a vault fails when the archive does not exist
-    Given the vault exists
-    And the vault is "ACTIVE"
-    And the archive does not exist
-    When an archive is deleted from a vault
+  @guard @negative @delete_archive
+  Scenario: a "glacier" "archive" is deleted from a "glacier" "vault" fails when the "glacier" "archive" did not exist
+    Given the "glacier" "vault" existed
+    And the "glacier" "vault" was "ACTIVE"
+    And the "glacier" "archive" did not exist
+    When a "glacier" "archive" is deleted from a "glacier" "vault"
     Then the operation is rejected
 
-  @standard @negative @delete_archive @lifecycle
-  Scenario: an archive is deleted from a vault fails when the archive is not "STORED"
-    Given the vault exists
-    And the vault is "ACTIVE"
-    And the archive exists
-    And the archive is not "STORED"
-    When an archive is deleted from a vault
+  @guard @negative @delete_archive @lifecycle
+  Scenario: a "glacier" "archive" is deleted from a "glacier" "vault" fails when the "glacier" "archive" was not "STORED"
+    Given the "glacier" "vault" existed
+    And the "glacier" "vault" was "ACTIVE"
+    And the "glacier" "archive" existed
+    And the "glacier" "archive" was not "STORED"
+    When a "glacier" "archive" is deleted from a "glacier" "vault"
     Then the operation is rejected

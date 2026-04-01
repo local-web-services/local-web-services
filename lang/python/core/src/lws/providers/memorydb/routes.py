@@ -13,7 +13,12 @@ from fastapi import FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
-from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
+from lws.providers._shared.aws_lifecycle import (
+    ResourceLifecycleConfig,
+    ResourceStateTracker,
+    TrackerRegistry,
+    register_tracker,
+)
 from lws.providers._shared.request_helpers import action_dispatch as _action_dispatch
 from lws.providers._shared.resource_container import ResourceContainerManager
 from lws.providers._shared.response_helpers import (
@@ -114,10 +119,11 @@ async def _handle_create_cluster(
     state.clusters[cluster_name] = cluster
 
     lc = tracker.config
-    if lc.enabled and lc.create_dwell_ms > 0:
+    if lc.enabled:
         tracker.set_state(cluster_name, "CREATING")
         tracker.schedule_transition(cluster_name, "ACTIVE", lc.create_dwell_ms)
-        cluster.status = "creating"
+        if lc.create_dwell_ms > 0:
+            cluster.status = "creating"
 
     return _json_response({"Cluster": _format_cluster(cluster)})
 
@@ -313,6 +319,7 @@ def create_memorydb_app(
     *,
     container_manager: ResourceContainerManager | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
+    registry: TrackerRegistry | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the MemoryDB wire protocol."""
     app = FastAPI(title="LDK MemoryDB")
@@ -320,6 +327,8 @@ def create_memorydb_app(
     state = _MemoryDBState(container_manager=container_manager)
     _lc = lifecycle or ResourceLifecycleConfig()
     _tracker = ResourceStateTracker(_lc)
+    if registry is not None:
+        register_tracker(registry, "memorydb", "cluster", _tracker)
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:

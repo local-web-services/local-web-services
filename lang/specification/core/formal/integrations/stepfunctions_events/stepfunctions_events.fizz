@@ -27,10 +27,10 @@ action Init:
     event_type = {}             # event_type[evid] = "STARTED" | "SUCCEEDED" | "FAILED"
 
 
-# step: a Step Functions state machine is created
-# result: the state machine is ACTIVE with no EventBridge bus configured
-# guard: the state machine does not already exist
-# guard_violation: the state machine already exists
+# step: a "step functions" "state machine" is created
+# result: the "step functions" "state machine" will be "ACTIVE" with no EventBridge bus configured
+# guard: the "step functions" "state machine" did not already exist
+# guard_violation: the "step functions" "state machine" already existed
 atomic action CreateStateMachine:
     oneof smid in SM_IDS:
         if smid not in sm_status:
@@ -39,9 +39,9 @@ atomic action CreateStateMachine:
 
 
 # step: an EventBridge event bus is created
-# result: the bus is ACTIVE
-# guard: the bus does not already exist
-# guard_violation: the bus already exists
+# result: the bus will be "ACTIVE"
+# guard: the bus did not already exist
+# guard_violation: the bus already existed
 atomic action CreateEventBus:
     oneof busid in BUS_IDS:
         if busid not in bus_status:
@@ -49,11 +49,11 @@ atomic action CreateEventBus:
 
 
 # step: the EventBridge event bus is deleted
-# result: the bus is DELETED and execution event delivery will fail
-# guard: the bus exists
-# guard_violation: the bus does not exist
-# guard: the bus is ACTIVE
-# guard_violation_lifecycle: the bus is already DELETED
+# result: the bus will be deleted and execution event delivery will fail
+# guard: the bus existed
+# guard_violation: the bus did not exist
+# guard: the bus was "ACTIVE"
+# guard_violation_lifecycle: the bus is already "DELETED"
 atomic action DeleteEventBus:
     oneof busid in BUS_IDS:
         if busid in bus_status:
@@ -63,12 +63,12 @@ atomic action DeleteEventBus:
 
 # step: the state machine is configured to publish execution events to the event bus
 # result: the state machine will send execution state change events to the bus
-# guard: the state machine exists and is ACTIVE
-# guard_violation_lifecycle: the state machine does not exist or is not ACTIVE
+# guard: the "step functions" "state machine" existed and was "ACTIVE"
+# guard_violation_lifecycle: the "step functions" "state machine" did not exist or was "ACTIVE"
 # guard: the state machine has no EventBridge bus configured
 # guard_violation: the state machine already has an EventBridge bus configured
-# guard: the bus exists and is ACTIVE
-# guard_violation_lifecycle: the bus does not exist or is not ACTIVE
+# guard: the bus existed and was "ACTIVE"
+# guard_violation_lifecycle: the bus did not exist or was "ACTIVE"
 atomic action ConfigureEventPublishing:
     oneof smid in SM_IDS:
         if smid in sm_status:
@@ -81,14 +81,14 @@ atomic action ConfigureEventPublishing:
 
 
 # step: an execution starts and Step Functions delivers a STARTED event to the EventBridge bus
-# result: the execution is RUNNING and the STARTED event is DELIVERED
-# guard: the state machine exists and is ACTIVE
-# guard_violation_lifecycle: the state machine does not exist or is not ACTIVE
+# result: the "step functions" "execution" will be "RUNNING" and the STARTED event will be "DELIVERED"
+# guard: the "step functions" "state machine" existed and was "ACTIVE"
+# guard_violation_lifecycle: the "step functions" "state machine" did not exist or was "ACTIVE"
 # guard: the state machine has an EventBridge bus configured
 # guard_violation: the state machine has no EventBridge bus configured
-# guard: the bus is ACTIVE
-# guard_violation_lifecycle: the bus is DELETED
-# guard: an execution slot is available
+# guard: the bus was "ACTIVE"
+# guard_violation_lifecycle: the bus was "DELETED"
+# guard: an "step functions" "execution" slot is available
 # guard_violation_capacity: no execution slot is available
 # guard: an event slot is available
 # guard_violation_capacity: no event slot is available
@@ -112,14 +112,14 @@ atomic action StartExecutionEventDelivered:
 
 
 # step: an execution starts but the STARTED event delivery fails because the bus is deleted
-# result: the execution is RUNNING but no STARTED event is delivered
-# guard: the state machine exists and is ACTIVE
-# guard_violation_lifecycle: the state machine does not exist or is not ACTIVE
+# result: the "step functions" "execution" will be "RUNNING" but no STARTED event will be delivered
+# guard: the "step functions" "state machine" existed and was "ACTIVE"
+# guard_violation_lifecycle: the "step functions" "state machine" did not exist or was "ACTIVE"
 # guard: the state machine has an EventBridge bus configured
 # guard_violation: the state machine has no EventBridge bus configured
-# guard: the bus is DELETED
-# guard_violation_lifecycle: the bus is not DELETED
-# guard: an execution slot is available
+# guard: the bus was "DELETED"
+# guard_violation_lifecycle: the bus was not "DELETED"
+# guard: an "step functions" "execution" slot is available
 # guard_violation_capacity: no execution slot is available
 atomic action StartExecutionEventFails:
     oneof smid in SM_IDS:
@@ -135,12 +135,12 @@ atomic action StartExecutionEventFails:
                                     exec_sm[eid] = smid
 
 
-# step: a running execution succeeds and Step Functions delivers a SUCCEEDED event to the bus
-# result: the execution is SUCCEEDED and the SUCCEEDED event is DELIVERED
-# guard: an execution is RUNNING
-# guard_violation: no execution is RUNNING
-# guard: the bus is ACTIVE
-# guard_violation_lifecycle: the bus is DELETED
+# step: a running "step functions" "execution" succeeds and Step Functions delivers a SUCCEEDED event to the bus
+# result: the "step functions" "execution" will be "SUCCEEDED" and the "SUCCEEDED" event will be "DELIVERED"
+# guard: a "step functions" "execution" was "RUNNING"
+# guard_violation: no "step functions" "execution" was "RUNNING"
+# guard: the bus was "ACTIVE"
+# guard_violation_lifecycle: the bus was "DELETED"
 # guard: an event slot is available
 # guard_violation_capacity: no event slot is available
 atomic action ExecutionSucceedsEventDelivered:
@@ -161,12 +161,12 @@ atomic action ExecutionSucceedsEventDelivered:
                                         event_type[evid] = "SUCCEEDED"
 
 
-# step: a running execution succeeds but the SUCCEEDED event delivery fails because the bus is deleted
-# result: the execution is SUCCEEDED but no SUCCEEDED event is delivered
-# guard: an execution is RUNNING
-# guard_violation: no execution is RUNNING
-# guard: the bus is DELETED
-# guard_violation_lifecycle: the bus is not DELETED
+# step: a running "step functions" "execution" succeeds but the SUCCEEDED event delivery fails because the bus is deleted
+# result: the "step functions" "execution" will be "SUCCEEDED" but no "SUCCEEDED" event will be delivered
+# guard: a "step functions" "execution" was "RUNNING"
+# guard_violation: no "step functions" "execution" was "RUNNING"
+# guard: the bus was "DELETED"
+# guard_violation_lifecycle: the bus was not "DELETED"
 atomic action ExecutionSucceedsEventFails:
     oneof eid in EXEC_IDS:
         if eid in exec_status:

@@ -1,12 +1,4 @@
-"""Lambda management HTTP routes.
-
-Implements the Lambda REST management API that the AWS SDK and Terraform
-use to create/read/delete Lambda functions and invoke them.
-
-Also provides ``LambdaRegistry``, a shared registry of function name ->
-``ICompute`` instances used by both this module and the API Gateway V2
-proxy to invoke Lambda functions.
-"""
+"""Lambda management HTTP routes."""
 
 from __future__ import annotations
 
@@ -19,7 +11,7 @@ from fastapi import APIRouter, FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
-from lws.providers._shared.aws_capacity import AwsCapacityConfig
+from lws.providers._shared.aws_capacity import AwsCapacityConfig, check_capacity
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.lambda_helpers import build_default_lambda_context
 from lws.providers._shared.request_helpers import parse_json_body
@@ -29,6 +21,7 @@ from lws.providers.lambda_runtime._lambda_esm_ops import (
     handle_delete_event_source_mapping,
     handle_get_event_source_mapping,
     handle_list_event_source_mappings,
+    handle_update_event_source_mapping,
 )
 from lws.providers.lambda_runtime._lambda_function_ops import (
     _json_response,
@@ -62,14 +55,6 @@ from lws.providers.lambda_runtime.event_source_manager import EventSourceManager
 
 _logger = get_logger("ldk.lambda-mgmt")
 
-_ACCOUNT_ID = "000000000000"
-_REGION = "us-east-1"
-
-
-# ---------------------------------------------------------------------------
-# Router
-# ---------------------------------------------------------------------------
-
 
 class LambdaManagementRouter:
     """Route Lambda management requests."""
@@ -81,9 +66,11 @@ class LambdaManagementRouter:
         sdk_env: dict[str, str] | None = None,
         lifecycle: ResourceLifecycleConfig | None = None,
         capacity: AwsCapacityConfig | None = None,
+        async_capacity: AwsCapacityConfig | None = None,
         event_source_manager: EventSourceManager | None = None,
         dynamodb_provider: Any = None,
         dynamodb_tracker_ref: list | None = None,
+        tracker_ref: list | None = None,
     ) -> None:
         self._registry = registry
         self._project_dir = project_dir
@@ -92,7 +79,10 @@ class LambdaManagementRouter:
         _lc = lifecycle or ResourceLifecycleConfig()
         self._lifecycle = _lc
         self._tracker = ResourceStateTracker(_lc)
+        if tracker_ref is not None:
+            tracker_ref.append(self._tracker)
         self._capacity = capacity or AwsCapacityConfig()
+        self._async_capacity = async_capacity or AwsCapacityConfig()
         self._event_source_manager = event_source_manager
         self._dynamodb_provider = dynamodb_provider
         self._dynamodb_tracker_ref = dynamodb_tracker_ref or []
@@ -157,6 +147,11 @@ class LambdaManagementRouter:
         )
         r.add_api_route(
             "/2015-03-31/event-source-mappings/{esm_uuid}",
+            self._update_event_source_mapping,
+            methods=["PUT"],
+        )
+        r.add_api_route(
+            "/2015-03-31/event-source-mappings/{esm_uuid}",
             self._delete_event_source_mapping,
             methods=["DELETE"],
         )
@@ -212,6 +207,11 @@ class LambdaManagementRouter:
             methods=["GET"],
         )
         r.add_api_route(
+            "/lws/lambda/invocations/{function_name}",
+            self._get_function_invocations,
+            methods=["GET"],
+        )
+        r.add_api_route(
             "/{path:path}",
             self._stub_handler,
             methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
@@ -256,14 +256,9 @@ class LambdaManagementRouter:
     # -- Invocations ---------------------------------------------------------
 
     async def _invoke_function(self, function_name: str, request: Request) -> Response:
-        if self._capacity.is_exhausted:
-            return _json_response(
-                {
-                    "Message": "lws: no invocation slots available",
-                    "Type": "ServiceUnavailableException",
-                },
-                503,
-            )
+        capacity_err = check_capacity(self._capacity, "TooManyRequestsException", 429)
+        if capacity_err is not None:
+            return capacity_err
         compute = self._registry.get_compute(function_name)
         if compute is None:
             return _json_response(
@@ -289,8 +284,13 @@ class LambdaManagementRouter:
 
         invocation_type = request.headers.get("X-Amz-Invocation-Type", "RequestResponse")
         if invocation_type == "Event":
+            async_capacity_err = check_capacity(
+                self._async_capacity, "TooManyRequestsException", 429
+            )
+            if async_capacity_err is not None:
+                return async_capacity_err
             invocation_id = str(uuid.uuid4())
-            self._state.record_invocation(invocation_id)
+            self._state.record_invocation(invocation_id, function_name)
             asyncio.create_task(
                 run_async_invocation(
                     compute, body, context, invocation_id, self._state, function_name
@@ -301,7 +301,10 @@ class LambdaManagementRouter:
                 headers={"X-Amzn-RequestId": invocation_id},
             )
 
+        invocation_id = str(uuid.uuid4())
+        self._state.record_invocation(invocation_id, function_name)
         result = await compute.invoke(body, context)
+        self._state.complete_invocation(invocation_id, success=not result.error)
 
         if result.error:
             return _json_response({"errorMessage": result.error}, 200)
@@ -357,6 +360,11 @@ class LambdaManagementRouter:
         if self._event_source_manager is not None:
             await self._event_source_manager.deactivate(esm_uuid)
         return response
+
+    async def _update_event_source_mapping(self, esm_uuid: str, request: Request) -> Response:
+        return await handle_update_event_source_mapping(
+            esm_uuid, request, self._state.event_source_mappings
+        )
 
     async def _list_event_source_mappings(self, _request: Request) -> Response:
         return await handle_list_event_source_mappings(self._state.event_source_mappings)
@@ -438,6 +446,10 @@ class LambdaManagementRouter:
             return _json_response({"Message": f"Invocation not found: {invocation_id}"}, 404)
         return _json_response({"InvocationId": invocation_id, "State": state})
 
+    async def _get_function_invocations(self, function_name: str) -> Response:
+        records = self._state.get_function_invocations(function_name)
+        return _json_response({"FunctionName": function_name, "Invocations": records})
+
     async def _stub_handler(self, request: Request, path: str) -> Response:
         _logger.warning("Unknown Lambda path: %s %s", request.method, path)
         return _json_response(
@@ -452,20 +464,17 @@ class LambdaManagementRouter:
         return create_compute(func_config, self._project_dir, self._sdk_env)
 
 
-# ---------------------------------------------------------------------------
-# App factory
-# ---------------------------------------------------------------------------
-
-
 def create_lambda_management_app(
     registry: LambdaRegistry | None = None,
     project_dir: Path | None = None,
     sdk_env: dict[str, str] | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
     capacity: AwsCapacityConfig | None = None,
+    async_capacity: AwsCapacityConfig | None = None,
     event_source_manager: EventSourceManager | None = None,
     dynamodb_provider: Any = None,
     dynamodb_tracker_ref: list | None = None,
+    tracker_ref: list | None = None,
 ) -> FastAPI:
     """Create a FastAPI app that speaks the Lambda management protocol."""
     if registry is None:
@@ -478,9 +487,11 @@ def create_lambda_management_app(
         sdk_env=sdk_env,
         lifecycle=lifecycle,
         capacity=capacity,
+        async_capacity=async_capacity,
         event_source_manager=event_source_manager,
         dynamodb_provider=dynamodb_provider,
         dynamodb_tracker_ref=dynamodb_tracker_ref,
+        tracker_ref=tracker_ref,
     )
     app.include_router(router.router)
     return app

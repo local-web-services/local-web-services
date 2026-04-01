@@ -1,5 +1,5 @@
 @lambdaneptune @generated
-Feature: LambdaNeptune - The Lambda Function Executes A Graph Query Against The Available Cluster And Succeeds
+Feature: LambdaNeptune - The "Lambda" "Function" Executes A Graph Query Against The Available Cluster And Succeeds
 
   # Generated from FizzBee spec: lambda_neptune.fizz
   # Safety invariants: InvocationRequiresActiveFunction, SuccessfulInvocationQueriedACluster
@@ -8,23 +8,23 @@ Feature: LambdaNeptune - The Lambda Function Executes A Graph Query Against The 
     Given the system is initialized
 
   @minimal @happy @invocation_succeeds @internal
-  Scenario: the Lambda function executes a graph query against the "AVAILABLE" cluster and succeeds
-    Given an invocation is "IN_PROGRESS"
-    And the Neptune cluster is "AVAILABLE"
-    When the Lambda function executes a graph query against the "AVAILABLE" cluster and succeeds
-    Then the invocation is "SUCCESS"
+  Scenario: the "lambda" "function" executes a graph query against the "AVAILABLE" cluster and succeeds
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "neptune" "cluster" was "AVAILABLE"
+    When the "lambda" "function" executes a graph query against the "AVAILABLE" cluster and succeeds
+    Then the invocation will be "SUCCESS"
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which cluster it queried
 
-  @standard @negative @invocation_succeeds @internal
-  Scenario: the Lambda function executes a graph query against the "AVAILABLE" cluster and succeeds fails when no invocation is "IN_PROGRESS"
-    Given no invocation is "IN_PROGRESS"
-    When the Lambda function executes a graph query against the "AVAILABLE" cluster and succeeds
+  @guard @negative @invocation_succeeds @internal
+  Scenario: the "lambda" "function" executes a graph query against the "AVAILABLE" cluster and succeeds fails when no "lambda" "invocation" was "IN_PROGRESS"
+    Given no "lambda" "invocation" was "IN_PROGRESS"
+    When the "lambda" "function" executes a graph query against the "AVAILABLE" cluster and succeeds
     Then the operation is rejected
 
-  @standard @negative @invocation_succeeds @internal
-  Scenario: the Lambda function executes a graph query against the "AVAILABLE" cluster and succeeds fails when the Neptune cluster is not "AVAILABLE"
-    Given an invocation is "IN_PROGRESS"
-    And the Neptune cluster is not "AVAILABLE"
-    When the Lambda function executes a graph query against the "AVAILABLE" cluster and succeeds
+  @guard @negative @invocation_succeeds @internal
+  Scenario: the "lambda" "function" executes a graph query against the "AVAILABLE" cluster and succeeds fails when the "neptune" "cluster" was not "AVAILABLE"
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "neptune" "cluster" was not "AVAILABLE"
+    When the "lambda" "function" executes a graph query against the "AVAILABLE" cluster and succeeds
     Then the operation is rejected

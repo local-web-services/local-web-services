@@ -7,2732 +7,884 @@ Feature: ApigatewayCognito - Action Sequences
   Background:
     Given the system is initialized
 
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a Cognito User Pool is created
+  @sequence
+  Scenario: an "api gateway" "api" is created then a "cognito" "user pool" is created
     Given aid not in api_status
-    When a "REST" "API" is created
-    When a Cognito User Pool is created
+    When an "api gateway" "api" is created
+    When a "cognito" "user pool" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a Cognito User Pool authorizer is configured on the "REST" "API"
+  @sequence
+  Scenario: an "api gateway" "api" is created then a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     Given aid not in api_status
-    When a "REST" "API" is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
+    When an "api gateway" "api" is created
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a user is confirmed in a Cognito User Pool
+  @sequence
+  Scenario: an "api gateway" "api" is created then a "cognito" "user" is confirmed in a "cognito" "user pool"
     Given aid not in api_status
-    When a "REST" "API" is created
-    When a user is confirmed in a Cognito User Pool
+    When an "api gateway" "api" is created
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then Cognito issues a "JWT" token for a confirmed user
+  @sequence
+  Scenario: an "api gateway" "api" is created then Cognito issues a "JWT" token for a confirmed user
     Given aid not in api_status
-    When a "REST" "API" is created
+    When an "api gateway" "api" is created
     When Cognito issues a "JWT" token for a confirmed user
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a request with a valid token from a user in the "API"'s configured pool is authorized
+  @sequence
+  Scenario: an "api gateway" "api" is created then a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     Given aid not in api_status
-    When a "REST" "API" is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
+    When an "api gateway" "api" is created
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a request with a valid token from a user in a different pool is rejected
+  @sequence
+  Scenario: an "api gateway" "api" is created then a request with a valid token from a "cognito" "user" in a different pool is rejected
     Given aid not in api_status
-    When a "REST" "API" is created
-    When a request with a valid token from a user in a different pool is rejected
+    When an "api gateway" "api" is created
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a "REST" "API" is created
+  @sequence
+  Scenario: a "cognito" "user pool" is created then an "api gateway" "api" is created
     Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a "REST" "API" is created
+    When a "cognito" "user pool" is created
+    When an "api gateway" "api" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a Cognito User Pool authorizer is configured on the "REST" "API"
+  @sequence
+  Scenario: a "cognito" "user pool" is created then a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
+    When a "cognito" "user pool" is created
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a user is confirmed in a Cognito User Pool
+  @sequence
+  Scenario: a "cognito" "user pool" is created then a "cognito" "user" is confirmed in a "cognito" "user pool"
     Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a user is confirmed in a Cognito User Pool
+    When a "cognito" "user pool" is created
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then Cognito issues a "JWT" token for a confirmed user
+  @sequence
+  Scenario: a "cognito" "user pool" is created then Cognito issues a "JWT" token for a confirmed user
     Given pid not in pool_status
-    When a Cognito User Pool is created
+    When a "cognito" "user pool" is created
     When Cognito issues a "JWT" token for a confirmed user
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a request with a valid token from a user in the "API"'s configured pool is authorized
+  @sequence
+  Scenario: a "cognito" "user pool" is created then a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
+    When a "cognito" "user pool" is created
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a request with a valid token from a user in a different pool is rejected
+  @sequence
+  Scenario: a "cognito" "user pool" is created then a request with a valid token from a "cognito" "user" in a different pool is rejected
     Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in a different pool is rejected
+    When a "cognito" "user pool" is created
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a "REST" "API" is created
+  @sequence
+  Scenario: a "cognito" "user pool" authorizer is configured on the "api gateway" "api" then an "api gateway" "api" is created
     Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a "REST" "API" is created
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
+    When an "api gateway" "api" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a Cognito User Pool is created
+  @sequence
+  Scenario: a "cognito" "user pool" authorizer is configured on the "api gateway" "api" then a "cognito" "user pool" is created
     Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a Cognito User Pool is created
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
+    When a "cognito" "user pool" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a user is confirmed in a Cognito User Pool
+  @sequence
+  Scenario: a "cognito" "user pool" authorizer is configured on the "api gateway" "api" then a "cognito" "user" is confirmed in a "cognito" "user pool"
     Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a user is confirmed in a Cognito User Pool
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then Cognito issues a "JWT" token for a confirmed user
+  @sequence
+  Scenario: a "cognito" "user pool" authorizer is configured on the "api gateway" "api" then Cognito issues a "JWT" token for a confirmed user
     Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     When Cognito issues a "JWT" token for a confirmed user
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in the "API"'s configured pool is authorized
+  @sequence
+  Scenario: a "cognito" "user pool" authorizer is configured on the "api gateway" "api" then a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in a different pool is rejected
+  @sequence
+  Scenario: a "cognito" "user pool" authorizer is configured on the "api gateway" "api" then a request with a valid token from a "cognito" "user" in a different pool is rejected
     Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in a different pool is rejected
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a "REST" "API" is created
+  @sequence
+  Scenario: a "cognito" "user" is confirmed in a "cognito" "user pool" then an "api gateway" "api" is created
     Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a "REST" "API" is created
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
+    When an "api gateway" "api" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a Cognito User Pool is created
+  @sequence
+  Scenario: a "cognito" "user" is confirmed in a "cognito" "user pool" then a "cognito" "user pool" is created
     Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool is created
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
+    When a "cognito" "user pool" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a Cognito User Pool authorizer is configured on the "REST" "API"
+  @sequence
+  Scenario: a "cognito" "user" is confirmed in a "cognito" "user pool" then a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then Cognito issues a "JWT" token for a confirmed user
+  @sequence
+  Scenario: a "cognito" "user" is confirmed in a "cognito" "user pool" then Cognito issues a "JWT" token for a confirmed user
     Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
     When Cognito issues a "JWT" token for a confirmed user
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a request with a valid token from a user in the "API"'s configured pool is authorized
+  @sequence
+  Scenario: a "cognito" "user" is confirmed in a "cognito" "user pool" then a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a request with a valid token from a user in a different pool is rejected
+  @sequence
+  Scenario: a "cognito" "user" is confirmed in a "cognito" "user pool" then a request with a valid token from a "cognito" "user" in a different pool is rejected
     Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in a different pool is rejected
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a "REST" "API" is created
+  @sequence
+  Scenario: Cognito issues a "JWT" token for a confirmed user then an "api gateway" "api" is created
     Given uid in user_status
     When Cognito issues a "JWT" token for a confirmed user
-    When a "REST" "API" is created
+    When an "api gateway" "api" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool is created
+  @sequence
+  Scenario: Cognito issues a "JWT" token for a confirmed user then a "cognito" "user pool" is created
     Given uid in user_status
     When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool is created
+    When a "cognito" "user pool" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool authorizer is configured on the "REST" "API"
+  @sequence
+  Scenario: Cognito issues a "JWT" token for a confirmed user then a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     Given uid in user_status
     When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a user is confirmed in a Cognito User Pool
+  @sequence
+  Scenario: Cognito issues a "JWT" token for a confirmed user then a "cognito" "user" is confirmed in a "cognito" "user pool"
     Given uid in user_status
     When Cognito issues a "JWT" token for a confirmed user
-    When a user is confirmed in a Cognito User Pool
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in the "API"'s configured pool is authorized
+  @sequence
+  Scenario: Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     Given uid in user_status
     When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in a different pool is rejected
+  @sequence
+  Scenario: Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a "cognito" "user" in a different pool is rejected
     Given uid in user_status
     When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in a different pool is rejected
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a "REST" "API" is created
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized then an "api gateway" "api" is created
     Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a "REST" "API" is created
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    When an "api gateway" "api" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool is created
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized then a "cognito" "user pool" is created
     Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool is created
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    When a "cognito" "user pool" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool authorizer is configured on the "REST" "API"
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized then a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a user is confirmed in a Cognito User Pool
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized then a "cognito" "user" is confirmed in a "cognito" "user pool"
     Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a user is confirmed in a Cognito User Pool
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then Cognito issues a "JWT" token for a confirmed user
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized then Cognito issues a "JWT" token for a confirmed user
     Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     When Cognito issues a "JWT" token for a confirmed user
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a request with a valid token from a user in a different pool is rejected
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized then a request with a valid token from a "cognito" "user" in a different pool is rejected
     Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a request with a valid token from a user in a different pool is rejected
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a "REST" "API" is created
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in a different pool is rejected then an "api gateway" "api" is created
     Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a "REST" "API" is created
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
+    When an "api gateway" "api" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a Cognito User Pool is created
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in a different pool is rejected then a "cognito" "user pool" is created
     Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool is created
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
+    When a "cognito" "user pool" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a Cognito User Pool authorizer is configured on the "REST" "API"
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in a different pool is rejected then a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a user is confirmed in a Cognito User Pool
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in a different pool is rejected then a "cognito" "user" is confirmed in a "cognito" "user pool"
     Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a user is confirmed in a Cognito User Pool
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then Cognito issues a "JWT" token for a confirmed user
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in a different pool is rejected then Cognito issues a "JWT" token for a confirmed user
     Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
     When Cognito issues a "JWT" token for a confirmed user
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a request with a valid token from a user in the "API"'s configured pool is authorized
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in a different pool is rejected then a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a Cognito User Pool is created then a Cognito User Pool authorizer is configured on the "REST" "API"
+  @sequence
+  Scenario: an "api gateway" "api" is created then a "cognito" "user pool" is created then a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     Given aid not in api_status
-    When a "REST" "API" is created
-    When a Cognito User Pool is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
+    When an "api gateway" "api" is created
+    When a "cognito" "user pool" is created
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a Cognito User Pool is created then a user is confirmed in a Cognito User Pool
+  @sequence
+  Scenario: an "api gateway" "api" is created then a "cognito" "user pool" authorizer is configured on the "api gateway" "api" then a "cognito" "user" is confirmed in a "cognito" "user pool"
     Given aid not in api_status
-    When a "REST" "API" is created
-    When a Cognito User Pool is created
-    When a user is confirmed in a Cognito User Pool
+    When an "api gateway" "api" is created
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a Cognito User Pool is created then Cognito issues a "JWT" token for a confirmed user
+  @sequence
+  Scenario: an "api gateway" "api" is created then a "cognito" "user" is confirmed in a "cognito" "user pool" then Cognito issues a "JWT" token for a confirmed user
     Given aid not in api_status
-    When a "REST" "API" is created
-    When a Cognito User Pool is created
+    When an "api gateway" "api" is created
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
     When Cognito issues a "JWT" token for a confirmed user
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a Cognito User Pool is created then a request with a valid token from a user in the "API"'s configured pool is authorized
+  @sequence
+  Scenario: an "api gateway" "api" is created then Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     Given aid not in api_status
-    When a "REST" "API" is created
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
+    When an "api gateway" "api" is created
+    When Cognito issues a "JWT" token for a confirmed user
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a Cognito User Pool is created then a request with a valid token from a user in a different pool is rejected
+  @sequence
+  Scenario: an "api gateway" "api" is created then a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized then a request with a valid token from a "cognito" "user" in a different pool is rejected
     Given aid not in api_status
-    When a "REST" "API" is created
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in a different pool is rejected
+    When an "api gateway" "api" is created
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a Cognito User Pool authorizer is configured on the "REST" "API" then a Cognito User Pool is created
+  @sequence
+  Scenario: an "api gateway" "api" is created then a request with a valid token from a "cognito" "user" in a different pool is rejected then a "cognito" "user pool" is created
     Given aid not in api_status
-    When a "REST" "API" is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a Cognito User Pool is created
+    When an "api gateway" "api" is created
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
+    When a "cognito" "user pool" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a Cognito User Pool authorizer is configured on the "REST" "API" then a user is confirmed in a Cognito User Pool
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a Cognito User Pool authorizer is configured on the "REST" "API" then Cognito issues a "JWT" token for a confirmed user
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in a different pool is rejected
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a user is confirmed in a Cognito User Pool then a Cognito User Pool is created
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a user is confirmed in a Cognito User Pool then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a user is confirmed in a Cognito User Pool then Cognito issues a "JWT" token for a confirmed user
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a user is confirmed in a Cognito User Pool
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a user is confirmed in a Cognito User Pool then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a user is confirmed in a Cognito User Pool then a request with a valid token from a user in a different pool is rejected
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool is created
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then Cognito issues a "JWT" token for a confirmed user then a user is confirmed in a Cognito User Pool
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When Cognito issues a "JWT" token for a confirmed user
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in a different pool is rejected
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool is created
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a request with a valid token from a user in the "API"'s configured pool is authorized then a user is confirmed in a Cognito User Pool
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a request with a valid token from a user in the "API"'s configured pool is authorized then Cognito issues a "JWT" token for a confirmed user
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a request with a valid token from a user in the "API"'s configured pool is authorized then a request with a valid token from a user in a different pool is rejected
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a request with a valid token from a user in a different pool is rejected then a Cognito User Pool is created
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a request with a valid token from a user in a different pool is rejected then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a request with a valid token from a user in a different pool is rejected then a user is confirmed in a Cognito User Pool
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a request with a valid token from a user in a different pool is rejected
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a request with a valid token from a user in a different pool is rejected then Cognito issues a "JWT" token for a confirmed user
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a request with a valid token from a user in a different pool is rejected
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a "REST" "API" is created then a request with a valid token from a user in a different pool is rejected then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given aid not in api_status
-    When a "REST" "API" is created
-    When a request with a valid token from a user in a different pool is rejected
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a "REST" "API" is created then a Cognito User Pool authorizer is configured on the "REST" "API"
+  @sequence
+  Scenario: a "cognito" "user pool" is created then an "api gateway" "api" is created then a "cognito" "user" is confirmed in a "cognito" "user pool"
     Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a "REST" "API" is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
+    When a "cognito" "user pool" is created
+    When an "api gateway" "api" is created
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a "REST" "API" is created then a user is confirmed in a Cognito User Pool
+  @sequence
+  Scenario: a "cognito" "user pool" is created then a "cognito" "user pool" authorizer is configured on the "api gateway" "api" then Cognito issues a "JWT" token for a confirmed user
     Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a "REST" "API" is created
-    When a user is confirmed in a Cognito User Pool
+    When a "cognito" "user pool" is created
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
+    When Cognito issues a "JWT" token for a confirmed user
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a "REST" "API" is created then Cognito issues a "JWT" token for a confirmed user
+  @sequence
+  Scenario: a "cognito" "user pool" is created then a "cognito" "user" is confirmed in a "cognito" "user pool" then a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a "REST" "API" is created
-    When Cognito issues a "JWT" token for a confirmed user
+    When a "cognito" "user pool" is created
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a "REST" "API" is created then a request with a valid token from a user in the "API"'s configured pool is authorized
+  @sequence
+  Scenario: a "cognito" "user pool" is created then Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a "cognito" "user" in a different pool is rejected
     Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a "REST" "API" is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
+    When a "cognito" "user pool" is created
+    When Cognito issues a "JWT" token for a confirmed user
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a "REST" "API" is created then a request with a valid token from a user in a different pool is rejected
+  @sequence
+  Scenario: a "cognito" "user pool" is created then a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized then an "api gateway" "api" is created
     Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a "REST" "API" is created
-    When a request with a valid token from a user in a different pool is rejected
+    When a "cognito" "user pool" is created
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    When an "api gateway" "api" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a Cognito User Pool authorizer is configured on the "REST" "API" then a "REST" "API" is created
+  @sequence
+  Scenario: a "cognito" "user pool" is created then a request with a valid token from a "cognito" "user" in a different pool is rejected then a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a "REST" "API" is created
+    When a "cognito" "user pool" is created
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a Cognito User Pool authorizer is configured on the "REST" "API" then a user is confirmed in a Cognito User Pool
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a Cognito User Pool authorizer is configured on the "REST" "API" then Cognito issues a "JWT" token for a confirmed user
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
+  @sequence
+  Scenario: a "cognito" "user pool" authorizer is configured on the "api gateway" "api" then an "api gateway" "api" is created then Cognito issues a "JWT" token for a confirmed user
+    Given aid in api_status
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
+    When an "api gateway" "api" is created
     When Cognito issues a "JWT" token for a confirmed user
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
+  @sequence
+  Scenario: a "cognito" "user pool" authorizer is configured on the "api gateway" "api" then a "cognito" "user pool" is created then a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    Given aid in api_status
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
+    When a "cognito" "user pool" is created
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in a different pool is rejected
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in a different pool is rejected
+  @sequence
+  Scenario: a "cognito" "user pool" authorizer is configured on the "api gateway" "api" then a "cognito" "user" is confirmed in a "cognito" "user pool" then a request with a valid token from a "cognito" "user" in a different pool is rejected
+    Given aid in api_status
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a user is confirmed in a Cognito User Pool then a "REST" "API" is created
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a user is confirmed in a Cognito User Pool
-    When a "REST" "API" is created
+  @sequence
+  Scenario: a "cognito" "user pool" authorizer is configured on the "api gateway" "api" then Cognito issues a "JWT" token for a confirmed user then an "api gateway" "api" is created
+    Given aid in api_status
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
+    When Cognito issues a "JWT" token for a confirmed user
+    When an "api gateway" "api" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a user is confirmed in a Cognito User Pool then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
+  @sequence
+  Scenario: a "cognito" "user pool" authorizer is configured on the "api gateway" "api" then a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized then a "cognito" "user pool" is created
+    Given aid in api_status
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    When a "cognito" "user pool" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a user is confirmed in a Cognito User Pool then Cognito issues a "JWT" token for a confirmed user
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a user is confirmed in a Cognito User Pool
+  @sequence
+  Scenario: a "cognito" "user pool" authorizer is configured on the "api gateway" "api" then a request with a valid token from a "cognito" "user" in a different pool is rejected then a "cognito" "user" is confirmed in a "cognito" "user pool"
+    Given aid in api_status
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
+    And every "API" with a configured authorizer references an "ACTIVE" pool
+    And every "AUTHORIZED" request was validated against a "VALID" token
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
+
+  @sequence
+  Scenario: a "cognito" "user" is confirmed in a "cognito" "user pool" then an "api gateway" "api" is created then a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    Given pid in pool_status
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
+    When an "api gateway" "api" is created
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    And every "API" with a configured authorizer references an "ACTIVE" pool
+    And every "AUTHORIZED" request was validated against a "VALID" token
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
+
+  @sequence
+  Scenario: a "cognito" "user" is confirmed in a "cognito" "user pool" then a "cognito" "user pool" is created then a request with a valid token from a "cognito" "user" in a different pool is rejected
+    Given pid in pool_status
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
+    When a "cognito" "user pool" is created
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
+    And every "API" with a configured authorizer references an "ACTIVE" pool
+    And every "AUTHORIZED" request was validated against a "VALID" token
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
+
+  @sequence
+  Scenario: a "cognito" "user" is confirmed in a "cognito" "user pool" then a "cognito" "user pool" authorizer is configured on the "api gateway" "api" then an "api gateway" "api" is created
+    Given pid in pool_status
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
+    When an "api gateway" "api" is created
+    And every "API" with a configured authorizer references an "ACTIVE" pool
+    And every "AUTHORIZED" request was validated against a "VALID" token
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
+
+  @sequence
+  Scenario: a "cognito" "user" is confirmed in a "cognito" "user pool" then Cognito issues a "JWT" token for a confirmed user then a "cognito" "user pool" is created
+    Given pid in pool_status
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
+    When Cognito issues a "JWT" token for a confirmed user
+    When a "cognito" "user pool" is created
+    And every "API" with a configured authorizer references an "ACTIVE" pool
+    And every "AUTHORIZED" request was validated against a "VALID" token
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
+
+  @sequence
+  Scenario: a "cognito" "user" is confirmed in a "cognito" "user pool" then a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized then a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
+    Given pid in pool_status
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
+    And every "API" with a configured authorizer references an "ACTIVE" pool
+    And every "AUTHORIZED" request was validated against a "VALID" token
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
+
+  @sequence
+  Scenario: a "cognito" "user" is confirmed in a "cognito" "user pool" then a request with a valid token from a "cognito" "user" in a different pool is rejected then Cognito issues a "JWT" token for a confirmed user
+    Given pid in pool_status
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
     When Cognito issues a "JWT" token for a confirmed user
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a user is confirmed in a Cognito User Pool then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a user is confirmed in a Cognito User Pool then a request with a valid token from a user in a different pool is rejected
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then Cognito issues a "JWT" token for a confirmed user then a "REST" "API" is created
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When Cognito issues a "JWT" token for a confirmed user
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then Cognito issues a "JWT" token for a confirmed user then a user is confirmed in a Cognito User Pool
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When Cognito issues a "JWT" token for a confirmed user
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in a different pool is rejected
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a request with a valid token from a user in the "API"'s configured pool is authorized then a "REST" "API" is created
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a request with a valid token from a user in the "API"'s configured pool is authorized then a user is confirmed in a Cognito User Pool
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a request with a valid token from a user in the "API"'s configured pool is authorized then Cognito issues a "JWT" token for a confirmed user
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a request with a valid token from a user in the "API"'s configured pool is authorized then a request with a valid token from a user in a different pool is rejected
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a request with a valid token from a user in a different pool is rejected then a "REST" "API" is created
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in a different pool is rejected
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a request with a valid token from a user in a different pool is rejected then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a request with a valid token from a user in a different pool is rejected then a user is confirmed in a Cognito User Pool
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in a different pool is rejected
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a request with a valid token from a user in a different pool is rejected then Cognito issues a "JWT" token for a confirmed user
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in a different pool is rejected
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool is created then a request with a valid token from a user in a different pool is rejected then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given pid not in pool_status
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in a different pool is rejected
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a "REST" "API" is created then a Cognito User Pool is created
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a "REST" "API" is created
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a "REST" "API" is created then a user is confirmed in a Cognito User Pool
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a "REST" "API" is created
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a "REST" "API" is created then Cognito issues a "JWT" token for a confirmed user
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a "REST" "API" is created
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a "REST" "API" is created then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a "REST" "API" is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a "REST" "API" is created then a request with a valid token from a user in a different pool is rejected
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a "REST" "API" is created
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a Cognito User Pool is created then a "REST" "API" is created
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a Cognito User Pool is created
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a Cognito User Pool is created then a user is confirmed in a Cognito User Pool
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a Cognito User Pool is created
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a Cognito User Pool is created then Cognito issues a "JWT" token for a confirmed user
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a Cognito User Pool is created
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a Cognito User Pool is created then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a Cognito User Pool is created then a request with a valid token from a user in a different pool is rejected
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a user is confirmed in a Cognito User Pool then a "REST" "API" is created
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a user is confirmed in a Cognito User Pool
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a user is confirmed in a Cognito User Pool then a Cognito User Pool is created
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a user is confirmed in a Cognito User Pool then Cognito issues a "JWT" token for a confirmed user
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a user is confirmed in a Cognito User Pool
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a user is confirmed in a Cognito User Pool then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a user is confirmed in a Cognito User Pool then a request with a valid token from a user in a different pool is rejected
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then Cognito issues a "JWT" token for a confirmed user then a "REST" "API" is created
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When Cognito issues a "JWT" token for a confirmed user
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool is created
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then Cognito issues a "JWT" token for a confirmed user then a user is confirmed in a Cognito User Pool
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When Cognito issues a "JWT" token for a confirmed user
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in a different pool is rejected
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in the "API"'s configured pool is authorized then a "REST" "API" is created
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool is created
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in the "API"'s configured pool is authorized then a user is confirmed in a Cognito User Pool
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in the "API"'s configured pool is authorized then Cognito issues a "JWT" token for a confirmed user
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in the "API"'s configured pool is authorized then a request with a valid token from a user in a different pool is rejected
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in a different pool is rejected then a "REST" "API" is created
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in a different pool is rejected
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in a different pool is rejected then a Cognito User Pool is created
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in a different pool is rejected then a user is confirmed in a Cognito User Pool
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in a different pool is rejected
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in a different pool is rejected then Cognito issues a "JWT" token for a confirmed user
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in a different pool is rejected
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in a different pool is rejected then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given aid in api_status
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in a different pool is rejected
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a "REST" "API" is created then a Cognito User Pool is created
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a "REST" "API" is created
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a "REST" "API" is created then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a "REST" "API" is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a "REST" "API" is created then Cognito issues a "JWT" token for a confirmed user
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a "REST" "API" is created
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a "REST" "API" is created then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a "REST" "API" is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a "REST" "API" is created then a request with a valid token from a user in a different pool is rejected
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a "REST" "API" is created
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a Cognito User Pool is created then a "REST" "API" is created
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool is created
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a Cognito User Pool is created then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a Cognito User Pool is created then Cognito issues a "JWT" token for a confirmed user
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool is created
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a Cognito User Pool is created then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a Cognito User Pool is created then a request with a valid token from a user in a different pool is rejected
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a Cognito User Pool authorizer is configured on the "REST" "API" then a "REST" "API" is created
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a Cognito User Pool authorizer is configured on the "REST" "API" then a Cognito User Pool is created
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a Cognito User Pool authorizer is configured on the "REST" "API" then Cognito issues a "JWT" token for a confirmed user
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in a different pool is rejected
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then Cognito issues a "JWT" token for a confirmed user then a "REST" "API" is created
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When Cognito issues a "JWT" token for a confirmed user
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool is created
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in a different pool is rejected
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a request with a valid token from a user in the "API"'s configured pool is authorized then a "REST" "API" is created
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool is created
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a request with a valid token from a user in the "API"'s configured pool is authorized then Cognito issues a "JWT" token for a confirmed user
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a request with a valid token from a user in the "API"'s configured pool is authorized then a request with a valid token from a user in a different pool is rejected
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a request with a valid token from a user in a different pool is rejected then a "REST" "API" is created
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in a different pool is rejected
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a request with a valid token from a user in a different pool is rejected then a Cognito User Pool is created
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a request with a valid token from a user in a different pool is rejected then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a request with a valid token from a user in a different pool is rejected then Cognito issues a "JWT" token for a confirmed user
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in a different pool is rejected
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a user is confirmed in a Cognito User Pool then a request with a valid token from a user in a different pool is rejected then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given pid in pool_status
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in a different pool is rejected
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a "REST" "API" is created then a Cognito User Pool is created
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
+
+  @sequence
+  Scenario: Cognito issues a "JWT" token for a confirmed user then an "api gateway" "api" is created then a request with a valid token from a "cognito" "user" in a different pool is rejected
     Given uid in user_status
     When Cognito issues a "JWT" token for a confirmed user
-    When a "REST" "API" is created
-    When a Cognito User Pool is created
+    When an "api gateway" "api" is created
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a "REST" "API" is created then a Cognito User Pool authorizer is configured on the "REST" "API"
+  @sequence
+  Scenario: Cognito issues a "JWT" token for a confirmed user then a "cognito" "user pool" is created then an "api gateway" "api" is created
     Given uid in user_status
     When Cognito issues a "JWT" token for a confirmed user
-    When a "REST" "API" is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
+    When a "cognito" "user pool" is created
+    When an "api gateway" "api" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a "REST" "API" is created then a user is confirmed in a Cognito User Pool
+  @sequence
+  Scenario: Cognito issues a "JWT" token for a confirmed user then a "cognito" "user pool" authorizer is configured on the "api gateway" "api" then a "cognito" "user pool" is created
     Given uid in user_status
     When Cognito issues a "JWT" token for a confirmed user
-    When a "REST" "API" is created
-    When a user is confirmed in a Cognito User Pool
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
+    When a "cognito" "user pool" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a "REST" "API" is created then a request with a valid token from a user in the "API"'s configured pool is authorized
+  @sequence
+  Scenario: Cognito issues a "JWT" token for a confirmed user then a "cognito" "user" is confirmed in a "cognito" "user pool" then a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     Given uid in user_status
     When Cognito issues a "JWT" token for a confirmed user
-    When a "REST" "API" is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a "REST" "API" is created then a request with a valid token from a user in a different pool is rejected
+  @sequence
+  Scenario: Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized then a "cognito" "user" is confirmed in a "cognito" "user pool"
     Given uid in user_status
     When Cognito issues a "JWT" token for a confirmed user
-    When a "REST" "API" is created
-    When a request with a valid token from a user in a different pool is rejected
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool is created then a "REST" "API" is created
+  @sequence
+  Scenario: Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a "cognito" "user" in a different pool is rejected then a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     Given uid in user_status
     When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool is created
-    When a "REST" "API" is created
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool is created then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool is created then a user is confirmed in a Cognito User Pool
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool is created
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool is created then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool is created then a request with a valid token from a user in a different pool is rejected
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool authorizer is configured on the "REST" "API" then a "REST" "API" is created
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool authorizer is configured on the "REST" "API" then a Cognito User Pool is created
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool authorizer is configured on the "REST" "API" then a user is confirmed in a Cognito User Pool
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in a different pool is rejected
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a user is confirmed in a Cognito User Pool then a "REST" "API" is created
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a user is confirmed in a Cognito User Pool
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a user is confirmed in a Cognito User Pool then a Cognito User Pool is created
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a user is confirmed in a Cognito User Pool then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a user is confirmed in a Cognito User Pool then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a user is confirmed in a Cognito User Pool then a request with a valid token from a user in a different pool is rejected
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in the "API"'s configured pool is authorized then a "REST" "API" is created
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool is created
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in the "API"'s configured pool is authorized then a user is confirmed in a Cognito User Pool
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in the "API"'s configured pool is authorized then a request with a valid token from a user in a different pool is rejected
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in a different pool is rejected then a "REST" "API" is created
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in a different pool is rejected
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in a different pool is rejected then a Cognito User Pool is created
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in a different pool is rejected then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in a different pool is rejected then a user is confirmed in a Cognito User Pool
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in a different pool is rejected
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in a different pool is rejected then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given uid in user_status
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in a different pool is rejected
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a "REST" "API" is created then a Cognito User Pool is created
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized then an "api gateway" "api" is created then a "cognito" "user pool" is created
     Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a "REST" "API" is created
-    When a Cognito User Pool is created
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    When an "api gateway" "api" is created
+    When a "cognito" "user pool" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a "REST" "API" is created then a Cognito User Pool authorizer is configured on the "REST" "API"
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized then a "cognito" "user pool" is created then a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a "REST" "API" is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    When a "cognito" "user pool" is created
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a "REST" "API" is created then a user is confirmed in a Cognito User Pool
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized then a "cognito" "user pool" authorizer is configured on the "api gateway" "api" then a "cognito" "user" is confirmed in a "cognito" "user pool"
     Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a "REST" "API" is created
-    When a user is confirmed in a Cognito User Pool
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a "REST" "API" is created then Cognito issues a "JWT" token for a confirmed user
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized then a "cognito" "user" is confirmed in a "cognito" "user pool" then Cognito issues a "JWT" token for a confirmed user
     Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a "REST" "API" is created
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
     When Cognito issues a "JWT" token for a confirmed user
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a "REST" "API" is created then a request with a valid token from a user in a different pool is rejected
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized then Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a "cognito" "user" in a different pool is rejected
     Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a "REST" "API" is created
-    When a request with a valid token from a user in a different pool is rejected
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    When Cognito issues a "JWT" token for a confirmed user
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool is created then a "REST" "API" is created
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized then a request with a valid token from a "cognito" "user" in a different pool is rejected then an "api gateway" "api" is created
     Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool is created
-    When a "REST" "API" is created
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
+    When an "api gateway" "api" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool is created then a Cognito User Pool authorizer is configured on the "REST" "API"
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in a different pool is rejected then an "api gateway" "api" is created then a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
+    When an "api gateway" "api" is created
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool is created then a user is confirmed in a Cognito User Pool
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in a different pool is rejected then a "cognito" "user pool" is created then a "cognito" "user" is confirmed in a "cognito" "user pool"
     Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool is created
-    When a user is confirmed in a Cognito User Pool
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
+    When a "cognito" "user pool" is created
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool is created then Cognito issues a "JWT" token for a confirmed user
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in a different pool is rejected then a "cognito" "user pool" authorizer is configured on the "api gateway" "api" then Cognito issues a "JWT" token for a confirmed user
     Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool is created
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
+    When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     When Cognito issues a "JWT" token for a confirmed user
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool is created then a request with a valid token from a user in a different pool is rejected
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in a different pool is rejected then a "cognito" "user" is confirmed in a "cognito" "user pool" then a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in a different pool is rejected
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
+    When a "cognito" "user" is confirmed in a "cognito" "user pool"
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool authorizer is configured on the "REST" "API" then a "REST" "API" is created
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in a different pool is rejected then Cognito issues a "JWT" token for a confirmed user then an "api gateway" "api" is created
     Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool authorizer is configured on the "REST" "API" then a Cognito User Pool is created
-    Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool authorizer is configured on the "REST" "API" then a user is confirmed in a Cognito User Pool
-    Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool authorizer is configured on the "REST" "API" then Cognito issues a "JWT" token for a confirmed user
-    Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
     When Cognito issues a "JWT" token for a confirmed user
+    When an "api gateway" "api" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in a different pool is rejected
+  @sequence
+  Scenario: a request with a valid token from a "cognito" "user" in a different pool is rejected then a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized then a "cognito" "user pool" is created
     Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in a different pool is rejected
+    When a request with a valid token from a "cognito" "user" in a different pool is rejected
+    When a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
+    When a "cognito" "user pool" is created
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a user is confirmed in a Cognito User Pool then a "REST" "API" is created
-    Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a user is confirmed in a Cognito User Pool
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a user is confirmed in a Cognito User Pool then a Cognito User Pool is created
-    Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a user is confirmed in a Cognito User Pool then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a user is confirmed in a Cognito User Pool then Cognito issues a "JWT" token for a confirmed user
-    Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a user is confirmed in a Cognito User Pool
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a user is confirmed in a Cognito User Pool then a request with a valid token from a user in a different pool is rejected
-    Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then Cognito issues a "JWT" token for a confirmed user then a "REST" "API" is created
-    Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When Cognito issues a "JWT" token for a confirmed user
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool is created
-    Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then Cognito issues a "JWT" token for a confirmed user then a user is confirmed in a Cognito User Pool
-    Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When Cognito issues a "JWT" token for a confirmed user
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in a different pool is rejected
-    Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in a different pool is rejected
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a request with a valid token from a user in a different pool is rejected then a "REST" "API" is created
-    Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a request with a valid token from a user in a different pool is rejected
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a request with a valid token from a user in a different pool is rejected then a Cognito User Pool is created
-    Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a request with a valid token from a user in a different pool is rejected then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a request with a valid token from a user in a different pool is rejected then a user is confirmed in a Cognito User Pool
-    Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a request with a valid token from a user in a different pool is rejected
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized then a request with a valid token from a user in a different pool is rejected then Cognito issues a "JWT" token for a confirmed user
-    Given rid not in req_status
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a request with a valid token from a user in a different pool is rejected
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a "REST" "API" is created then a Cognito User Pool is created
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a "REST" "API" is created
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a "REST" "API" is created then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a "REST" "API" is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a "REST" "API" is created then a user is confirmed in a Cognito User Pool
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a "REST" "API" is created
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a "REST" "API" is created then Cognito issues a "JWT" token for a confirmed user
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a "REST" "API" is created
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a "REST" "API" is created then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a "REST" "API" is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a Cognito User Pool is created then a "REST" "API" is created
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool is created
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a Cognito User Pool is created then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool is created
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a Cognito User Pool is created then a user is confirmed in a Cognito User Pool
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool is created
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a Cognito User Pool is created then Cognito issues a "JWT" token for a confirmed user
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool is created
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a Cognito User Pool is created then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool is created
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a Cognito User Pool authorizer is configured on the "REST" "API" then a "REST" "API" is created
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a Cognito User Pool authorizer is configured on the "REST" "API" then a Cognito User Pool is created
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a Cognito User Pool authorizer is configured on the "REST" "API" then a user is confirmed in a Cognito User Pool
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a Cognito User Pool authorizer is configured on the "REST" "API" then Cognito issues a "JWT" token for a confirmed user
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a Cognito User Pool authorizer is configured on the "REST" "API" then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a user is confirmed in a Cognito User Pool then a "REST" "API" is created
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a user is confirmed in a Cognito User Pool
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a user is confirmed in a Cognito User Pool then a Cognito User Pool is created
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a user is confirmed in a Cognito User Pool then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a user is confirmed in a Cognito User Pool
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a user is confirmed in a Cognito User Pool then Cognito issues a "JWT" token for a confirmed user
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a user is confirmed in a Cognito User Pool
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a user is confirmed in a Cognito User Pool then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a user is confirmed in a Cognito User Pool
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then Cognito issues a "JWT" token for a confirmed user then a "REST" "API" is created
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When Cognito issues a "JWT" token for a confirmed user
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool is created
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then Cognito issues a "JWT" token for a confirmed user then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When Cognito issues a "JWT" token for a confirmed user
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then Cognito issues a "JWT" token for a confirmed user then a user is confirmed in a Cognito User Pool
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When Cognito issues a "JWT" token for a confirmed user
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then Cognito issues a "JWT" token for a confirmed user then a request with a valid token from a user in the "API"'s configured pool is authorized
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When Cognito issues a "JWT" token for a confirmed user
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a request with a valid token from a user in the "API"'s configured pool is authorized then a "REST" "API" is created
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a "REST" "API" is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool is created
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool is created
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a request with a valid token from a user in the "API"'s configured pool is authorized then a Cognito User Pool authorizer is configured on the "REST" "API"
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a Cognito User Pool authorizer is configured on the "REST" "API"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a request with a valid token from a user in the "API"'s configured pool is authorized then a user is confirmed in a Cognito User Pool
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When a user is confirmed in a Cognito User Pool
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
-
-  @exhaustive @sequence
-  Scenario: a request with a valid token from a user in a different pool is rejected then a request with a valid token from a user in the "API"'s configured pool is authorized then Cognito issues a "JWT" token for a confirmed user
-    Given rid not in req_status
-    When a request with a valid token from a user in a different pool is rejected
-    When a request with a valid token from a user in the "API"'s configured pool is authorized
-    When Cognito issues a "JWT" token for a confirmed user
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer

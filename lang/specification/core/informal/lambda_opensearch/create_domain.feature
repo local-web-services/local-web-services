@@ -1,5 +1,5 @@
 @lambdaopensearch @generated
-Feature: LambdaOpensearch - An Opensearch Domain Is Created
+Feature: LambdaOpensearch - An "Opensearch" "Domain" Is Created
 
   # Generated from FizzBee spec: lambda_opensearch.fizz
   # Safety invariants: InvocationRequiresActiveFunction, DocumentRequiresExistingIndex, IndexRequiresActiveDomain
@@ -8,16 +8,16 @@ Feature: LambdaOpensearch - An Opensearch Domain Is Created
     Given the system is initialized
 
   @minimal @happy @create_domain
-  Scenario: an OpenSearch domain is created
-    Given the domain does not already exist
-    When an OpenSearch domain is created
-    Then the domain is "ACTIVE"
+  Scenario: an "opensearch" "domain" is created
+    Given the "opensearch" "domain" did not already exist
+    When an "opensearch" "domain" is created
+    Then the "opensearch" "domain" will be "ACTIVE"
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every indexed document belongs to an existing index
     And every existing index belongs to an "ACTIVE" domain
 
-  @standard @negative @create_domain
-  Scenario: an OpenSearch domain is created fails when the domain already exists
-    Given the domain already exists
-    When an OpenSearch domain is created
+  @guard @negative @create_domain
+  Scenario: an "opensearch" "domain" is created fails when the "opensearch" "domain" already existed
+    Given the "opensearch" "domain" already existed
+    When an "opensearch" "domain" is created
     Then the operation is rejected

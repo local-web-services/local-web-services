@@ -1,5 +1,5 @@
 @secretsmanager @generated
-Feature: Secretsmanager - Tags Are Added To An Active Secret
+Feature: Secretsmanager - Tags Are Added To An Active "Secrets Manager" "Secret"
 
   # Generated from FizzBee spec: secretsmanager.fizz
   # Safety invariants: ActiveSecretHasCurrentVersion, AtMostOneCurrentVersionPerSecret, AtMostOnePreviousVersionPerSecret, DeletedSecretWithClosedWindowNotRestored, SecretNamesAreUnique, VersionIdsAreUnique, DeletedSecretRecoveryWindowIsOpen, ActiveSecretHasVersion
@@ -8,11 +8,11 @@ Feature: Secretsmanager - Tags Are Added To An Active Secret
     Given the system is initialized
 
   @minimal @happy @tag_resource
-  Scenario: tags are added to an active secret
-    Given the secret exists
-    And the secret is "ACTIVE"
-    When tags are added to an active secret
-    Then the specified tags are associated with the secret
+  Scenario: tags are added to an active "secrets manager" "secret"
+    Given the "secrets manager" "secret" existed
+    And the "secrets manager" "secret" was "ACTIVE"
+    When tags are added to an active "secrets manager" "secret"
+    Then the specified tags are associated with the "secrets manager" "secret"
     And every "ACTIVE" secret has a current version assigned
     And at most one current version exists per secret
     And at most one previous version exists per secret
@@ -22,15 +22,15 @@ Feature: Secretsmanager - Tags Are Added To An Active Secret
     And every deleted secret with an open recovery window can still be restored or expired
     And every active secret has a current version assigned
 
-  @standard @negative @tag_resource
-  Scenario: tags are added to an active secret fails when the secret does not exist
-    Given the secret does not exist
-    When tags are added to an active secret
+  @guard @negative @tag_resource
+  Scenario: tags are added to an active "secrets manager" "secret" fails when the "secrets manager" "secret" did not exist
+    Given the "secrets manager" "secret" did not exist
+    When tags are added to an active "secrets manager" "secret"
     Then the operation is rejected
 
-  @standard @negative @tag_resource @lifecycle
-  Scenario: tags are added to an active secret fails when the secret is not "ACTIVE"
-    Given the secret exists
-    And the secret is not "ACTIVE"
-    When tags are added to an active secret
+  @guard @negative @tag_resource @lifecycle
+  Scenario: tags are added to an active "secrets manager" "secret" fails when the "secrets manager" "secret" was not "ACTIVE"
+    Given the "secrets manager" "secret" existed
+    And the "secrets manager" "secret" was not "ACTIVE"
+    When tags are added to an active "secrets manager" "secret"
     Then the operation is rejected

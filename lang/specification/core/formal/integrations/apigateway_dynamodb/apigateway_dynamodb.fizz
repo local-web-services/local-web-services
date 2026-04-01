@@ -26,10 +26,10 @@ action Init:
     item_req = {}               # item_req[iid] = req_id
 
 
-# step: an API Gateway REST API is created
-# result: the API is ACTIVE with no DynamoDB integration configured
-# guard: the API does not already exist
-# guard_violation: the API already exists
+# step: an "api gateway" "api" is created
+# result: the "api gateway" "api" will be "ACTIVE" with no DynamoDB integration configured
+# guard: the "api gateway" "API" did not already exist
+# guard_violation: the "api gateway" "API" already existed
 atomic action CreateRestAPI:
     oneof aid in API_IDS:
         if aid not in api_status:
@@ -37,22 +37,22 @@ atomic action CreateRestAPI:
             api_table[aid] = ""
 
 
-# step: a DynamoDB table is created
-# result: the table is ACTIVE
-# guard: the table does not already exist
-# guard_violation: the table already exists
+# step: a "dynamodb" "table" is created
+# result: the "dynamodb" "table" will be "ACTIVE"
+# guard: the "dynamodb" "table" did not already exist
+# guard_violation: the "dynamodb" "table" already existed
 atomic action CreateTable:
     oneof tid in TABLE_IDS:
         if tid not in table_status:
             table_status[tid] = "ACTIVE"
 
 
-# step: a table deletion is initiated
-# result: the table is DELETING and API requests targeting it will fail
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation_lifecycle: the table is already DELETING
+# step: a "dynamodb" "table" deletion is initiated
+# result: the "dynamodb" "table" will be "DELETING" and API requests targeting it will fail
+# guard: the "dynamodb" "table" existed
+# guard_violation: the "dynamodb" "table" did not exist
+# guard: the "dynamodb" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "dynamodb" "table" is already "DELETING"
 atomic action DeleteTable:
     oneof tid in TABLE_IDS:
         if tid in table_status:
@@ -60,14 +60,14 @@ atomic action DeleteTable:
                 table_status[tid] = "DELETING"
 
 
-# step: a direct DynamoDB integration is configured on the API
-# result: the API will write to the table when requests are received
-# guard: the API exists and is ACTIVE
-# guard_violation: the API does not exist or is not ACTIVE
-# guard: the API has no DynamoDB integration configured
-# guard_violation: the API already has a DynamoDB integration configured
-# guard: the table exists and is ACTIVE
-# guard_violation: the table does not exist or is not ACTIVE
+# step: a direct "dynamodb" integration is configured on the "api gateway" "API"
+# result: the "api gateway" "api" will write to the "dynamodb" "table" when requests are received
+# guard: the "api gateway" "API" existed and was "ACTIVE"
+# guard_violation: the "api gateway" "API" did not exist or was "ACTIVE"
+# guard: the "api gateway" "api" has no "dynamodb" integration configured
+# guard_violation: the "api gateway" "API" already has a DynamoDB integration configured
+# guard: the "dynamodb" "table" existed and was "ACTIVE"
+# guard_violation: the "dynamodb" "table" did not exist or was "ACTIVE"
 atomic action ConfigureDirectIntegration:
     oneof aid in API_IDS:
         if aid in api_status:
@@ -79,14 +79,14 @@ atomic action ConfigureDirectIntegration:
                                 api_table[aid] = tid
 
 
-# step: a request is received, the API writes to the DynamoDB table, and returns 200
-# result: the item EXISTS and the request is SUCCESS
-# guard: the API is ACTIVE
-# guard_violation_lifecycle: the API is not ACTIVE
-# guard: the API has a DynamoDB integration configured
-# guard_violation: the API has no DynamoDB integration configured
-# guard: the target table is ACTIVE
-# guard_violation_lifecycle: the target table is not ACTIVE
+# step: a request is received, the "api gateway" "API" writes to the "dynamodb" "table", and returns 200
+# result: the item will exist and the request will be "SUCCESS"
+# guard: the "api gateway" "api" was "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
+# guard: the "api gateway" "api" has a "dynamodb" integration configured
+# guard_violation: the "api gateway" "api" has no "dynamodb" integration configured
+# guard: the target "dynamodb" "table" was "ACTIVE"
+# guard_violation_lifecycle: the target "dynamodb" "table" was not "ACTIVE"
 # guard: a request slot is available
 # guard_violation_capacity: no request slot is available
 # guard: an item slot is available
@@ -110,14 +110,14 @@ atomic action RequestSucceeds:
                                             item_req[iid] = rid
 
 
-# step: a request is received but the DynamoDB write fails because the table is being deleted
-# result: the request is FAILED and no item is written
-# guard: the API is ACTIVE
-# guard_violation_lifecycle: the API is not ACTIVE
-# guard: the API has a DynamoDB integration configured
-# guard_violation: the API has no DynamoDB integration configured
-# guard: the target table is DELETING
-# guard_violation_lifecycle: the target table is not DELETING
+# step: a request is received but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+# result: the request will be "FAILED" and no item will be written
+# guard: the "api gateway" "api" was "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
+# guard: the "api gateway" "api" has a "dynamodb" integration configured
+# guard_violation: the "api gateway" "api" has no "dynamodb" integration configured
+# guard: the target "dynamodb" "table" was "DELETING"
+# guard_violation_lifecycle: the target "dynamodb" "table" was not "DELETING"
 # guard: a request slot is available
 # guard_violation_capacity: no request slot is available
 atomic action RequestFails:
@@ -134,7 +134,7 @@ atomic action RequestFails:
                                     req_api[rid] = aid
 
 
-# check: every existing item references a table that exists
+# check: every existing item references a "dynamodb" "table" that exists
 always assertion ItemReferencesExistingTable:
     for iid in item_status:
         if item_status[iid] == "EXISTS":
@@ -144,7 +144,7 @@ always assertion ItemReferencesExistingTable:
     return True
 
 
-# check: every successful request references an API that exists
+# check: every successful request references an "api gateway" "API" that exists
 always assertion SuccessfulRequestReferencesExistingAPI:
     for rid in req_status:
         if req_status[rid] == "SUCCESS":

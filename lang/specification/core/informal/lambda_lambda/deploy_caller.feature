@@ -1,5 +1,5 @@
 @lambdalambda @generated
-Feature: LambdaLambda - A Caller Lambda Function Is Deployed
+Feature: LambdaLambda - A Caller "Lambda" "Function" Is Deployed
 
   # Generated from FizzBee spec: lambda_lambda.fizz
   # Safety invariants: InvocationRequiresActiveCaller, SuccessfulInvocationInvokedACallee
@@ -8,15 +8,15 @@ Feature: LambdaLambda - A Caller Lambda Function Is Deployed
     Given the system is initialized
 
   @minimal @happy @deploy_caller
-  Scenario: a caller Lambda function is deployed
-    Given the caller function does not already exist
-    When a caller Lambda function is deployed
-    Then the caller function is "ACTIVE"
+  Scenario: a caller "lambda" "function" is deployed
+    Given the caller "lambda" "function" did not already exist
+    When a caller "lambda" "function" is deployed
+    Then the caller "lambda" "function" will be "ACTIVE"
     And every "IN_PROGRESS" invocation references an "ACTIVE" caller function
     And every successful invocation recorded which callee was invoked
 
-  @standard @negative @deploy_caller
-  Scenario: a caller Lambda function is deployed fails when the caller function already exists
-    Given the caller function already exists
-    When a caller Lambda function is deployed
+  @guard @negative @deploy_caller
+  Scenario: a caller "lambda" "function" is deployed fails when the caller "lambda" "function" already existed
+    Given the caller "lambda" "function" already existed
+    When a caller "lambda" "function" is deployed
     Then the operation is rejected

@@ -1,5 +1,5 @@
 @stepfunctionsdocdb @generated
-Feature: StepfunctionsDocdb - A Running Execution Connects To The Available Documentdb Cluster And The Task Succeeds
+Feature: StepfunctionsDocdb - A Running "Step Functions" "Execution" Connects To The "Documentdb" "Cluster" That Was "Available" And The Task Succeeds
 
   # Generated from FizzBee spec: stepfunctions_docdb.fizz
   # Safety invariants: ExecutionRequiresActiveStateMachine, SuccessfulExecutionConnectedToACluster
@@ -8,23 +8,23 @@ Feature: StepfunctionsDocdb - A Running Execution Connects To The Available Docu
     Given the system is initialized
 
   @minimal @happy @query_document_task_succeeds @internal
-  Scenario: a running execution connects to the "AVAILABLE" DocumentDB cluster and the task succeeds
-    Given an execution is "RUNNING"
-    And the cluster is "AVAILABLE"
-    When a running execution connects to the "AVAILABLE" DocumentDB cluster and the task succeeds
-    Then the execution is "SUCCEEDED"
+  Scenario: a running "step functions" "execution" connects to the "documentdb" "cluster" that was "AVAILABLE" and the task succeeds
+    Given a "step functions" "execution" was "RUNNING"
+    And the "documentdb" "cluster" was "AVAILABLE"
+    When a running "step functions" "execution" connects to the "documentdb" "cluster" that was "AVAILABLE" and the task succeeds
+    Then the "step functions" "execution" will be "SUCCEEDED"
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it connected to
 
-  @standard @negative @query_document_task_succeeds @internal
-  Scenario: a running execution connects to the "AVAILABLE" DocumentDB cluster and the task succeeds fails when no execution is "RUNNING"
-    Given no execution is "RUNNING"
-    When a running execution connects to the "AVAILABLE" DocumentDB cluster and the task succeeds
+  @guard @negative @query_document_task_succeeds @internal
+  Scenario: a running "step functions" "execution" connects to the "documentdb" "cluster" that was "AVAILABLE" and the task succeeds fails when no "step functions" "execution" was "RUNNING"
+    Given no "step functions" "execution" was "RUNNING"
+    When a running "step functions" "execution" connects to the "documentdb" "cluster" that was "AVAILABLE" and the task succeeds
     Then the operation is rejected
 
-  @standard @negative @query_document_task_succeeds @internal
-  Scenario: a running execution connects to the "AVAILABLE" DocumentDB cluster and the task succeeds fails when the cluster is not "AVAILABLE"
-    Given an execution is "RUNNING"
-    And the cluster is not "AVAILABLE"
-    When a running execution connects to the "AVAILABLE" DocumentDB cluster and the task succeeds
+  @guard @negative @query_document_task_succeeds @internal
+  Scenario: a running "step functions" "execution" connects to the "documentdb" "cluster" that was "AVAILABLE" and the task succeeds fails when the "documentdb" "cluster" was not "AVAILABLE"
+    Given a "step functions" "execution" was "RUNNING"
+    And the "documentdb" "cluster" was not "AVAILABLE"
+    When a running "step functions" "execution" connects to the "documentdb" "cluster" that was "AVAILABLE" and the task succeeds
     Then the operation is rejected

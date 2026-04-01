@@ -1,5 +1,5 @@
 @rds @generated
-Feature: Rds - A Multi-Az Failover Is Triggered On An Instance
+Feature: Rds - A Multi-Az Failover Is Triggered On A "Rds" "Instance"
 
   # Generated from FizzBee spec: rds.fizz
   # Safety invariants: ValidDBInstanceStatus, ValidDBSnapshotStatus, BackingUpInstanceHasSnapshot
@@ -8,33 +8,33 @@ Feature: Rds - A Multi-Az Failover Is Triggered On An Instance
     Given the system is initialized
 
   @minimal @happy @multi_a_z_failover @internal
-  Scenario: a multi-"AZ" failover is triggered on an instance
-    Given the database instance exists
-    And the instance is "AVAILABLE"
-    And the instance has multi-"AZ" enabled
-    When a multi-"AZ" failover is triggered on an instance
-    Then the instance enters "MODIFYING" state during promotion
+  Scenario: a multi-"AZ" failover is triggered on a "rds" "instance"
+    Given the "rds" "instance" existed
+    And the "rds" "instance" was "AVAILABLE"
+    And the "rds" "instance" has multi-"AZ" enabled
+    When a multi-"AZ" failover is triggered on a "rds" "instance"
+    Then the "rds" "instance" will be in "MODIFYING" state during promotion
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
 
-  @standard @negative @multi_a_z_failover @internal
-  Scenario: a multi-"AZ" failover is triggered on an instance fails when the database instance does not exist
-    Given the database instance does not exist
-    When a multi-"AZ" failover is triggered on an instance
+  @guard @negative @multi_a_z_failover @internal
+  Scenario: a multi-"AZ" failover is triggered on a "rds" "instance" fails when the "rds" "instance" did not exist
+    Given the "rds" "instance" did not exist
+    When a multi-"AZ" failover is triggered on a "rds" "instance"
     Then the operation is rejected
 
-  @standard @negative @multi_a_z_failover @internal
-  Scenario: a multi-"AZ" failover is triggered on an instance fails when the instance is not "AVAILABLE"
-    Given the database instance exists
-    And the instance is not "AVAILABLE"
-    When a multi-"AZ" failover is triggered on an instance
+  @guard @negative @multi_a_z_failover @internal
+  Scenario: a multi-"AZ" failover is triggered on a "rds" "instance" fails when the "rds" "instance" was not "AVAILABLE"
+    Given the "rds" "instance" existed
+    And the "rds" "instance" was not "AVAILABLE"
+    When a multi-"AZ" failover is triggered on a "rds" "instance"
     Then the operation is rejected
 
-  @standard @negative @multi_a_z_failover @internal
-  Scenario: a multi-"AZ" failover is triggered on an instance fails when the instance does not have multi-"AZ" enabled
-    Given the database instance exists
-    And the instance is "AVAILABLE"
-    And the instance does not have multi-"AZ" enabled
-    When a multi-"AZ" failover is triggered on an instance
+  @guard @negative @multi_a_z_failover @internal
+  Scenario: a multi-"AZ" failover is triggered on a "rds" "instance" fails when the "rds" "instance" does not have multi-"AZ" enabled
+    Given the "rds" "instance" existed
+    And the "rds" "instance" was "AVAILABLE"
+    And the "rds" "instance" does not have multi-"AZ" enabled
+    When a multi-"AZ" failover is triggered on a "rds" "instance"
     Then the operation is rejected

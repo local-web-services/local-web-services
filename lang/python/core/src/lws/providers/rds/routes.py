@@ -16,7 +16,9 @@ from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_lifecycle import (
     ResourceLifecycleConfig,
     ResourceStateTracker,
+    TrackerRegistry,
     apply_delete_lifecycle,
+    register_tracker,
 )
 from lws.providers._shared.cluster_db_service import (
     check_db_resource_read_lifecycle,
@@ -366,7 +368,7 @@ async def _rds_lifecycle_instance(
     tracker: ResourceStateTracker,
 ) -> Response | None:
     """Handle lifecycle-aware instance create/delete. Returns None to fall through."""
-    if action == "CreateDBInstance" and lc.enabled and lc.create_dwell_ms > 0:
+    if action == "CreateDBInstance" and lc.enabled:
         resp = await handler(state, body)
         if resp.status_code == 200:
             iid = body.get("DBInstanceIdentifier", "")
@@ -394,7 +396,7 @@ async def _rds_lifecycle_cluster(
     tracker: ResourceStateTracker,
 ) -> Response | None:
     """Handle lifecycle-aware cluster create/delete. Returns None to fall through."""
-    if action == "CreateDBCluster" and lc.enabled and lc.create_dwell_ms > 0:
+    if action == "CreateDBCluster" and lc.enabled:
         resp = await handler(state, body)
         if resp.status_code == 200:
             cid = body.get("DBClusterIdentifier", "")
@@ -462,11 +464,15 @@ def create_rds_app(
     postgres_container_manager: ResourceContainerManager | None = None,
     mysql_container_manager: ResourceContainerManager | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
+    registry: TrackerRegistry | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the RDS wire protocol."""
     _lc = lifecycle or ResourceLifecycleConfig()
     _instance_tracker = ResourceStateTracker(_lc)
     _cluster_tracker = ResourceStateTracker(_lc)
+    if registry is not None:
+        register_tracker(registry, "rds", "instance", _instance_tracker)
+        register_tracker(registry, "rds", "cluster", _cluster_tracker)
 
     app = FastAPI(title="LDK RDS")
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="rds")

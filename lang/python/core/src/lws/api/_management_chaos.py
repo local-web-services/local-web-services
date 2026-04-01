@@ -44,6 +44,43 @@ def _serialize_chaos(cfg: AwsChaosConfig) -> dict[str, Any]:
     }
 
 
+def _handle_get_chaos_service(
+    chaos_configs: dict[str, AwsChaosConfig], service: str
+) -> JSONResponse:
+    """Return chaos config for a single service."""
+    if service not in chaos_configs:
+        return JSONResponse(
+            status_code=404, content={"error": f"Service {service!r} not found in chaos configs"}
+        )
+    return JSONResponse(content=_serialize_chaos(chaos_configs[service]))
+
+
+async def _handle_put_chaos_service(
+    request: Request, chaos_configs: dict[str, AwsChaosConfig], service: str
+) -> JSONResponse:
+    """Set chaos config for a single service (enables chaos automatically)."""
+    if service not in chaos_configs:
+        return JSONResponse(
+            status_code=404, content={"error": f"Service {service!r} not found in chaos configs"}
+        )
+    body = await request.json()
+    _apply_chaos_overrides(chaos_configs[service], {**body, "enabled": True})
+    return JSONResponse(content=_serialize_chaos(chaos_configs[service]))
+
+
+def _handle_delete_chaos_service(
+    chaos_configs: dict[str, AwsChaosConfig], service: str
+) -> JSONResponse:
+    """Reset (disable) chaos config for a single service."""
+    if service not in chaos_configs:
+        return JSONResponse(
+            status_code=404, content={"error": f"Service {service!r} not found in chaos configs"}
+        )
+    cfg = chaos_configs[service]
+    cfg.reset()
+    return JSONResponse(content=_serialize_chaos(cfg))
+
+
 def _apply_chaos_overrides(cfg: AwsChaosConfig, overrides: dict[str, Any]) -> None:
     """Apply partial overrides to an existing AwsChaosConfig in place."""
     if "enabled" in overrides:

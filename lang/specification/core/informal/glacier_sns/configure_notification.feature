@@ -1,5 +1,5 @@
 @glaciersns @generated
-Feature: GlacierSns - An Sns Notification Is Configured On The Vault
+Feature: GlacierSns - A Sns Notification Is Configured On The "Glacier" "Vault"
 
   # Generated from FizzBee spec: glacier_sns.fizz
   # Safety invariants: PublishedNotificationReferencesExistingJob, PublishedNotificationReferencesExistingTopic
@@ -8,32 +8,32 @@ Feature: GlacierSns - An Sns Notification Is Configured On The Vault
     Given the system is initialized
 
   @minimal @happy @configure_notification
-  Scenario: an "SNS" notification is configured on the vault
-    Given the vault exists
-    And the vault has no "SNS" notification configured
-    And the topic exists and is "ACTIVE"
-    When an "SNS" notification is configured on the vault
-    Then the vault will publish job completion notifications to the topic
-    And every "PUBLISHED" notification references a job that exists
-    And every "PUBLISHED" notification references a topic that exists
+  Scenario: a "SNS" notification is configured on the "glacier" "vault"
+    Given the "glacier" "vault" existed
+    And the "glacier" "vault" has no "SNS" notification configured
+    And the "sns" "topic" existed and was "ACTIVE"
+    When a "SNS" notification is configured on the "glacier" "vault"
+    Then the "glacier" "vault" will publish job completion notifications to the "sns" "topic"
+    And every "PUBLISHED" notification references a "glacier" "job" that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @standard @negative @configure_notification
-  Scenario: an "SNS" notification is configured on the vault fails when the vault does not exist
-    Given the vault does not exist
-    When an "SNS" notification is configured on the vault
+  @guard @negative @configure_notification
+  Scenario: a "SNS" notification is configured on the "glacier" "vault" fails when the "glacier" "vault" did not exist
+    Given the "glacier" "vault" did not exist
+    When a "SNS" notification is configured on the "glacier" "vault"
     Then the operation is rejected
 
-  @standard @negative @configure_notification
-  Scenario: an "SNS" notification is configured on the vault fails when the vault already has an "SNS" notification configured
-    Given the vault exists
-    And the vault already has an "SNS" notification configured
-    When an "SNS" notification is configured on the vault
+  @guard @negative @configure_notification
+  Scenario: a "SNS" notification is configured on the "glacier" "vault" fails when the "glacier" "vault" already has a "SNS" notification configured
+    Given the "glacier" "vault" existed
+    And the "glacier" "vault" already has a "SNS" notification configured
+    When a "SNS" notification is configured on the "glacier" "vault"
     Then the operation is rejected
 
-  @standard @negative @configure_notification
-  Scenario: an "SNS" notification is configured on the vault fails when the topic does not exist or is not "ACTIVE"
-    Given the vault exists
-    And the vault has no "SNS" notification configured
-    And the topic does not exist or is not "ACTIVE"
-    When an "SNS" notification is configured on the vault
+  @guard @negative @configure_notification
+  Scenario: a "SNS" notification is configured on the "glacier" "vault" fails when the "sns" "topic" did not exist or was "ACTIVE"
+    Given the "glacier" "vault" existed
+    And the "glacier" "vault" has no "SNS" notification configured
+    And the "sns" "topic" did not exist or was "ACTIVE"
+    When a "SNS" notification is configured on the "glacier" "vault"
     Then the operation is rejected

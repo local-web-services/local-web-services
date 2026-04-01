@@ -9,33 +9,33 @@ Feature: ApigatewayCognito - Cognito Issues A Jwt Token For A Confirmed User
 
   @minimal @happy @issue_token
   Scenario: Cognito issues a "JWT" token for a confirmed user
-    Given the user exists
-    And the user is "CONFIRMED"
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was "CONFIRMED"
     And a token slot is available
     When Cognito issues a "JWT" token for a confirmed user
-    Then a "VALID" token is issued that can be presented to "API" Gateway for authorization
+    Then a "VALID" token will be issued that can be presented to "API" Gateway for authorization
     And every "API" with a configured authorizer references an "ACTIVE" pool
     And every "AUTHORIZED" request was validated against a "VALID" token
-    And every "AUTHORIZED" request's token belongs to a user in the "API"'s configured pool
-    And every "REJECTED" request's token belongs to a user in a different pool than the configured authorizer
+    And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
+    And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 
-  @standard @negative @issue_token
-  Scenario: Cognito issues a "JWT" token for a confirmed user fails when the user does not exist
-    Given the user does not exist
+  @guard @negative @issue_token
+  Scenario: Cognito issues a "JWT" token for a confirmed user fails when the "cognito" "user" did not exist
+    Given the "cognito" "user" did not exist
     When Cognito issues a "JWT" token for a confirmed user
     Then the operation is rejected
 
-  @standard @negative @issue_token @lifecycle
-  Scenario: Cognito issues a "JWT" token for a confirmed user fails when the user is not "CONFIRMED"
-    Given the user exists
-    And the user is not "CONFIRMED"
+  @guard @negative @issue_token @lifecycle
+  Scenario: Cognito issues a "JWT" token for a confirmed user fails when the "cognito" "user" was not "CONFIRMED"
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was not "CONFIRMED"
     When Cognito issues a "JWT" token for a confirmed user
     Then the operation is rejected
 
-  @standard @negative @issue_token @capacity
+  @guard @negative @issue_token @capacity
   Scenario: Cognito issues a "JWT" token for a confirmed user fails when no token slot is available
-    Given the user exists
-    And the user is "CONFIRMED"
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was "CONFIRMED"
     And no token slot is available
     When Cognito issues a "JWT" token for a confirmed user
     Then the operation is rejected

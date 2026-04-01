@@ -12,11 +12,16 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from fastapi import FastAPI
+
+from lws.api.management import create_management_router
 from lws.interfaces import Provider
-from lws.parser.assembly import AppModel
+from lws.providers._shared.aws_capacity import AwsCapacityConfig
 from lws.providers._shared.aws_chaos import AwsChaosConfig
 from lws.providers._shared.aws_iam_auth import IamAuthBundle
+from lws.providers._shared.aws_lifecycle import TrackerRegistry
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig
+from lws.providers._shared.capacity_control import create_capacity_control_router
 from lws.providers.apigateway.provider import ApiGatewayProvider
 from lws.providers.cognito.provider import CognitoProvider
 from lws.providers.cognito.user_store import UserPoolConfig
@@ -145,6 +150,7 @@ def _register_http_providers(
     aws_fake_configs: dict[str, AwsFakeConfig] | None = None,
     iam_auth: IamAuthBundle | None = None,
     lifecycle_configs: dict[str, Any] | None = None,
+    capacity_configs: dict[str, AwsCapacityConfig] | None = None,
 ) -> None:
     """Register HTTP service providers for each active backend."""
     from lws.providers.cognito.routes import (  # pylint: disable=import-outside-toplevel
@@ -161,6 +167,7 @@ def _register_http_providers(
     mc = aws_fake_configs or {}
     ia = iam_auth
     lc = lifecycle_configs or {}
+    cap = capacity_configs or {}
 
     http_services: list[tuple[str, Any, Callable[[], Any]]] = []
     http_services.append(
@@ -169,7 +176,9 @@ def _register_http_providers(
             ports["dynamodb"],
             lambda p=dynamo_provider, c=cc.get("dynamodb"), m=mc.get(
                 "dynamodb"
-            ), i=ia: create_dynamodb_app(p, chaos=c, aws_fake=m, iam_auth=i),
+            ), i=ia, cap_val=cap.get("dynamodb"): create_dynamodb_app(
+                p, chaos=c, aws_fake=m, iam_auth=i, capacity=cap_val
+            ),
         )
     )
     http_services.append(
@@ -178,7 +187,9 @@ def _register_http_providers(
             ports["sqs"],
             lambda p=sqs_provider, pt=ports["sqs"], c=cc.get("sqs"), m=mc.get(
                 "sqs"
-            ), i=ia: create_sqs_app(p, pt, chaos=c, aws_fake=m, iam_auth=i),
+            ), i=ia, cap_val=cap.get("sqs"): create_sqs_app(
+                p, pt, chaos=c, aws_fake=m, iam_auth=i, capacity=cap_val
+            ),
         )
     )
     http_services.append(
@@ -194,9 +205,9 @@ def _register_http_providers(
         (
             "sns",
             ports["sns"],
-            lambda p=sns_provider, c=cc.get("sns"), m=mc.get("sns"), i=ia: create_sns_app(
-                p, chaos=c, aws_fake=m, iam_auth=i
-            ),
+            lambda p=sns_provider, c=cc.get("sns"), m=mc.get("sns"), i=ia, cap_val=cap.get(
+                "sns"
+            ): create_sns_app(p, chaos=c, aws_fake=m, iam_auth=i, sns_capacity=cap_val),
         )
     )
     http_services.append(
@@ -214,7 +225,9 @@ def _register_http_providers(
             ports["stepfunctions"],
             lambda p=sf_provider, c=cc.get("stepfunctions"), m=mc.get(
                 "stepfunctions"
-            ), i=ia: create_stepfunctions_app(p, chaos=c, aws_fake=m, iam_auth=i),
+            ), i=ia, cap_val=cap.get("stepfunctions"): create_stepfunctions_app(
+                p, chaos=c, aws_fake=m, iam_auth=i, capacity=cap_val
+            ),
         )
     )
     http_services.append(
@@ -223,8 +236,8 @@ def _register_http_providers(
             ports["cognito-idp"],
             lambda p=cognito_provider, c=cc.get("cognito-idp"), m=mc.get(
                 "cognito-idp"
-            ), i=ia, lc_val=lc.get("cognito"): create_cognito_app(
-                p, chaos=c, aws_fake=m, iam_auth=i, lifecycle=lc_val
+            ), i=ia, lc_val=lc.get("cognito"), cap_val=cap.get("cognito"): create_cognito_app(
+                p, chaos=c, aws_fake=m, iam_auth=i, lifecycle=lc_val, capacity=cap_val
             ),
         )
     )
@@ -242,6 +255,7 @@ def _register_http_providers_from_set(
     aws_fake_configs: dict[str, AwsFakeConfig] | None = None,
     iam_auth: IamAuthBundle | None = None,
     lifecycle_configs: dict[str, Any] | None = None,
+    capacity_configs: dict[str, AwsCapacityConfig] | None = None,
 ) -> None:
     """Register HTTP service providers from a ``_CoreProviderSet``."""
     _register_http_providers(
@@ -258,149 +272,8 @@ def _register_http_providers_from_set(
         aws_fake_configs=aws_fake_configs,
         iam_auth=iam_auth,
         lifecycle_configs=lifecycle_configs,
+        capacity_configs=capacity_configs,
     )
-
-
-def _build_resource_metadata(app_model: AppModel, port: int) -> dict[str, Any]:
-    """Build resource metadata for the ``/_ldk/resources`` endpoint."""
-    metadata: dict[str, Any] = {"port": port, "services": {}}
-    services = metadata["services"]
-    ports = _service_ports(port)
-
-    _add_api_metadata(services, app_model, port)
-    _add_service_metadata(services, app_model, ports)
-    return metadata
-
-
-def _service_ports(port: int) -> dict[str, int]:
-    """Return a mapping of service name to port number."""
-    return {
-        "dynamodb": port + 1,
-        "sqs": port + 2,
-        "s3": port + 3,
-        "sns": port + 4,
-        "events": port + 5,
-        "stepfunctions": port + 6,
-        "cognito-idp": port + 7,
-        "lambda": port + 9,
-        "ssm": port + 12,
-        "secretsmanager": port + 13,
-        "elasticache": port + 14,
-        "memorydb": port + 15,
-        "docdb": port + 16,
-        "neptune": port + 17,
-        "es": port + 18,
-        "opensearch": port + 19,
-        "rds": port + 20,
-        "glacier": port + 21,
-        "s3tables": port + 22,
-        "organizations": port + 50,
-    }
-
-
-def _add_api_metadata(services: dict[str, Any], app_model: AppModel, port: int) -> None:
-    """Add API Gateway metadata to services."""
-    if not app_model.apis:
-        return
-    routes = []
-    for api_def in app_model.apis:
-        for r in api_def.routes:
-            routes.append(
-                {
-                    "name": api_def.name,
-                    "path": r.path,
-                    "method": r.method,
-                    "handler": r.handler_name or "",
-                }
-            )
-    services["apigateway"] = {"port": port, "resources": routes}
-
-
-def _add_service_metadata(
-    services: dict[str, Any], app_model: AppModel, ports: dict[str, int]
-) -> None:
-    """Add non-API service metadata to services."""
-    _SERVICE_DESCRIPTORS: list[
-        tuple[str, str, str | None, Callable[[Any, int | None], dict[str, Any]]]
-    ] = [
-        (
-            "functions",
-            "lambda",
-            "lambda",
-            lambda f, _p: {
-                "name": f.name,
-                "runtime": f.runtime,
-                "arn": f"arn:aws:lambda:us-east-1:000000000000:function:{f.name}",
-            },
-        ),
-        ("tables", "dynamodb", "dynamodb", lambda t, _p: {"name": t.name}),
-        (
-            "queues",
-            "sqs",
-            "sqs",
-            lambda q, p: {
-                "name": q.name,
-                "queue_url": f"http://localhost:{p}/000000000000/{q.name}",
-            },
-        ),
-        ("buckets", "s3", "s3", lambda b, _p: {"name": b.name}),
-        (
-            "topics",
-            "sns",
-            "sns",
-            lambda t, _p: {
-                "name": t.name,
-                "arn": t.topic_arn or f"arn:aws:sns:us-east-1:000000000000:{t.name}",
-            },
-        ),
-        (
-            "event_buses",
-            "events",
-            "events",
-            lambda b, _p: {
-                "name": b.name,
-                "arn": b.bus_arn or f"arn:aws:events:us-east-1:000000000000:event-bus/{b.name}",
-            },
-        ),
-        (
-            "state_machines",
-            "stepfunctions",
-            "stepfunctions",
-            lambda sm, _p: {
-                "name": sm.name,
-                "arn": f"arn:aws:states:us-east-1:000000000000:stateMachine:{sm.name}",
-            },
-        ),
-        (
-            "user_pools",
-            "cognito-idp",
-            "cognito-idp",
-            lambda p, _p2: {
-                "name": p.user_pool_name,
-                "user_pool_id": f"us-east-1_{p.logical_id}",
-            },
-        ),
-        ("ssm_parameters", "ssm", "ssm", lambda p, _p2: {"name": p.name}),
-        (
-            "secrets",
-            "secretsmanager",
-            "secretsmanager",
-            lambda s, _p: {
-                "name": s.name,
-                "arn": f"arn:aws:secretsmanager:us-east-1:000000000000:secret:{s.name}",
-            },
-        ),
-    ]
-    for attr, service_key, port_key, resource_fn in _SERVICE_DESCRIPTORS:
-        items = getattr(app_model, attr)
-        if items:
-            port = ports[port_key] if port_key else None
-            entry: dict[str, Any] = {
-                "resources": [resource_fn(item, port) for item in items],
-            }
-            if port is not None:
-                entry["port"] = port
-            services[service_key] = entry
 
 
 def _mount_management_api(
@@ -412,14 +285,10 @@ def _mount_management_api(
     aws_fake_configs: dict[str, AwsFakeConfig] | None = None,
     iam_auth_bundle: IamAuthBundle | None = None,
     lifecycle_configs: dict[str, Any] | None = None,
+    capacity_configs: dict[str, AwsCapacityConfig] | None = None,
+    tracker_registry: TrackerRegistry | None = None,
 ) -> None:
     """Mount the management API router on the API Gateway app or create a standalone one."""
-    from fastapi import FastAPI  # pylint: disable=import-outside-toplevel
-
-    from lws.api.management import (  # pylint: disable=import-outside-toplevel
-        create_management_router,
-    )
-
     mgmt_router = create_management_router(
         orchestrator,
         providers,
@@ -428,17 +297,22 @@ def _mount_management_api(
         aws_fake_configs=aws_fake_configs,
         iam_auth_bundle=iam_auth_bundle,
         lifecycle_configs=lifecycle_configs,
+        capacity_configs=capacity_configs,
+        tracker_registry=tracker_registry,
     )
+    capacity_router = create_capacity_control_router(capacity_configs or {})
 
     # Try to find an existing API Gateway provider to mount on
     for _key, prov in providers.items():
         if isinstance(prov, ApiGatewayProvider):
             prov.app.include_router(mgmt_router)
+            prov.app.include_router(capacity_router)
             return
 
     # No API Gateway — create a standalone FastAPI app for management
     mgmt_app = FastAPI(title="LDK Management")
     mgmt_app.include_router(mgmt_router)
+    mgmt_app.include_router(capacity_router)
     providers["__management_http__"] = _HttpServiceProvider(
         "management-http", lambda: mgmt_app, port
     )

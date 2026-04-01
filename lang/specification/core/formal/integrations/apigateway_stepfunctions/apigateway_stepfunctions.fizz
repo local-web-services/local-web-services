@@ -24,10 +24,10 @@ action Init:
     exec_req = {}               # exec_req[eid] = request_id
 
 
-# step: a REST API is created
-# result: the API is ACTIVE with no Step Functions integration configured
-# guard: the API does not already exist
-# guard_violation: the API already exists
+# step: an "api gateway" "api" is created
+# result: the "api gateway" "api" will be "ACTIVE" with no Step Functions integration configured
+# guard: the "api gateway" "API" did not already exist
+# guard_violation: the "api gateway" "API" already existed
 atomic action CreateRestApi:
     oneof aid in API_IDS:
         if aid not in api_status:
@@ -35,28 +35,28 @@ atomic action CreateRestApi:
             api_sm[aid] = ""
 
 
-# step: a Step Functions Express Workflow state machine is created
-# result: the state machine is ACTIVE
-# guard: the state machine does not already exist
-# guard_violation: the state machine already exists
+# step: a "step functions" "Express Workflow state machine" is created
+# result: the "step functions" "state machine" will be "ACTIVE"
+# guard: the "step functions" "state machine" did not already exist
+# guard_violation: the "step functions" "state machine" already existed
 atomic action CreateStateMachine:
     oneof smid in SM_IDS:
         if smid not in sm_status:
             sm_status[smid] = "ACTIVE"
 
 
-# step: a Step Functions direct integration is configured on the REST API
-# result: the API will synchronously start and await an Express Workflow execution per request
-# guard: the API exists
-# guard_violation: the API does not exist
-# guard: the API is ACTIVE
-# guard_violation_lifecycle: the API is not ACTIVE
-# guard: the API has no integration configured
-# guard_violation: the API already has an integration configured
-# guard: the state machine exists
-# guard_violation: the state machine does not exist
-# guard: the state machine is ACTIVE
-# guard_violation_lifecycle: the state machine is not ACTIVE
+# step: a Step Functions direct integration is configured on the "api gateway" "api"
+# result: the "api gateway" "API" will synchronously start and await an Express Workflow execution per request
+# guard: the "api gateway" "API" existed
+# guard_violation: the "api gateway" "API" did not exist
+# guard: the "api gateway" "api" was "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
+# guard: the "api gateway" "API" had no integration configured
+# guard_violation: the "api gateway" "API" already had an "api gateway" "integration" configured
+# guard: the "step functions" "state machine" existed
+# guard_violation: the "step functions" "state machine" did not exist
+# guard: the "step functions" "state machine" was "ACTIVE"
+# guard_violation_lifecycle: the "step functions" "state machine" was not "ACTIVE"
 atomic action ConfigureIntegration:
     oneof aid in API_IDS:
         if aid in api_status:
@@ -68,19 +68,19 @@ atomic action ConfigureIntegration:
                                 api_sm[aid] = smid
 
 
-# step: the API receives an HTTP request and synchronously starts a Step Functions execution
-# result: the request and execution are both IN_PROGRESS and RUNNING respectively
-# guard: the API exists
-# guard_violation: the API does not exist
-# guard: the API is ACTIVE
-# guard_violation_lifecycle: the API is not ACTIVE
-# guard: the API has a Step Functions integration configured
-# guard_violation: the API has no Step Functions integration configured
-# guard: the integrated state machine is ACTIVE
-# guard_violation_lifecycle: the integrated state machine is not ACTIVE
+# step: the "api gateway" "API" receives a HTTP request and synchronously starts a Step Functions execution
+# result: the request and execution are both "IN_PROGRESS" and "RUNNING" respectively
+# guard: the "api gateway" "API" existed
+# guard_violation: the "api gateway" "API" did not exist
+# guard: the "api gateway" "api" was "ACTIVE"
+# guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
+# guard: the "api gateway" "api" has a Step Functions integration configured
+# guard_violation: the "api gateway" "api" has no Step Functions integration configured
+# guard: the integrated state machine was "ACTIVE"
+# guard_violation_lifecycle: the integrated state machine was not "ACTIVE"
 # guard: a request slot is available
 # guard_violation_capacity: no request slot is available
-# guard: an execution slot is available
+# guard: an "step functions" "execution" slot is available
 # guard_violation_capacity: no execution slot is available
 atomic action HandleRequest:
     oneof aid in API_IDS:
@@ -101,10 +101,10 @@ atomic action HandleRequest:
 
 
 # fake_skip: internal
-# step: the Step Functions execution completes successfully and the API returns a successful response
-# result: the execution is SUCCEEDED and the request is SUCCESS
-# guard: an execution is RUNNING
-# guard_violation_lifecycle: no execution is RUNNING
+# step: the Step Functions execution completes successfully and the "api gateway" "API" returns a successful response
+# result: the "step functions" "execution" will be "SUCCEEDED" and the request will be "SUCCESS"
+# guard: a "step functions" "execution" was "RUNNING"
+# guard_violation_lifecycle: no "step functions" "execution" was "RUNNING"
 atomic action ExecutionSucceeds:
     oneof eid in EXEC_IDS:
         if eid in exec_status:
@@ -115,10 +115,10 @@ atomic action ExecutionSucceeds:
 
 
 # fake_skip: internal
-# step: the Step Functions execution fails and the API returns an error response
-# result: the execution is FAILED and the request is FAILED
-# guard: an execution is RUNNING
-# guard_violation_lifecycle: no execution is RUNNING
+# step: the Step Functions execution fails and the "api gateway" "API" returns an error response
+# result: the "step functions" "execution" will be "FAILED" and the request will be "FAILED"
+# guard: a "step functions" "execution" was "RUNNING"
+# guard_violation_lifecycle: no "step functions" "execution" was "RUNNING"
 atomic action ExecutionFails:
     oneof eid in EXEC_IDS:
         if eid in exec_status:

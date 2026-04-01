@@ -24,10 +24,10 @@ action Init:
     event_bus = {}              # event_bus[eid] = bus_id
 
 
-# step: a Cognito user pool is created
-# result: the pool is ACTIVE with no EventBridge configuration
-# guard: the pool does not already exist
-# guard_violation: the pool already exists
+# step: a "cognito" "user pool" is created
+# result: the "cognito" "user pool" will be "ACTIVE" with no EventBridge configuration
+# guard: the "cognito" "user pool" did not already exist
+# guard_violation: the "cognito" "user pool" already existed
 atomic action CreateUserPool:
     oneof pid in POOL_IDS:
         if pid not in pool_status:
@@ -36,9 +36,9 @@ atomic action CreateUserPool:
 
 
 # step: an EventBridge event bus is created
-# result: the bus is ACTIVE
-# guard: the bus does not already exist
-# guard_violation: the bus already exists
+# result: the bus will be "ACTIVE"
+# guard: the bus did not already exist
+# guard_violation: the bus already existed
 atomic action CreateEventBus:
     oneof busid in BUS_IDS:
         if busid not in bus_status:
@@ -46,11 +46,11 @@ atomic action CreateEventBus:
 
 
 # step: the EventBridge event bus is deleted
-# result: the bus is DELETED and Cognito event delivery will fail
-# guard: the bus exists
-# guard_violation: the bus does not exist
-# guard: the bus is ACTIVE
-# guard_violation_lifecycle: the bus is already DELETED
+# result: the bus will be deleted and Cognito event delivery will fail
+# guard: the bus existed
+# guard_violation: the bus did not exist
+# guard: the bus was "ACTIVE"
+# guard_violation_lifecycle: the bus is already "DELETED"
 atomic action DeleteEventBus:
     oneof busid in BUS_IDS:
         if busid in bus_status:
@@ -58,14 +58,14 @@ atomic action DeleteEventBus:
                 bus_status[busid] = "DELETED"
 
 
-# step: EventBridge publishing is enabled on the user pool
-# result: the pool will send user events to the bus
-# guard: the pool exists and is ACTIVE
-# guard_violation_lifecycle: the pool does not exist or is not ACTIVE
-# guard: the pool has no EventBridge configuration
-# guard_violation: the pool already has an EventBridge configuration
-# guard: the bus exists and is ACTIVE
-# guard_violation: the bus does not exist or is not ACTIVE
+# step: EventBridge publishing was "ENABLED" on the "cognito" "user" pool
+# result: the "cognito" "user pool" will send user events to the bus
+# guard: the "cognito" "user pool" existed and was "ACTIVE"
+# guard_violation_lifecycle: the "cognito" "user pool" did not exist or was "ACTIVE"
+# guard: the "cognito" "user pool" has no EventBridge configuration
+# guard_violation: the "cognito" "user pool" already has an EventBridge configuration
+# guard: the bus existed and was "ACTIVE"
+# guard_violation: the bus did not exist or was "ACTIVE"
 atomic action EnableEventPublishing:
     oneof pid in POOL_IDS:
         if pid in pool_status:
@@ -78,14 +78,14 @@ atomic action EnableEventPublishing:
 
 
 # fake_skip: internal
-# step: a user action occurs in the pool and Cognito delivers the event to the EventBridge bus
-# result: the event is DELIVERED to the bus
-# guard: the pool exists and is ACTIVE
-# guard_violation_lifecycle: the pool does not exist or is not ACTIVE
-# guard: the pool has an EventBridge configuration
-# guard_violation: the pool has no EventBridge configuration
-# guard: the bus is ACTIVE
-# guard_violation_lifecycle: the bus is DELETED
+# step: a "cognito" "user" action occurs in the "cognito" "user pool" and Cognito delivers the event to the EventBridge bus
+# result: the event will be "DELIVERED" to the bus
+# guard: the "cognito" "user pool" existed and was "ACTIVE"
+# guard_violation_lifecycle: the "cognito" "user pool" did not exist or was "ACTIVE"
+# guard: the "cognito" "user pool" has an EventBridge configuration
+# guard_violation: the "cognito" "user pool" has no EventBridge configuration
+# guard: the bus was "ACTIVE"
+# guard_violation_lifecycle: the bus was "DELETED"
 # guard: an event slot is available
 # guard_violation_capacity: no event slot is available
 atomic action UserActionDelivered:
@@ -104,14 +104,14 @@ atomic action UserActionDelivered:
 
 
 # fake_skip: internal
-# step: a user action occurs but event delivery fails because the bus has been deleted
-# result: the event delivery FAILED
-# guard: the pool exists and is ACTIVE
-# guard_violation_lifecycle: the pool does not exist or is not ACTIVE
-# guard: the pool has an EventBridge configuration
-# guard_violation: the pool has no EventBridge configuration
-# guard: the bus is DELETED
-# guard_violation_lifecycle: the bus is not DELETED
+# step: a "cognito" "user" action occurs but event delivery fails because the bus has been deleted
+# result: the event delivery "FAILED"
+# guard: the "cognito" "user pool" existed and was "ACTIVE"
+# guard_violation_lifecycle: the "cognito" "user pool" did not exist or was "ACTIVE"
+# guard: the "cognito" "user pool" has an EventBridge configuration
+# guard_violation: the "cognito" "user pool" has no EventBridge configuration
+# guard: the bus was "DELETED"
+# guard_violation_lifecycle: the bus was not "DELETED"
 # guard: an event slot is available
 # guard_violation_capacity: no event slot is available
 atomic action UserActionDeliveryFails:
@@ -129,7 +129,7 @@ atomic action UserActionDeliveryFails:
                                     event_bus[eid] = busid
 
 
-# check: every DELIVERED event references a pool that exists
+# check: every DELIVERED event references a "cognito" "user pool" that exists
 always assertion DeliveredEventReferencesExistingPool:
     for eid in event_status:
         if event_status[eid] == "DELIVERED":

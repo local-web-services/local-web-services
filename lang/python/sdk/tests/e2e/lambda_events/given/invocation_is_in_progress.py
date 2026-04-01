@@ -1,0 +1,22 @@
+"""Given: a "lambda" "invocation" was "IN_PROGRESS" """
+
+from __future__ import annotations
+
+import uuid
+
+from botocore.exceptions import ClientError
+from pytest_bdd import given
+
+from ..client import LambdaEventsTestClient
+
+
+@given('a "lambda" "invocation" was "IN_PROGRESS"')
+def invocation_is_in_progress(lws_session, world):
+    try:
+        LambdaEventsTestClient(lws_session).create_function()
+    except ClientError as exc:
+        if exc.response["Error"]["Code"] != "ResourceConflictException":
+            raise
+    invocation_id = str(uuid.uuid4())
+    lws_session.inject_state("lambda", "invocation", invocation_id, "IN_PROGRESS")
+    world["invocation_id"] = invocation_id

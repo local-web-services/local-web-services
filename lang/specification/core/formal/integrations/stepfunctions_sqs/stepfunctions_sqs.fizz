@@ -25,10 +25,10 @@ action Init:
     msg_exec = {}               # msg_exec[mid] = exec_id
 
 
-# step: a Step Functions state machine is created
-# result: the state machine is ACTIVE with no SQS task configured
-# guard: the state machine does not already exist
-# guard_violation: the state machine already exists
+# step: a "step functions" "state machine" is created
+# result: the "step functions" "state machine" will be "ACTIVE" with no SQS task configured
+# guard: the "step functions" "state machine" did not already exist
+# guard_violation: the "step functions" "state machine" already existed
 atomic action CreateStateMachine:
     oneof smid in SM_IDS:
         if smid not in sm_status:
@@ -36,28 +36,28 @@ atomic action CreateStateMachine:
             sm_queue[smid] = ""
 
 
-# step: an SQS queue is created
-# result: the queue is ACTIVE
-# guard: the queue does not already exist
-# guard_violation: the queue already exists
+# step: a "sqs" "queue" is created
+# result: the "sqs" "queue" will be "ACTIVE"
+# guard: the queue did not already exist
+# guard_violation: the queue already existed
 atomic action CreateQueue:
     oneof qid in QUEUE_IDS:
         if qid not in queue_status:
             queue_status[qid] = "ACTIVE"
 
 
-# step: an SQS send-message task is configured on the state machine
+# step: a SQS send-message task is configured on the state machine
 # result: the state machine will enqueue a message when it reaches the task state
-# guard: the state machine exists
-# guard_violation: the state machine does not exist
-# guard: the state machine is ACTIVE
-# guard_violation_lifecycle: the state machine is not ACTIVE
+# guard: the "step functions" "state machine" existed
+# guard_violation: the "step functions" "state machine" did not exist
+# guard: the "step functions" "state machine" was "ACTIVE"
+# guard_violation_lifecycle: the "step functions" "state machine" was not "ACTIVE"
 # guard: the state machine has no SQS task configured
-# guard_violation: the state machine already has an SQS task configured
-# guard: the queue exists
-# guard_violation: the queue does not exist
-# guard: the queue is ACTIVE
-# guard_violation_lifecycle: the queue is not ACTIVE
+# guard_violation: the state machine already has a SQS task configured
+# guard: the "sqs" "queue" existed
+# guard_violation: the "sqs" "queue" did not exist
+# guard: the "sqs" "queue" was "ACTIVE"
+# guard_violation_lifecycle: the "sqs" "queue" was not "ACTIVE"
 atomic action ConfigureSQSTask:
     oneof smid in SM_IDS:
         if smid in sm_status:
@@ -69,15 +69,15 @@ atomic action ConfigureSQSTask:
                                 sm_queue[smid] = qid
 
 
-# step: an execution of the state machine is started
-# result: the execution is RUNNING
-# guard: the state machine exists
-# guard_violation: the state machine does not exist
-# guard: the state machine is ACTIVE
-# guard_violation_lifecycle: the state machine is not ACTIVE
-# guard: the state machine has an SQS task configured
+# step: an "step functions" "execution" of the "step functions" "state machine" is started
+# result: the "step functions" "execution" will be "RUNNING"
+# guard: the "step functions" "state machine" existed
+# guard_violation: the "step functions" "state machine" did not exist
+# guard: the "step functions" "state machine" was "ACTIVE"
+# guard_violation_lifecycle: the "step functions" "state machine" was not "ACTIVE"
+# guard: the state machine has a SQS task configured
 # guard_violation: the state machine has no SQS task configured
-# guard: an execution slot is available
+# guard: an "step functions" "execution" slot is available
 # guard_violation_capacity: no execution slot is available
 atomic action StartExecution:
     oneof smid in SM_IDS:
@@ -90,14 +90,14 @@ atomic action StartExecution:
                             exec_sm[eid] = smid
 
 
-# step: a running execution reaches the SQS task state and sends a message to the queue
-# result: the message is AVAILABLE in the queue and the execution is SUCCEEDED
-# guard: an execution is RUNNING
-# guard_violation: no execution is RUNNING
+# step: a running "step functions" "execution" reaches the SQS task state and sends a message to the queue
+# result: the message will be "AVAILABLE" in the queue and the "step functions" "execution" will be "SUCCEEDED"
+# guard: a "step functions" "execution" was "RUNNING"
+# guard_violation: no "step functions" "execution" was "RUNNING"
 # guard: the execution's state machine has a configured SQS task
 # guard_violation: the execution's state machine has no SQS task configured
-# guard: the target queue is ACTIVE
-# guard_violation_lifecycle: the target queue is not ACTIVE
+# guard: the target queue was "ACTIVE"
+# guard_violation_lifecycle: the target queue was not "ACTIVE"
 # guard: a message slot is available
 # guard_violation_capacity: no message slot is available
 atomic action SendMessageTask:

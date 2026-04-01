@@ -1,5 +1,5 @@
 @secretsmanager @generated
-Feature: Secretsmanager - A Secret Is Described
+Feature: Secretsmanager - A "Secrets Manager" "Secret" Is Described
 
   # Generated from FizzBee spec: secretsmanager.fizz
   # Safety invariants: ActiveSecretHasCurrentVersion, AtMostOneCurrentVersionPerSecret, AtMostOnePreviousVersionPerSecret, DeletedSecretWithClosedWindowNotRestored, SecretNamesAreUnique, VersionIdsAreUnique, DeletedSecretRecoveryWindowIsOpen, ActiveSecretHasVersion
@@ -8,10 +8,10 @@ Feature: Secretsmanager - A Secret Is Described
     Given the system is initialized
 
   @minimal @happy @describe_secret
-  Scenario: a secret is described
-    Given the secret exists
-    When a secret is described
-    Then the secret metadata is returned
+  Scenario: a "secrets manager" "secret" is described
+    Given the "secrets manager" "secret" existed
+    When a "secrets manager" "secret" is described
+    Then the "secrets manager" "secret" metadata will be returned
     And every "ACTIVE" secret has a current version assigned
     And at most one current version exists per secret
     And at most one previous version exists per secret
@@ -21,8 +21,8 @@ Feature: Secretsmanager - A Secret Is Described
     And every deleted secret with an open recovery window can still be restored or expired
     And every active secret has a current version assigned
 
-  @standard @negative @describe_secret
-  Scenario: a secret is described fails when the secret does not exist
-    Given the secret does not exist
-    When a secret is described
+  @guard @negative @describe_secret
+  Scenario: a "secrets manager" "secret" is described fails when the "secrets manager" "secret" did not exist
+    Given the "secrets manager" "secret" did not exist
+    When a "secrets manager" "secret" is described
     Then the operation is rejected

@@ -16,17 +16,17 @@ action Init:
     chaos_has_latency = {}
 
 
-# step: chaos is enabled for a service
-# result: chaos is enabled for the service
+# step: chaos was "ENABLED" for a service
+# result: chaos will be enabled for the service
 atomic action EnableChaos:
     oneof svc in SERVICES:
         chaos_enabled[svc] = True
 
 
-# step: chaos is disabled for a service
-# result: chaos is disabled for the service
-# guard: chaos is enabled for the service
-# guard_violation: chaos is not enabled for the service
+# step: chaos was "DISABLED" for a service
+# result: chaos will be disabled for the service
+# guard: chaos was "ENABLED" for the service
+# guard_violation: chaos was not "ENABLED" for the service
 atomic action DisableChaos:
     oneof svc in SERVICES:
         if svc in chaos_enabled:
@@ -35,7 +35,7 @@ atomic action DisableChaos:
 
 
 # step: the chaos error rate is configured for a service
-# result: the error rate configuration is updated
+# result: the error rate configuration will be updated
 atomic action SetErrorRate:
     oneof svc in SERVICES:
         oneof:
@@ -44,7 +44,7 @@ atomic action SetErrorRate:
 
 
 # step: the chaos latency is configured for a service
-# result: the latency configuration is updated
+# result: the latency configuration will be updated
 atomic action SetLatency:
     oneof svc in SERVICES:
         oneof:
@@ -53,15 +53,15 @@ atomic action SetLatency:
 
 
 # step: the chaos status for all services is retrieved
-# result: the chaos configuration for each service is returned
+# result: the chaos configuration for each service will be returned
 atomic action GetChaosStatus:
     pass
 
 
 # step: a service call is injected with a chaos error
 # result: the service call receives a chaos error response
-# guard: chaos is enabled for the service
-# guard_violation: chaos is not enabled for the service
+# guard: chaos was "ENABLED" for the service
+# guard_violation: chaos was not "ENABLED" for the service
 # guard: the error rate is set to full for the service
 # guard_violation: the error rate is not set to full for the service
 atomic action InjectError:
@@ -75,8 +75,8 @@ atomic action InjectError:
 
 # step: a service call is delayed by chaos latency injection
 # result: the service call takes at least the configured minimum latency
-# guard: chaos is enabled for the service
-# guard_violation: chaos is not enabled for the service
+# guard: chaos was "ENABLED" for the service
+# guard_violation: chaos was not "ENABLED" for the service
 # guard: latency is configured for the service
 # guard_violation: latency is not configured for the service
 atomic action InjectLatency:

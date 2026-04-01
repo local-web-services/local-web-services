@@ -24,32 +24,32 @@ action Init:
     exec_inv = {}               # exec_inv[eid] = inv_id (invocation that started this execution)
 
 
-# step: a Lambda function is deployed
-# result: the function is ACTIVE
-# guard: the function does not already exist
-# guard_violation: the function already exists
+# step: a "lambda" "function" is deployed
+# result: the "lambda" "function" will be "ACTIVE"
+# guard: the "lambda" "function" did not already exist
+# guard_violation: the "lambda" "function" already existed
 atomic action DeployFunction:
     oneof fid in FUNC_IDS:
         if fid not in func_status:
             func_status[fid] = "ACTIVE"
 
 
-# step: a Step Functions state machine is created
-# result: the state machine is ACTIVE
-# guard: the state machine does not already exist
-# guard_violation: the state machine already exists
+# step: a "step functions" "state machine" is created
+# result: the "step functions" "state machine" will be "ACTIVE"
+# guard: the "step functions" "state machine" did not already exist
+# guard_violation: the "step functions" "state machine" already existed
 atomic action CreateStateMachine:
     oneof smid in SM_IDS:
         if smid not in sm_status:
             sm_status[smid] = "ACTIVE"
 
 
-# step: a Step Functions state machine is deleted
-# result: the state machine is DELETED and Lambda StartExecution calls will fail
-# guard: the state machine exists
-# guard_violation: the state machine does not exist
-# guard: the state machine is ACTIVE
-# guard_violation_lifecycle: the state machine is already DELETED
+# step: a "step functions" "state machine" is deleted
+# result: the "step functions" "state machine" will be deleted and Lambda StartExecution calls will fail
+# guard: the "step functions" "state machine" existed
+# guard_violation: the "step functions" "state machine" did not exist
+# guard: the "step functions" "state machine" was "ACTIVE"
+# guard_violation_lifecycle: the state machine is already "DELETED"
 atomic action DeleteStateMachine:
     oneof smid in SM_IDS:
         if smid in sm_status:
@@ -57,13 +57,13 @@ atomic action DeleteStateMachine:
                 sm_status[smid] = "DELETED"
 
 
-# step: the Lambda function is invoked
-# result: the invocation is IN_PROGRESS
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
-# guard: an invocation slot is available
+# step: the "lambda" "function" is invoked
+# result: the invocation will be "IN_PROGRESS"
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
+# guard: a "lambda" "invocation" slot is available
 # guard_violation_capacity: no invocation slot is available
 atomic action InvokeFunction:
     oneof fid in FUNC_IDS:
@@ -76,13 +76,13 @@ atomic action InvokeFunction:
 
 
 # fake_skip: internal
-# step: the Lambda function starts an execution of an ACTIVE state machine and succeeds
-# result: the execution is RUNNING and the invocation is SUCCESS
-# guard: an invocation is IN_PROGRESS
-# guard_violation_lifecycle: no invocation is IN_PROGRESS
-# guard: the state machine is ACTIVE
-# guard_violation_lifecycle: the state machine does not exist or is DELETED
-# guard: an execution slot is available
+# step: the "lambda" "function" starts an execution of an ACTIVE state machine and succeeds
+# result: the "step functions" "execution" will be "RUNNING" and the invocation will be "SUCCESS"
+# guard: a "lambda" "invocation" was "IN_PROGRESS"
+# guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
+# guard: the "step functions" "state machine" was "ACTIVE"
+# guard_violation_lifecycle: the "step functions" "state machine" did not exist or was "DELETED"
+# guard: an "step functions" "execution" slot is available
 # guard_violation_capacity: no execution slot is available
 atomic action StartExecutionTask:
     oneof iid in INV_IDS:
@@ -99,12 +99,12 @@ atomic action StartExecutionTask:
                                     inv_status[iid] = "SUCCESS"
 
 
-# step: the Lambda function fails to start an execution because the state machine has been deleted
-# result: the invocation is FAILED with a StateMachineDoesNotExist error
-# guard: an invocation is IN_PROGRESS
-# guard_violation_lifecycle: no invocation is IN_PROGRESS
-# guard: the state machine is DELETED
-# guard_violation_lifecycle: the state machine is not DELETED
+# step: the "lambda" "function" fails to start an execution because the state machine has been deleted
+# result: the invocation will be "FAILED" with a StateMachineDoesNotExist error
+# guard: a "lambda" "invocation" was "IN_PROGRESS"
+# guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
+# guard: the "step functions" "state machine" was "DELETED"
+# guard_violation_lifecycle: the "step functions" "state machine" was not "DELETED"
 atomic action InvocationFailsStateMachineDeleted:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -116,10 +116,10 @@ atomic action InvocationFailsStateMachineDeleted:
 
 
 # fake_skip: internal
-# step: a running execution completes successfully
-# result: the execution is SUCCEEDED
-# guard: an execution is RUNNING
-# guard_violation_lifecycle: no execution is RUNNING
+# step: a running "step functions" "execution" completes successfully
+# result: the "step functions" "execution" will be "SUCCEEDED"
+# guard: a "step functions" "execution" was "RUNNING"
+# guard_violation_lifecycle: no "step functions" "execution" was "RUNNING"
 atomic action ExecutionCompletes:
     oneof eid in EXEC_IDS:
         if eid in exec_status:

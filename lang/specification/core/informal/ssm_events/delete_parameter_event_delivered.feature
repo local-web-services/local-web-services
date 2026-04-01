@@ -9,41 +9,41 @@ Feature: SsmEvents - A Parameter Is Deleted And Ssm Delivers A Deleted Event To 
 
   @minimal @happy @delete_parameter_event_delivered @internal
   Scenario: a parameter is deleted and "SSM" delivers a "DELETED" event to the EventBridge bus
-    Given the parameter exists
-    And the parameter "EXISTS" (not already "DELETED")
-    And the bus is "ACTIVE"
+    Given the "ssm" "parameter" existed
+    And the "ssm" "parameter" existed (not already "DELETED")
+    And the bus was "ACTIVE"
     And an event slot is available
     When a parameter is deleted and "SSM" delivers a "DELETED" event to the EventBridge bus
-    Then the parameter is "DELETED" and the "DELETED" event is "DELIVERED"
+    Then the "ssm" "parameter" will be deleted and the "DELETED" event will be "DELIVERED"
     And every "DELIVERED" event references a parameter that exists (in any state)
     And every "DELIVERED" event references a bus that exists
 
-  @standard @negative @delete_parameter_event_delivered @internal
-  Scenario: a parameter is deleted and "SSM" delivers a "DELETED" event to the EventBridge bus fails when the parameter does not exist
-    Given the parameter does not exist
+  @guard @negative @delete_parameter_event_delivered @internal
+  Scenario: a parameter is deleted and "SSM" delivers a "DELETED" event to the EventBridge bus fails when the "ssm" "parameter" did not exist
+    Given the "ssm" "parameter" did not exist
     When a parameter is deleted and "SSM" delivers a "DELETED" event to the EventBridge bus
     Then the operation is rejected
 
-  @standard @negative @delete_parameter_event_delivered @internal
+  @guard @negative @delete_parameter_event_delivered @internal
   Scenario: a parameter is deleted and "SSM" delivers a "DELETED" event to the EventBridge bus fails when the parameter is already "DELETED"
-    Given the parameter exists
+    Given the "ssm" "parameter" existed
     And the parameter is already "DELETED"
     When a parameter is deleted and "SSM" delivers a "DELETED" event to the EventBridge bus
     Then the operation is rejected
 
-  @standard @negative @delete_parameter_event_delivered @internal
-  Scenario: a parameter is deleted and "SSM" delivers a "DELETED" event to the EventBridge bus fails when the bus is "DELETED"
-    Given the parameter exists
-    And the parameter "EXISTS" (not already "DELETED")
-    And the bus is "DELETED"
+  @guard @negative @delete_parameter_event_delivered @internal
+  Scenario: a parameter is deleted and "SSM" delivers a "DELETED" event to the EventBridge bus fails when the bus was "DELETED"
+    Given the "ssm" "parameter" existed
+    And the "ssm" "parameter" existed (not already "DELETED")
+    And the bus was "DELETED"
     When a parameter is deleted and "SSM" delivers a "DELETED" event to the EventBridge bus
     Then the operation is rejected
 
-  @standard @negative @delete_parameter_event_delivered @internal
+  @guard @negative @delete_parameter_event_delivered @internal
   Scenario: a parameter is deleted and "SSM" delivers a "DELETED" event to the EventBridge bus fails when no event slot is available
-    Given the parameter exists
-    And the parameter "EXISTS" (not already "DELETED")
-    And the bus is "ACTIVE"
+    Given the "ssm" "parameter" existed
+    And the "ssm" "parameter" existed (not already "DELETED")
+    And the bus was "ACTIVE"
     And no event slot is available
     When a parameter is deleted and "SSM" delivers a "DELETED" event to the EventBridge bus
     Then the operation is rejected

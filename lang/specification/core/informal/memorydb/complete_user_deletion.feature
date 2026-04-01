@@ -1,5 +1,5 @@
 @memorydb @generated
-Feature: Memorydb - A User Deletion Completes
+Feature: Memorydb - A "Memorydb" "User" Deletion Completes
 
   # Generated from FizzBee spec: memorydb.fizz
   # Safety invariants: AllClustersHaveDurability, SnapshottingClusterHasSnapshot, ACLNotDeletedWhileInUse, UserNotDeletedWhileInACL, TagsExistForResources
@@ -8,26 +8,26 @@ Feature: Memorydb - A User Deletion Completes
     Given the system is initialized
 
   @minimal @happy @complete_user_deletion @internal
-  Scenario: a user deletion completes
-    Given the user exists
-    And the user is "DELETING"
-    When a user deletion completes
-    Then the user is "DELETED"
+  Scenario: a "memorydb" "user" deletion completes
+    Given the "memorydb" "user" existed
+    And the "memorydb" "user" was "DELETING"
+    When a "memorydb" "user" deletion completes
+    Then the "memorydb" "user" will be deleted
     And every active cluster has write durability enabled
     And every snapshotting cluster has a corresponding in-progress snapshot
-    And no "ACL" in "DELETING" state is currently associated with a cluster
-    And no user in "DELETING" state is currently a member of an "ACL"
+    And no "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"
+    And no user in "DELETING" state is currently a member of an "memorydb" "ACL"
     And every active cluster and snapshot has tags
 
-  @standard @negative @complete_user_deletion @internal
-  Scenario: a user deletion completes fails when the user does not exist
-    Given the user does not exist
-    When a user deletion completes
+  @guard @negative @complete_user_deletion @internal
+  Scenario: a "memorydb" "user" deletion completes fails when the "memorydb" "user" did not exist
+    Given the "memorydb" "user" did not exist
+    When a "memorydb" "user" deletion completes
     Then the operation is rejected
 
-  @standard @negative @complete_user_deletion @internal
-  Scenario: a user deletion completes fails when the user is not "DELETING"
-    Given the user exists
-    And the user is not "DELETING"
-    When a user deletion completes
+  @guard @negative @complete_user_deletion @internal
+  Scenario: a "memorydb" "user" deletion completes fails when the "memorydb" "user" was not "DELETING"
+    Given the "memorydb" "user" existed
+    And the "memorydb" "user" was not "DELETING"
+    When a "memorydb" "user" deletion completes
     Then the operation is rejected

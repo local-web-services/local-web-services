@@ -1,5 +1,5 @@
 @stepfunctionsssm @generated
-Feature: StepfunctionsSsm - A Parameter Is Created In Ssm Parameter Store
+Feature: StepfunctionsSsm - A "Ssm" "Parameter" Is Created
 
   # Generated from FizzBee spec: stepfunctions_ssm.fizz
   # Safety invariants: ExecutionRequiresActiveStateMachine, SuccessfulExecutionReadAParameter
@@ -8,15 +8,15 @@ Feature: StepfunctionsSsm - A Parameter Is Created In Ssm Parameter Store
     Given the system is initialized
 
   @minimal @happy @create_parameter
-  Scenario: a parameter is created in "SSM" Parameter Store
-    Given the parameter does not already exist
-    When a parameter is created in "SSM" Parameter Store
-    Then the parameter "EXISTS"
+  Scenario: a "ssm" "parameter" is created
+    Given the "ssm" "parameter" did not already exist
+    When a "ssm" "parameter" is created
+    Then the parameter will exist
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which parameter it read
 
-  @standard @negative @create_parameter
-  Scenario: a parameter is created in "SSM" Parameter Store fails when the parameter already exists
-    Given the parameter already exists
-    When a parameter is created in "SSM" Parameter Store
+  @guard @negative @create_parameter
+  Scenario: a "ssm" "parameter" is created fails when the "ssm" "parameter" already existed
+    Given the "ssm" "parameter" already existed
+    When a "ssm" "parameter" is created
     Then the operation is rejected

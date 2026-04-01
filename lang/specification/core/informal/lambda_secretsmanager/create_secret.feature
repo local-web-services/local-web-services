@@ -1,5 +1,5 @@
 @lambdasecretsmanager @generated
-Feature: LambdaSecretsmanager - A Secret Is Created In Secrets Manager
+Feature: LambdaSecretsmanager - A "Secretsmanager" "Secret" Is Created In Secrets Manager
 
   # Generated from FizzBee spec: lambda_secretsmanager.fizz
   # Safety invariants: InvocationRequiresActiveFunction, SuccessfulInvocationReadASecret
@@ -8,15 +8,15 @@ Feature: LambdaSecretsmanager - A Secret Is Created In Secrets Manager
     Given the system is initialized
 
   @minimal @happy @create_secret
-  Scenario: a secret is created in Secrets Manager
-    Given the secret does not already exist
-    When a secret is created in Secrets Manager
-    Then the secret is "ACTIVE" and can be read by Lambda
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager
+    Given the "secretsmanager" "secret" did not already exist
+    When a "secretsmanager" "secret" is created in Secrets Manager
+    Then the "secrets manager" "secret" will be "ACTIVE" and can be read by Lambda
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
-  @standard @negative @create_secret
-  Scenario: a secret is created in Secrets Manager fails when the secret already exists
-    Given the secret already exists
-    When a secret is created in Secrets Manager
+  @guard @negative @create_secret
+  Scenario: a "secretsmanager" "secret" is created in Secrets Manager fails when the "secretsmanager" "secret" already existed
+    Given the "secretsmanager" "secret" already existed
+    When a "secretsmanager" "secret" is created in Secrets Manager
     Then the operation is rejected

@@ -1,5 +1,5 @@
 @events @generated
-Feature: Events - An Eventbridge Rule Is Described
+Feature: events - An "Eventbridge" "Rule" Is Described
 
   # Generated from FizzBee spec: events.fizz
   # Safety invariants: EventBusStatusValid, RuleStatusValid, RulePatternTypeValid, RuleBusExists, DefaultBusCannotBeDeleted, DeleteRuleRequiresNoTargets, RuleOnlyEnabledOnActiveBus, DeadLetterQueueBounded
@@ -8,11 +8,11 @@ Feature: Events - An Eventbridge Rule Is Described
     Given the system is initialized
 
   @minimal @happy @describe_rule
-  Scenario: an EventBridge rule is described
-    Given the rule exists
-    And the rule is not "DELETED"
-    When an EventBridge rule is described
-    Then the rule details are returned
+  Scenario: an "eventbridge" "rule" is described
+    Given the "eventbridge" "rule" existed
+    And the "eventbridge" "rule" was not "DELETED"
+    When an "eventbridge" "rule" is described
+    Then the "eventbridge" "rule" details will be returned
     And every event bus has a valid status ("ACTIVE" or "DELETED")
     And every rule has a valid status ("ENABLED", "DISABLED", or "DELETED")
     And every rule has a valid pattern type ("EVENT_PATTERN" or "SCHEDULE")
@@ -22,15 +22,15 @@ Feature: Events - An Eventbridge Rule Is Described
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @describe_rule
-  Scenario: an EventBridge rule is described fails when the rule does not exist
-    Given the rule does not exist
-    When an EventBridge rule is described
+  @guard @negative @describe_rule
+  Scenario: an "eventbridge" "rule" is described fails when the "eventbridge" "rule" did not exist
+    Given the "eventbridge" "rule" did not exist
+    When an "eventbridge" "rule" is described
     Then the operation is rejected
 
-  @standard @negative @describe_rule
-  Scenario: an EventBridge rule is described fails when the rule is "DELETED"
-    Given the rule exists
-    And the rule is "DELETED"
-    When an EventBridge rule is described
+  @guard @negative @describe_rule
+  Scenario: an "eventbridge" "rule" is described fails when the "eventbridge" "rule" was "DELETED"
+    Given the "eventbridge" "rule" existed
+    And the "eventbridge" "rule" was "DELETED"
+    When an "eventbridge" "rule" is described
     Then the operation is rejected

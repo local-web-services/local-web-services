@@ -1,5 +1,5 @@
 @lambdasecretsmanager @generated
-Feature: LambdaSecretsmanager - A Secret Is Scheduled For Deletion
+Feature: LambdaSecretsmanager - A "Secretsmanager" "Secret" Is Scheduled For Deletion
 
   # Generated from FizzBee spec: lambda_secretsmanager.fizz
   # Safety invariants: InvocationRequiresActiveFunction, SuccessfulInvocationReadASecret
@@ -8,23 +8,23 @@ Feature: LambdaSecretsmanager - A Secret Is Scheduled For Deletion
     Given the system is initialized
 
   @minimal @happy @schedule_secret_deletion
-  Scenario: a secret is scheduled for deletion
-    Given the secret exists
-    And the secret is "ACTIVE"
-    When a secret is scheduled for deletion
-    Then the secret is "PENDING_DELETION" and will be unavailable to Lambda during the recovery window
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion
+    Given the secrets manager secret existed
+    And the "secrets manager" "secret" was "ACTIVE"
+    When a "secretsmanager" "secret" is scheduled for deletion
+    Then the "secrets manager" "secret" will be "PENDING_DELETION" and will be unavailable to Lambda during the recovery window
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which secret it read
 
-  @standard @negative @schedule_secret_deletion
-  Scenario: a secret is scheduled for deletion fails when the secret does not exist
-    Given the secret does not exist
-    When a secret is scheduled for deletion
+  @guard @negative @schedule_secret_deletion
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion fails when the secrets manager secret did not exist
+    Given the secrets manager secret did not exist
+    When a "secretsmanager" "secret" is scheduled for deletion
     Then the operation is rejected
 
-  @standard @negative @schedule_secret_deletion @lifecycle
-  Scenario: a secret is scheduled for deletion fails when the secret is not "ACTIVE"
-    Given the secret exists
-    And the secret is not "ACTIVE"
-    When a secret is scheduled for deletion
+  @guard @negative @schedule_secret_deletion @lifecycle
+  Scenario: a "secretsmanager" "secret" is scheduled for deletion fails when the "secrets manager" "secret" was not "ACTIVE"
+    Given the secrets manager secret existed
+    And the "secrets manager" "secret" was not "ACTIVE"
+    When a "secretsmanager" "secret" is scheduled for deletion
     Then the operation is rejected

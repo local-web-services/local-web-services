@@ -6,8 +6,11 @@ import socket
 from pathlib import Path
 from typing import Any
 
+from lws.providers._shared.async_state_store import AsyncStateStore
+
 from lws_testing._transport._provider_wrappers import (
     _ApiGatewayStateProvider,
+    _ClusterDBStateProvider,
     _ElasticsearchStateProvider,
     _GlacierStateProvider,
     _LambdaRegistryProvider,
@@ -18,85 +21,26 @@ from lws_testing._transport._provider_wrappers import (
     _SsmStateProvider,
     _StubOrchestrator,
 )
+from lws_testing._transport._spec_converters import convert_spec
 
 
-def _free_port() -> int:
-    """Return a free ephemeral TCP port on localhost."""
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind(("127.0.0.1", 0))
-        return s.getsockname()[1]
+def _bound_socket() -> socket.socket:
+    """Bind a socket to an OS-assigned port and return it (kept open).
+
+    Keeping the socket open prevents other processes from claiming the same
+    port between the ``bind`` call and the moment uvicorn starts listening —
+    the TOCTOU race that causes ``[Errno 48] address already in use`` when
+    many test processes start in parallel.
+    """
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind(("127.0.0.1", 0))
+    return sock
 
 
-def _make_table_config(spec: dict[str, Any]) -> Any:
-    """Convert a table spec dict to a TableConfig."""
-    from lws.interfaces.key_value_store import KeyAttribute, KeySchema, TableConfig
-
-    pk = KeyAttribute(
-        name=spec["partition_key"],
-        type=spec.get("partition_key_type", "S"),
-    )
-    sk = None
-    if "sort_key" in spec:
-        sk = KeyAttribute(
-            name=spec["sort_key"],
-            type=spec.get("sort_key_type", "S"),
-        )
-    return TableConfig(
-        table_name=spec["name"],
-        key_schema=KeySchema(partition_key=pk, sort_key=sk),
-    )
-
-
-def _make_queue_config(spec: str | dict[str, Any]) -> Any:
-    """Convert a queue spec (str or dict) to a QueueConfig."""
-    from lws.providers.sqs.provider import QueueConfig
-
-    if isinstance(spec, str):
-        return QueueConfig(queue_name=spec)
-    return QueueConfig(
-        queue_name=spec["name"],
-        visibility_timeout=spec.get("visibility_timeout", 30),
-        is_fifo=spec.get("is_fifo", False),
-        content_based_dedup=spec.get("content_based_dedup", False),
-    )
-
-
-def _make_topic_config(spec: str | dict[str, Any]) -> Any:
-    """Convert a topic spec (str or dict) to a TopicConfig."""
-    from lws.providers.sns.provider import TopicConfig
-
-    if isinstance(spec, str):
-        name = spec
-        arn = f"arn:aws:sns:us-east-1:000000000000:{name}"
-    else:
-        name = spec["name"]
-        arn = spec.get("arn", f"arn:aws:sns:us-east-1:000000000000:{name}")
-    return TopicConfig(topic_name=name, topic_arn=arn)
-
-
-def _make_state_machine_config(spec: dict[str, Any]) -> Any:
-    """Convert a state machine spec dict to a StateMachineConfig."""
-    from lws.providers.stepfunctions.provider import StateMachineConfig
-
-    return StateMachineConfig(
-        name=spec["name"],
-        definition=spec.get("definition", "{}"),
-        role_arn=spec.get("role_arn", ""),
-    )
-
-
-def _make_initial_parameter(spec: str | dict[str, Any]) -> dict[str, Any]:
-    """Convert a parameter spec to the dict format expected by create_ssm_app."""
-    if isinstance(spec, str):
-        return {"name": spec, "value": "", "type": "String"}
-    return spec
-
-
-def _make_initial_secret(spec: str | dict[str, Any]) -> dict[str, Any]:
-    """Convert a secret spec to the dict format expected by create_secretsmanager_app."""
-    if isinstance(spec, str):
-        return {"name": spec, "secret_string": ""}
-    return spec
+def _unbox(ref: list[Any]) -> Any | None:
+    """Return ref[0] if non-empty, else None."""
+    return ref[0] if ref else None
 
 
 def _create_management_app(
@@ -105,11 +49,15 @@ def _create_management_app(
     fake_configs: dict[str, Any],
     lifecycle_configs: dict[str, Any],
     capacity_configs: dict[str, Any] | None = None,
+    fake_provider: Any | None = None,
+    state_store: Any | None = None,
+    tracker_registry: dict | None = None,
 ) -> Any:
     """Build a FastAPI management app with reset, fake, chaos, lifecycle, and capacity endpoints."""
     from fastapi import FastAPI
     from fastapi.responses import JSONResponse
     from lws.api.management import _handle_reset, create_management_router
+    from lws.providers._shared.capacity_control import create_capacity_control_router
 
     orchestrator = _StubOrchestrator(providers)
     app = FastAPI(title="LWS Testing Management")
@@ -121,13 +69,17 @@ def _create_management_app(
         aws_fake_configs=fake_configs,
         lifecycle_configs=lifecycle_configs,
         capacity_configs=capacity_configs,
+        fake_provider=fake_provider,
+        state_store=state_store,
+        tracker_registry=tracker_registry,
     )
     app.include_router(router)
+    app.include_router(create_capacity_control_router(capacity_configs or {}))
 
     # Alias endpoint used by LwsSession.reset()
     @app.post("/_ldk/state/clear")
     async def state_clear() -> JSONResponse:
-        return await _handle_reset(providers)
+        return await _handle_reset(providers, state_store=state_store)
 
     return app
 
@@ -139,19 +91,6 @@ def _setup_logging() -> Any:
     log_handler = WebSocketLogHandler()
     set_ws_handler(log_handler)
     return log_handler
-
-
-def _convert_spec(spec: dict[str, Any]) -> dict[str, list[Any]]:
-    """Convert raw spec dict to typed provider config lists."""
-    return {
-        "tables": [_make_table_config(t) for t in spec.get("tables", [])],
-        "queues": [_make_queue_config(q) for q in spec.get("queues", [])],
-        "buckets": [b if isinstance(b, str) else b["name"] for b in spec.get("buckets", [])],
-        "topics": [_make_topic_config(t) for t in spec.get("topics", [])],
-        "state_machines": [_make_state_machine_config(sm) for sm in spec.get("state_machines", [])],
-        "parameters": [_make_initial_parameter(p) for p in spec.get("parameters", [])],
-        "secrets": [_make_initial_secret(s) for s in spec.get("secrets", [])],
-    }
 
 
 def _create_providers(cfg: dict[str, list[Any]], data_dir: Path) -> dict[str, Any]:
@@ -228,6 +167,7 @@ def _build_service_apps(
     lifecycle_configs: dict[str, Any],
     cfg: dict[str, list[Any]],
     capacity_configs: dict[str, Any] | None = None,
+    tracker_registry: dict | None = None,
 ) -> tuple[list[tuple[str, Any]], dict[str, Any]]:
     """Build FastAPI apps for all services.
 
@@ -254,6 +194,7 @@ def _build_service_apps(
         lifecycle_configs,
         capacity_configs=_cap,
         dynamodb_tracker_ref=(_dynamodb_tracker_ref := []),
+        tracker_registry=tracker_registry,
     )
 
     ssm_app, ssm_state = create_ssm_app(
@@ -314,9 +255,10 @@ def _build_service_apps(
                 chaos=chaos_configs["sns"],
                 aws_fake=fake_configs["sns"],
                 lifecycle=lifecycle_configs["sns"],
+                sns_capacity=_cap.get("sns"),
                 sqs_capacity=_cap.get("sqs"),
                 sqs_provider=providers["sqs"],
-                sqs_tracker=_sqs_tracker_ref[0] if _sqs_tracker_ref else None,
+                sqs_tracker=_unbox(_sqs_tracker_ref),
                 tracker_ref=(_sns_tracker_ref := []),
             ),
         ),
@@ -329,6 +271,8 @@ def _build_service_apps(
                 lifecycle=lifecycle_configs["stepfunctions"],
                 tracker_ref=(_sf_tracker_ref := []),
                 capacity=_cap.get("stepfunctions"),
+                sqs_provider=providers["sqs"],
+                sqs_tracker=_unbox(_sqs_tracker_ref),
             ),
         ),
         ("ssm", ssm_app),
@@ -340,12 +284,16 @@ def _build_service_apps(
                 chaos=chaos_configs["events"],
                 aws_fake=fake_configs["events"],
                 lifecycle=lifecycle_configs["events"],
-                sf_tracker=_sf_tracker_ref[0] if _sf_tracker_ref else None,
+                sf_tracker=_unbox(_sf_tracker_ref),
                 sqs_capacity=_cap.get("sqs"),
                 sqs_provider=providers["sqs"],
-                sqs_tracker=_sqs_tracker_ref[0] if _sqs_tracker_ref else None,
+                sqs_tracker=_unbox(_sqs_tracker_ref),
                 sns_provider=providers["sns"],
-                sns_tracker=_sns_tracker_ref[0] if _sns_tracker_ref else None,
+                sns_tracker=_unbox(_sns_tracker_ref),
+                lambda_registry=extended_extra_providers["lambda_registry"],
+                lambda_tracker=extended_extra_providers.get("lambda_tracker"),
+                dynamodb_provider=providers["dynamodb"],
+                dynamodb_tracker=_unbox(_dynamodb_tracker_ref),
             ),
         ),
         (
@@ -354,8 +302,21 @@ def _build_service_apps(
                 _apigateway_app := create_apigateway_management_app(
                     lifecycle=lifecycle_configs["apigateway"],
                     service_providers={
-                        k: providers[k] for k in ("dynamodb", "sqs", "s3", "sns", "stepfunctions")
+                        **{
+                            k: providers[k]
+                            for k in ("dynamodb", "sqs", "s3", "sns", "stepfunctions")
+                        },
+                        "dynamodb_tracker": _unbox(_dynamodb_tracker_ref),
+                        "dynamodb_capacity": _cap.get("dynamodb"),
+                        "sqs_tracker": _unbox(_sqs_tracker_ref),
+                        "sqs_capacity": _cap.get("sqs"),
+                        "s3_tracker": _unbox(_s3_tracker_ref),
+                        "sns_tracker": _unbox(_sns_tracker_ref),
+                        "sns_capacity": _cap.get("sns"),
+                        "stepfunctions_tracker": _unbox(_sf_tracker_ref),
+                        "stepfunctions_capacity": _cap.get("stepfunctions"),
                     },
+                    capacity=_cap.get("apigateway"),
                 )
             )[0],
         ),
@@ -378,6 +339,10 @@ def _build_service_apps(
         "s3tables": _S3TablesStateProvider(extended_extra_providers["s3tables_state"]),
         "es": _ElasticsearchStateProvider(extended_extra_providers["elasticsearch_state"]),
         "opensearch-state": _OpensearchStateProvider(extended_extra_providers["opensearch_state"]),
+        "neptune-state": _ClusterDBStateProvider(
+            extended_extra_providers["neptune_state"], "neptune"
+        ),
+        "docdb-state": _ClusterDBStateProvider(extended_extra_providers["docdb_state"], "docdb"),
         "_s3_tracker_ref": _s3_tracker_ref,
         "_sns_tracker_ref": _sns_tracker_ref,
     }
@@ -387,18 +352,18 @@ def _build_service_apps(
 
 async def _start_all_servers(
     service_apps: list[tuple[str, Any]],
-    ports: dict[str, int],
+    sockets: dict[str, socket.socket],
     mgmt_app: Any,
-    mgmt_port: int,
+    mgmt_socket: socket.socket,
 ) -> list[Any]:
     """Start uvicorn servers for every service app plus the management app."""
     from lws.providers.fakeserver.provider import start_uvicorn_server
 
     servers: list[Any] = []
     for svc, app in service_apps:
-        server, task = await start_uvicorn_server(app, ports[svc], host="127.0.0.1")
+        server, task = await start_uvicorn_server(app, sockets[svc], host="127.0.0.1")
         servers.append((server, task))
-    mgmt_server, mgmt_task = await start_uvicorn_server(mgmt_app, mgmt_port, host="127.0.0.1")
+    mgmt_server, mgmt_task = await start_uvicorn_server(mgmt_app, mgmt_socket, host="127.0.0.1")
     servers.append((mgmt_server, mgmt_task))
     return servers
 
@@ -441,19 +406,25 @@ async def start_services(
     """
     from lws.providers._shared.aws_capacity import AwsCapacityConfig
     from lws.providers._shared.aws_chaos import AwsChaosConfig
-    from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig
+    from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, TrackerRegistry
     from lws.providers._shared.aws_operation_fake import AwsFakeConfig
+    from lws.providers.fakeserver.provider import FakeServerProvider
 
     log_handler = _setup_logging()
-    cfg = _convert_spec(spec)
+    cfg = convert_spec(spec)
     providers = _create_providers(cfg, data_dir)
+    fake_server_provider = FakeServerProvider(project_dir=data_dir, base_port=14000)
 
     chaos_configs: dict[str, Any] = {s: AwsChaosConfig() for s in _SERVICE_NAMES}
     fake_configs: dict[str, Any] = {s: AwsFakeConfig(service=s) for s in _SERVICE_NAMES}
     lifecycle_configs: dict[str, Any] = {s: ResourceLifecycleConfig() for s in _SERVICE_NAMES}
     capacity_configs: dict[str, Any] = {s: AwsCapacityConfig() for s in _SERVICE_NAMES}
-    ports: dict[str, int] = {s: _free_port() for s in _SERVICE_NAMES}
-    mgmt_port = _free_port()
+    capacity_configs["lambda-async"] = AwsCapacityConfig()
+    tracker_registry: TrackerRegistry = {}
+    _sockets: dict[str, socket.socket] = {s: _bound_socket() for s in _SERVICE_NAMES}
+    _mgmt_socket = _bound_socket()
+    ports: dict[str, int] = {s: sock.getsockname()[1] for s, sock in _sockets.items()}
+    mgmt_port = _mgmt_socket.getsockname()[1]
 
     service_apps, extra_providers = _build_service_apps(
         providers,
@@ -463,6 +434,7 @@ async def start_services(
         lifecycle_configs,
         cfg,
         capacity_configs,
+        tracker_registry=tracker_registry,
     )
     # Merge ssm/secretsmanager state wrappers so the management reset endpoint can reach them
     all_providers = {**providers, **extra_providers}
@@ -480,19 +452,33 @@ async def start_services(
         s3_capacity=capacity_configs.get("s3"),
     )
 
+    state_store = AsyncStateStore()
     for provider in providers.values():
         await provider.start()
+    await fake_server_provider.start()
+    all_providers["__fake_server__"] = fake_server_provider
     mgmt_app = _create_management_app(
-        all_providers, chaos_configs, fake_configs, lifecycle_configs, capacity_configs
+        all_providers,
+        chaos_configs,
+        fake_configs,
+        lifecycle_configs,
+        capacity_configs,
+        fake_provider=fake_server_provider,
+        state_store=state_store,
+        tracker_registry=tracker_registry,
     )
-    servers = await _start_all_servers(service_apps, ports, mgmt_app, mgmt_port)
+    servers = await _start_all_servers(service_apps, _sockets, mgmt_app, _mgmt_socket)
 
-    return log_handler, ports, mgmt_port, servers
+    return log_handler, ports, mgmt_port, servers, providers
 
 
-async def stop_services(servers: list[Any]) -> None:
+async def stop_services(servers: list[Any], providers: dict[str, Any] | None = None) -> None:
     """Gracefully stop all servers started by :func:`start_services`."""
     from lws.providers.fakeserver.provider import stop_uvicorn_server
 
     for server, task in reversed(servers):
         await stop_uvicorn_server(server, task)
+
+    for provider in (providers or {}).values():
+        if hasattr(provider, "stop"):
+            await provider.stop()

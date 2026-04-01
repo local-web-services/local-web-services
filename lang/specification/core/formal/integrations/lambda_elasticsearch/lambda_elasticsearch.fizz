@@ -24,32 +24,32 @@ action Init:
     doc_inv = {}                # doc_inv[docid] = inv_id
 
 
-# step: a Lambda function is deployed
-# result: the function is ACTIVE
-# guard: the function does not already exist
-# guard_violation: the function already exists
+# step: a "lambda" "function" is deployed
+# result: the "lambda" "function" will be "ACTIVE"
+# guard: the "lambda" "function" did not already exist
+# guard_violation: the "lambda" "function" already existed
 atomic action DeployFunction:
     oneof fid in FUNC_IDS:
         if fid not in func_status:
             func_status[fid] = "ACTIVE"
 
 
-# step: an Elasticsearch domain is created and becomes AVAILABLE
-# result: the domain is AVAILABLE
-# guard: the domain does not already exist
-# guard_violation: the domain already exists
+# step: an "elasticsearch" "domain" is created and becomes AVAILABLE
+# result: the "elasticsearch" "domain" will be "AVAILABLE"
+# guard: the "elasticsearch" "domain" did not already exist
+# guard_violation: the "elasticsearch" "domain" already existed
 atomic action CreateDomain:
     oneof did in DOMAIN_IDS:
         if did not in domain_status:
             domain_status[did] = "AVAILABLE"
 
 
-# step: a domain configuration update begins
-# result: the domain is PROCESSING and write operations may fail
-# guard: the domain exists
-# guard_violation: the domain does not exist
-# guard: the domain is AVAILABLE
-# guard_violation_lifecycle: the domain is not AVAILABLE
+# step: a "elasticsearch" "domain" configuration update begins
+# result: the "elasticsearch" "domain" will be "PROCESSING" and write operations may fail
+# guard: the "elasticsearch" "domain" existed
+# guard_violation: the "elasticsearch" "domain" did not exist
+# guard: the "elasticsearch" "domain" was "AVAILABLE"
+# guard_violation_lifecycle: the "elasticsearch" "domain" was not "AVAILABLE"
 atomic action DomainProcessingBegins:
     oneof did in DOMAIN_IDS:
         if did in domain_status:
@@ -58,10 +58,10 @@ atomic action DomainProcessingBegins:
 
 
 # fake_skip: internal
-# step: the domain configuration update completes
-# result: the domain is AVAILABLE again
-# guard: the domain is PROCESSING
-# guard_violation_lifecycle: the domain is not PROCESSING
+# step: the "elasticsearch" "domain" configuration update completes
+# result: the "elasticsearch" "domain" will be "AVAILABLE" again
+# guard: the "elasticsearch" "domain" was PROCESSING
+# guard_violation_lifecycle: the "elasticsearch" "domain" was not PROCESSING
 atomic action DomainProcessingComplete:
     oneof did in DOMAIN_IDS:
         if did in domain_status:
@@ -69,13 +69,13 @@ atomic action DomainProcessingComplete:
                 domain_status[did] = "AVAILABLE"
 
 
-# step: the Lambda function is invoked
-# result: the invocation is IN_PROGRESS
-# guard: the function exists
-# guard_violation: the function does not exist
-# guard: the function is ACTIVE
-# guard_violation_lifecycle: the function is not ACTIVE
-# guard: an invocation slot is available
+# step: the "lambda" "function" is invoked
+# result: the invocation will be "IN_PROGRESS"
+# guard: the "lambda" "function" existed
+# guard_violation: the "lambda" "function" did not exist
+# guard: the "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
+# guard: a "lambda" "invocation" slot is available
 # guard_violation_capacity: no invocation slot is available
 atomic action InvokeFunction:
     oneof fid in FUNC_IDS:
@@ -88,13 +88,13 @@ atomic action InvokeFunction:
 
 
 # fake_skip: internal
-# step: the Lambda function indexes a document into the AVAILABLE domain and succeeds
-# result: the document EXISTS and the invocation is SUCCESS
-# guard: an invocation is IN_PROGRESS
-# guard_violation_lifecycle: no invocation is IN_PROGRESS
-# guard: the domain is AVAILABLE
-# guard_violation_lifecycle: the domain is not AVAILABLE
-# guard: a document slot is available
+# step: the "lambda" "function" indexes a "elasticsearch" "document" into the AVAILABLE domain and succeeds
+# result: the "elasticsearch" "document" will exist and the invocation will be "SUCCESS"
+# guard: a "lambda" "invocation" was "IN_PROGRESS"
+# guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
+# guard: the "elasticsearch" "domain" was "AVAILABLE"
+# guard_violation_lifecycle: the "elasticsearch" "domain" was not "AVAILABLE"
+# guard: a "elasticsearch" "document" slot is available
 # guard_violation_capacity: no document slot is available
 atomic action IndexDocumentTask:
     oneof iid in INV_IDS:
@@ -111,12 +111,12 @@ atomic action IndexDocumentTask:
                                     inv_status[iid] = "SUCCESS"
 
 
-# step: the Lambda function fails to write because the domain is processing a config update
-# result: the invocation is FAILED with a connection error
-# guard: an invocation is IN_PROGRESS
-# guard_violation_lifecycle: no invocation is IN_PROGRESS
-# guard: the domain is PROCESSING
-# guard_violation_lifecycle: the domain is not PROCESSING
+# step: the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
+# result: the invocation will be "FAILED" with a connection error
+# guard: a "lambda" "invocation" was "IN_PROGRESS"
+# guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
+# guard: the "elasticsearch" "domain" was PROCESSING
+# guard_violation_lifecycle: the "elasticsearch" "domain" was not PROCESSING
 atomic action InvocationFailsDomainProcessing:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -138,7 +138,7 @@ always assertion InvocationRequiresActiveFunction:
     return True
 
 
-# check: every existing document references a domain that exists
+# check: every existing document references a "elasticsearch" "domain" that exists
 always assertion DocumentRequiresExistingDomain:
     for docid in doc_status:
         if doc_status[docid] == "EXISTS":

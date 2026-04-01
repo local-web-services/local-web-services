@@ -10,6 +10,8 @@ from typing import Any
 
 from lws.interfaces.provider import Provider
 from lws.logging.logger import get_logger
+from lws.providers.cognito._cognito_group_ops import CognitoGroupOpsMixin
+from lws.providers.cognito._cognito_triggers_mixin import _CognitoTriggersMixin
 from lws.providers.cognito.tokens import TokenIssuer
 from lws.providers.cognito.user_store import (
     CognitoError,
@@ -25,7 +27,7 @@ _logger = get_logger("ldk.cognito")
 TriggerFunc = Callable[[dict], Coroutine[Any, Any, dict]]
 
 
-class CognitoProvider(Provider):
+class CognitoProvider(Provider, CognitoGroupOpsMixin, _CognitoTriggersMixin):
     """Local Cognito User Pool provider.
 
     Manages user sign-up, sign-in (with JWT tokens), confirmation,
@@ -55,8 +57,11 @@ class CognitoProvider(Provider):
             client_id=config.client_id or "local-client-id",
         )
         self._triggers = trigger_functions or {}
-        # In-memory store for user pool clients (client_id -> client_info)
         self._clients: dict[str, dict[str, Any]] = {}
+        # In-memory store for groups (group_name -> group_info)
+        self._groups: dict[str, dict[str, Any]] = {}
+        # Mapping of username -> set of group names
+        self._user_groups: dict[str, set[str]] = {}
 
     # -- Provider lifecycle ---------------------------------------------------
 
@@ -77,9 +82,11 @@ class CognitoProvider(Provider):
         return await self._store.is_healthy()
 
     async def reset(self) -> None:
-        """Clear all user pool state (pool name, clients, and users) for test isolation."""
+        """Clear all user pool state (pool name, clients, users, and groups) for test isolation."""
         self._config.user_pool_name = ""
         self._clients.clear()
+        self._groups.clear()
+        self._user_groups.clear()
         await self._store.clear()
 
     # -- Public API -----------------------------------------------------------
@@ -106,6 +113,7 @@ class CognitoProvider(Provider):
         attributes: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         """Register a new user. Returns sign-up result dict."""
+        await self._invoke_pre_signup(username, attributes or {})
         sub = await self._store.sign_up(username, password, attributes)
         result: dict[str, Any] = {
             "UserConfirmed": self._config.auto_confirm,
@@ -129,24 +137,14 @@ class CognitoProvider(Provider):
         username: str,
         password: str,
     ) -> dict[str, Any]:
-        """Authenticate a user and return tokens.
-
-        Supports USER_PASSWORD_AUTH flow.
-        Raises CognitoError on failure.
-        """
+        """Authenticate a user and return tokens."""
         if auth_flow != "USER_PASSWORD_AUTH":
             raise CognitoError(
                 "InvalidParameterException",
                 f"Unsupported auth flow: {auth_flow}",
             )
-
-        # Pre-authentication trigger
         await self._invoke_pre_authentication(username)
-
-        # Authenticate
         user_info = await self._store.authenticate(username, password)
-
-        # Generate tokens
         return await self._generate_auth_result(user_info)
 
     async def refresh_tokens(self, refresh_token: str) -> dict[str, Any]:
@@ -242,6 +240,94 @@ class CognitoProvider(Provider):
             }
         }
 
+    async def admin_confirm_sign_up(
+        self,
+        user_pool_id: str,
+        username: str,
+    ) -> None:
+        """Confirm a user's registration as an admin."""
+        self._validate_user_pool_id(user_pool_id)
+        await self._store.admin_confirm_user(username)
+
+    async def admin_set_user_password(
+        self,
+        user_pool_id: str,
+        username: str,
+        password: str,
+        permanent: bool = True,
+    ) -> None:
+        """Set a user's password as an admin."""
+        self._validate_user_pool_id(user_pool_id)
+        user_info = await self._store.admin_get_user(username)
+        if not user_info.get("reset_required"):
+            raise NotAuthorizedException("User is not in RESET_REQUIRED state.")
+        await self._store.admin_set_user_password(username, password, permanent)
+
+    async def admin_reset_user_password(
+        self,
+        user_pool_id: str,
+        username: str,
+    ) -> None:
+        """Set user to RESET_REQUIRED state so an admin can assign a new password."""
+        self._validate_user_pool_id(user_pool_id)
+        await self._store.admin_reset_user_password(username)
+
+    async def admin_update_user_attributes(
+        self,
+        user_pool_id: str,
+        username: str,
+        user_attributes: dict[str, str],
+    ) -> None:
+        """Update user attributes as an admin."""
+        self._validate_user_pool_id(user_pool_id)
+        user_info = await self._store.admin_get_user(username)
+        if not user_info.get("confirmed"):
+            raise NotAuthorizedException("User is not in confirmed state.")
+        await self._store.admin_update_user_attributes(username, user_attributes)
+
+    async def admin_initiate_auth(
+        self,
+        user_pool_id: str,
+        _auth_flow: str,
+        username: str,
+        password: str,
+    ) -> dict[str, Any]:
+        """Admin-initiated authentication. Supports ADMIN_NO_SRP_AUTH flow."""
+        self._validate_user_pool_id(user_pool_id)
+        user_info = await self._store.authenticate(username, password)
+        return await self._generate_auth_result(user_info)
+
+    async def respond_to_auth_challenge(
+        self,
+        _client_id: str,
+        challenge_name: str,
+        _session: str,
+        challenge_responses: dict[str, str],
+    ) -> dict[str, Any]:
+        """Respond to an authentication challenge."""
+        username = challenge_responses.get("USERNAME", "")
+        if challenge_name == "NEW_PASSWORD_REQUIRED":
+            new_password = challenge_responses.get("NEW_PASSWORD", "")
+            await self._store.admin_set_user_password(username, new_password, permanent=True)
+            user = await self._store.get_user(username)
+            if user is None:
+                raise NotAuthorizedException("User not found.")
+            return await self._generate_auth_result(user)
+        raise CognitoError(
+            "NotAuthorizedException",
+            f"Unsupported challenge: {challenge_name}",
+        )
+
+    async def admin_disable_user(self, user_pool_id: str, username: str) -> None:
+        """Disable a user account as an admin."""
+        self._validate_user_pool_id(user_pool_id)
+        await self._store.admin_disable_user(username)
+
+    async def admin_enable_user(self, user_pool_id: str, username: str) -> None:
+        """Enable a user account as an admin."""
+        self._validate_user_pool_id(user_pool_id)
+        await self._store.admin_enable_user(username)
+
     async def admin_delete_user(
         self,
         user_pool_id: str,
@@ -261,19 +347,36 @@ class CognitoProvider(Provider):
         user = await self._store.admin_get_user(username)
         attrs_list = [{"Name": k, "Value": v} for k, v in user["attributes"].items()]
         attrs_list.append({"Name": "sub", "Value": user["sub"]})
+        if user.get("reset_required"):
+            user_status = "RESET_REQUIRED"
+        elif user["confirmed"]:
+            user_status = "CONFIRMED"
+        else:
+            user_status = "UNCONFIRMED"
         return {
             "Username": user["username"],
             "UserAttributes": attrs_list,
-            "UserStatus": "CONFIRMED" if user["confirmed"] else "UNCONFIRMED",
-            "Enabled": True,
+            "UserStatus": user_status,
+            "Enabled": user.get("enabled", True),
         }
 
     async def update_user_pool(
         self,
         user_pool_id: str,
+        lambda_config: dict[str, str] | None = None,
     ) -> dict[str, Any]:
-        """Update a user pool. Currently a no-op that validates the pool exists."""
+        """Update a user pool, optionally wiring Lambda trigger function names."""
         self._validate_user_pool_id(user_pool_id)
+        if lambda_config:
+            pre_signup = lambda_config.get("PreSignUp")
+            if pre_signup is not None:
+                self._config.pre_signup_trigger = pre_signup or None
+            pre_auth = lambda_config.get("PreAuthentication")
+            if pre_auth is not None:
+                self._config.pre_authentication_trigger = pre_auth or None
+            post_confirm = lambda_config.get("PostConfirmation")
+            if post_confirm is not None:
+                self._config.post_confirmation_trigger = post_confirm or None
         return {}
 
     async def list_users(
@@ -306,7 +409,6 @@ class CognitoProvider(Provider):
     ) -> dict[str, Any]:
         """Initiate a password reset. Returns CodeDeliveryDetails."""
         code = await self._store.create_password_reset_code(username)
-        # In a local environment, we log the code so the developer can use it.
         _logger.info("Password reset code for %s: %s", username, code)
         return {
             "CodeDeliveryDetails": {
@@ -349,8 +451,6 @@ class CognitoProvider(Provider):
             raise NotAuthorizedException("Invalid access token.")
         await self._store.revoke_refresh_tokens(username)
 
-    # -- Validation helpers ---------------------------------------------------
-
     def _validate_user_pool_id(self, user_pool_id: str) -> None:
         """Validate that the user pool ID matches the configured pool."""
         if user_pool_id != self._config.user_pool_id:
@@ -359,53 +459,7 @@ class CognitoProvider(Provider):
                 f"User pool {user_pool_id} does not exist.",
             )
 
-    # -- Lambda Triggers ------------------------------------------------------
-
-    async def _invoke_pre_authentication(self, username: str) -> None:
-        """Invoke the pre-authentication Lambda trigger if configured."""
-        trigger_name = self._config.pre_authentication_trigger
-        if not trigger_name or trigger_name not in self._triggers:
-            return
-
-        event = _build_pre_auth_event(
-            username=username,
-            user_pool_id=self._config.user_pool_id,
-            client_id=self._config.client_id or "local-client-id",
-        )
-
-        trigger_fn = self._triggers[trigger_name]
-        result = await trigger_fn(event)
-
-        response = result.get("response", {})
-        if not response:
-            return
-        # If the trigger explicitly denies, raise NotAuthorizedException
-        if response.get("autoConfirmUser") is False:
-            raise NotAuthorizedException("Pre-authentication denied by trigger.")
-
-    async def _invoke_post_confirmation(
-        self,
-        username: str,
-        sub: str,
-        attributes: dict[str, str],
-    ) -> None:
-        """Invoke the post-confirmation Lambda trigger if configured."""
-        trigger_name = self._config.post_confirmation_trigger
-        if not trigger_name or trigger_name not in self._triggers:
-            return
-
-        event = _build_post_confirmation_event(
-            username=username,
-            sub=sub,
-            attributes=attributes,
-            user_pool_id=self._config.user_pool_id,
-            client_id=self._config.client_id or "local-client-id",
-        )
-
-        trigger_fn = self._triggers[trigger_name]
-        await trigger_fn(event)
-
-    # -- Private helpers -------------------------------------------------------
+    # Lambda trigger invocation methods are inherited from _CognitoTriggersMixin.
 
     async def _generate_auth_result(self, user_info: dict) -> dict[str, Any]:
         """Generate authentication result with tokens."""
@@ -428,58 +482,3 @@ class CognitoProvider(Provider):
                 "TokenType": "Bearer",
             }
         }
-
-
-# ---------------------------------------------------------------------------
-# Trigger event builders
-# ---------------------------------------------------------------------------
-
-
-def _build_pre_auth_event(
-    username: str,
-    user_pool_id: str,
-    client_id: str,
-) -> dict[str, Any]:
-    """Build a Cognito pre-authentication trigger event."""
-    return {
-        "version": "1",
-        "triggerSource": "PreAuthentication_Authentication",
-        "region": "us-east-1",
-        "userPoolId": user_pool_id,
-        "callerContext": {
-            "awsSdkVersion": "ldk-local",
-            "clientId": client_id,
-        },
-        "userName": username,
-        "request": {
-            "userAttributes": {},
-        },
-        "response": {},
-    }
-
-
-def _build_post_confirmation_event(
-    username: str,
-    sub: str,
-    attributes: dict[str, str],
-    user_pool_id: str,
-    client_id: str,
-) -> dict[str, Any]:
-    """Build a Cognito post-confirmation trigger event."""
-    user_attributes = dict(attributes)
-    user_attributes["sub"] = sub
-    return {
-        "version": "1",
-        "triggerSource": "PostConfirmation_ConfirmSignUp",
-        "region": "us-east-1",
-        "userPoolId": user_pool_id,
-        "callerContext": {
-            "awsSdkVersion": "ldk-local",
-            "clientId": client_id,
-        },
-        "userName": username,
-        "request": {
-            "userAttributes": user_attributes,
-        },
-        "response": {},
-    }

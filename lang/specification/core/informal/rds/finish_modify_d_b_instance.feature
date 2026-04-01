@@ -1,5 +1,5 @@
 @rds @generated
-Feature: Rds - A Database Instance Modification Completes
+Feature: Rds - A "Rds" "Instance" Modification Completes
 
   # Generated from FizzBee spec: rds.fizz
   # Safety invariants: ValidDBInstanceStatus, ValidDBSnapshotStatus, BackingUpInstanceHasSnapshot
@@ -8,24 +8,24 @@ Feature: Rds - A Database Instance Modification Completes
     Given the system is initialized
 
   @minimal @happy @finish_modify_d_b_instance @internal
-  Scenario: a database instance modification completes
-    Given the database instance exists
-    And the instance is "MODIFYING"
-    When a database instance modification completes
-    Then the instance returns to "AVAILABLE" state
+  Scenario: a "rds" "instance" modification completes
+    Given the "rds" "instance" existed
+    And the "rds" "instance" was "MODIFYING"
+    When a "rds" "instance" modification completes
+    Then the "rds" "instance" returns to "AVAILABLE" state
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
 
-  @standard @negative @finish_modify_d_b_instance @internal
-  Scenario: a database instance modification completes fails when the database instance does not exist
-    Given the database instance does not exist
-    When a database instance modification completes
+  @guard @negative @finish_modify_d_b_instance @internal
+  Scenario: a "rds" "instance" modification completes fails when the "rds" "instance" did not exist
+    Given the "rds" "instance" did not exist
+    When a "rds" "instance" modification completes
     Then the operation is rejected
 
-  @standard @negative @finish_modify_d_b_instance @internal
-  Scenario: a database instance modification completes fails when the instance is not "MODIFYING"
-    Given the database instance exists
-    And the instance is not "MODIFYING"
-    When a database instance modification completes
+  @guard @negative @finish_modify_d_b_instance @internal
+  Scenario: a "rds" "instance" modification completes fails when the "rds" "instance" was not "MODIFYING"
+    Given the "rds" "instance" existed
+    And the "rds" "instance" was not "MODIFYING"
+    When a "rds" "instance" modification completes
     Then the operation is rejected

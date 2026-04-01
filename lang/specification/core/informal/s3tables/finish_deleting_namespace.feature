@@ -1,5 +1,5 @@
 @s3tables @generated
-Feature: S3tables - A Namespace Finishes Being Deleted
+Feature: S3tables - A "S3 Tables" "Namespace" Finishes Being Deleted
 
   # Generated from FizzBee spec: s3tables.fizz
   # Safety invariants: BucketDeletionRequiresNoNamespaces, NamespaceDeletionRequiresNoTables, SnapshotCountNonNegative, SchemaVersionAtLeastOne
@@ -8,25 +8,25 @@ Feature: S3tables - A Namespace Finishes Being Deleted
     Given the system is initialized
 
   @minimal @happy @finish_deleting_namespace @internal
-  Scenario: a namespace finishes being deleted
-    Given the namespace exists
-    And the namespace is "DELETING"
-    When a namespace finishes being deleted
-    Then the namespace is "DELETED" and all its tables are "DELETED"
+  Scenario: a "s3 tables" "namespace" finishes being deleted
+    Given the "s3 tables" "namespace" existed
+    And the "s3 tables" "namespace" was "DELETING"
+    When a "s3 tables" "namespace" finishes being deleted
+    Then the "s3 tables" "namespace" will be deleted and all its tables will be deleted
     And a bucket in "DELETING" state has no "ACTIVE" namespaces
-    And a namespace in "DELETING" state has no "ACTIVE" tables
+    And a "s3 tables" "namespace" in "DELETING" state has no "ACTIVE" tables
     And snapshot count is never negative
     And schema version is always at least one
 
-  @standard @negative @finish_deleting_namespace @internal
-  Scenario: a namespace finishes being deleted fails when the namespace does not exist
-    Given the namespace does not exist
-    When a namespace finishes being deleted
+  @guard @negative @finish_deleting_namespace @internal
+  Scenario: a "s3 tables" "namespace" finishes being deleted fails when the "s3 tables" "namespace" did not exist
+    Given the "s3 tables" "namespace" did not exist
+    When a "s3 tables" "namespace" finishes being deleted
     Then the operation is rejected
 
-  @standard @negative @finish_deleting_namespace @internal
-  Scenario: a namespace finishes being deleted fails when the namespace is not "DELETING"
-    Given the namespace exists
-    And the namespace is not "DELETING"
-    When a namespace finishes being deleted
+  @guard @negative @finish_deleting_namespace @internal
+  Scenario: a "s3 tables" "namespace" finishes being deleted fails when the "s3 tables" "namespace" was not "DELETING"
+    Given the "s3 tables" "namespace" existed
+    And the "s3 tables" "namespace" was not "DELETING"
+    When a "s3 tables" "namespace" finishes being deleted
     Then the operation is rejected

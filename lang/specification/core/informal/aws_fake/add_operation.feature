@@ -9,31 +9,31 @@ Feature: AwsFake - An Operation Is Added To An Aws Fake
 
   @minimal @happy @add_operation
   Scenario: an operation is added to an "AWS" fake
-    Given the "AWS" fake exists
-    And the "AWS" fake is "ACTIVE"
+    Given the "AWS" fake existed
+    And the "AWS" fake was "ACTIVE"
     And an operation slot is available
     When an operation is added to an "AWS" fake
-    Then the operation is "ACTIVE" on the "AWS" fake
+    Then the operation will be "ACTIVE" on the "AWS" fake
     And every "ACTIVE" operation belongs to an "ACTIVE" "AWS" fake
     And every "AWS" fake is tied to a known service
 
-  @standard @negative @add_operation
-  Scenario: an operation is added to an "AWS" fake fails when the "AWS" fake does not exist
-    Given the "AWS" fake does not exist
+  @guard @negative @add_operation
+  Scenario: an operation is added to an "AWS" fake fails when the "AWS" fake did not exist
+    Given the "AWS" fake did not exist
     When an operation is added to an "AWS" fake
     Then the operation is rejected
 
-  @standard @negative @add_operation
-  Scenario: an operation is added to an "AWS" fake fails when the "AWS" fake is not "ACTIVE"
-    Given the "AWS" fake exists
-    And the "AWS" fake is not "ACTIVE"
+  @guard @negative @add_operation
+  Scenario: an operation is added to an "AWS" fake fails when the "AWS" fake was not "ACTIVE"
+    Given the "AWS" fake existed
+    And the "AWS" fake was not "ACTIVE"
     When an operation is added to an "AWS" fake
     Then the operation is rejected
 
-  @standard @negative @add_operation
+  @guard @negative @add_operation
   Scenario: an operation is added to an "AWS" fake fails when no operation slot is available
-    Given the "AWS" fake exists
-    And the "AWS" fake is "ACTIVE"
+    Given the "AWS" fake existed
+    And the "AWS" fake was "ACTIVE"
     And no operation slot is available
     When an operation is added to an "AWS" fake
     Then the operation is rejected

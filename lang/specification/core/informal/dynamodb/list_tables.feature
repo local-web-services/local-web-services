@@ -10,7 +10,7 @@ Feature: Dynamodb - All Tables Are Listed
   @minimal @happy @list_tables
   Scenario: all tables are listed
     When all tables are listed
-    Then the list of tables is returned
+    Then the list of tables will be returned
     And every table has a valid status ("CREATING", "ACTIVE", or "DELETED")
     And "GSI" pending write count is never negative
     And transaction status is always a valid value

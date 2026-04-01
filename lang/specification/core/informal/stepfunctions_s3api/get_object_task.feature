@@ -1,5 +1,5 @@
 @stepfunctionss3api @generated
-Feature: StepfunctionsS3api - A Running Execution Reads An Existing Object From The S3 Bucket And Succeeds
+Feature: StepfunctionsS3api - A Running "Step Functions" "Execution" Reads An Existing Object From The "S3" "Bucket" And Succeeds
 
   # Generated from FizzBee spec: stepfunctions_s3api.fizz
   # Safety invariants: ExecutionRequiresActiveStateMachine, ObjectRequiresActiveBucket
@@ -8,23 +8,23 @@ Feature: StepfunctionsS3api - A Running Execution Reads An Existing Object From 
     Given the system is initialized
 
   @minimal @happy @get_object_task
-  Scenario: a running execution reads an existing object from the S3 bucket and succeeds
-    Given an execution is "RUNNING"
-    And an object "EXISTS" in the target bucket
-    When a running execution reads an existing object from the S3 bucket and succeeds
-    Then the execution is "SUCCEEDED"
+  Scenario: a running "step functions" "execution" reads an existing object from the "s3" "bucket" and succeeds
+    Given a "step functions" "execution" was "RUNNING"
+    And an object existed in the target bucket
+    When a running "step functions" "execution" reads an existing object from the "s3" "bucket" and succeeds
+    Then the "step functions" "execution" will be "SUCCEEDED"
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every existing object belongs to an "ACTIVE" bucket
 
-  @standard @negative @get_object_task
-  Scenario: a running execution reads an existing object from the S3 bucket and succeeds fails when no execution is "RUNNING"
-    Given no execution is "RUNNING"
-    When a running execution reads an existing object from the S3 bucket and succeeds
+  @guard @negative @get_object_task
+  Scenario: a running "step functions" "execution" reads an existing object from the "s3" "bucket" and succeeds fails when no "step functions" "execution" was "RUNNING"
+    Given no "step functions" "execution" was "RUNNING"
+    When a running "step functions" "execution" reads an existing object from the "s3" "bucket" and succeeds
     Then the operation is rejected
 
-  @standard @negative @get_object_task
-  Scenario: a running execution reads an existing object from the S3 bucket and succeeds fails when no object "EXISTS" in the target bucket
-    Given an execution is "RUNNING"
-    And no object "EXISTS" in the target bucket
-    When a running execution reads an existing object from the S3 bucket and succeeds
+  @guard @negative @get_object_task
+  Scenario: a running "step functions" "execution" reads an existing object from the "s3" "bucket" and succeeds fails when no object existed in the target bucket
+    Given a "step functions" "execution" was "RUNNING"
+    And no object existed in the target bucket
+    When a running "step functions" "execution" reads an existing object from the "s3" "bucket" and succeeds
     Then the operation is rejected

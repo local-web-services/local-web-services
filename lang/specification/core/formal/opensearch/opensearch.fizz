@@ -21,10 +21,10 @@ action Init:
     outbound_remote = {}
     inbound_status = {}
 
-# step: a search domain is created
-# result: the domain is in CREATING state
-# guard: the domain does not already exist
-# guard_violation: the domain already exists
+# step: an "opensearch" "domain" is created
+# result: the "opensearch" "domain" will be in "CREATING" state
+# guard: the "opensearch" "domain" did not already exist
+# guard_violation: the "opensearch" "domain" already existed
 atomic action CreateDomain:
     oneof domain in DOMAIN_NAMES:
         if domain not in domain_status:
@@ -36,24 +36,24 @@ atomic action CreateDomain:
             domain_bg_traffic_swapped[domain] = False
 
 # fake_skip: internal
-# step: a search domain finishes creating
-# result: the domain is ACTIVE and ready for use
-# guard: the domain exists
-# guard_violation: the domain does not exist
-# guard: the domain is CREATING
-# guard_violation: the domain is not CREATING
+# step: an "opensearch" "domain" finishes creating
+# result: the "opensearch" "domain" will be "ACTIVE" and ready for use
+# guard: the "opensearch" "domain" existed
+# guard_violation: the "opensearch" "domain" did not exist
+# guard: the "opensearch" "domain" was "CREATING"
+# guard_violation: the "opensearch" "domain" was not "CREATING"
 atomic action FinishCreatingDomain:
     oneof domain in DOMAIN_NAMES:
         if domain in domain_status:
             if domain_status[domain] == "CREATING":
                 domain_status[domain] = "ACTIVE"
 
-# step: a search domain is deleted
-# result: the domain is in DELETING state
-# guard: the domain exists
-# guard_violation: the domain does not exist
-# guard: the domain is ACTIVE
-# guard_violation_lifecycle: the domain is not ACTIVE
+# step: an "opensearch" "domain" is deleted
+# result: the "opensearch" "domain" will be in "DELETING" state
+# guard: the "opensearch" "domain" existed
+# guard_violation: the "opensearch" "domain" did not exist
+# guard: the "opensearch" "domain" was "ACTIVE"
+# guard_violation_lifecycle: the "opensearch" "domain" was not "ACTIVE"
 atomic action DeleteDomain:
     oneof domain in DOMAIN_NAMES:
         if domain in domain_status:
@@ -61,32 +61,32 @@ atomic action DeleteDomain:
                 domain_status[domain] = "DELETING"
 
 # fake_skip: internal
-# step: a search domain finishes deleting
-# result: the domain is DELETED and all associated connections are removed
-# guard: the domain exists
-# guard_violation: the domain does not exist
-# guard: the domain is DELETING
-# guard_violation: the domain is not DELETING
-# guard: an outbound connection has a local domain set
-# guard_violation: an outbound connection does not have a local domain set
-# guard: the outbound connection's local domain is this domain
-# guard_violation: the outbound connection's local domain is not this domain
-# guard: an outbound connection has a remote domain set
-# guard_violation: an outbound connection does not have a remote domain set
-# guard: the outbound connection's remote domain is this domain
-# guard_violation: the outbound connection's remote domain is not this domain
-# guard: an inbound connection exists
-# guard_violation: an inbound connection does not exist
-# guard: the inbound connection is not already DELETED
-# guard_violation: the inbound connection is already DELETED
-# guard: the associated outbound connection has a local domain
-# guard_violation: the associated outbound connection does not have a local domain
-# guard: the outbound connection's local domain matches this domain
-# guard_violation: the outbound connection's local domain does not match this domain
-# guard: the associated outbound connection has a remote domain
-# guard_violation: the associated outbound connection does not have a remote domain
-# guard: the outbound connection's remote domain matches this domain
-# guard_violation: the outbound connection's remote domain does not match this domain
+# step: an "opensearch" "domain" finishes deleting
+# result: the "opensearch" "domain" will be "DELETED" and all associated connections will be removed
+# guard: the "opensearch" "domain" existed
+# guard_violation: the "opensearch" "domain" did not exist
+# guard: the "opensearch" "domain" was "DELETING"
+# guard_violation: the "opensearch" "domain" was not "DELETING"
+# guard: an "opensearch" "outbound connection" has a local "opensearch" "domain" set
+# guard_violation: an "opensearch" "outbound connection" does not have a local "opensearch" "domain" set
+# guard: the "opensearch" "outbound connection"'s local "opensearch" "domain" is this "opensearch" "domain"
+# guard_violation: the "opensearch" "outbound connection"'s local "opensearch" "domain" is not this "opensearch" "domain"
+# guard: an "opensearch" "outbound connection" has a remote "opensearch" "domain" set
+# guard_violation: an "opensearch" "outbound connection" does not have a remote "opensearch" "domain" set
+# guard: the "opensearch" "outbound connection"'s remote "opensearch" "domain" is this "opensearch" "domain"
+# guard_violation: the "opensearch" "outbound connection"'s remote "opensearch" "domain" is not this "opensearch" "domain"
+# guard: an "opensearch" "inbound connection" existed
+# guard_violation: an "opensearch" "inbound connection" did not exist
+# guard: the "opensearch" "inbound connection" is not already "DELETED"
+# guard_violation: the "opensearch" "inbound connection" is already "DELETED"
+# guard: the associated outbound connection has a local "opensearch" "domain"
+# guard_violation: the associated outbound connection does not have a local "opensearch" "domain"
+# guard: the "opensearch" "outbound connection"'s local "opensearch" "domain" matches this "opensearch" "domain"
+# guard_violation: the "opensearch" "outbound connection"'s local "opensearch" "domain" does not match this "opensearch" "domain"
+# guard: the associated outbound connection has a remote "opensearch" "domain"
+# guard_violation: the associated outbound connection does not have a remote "opensearch" "domain"
+# guard: the "opensearch" "outbound connection"'s remote "opensearch" "domain" matches this "opensearch" "domain"
+# guard_violation: the "opensearch" "outbound connection"'s remote "opensearch" "domain" does not match this "opensearch" "domain"
 atomic action FinishDeletingDomain:
     oneof domain in DOMAIN_NAMES:
         if domain in domain_status:
@@ -108,12 +108,12 @@ atomic action FinishDeletingDomain:
                                 if outbound_remote[conn] == domain:
                                     inbound_status[conn] = "DELETED"
 
-# step: a domain configuration update is requested
-# result: the domain is in PROCESSING state and a blue-green deployment begins
-# guard: the domain exists
-# guard_violation: the domain does not exist
-# guard: the domain is ACTIVE
-# guard_violation_lifecycle: the domain is not ACTIVE
+# step: an "opensearch" "domain" configuration update is requested
+# result: the "opensearch" "domain" will be in "PROCESSING" state and a blue-green deployment begins
+# guard: the "opensearch" "domain" existed
+# guard_violation: the "opensearch" "domain" did not exist
+# guard: the "opensearch" "domain" was "ACTIVE"
+# guard_violation_lifecycle: the "opensearch" "domain" was not "ACTIVE"
 atomic action UpdateDomainConfig:
     oneof domain in DOMAIN_NAMES:
         if domain in domain_status:
@@ -124,14 +124,14 @@ atomic action UpdateDomainConfig:
                 domain_bg_traffic_swapped[domain] = False
 
 # fake_skip: internal
-# step: the new cluster for a blue-green deployment becomes ready
-# result: the domain has a new cluster prepared but traffic is not yet swapped
-# guard: the domain exists
-# guard_violation: the domain does not exist
-# guard: the domain is PROCESSING
-# guard_violation: the domain is not PROCESSING
-# guard: the new cluster has not been prepared yet
-# guard_violation: the new cluster has already been prepared
+# step: the new "opensearch" "cluster" for a blue-green deployment becomes ready
+# result: the "opensearch" "domain" will have a new cluster prepared but traffic will not yet be swapped
+# guard: the "opensearch" "domain" existed
+# guard_violation: the "opensearch" "domain" did not exist
+# guard: the "opensearch" "domain" was "PROCESSING"
+# guard_violation: the "opensearch" "domain" was not "PROCESSING"
+# guard: the new "opensearch" "cluster" has not been prepared yet
+# guard_violation: the new "opensearch" "cluster" has already been prepared
 atomic action BlueGreenNewClusterReady:
     oneof domain in DOMAIN_NAMES:
         if domain in domain_status:
@@ -140,14 +140,14 @@ atomic action BlueGreenNewClusterReady:
                     domain_bg_new_cluster[domain] = True
 
 # fake_skip: internal
-# step: traffic is swapped to the new cluster during a blue-green deployment
-# result: the domain is now serving requests from the new cluster
-# guard: the domain exists
-# guard_violation: the domain does not exist
-# guard: the domain is PROCESSING
-# guard_violation: the domain is not PROCESSING
-# guard: the new cluster is ready
-# guard_violation: the new cluster is not ready
+# step: traffic is swapped to the new "opensearch" "cluster" during a blue-green deployment
+# result: the "opensearch" "domain" will now be serving requests from the new "opensearch" "cluster"
+# guard: the "opensearch" "domain" existed
+# guard_violation: the "opensearch" "domain" did not exist
+# guard: the "opensearch" "domain" was "PROCESSING"
+# guard_violation: the "opensearch" "domain" was not "PROCESSING"
+# guard: the new "opensearch" "cluster" was ready
+# guard_violation: the new "opensearch" "cluster" was not ready
 # guard: traffic has not been swapped yet
 # guard_violation: traffic has already been swapped
 atomic action BlueGreenSwapTraffic:
@@ -160,13 +160,13 @@ atomic action BlueGreenSwapTraffic:
 
 # fake_skip: internal
 # step: a blue-green deployment completes
-# result: the domain is ACTIVE with the new configuration applied
-# guard: the domain exists
-# guard_violation: the domain does not exist
-# guard: the domain is PROCESSING
-# guard_violation: the domain is not PROCESSING
-# guard: traffic has been swapped to the new cluster
-# guard_violation: traffic has not been swapped to the new cluster
+# result: the "opensearch" "domain" will be "ACTIVE" with the new configuration applied
+# guard: the "opensearch" "domain" existed
+# guard_violation: the "opensearch" "domain" did not exist
+# guard: the "opensearch" "domain" was "PROCESSING"
+# guard_violation: the "opensearch" "domain" was not "PROCESSING"
+# guard: traffic has been swapped to the new "opensearch" "cluster"
+# guard_violation: traffic has not been swapped to the new "opensearch" "cluster"
 atomic action BlueGreenComplete:
     oneof domain in DOMAIN_NAMES:
         if domain in domain_status:
@@ -180,30 +180,30 @@ atomic action BlueGreenComplete:
                     domain_status[domain] = "ACTIVE"
 
 # fake_skip: internal
-# step: shards are rebalanced across nodes in an active domain
-# result: the instance count is updated without data loss
-# guard: the domain exists
-# guard_violation: the domain does not exist
-# guard: the domain is ACTIVE
-# guard_violation_lifecycle: the domain is not ACTIVE
+# step: shards are rebalanced across nodes in an active "opensearch" "domain"
+# result: the instance count will be updated without data loss
+# guard: the "opensearch" "domain" existed
+# guard_violation: the "opensearch" "domain" did not exist
+# guard: the "opensearch" "domain" was "ACTIVE"
+# guard_violation_lifecycle: the "opensearch" "domain" was not "ACTIVE"
 atomic action ShardRebalancing:
     oneof domain in DOMAIN_NAMES:
         if domain in domain_status:
             if domain_status[domain] == "ACTIVE":
                 domain_instance_count[domain] = domain_instance_count[domain]
 
-# step: an outbound cross-cluster connection is created between two domains
-# result: the connection is in PENDING_ACCEPTANCE state
+# step: an outbound cross-cluster connection is created between two "opensearch" "domain"s
+# result: the connection will be in "PENDING_ACCEPTANCE" state
 # guard: the connection slot is available
 # guard_violation: the connection slot is not available
-# guard: the local domain exists
-# guard_violation: the local domain does not exist
-# guard: the local domain is ACTIVE
-# guard_violation_lifecycle: the local domain is not ACTIVE
-# guard: the remote domain exists
-# guard_violation: the remote domain does not exist
-# guard: the remote domain is ACTIVE
-# guard_violation_lifecycle: the remote domain is not ACTIVE
+# guard: the local "opensearch" "domain" existed
+# guard_violation: the local "opensearch" "domain" did not exist
+# guard: the local "opensearch" "domain" was "ACTIVE"
+# guard_violation_lifecycle: the local "opensearch" "domain" was not "ACTIVE"
+# guard: the remote "opensearch" "domain" existed
+# guard_violation: the remote "opensearch" "domain" did not exist
+# guard: the remote "opensearch" "domain" was "ACTIVE"
+# guard_violation_lifecycle: the remote "opensearch" "domain" was not "ACTIVE"
 # guard: the local and remote domains are different
 # guard_violation: the local and remote domains are the same
 atomic action CreateOutboundConnection:
@@ -222,13 +222,13 @@ atomic action CreateOutboundConnection:
                                         inbound_status[conn] = "PENDING_ACCEPTANCE"
 
 # step: an inbound cross-cluster connection is accepted
-# result: both the inbound and outbound connection are ACTIVE
-# guard: the inbound connection exists
-# guard_violation: the inbound connection does not exist
-# guard: the inbound connection is PENDING_ACCEPTANCE
-# guard_violation: the inbound connection is not PENDING_ACCEPTANCE
-# guard: the outbound connection exists
-# guard_violation: the outbound connection does not exist
+# result: both the inbound and outbound connection are "ACTIVE"
+# guard: the "opensearch" "inbound connection" existed
+# guard_violation: the "opensearch" "inbound connection" did not exist
+# guard: the "opensearch" "inbound connection" was "PENDING_ACCEPTANCE"
+# guard_violation: the "opensearch" "inbound connection" was not "PENDING_ACCEPTANCE"
+# guard: the "opensearch" "outbound connection" existed
+# guard_violation: the "opensearch" "outbound connection" did not exist
 atomic action AcceptInboundConnection:
     oneof conn in CONNECTION_IDS:
         if conn in inbound_status:
@@ -238,13 +238,13 @@ atomic action AcceptInboundConnection:
                     outbound_status[conn] = "ACTIVE"
 
 # step: an inbound cross-cluster connection is rejected
-# result: both the inbound and outbound connection are REJECTED
-# guard: the inbound connection exists
-# guard_violation: the inbound connection does not exist
-# guard: the inbound connection is PENDING_ACCEPTANCE
-# guard_violation: the inbound connection is not PENDING_ACCEPTANCE
-# guard: the outbound connection exists
-# guard_violation: the outbound connection does not exist
+# result: both the inbound and outbound connection are "REJECTED"
+# guard: the "opensearch" "inbound connection" existed
+# guard_violation: the "opensearch" "inbound connection" did not exist
+# guard: the "opensearch" "inbound connection" was "PENDING_ACCEPTANCE"
+# guard_violation: the "opensearch" "inbound connection" was not "PENDING_ACCEPTANCE"
+# guard: the "opensearch" "outbound connection" existed
+# guard_violation: the "opensearch" "outbound connection" did not exist
 atomic action RejectInboundConnection:
     oneof conn in CONNECTION_IDS:
         if conn in inbound_status:
@@ -254,13 +254,13 @@ atomic action RejectInboundConnection:
                     outbound_status[conn] = "REJECTED"
 
 # step: an outbound cross-cluster connection is deleted
-# result: the outbound connection is in DELETING state
-# guard: the outbound connection exists
-# guard_violation: the outbound connection does not exist
-# guard: the outbound connection is not already DELETING
-# guard_violation: the outbound connection is already DELETING
-# guard: the outbound connection is not already DELETED
-# guard_violation: the outbound connection is already DELETED
+# result: the "opensearch" "outbound connection" will be in "DELETING" state
+# guard: the "opensearch" "outbound connection" existed
+# guard_violation: the "opensearch" "outbound connection" did not exist
+# guard: the "opensearch" "outbound connection" is not already "DELETING"
+# guard_violation: the "opensearch" "outbound connection" is already "DELETING"
+# guard: the "opensearch" "outbound connection" is not already "DELETED"
+# guard_violation: the "opensearch" "outbound connection" is already "DELETED"
 atomic action DeleteOutboundConnection:
     oneof conn in CONNECTION_IDS:
         if conn in outbound_status:
@@ -269,14 +269,14 @@ atomic action DeleteOutboundConnection:
                     outbound_status[conn] = "DELETING"
 
 # fake_skip: internal
-# step: an outbound connection finishes deleting
-# result: the outbound and associated inbound connection are DELETED
-# guard: the outbound connection exists
-# guard_violation: the outbound connection does not exist
-# guard: the outbound connection is DELETING
-# guard_violation: the outbound connection is not DELETING
-# guard: the associated inbound connection exists
-# guard_violation: the associated inbound connection does not exist
+# step: an "opensearch" "outbound connection" finishes deleting
+# result: the outbound and associated inbound connection will be "DELETED"
+# guard: the "opensearch" "outbound connection" existed
+# guard_violation: the "opensearch" "outbound connection" did not exist
+# guard: the "opensearch" "outbound connection" was "DELETING"
+# guard_violation: the "opensearch" "outbound connection" was not "DELETING"
+# guard: the associated "opensearch" "inbound connection" existed
+# guard_violation: the associated "opensearch" "inbound connection" did not exist
 atomic action FinishDeletingOutboundConnection:
     oneof conn in CONNECTION_IDS:
         if conn in outbound_status:
@@ -286,13 +286,13 @@ atomic action FinishDeletingOutboundConnection:
                     inbound_status[conn] = "DELETED"
 
 # step: an inbound cross-cluster connection is deleted
-# result: the inbound connection is in DELETING state
-# guard: the inbound connection exists
-# guard_violation: the inbound connection does not exist
-# guard: the inbound connection is not already DELETING
-# guard_violation: the inbound connection is already DELETING
-# guard: the inbound connection is not already DELETED
-# guard_violation: the inbound connection is already DELETED
+# result: the "opensearch" "inbound connection" will be in "DELETING" state
+# guard: the "opensearch" "inbound connection" existed
+# guard_violation: the "opensearch" "inbound connection" did not exist
+# guard: the "opensearch" "inbound connection" is not already "DELETING"
+# guard_violation: the "opensearch" "inbound connection" is already "DELETING"
+# guard: the "opensearch" "inbound connection" is not already "DELETED"
+# guard_violation: the "opensearch" "inbound connection" is already "DELETED"
 atomic action DeleteInboundConnection:
     oneof conn in CONNECTION_IDS:
         if conn in inbound_status:
@@ -301,26 +301,26 @@ atomic action DeleteInboundConnection:
                     inbound_status[conn] = "DELETING"
 
 # fake_skip: internal
-# step: an inbound connection finishes deleting
-# result: the inbound connection is DELETED
-# guard: the inbound connection exists
-# guard_violation: the inbound connection does not exist
-# guard: the inbound connection is DELETING
-# guard_violation: the inbound connection is not DELETING
+# step: an "opensearch" "inbound connection" finishes deleting
+# result: the "opensearch" "inbound connection" will be "DELETED"
+# guard: the "opensearch" "inbound connection" existed
+# guard_violation: the "opensearch" "inbound connection" did not exist
+# guard: the "opensearch" "inbound connection" was "DELETING"
+# guard_violation: the "opensearch" "inbound connection" was not "DELETING"
 atomic action FinishDeletingInboundConnection:
     oneof conn in CONNECTION_IDS:
         if conn in inbound_status:
             if inbound_status[conn] == "DELETING":
                 inbound_status[conn] = "DELETED"
 
-# step: tags are added to a domain
-# result: the specified tags are associated with the domain
-# guard: the domain exists
-# guard_violation: the domain does not exist
-# guard: the domain is not being deleted
-# guard_violation_lifecycle: the domain is being deleted
-# guard: the domain is not deleted
-# guard_violation: the domain is deleted
+# step: tags are added to an "opensearch" "domain"
+# result: the specified tags are associated with the "opensearch" "domain"
+# guard: the "opensearch" "domain" existed
+# guard_violation: the "opensearch" "domain" did not exist
+# guard: the "opensearch" "domain" is not being deleted
+# guard_violation_lifecycle: the "opensearch" "domain" is being deleted
+# guard: the "opensearch" "domain" was not "DELETED"
+# guard_violation: the "opensearch" "domain" was "DELETED"
 atomic action AddTags:
     oneof domain in DOMAIN_NAMES:
         if domain in domain_status:
@@ -329,16 +329,16 @@ atomic action AddTags:
                     oneof tkey in TAG_KEYS:
                         domain_tag[domain + "#" + tkey] = True
 
-# step: tags are removed from a domain
-# result: the specified tags are no longer associated with the domain
-# guard: the domain exists
-# guard_violation: the domain does not exist
-# guard: the domain is not being deleted
-# guard_violation_lifecycle: the domain is being deleted
-# guard: the domain is not deleted
-# guard_violation: the domain is deleted
-# guard: the tag key exists
-# guard_violation: the tag key does not exist
+# step: tags are removed from an "opensearch" "domain"
+# result: the specified tags are no longer associated with the "opensearch" "domain"
+# guard: the "opensearch" "domain" existed
+# guard_violation: the "opensearch" "domain" did not exist
+# guard: the "opensearch" "domain" is not being deleted
+# guard_violation_lifecycle: the "opensearch" "domain" is being deleted
+# guard: the "opensearch" "domain" was not "DELETED"
+# guard_violation: the "opensearch" "domain" was "DELETED"
+# guard: the "opensearch" "tag key" existed
+# guard_violation: the "opensearch" "tag key" did not exist
 atomic action RemoveTags:
     oneof domain in DOMAIN_NAMES:
         if domain in domain_status:
@@ -366,7 +366,7 @@ always assertion ActiveConnectionsReferenceActiveDomains:
                             return False
     return True
 
-# check: traffic can only be swapped after the new cluster is ready
+# check: traffic can only be swapped after the new "opensearch" "cluster" was ready
 always assertion TrafficSwapRequiresNewCluster:
     for domain in DOMAIN_NAMES:
         if domain in domain_bg_traffic_swapped:
@@ -375,7 +375,7 @@ always assertion TrafficSwapRequiresNewCluster:
                     return False
     return True
 
-# check: an outbound connection that is ACTIVE cannot have a REJECTED inbound connection
+# check: an "opensearch" "outbound connection" that was "ACTIVE" cannot have a REJECTED inbound connection
 always assertion ConnectionStatusConsistency:
     for conn in CONNECTION_IDS:
         if conn in outbound_status:
@@ -385,7 +385,7 @@ always assertion ConnectionStatusConsistency:
                         return False
     return True
 
-# check: a pending config change only exists on a domain that is PROCESSING
+# check: a pending config change only exists on a "opensearch" "domain" that is PROCESSING
 always assertion PendingConfigOnlyOnProcessingDomain:
     for domain in DOMAIN_NAMES:
         if domain in domain_pending_config:

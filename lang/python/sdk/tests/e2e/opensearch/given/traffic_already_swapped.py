@@ -1,0 +1,12 @@
+"""Given: traffic has already been swapped"""
+
+from __future__ import annotations
+
+import pytest
+from pytest_bdd import given
+
+
+@given("traffic has already been swapped")
+def traffic_already_swapped(world):
+    world["_skip"] = "Cannot configure blue-green deployment traffic state in lws"
+    pytest.skip(world["_skip"])

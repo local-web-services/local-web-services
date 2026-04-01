@@ -1,5 +1,5 @@
 @stepfunctionselasticache @generated
-Feature: StepfunctionsElasticache - A Running Execution Reads From The Available Elasticache Cluster And Succeeds
+Feature: StepfunctionsElasticache - A Running "Step Functions" "Execution" Reads From The Available Elasticache Cluster And Succeeds
 
   # Generated from FizzBee spec: stepfunctions_elasticache.fizz
   # Safety invariants: ExecutionRequiresActiveStateMachine, SuccessfulExecutionReadACluster
@@ -8,23 +8,23 @@ Feature: StepfunctionsElasticache - A Running Execution Reads From The Available
     Given the system is initialized
 
   @minimal @happy @read_cache_task_succeeds @internal
-  Scenario: a running execution reads from the "AVAILABLE" ElastiCache cluster and succeeds
-    Given an execution is "RUNNING"
-    And the cluster is "AVAILABLE"
-    When a running execution reads from the "AVAILABLE" ElastiCache cluster and succeeds
-    Then the execution is "SUCCEEDED"
+  Scenario: a running "step functions" "execution" reads from the "AVAILABLE" ElastiCache cluster and succeeds
+    Given a "step functions" "execution" was "RUNNING"
+    And the "elasticache" "cluster" was "AVAILABLE"
+    When a running "step functions" "execution" reads from the "AVAILABLE" ElastiCache cluster and succeeds
+    Then the "step functions" "execution" will be "SUCCEEDED"
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it read
 
-  @standard @negative @read_cache_task_succeeds @internal
-  Scenario: a running execution reads from the "AVAILABLE" ElastiCache cluster and succeeds fails when no execution is "RUNNING"
-    Given no execution is "RUNNING"
-    When a running execution reads from the "AVAILABLE" ElastiCache cluster and succeeds
+  @guard @negative @read_cache_task_succeeds @internal
+  Scenario: a running "step functions" "execution" reads from the "AVAILABLE" ElastiCache cluster and succeeds fails when no "step functions" "execution" was "RUNNING"
+    Given no "step functions" "execution" was "RUNNING"
+    When a running "step functions" "execution" reads from the "AVAILABLE" ElastiCache cluster and succeeds
     Then the operation is rejected
 
-  @standard @negative @read_cache_task_succeeds @internal
-  Scenario: a running execution reads from the "AVAILABLE" ElastiCache cluster and succeeds fails when the cluster is not "AVAILABLE"
-    Given an execution is "RUNNING"
-    And the cluster is not "AVAILABLE"
-    When a running execution reads from the "AVAILABLE" ElastiCache cluster and succeeds
+  @guard @negative @read_cache_task_succeeds @internal
+  Scenario: a running "step functions" "execution" reads from the "AVAILABLE" ElastiCache cluster and succeeds fails when the "elasticache" "cluster" was not "AVAILABLE"
+    Given a "step functions" "execution" was "RUNNING"
+    And the "elasticache" "cluster" was not "AVAILABLE"
+    When a running "step functions" "execution" reads from the "AVAILABLE" ElastiCache cluster and succeeds
     Then the operation is rejected

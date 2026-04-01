@@ -81,7 +81,7 @@ class TestResetClearsLifecycleConfigs:
             }
         }
         await client.post("/_ldk/lifecycle", json=setup_payload)
-        expected_enabled = False
+        expected_enabled = True
         expected_create_dwell_ms = 0
         expected_delete_dwell_ms = 0
 

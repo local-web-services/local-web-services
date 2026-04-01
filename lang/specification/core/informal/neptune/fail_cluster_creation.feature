@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Database Cluster Creation Fails
+Feature: Neptune - A "Neptune" "Cluster" Creation Fails
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,11 +8,11 @@ Feature: Neptune - A Database Cluster Creation Fails
     Given the system is initialized
 
   @minimal @happy @fail_cluster_creation @internal
-  Scenario: a database cluster creation fails
-    Given the cluster exists
-    And the cluster is "CREATING"
-    When a database cluster creation fails
-    Then the cluster is in "FAILED" state
+  Scenario: a "neptune" "cluster" creation fails
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "CREATING"
+    When a "neptune" "cluster" creation fails
+    Then the "neptune" "cluster" will be in "FAILED" state
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -22,15 +22,15 @@ Feature: Neptune - A Database Cluster Creation Fails
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @fail_cluster_creation @internal
-  Scenario: a database cluster creation fails fails when the cluster does not exist
-    Given the cluster does not exist
-    When a database cluster creation fails
+  @guard @negative @fail_cluster_creation @internal
+  Scenario: a "neptune" "cluster" creation fails fails when the "neptune" "cluster" did not exist
+    Given the "neptune" "cluster" did not exist
+    When a "neptune" "cluster" creation fails
     Then the operation is rejected
 
-  @standard @negative @fail_cluster_creation @internal
-  Scenario: a database cluster creation fails fails when the cluster is not "CREATING"
-    Given the cluster exists
-    And the cluster is not "CREATING"
-    When a database cluster creation fails
+  @guard @negative @fail_cluster_creation @internal
+  Scenario: a "neptune" "cluster" creation fails fails when the "neptune" "cluster" was not "CREATING"
+    Given the "neptune" "cluster" existed
+    And the "neptune" "cluster" was not "CREATING"
+    When a "neptune" "cluster" creation fails
     Then the operation is rejected

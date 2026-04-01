@@ -1,5 +1,5 @@
 @neptuneevents @generated
-Feature: NeptuneEvents - The Neptune Cluster Finishes Stopping
+Feature: NeptuneEvents - The "Neptune" "Cluster" Finishes Stopping
 
   # Generated from FizzBee spec: neptune_events.fizz
   # Safety invariants: DeliveredEventReferencesExistingCluster, DeliveredEventReferencesExistingBus
@@ -8,15 +8,15 @@ Feature: NeptuneEvents - The Neptune Cluster Finishes Stopping
     Given the system is initialized
 
   @minimal @happy @cluster_stop_complete @internal
-  Scenario: the Neptune cluster finishes stopping
-    Given the cluster is "STOPPING"
-    When the Neptune cluster finishes stopping
-    Then the cluster is "STOPPED"
+  Scenario: the "neptune" "cluster" finishes stopping
+    Given the "neptune" "cluster" was "STOPPING"
+    When the "neptune" "cluster" finishes stopping
+    Then the "neptune" "cluster" will be "STOPPED"
     And every "DELIVERED" event references a cluster that exists
     And every "DELIVERED" event references a bus that exists
 
-  @standard @negative @cluster_stop_complete @internal
-  Scenario: the Neptune cluster finishes stopping fails when the cluster is not "STOPPING"
-    Given the cluster is not "STOPPING"
-    When the Neptune cluster finishes stopping
+  @guard @negative @cluster_stop_complete @internal
+  Scenario: the "neptune" "cluster" finishes stopping fails when the "neptune" "cluster" was not "STOPPING"
+    Given the "neptune" "cluster" was not "STOPPING"
+    When the "neptune" "cluster" finishes stopping
     Then the operation is rejected

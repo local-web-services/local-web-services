@@ -6,102 +6,29 @@ using JSON request/response format with X-Amz-Target header dispatch.
 
 from __future__ import annotations
 
-import time
 from typing import Any
 
 from fastapi import FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
-from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
+from lws.providers._shared.aws_lifecycle import (
+    ResourceLifecycleConfig,
+    ResourceStateTracker,
+    TrackerRegistry,
+    register_tracker,
+)
 from lws.providers._shared.request_helpers import action_dispatch as _action_dispatch
 from lws.providers._shared.resource_container import ResourceContainerManager
-from lws.providers._shared.response_helpers import (
-    error_response as _error_response_base,
-)
-from lws.providers._shared.response_helpers import (
-    json_response as _json_response,
-)
-from lws.providers._shared.response_helpers import (
-    parse_endpoint as _parse_endpoint,
+from lws.providers._shared.response_helpers import error_response as _error_response_base
+from lws.providers._shared.response_helpers import json_response as _json_response
+from lws.providers.elasticache._elasticache_state import (
+    _CacheCluster,
+    _ElastiCacheState,
+    _ReplicationGroup,
 )
 
 _logger = get_logger("ldk.elasticache")
-
-_ACCOUNT_ID = "000000000000"
-_REGION = "us-east-1"
-
-
-# ------------------------------------------------------------------
-# In-memory state
-# ------------------------------------------------------------------
-
-
-class _CacheCluster:
-    """Represents an ElastiCache cache cluster."""
-
-    def __init__(
-        self,
-        cache_cluster_id: str,
-        engine: str = "redis",
-        num_cache_nodes: int = 1,
-        cache_node_type: str = "cache.t3.micro",
-        tags: dict[str, str] | None = None,
-        data_plane_endpoint: str | None = None,
-    ) -> None:
-        self.cache_cluster_id = cache_cluster_id
-        self.engine = engine
-        self.num_cache_nodes = num_cache_nodes
-        self.cache_node_type = cache_node_type
-        self.status = "available"
-        self.arn = f"arn:aws:elasticache:{_REGION}:{_ACCOUNT_ID}:cluster:{cache_cluster_id}"
-        if data_plane_endpoint:
-            addr, pt = _parse_endpoint(data_plane_endpoint)
-            self.endpoint: dict[str, Any] = {"Address": addr, "Port": pt}
-        else:
-            self.endpoint = {"Address": f"{cache_cluster_id}.cache.localhost", "Port": 6379}
-        self.tags: dict[str, str] = tags or {}
-        self.created_date: float = time.time()
-
-
-class _ReplicationGroup:
-    """Represents an ElastiCache replication group."""
-
-    def __init__(
-        self,
-        replication_group_id: str,
-        description: str = "",
-        member_clusters: list[str] | None = None,
-        tags: dict[str, str] | None = None,
-    ) -> None:
-        self.replication_group_id = replication_group_id
-        self.description = description
-        self.status = "available"
-        self.member_clusters: list[str] = member_clusters or []
-        self.arn = (
-            f"arn:aws:elasticache:{_REGION}:{_ACCOUNT_ID}"
-            f":replicationgroup:{replication_group_id}"
-        )
-        self.tags: dict[str, str] = tags or {}
-
-
-class _ElastiCacheState:
-    """In-memory store for ElastiCache resources."""
-
-    def __init__(self, *, container_manager: ResourceContainerManager | None = None) -> None:
-        self._clusters: dict[str, _CacheCluster] = {}
-        self._replication_groups: dict[str, _ReplicationGroup] = {}
-        self.container_manager = container_manager
-
-    @property
-    def clusters(self) -> dict[str, _CacheCluster]:
-        """Return the clusters store."""
-        return self._clusters
-
-    @property
-    def replication_groups(self) -> dict[str, _ReplicationGroup]:
-        """Return the replication groups store."""
-        return self._replication_groups
 
 
 # ------------------------------------------------------------------
@@ -145,10 +72,11 @@ async def _handle_create_cache_cluster(
     state.clusters[cluster_id] = cluster
 
     lc = tracker.config
-    if lc.enabled and lc.create_dwell_ms > 0:
+    if lc.enabled:
         tracker.set_state(cluster_id, "CREATING")
         tracker.schedule_transition(cluster_id, "ACTIVE", lc.create_dwell_ms)
-        cluster.status = "creating"
+        if lc.create_dwell_ms > 0:
+            cluster.status = "creating"
 
     return _json_response({"CacheCluster": _format_cache_cluster(cluster)})
 
@@ -230,11 +158,6 @@ async def _handle_modify_cache_cluster(
     return _json_response({"CacheCluster": _format_cache_cluster(cluster)})
 
 
-# ------------------------------------------------------------------
-# Action handlers — Replication Groups
-# ------------------------------------------------------------------
-
-
 async def _handle_create_replication_group(
     state: _ElastiCacheState, body: dict, tracker: ResourceStateTracker
 ) -> Response:
@@ -266,10 +189,11 @@ async def _handle_create_replication_group(
 
     lc = tracker.config
     rg_tracker_key = f"rg:{rg_id}"
-    if lc.enabled and lc.create_dwell_ms > 0:
+    if lc.enabled:
         tracker.set_state(rg_tracker_key, "CREATING")
         tracker.schedule_transition(rg_tracker_key, "ACTIVE", lc.create_dwell_ms)
-        rg.status = "creating"
+        if lc.create_dwell_ms > 0:
+            rg.status = "creating"
 
     return _json_response({"ReplicationGroup": _format_replication_group(rg)})
 
@@ -296,6 +220,25 @@ async def _handle_describe_replication_groups(
 
     groups = [_format_replication_group(rg) for rg in state.replication_groups.values()]
     return _json_response({"ReplicationGroups": groups})
+
+
+async def _handle_modify_replication_group(
+    state: _ElastiCacheState, body: dict, _tracker: ResourceStateTracker
+) -> Response:
+    rg_id = body.get("ReplicationGroupId", "")
+    rg = state.replication_groups.get(rg_id)
+    if rg is None:
+        return _error_response(
+            "ReplicationGroupNotFoundFault",
+            f"Replication group {rg_id} not found.",
+        )
+
+    if "ReplicationGroupDescription" in body:
+        rg.description = body["ReplicationGroupDescription"]
+    if "NotificationTopicArn" in body:
+        rg.notification_topic_arn = body["NotificationTopicArn"]
+
+    return _json_response({"ReplicationGroup": _format_replication_group(rg)})
 
 
 async def _handle_delete_replication_group(
@@ -446,6 +389,7 @@ _ACTION_HANDLERS: dict[str, Any] = {
     "ModifyCacheCluster": _handle_modify_cache_cluster,
     "CreateReplicationGroup": _handle_create_replication_group,
     "DescribeReplicationGroups": _handle_describe_replication_groups,
+    "ModifyReplicationGroup": _handle_modify_replication_group,
     "DeleteReplicationGroup": _handle_delete_replication_group,
     "ListTagsForResource": _handle_list_tags_for_resource,
     "AddTagsToResource": _handle_add_tags_to_resource,
@@ -462,6 +406,7 @@ def create_elasticache_app(
     *,
     container_manager: ResourceContainerManager | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
+    registry: TrackerRegistry | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the ElastiCache wire protocol."""
     app = FastAPI(title="LDK ElastiCache")
@@ -469,6 +414,9 @@ def create_elasticache_app(
     state = _ElastiCacheState(container_manager=container_manager)
     _lc = lifecycle or ResourceLifecycleConfig()
     _tracker = ResourceStateTracker(_lc)
+    if registry is not None:
+        register_tracker(registry, "elasticache", "cluster", _tracker)
+        register_tracker(registry, "elasticache", "replication-group", _tracker)
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:

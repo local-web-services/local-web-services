@@ -1,7 +1,34 @@
 from __future__ import annotations
 
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
+from lws.api.management import create_management_router
 from lws.interfaces import ICompute, InvocationResult, LambdaContext
 from lws.interfaces.provider import Provider
+from lws.providers._shared.async_state_store import AsyncStateStore
+from lws.providers._shared.aws_lifecycle import TrackerRegistry
+from lws.runtime.orchestrator import Orchestrator
+
+
+def make_registry_client(
+    state_store: AsyncStateStore,
+    tracker_registry: TrackerRegistry | None = None,
+) -> TestClient:
+    """Build a TestClient wired to a management router with optional tracker registry."""
+    orchestrator = Orchestrator()
+    orchestrator._running = True
+    providers: dict = {"dynamodb": FakeProvider("dynamodb")}
+    orchestrator._providers = providers
+    router = create_management_router(
+        orchestrator=orchestrator,
+        providers=providers,
+        state_store=state_store,
+        tracker_registry=tracker_registry,
+    )
+    app = FastAPI()
+    app.include_router(router)
+    return TestClient(app)
 
 
 class FakeCompute(ICompute):

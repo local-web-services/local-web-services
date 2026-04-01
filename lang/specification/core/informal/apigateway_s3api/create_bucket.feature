@@ -1,5 +1,5 @@
 @apigateways3api @generated
-Feature: ApigatewayS3api - An S3 Bucket Is Created
+Feature: ApigatewayS3api - A "S3" "Bucket" Is Created
 
   # Generated from FizzBee spec: apigateway_s3api.fizz
   # Safety invariants: ObjectReferencesExistingBucket, SuccessfulRequestReferencesExistingAPI
@@ -8,15 +8,15 @@ Feature: ApigatewayS3api - An S3 Bucket Is Created
     Given the system is initialized
 
   @minimal @happy @create_bucket
-  Scenario: an S3 bucket is created
-    Given the bucket does not already exist
-    When an S3 bucket is created
-    Then the bucket is "ACTIVE"
-    And every existing object references a bucket that exists
-    And every successful request references an "API" that exists
+  Scenario: a "s3" "bucket" is created
+    Given the "s3" "bucket" did not already exist
+    When a "s3" "bucket" is created
+    Then the "s3" "bucket" will be "ACTIVE"
+    And every existing object references a "s3" "bucket" that exists
+    And every successful request references an "api gateway" "API" that exists
 
-  @standard @negative @create_bucket
-  Scenario: an S3 bucket is created fails when the bucket already exists
-    Given the bucket already exists
-    When an S3 bucket is created
+  @guard @negative @create_bucket
+  Scenario: a "s3" "bucket" is created fails when the "s3" "bucket" already existed
+    Given the "s3" "bucket" already existed
+    When a "s3" "bucket" is created
     Then the operation is rejected

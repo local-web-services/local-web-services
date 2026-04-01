@@ -9,16 +9,16 @@ Feature: LambdaSqs - The Lambda Invocation Completes Successfully
 
   @minimal @happy @invocation_succeeds @internal
   Scenario: the Lambda invocation completes successfully
-    Given an invocation is "IN_PROGRESS"
+    Given a "lambda" "invocation" was "IN_PROGRESS"
     When the Lambda invocation completes successfully
-    Then the invocation is "SUCCESS" and the "SQS" message is "DELETED"
+    Then the invocation will be "SUCCESS" and the "SQS" message will be deleted
     And every in-progress invocation was initiated by an "ENABLED" event source mapping
     And every in-progress invocation references an "ACTIVE" Lambda function
     And every "AVAILABLE" or "IN_FLIGHT" message belongs to an "ACTIVE" queue
     And every "ENABLED" event source mapping references an "ACTIVE" queue
 
-  @standard @negative @invocation_succeeds @internal
-  Scenario: the Lambda invocation completes successfully fails when no invocation is "IN_PROGRESS"
-    Given no invocation is "IN_PROGRESS"
+  @guard @negative @invocation_succeeds @internal
+  Scenario: the Lambda invocation completes successfully fails when no "lambda" "invocation" was "IN_PROGRESS"
+    Given no "lambda" "invocation" was "IN_PROGRESS"
     When the Lambda invocation completes successfully
     Then the operation is rejected

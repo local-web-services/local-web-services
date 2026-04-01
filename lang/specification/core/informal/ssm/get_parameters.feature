@@ -1,5 +1,5 @@
 @ssm @generated
-Feature: Ssm - Multiple Parameters Are Retrieved From Ssm
+Feature: Ssm - Multiple "Ssm" "Parameter"S Are Retrieved
 
   # Generated from FizzBee spec: ssm.fizz
   # Safety invariants: VersionIsPositive, TypeIsValid, ParamExistsValuesValid, ErrorLogEntriesAreValid
@@ -8,9 +8,9 @@ Feature: Ssm - Multiple Parameters Are Retrieved From Ssm
     Given the system is initialized
 
   @minimal @happy @get_parameters
-  Scenario: multiple parameters are retrieved from "SSM"
-    When multiple parameters are retrieved from "SSM"
-    Then the parameter values are returned
+  Scenario: multiple "ssm" "parameter"s are retrieved
+    When multiple "ssm" "parameter"s are retrieved
+    Then the "ssm" "parameter" values will be returned
     And every parameter version is a positive integer
     And every parameter has a valid type (String, SecureString, or StringList)
     And param_exists values are always valid booleans

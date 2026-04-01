@@ -225,3 +225,69 @@ internal control of the fake.
   fake. Those must be implemented — not tagged or skipped.
 - Scenarios that require Docker or other external dependencies. Configure CI
   to provide those dependencies instead.
+
+## Tags Produced by `tools/fizz_to_gherkin.py`
+
+When feature files are generated from a FizzBee spec, the script applies a
+fixed set of tags. Never add or remove these tags by hand — regenerate the
+file instead.
+
+### Feature-level tags
+
+Every generated feature file begins with two tags on the `Feature:` line:
+
+| Tag | Meaning |
+|-----|---------|
+| `@<service>` | Service name in lowercase (e.g. `@dynamodb`, `@s3api`). Derived from `--service` or the spec filename. |
+| `@generated` | Marks the feature file as auto-generated from a FizzBee spec. |
+
+### Scenario-level tags
+
+Each scenario receives a combination of tags drawn from three groups.
+
+#### Test-type tag — what kind of test this scenario is
+
+| Tag | Meaning |
+|-----|---------|
+| `@minimal` | One happy-path scenario per action. |
+| `@guard` | One scenario per guard violation — the action is attempted with a precondition deliberately broken. |
+| `@sequence` | A chain of two or three actions exercising state transitions. |
+| `@invariant` | A standalone check for a stub safety assertion. |
+
+#### Outcome tag — what the scenario asserts
+
+| Tag | Paired with | Meaning |
+|-----|-------------|---------|
+| `@happy` | `@minimal` | The action succeeds with all preconditions met. |
+| `@negative` | `@guard` | The action is rejected because a guard condition is violated. |
+
+#### Action tag — which FizzBee action the scenario covers
+
+`@minimal` and `@guard` scenarios also carry a tag derived from the action
+name (CamelCase → `snake_case`):
+
+```gherkin
+@minimal @happy @create_table
+Scenario: Create a table
+
+@guard @negative @create_table
+Scenario: Create a table fails when the table already exists
+```
+
+`@sequence` scenarios cover multiple actions and do not carry an action tag.
+
+#### Skip tags — scenarios that require privileged state
+
+These tags appear on `@guard` scenarios when the guard violation cannot be
+reproduced through public API calls alone:
+
+| Tag | Source annotation | Meaning |
+|-----|-------------------|---------|
+| `@lifecycle` | `# guard_violation_lifecycle:` | Requires internal lifecycle control to reach this state. |
+| `@capacity` | `# guard_violation_capacity:` | Requires internal capacity control (e.g. slot exhaustion). |
+| `@<custom>` | `# fake_skip:` on the action | Action-level skip tag; applies to all of that action's scenarios. |
+
+`@lifecycle` and `@capacity` are the generated equivalents of `@internal` in
+hand-written feature files. All three are permanently excluded from the
+standard test run. The pytest `addopts` in each `pyproject.toml` must
+filter all three: `-m 'not internal and not lifecycle and not capacity'`.

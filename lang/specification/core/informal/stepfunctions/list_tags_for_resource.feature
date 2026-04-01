@@ -1,5 +1,5 @@
 @stepfunctions @generated
-Feature: Stepfunctions - Tags For A State Machine Are Listed
+Feature: Stepfunctions - Tags For A "Step Functions" "State Machine" Are Listed
 
   # Generated from FizzBee spec: stepfunctions.fizz
   # Safety invariants: StateMachineStatusValid, ExecutionStatusValid, StateMachineTypeValid, SyncExecutionOnlyForExpress, ExecutionBelongsToKnownStateMachine
@@ -8,26 +8,26 @@ Feature: Stepfunctions - Tags For A State Machine Are Listed
     Given the system is initialized
 
   @minimal @happy @list_tags_for_resource
-  Scenario: tags for a state machine are listed
-    Given the state machine exists
-    And the state machine is "ACTIVE"
-    When tags for a state machine are listed
-    Then the list of tags is returned
+  Scenario: tags for a "step functions" "state machine" are listed
+    Given the "step functions" "state machine" existed
+    And the "step functions" "state machine" was "ACTIVE"
+    When tags for a "step functions" "state machine" are listed
+    Then the list of tags will be returned
     And every state machine has a valid status ("ACTIVE", "DELETING", or "DELETED")
     And every execution has a valid status ("RUNNING", "SUCCEEDED", "FAILED", "TIMED_OUT", or "ABORTED")
     And every state machine has a valid type ("STANDARD" or "EXPRESS")
     And synchronous executions only run on express state machines
     And every execution belongs to a known state machine
 
-  @standard @negative @list_tags_for_resource
-  Scenario: tags for a state machine are listed fails when the state machine does not exist
-    Given the state machine does not exist
-    When tags for a state machine are listed
+  @guard @negative @list_tags_for_resource
+  Scenario: tags for a "step functions" "state machine" are listed fails when the "step functions" "state machine" did not exist
+    Given the "step functions" "state machine" did not exist
+    When tags for a "step functions" "state machine" are listed
     Then the operation is rejected
 
-  @standard @negative @list_tags_for_resource @lifecycle
-  Scenario: tags for a state machine are listed fails when the state machine is not "ACTIVE"
-    Given the state machine exists
-    And the state machine is not "ACTIVE"
-    When tags for a state machine are listed
+  @guard @negative @list_tags_for_resource @lifecycle
+  Scenario: tags for a "step functions" "state machine" are listed fails when the "step functions" "state machine" was not "ACTIVE"
+    Given the "step functions" "state machine" existed
+    And the "step functions" "state machine" was not "ACTIVE"
+    When tags for a "step functions" "state machine" are listed
     Then the operation is rejected

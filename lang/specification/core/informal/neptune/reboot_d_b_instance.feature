@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Database Instance Is Rebooted
+Feature: Neptune - A "Neptune" "Instance" Is Rebooted
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -8,13 +8,13 @@ Feature: Neptune - A Database Instance Is Rebooted
     Given the system is initialized
 
   @minimal @happy @reboot_d_b_instance
-  Scenario: a database instance is rebooted
-    Given the instance exists
-    And the instance is "AVAILABLE"
-    And the cluster exists
-    And the cluster is "AVAILABLE"
-    When a database instance is rebooted
-    Then the instance is in "REBOOTING" state
+  Scenario: a "neptune" "instance" is rebooted
+    Given the "neptune" "instance" existed
+    And the "neptune" "instance" was "AVAILABLE"
+    And the "neptune" "cluster" existed
+    And the "neptune" "cluster" was "AVAILABLE"
+    When a "neptune" "instance" is rebooted
+    Then the "neptune" "INSTANCE" will be in "REBOOTING" state
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -24,32 +24,32 @@ Feature: Neptune - A Database Instance Is Rebooted
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @reboot_d_b_instance
-  Scenario: a database instance is rebooted fails when the instance does not exist
-    Given the instance does not exist
-    When a database instance is rebooted
+  @guard @negative @reboot_d_b_instance
+  Scenario: a "neptune" "instance" is rebooted fails when the "neptune" "instance" did not exist
+    Given the "neptune" "instance" did not exist
+    When a "neptune" "instance" is rebooted
     Then the operation is rejected
 
-  @standard @negative @reboot_d_b_instance @lifecycle
-  Scenario: a database instance is rebooted fails when the instance is not "AVAILABLE"
-    Given the instance exists
-    And the instance is not "AVAILABLE"
-    When a database instance is rebooted
+  @guard @negative @reboot_d_b_instance @lifecycle
+  Scenario: a "neptune" "instance" is rebooted fails when the "neptune" "instance" was not "AVAILABLE"
+    Given the "neptune" "instance" existed
+    And the "neptune" "instance" was not "AVAILABLE"
+    When a "neptune" "instance" is rebooted
     Then the operation is rejected
 
-  @standard @negative @reboot_d_b_instance
-  Scenario: a database instance is rebooted fails when the cluster does not exist
-    Given the instance exists
-    And the instance is "AVAILABLE"
-    And the cluster does not exist
-    When a database instance is rebooted
+  @guard @negative @reboot_d_b_instance
+  Scenario: a "neptune" "instance" is rebooted fails when the "neptune" "cluster" did not exist
+    Given the "neptune" "instance" existed
+    And the "neptune" "instance" was "AVAILABLE"
+    And the "neptune" "cluster" did not exist
+    When a "neptune" "instance" is rebooted
     Then the operation is rejected
 
-  @standard @negative @reboot_d_b_instance @lifecycle
-  Scenario: a database instance is rebooted fails when the cluster is not "AVAILABLE"
-    Given the instance exists
-    And the instance is "AVAILABLE"
-    And the cluster exists
-    And the cluster is not "AVAILABLE"
-    When a database instance is rebooted
+  @guard @negative @reboot_d_b_instance @lifecycle
+  Scenario: a "neptune" "instance" is rebooted fails when the "neptune" "cluster" was not "AVAILABLE"
+    Given the "neptune" "instance" existed
+    And the "neptune" "instance" was "AVAILABLE"
+    And the "neptune" "cluster" existed
+    And the "neptune" "cluster" was not "AVAILABLE"
+    When a "neptune" "instance" is rebooted
     Then the operation is rejected

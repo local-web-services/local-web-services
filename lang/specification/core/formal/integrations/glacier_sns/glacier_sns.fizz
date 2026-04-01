@@ -27,10 +27,10 @@ action Init:
     msg_job = {}                # msg_job[mid] = job_id
 
 
-# step: a Glacier vault is created
-# result: the vault EXISTS with no SNS notification configuration
-# guard: the vault does not already exist
-# guard_violation: the vault already exists
+# step: a "glacier" "vault" is created
+# result: the "glacier" "vault" will exist with no SNS notification configuration
+# guard: the "glacier" "vault" did not already exist
+# guard_violation: the "glacier" "vault" already existed
 atomic action CreateVault:
     oneof vid in VAULT_IDS:
         if vid not in vault_status:
@@ -38,22 +38,22 @@ atomic action CreateVault:
             vault_topic[vid] = ""
 
 
-# step: an SNS topic is created
-# result: the topic is ACTIVE
-# guard: the topic does not already exist
-# guard_violation: the topic already exists
+# step: a "sns" "topic" is created
+# result: the "sns" "topic" will be "ACTIVE"
+# guard: the "sns" "topic" did not already exist
+# guard_violation: the "sns" "topic" already existed
 atomic action CreateTopic:
     oneof tid in TOPIC_IDS:
         if tid not in topic_status:
             topic_status[tid] = "ACTIVE"
 
 
-# step: the SNS topic is deleted
-# result: the topic is DELETED and Glacier notifications will fail
-# guard: the topic exists
-# guard_violation: the topic does not exist
-# guard: the topic is ACTIVE
-# guard_violation_lifecycle: the topic is already DELETED
+# step: the "sns" "topic" is deleted
+# result: the "sns" "topic" will be deleted and Glacier notifications will fail
+# guard: the "sns" "topic" existed
+# guard_violation: the "sns" "topic" did not exist
+# guard: the "sns" "topic" was "ACTIVE"
+# guard_violation_lifecycle: the "sns" "topic" is already "DELETED"
 atomic action DeleteTopic:
     oneof tid in TOPIC_IDS:
         if tid in topic_status:
@@ -61,14 +61,14 @@ atomic action DeleteTopic:
                 topic_status[tid] = "DELETED"
 
 
-# step: an SNS notification is configured on the vault
-# result: the vault will publish job completion notifications to the topic
-# guard: the vault exists
-# guard_violation: the vault does not exist
-# guard: the vault has no SNS notification configured
-# guard_violation: the vault already has an SNS notification configured
-# guard: the topic exists and is ACTIVE
-# guard_violation: the topic does not exist or is not ACTIVE
+# step: a SNS notification is configured on the "glacier" "vault"
+# result: the "glacier" "vault" will publish job completion notifications to the "sns" "topic"
+# guard: the "glacier" "vault" existed
+# guard_violation: the "glacier" "vault" did not exist
+# guard: the "glacier" "vault" has no SNS notification configured
+# guard_violation: the "glacier" "vault" already has a SNS notification configured
+# guard: the "sns" "topic" existed and was "ACTIVE"
+# guard_violation: the "sns" "topic" did not exist or was "ACTIVE"
 atomic action ConfigureNotification:
     oneof vid in VAULT_IDS:
         if vid in vault_status:
@@ -79,11 +79,11 @@ atomic action ConfigureNotification:
                             vault_topic[vid] = tid
 
 
-# step: a Glacier archive retrieval job is initiated on the vault
-# result: the job is IN_PROGRESS
-# guard: the vault exists
-# guard_violation: the vault does not exist
-# guard: a job slot is available
+# step: a Glacier archive retrieval job is initiated on the "glacier" "vault"
+# result: the "glacier" "job" will be "IN_PROGRESS"
+# guard: the "glacier" "vault" existed
+# guard_violation: the "glacier" "vault" did not exist
+# guard: a "glacier" "job" slot is available
 # guard_violation_capacity: no job slot is available
 atomic action InitiateJob:
     oneof vid in VAULT_IDS:
@@ -96,13 +96,13 @@ atomic action InitiateJob:
 
 # fake_skip: internal
 # step: the Glacier job completes and publishes a notification to the configured SNS topic
-# result: the job is SUCCEEDED and the notification is PUBLISHED
-# guard: a job is IN_PROGRESS
-# guard_violation_lifecycle: no job is IN_PROGRESS
-# guard: the vault has an SNS notification configured
-# guard_violation: the vault has no SNS notification configured
-# guard: the configured topic is ACTIVE
-# guard_violation_lifecycle: the configured topic is DELETED
+# result: the "glacier" "job" will be "SUCCEEDED" and the notification will be "PUBLISHED"
+# guard: a "glacier" "job" was "IN_PROGRESS"
+# guard_violation_lifecycle: no job was "IN_PROGRESS"
+# guard: the "glacier" "vault" has a SNS notification configured
+# guard_violation: the "glacier" "vault" has no SNS notification configured
+# guard: the configured topic was "ACTIVE"
+# guard_violation_lifecycle: the configured topic was "DELETED"
 # guard: a message slot is available
 # guard_violation_capacity: no message slot is available
 atomic action JobCompletedNotificationDelivered:
@@ -124,14 +124,14 @@ atomic action JobCompletedNotificationDelivered:
 
 
 # fake_skip: internal
-# step: the Glacier job completes but notification delivery fails because the topic was deleted
-# result: the job is SUCCEEDED but no notification is published
-# guard: a job is IN_PROGRESS
-# guard_violation_lifecycle: no job is IN_PROGRESS
-# guard: the vault has an SNS notification configured
-# guard_violation: the vault has no SNS notification configured
-# guard: the configured topic is DELETED
-# guard_violation_lifecycle: the configured topic is not DELETED
+# step: the Glacier job completes but notification delivery fails because the "sns" "topic" was deleted
+# result: the "glacier" "job" will be "SUCCEEDED" but no notification will be published
+# guard: a "glacier" "job" was "IN_PROGRESS"
+# guard_violation_lifecycle: no job was "IN_PROGRESS"
+# guard: the "glacier" "vault" has a SNS notification configured
+# guard_violation: the "glacier" "vault" has no SNS notification configured
+# guard: the configured topic was "DELETED"
+# guard_violation_lifecycle: the configured topic was not "DELETED"
 atomic action JobCompletedNotificationFails:
     oneof jid in JOB_IDS:
         if jid in job_status:
@@ -145,7 +145,7 @@ atomic action JobCompletedNotificationFails:
                                 job_status[jid] = "SUCCEEDED"
 
 
-# check: every PUBLISHED notification references a job that exists
+# check: every PUBLISHED notification references a "glacier" "job" that exists
 always assertion PublishedNotificationReferencesExistingJob:
     for mid in msg_status:
         if msg_status[mid] == "PUBLISHED":
@@ -155,7 +155,7 @@ always assertion PublishedNotificationReferencesExistingJob:
     return True
 
 
-# check: every PUBLISHED notification references a topic that exists
+# check: every PUBLISHED notification references a "sns" "topic" that exists
 always assertion PublishedNotificationReferencesExistingTopic:
     for mid in msg_status:
         if msg_status[mid] == "PUBLISHED":

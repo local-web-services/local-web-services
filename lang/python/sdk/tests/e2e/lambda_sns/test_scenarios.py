@@ -1,4 +1,4 @@
-"""Load all LambdaSns informal spec scenarios (excluding sequences files)."""
+"""Load all LambdaSns informal spec scenarios."""
 
 from __future__ import annotations
 
@@ -21,3 +21,7 @@ def _has_runnable_scenarios(filepath: str) -> bool:
 for _f in glob.glob(os.path.join(_INFORMAL, "lambda_sns", "*.feature")):
     if "sequences" not in os.path.basename(_f) and _has_runnable_scenarios(_f):
         scenarios(_f)
+
+_sequences_file = os.path.join(_INFORMAL, "lambda_sns", "sequences.feature")
+if os.path.exists(_sequences_file):
+    scenarios(_sequences_file)

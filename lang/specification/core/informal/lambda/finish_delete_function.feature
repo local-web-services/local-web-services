@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: Lambda - A Function Finishes Being Deleted
+Feature: lambda - A "Lambda" "Function" Finishes Being Deleted
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions
@@ -8,11 +8,11 @@ Feature: Lambda - A Function Finishes Being Deleted
     Given the system is initialized
 
   @minimal @happy @finish_delete_function @internal
-  Scenario: a function finishes being deleted
-    Given the function exists
-    And the function is "DELETING"
-    When a function finishes being deleted
-    Then the function is "DELETED"
+  Scenario: a "lambda" "function" finishes being deleted
+    Given the "lambda" "function" existed
+    And the "lambda" "function" was "DELETING"
+    When a "lambda" "function" finishes being deleted
+    Then the "lambda" "function" will be "DELETED"
     And every active event source mapping references an existing non-deleted function
     And no function in "DELETING" state has active executions
     And active execution count never exceeds reserved concurrency when set
@@ -21,15 +21,15 @@ Feature: Lambda - A Function Finishes Being Deleted
     And every function has a valid status
     And all async slots reference known function IDs or are empty
 
-  @standard @negative @finish_delete_function @internal
-  Scenario: a function finishes being deleted fails when the function does not exist
-    Given the function does not exist
-    When a function finishes being deleted
+  @guard @negative @finish_delete_function @internal
+  Scenario: a "lambda" "function" finishes being deleted fails when the "lambda" "function" did not exist
+    Given the "lambda" "function" did not exist
+    When a "lambda" "function" finishes being deleted
     Then the operation is rejected
 
-  @standard @negative @finish_delete_function @internal
-  Scenario: a function finishes being deleted fails when the function is not "DELETING"
-    Given the function exists
-    And the function is not "DELETING"
-    When a function finishes being deleted
+  @guard @negative @finish_delete_function @internal
+  Scenario: a "lambda" "function" finishes being deleted fails when the "lambda" "function" was not "DELETING"
+    Given the "lambda" "function" existed
+    And the "lambda" "function" was not "DELETING"
+    When a "lambda" "function" finishes being deleted
     Then the operation is rejected

@@ -1,5 +1,5 @@
 @docdb @generated
-Feature: Docdb - A Database Instance Is Deleted
+Feature: Docdb - A "Documentdb" "Instance" Is Deleted
 
   # Generated from FizzBee spec: docdb.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, NoNonDeletedInstancesOnDeletedCluster, NoAvailableInstancesOnFailedCluster, DeletingClusterGetsNoNewInstances, SnapshotHasValidClusterReference
@@ -8,11 +8,11 @@ Feature: Docdb - A Database Instance Is Deleted
     Given the system is initialized
 
   @minimal @happy @delete_d_b_instance
-  Scenario: a database instance is deleted
-    Given the instance exists
-    And the instance is "AVAILABLE"
-    When a database instance is deleted
-    Then the instance is in "DELETING" state
+  Scenario: a "documentdb" "instance" is deleted
+    Given the "documentdb" "instance" existed
+    And the "documentdb" "instance" was "AVAILABLE"
+    When a "documentdb" "instance" is deleted
+    Then the "documentdb" "INSTANCE" will be in "DELETING" state
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -21,15 +21,15 @@ Feature: Docdb - A Database Instance Is Deleted
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @delete_d_b_instance
-  Scenario: a database instance is deleted fails when the instance does not exist
-    Given the instance does not exist
-    When a database instance is deleted
+  @guard @negative @delete_d_b_instance
+  Scenario: a "documentdb" "instance" is deleted fails when the "documentdb" "instance" did not exist
+    Given the "documentdb" "instance" did not exist
+    When a "documentdb" "instance" is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_d_b_instance @lifecycle
-  Scenario: a database instance is deleted fails when the instance is not "AVAILABLE"
-    Given the instance exists
-    And the instance is not "AVAILABLE"
-    When a database instance is deleted
+  @guard @negative @delete_d_b_instance @lifecycle
+  Scenario: a "documentdb" "instance" is deleted fails when the "documentdb" "instance" was not "AVAILABLE"
+    Given the "documentdb" "instance" existed
+    And the "documentdb" "instance" was not "AVAILABLE"
+    When a "documentdb" "instance" is deleted
     Then the operation is rejected

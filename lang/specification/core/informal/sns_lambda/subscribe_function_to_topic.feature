@@ -1,5 +1,5 @@
 @snslambda @generated
-Feature: SnsLambda - A Lambda Function Subscribes To An Sns Topic
+Feature: SnsLambda - A "Lambda" "Function" Subscribes To A "Sns" "Topic"
 
   # Generated from FizzBee spec: sns_lambda.fizz
   # Safety invariants: SubscriptionReferencesActiveTopic, InvocationRequiresActiveFunction, InvocationRequiresConfirmedSubscription
@@ -8,54 +8,54 @@ Feature: SnsLambda - A Lambda Function Subscribes To An Sns Topic
     Given the system is initialized
 
   @minimal @happy @subscribe_function_to_topic
-  Scenario: a Lambda function subscribes to an "SNS" topic
-    Given the topic exists
-    And the topic is "ACTIVE"
-    And the function exists
-    And the function is "ACTIVE"
+  Scenario: a "lambda" "function" subscribes to a "sns" "topic"
+    Given the "sns" "topic" existed
+    And the "sns" "topic" was "ACTIVE"
+    And the "lambda" "function" existed
+    And the "lambda" "function" was "ACTIVE"
     And the subscription slot is available
-    When a Lambda function subscribes to an "SNS" topic
-    Then the subscription is "CONFIRMED" and the function will be invoked on published messages
+    When a "lambda" "function" subscribes to a "sns" "topic"
+    Then the subscription will be "CONFIRMED" and the "lambda" "function" will be invoked on published messages
     And every "CONFIRMED" subscription references an "ACTIVE" "SNS" topic
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "IN_PROGRESS" invocation was triggered by a "CONFIRMED" subscription
 
-  @standard @negative @subscribe_function_to_topic
-  Scenario: a Lambda function subscribes to an "SNS" topic fails when the topic does not exist
-    Given the topic does not exist
-    When a Lambda function subscribes to an "SNS" topic
+  @guard @negative @subscribe_function_to_topic
+  Scenario: a "lambda" "function" subscribes to a "sns" "topic" fails when the "sns" "topic" did not exist
+    Given the "sns" "topic" did not exist
+    When a "lambda" "function" subscribes to a "sns" "topic"
     Then the operation is rejected
 
-  @standard @negative @subscribe_function_to_topic @lifecycle
-  Scenario: a Lambda function subscribes to an "SNS" topic fails when the topic is not "ACTIVE"
-    Given the topic exists
-    And the topic is not "ACTIVE"
-    When a Lambda function subscribes to an "SNS" topic
+  @guard @negative @subscribe_function_to_topic @lifecycle
+  Scenario: a "lambda" "function" subscribes to a "sns" "topic" fails when the "sns" "topic" was not "ACTIVE"
+    Given the "sns" "topic" existed
+    And the "sns" "topic" was not "ACTIVE"
+    When a "lambda" "function" subscribes to a "sns" "topic"
     Then the operation is rejected
 
-  @standard @negative @subscribe_function_to_topic
-  Scenario: a Lambda function subscribes to an "SNS" topic fails when the function does not exist
-    Given the topic exists
-    And the topic is "ACTIVE"
-    And the function does not exist
-    When a Lambda function subscribes to an "SNS" topic
+  @guard @negative @subscribe_function_to_topic
+  Scenario: a "lambda" "function" subscribes to a "sns" "topic" fails when the "lambda" "function" did not exist
+    Given the "sns" "topic" existed
+    And the "sns" "topic" was "ACTIVE"
+    And the "lambda" "function" did not exist
+    When a "lambda" "function" subscribes to a "sns" "topic"
     Then the operation is rejected
 
-  @standard @negative @subscribe_function_to_topic @lifecycle
-  Scenario: a Lambda function subscribes to an "SNS" topic fails when the function is not "ACTIVE"
-    Given the topic exists
-    And the topic is "ACTIVE"
-    And the function exists
-    And the function is not "ACTIVE"
-    When a Lambda function subscribes to an "SNS" topic
+  @guard @negative @subscribe_function_to_topic @lifecycle
+  Scenario: a "lambda" "function" subscribes to a "sns" "topic" fails when the "lambda" "function" was not "ACTIVE"
+    Given the "sns" "topic" existed
+    And the "sns" "topic" was "ACTIVE"
+    And the "lambda" "function" existed
+    And the "lambda" "function" was not "ACTIVE"
+    When a "lambda" "function" subscribes to a "sns" "topic"
     Then the operation is rejected
 
-  @standard @negative @subscribe_function_to_topic @capacity
-  Scenario: a Lambda function subscribes to an "SNS" topic fails when the subscription slot is not available
-    Given the topic exists
-    And the topic is "ACTIVE"
-    And the function exists
-    And the function is "ACTIVE"
+  @guard @negative @subscribe_function_to_topic @capacity
+  Scenario: a "lambda" "function" subscribes to a "sns" "topic" fails when the subscription slot is not available
+    Given the "sns" "topic" existed
+    And the "sns" "topic" was "ACTIVE"
+    And the "lambda" "function" existed
+    And the "lambda" "function" was "ACTIVE"
     And the subscription slot is not available
-    When a Lambda function subscribes to an "SNS" topic
+    When a "lambda" "function" subscribes to a "sns" "topic"
     Then the operation is rejected

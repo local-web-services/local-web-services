@@ -1,5 +1,5 @@
 @lambdas3api @generated
-Feature: LambdaS3api - The Lambda Function Writes An Object To The S3 Bucket During Invocation
+Feature: LambdaS3api - The "Lambda" "Function" Writes An "S3" "Object" To The "S3" "Bucket" During Invocation
 
   # Generated from FizzBee spec: lambda_s3api.fizz
   # Safety invariants: InvocationRequiresActiveFunction, ObjectRequiresActiveBucket
@@ -8,42 +8,42 @@ Feature: LambdaS3api - The Lambda Function Writes An Object To The S3 Bucket Dur
     Given the system is initialized
 
   @minimal @happy @put_object
-  Scenario: the Lambda function writes an object to the S3 bucket during invocation
-    Given an invocation is "IN_PROGRESS"
-    And the bucket exists
-    And the bucket is "ACTIVE"
-    And an object slot is available
-    When the Lambda function writes an object to the S3 bucket during invocation
-    Then the object "EXISTS" in the bucket
+  Scenario: the "lambda" "function" writes an "s3" "object" to the "s3" "bucket" during invocation
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "s3" "bucket" existed
+    And the "s3" "bucket" was "ACTIVE"
+    And an "s3" "object" slot is available
+    When the "lambda" "function" writes an "s3" "object" to the "s3" "bucket" during invocation
+    Then the object will exist in the "s3" "bucket"
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing object belongs to an "ACTIVE" bucket
 
-  @standard @negative @put_object @lifecycle
-  Scenario: the Lambda function writes an object to the S3 bucket during invocation fails when no invocation is "IN_PROGRESS"
-    Given no invocation is "IN_PROGRESS"
-    When the Lambda function writes an object to the S3 bucket during invocation
+  @guard @negative @put_object @lifecycle
+  Scenario: the "lambda" "function" writes an "s3" "object" to the "s3" "bucket" during invocation fails when no "lambda" "invocation" was "IN_PROGRESS"
+    Given no "lambda" "invocation" was "IN_PROGRESS"
+    When the "lambda" "function" writes an "s3" "object" to the "s3" "bucket" during invocation
     Then the operation is rejected
 
-  @standard @negative @put_object
-  Scenario: the Lambda function writes an object to the S3 bucket during invocation fails when the bucket does not exist
-    Given an invocation is "IN_PROGRESS"
-    And the bucket does not exist
-    When the Lambda function writes an object to the S3 bucket during invocation
+  @guard @negative @put_object
+  Scenario: the "lambda" "function" writes an "s3" "object" to the "s3" "bucket" during invocation fails when the "s3" "bucket" did not exist
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "s3" "bucket" did not exist
+    When the "lambda" "function" writes an "s3" "object" to the "s3" "bucket" during invocation
     Then the operation is rejected
 
-  @standard @negative @put_object @lifecycle
-  Scenario: the Lambda function writes an object to the S3 bucket during invocation fails when the bucket is not "ACTIVE"
-    Given an invocation is "IN_PROGRESS"
-    And the bucket exists
-    And the bucket is not "ACTIVE"
-    When the Lambda function writes an object to the S3 bucket during invocation
+  @guard @negative @put_object @lifecycle
+  Scenario: the "lambda" "function" writes an "s3" "object" to the "s3" "bucket" during invocation fails when the "s3" "bucket" was not "ACTIVE"
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "s3" "bucket" existed
+    And the "s3" "bucket" was not "ACTIVE"
+    When the "lambda" "function" writes an "s3" "object" to the "s3" "bucket" during invocation
     Then the operation is rejected
 
-  @standard @negative @put_object @capacity
-  Scenario: the Lambda function writes an object to the S3 bucket during invocation fails when no object slot is available
-    Given an invocation is "IN_PROGRESS"
-    And the bucket exists
-    And the bucket is "ACTIVE"
+  @guard @negative @put_object @capacity
+  Scenario: the "lambda" "function" writes an "s3" "object" to the "s3" "bucket" during invocation fails when no object slot is available
+    Given a "lambda" "invocation" was "IN_PROGRESS"
+    And the "s3" "bucket" existed
+    And the "s3" "bucket" was "ACTIVE"
     And no object slot is available
-    When the Lambda function writes an object to the S3 bucket during invocation
+    When the "lambda" "function" writes an "s3" "object" to the "s3" "bucket" during invocation
     Then the operation is rejected

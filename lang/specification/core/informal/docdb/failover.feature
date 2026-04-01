@@ -9,14 +9,14 @@ Feature: Docdb - A Failover Is Triggered And A Replica Is Promoted To Primary
 
   @minimal @happy @failover @internal
   Scenario: a failover is triggered and a replica is promoted to primary
-    Given the cluster exists
-    And the cluster is "AVAILABLE"
-    And the new primary instance exists
-    And the instance belongs to this cluster
-    And the instance is not already the primary
-    And the instance is "AVAILABLE"
+    Given the "documentdb" "cluster" existed
+    And the "documentdb" "cluster" was "AVAILABLE"
+    And the new primary "documentdb" "instance" existed
+    And the "documentdb" "instance" belongs to this documentdb cluster
+    And the "documentdb" "instance" was not already the primary
+    And the "documentdb" "instance" was "AVAILABLE"
     When a failover is triggered and a replica is promoted to primary
-    Then the cluster has a new primary instance
+    Then the "documentdb" "cluster" has a new primary documentdb instance
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -25,53 +25,53 @@ Feature: Docdb - A Failover Is Triggered And A Replica Is Promoted To Primary
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @failover @internal
-  Scenario: a failover is triggered and a replica is promoted to primary fails when the cluster does not exist
-    Given the cluster does not exist
+  @guard @negative @failover @internal
+  Scenario: a failover is triggered and a replica is promoted to primary fails when the "documentdb" "cluster" did not exist
+    Given the "documentdb" "cluster" did not exist
     When a failover is triggered and a replica is promoted to primary
     Then the operation is rejected
 
-  @standard @negative @failover @internal
-  Scenario: a failover is triggered and a replica is promoted to primary fails when the cluster is not "AVAILABLE"
-    Given the cluster exists
-    And the cluster is not "AVAILABLE"
+  @guard @negative @failover @internal
+  Scenario: a failover is triggered and a replica is promoted to primary fails when the "documentdb" "cluster" was not "AVAILABLE"
+    Given the "documentdb" "cluster" existed
+    And the "documentdb" "cluster" was not "AVAILABLE"
     When a failover is triggered and a replica is promoted to primary
     Then the operation is rejected
 
-  @standard @negative @failover @internal
-  Scenario: a failover is triggered and a replica is promoted to primary fails when the new primary instance does not exist
-    Given the cluster exists
-    And the cluster is "AVAILABLE"
-    And the new primary instance does not exist
+  @guard @negative @failover @internal
+  Scenario: a failover is triggered and a replica is promoted to primary fails when the new primary "documentdb" "instance" did not exist
+    Given the "documentdb" "cluster" existed
+    And the "documentdb" "cluster" was "AVAILABLE"
+    And the new primary "documentdb" "instance" did not exist
     When a failover is triggered and a replica is promoted to primary
     Then the operation is rejected
 
-  @standard @negative @failover @internal
-  Scenario: a failover is triggered and a replica is promoted to primary fails when the instance does not belong to this cluster
-    Given the cluster exists
-    And the cluster is "AVAILABLE"
-    And the new primary instance exists
-    And the instance does not belong to this cluster
+  @guard @negative @failover @internal
+  Scenario: a failover is triggered and a replica is promoted to primary fails when the "documentdb" "instance" does not belong to this documentdb cluster
+    Given the "documentdb" "cluster" existed
+    And the "documentdb" "cluster" was "AVAILABLE"
+    And the new primary "documentdb" "instance" existed
+    And the "documentdb" "instance" does not belong to this documentdb cluster
     When a failover is triggered and a replica is promoted to primary
     Then the operation is rejected
 
-  @standard @negative @failover @internal
-  Scenario: a failover is triggered and a replica is promoted to primary fails when the instance is already the primary
-    Given the cluster exists
-    And the cluster is "AVAILABLE"
-    And the new primary instance exists
-    And the instance belongs to this cluster
-    And the instance is already the primary
+  @guard @negative @failover @internal
+  Scenario: a failover is triggered and a replica is promoted to primary fails when the "documentdb" "instance" was already the primary
+    Given the "documentdb" "cluster" existed
+    And the "documentdb" "cluster" was "AVAILABLE"
+    And the new primary "documentdb" "instance" existed
+    And the "documentdb" "instance" belongs to this documentdb cluster
+    And the "documentdb" "instance" was already the primary
     When a failover is triggered and a replica is promoted to primary
     Then the operation is rejected
 
-  @standard @negative @failover @internal
-  Scenario: a failover is triggered and a replica is promoted to primary fails when the instance is not "AVAILABLE"
-    Given the cluster exists
-    And the cluster is "AVAILABLE"
-    And the new primary instance exists
-    And the instance belongs to this cluster
-    And the instance is not already the primary
-    And the instance is not "AVAILABLE"
+  @guard @negative @failover @internal
+  Scenario: a failover is triggered and a replica is promoted to primary fails when the "documentdb" "instance" was not "AVAILABLE"
+    Given the "documentdb" "cluster" existed
+    And the "documentdb" "cluster" was "AVAILABLE"
+    And the new primary "documentdb" "instance" existed
+    And the "documentdb" "instance" belongs to this documentdb cluster
+    And the "documentdb" "instance" was not already the primary
+    And the "documentdb" "instance" was not "AVAILABLE"
     When a failover is triggered and a replica is promoted to primary
     Then the operation is rejected

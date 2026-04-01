@@ -26,8 +26,13 @@ testpaths = ["tests"]
 timeout = 120
 pythonpath = ["."]
 asyncio_mode = "auto"
+addopts = "-qq --no-header --disable-warnings"
 markers = [
     "internal: scenarios tagged @internal in Gherkin (excluded from standard test runs)",
+    "lifecycle: scenarios tagged @lifecycle in Gherkin (require internal lifecycle control)",
+    "capacity: scenarios tagged @capacity in Gherkin (require internal capacity control)",
+    "guard: scenarios tagged @guard in Gherkin (guard violation / negative outcome)",
+    "sequence: scenarios tagged @sequence in Gherkin (multi-action chain)",
 ]
 
 [dependency-groups]

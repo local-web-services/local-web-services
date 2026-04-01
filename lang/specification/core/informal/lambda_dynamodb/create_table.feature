@@ -1,5 +1,5 @@
 @lambdadynamodb @generated
-Feature: LambdaDynamodb - A Dynamodb Table Is Created
+Feature: LambdaDynamodb - A "Dynamodb" "Table" Is Created
 
   # Generated from FizzBee spec: lambda_dynamodb.fizz
   # Safety invariants: InvocationRequiresActiveFunction, ItemRequiresActiveTable
@@ -8,15 +8,15 @@ Feature: LambdaDynamodb - A Dynamodb Table Is Created
     Given the system is initialized
 
   @minimal @happy @create_table
-  Scenario: a DynamoDB table is created
-    Given the table does not already exist
-    When a DynamoDB table is created
-    Then the table is "ACTIVE"
+  Scenario: a "dynamodb" "table" is created
+    Given the "dynamodb" "table" did not already exist
+    When a "dynamodb" "table" is created
+    Then the "dynamodb" "table" will be "ACTIVE"
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing item belongs to an "ACTIVE" table
 
-  @standard @negative @create_table
-  Scenario: a DynamoDB table is created fails when the table already exists
-    Given the table already exists
-    When a DynamoDB table is created
+  @guard @negative @create_table
+  Scenario: a "dynamodb" "table" is created fails when the "dynamodb" "table" already existed
+    Given the "dynamodb" "table" already existed
+    When a "dynamodb" "table" is created
     Then the operation is rejected

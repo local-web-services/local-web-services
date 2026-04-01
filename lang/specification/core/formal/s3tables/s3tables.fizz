@@ -29,36 +29,36 @@ action Init:
 
     table_policy_exists = {}
 
-# step: a table bucket is created
-# result: the bucket is in CREATING state
-# guard: the bucket does not already exist
-# guard_violation: the bucket already exists
+# step: a "s3 tables" "table" s3 tables bucket is created
+# result: the "s3 tables" "bucket" will be in "CREATING" state
+# guard: the "s3 tables" "bucket" did not already exist
+# guard_violation: the "s3 tables" "bucket" already existed
 atomic action CreateTableBucket:
     oneof bname in BUCKET_NAMES:
         if bname not in bucket_status:
             bucket_status[bname] = "CREATING"
 
 # fake_skip: internal
-# step: a table bucket finishes creating
-# result: the bucket is ACTIVE
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is CREATING
-# guard_violation: the bucket is not CREATING
+# step: a "s3 tables" "table" s3 tables bucket finishes creating
+# result: the "s3 tables" "bucket" will be "ACTIVE"
+# guard: the "s3 tables" "bucket" existed
+# guard_violation: the "s3 tables" "bucket" did not exist
+# guard: the "s3 tables" "bucket" was "CREATING"
+# guard_violation: the "s3 tables" "bucket" was not "CREATING"
 atomic action FinishCreatingTableBucket:
     oneof bname in BUCKET_NAMES:
         if bname in bucket_status:
             if bucket_status[bname] == "CREATING":
                 bucket_status[bname] = "ACTIVE"
 
-# step: a table bucket is deleted
-# result: the bucket enters DELETING state
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
-# guard: the bucket has no active namespaces
-# guard_violation: the bucket has active namespaces
+# step: a "s3 tables" "table" s3 tables bucket is deleted
+# result: the "s3 tables" "bucket" will be in "DELETING" state
+# guard: the "s3 tables" "bucket" existed
+# guard_violation: the "s3 tables" "bucket" did not exist
+# guard: the "s3 tables" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3 tables" "bucket" was not "ACTIVE"
+# guard: the "s3 tables" "bucket" had no active namespaces
+# guard_violation: the "s3 tables" "bucket" had active namespaces
 atomic action DeleteTableBucket:
     oneof bname in BUCKET_NAMES:
         if bname in bucket_status:
@@ -67,16 +67,16 @@ atomic action DeleteTableBucket:
                     bucket_status[bname] = "DELETING"
 
 # fake_skip: internal
-# step: a table bucket finishes being deleted
-# result: the bucket is DELETED and all its namespaces and tables are DELETED
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is DELETING
-# guard_violation: the bucket is not DELETING
-# guard: the namespace exists
-# guard_violation: the namespace does not exist
-# guard: the table exists
-# guard_violation: the table does not exist
+# step: a "s3 tables" "table" s3 tables bucket finishes being deleted
+# result: the "s3 tables" "bucket" will be "DELETED" and all its namespaces and tables will be deleted
+# guard: the "s3 tables" "bucket" existed
+# guard_violation: the "s3 tables" "bucket" did not exist
+# guard: the "s3 tables" "bucket" was "DELETING"
+# guard_violation: the "s3 tables" "bucket" was not "DELETING"
+# guard: the "s3 tables" "namespace" existed
+# guard_violation: the "s3 tables" "namespace" did not exist
+# guard: the "s3 tables" "table" existed
+# guard_violation: the "s3 tables" "table" did not exist
 atomic action FinishDeletingTableBucket:
     oneof bname in BUCKET_NAMES:
         if bname in bucket_status:
@@ -91,14 +91,14 @@ atomic action FinishDeletingTableBucket:
                             if tkey in table_status:
                                 table_status[tkey] = "DELETED"
 
-# step: a namespace is created in a table bucket
-# result: the namespace is ACTIVE
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
-# guard: the namespace does not already exist
-# guard_violation: the namespace already exists
+# step: a "s3 tables" "namespace" is created in a "s3 tables" "table" s3 tables bucket
+# result: the "s3 tables" "namespace" will be "ACTIVE"
+# guard: the "s3 tables" "bucket" existed
+# guard_violation: the "s3 tables" "bucket" did not exist
+# guard: the "s3 tables" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3 tables" "bucket" was not "ACTIVE"
+# guard: the "s3 tables" "namespace" did not already exist
+# guard_violation: the "s3 tables" "namespace" already existed
 atomic action CreateNamespace:
     oneof bname in BUCKET_NAMES:
         if bname in bucket_status:
@@ -108,18 +108,18 @@ atomic action CreateNamespace:
                     if ns_key not in ns_status:
                         ns_status[ns_key] = "ACTIVE"
 
-# step: a namespace is deleted from a table bucket
-# result: the namespace enters DELETING state
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
-# guard: the namespace exists
-# guard_violation: the namespace does not exist
-# guard: the namespace is ACTIVE
-# guard_violation_lifecycle: the namespace is not ACTIVE
-# guard: the namespace has no active tables
-# guard_violation: the namespace has active tables
+# step: a "s3 tables" "namespace" is deleted from a "s3 tables" "table" s3 tables bucket
+# result: the "s3 tables" "namespace" will be in "DELETING" state
+# guard: the "s3 tables" "bucket" existed
+# guard_violation: the "s3 tables" "bucket" did not exist
+# guard: the "s3 tables" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3 tables" "bucket" was not "ACTIVE"
+# guard: the "s3 tables" "namespace" existed
+# guard_violation: the "s3 tables" "namespace" did not exist
+# guard: the "s3 tables" "namespace" was "ACTIVE"
+# guard_violation_lifecycle: the "s3 tables" "namespace" was not "ACTIVE"
+# guard: the "s3 tables" "namespace" had no active tables
+# guard_violation: the "s3 tables" "namespace" had active tables
 atomic action DeleteNamespace:
     oneof bname in BUCKET_NAMES:
         if bname in bucket_status:
@@ -132,14 +132,14 @@ atomic action DeleteNamespace:
                                 ns_status[ns_key] = "DELETING"
 
 # fake_skip: internal
-# step: a namespace finishes being deleted
-# result: the namespace is DELETED and all its tables are DELETED
-# guard: the namespace exists
-# guard_violation: the namespace does not exist
-# guard: the namespace is DELETING
-# guard_violation: the namespace is not DELETING
-# guard: the table exists
-# guard_violation: the table does not exist
+# step: a "s3 tables" "namespace" finishes being deleted
+# result: the "s3 tables" "namespace" will be deleted and all its tables will be deleted
+# guard: the "s3 tables" "namespace" existed
+# guard_violation: the "s3 tables" "namespace" did not exist
+# guard: the "s3 tables" "namespace" was "DELETING"
+# guard_violation: the "s3 tables" "namespace" was not "DELETING"
+# guard: the "s3 tables" "table" existed
+# guard_violation: the "s3 tables" "table" did not exist
 atomic action FinishDeletingNamespace:
     oneof bname in BUCKET_NAMES:
         oneof ns in NS_NAMES:
@@ -152,18 +152,18 @@ atomic action FinishDeletingNamespace:
                         if tkey in table_status:
                             table_status[tkey] = "DELETED"
 
-# step: a table is created in a namespace
-# result: the table is in CREATING state
-# guard: the bucket exists
-# guard_violation: the bucket does not exist
-# guard: the bucket is ACTIVE
-# guard_violation_lifecycle: the bucket is not ACTIVE
-# guard: the namespace exists
-# guard_violation: the namespace does not exist
-# guard: the namespace is ACTIVE
-# guard_violation_lifecycle: the namespace is not ACTIVE
-# guard: the table does not already exist
-# guard_violation: the table already exists
+# step: a "s3 tables" "table" is created in a "s3 tables" "namespace"
+# result: the "s3 tables" "table" will be in "CREATING" state
+# guard: the "s3 tables" "bucket" existed
+# guard_violation: the "s3 tables" "bucket" did not exist
+# guard: the "s3 tables" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3 tables" "bucket" was not "ACTIVE"
+# guard: the "s3 tables" "namespace" existed
+# guard_violation: the "s3 tables" "namespace" did not exist
+# guard: the "s3 tables" "namespace" was "ACTIVE"
+# guard_violation_lifecycle: the "s3 tables" "namespace" was not "ACTIVE"
+# guard: the "s3 tables" "table" did not already exist
+# guard_violation: the "s3 tables" "table" already existed
 atomic action CreateTable:
     oneof bname in BUCKET_NAMES:
         if bname in bucket_status:
@@ -182,12 +182,12 @@ atomic action CreateTable:
                                     table_policy_exists[tkey] = False
 
 # fake_skip: internal
-# step: a table finishes creating
-# result: the table is ACTIVE
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is CREATING
-# guard_violation: the table is not CREATING
+# step: a "s3 tables" "table" finishes creating
+# result: the "s3 tables" "table" will be "ACTIVE"
+# guard: the "s3 tables" "table" existed
+# guard_violation: the "s3 tables" "table" did not exist
+# guard: the "s3 tables" "table" was "CREATING"
+# guard_violation: the "s3 tables" "table" was not "CREATING"
 atomic action FinishCreatingTable:
     oneof bname in BUCKET_NAMES:
         oneof ns in NS_NAMES:
@@ -197,12 +197,12 @@ atomic action FinishCreatingTable:
                     if table_status[tkey] == "CREATING":
                         table_status[tkey] = "ACTIVE"
 
-# step: a table is deleted
-# result: the table enters DELETING state
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation_lifecycle: the table is not ACTIVE
+# step: a "s3 tables" "table" is deleted
+# result: the "s3 tables" "table" will be in "DELETING" state
+# guard: the "s3 tables" "table" existed
+# guard_violation: the "s3 tables" "table" did not exist
+# guard: the "s3 tables" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "s3 tables" "table" was not "ACTIVE"
 atomic action DeleteTable:
     oneof bname in BUCKET_NAMES:
         oneof ns in NS_NAMES:
@@ -213,14 +213,14 @@ atomic action DeleteTable:
                         table_status[tkey] = "DELETING"
 
 # fake_skip: internal
-# step: a table finishes being deleted
-# result: the table is DELETED and all its snapshots are DELETED
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is DELETING
-# guard_violation: the table is not DELETING
-# guard: the snapshot exists
-# guard_violation: the snapshot does not exist
+# step: a "s3 tables" "table" finishes being deleted
+# result: the "s3 tables" "table" will be "DELETED" and all its snapshots will be deleted
+# guard: the "s3 tables" "table" existed
+# guard_violation: the "s3 tables" "table" did not exist
+# guard: the "s3 tables" "table" was "DELETING"
+# guard_violation: the "s3 tables" "table" was not "DELETING"
+# guard: the "s3 tables" "snapshot" existed
+# guard_violation: the "s3 tables" "snapshot" did not exist
 atomic action FinishDeletingTable:
     oneof bname in BUCKET_NAMES:
         oneof ns in NS_NAMES:
@@ -234,14 +234,14 @@ atomic action FinishDeletingTable:
                             if snap_key in snapshot_status:
                                 snapshot_status[snap_key] = "DELETED"
 
-# step: a snapshot is created for a table
-# result: the snapshot is ACTIVE and the table snapshot count increases
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation_lifecycle: the table is not ACTIVE
-# guard: the snapshot does not already exist
-# guard_violation: the snapshot already exists
+# step: a "s3 tables" "snapshot" is created for a "s3 tables" "table"
+# result: the "s3 tables" "SNAPSHOT" will be "ACTIVE" and the "s3 tables" "table" s3 tables snapshot count will increase
+# guard: the "s3 tables" "table" existed
+# guard_violation: the "s3 tables" "table" did not exist
+# guard: the "s3 tables" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "s3 tables" "table" was not "ACTIVE"
+# guard: the "s3 tables" "snapshot" did not already exist
+# guard_violation: the "s3 tables" "snapshot" already existed
 atomic action CreateSnapshot:
     oneof bname in BUCKET_NAMES:
         oneof ns in NS_NAMES:
@@ -255,12 +255,12 @@ atomic action CreateSnapshot:
                                 snapshot_status[snap_key] = "ACTIVE"
                                 table_snapshot_count[tkey] = table_snapshot_count[tkey] + 1
 
-# step: a table's schema is evolved
-# result: the schema version is incremented
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation_lifecycle: the table is not ACTIVE
+# step: a "s3 tables" "table"'s schema is evolved
+# result: the schema version will be incremented
+# guard: the "s3 tables" "table" existed
+# guard_violation: the "s3 tables" "table" did not exist
+# guard: the "s3 tables" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "s3 tables" "table" was not "ACTIVE"
 atomic action EvolveSchema:
     oneof bname in BUCKET_NAMES:
         oneof ns in NS_NAMES:
@@ -270,12 +270,12 @@ atomic action EvolveSchema:
                     if table_status[tkey] == "ACTIVE":
                         table_schema_version[tkey] = table_schema_version[tkey] + 1
 
-# step: maintenance configuration is applied to a table
-# result: compaction is enabled for the table
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation_lifecycle: the table is not ACTIVE
+# step: maintenance configuration is applied to a "s3 tables" "table"
+# result: compaction will be enabled for the "s3 tables" "table"
+# guard: the "s3 tables" "table" existed
+# guard_violation: the "s3 tables" "table" did not exist
+# guard: the "s3 tables" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "s3 tables" "table" was not "ACTIVE"
 atomic action PutTableMaintenanceConfiguration:
     oneof bname in BUCKET_NAMES:
         oneof ns in NS_NAMES:
@@ -285,12 +285,12 @@ atomic action PutTableMaintenanceConfiguration:
                     if table_status[tkey] == "ACTIVE":
                         maintenance_compaction[tkey] = True
 
-# step: a policy is attached to a table
-# result: the table has a policy
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation_lifecycle: the table is not ACTIVE
+# step: a policy is attached to a "s3 tables" "table"
+# result: the "s3 tables" "table" has a policy
+# guard: the "s3 tables" "table" existed
+# guard_violation: the "s3 tables" "table" did not exist
+# guard: the "s3 tables" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "s3 tables" "table" was not "ACTIVE"
 atomic action PutTablePolicy:
     oneof bname in BUCKET_NAMES:
         oneof ns in NS_NAMES:
@@ -300,14 +300,14 @@ atomic action PutTablePolicy:
                     if table_status[tkey] == "ACTIVE":
                         table_policy_exists[tkey] = True
 
-# step: a table's policy is deleted
-# result: the table has no policy
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation_lifecycle: the table is not ACTIVE
-# guard: the table has a policy
-# guard_violation: the table does not have a policy
+# step: a "s3 tables" "table"'s policy is deleted
+# result: the "s3 tables" "table" has no policy
+# guard: the "s3 tables" "table" existed
+# guard_violation: the "s3 tables" "table" did not exist
+# guard: the "s3 tables" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "s3 tables" "table" was not "ACTIVE"
+# guard: the "s3 tables" "table" has a policy
+# guard_violation: the "s3 tables" "table" does not have a policy
 atomic action DeleteTablePolicy:
     oneof bname in BUCKET_NAMES:
         oneof ns in NS_NAMES:
@@ -318,14 +318,14 @@ atomic action DeleteTablePolicy:
                         if table_policy_exists[tkey] == True:
                             table_policy_exists[tkey] = False
 
-# step: compaction is started on a table
-# result: the table enters MAINTENANCE state
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation_lifecycle: the table is not ACTIVE
-# guard: compaction is enabled for the table
-# guard_violation: compaction is not enabled for the table
+# step: compaction is started on a "s3 tables" "table"
+# result: the "s3 tables" "table" will be in "MAINTENANCE" state
+# guard: the "s3 tables" "table" existed
+# guard_violation: the "s3 tables" "table" did not exist
+# guard: the "s3 tables" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "s3 tables" "table" was not "ACTIVE"
+# guard: compaction was "ENABLED" for the "s3 tables" "table"
+# guard_violation: compaction was not "ENABLED" for the "s3 tables" "table"
 atomic action StartCompaction:
     oneof bname in BUCKET_NAMES:
         oneof ns in NS_NAMES:
@@ -337,12 +337,12 @@ atomic action StartCompaction:
                             table_status[tkey] = "MAINTENANCE"
 
 # fake_skip: internal
-# step: compaction finishes on a table
-# result: the table returns to ACTIVE state
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is in MAINTENANCE state
-# guard_violation_lifecycle: the table is not in MAINTENANCE state
+# step: compaction finishes on a "s3 tables" "table"
+# result: the "s3 tables" "table" returns to ACTIVE state
+# guard: the "s3 tables" "table" existed
+# guard_violation: the "s3 tables" "table" did not exist
+# guard: the "s3 tables" "table" was in "MAINTENANCE" state
+# guard_violation_lifecycle: the "s3 tables" "table" is not in MAINTENANCE state
 atomic action FinishCompaction:
     oneof bname in BUCKET_NAMES:
         oneof ns in NS_NAMES:
@@ -352,18 +352,18 @@ atomic action FinishCompaction:
                     if table_status[tkey] == "MAINTENANCE":
                         table_status[tkey] = "ACTIVE"
 
-# step: an expired snapshot is removed from a table
-# result: the snapshot is DELETED and the table snapshot count decreases
-# guard: the table exists
-# guard_violation: the table does not exist
-# guard: the table is ACTIVE
-# guard_violation_lifecycle: the table is not ACTIVE
-# guard: the table has more than one snapshot
-# guard_violation: the table has one or fewer snapshots
-# guard: the snapshot exists
-# guard_violation: the snapshot does not exist
-# guard: the snapshot is ACTIVE
-# guard_violation: the snapshot is not ACTIVE
+# step: an expired s3 tables snapshot is removed from a "s3 tables" "table"
+# result: the "s3 tables" "SNAPSHOT" will be "DELETED" and the "s3 tables" "table" s3 tables snapshot count decreases
+# guard: the "s3 tables" "table" existed
+# guard_violation: the "s3 tables" "table" did not exist
+# guard: the "s3 tables" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "s3 tables" "table" was not "ACTIVE"
+# guard: the "s3 tables" "table" has more than one s3 tables snapshot
+# guard_violation: the "s3 tables" "table" had one or fewer snapshots
+# guard: the "s3 tables" "snapshot" existed
+# guard_violation: the "s3 tables" "snapshot" did not exist
+# guard: the "s3 tables" "snapshot" was "ACTIVE"
+# guard_violation: the "s3 tables" "snapshot" was not "ACTIVE"
 atomic action ExpireSnapshot:
     oneof bname in BUCKET_NAMES:
         oneof ns in NS_NAMES:
@@ -391,7 +391,7 @@ always assertion BucketDeletionRequiresNoNamespaces:
                             return False
     return True
 
-# check: a namespace in DELETING state has no ACTIVE tables
+# check: a "s3 tables" "namespace" in DELETING state has no ACTIVE tables
 always assertion NamespaceDeletionRequiresNoTables:
     for bname in BUCKET_NAMES:
         for ns in NS_NAMES:

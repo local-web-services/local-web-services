@@ -9,10 +9,10 @@ Feature: CognitoIdp - An Authenticated Session Expires
 
   @minimal @happy @expire_auth_session @internal
   Scenario: an authenticated session expires
-    Given the session exists
-    And the session is "AUTHENTICATED"
+    Given the "cognito" "session" existed
+    And the "cognito" "session" was "AUTHENTICATED"
     When an authenticated session expires
-    Then the session is in "EXPIRED" state
+    Then the "cognito" "session" will be in "EXPIRED" state
     And every user pool has a valid status ("ACTIVE" or "DELETED")
     And every user has a valid status
     And every non-deleted user has an enabled flag set
@@ -21,15 +21,15 @@ Feature: CognitoIdp - An Authenticated Session Expires
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @expire_auth_session @internal
-  Scenario: an authenticated session expires fails when the session does not exist
-    Given the session does not exist
+  @guard @negative @expire_auth_session @internal
+  Scenario: an authenticated session expires fails when the "cognito" "session" did not exist
+    Given the "cognito" "session" did not exist
     When an authenticated session expires
     Then the operation is rejected
 
-  @standard @negative @expire_auth_session @internal
-  Scenario: an authenticated session expires fails when the session is not "AUTHENTICATED"
-    Given the session exists
-    And the session is not "AUTHENTICATED"
+  @guard @negative @expire_auth_session @internal
+  Scenario: an authenticated session expires fails when the "cognito" "session" was not "AUTHENTICATED"
+    Given the "cognito" "session" existed
+    And the "cognito" "session" was not "AUTHENTICATED"
     When an authenticated session expires
     Then the operation is rejected

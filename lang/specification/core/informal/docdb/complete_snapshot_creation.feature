@@ -1,5 +1,5 @@
 @docdb @generated
-Feature: Docdb - A Database Cluster Snapshot Finishes Creating
+Feature: Docdb - A "Documentdb" "Cluster" Documentdb Snapshot Finishes Creating
 
   # Generated from FizzBee spec: docdb.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, NoNonDeletedInstancesOnDeletedCluster, NoAvailableInstancesOnFailedCluster, DeletingClusterGetsNoNewInstances, SnapshotHasValidClusterReference
@@ -8,11 +8,11 @@ Feature: Docdb - A Database Cluster Snapshot Finishes Creating
     Given the system is initialized
 
   @minimal @happy @complete_snapshot_creation @internal
-  Scenario: a database cluster snapshot finishes creating
-    Given the snapshot exists
-    And the snapshot is "CREATING"
-    When a database cluster snapshot finishes creating
-    Then the snapshot is "AVAILABLE"
+  Scenario: a "documentdb" "cluster" documentdb snapshot finishes creating
+    Given the "documentdb" "snapshot" existed
+    And the "documentdb" "snapshot" was "CREATING"
+    When a "documentdb" "cluster" documentdb snapshot finishes creating
+    Then the "documentdb" "SNAPSHOT" will be "AVAILABLE"
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -21,15 +21,15 @@ Feature: Docdb - A Database Cluster Snapshot Finishes Creating
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @complete_snapshot_creation @internal
-  Scenario: a database cluster snapshot finishes creating fails when the snapshot does not exist
-    Given the snapshot does not exist
-    When a database cluster snapshot finishes creating
+  @guard @negative @complete_snapshot_creation @internal
+  Scenario: a "documentdb" "cluster" documentdb snapshot finishes creating fails when the "documentdb" "snapshot" did not exist
+    Given the "documentdb" "snapshot" did not exist
+    When a "documentdb" "cluster" documentdb snapshot finishes creating
     Then the operation is rejected
 
-  @standard @negative @complete_snapshot_creation @internal
-  Scenario: a database cluster snapshot finishes creating fails when the snapshot is not "CREATING"
-    Given the snapshot exists
-    And the snapshot is not "CREATING"
-    When a database cluster snapshot finishes creating
+  @guard @negative @complete_snapshot_creation @internal
+  Scenario: a "documentdb" "cluster" documentdb snapshot finishes creating fails when the "documentdb" "snapshot" was not "CREATING"
+    Given the "documentdb" "snapshot" existed
+    And the "documentdb" "snapshot" was not "CREATING"
+    When a "documentdb" "cluster" documentdb snapshot finishes creating
     Then the operation is rejected

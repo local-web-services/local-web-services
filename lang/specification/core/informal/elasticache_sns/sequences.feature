@@ -7,2228 +7,716 @@ Feature: ElasticacheSns - Action Sequences
   Background:
     Given the system is initialized
 
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then an "SNS" topic is created
+  @sequence
+  Scenario: an "elasticache" "cluster" is created then a "sns" "topic" is created
     Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When an "SNS" topic is created
+    When an "elasticache" "cluster" is created
+    When a "sns" "topic" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then the "SNS" topic is deleted
+  @sequence
+  Scenario: an "elasticache" "cluster" is created then the "sns" "topic" is deleted
     Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When the "SNS" topic is deleted
+    When an "elasticache" "cluster" is created
+    When the "sns" "topic" is deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then an "SNS" notification is configured on the ElastiCache cluster
+  @sequence
+  Scenario: an "elasticache" "cluster" is created then a "SNS" notification is configured on the "elasticache" "cluster"
     Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When an "SNS" notification is configured on the ElastiCache cluster
+    When an "elasticache" "cluster" is created
+    When a "SNS" notification is configured on the "elasticache" "cluster"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+  @sequence
+  Scenario: an "elasticache" "cluster" is created then a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+    When an "elasticache" "cluster" is created
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+  @sequence
+  Scenario: an "elasticache" "cluster" is created then a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+    When an "elasticache" "cluster" is created
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then the cluster modification completes
+  @sequence
+  Scenario: an "elasticache" "cluster" is created then the "elasticache" "cluster" modification completes
     Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When the cluster modification completes
+    When an "elasticache" "cluster" is created
+    When the "elasticache" "cluster" modification completes
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then an ElastiCache cluster is created
+  @sequence
+  Scenario: a "sns" "topic" is created then an "elasticache" "cluster" is created
     Given tid not in topic_status
-    When an "SNS" topic is created
-    When an ElastiCache cluster is created
+    When a "sns" "topic" is created
+    When an "elasticache" "cluster" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then the "SNS" topic is deleted
+  @sequence
+  Scenario: a "sns" "topic" is created then the "sns" "topic" is deleted
     Given tid not in topic_status
-    When an "SNS" topic is created
-    When the "SNS" topic is deleted
+    When a "sns" "topic" is created
+    When the "sns" "topic" is deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then an "SNS" notification is configured on the ElastiCache cluster
+  @sequence
+  Scenario: a "sns" "topic" is created then a "SNS" notification is configured on the "elasticache" "cluster"
     Given tid not in topic_status
-    When an "SNS" topic is created
-    When an "SNS" notification is configured on the ElastiCache cluster
+    When a "sns" "topic" is created
+    When a "SNS" notification is configured on the "elasticache" "cluster"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+  @sequence
+  Scenario: a "sns" "topic" is created then a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     Given tid not in topic_status
-    When an "SNS" topic is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+    When a "sns" "topic" is created
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+  @sequence
+  Scenario: a "sns" "topic" is created then a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     Given tid not in topic_status
-    When an "SNS" topic is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+    When a "sns" "topic" is created
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then the cluster modification completes
+  @sequence
+  Scenario: a "sns" "topic" is created then the "elasticache" "cluster" modification completes
     Given tid not in topic_status
-    When an "SNS" topic is created
-    When the cluster modification completes
+    When a "sns" "topic" is created
+    When the "elasticache" "cluster" modification completes
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then an ElastiCache cluster is created
+  @sequence
+  Scenario: the "sns" "topic" is deleted then an "elasticache" "cluster" is created
     Given tid in topic_status
-    When the "SNS" topic is deleted
-    When an ElastiCache cluster is created
+    When the "sns" "topic" is deleted
+    When an "elasticache" "cluster" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then an "SNS" topic is created
+  @sequence
+  Scenario: the "sns" "topic" is deleted then a "sns" "topic" is created
     Given tid in topic_status
-    When the "SNS" topic is deleted
-    When an "SNS" topic is created
+    When the "sns" "topic" is deleted
+    When a "sns" "topic" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then an "SNS" notification is configured on the ElastiCache cluster
+  @sequence
+  Scenario: the "sns" "topic" is deleted then a "SNS" notification is configured on the "elasticache" "cluster"
     Given tid in topic_status
-    When the "SNS" topic is deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
+    When the "sns" "topic" is deleted
+    When a "SNS" notification is configured on the "elasticache" "cluster"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+  @sequence
+  Scenario: the "sns" "topic" is deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     Given tid in topic_status
-    When the "SNS" topic is deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+    When the "sns" "topic" is deleted
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+  @sequence
+  Scenario: the "sns" "topic" is deleted then a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     Given tid in topic_status
-    When the "SNS" topic is deleted
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+    When the "sns" "topic" is deleted
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then the cluster modification completes
+  @sequence
+  Scenario: the "sns" "topic" is deleted then the "elasticache" "cluster" modification completes
     Given tid in topic_status
-    When the "SNS" topic is deleted
-    When the cluster modification completes
+    When the "sns" "topic" is deleted
+    When the "elasticache" "cluster" modification completes
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then an ElastiCache cluster is created
+  @sequence
+  Scenario: a "SNS" notification is configured on the "elasticache" "cluster" then an "elasticache" "cluster" is created
     Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an ElastiCache cluster is created
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    When an "elasticache" "cluster" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then an "SNS" topic is created
+  @sequence
+  Scenario: a "SNS" notification is configured on the "elasticache" "cluster" then a "sns" "topic" is created
     Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an "SNS" topic is created
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    When a "sns" "topic" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then the "SNS" topic is deleted
+  @sequence
+  Scenario: a "SNS" notification is configured on the "elasticache" "cluster" then the "sns" "topic" is deleted
     Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the "SNS" topic is deleted
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    When the "sns" "topic" is deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+  @sequence
+  Scenario: a "SNS" notification is configured on the "elasticache" "cluster" then a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+  @sequence
+  Scenario: a "SNS" notification is configured on the "elasticache" "cluster" then a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then the cluster modification completes
+  @sequence
+  Scenario: a "SNS" notification is configured on the "elasticache" "cluster" then the "elasticache" "cluster" modification completes
     Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the cluster modification completes
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    When the "elasticache" "cluster" modification completes
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an ElastiCache cluster is created
+  @sequence
+  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" then an "elasticache" "cluster" is created
     Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an ElastiCache cluster is created
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+    When an "elasticache" "cluster" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" topic is created
+  @sequence
+  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" then a "sns" "topic" is created
     Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" topic is created
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+    When a "sns" "topic" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the "SNS" topic is deleted
+  @sequence
+  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" then the "sns" "topic" is deleted
     Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the "SNS" topic is deleted
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+    When the "sns" "topic" is deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" notification is configured on the ElastiCache cluster
+  @sequence
+  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" then a "SNS" notification is configured on the "elasticache" "cluster"
     Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" notification is configured on the ElastiCache cluster
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+    When a "SNS" notification is configured on the "elasticache" "cluster"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+  @sequence
+  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" then a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the cluster modification completes
+  @sequence
+  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" then the "elasticache" "cluster" modification completes
     Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the cluster modification completes
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+    When the "elasticache" "cluster" modification completes
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an ElastiCache cluster is created
+  @sequence
+  Scenario: a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted then an "elasticache" "cluster" is created
     Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an ElastiCache cluster is created
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
+    When an "elasticache" "cluster" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" topic is created
+  @sequence
+  Scenario: a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted then a "sns" "topic" is created
     Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" topic is created
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
+    When a "sns" "topic" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the "SNS" topic is deleted
+  @sequence
+  Scenario: a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted then the "sns" "topic" is deleted
     Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the "SNS" topic is deleted
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
+    When the "sns" "topic" is deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" notification is configured on the ElastiCache cluster
+  @sequence
+  Scenario: a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted then a "SNS" notification is configured on the "elasticache" "cluster"
     Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
+    When a "SNS" notification is configured on the "elasticache" "cluster"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+  @sequence
+  Scenario: a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the cluster modification completes
+  @sequence
+  Scenario: a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted then the "elasticache" "cluster" modification completes
     Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the cluster modification completes
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
+    When the "elasticache" "cluster" modification completes
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then an ElastiCache cluster is created
+  @sequence
+  Scenario: the "elasticache" "cluster" modification completes then an "elasticache" "cluster" is created
     Given cid in cluster_status
-    When the cluster modification completes
-    When an ElastiCache cluster is created
+    When the "elasticache" "cluster" modification completes
+    When an "elasticache" "cluster" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then an "SNS" topic is created
+  @sequence
+  Scenario: the "elasticache" "cluster" modification completes then a "sns" "topic" is created
     Given cid in cluster_status
-    When the cluster modification completes
-    When an "SNS" topic is created
+    When the "elasticache" "cluster" modification completes
+    When a "sns" "topic" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then the "SNS" topic is deleted
+  @sequence
+  Scenario: the "elasticache" "cluster" modification completes then the "sns" "topic" is deleted
     Given cid in cluster_status
-    When the cluster modification completes
-    When the "SNS" topic is deleted
+    When the "elasticache" "cluster" modification completes
+    When the "sns" "topic" is deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then an "SNS" notification is configured on the ElastiCache cluster
+  @sequence
+  Scenario: the "elasticache" "cluster" modification completes then a "SNS" notification is configured on the "elasticache" "cluster"
     Given cid in cluster_status
-    When the cluster modification completes
-    When an "SNS" notification is configured on the ElastiCache cluster
+    When the "elasticache" "cluster" modification completes
+    When a "SNS" notification is configured on the "elasticache" "cluster"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+  @sequence
+  Scenario: the "elasticache" "cluster" modification completes then a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     Given cid in cluster_status
-    When the cluster modification completes
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+    When the "elasticache" "cluster" modification completes
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+  @sequence
+  Scenario: the "elasticache" "cluster" modification completes then a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     Given cid in cluster_status
-    When the cluster modification completes
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+    When the "elasticache" "cluster" modification completes
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then an "SNS" topic is created then the "SNS" topic is deleted
+  @sequence
+  Scenario: an "elasticache" "cluster" is created then a "sns" "topic" is created then the "sns" "topic" is deleted
     Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When an "SNS" topic is created
-    When the "SNS" topic is deleted
+    When an "elasticache" "cluster" is created
+    When a "sns" "topic" is created
+    When the "sns" "topic" is deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then an "SNS" topic is created then an "SNS" notification is configured on the ElastiCache cluster
+  @sequence
+  Scenario: an "elasticache" "cluster" is created then the "sns" "topic" is deleted then a "SNS" notification is configured on the "elasticache" "cluster"
     Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When an "SNS" topic is created
-    When an "SNS" notification is configured on the ElastiCache cluster
+    When an "elasticache" "cluster" is created
+    When the "sns" "topic" is deleted
+    When a "SNS" notification is configured on the "elasticache" "cluster"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then an "SNS" topic is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+  @sequence
+  Scenario: an "elasticache" "cluster" is created then a "SNS" notification is configured on the "elasticache" "cluster" then a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When an "SNS" topic is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+    When an "elasticache" "cluster" is created
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then an "SNS" topic is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+  @sequence
+  Scenario: an "elasticache" "cluster" is created then a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" then a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When an "SNS" topic is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+    When an "elasticache" "cluster" is created
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then an "SNS" topic is created then the cluster modification completes
+  @sequence
+  Scenario: an "elasticache" "cluster" is created then a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted then the "elasticache" "cluster" modification completes
     Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When an "SNS" topic is created
-    When the cluster modification completes
+    When an "elasticache" "cluster" is created
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
+    When the "elasticache" "cluster" modification completes
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then the "SNS" topic is deleted then an "SNS" topic is created
+  @sequence
+  Scenario: an "elasticache" "cluster" is created then the "elasticache" "cluster" modification completes then a "sns" "topic" is created
     Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When the "SNS" topic is deleted
-    When an "SNS" topic is created
+    When an "elasticache" "cluster" is created
+    When the "elasticache" "cluster" modification completes
+    When a "sns" "topic" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then the "SNS" topic is deleted then an "SNS" notification is configured on the ElastiCache cluster
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When the "SNS" topic is deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then the "SNS" topic is deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When the "SNS" topic is deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then the "SNS" topic is deleted then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When the "SNS" topic is deleted
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then the "SNS" topic is deleted then the cluster modification completes
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When the "SNS" topic is deleted
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then an "SNS" notification is configured on the ElastiCache cluster then an "SNS" topic is created
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then an "SNS" notification is configured on the ElastiCache cluster then the "SNS" topic is deleted
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then an "SNS" notification is configured on the ElastiCache cluster then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then an "SNS" notification is configured on the ElastiCache cluster then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then an "SNS" notification is configured on the ElastiCache cluster then the cluster modification completes
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" topic is created
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the "SNS" topic is deleted
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" notification is configured on the ElastiCache cluster
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the cluster modification completes
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" topic is created
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the "SNS" topic is deleted
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" notification is configured on the ElastiCache cluster
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the cluster modification completes
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then the cluster modification completes then an "SNS" topic is created
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When the cluster modification completes
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then the cluster modification completes then the "SNS" topic is deleted
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When the cluster modification completes
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then the cluster modification completes then an "SNS" notification is configured on the ElastiCache cluster
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When the cluster modification completes
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then the cluster modification completes then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When the cluster modification completes
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an ElastiCache cluster is created then the cluster modification completes then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given cid not in cluster_status
-    When an ElastiCache cluster is created
-    When the cluster modification completes
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then an ElastiCache cluster is created then the "SNS" topic is deleted
+  @sequence
+  Scenario: a "sns" "topic" is created then an "elasticache" "cluster" is created then a "SNS" notification is configured on the "elasticache" "cluster"
     Given tid not in topic_status
-    When an "SNS" topic is created
-    When an ElastiCache cluster is created
-    When the "SNS" topic is deleted
+    When a "sns" "topic" is created
+    When an "elasticache" "cluster" is created
+    When a "SNS" notification is configured on the "elasticache" "cluster"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then an ElastiCache cluster is created then an "SNS" notification is configured on the ElastiCache cluster
+  @sequence
+  Scenario: a "sns" "topic" is created then the "sns" "topic" is deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     Given tid not in topic_status
-    When an "SNS" topic is created
-    When an ElastiCache cluster is created
-    When an "SNS" notification is configured on the ElastiCache cluster
+    When a "sns" "topic" is created
+    When the "sns" "topic" is deleted
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then an ElastiCache cluster is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+  @sequence
+  Scenario: a "sns" "topic" is created then a "SNS" notification is configured on the "elasticache" "cluster" then a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     Given tid not in topic_status
-    When an "SNS" topic is created
-    When an ElastiCache cluster is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+    When a "sns" "topic" is created
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then an ElastiCache cluster is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+  @sequence
+  Scenario: a "sns" "topic" is created then a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" then the "elasticache" "cluster" modification completes
     Given tid not in topic_status
-    When an "SNS" topic is created
-    When an ElastiCache cluster is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+    When a "sns" "topic" is created
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+    When the "elasticache" "cluster" modification completes
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then an ElastiCache cluster is created then the cluster modification completes
+  @sequence
+  Scenario: a "sns" "topic" is created then a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted then an "elasticache" "cluster" is created
     Given tid not in topic_status
-    When an "SNS" topic is created
-    When an ElastiCache cluster is created
-    When the cluster modification completes
+    When a "sns" "topic" is created
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
+    When an "elasticache" "cluster" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then the "SNS" topic is deleted then an ElastiCache cluster is created
+  @sequence
+  Scenario: a "sns" "topic" is created then the "elasticache" "cluster" modification completes then the "sns" "topic" is deleted
     Given tid not in topic_status
-    When an "SNS" topic is created
-    When the "SNS" topic is deleted
-    When an ElastiCache cluster is created
+    When a "sns" "topic" is created
+    When the "elasticache" "cluster" modification completes
+    When the "sns" "topic" is deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then the "SNS" topic is deleted then an "SNS" notification is configured on the ElastiCache cluster
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When the "SNS" topic is deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then the "SNS" topic is deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When the "SNS" topic is deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then the "SNS" topic is deleted then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When the "SNS" topic is deleted
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then the "SNS" topic is deleted then the cluster modification completes
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When the "SNS" topic is deleted
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then an "SNS" notification is configured on the ElastiCache cluster then an ElastiCache cluster is created
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then an "SNS" notification is configured on the ElastiCache cluster then the "SNS" topic is deleted
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then an "SNS" notification is configured on the ElastiCache cluster then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then an "SNS" notification is configured on the ElastiCache cluster then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then an "SNS" notification is configured on the ElastiCache cluster then the cluster modification completes
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an ElastiCache cluster is created
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the "SNS" topic is deleted
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" notification is configured on the ElastiCache cluster
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the cluster modification completes
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an ElastiCache cluster is created
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the "SNS" topic is deleted
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" notification is configured on the ElastiCache cluster
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the cluster modification completes
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then the cluster modification completes then an ElastiCache cluster is created
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When the cluster modification completes
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then the cluster modification completes then the "SNS" topic is deleted
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When the cluster modification completes
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then the cluster modification completes then an "SNS" notification is configured on the ElastiCache cluster
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When the cluster modification completes
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then the cluster modification completes then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When the cluster modification completes
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" topic is created then the cluster modification completes then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given tid not in topic_status
-    When an "SNS" topic is created
-    When the cluster modification completes
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then an ElastiCache cluster is created then an "SNS" topic is created
+  @sequence
+  Scenario: the "sns" "topic" is deleted then an "elasticache" "cluster" is created then a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     Given tid in topic_status
-    When the "SNS" topic is deleted
-    When an ElastiCache cluster is created
-    When an "SNS" topic is created
+    When the "sns" "topic" is deleted
+    When an "elasticache" "cluster" is created
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then an ElastiCache cluster is created then an "SNS" notification is configured on the ElastiCache cluster
+  @sequence
+  Scenario: the "sns" "topic" is deleted then a "sns" "topic" is created then a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     Given tid in topic_status
-    When the "SNS" topic is deleted
-    When an ElastiCache cluster is created
-    When an "SNS" notification is configured on the ElastiCache cluster
+    When the "sns" "topic" is deleted
+    When a "sns" "topic" is created
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then an ElastiCache cluster is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+  @sequence
+  Scenario: the "sns" "topic" is deleted then a "SNS" notification is configured on the "elasticache" "cluster" then the "elasticache" "cluster" modification completes
     Given tid in topic_status
-    When the "SNS" topic is deleted
-    When an ElastiCache cluster is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+    When the "sns" "topic" is deleted
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    When the "elasticache" "cluster" modification completes
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then an ElastiCache cluster is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+  @sequence
+  Scenario: the "sns" "topic" is deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" then an "elasticache" "cluster" is created
     Given tid in topic_status
-    When the "SNS" topic is deleted
-    When an ElastiCache cluster is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+    When the "sns" "topic" is deleted
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+    When an "elasticache" "cluster" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then an ElastiCache cluster is created then the cluster modification completes
+  @sequence
+  Scenario: the "sns" "topic" is deleted then a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted then a "sns" "topic" is created
     Given tid in topic_status
-    When the "SNS" topic is deleted
-    When an ElastiCache cluster is created
-    When the cluster modification completes
+    When the "sns" "topic" is deleted
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
+    When a "sns" "topic" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then an "SNS" topic is created then an ElastiCache cluster is created
+  @sequence
+  Scenario: the "sns" "topic" is deleted then the "elasticache" "cluster" modification completes then a "SNS" notification is configured on the "elasticache" "cluster"
     Given tid in topic_status
-    When the "SNS" topic is deleted
-    When an "SNS" topic is created
-    When an ElastiCache cluster is created
+    When the "sns" "topic" is deleted
+    When the "elasticache" "cluster" modification completes
+    When a "SNS" notification is configured on the "elasticache" "cluster"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then an "SNS" topic is created then an "SNS" notification is configured on the ElastiCache cluster
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When an "SNS" topic is created
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then an "SNS" topic is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When an "SNS" topic is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then an "SNS" topic is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When an "SNS" topic is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then an "SNS" topic is created then the cluster modification completes
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When an "SNS" topic is created
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then an "SNS" notification is configured on the ElastiCache cluster then an ElastiCache cluster is created
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then an "SNS" notification is configured on the ElastiCache cluster then an "SNS" topic is created
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then an "SNS" notification is configured on the ElastiCache cluster then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then an "SNS" notification is configured on the ElastiCache cluster then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then an "SNS" notification is configured on the ElastiCache cluster then the cluster modification completes
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an ElastiCache cluster is created
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" topic is created
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" notification is configured on the ElastiCache cluster
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the cluster modification completes
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an ElastiCache cluster is created
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" topic is created
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" notification is configured on the ElastiCache cluster
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the cluster modification completes
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then the cluster modification completes then an ElastiCache cluster is created
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When the cluster modification completes
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then the cluster modification completes then an "SNS" topic is created
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When the cluster modification completes
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then the cluster modification completes then an "SNS" notification is configured on the ElastiCache cluster
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When the cluster modification completes
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then the cluster modification completes then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When the cluster modification completes
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the "SNS" topic is deleted then the cluster modification completes then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given tid in topic_status
-    When the "SNS" topic is deleted
-    When the cluster modification completes
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then an ElastiCache cluster is created then an "SNS" topic is created
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an ElastiCache cluster is created
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then an ElastiCache cluster is created then the "SNS" topic is deleted
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an ElastiCache cluster is created
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then an ElastiCache cluster is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an ElastiCache cluster is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then an ElastiCache cluster is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an ElastiCache cluster is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then an ElastiCache cluster is created then the cluster modification completes
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an ElastiCache cluster is created
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then an "SNS" topic is created then an ElastiCache cluster is created
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an "SNS" topic is created
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then an "SNS" topic is created then the "SNS" topic is deleted
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an "SNS" topic is created
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then an "SNS" topic is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an "SNS" topic is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then an "SNS" topic is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an "SNS" topic is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then an "SNS" topic is created then the cluster modification completes
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an "SNS" topic is created
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then the "SNS" topic is deleted then an ElastiCache cluster is created
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the "SNS" topic is deleted
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then the "SNS" topic is deleted then an "SNS" topic is created
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the "SNS" topic is deleted
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then the "SNS" topic is deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the "SNS" topic is deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then the "SNS" topic is deleted then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the "SNS" topic is deleted
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then the "SNS" topic is deleted then the cluster modification completes
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the "SNS" topic is deleted
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an ElastiCache cluster is created
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" topic is created
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the "SNS" topic is deleted
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the cluster modification completes
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an ElastiCache cluster is created
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" topic is created
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the "SNS" topic is deleted
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the cluster modification completes
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then the cluster modification completes then an ElastiCache cluster is created
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the cluster modification completes
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then the cluster modification completes then an "SNS" topic is created
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the cluster modification completes
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then the cluster modification completes then the "SNS" topic is deleted
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the cluster modification completes
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then the cluster modification completes then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the cluster modification completes
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: an "SNS" notification is configured on the ElastiCache cluster then the cluster modification completes then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given cid in cluster_status
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the cluster modification completes
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an ElastiCache cluster is created then an "SNS" topic is created
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an ElastiCache cluster is created
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an ElastiCache cluster is created then the "SNS" topic is deleted
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an ElastiCache cluster is created
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an ElastiCache cluster is created then an "SNS" notification is configured on the ElastiCache cluster
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an ElastiCache cluster is created
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an ElastiCache cluster is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an ElastiCache cluster is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an ElastiCache cluster is created then the cluster modification completes
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an ElastiCache cluster is created
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" topic is created then an ElastiCache cluster is created
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" topic is created
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" topic is created then the "SNS" topic is deleted
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" topic is created
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" topic is created then an "SNS" notification is configured on the ElastiCache cluster
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" topic is created
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" topic is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" topic is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" topic is created then the cluster modification completes
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" topic is created
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the "SNS" topic is deleted then an ElastiCache cluster is created
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the "SNS" topic is deleted
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the "SNS" topic is deleted then an "SNS" topic is created
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the "SNS" topic is deleted
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the "SNS" topic is deleted then an "SNS" notification is configured on the ElastiCache cluster
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the "SNS" topic is deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the "SNS" topic is deleted then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the "SNS" topic is deleted
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the "SNS" topic is deleted then the cluster modification completes
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the "SNS" topic is deleted
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" notification is configured on the ElastiCache cluster then an ElastiCache cluster is created
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" notification is configured on the ElastiCache cluster then an "SNS" topic is created
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" notification is configured on the ElastiCache cluster then the "SNS" topic is deleted
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" notification is configured on the ElastiCache cluster then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" notification is configured on the ElastiCache cluster then the cluster modification completes
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an ElastiCache cluster is created
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" topic is created
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the "SNS" topic is deleted
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" notification is configured on the ElastiCache cluster
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the cluster modification completes
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the cluster modification completes then an ElastiCache cluster is created
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the cluster modification completes
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the cluster modification completes then an "SNS" topic is created
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the cluster modification completes
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the cluster modification completes then the "SNS" topic is deleted
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the cluster modification completes
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the cluster modification completes then an "SNS" notification is configured on the ElastiCache cluster
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the cluster modification completes
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the cluster modification completes then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given cid in cluster_status
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the cluster modification completes
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an ElastiCache cluster is created then an "SNS" topic is created
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an ElastiCache cluster is created
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an ElastiCache cluster is created then the "SNS" topic is deleted
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an ElastiCache cluster is created
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an ElastiCache cluster is created then an "SNS" notification is configured on the ElastiCache cluster
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an ElastiCache cluster is created
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an ElastiCache cluster is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an ElastiCache cluster is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an ElastiCache cluster is created then the cluster modification completes
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an ElastiCache cluster is created
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" topic is created then an ElastiCache cluster is created
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" topic is created
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" topic is created then the "SNS" topic is deleted
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" topic is created
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" topic is created then an "SNS" notification is configured on the ElastiCache cluster
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" topic is created
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" topic is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" topic is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" topic is created then the cluster modification completes
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" topic is created
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the "SNS" topic is deleted then an ElastiCache cluster is created
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the "SNS" topic is deleted
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the "SNS" topic is deleted then an "SNS" topic is created
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the "SNS" topic is deleted
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the "SNS" topic is deleted then an "SNS" notification is configured on the ElastiCache cluster
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the "SNS" topic is deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the "SNS" topic is deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the "SNS" topic is deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the "SNS" topic is deleted then the cluster modification completes
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the "SNS" topic is deleted
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" notification is configured on the ElastiCache cluster then an ElastiCache cluster is created
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" notification is configured on the ElastiCache cluster then an "SNS" topic is created
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" notification is configured on the ElastiCache cluster then the "SNS" topic is deleted
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" notification is configured on the ElastiCache cluster then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" notification is configured on the ElastiCache cluster then the cluster modification completes
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an ElastiCache cluster is created
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" topic is created
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the "SNS" topic is deleted
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" notification is configured on the ElastiCache cluster
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the cluster modification completes
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the cluster modification completes
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the cluster modification completes then an ElastiCache cluster is created
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the cluster modification completes
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the cluster modification completes then an "SNS" topic is created
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the cluster modification completes
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the cluster modification completes then the "SNS" topic is deleted
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the cluster modification completes
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the cluster modification completes then an "SNS" notification is configured on the ElastiCache cluster
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the cluster modification completes
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the cluster modification completes then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given cid in cluster_status
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the cluster modification completes
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then an ElastiCache cluster is created then an "SNS" topic is created
-    Given cid in cluster_status
-    When the cluster modification completes
-    When an ElastiCache cluster is created
-    When an "SNS" topic is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then an ElastiCache cluster is created then the "SNS" topic is deleted
-    Given cid in cluster_status
-    When the cluster modification completes
-    When an ElastiCache cluster is created
-    When the "SNS" topic is deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then an ElastiCache cluster is created then an "SNS" notification is configured on the ElastiCache cluster
-    Given cid in cluster_status
-    When the cluster modification completes
-    When an ElastiCache cluster is created
-    When an "SNS" notification is configured on the ElastiCache cluster
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then an ElastiCache cluster is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    Given cid in cluster_status
-    When the cluster modification completes
-    When an ElastiCache cluster is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then an ElastiCache cluster is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    Given cid in cluster_status
-    When the cluster modification completes
-    When an ElastiCache cluster is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then an "SNS" topic is created then an ElastiCache cluster is created
-    Given cid in cluster_status
-    When the cluster modification completes
-    When an "SNS" topic is created
-    When an ElastiCache cluster is created
-    And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
-
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then an "SNS" topic is created then the "SNS" topic is deleted
+  @sequence
+  Scenario: a "SNS" notification is configured on the "elasticache" "cluster" then an "elasticache" "cluster" is created then a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     Given cid in cluster_status
-    When the cluster modification completes
-    When an "SNS" topic is created
-    When the "SNS" topic is deleted
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    When an "elasticache" "cluster" is created
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then an "SNS" topic is created then an "SNS" notification is configured on the ElastiCache cluster
+  @sequence
+  Scenario: a "SNS" notification is configured on the "elasticache" "cluster" then a "sns" "topic" is created then the "elasticache" "cluster" modification completes
     Given cid in cluster_status
-    When the cluster modification completes
-    When an "SNS" topic is created
-    When an "SNS" notification is configured on the ElastiCache cluster
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    When a "sns" "topic" is created
+    When the "elasticache" "cluster" modification completes
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then an "SNS" topic is created then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+  @sequence
+  Scenario: a "SNS" notification is configured on the "elasticache" "cluster" then the "sns" "topic" is deleted then an "elasticache" "cluster" is created
     Given cid in cluster_status
-    When the cluster modification completes
-    When an "SNS" topic is created
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    When the "sns" "topic" is deleted
+    When an "elasticache" "cluster" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then an "SNS" topic is created then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+  @sequence
+  Scenario: a "SNS" notification is configured on the "elasticache" "cluster" then a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" then a "sns" "topic" is created
     Given cid in cluster_status
-    When the cluster modification completes
-    When an "SNS" topic is created
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+    When a "sns" "topic" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then the "SNS" topic is deleted then an ElastiCache cluster is created
+  @sequence
+  Scenario: a "SNS" notification is configured on the "elasticache" "cluster" then a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted then the "sns" "topic" is deleted
     Given cid in cluster_status
-    When the cluster modification completes
-    When the "SNS" topic is deleted
-    When an ElastiCache cluster is created
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
+    When the "sns" "topic" is deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then the "SNS" topic is deleted then an "SNS" topic is created
+  @sequence
+  Scenario: a "SNS" notification is configured on the "elasticache" "cluster" then the "elasticache" "cluster" modification completes then a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     Given cid in cluster_status
-    When the cluster modification completes
-    When the "SNS" topic is deleted
-    When an "SNS" topic is created
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    When the "elasticache" "cluster" modification completes
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then the "SNS" topic is deleted then an "SNS" notification is configured on the ElastiCache cluster
+  @sequence
+  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" then an "elasticache" "cluster" is created then the "elasticache" "cluster" modification completes
     Given cid in cluster_status
-    When the cluster modification completes
-    When the "SNS" topic is deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+    When an "elasticache" "cluster" is created
+    When the "elasticache" "cluster" modification completes
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then the "SNS" topic is deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+  @sequence
+  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" then a "sns" "topic" is created then an "elasticache" "cluster" is created
     Given cid in cluster_status
-    When the cluster modification completes
-    When the "SNS" topic is deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+    When a "sns" "topic" is created
+    When an "elasticache" "cluster" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then the "SNS" topic is deleted then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+  @sequence
+  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" then the "sns" "topic" is deleted then a "sns" "topic" is created
     Given cid in cluster_status
-    When the cluster modification completes
-    When the "SNS" topic is deleted
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+    When the "sns" "topic" is deleted
+    When a "sns" "topic" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then an "SNS" notification is configured on the ElastiCache cluster then an ElastiCache cluster is created
+  @sequence
+  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" then a "SNS" notification is configured on the "elasticache" "cluster" then the "sns" "topic" is deleted
     Given cid in cluster_status
-    When the cluster modification completes
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an ElastiCache cluster is created
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    When the "sns" "topic" is deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then an "SNS" notification is configured on the ElastiCache cluster then an "SNS" topic is created
+  @sequence
+  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" then a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted then a "SNS" notification is configured on the "elasticache" "cluster"
     Given cid in cluster_status
-    When the cluster modification completes
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When an "SNS" topic is created
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
+    When a "SNS" notification is configured on the "elasticache" "cluster"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then an "SNS" notification is configured on the ElastiCache cluster then the "SNS" topic is deleted
+  @sequence
+  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" then the "elasticache" "cluster" modification completes then a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     Given cid in cluster_status
-    When the cluster modification completes
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When the "SNS" topic is deleted
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+    When the "elasticache" "cluster" modification completes
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then an "SNS" notification is configured on the ElastiCache cluster then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+  @sequence
+  Scenario: a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted then an "elasticache" "cluster" is created then a "sns" "topic" is created
     Given cid in cluster_status
-    When the cluster modification completes
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
+    When an "elasticache" "cluster" is created
+    When a "sns" "topic" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then an "SNS" notification is configured on the ElastiCache cluster then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+  @sequence
+  Scenario: a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted then a "sns" "topic" is created then the "sns" "topic" is deleted
     Given cid in cluster_status
-    When the cluster modification completes
-    When an "SNS" notification is configured on the ElastiCache cluster
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
+    When a "sns" "topic" is created
+    When the "sns" "topic" is deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an ElastiCache cluster is created
+  @sequence
+  Scenario: a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted then the "sns" "topic" is deleted then a "SNS" notification is configured on the "elasticache" "cluster"
     Given cid in cluster_status
-    When the cluster modification completes
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an ElastiCache cluster is created
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
+    When the "sns" "topic" is deleted
+    When a "SNS" notification is configured on the "elasticache" "cluster"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" topic is created
+  @sequence
+  Scenario: a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted then a "SNS" notification is configured on the "elasticache" "cluster" then a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     Given cid in cluster_status
-    When the cluster modification completes
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" topic is created
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then the "SNS" topic is deleted
+  @sequence
+  Scenario: a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" then the "elasticache" "cluster" modification completes
     Given cid in cluster_status
-    When the cluster modification completes
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When the "SNS" topic is deleted
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+    When the "elasticache" "cluster" modification completes
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then an "SNS" notification is configured on the ElastiCache cluster
+  @sequence
+  Scenario: a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted then the "elasticache" "cluster" modification completes then an "elasticache" "cluster" is created
     Given cid in cluster_status
-    When the cluster modification completes
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When an "SNS" notification is configured on the ElastiCache cluster
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
+    When the "elasticache" "cluster" modification completes
+    When an "elasticache" "cluster" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic then a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+  @sequence
+  Scenario: the "elasticache" "cluster" modification completes then an "elasticache" "cluster" is created then the "sns" "topic" is deleted
     Given cid in cluster_status
-    When the cluster modification completes
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
+    When the "elasticache" "cluster" modification completes
+    When an "elasticache" "cluster" is created
+    When the "sns" "topic" is deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an ElastiCache cluster is created
+  @sequence
+  Scenario: the "elasticache" "cluster" modification completes then a "sns" "topic" is created then a "SNS" notification is configured on the "elasticache" "cluster"
     Given cid in cluster_status
-    When the cluster modification completes
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an ElastiCache cluster is created
+    When the "elasticache" "cluster" modification completes
+    When a "sns" "topic" is created
+    When a "SNS" notification is configured on the "elasticache" "cluster"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" topic is created
+  @sequence
+  Scenario: the "elasticache" "cluster" modification completes then the "sns" "topic" is deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     Given cid in cluster_status
-    When the cluster modification completes
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" topic is created
+    When the "elasticache" "cluster" modification completes
+    When the "sns" "topic" is deleted
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then the "SNS" topic is deleted
+  @sequence
+  Scenario: the "elasticache" "cluster" modification completes then a "SNS" notification is configured on the "elasticache" "cluster" then a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     Given cid in cluster_status
-    When the cluster modification completes
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When the "SNS" topic is deleted
+    When the "elasticache" "cluster" modification completes
+    When a "SNS" notification is configured on the "elasticache" "cluster"
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then an "SNS" notification is configured on the ElastiCache cluster
+  @sequence
+  Scenario: the "elasticache" "cluster" modification completes then a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" then an "elasticache" "cluster" is created
     Given cid in cluster_status
-    When the cluster modification completes
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When an "SNS" notification is configured on the ElastiCache cluster
+    When the "elasticache" "cluster" modification completes
+    When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
+    When an "elasticache" "cluster" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists
 
-  @exhaustive @sequence
-  Scenario: the cluster modification completes then a cluster event occurs but the "SNS" notification fails because the topic has been deleted then a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+  @sequence
+  Scenario: the "elasticache" "cluster" modification completes then a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted then a "sns" "topic" is created
     Given cid in cluster_status
-    When the cluster modification completes
-    When a cluster event occurs but the "SNS" notification fails because the topic has been deleted
-    When a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic
+    When the "elasticache" "cluster" modification completes
+    When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
+    When a "sns" "topic" is created
     And every "PUBLISHED" notification references a cluster that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" notification references a "sns" "topic" that exists

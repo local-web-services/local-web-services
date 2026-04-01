@@ -7,3474 +7,954 @@ Feature: EventsDynamodb - Action Sequences
   Background:
     Given the system is initialized
 
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then a DynamoDB table is created
+  @sequence
+  Scenario: an EventBridge event bus is created then a "dynamodb" "table" is created
     Given busid not in bus_status
     When an EventBridge event bus is created
-    When a DynamoDB table is created
-    And every existing item references a table that exists
+    When a "dynamodb" "table" is created
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then a table deletion is initiated
+  @sequence
+  Scenario: an EventBridge event bus is created then a "dynamodb" "table" deletion is initiated
     Given busid not in bus_status
     When an EventBridge event bus is created
-    When a table deletion is initiated
-    And every existing item references a table that exists
+    When a "dynamodb" "table" deletion is initiated
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is created targeting a DynamoDB table
+  @sequence
+  Scenario: an EventBridge event bus is created then an "eventbridge" "rule" is created targeting a "dynamodb" "table"
     Given busid not in bus_status
     When an EventBridge event bus is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is enabled
+  @sequence
+  Scenario: an EventBridge event bus is created then an "eventbridge" "rule" was "ENABLED"
     Given busid not in bus_status
     When an EventBridge event bus is created
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "ENABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is disabled
+  @sequence
+  Scenario: an EventBridge event bus is created then an "eventbridge" "rule" was "DISABLED"
     Given busid not in bus_status
     When an EventBridge event bus is created
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "DISABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: an EventBridge event bus is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     Given busid not in bus_status
     When an EventBridge event bus is created
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
+  @sequence
+  Scenario: an EventBridge event bus is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
     Given busid not in bus_status
     When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge event bus is created
+  @sequence
+  Scenario: a "dynamodb" "table" is created then an EventBridge event bus is created
     Given tid not in table_status
-    When a DynamoDB table is created
+    When a "dynamodb" "table" is created
     When an EventBridge event bus is created
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then a table deletion is initiated
+  @sequence
+  Scenario: a "dynamodb" "table" is created then a "dynamodb" "table" deletion is initiated
     Given tid not in table_status
-    When a DynamoDB table is created
-    When a table deletion is initiated
-    And every existing item references a table that exists
+    When a "dynamodb" "table" is created
+    When a "dynamodb" "table" deletion is initiated
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is created targeting a DynamoDB table
+  @sequence
+  Scenario: a "dynamodb" "table" is created then an "eventbridge" "rule" is created targeting a "dynamodb" "table"
     Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
+    When a "dynamodb" "table" is created
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is enabled
+  @sequence
+  Scenario: a "dynamodb" "table" is created then an "eventbridge" "rule" was "ENABLED"
     Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
+    When a "dynamodb" "table" is created
+    When an "eventbridge" "rule" was "ENABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is disabled
+  @sequence
+  Scenario: a "dynamodb" "table" is created then an "eventbridge" "rule" was "DISABLED"
     Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
+    When a "dynamodb" "table" is created
+    When an "eventbridge" "rule" was "DISABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+  @sequence
+  Scenario: a "dynamodb" "table" is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     Given tid not in table_status
-    When a DynamoDB table is created
+    When a "dynamodb" "table" is created
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
+  @sequence
+  Scenario: a "dynamodb" "table" is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
     Given tid not in table_status
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
+    When a "dynamodb" "table" is created
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge event bus is created
+  @sequence
+  Scenario: a "dynamodb" "table" deletion is initiated then an EventBridge event bus is created
     Given tid in table_status
-    When a table deletion is initiated
+    When a "dynamodb" "table" deletion is initiated
     When an EventBridge event bus is created
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then a DynamoDB table is created
+  @sequence
+  Scenario: a "dynamodb" "table" deletion is initiated then a "dynamodb" "table" is created
     Given tid in table_status
-    When a table deletion is initiated
-    When a DynamoDB table is created
-    And every existing item references a table that exists
+    When a "dynamodb" "table" deletion is initiated
+    When a "dynamodb" "table" is created
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is created targeting a DynamoDB table
+  @sequence
+  Scenario: a "dynamodb" "table" deletion is initiated then an "eventbridge" "rule" is created targeting a "dynamodb" "table"
     Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
+    When a "dynamodb" "table" deletion is initiated
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is enabled
+  @sequence
+  Scenario: a "dynamodb" "table" deletion is initiated then an "eventbridge" "rule" was "ENABLED"
     Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
+    When a "dynamodb" "table" deletion is initiated
+    When an "eventbridge" "rule" was "ENABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is disabled
+  @sequence
+  Scenario: a "dynamodb" "table" deletion is initiated then an "eventbridge" "rule" was "DISABLED"
     Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
+    When a "dynamodb" "table" deletion is initiated
+    When an "eventbridge" "rule" was "DISABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+  @sequence
+  Scenario: a "dynamodb" "table" deletion is initiated then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     Given tid in table_status
-    When a table deletion is initiated
+    When a "dynamodb" "table" deletion is initiated
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
+  @sequence
+  Scenario: a "dynamodb" "table" deletion is initiated then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
     Given tid in table_status
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
+    When a "dynamodb" "table" deletion is initiated
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge event bus is created
+  @sequence
+  Scenario: an "eventbridge" "rule" is created targeting a "dynamodb" "table" then an EventBridge event bus is created
     Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
     When an EventBridge event bus is created
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then a DynamoDB table is created
+  @sequence
+  Scenario: an "eventbridge" "rule" is created targeting a "dynamodb" "table" then a "dynamodb" "table" is created
     Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a DynamoDB table is created
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    When a "dynamodb" "table" is created
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then a table deletion is initiated
+  @sequence
+  Scenario: an "eventbridge" "rule" is created targeting a "dynamodb" "table" then a "dynamodb" "table" deletion is initiated
     Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a table deletion is initiated
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    When a "dynamodb" "table" deletion is initiated
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is enabled
+  @sequence
+  Scenario: an "eventbridge" "rule" is created targeting a "dynamodb" "table" then an "eventbridge" "rule" was "ENABLED"
     Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    When an "eventbridge" "rule" was "ENABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is disabled
+  @sequence
+  Scenario: an "eventbridge" "rule" is created targeting a "dynamodb" "table" then an "eventbridge" "rule" was "DISABLED"
     Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    When an "eventbridge" "rule" was "DISABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+  @sequence
+  Scenario: an "eventbridge" "rule" is created targeting a "dynamodb" "table" then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
+  @sequence
+  Scenario: an "eventbridge" "rule" is created targeting a "dynamodb" "table" then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
     Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge event bus is created
+  @sequence
+  Scenario: an "eventbridge" "rule" was "ENABLED" then an EventBridge event bus is created
     Given rid in rule_status
-    When an EventBridge rule is enabled
+    When an "eventbridge" "rule" was "ENABLED"
     When an EventBridge event bus is created
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then a DynamoDB table is created
+  @sequence
+  Scenario: an "eventbridge" "rule" was "ENABLED" then a "dynamodb" "table" is created
     Given rid in rule_status
-    When an EventBridge rule is enabled
-    When a DynamoDB table is created
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "ENABLED"
+    When a "dynamodb" "table" is created
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then a table deletion is initiated
+  @sequence
+  Scenario: an "eventbridge" "rule" was "ENABLED" then a "dynamodb" "table" deletion is initiated
     Given rid in rule_status
-    When an EventBridge rule is enabled
-    When a table deletion is initiated
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "ENABLED"
+    When a "dynamodb" "table" deletion is initiated
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge rule is created targeting a DynamoDB table
+  @sequence
+  Scenario: an "eventbridge" "rule" was "ENABLED" then an "eventbridge" "rule" is created targeting a "dynamodb" "table"
     Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "ENABLED"
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge rule is disabled
+  @sequence
+  Scenario: an "eventbridge" "rule" was "ENABLED" then an "eventbridge" "rule" was "DISABLED"
     Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "ENABLED"
+    When an "eventbridge" "rule" was "DISABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+  @sequence
+  Scenario: an "eventbridge" "rule" was "ENABLED" then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     Given rid in rule_status
-    When an EventBridge rule is enabled
+    When an "eventbridge" "rule" was "ENABLED"
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
+  @sequence
+  Scenario: an "eventbridge" "rule" was "ENABLED" then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
     Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "ENABLED"
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge event bus is created
+  @sequence
+  Scenario: an "eventbridge" "rule" was "DISABLED" then an EventBridge event bus is created
     Given rid in rule_status
-    When an EventBridge rule is disabled
+    When an "eventbridge" "rule" was "DISABLED"
     When an EventBridge event bus is created
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then a DynamoDB table is created
+  @sequence
+  Scenario: an "eventbridge" "rule" was "DISABLED" then a "dynamodb" "table" is created
     Given rid in rule_status
-    When an EventBridge rule is disabled
-    When a DynamoDB table is created
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "DISABLED"
+    When a "dynamodb" "table" is created
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then a table deletion is initiated
+  @sequence
+  Scenario: an "eventbridge" "rule" was "DISABLED" then a "dynamodb" "table" deletion is initiated
     Given rid in rule_status
-    When an EventBridge rule is disabled
-    When a table deletion is initiated
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "DISABLED"
+    When a "dynamodb" "table" deletion is initiated
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge rule is created targeting a DynamoDB table
+  @sequence
+  Scenario: an "eventbridge" "rule" was "DISABLED" then an "eventbridge" "rule" is created targeting a "dynamodb" "table"
     Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "DISABLED"
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge rule is enabled
+  @sequence
+  Scenario: an "eventbridge" "rule" was "DISABLED" then an "eventbridge" "rule" was "ENABLED"
     Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "DISABLED"
+    When an "eventbridge" "rule" was "ENABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+  @sequence
+  Scenario: an "eventbridge" "rule" was "DISABLED" then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     Given rid in rule_status
-    When an EventBridge rule is disabled
+    When an "eventbridge" "rule" was "DISABLED"
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
+  @sequence
+  Scenario: an "eventbridge" "rule" was "DISABLED" then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
     Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "DISABLED"
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
+  @sequence
   Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge event bus is created
     Given rid in rule_status
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     When an EventBridge event bus is created
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a DynamoDB table is created
+  @sequence
+  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a "dynamodb" "table" is created
     Given rid in rule_status
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a DynamoDB table is created
-    And every existing item references a table that exists
+    When a "dynamodb" "table" is created
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a table deletion is initiated
+  @sequence
+  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a "dynamodb" "table" deletion is initiated
     Given rid in rule_status
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a table deletion is initiated
-    And every existing item references a table that exists
+    When a "dynamodb" "table" deletion is initiated
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is created targeting a DynamoDB table
+  @sequence
+  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an "eventbridge" "rule" is created targeting a "dynamodb" "table"
     Given rid in rule_status
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is enabled
+  @sequence
+  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an "eventbridge" "rule" was "ENABLED"
     Given rid in rule_status
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "ENABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is disabled
+  @sequence
+  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an "eventbridge" "rule" was "DISABLED"
     Given rid in rule_status
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "DISABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
+  @sequence
+  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
     Given rid in rule_status
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge event bus is created
+  @sequence
+  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then an EventBridge event bus is created
     Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
     When an EventBridge event bus is created
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a DynamoDB table is created
+  @sequence
+  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then a "dynamodb" "table" is created
     Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a DynamoDB table is created
-    And every existing item references a table that exists
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    When a "dynamodb" "table" is created
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a table deletion is initiated
+  @sequence
+  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then a "dynamodb" "table" deletion is initiated
     Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a table deletion is initiated
-    And every existing item references a table that exists
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    When a "dynamodb" "table" deletion is initiated
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is created targeting a DynamoDB table
+  @sequence
+  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then an "eventbridge" "rule" is created targeting a "dynamodb" "table"
     Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is enabled
+  @sequence
+  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then an "eventbridge" "rule" was "ENABLED"
     Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    When an "eventbridge" "rule" was "ENABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is disabled
+  @sequence
+  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then an "eventbridge" "rule" was "DISABLED"
     Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    When an "eventbridge" "rule" was "DISABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+  @sequence
+  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then a DynamoDB table is created then a table deletion is initiated
+  @sequence
+  Scenario: an EventBridge event bus is created then a "dynamodb" "table" is created then a "dynamodb" "table" deletion is initiated
     Given busid not in bus_status
     When an EventBridge event bus is created
-    When a DynamoDB table is created
-    When a table deletion is initiated
-    And every existing item references a table that exists
+    When a "dynamodb" "table" is created
+    When a "dynamodb" "table" deletion is initiated
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then a DynamoDB table is created then an EventBridge rule is created targeting a DynamoDB table
+  @sequence
+  Scenario: an EventBridge event bus is created then a "dynamodb" "table" deletion is initiated then an "eventbridge" "rule" is created targeting a "dynamodb" "table"
     Given busid not in bus_status
     When an EventBridge event bus is created
-    When a DynamoDB table is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
+    When a "dynamodb" "table" deletion is initiated
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then a DynamoDB table is created then an EventBridge rule is enabled
+  @sequence
+  Scenario: an EventBridge event bus is created then an "eventbridge" "rule" is created targeting a "dynamodb" "table" then an "eventbridge" "rule" was "ENABLED"
     Given busid not in bus_status
     When an EventBridge event bus is created
-    When a DynamoDB table is created
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    When an "eventbridge" "rule" was "ENABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then a DynamoDB table is created then an EventBridge rule is disabled
+  @sequence
+  Scenario: an EventBridge event bus is created then an "eventbridge" "rule" was "ENABLED" then an "eventbridge" "rule" was "DISABLED"
     Given busid not in bus_status
     When an EventBridge event bus is created
-    When a DynamoDB table is created
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "ENABLED"
+    When an "eventbridge" "rule" was "DISABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then a DynamoDB table is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+  @sequence
+  Scenario: an EventBridge event bus is created then an "eventbridge" "rule" was "DISABLED" then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     Given busid not in bus_status
     When an EventBridge event bus is created
-    When a DynamoDB table is created
+    When an "eventbridge" "rule" was "DISABLED"
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then a DynamoDB table is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then a table deletion is initiated then a DynamoDB table is created
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When a table deletion is initiated
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then a table deletion is initiated then an EventBridge rule is created targeting a DynamoDB table
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When a table deletion is initiated
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then a table deletion is initiated then an EventBridge rule is enabled
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When a table deletion is initiated
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then a table deletion is initiated then an EventBridge rule is disabled
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When a table deletion is initiated
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then a table deletion is initiated then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then a table deletion is initiated then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is created targeting a DynamoDB table then a DynamoDB table is created
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is created targeting a DynamoDB table then a table deletion is initiated
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is enabled
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is disabled
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is enabled then a DynamoDB table is created
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an EventBridge rule is enabled
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is enabled then a table deletion is initiated
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an EventBridge rule is enabled
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is enabled then an EventBridge rule is created targeting a DynamoDB table
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an EventBridge rule is enabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is enabled then an EventBridge rule is disabled
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an EventBridge rule is enabled
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is enabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is enabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is disabled then a DynamoDB table is created
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an EventBridge rule is disabled
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is disabled then a table deletion is initiated
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an EventBridge rule is disabled
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is disabled then an EventBridge rule is created targeting a DynamoDB table
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an EventBridge rule is disabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is disabled then an EventBridge rule is enabled
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an EventBridge rule is disabled
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is disabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an EventBridge rule is disabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a DynamoDB table is created
+  @sequence
+  Scenario: an EventBridge event bus is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
     Given busid not in bus_status
     When an EventBridge event bus is created
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a DynamoDB table is created
-    And every existing item references a table that exists
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a table deletion is initiated
+  @sequence
+  Scenario: an EventBridge event bus is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then a "dynamodb" "table" is created
     Given busid not in bus_status
     When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a table deletion is initiated
-    And every existing item references a table that exists
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    When a "dynamodb" "table" is created
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is created targeting a DynamoDB table
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is enabled
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is disabled
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a DynamoDB table is created
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a table deletion is initiated
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is created targeting a DynamoDB table
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is enabled
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is disabled
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge event bus is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge event bus is created then a table deletion is initiated
+  @sequence
+  Scenario: a "dynamodb" "table" is created then an EventBridge event bus is created then an "eventbridge" "rule" is created targeting a "dynamodb" "table"
     Given tid not in table_status
-    When a DynamoDB table is created
+    When a "dynamodb" "table" is created
     When an EventBridge event bus is created
-    When a table deletion is initiated
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge event bus is created then an EventBridge rule is created targeting a DynamoDB table
+  @sequence
+  Scenario: a "dynamodb" "table" is created then a "dynamodb" "table" deletion is initiated then an "eventbridge" "rule" was "ENABLED"
     Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge event bus is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
+    When a "dynamodb" "table" is created
+    When a "dynamodb" "table" deletion is initiated
+    When an "eventbridge" "rule" was "ENABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge event bus is created then an EventBridge rule is enabled
+  @sequence
+  Scenario: a "dynamodb" "table" is created then an "eventbridge" "rule" is created targeting a "dynamodb" "table" then an "eventbridge" "rule" was "DISABLED"
     Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge event bus is created
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
+    When a "dynamodb" "table" is created
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    When an "eventbridge" "rule" was "DISABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge event bus is created then an EventBridge rule is disabled
+  @sequence
+  Scenario: a "dynamodb" "table" is created then an "eventbridge" "rule" was "ENABLED" then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge event bus is created
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
+    When a "dynamodb" "table" is created
+    When an "eventbridge" "rule" was "ENABLED"
+    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge event bus is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+  @sequence
+  Scenario: a "dynamodb" "table" is created then an "eventbridge" "rule" was "DISABLED" then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
     Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
+    When a "dynamodb" "table" is created
+    When an "eventbridge" "rule" was "DISABLED"
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge event bus is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
+  @sequence
+  Scenario: a "dynamodb" "table" is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge event bus is created
     Given tid not in table_status
-    When a DynamoDB table is created
+    When a "dynamodb" "table" is created
+    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then a table deletion is initiated then an EventBridge event bus is created
+  @sequence
+  Scenario: a "dynamodb" "table" is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then a "dynamodb" "table" deletion is initiated
     Given tid not in table_status
-    When a DynamoDB table is created
-    When a table deletion is initiated
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
+    When a "dynamodb" "table" is created
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    When a "dynamodb" "table" deletion is initiated
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then a table deletion is initiated then an EventBridge rule is created targeting a DynamoDB table
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When a table deletion is initiated
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then a table deletion is initiated then an EventBridge rule is enabled
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When a table deletion is initiated
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then a table deletion is initiated then an EventBridge rule is disabled
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When a table deletion is initiated
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then a table deletion is initiated then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then a table deletion is initiated then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is created targeting a DynamoDB table then an EventBridge event bus is created
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is created targeting a DynamoDB table then a table deletion is initiated
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is enabled
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is disabled
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is enabled then an EventBridge event bus is created
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is enabled
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is enabled then a table deletion is initiated
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is enabled
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is enabled then an EventBridge rule is created targeting a DynamoDB table
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is enabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is enabled then an EventBridge rule is disabled
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is enabled
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is enabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is enabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is disabled then an EventBridge event bus is created
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is disabled
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is disabled then a table deletion is initiated
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is disabled
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is disabled then an EventBridge rule is created targeting a DynamoDB table
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is disabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is disabled then an EventBridge rule is enabled
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is disabled
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is disabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an EventBridge rule is disabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge event bus is created
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a table deletion is initiated
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is created targeting a DynamoDB table
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is enabled
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is disabled
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge event bus is created
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a table deletion is initiated
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is created targeting a DynamoDB table
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is enabled
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is disabled
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a DynamoDB table is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given tid not in table_status
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge event bus is created then a DynamoDB table is created
+  @sequence
+  Scenario: a "dynamodb" "table" deletion is initiated then an EventBridge event bus is created then an "eventbridge" "rule" was "ENABLED"
     Given tid in table_status
-    When a table deletion is initiated
+    When a "dynamodb" "table" deletion is initiated
     When an EventBridge event bus is created
-    When a DynamoDB table is created
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "ENABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge event bus is created then an EventBridge rule is created targeting a DynamoDB table
+  @sequence
+  Scenario: a "dynamodb" "table" deletion is initiated then a "dynamodb" "table" is created then an "eventbridge" "rule" was "DISABLED"
     Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge event bus is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
+    When a "dynamodb" "table" deletion is initiated
+    When a "dynamodb" "table" is created
+    When an "eventbridge" "rule" was "DISABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge event bus is created then an EventBridge rule is enabled
+  @sequence
+  Scenario: a "dynamodb" "table" deletion is initiated then an "eventbridge" "rule" is created targeting a "dynamodb" "table" then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge event bus is created
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
+    When a "dynamodb" "table" deletion is initiated
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge event bus is created then an EventBridge rule is disabled
+  @sequence
+  Scenario: a "dynamodb" "table" deletion is initiated then an "eventbridge" "rule" was "ENABLED" then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
     Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge event bus is created
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
+    When a "dynamodb" "table" deletion is initiated
+    When an "eventbridge" "rule" was "ENABLED"
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge event bus is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+  @sequence
+  Scenario: a "dynamodb" "table" deletion is initiated then an "eventbridge" "rule" was "DISABLED" then an EventBridge event bus is created
     Given tid in table_status
-    When a table deletion is initiated
+    When a "dynamodb" "table" deletion is initiated
+    When an "eventbridge" "rule" was "DISABLED"
     When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge event bus is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
+  @sequence
+  Scenario: a "dynamodb" "table" deletion is initiated then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a "dynamodb" "table" is created
     Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
+    When a "dynamodb" "table" deletion is initiated
+    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+    When a "dynamodb" "table" is created
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then a DynamoDB table is created then an EventBridge event bus is created
+  @sequence
+  Scenario: a "dynamodb" "table" deletion is initiated then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then an "eventbridge" "rule" is created targeting a "dynamodb" "table"
     Given tid in table_status
-    When a table deletion is initiated
-    When a DynamoDB table is created
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
+    When a "dynamodb" "table" deletion is initiated
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then a DynamoDB table is created then an EventBridge rule is created targeting a DynamoDB table
-    Given tid in table_status
-    When a table deletion is initiated
-    When a DynamoDB table is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then a DynamoDB table is created then an EventBridge rule is enabled
-    Given tid in table_status
-    When a table deletion is initiated
-    When a DynamoDB table is created
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then a DynamoDB table is created then an EventBridge rule is disabled
-    Given tid in table_status
-    When a table deletion is initiated
-    When a DynamoDB table is created
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then a DynamoDB table is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given tid in table_status
-    When a table deletion is initiated
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then a DynamoDB table is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given tid in table_status
-    When a table deletion is initiated
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is created targeting a DynamoDB table then an EventBridge event bus is created
-    Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is created targeting a DynamoDB table then a DynamoDB table is created
-    Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is enabled
-    Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is disabled
-    Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is enabled then an EventBridge event bus is created
-    Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is enabled
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is enabled then a DynamoDB table is created
-    Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is enabled
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is enabled then an EventBridge rule is created targeting a DynamoDB table
-    Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is enabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is enabled then an EventBridge rule is disabled
-    Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is enabled
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is enabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is enabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is disabled then an EventBridge event bus is created
-    Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is disabled
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is disabled then a DynamoDB table is created
-    Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is disabled
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is disabled then an EventBridge rule is created targeting a DynamoDB table
-    Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is disabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is disabled then an EventBridge rule is enabled
-    Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is disabled
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is disabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an EventBridge rule is disabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given tid in table_status
-    When a table deletion is initiated
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge event bus is created
-    Given tid in table_status
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a DynamoDB table is created
-    Given tid in table_status
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is created targeting a DynamoDB table
-    Given tid in table_status
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is enabled
-    Given tid in table_status
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is disabled
-    Given tid in table_status
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given tid in table_status
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge event bus is created
-    Given tid in table_status
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a DynamoDB table is created
-    Given tid in table_status
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is created targeting a DynamoDB table
-    Given tid in table_status
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is enabled
-    Given tid in table_status
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is disabled
-    Given tid in table_status
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: a table deletion is initiated then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given tid in table_status
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge event bus is created then a DynamoDB table is created
+  @sequence
+  Scenario: an "eventbridge" "rule" is created targeting a "dynamodb" "table" then an EventBridge event bus is created then an "eventbridge" "rule" was "DISABLED"
     Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
     When an EventBridge event bus is created
-    When a DynamoDB table is created
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "DISABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge event bus is created then a table deletion is initiated
+  @sequence
+  Scenario: an "eventbridge" "rule" is created targeting a "dynamodb" "table" then a "dynamodb" "table" is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge event bus is created
-    When a table deletion is initiated
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    When a "dynamodb" "table" is created
+    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge event bus is created then an EventBridge rule is enabled
+  @sequence
+  Scenario: an "eventbridge" "rule" is created targeting a "dynamodb" "table" then a "dynamodb" "table" deletion is initiated then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
     Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge event bus is created
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    When a "dynamodb" "table" deletion is initiated
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge event bus is created then an EventBridge rule is disabled
+  @sequence
+  Scenario: an "eventbridge" "rule" is created targeting a "dynamodb" "table" then an "eventbridge" "rule" was "ENABLED" then an EventBridge event bus is created
     Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    When an "eventbridge" "rule" was "ENABLED"
     When an EventBridge event bus is created
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge event bus is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+  @sequence
+  Scenario: an "eventbridge" "rule" is created targeting a "dynamodb" "table" then an "eventbridge" "rule" was "DISABLED" then a "dynamodb" "table" is created
     Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    When an "eventbridge" "rule" was "DISABLED"
+    When a "dynamodb" "table" is created
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge event bus is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
+  @sequence
+  Scenario: an "eventbridge" "rule" is created targeting a "dynamodb" "table" then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a "dynamodb" "table" deletion is initiated
     Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+    When a "dynamodb" "table" deletion is initiated
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then a DynamoDB table is created then an EventBridge event bus is created
+  @sequence
+  Scenario: an "eventbridge" "rule" is created targeting a "dynamodb" "table" then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then an "eventbridge" "rule" was "ENABLED"
     Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a DynamoDB table is created
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    When an "eventbridge" "rule" was "ENABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then a DynamoDB table is created then a table deletion is initiated
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a DynamoDB table is created
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then a DynamoDB table is created then an EventBridge rule is enabled
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a DynamoDB table is created
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then a DynamoDB table is created then an EventBridge rule is disabled
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a DynamoDB table is created
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then a DynamoDB table is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then a DynamoDB table is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then a table deletion is initiated then an EventBridge event bus is created
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a table deletion is initiated
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then a table deletion is initiated then a DynamoDB table is created
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a table deletion is initiated
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then a table deletion is initiated then an EventBridge rule is enabled
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a table deletion is initiated
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then a table deletion is initiated then an EventBridge rule is disabled
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a table deletion is initiated
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then a table deletion is initiated then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then a table deletion is initiated then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is enabled then an EventBridge event bus is created
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is enabled
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is enabled then a DynamoDB table is created
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is enabled
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is enabled then a table deletion is initiated
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is enabled
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is enabled then an EventBridge rule is disabled
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is enabled
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is enabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is enabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is disabled then an EventBridge event bus is created
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is disabled
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is disabled then a DynamoDB table is created
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is disabled
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is disabled then a table deletion is initiated
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is disabled
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is disabled then an EventBridge rule is enabled
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is disabled
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is disabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is disabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge event bus is created
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a DynamoDB table is created
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a table deletion is initiated
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is enabled
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is disabled
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge event bus is created
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a DynamoDB table is created
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a table deletion is initiated
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is enabled
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is disabled
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given busid in bus_status
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge event bus is created then a DynamoDB table is created
+  @sequence
+  Scenario: an "eventbridge" "rule" was "ENABLED" then an EventBridge event bus is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an EventBridge event bus is created
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge event bus is created then a table deletion is initiated
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an EventBridge event bus is created
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge event bus is created then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an EventBridge event bus is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge event bus is created then an EventBridge rule is disabled
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an EventBridge event bus is created
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge event bus is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given rid in rule_status
-    When an EventBridge rule is enabled
+    When an "eventbridge" "rule" was "ENABLED"
     When an EventBridge event bus is created
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge event bus is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
+  @sequence
+  Scenario: an "eventbridge" "rule" was "ENABLED" then a "dynamodb" "table" is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
     Given rid in rule_status
-    When an EventBridge rule is enabled
+    When an "eventbridge" "rule" was "ENABLED"
+    When a "dynamodb" "table" is created
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    And every existing item references a "dynamodb" "table" that exists
+    And every matched event references a rule that exists
+
+  @sequence
+  Scenario: an "eventbridge" "rule" was "ENABLED" then a "dynamodb" "table" deletion is initiated then an EventBridge event bus is created
+    Given rid in rule_status
+    When an "eventbridge" "rule" was "ENABLED"
+    When a "dynamodb" "table" deletion is initiated
     When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then a DynamoDB table is created then an EventBridge event bus is created
+  @sequence
+  Scenario: an "eventbridge" "rule" was "ENABLED" then an "eventbridge" "rule" is created targeting a "dynamodb" "table" then a "dynamodb" "table" is created
     Given rid in rule_status
-    When an EventBridge rule is enabled
-    When a DynamoDB table is created
+    When an "eventbridge" "rule" was "ENABLED"
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    When a "dynamodb" "table" is created
+    And every existing item references a "dynamodb" "table" that exists
+    And every matched event references a rule that exists
+
+  @sequence
+  Scenario: an "eventbridge" "rule" was "ENABLED" then an "eventbridge" "rule" was "DISABLED" then a "dynamodb" "table" deletion is initiated
+    Given rid in rule_status
+    When an "eventbridge" "rule" was "ENABLED"
+    When an "eventbridge" "rule" was "DISABLED"
+    When a "dynamodb" "table" deletion is initiated
+    And every existing item references a "dynamodb" "table" that exists
+    And every matched event references a rule that exists
+
+  @sequence
+  Scenario: an "eventbridge" "rule" was "ENABLED" then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    Given rid in rule_status
+    When an "eventbridge" "rule" was "ENABLED"
+    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    And every existing item references a "dynamodb" "table" that exists
+    And every matched event references a rule that exists
+
+  @sequence
+  Scenario: an "eventbridge" "rule" was "ENABLED" then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then an "eventbridge" "rule" was "DISABLED"
+    Given rid in rule_status
+    When an "eventbridge" "rule" was "ENABLED"
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    When an "eventbridge" "rule" was "DISABLED"
+    And every existing item references a "dynamodb" "table" that exists
+    And every matched event references a rule that exists
+
+  @sequence
+  Scenario: an "eventbridge" "rule" was "DISABLED" then an EventBridge event bus is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    Given rid in rule_status
+    When an "eventbridge" "rule" was "DISABLED"
     When an EventBridge event bus is created
-    And every existing item references a table that exists
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then a DynamoDB table is created then a table deletion is initiated
+  @sequence
+  Scenario: an "eventbridge" "rule" was "DISABLED" then a "dynamodb" "table" is created then an EventBridge event bus is created
     Given rid in rule_status
-    When an EventBridge rule is enabled
-    When a DynamoDB table is created
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then a DynamoDB table is created then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When a DynamoDB table is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then a DynamoDB table is created then an EventBridge rule is disabled
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When a DynamoDB table is created
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then a DynamoDB table is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then a DynamoDB table is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then a table deletion is initiated then an EventBridge event bus is created
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When a table deletion is initiated
+    When an "eventbridge" "rule" was "DISABLED"
+    When a "dynamodb" "table" is created
     When an EventBridge event bus is created
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then a table deletion is initiated then a DynamoDB table is created
+  @sequence
+  Scenario: an "eventbridge" "rule" was "DISABLED" then a "dynamodb" "table" deletion is initiated then a "dynamodb" "table" is created
     Given rid in rule_status
-    When an EventBridge rule is enabled
-    When a table deletion is initiated
-    When a DynamoDB table is created
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "DISABLED"
+    When a "dynamodb" "table" deletion is initiated
+    When a "dynamodb" "table" is created
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then a table deletion is initiated then an EventBridge rule is created targeting a DynamoDB table
+  @sequence
+  Scenario: an "eventbridge" "rule" was "DISABLED" then an "eventbridge" "rule" is created targeting a "dynamodb" "table" then a "dynamodb" "table" deletion is initiated
     Given rid in rule_status
-    When an EventBridge rule is enabled
-    When a table deletion is initiated
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "DISABLED"
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    When a "dynamodb" "table" deletion is initiated
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then a table deletion is initiated then an EventBridge rule is disabled
+  @sequence
+  Scenario: an "eventbridge" "rule" was "DISABLED" then an "eventbridge" "rule" was "ENABLED" then an "eventbridge" "rule" is created targeting a "dynamodb" "table"
     Given rid in rule_status
-    When an EventBridge rule is enabled
-    When a table deletion is initiated
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "DISABLED"
+    When an "eventbridge" "rule" was "ENABLED"
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then a table deletion is initiated then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+  @sequence
+  Scenario: an "eventbridge" "rule" was "DISABLED" then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an "eventbridge" "rule" was "ENABLED"
     Given rid in rule_status
-    When an EventBridge rule is enabled
-    When a table deletion is initiated
+    When an "eventbridge" "rule" was "DISABLED"
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
+    When an "eventbridge" "rule" was "ENABLED"
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then a table deletion is initiated then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
+  @sequence
+  Scenario: an "eventbridge" "rule" was "DISABLED" then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     Given rid in rule_status
-    When an EventBridge rule is enabled
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge rule is created targeting a DynamoDB table then an EventBridge event bus is created
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge rule is created targeting a DynamoDB table then a DynamoDB table is created
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge rule is created targeting a DynamoDB table then a table deletion is initiated
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is disabled
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an EventBridge rule is created targeting a DynamoDB table
+    When an "eventbridge" "rule" was "DISABLED"
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge rule is disabled then an EventBridge event bus is created
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an EventBridge rule is disabled
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge rule is disabled then a DynamoDB table is created
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an EventBridge rule is disabled
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge rule is disabled then a table deletion is initiated
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an EventBridge rule is disabled
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge rule is disabled then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an EventBridge rule is disabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge rule is disabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an EventBridge rule is disabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge event bus is created
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a DynamoDB table is created
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a table deletion is initiated
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is disabled
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge event bus is created
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a DynamoDB table is created
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a table deletion is initiated
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is disabled
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is enabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given rid in rule_status
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge event bus is created then a DynamoDB table is created
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge event bus is created
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge event bus is created then a table deletion is initiated
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge event bus is created
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge event bus is created then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge event bus is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge event bus is created then an EventBridge rule is enabled
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge event bus is created
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge event bus is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge event bus is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then a DynamoDB table is created then an EventBridge event bus is created
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When a DynamoDB table is created
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then a DynamoDB table is created then a table deletion is initiated
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When a DynamoDB table is created
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then a DynamoDB table is created then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When a DynamoDB table is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then a DynamoDB table is created then an EventBridge rule is enabled
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When a DynamoDB table is created
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then a DynamoDB table is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then a DynamoDB table is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then a table deletion is initiated then an EventBridge event bus is created
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When a table deletion is initiated
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then a table deletion is initiated then a DynamoDB table is created
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When a table deletion is initiated
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then a table deletion is initiated then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When a table deletion is initiated
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then a table deletion is initiated then an EventBridge rule is enabled
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When a table deletion is initiated
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then a table deletion is initiated then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then a table deletion is initiated then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge rule is created targeting a DynamoDB table then an EventBridge event bus is created
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge rule is created targeting a DynamoDB table then a DynamoDB table is created
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge rule is created targeting a DynamoDB table then a table deletion is initiated
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is enabled
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge rule is enabled then an EventBridge event bus is created
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge rule is enabled
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge rule is enabled then a DynamoDB table is created
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge rule is enabled
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge rule is enabled then a table deletion is initiated
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge rule is enabled
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge rule is enabled then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge rule is enabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge rule is enabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an EventBridge rule is enabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge event bus is created
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a DynamoDB table is created
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a table deletion is initiated
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is enabled
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge event bus is created
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a DynamoDB table is created
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a table deletion is initiated
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is enabled
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an EventBridge rule is disabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given rid in rule_status
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge event bus is created then a DynamoDB table is created
+  @sequence
+  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge event bus is created then a "dynamodb" "table" is created
     Given rid in rule_status
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     When an EventBridge event bus is created
-    When a DynamoDB table is created
-    And every existing item references a table that exists
+    When a "dynamodb" "table" is created
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge event bus is created then a table deletion is initiated
+  @sequence
+  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a "dynamodb" "table" is created then a "dynamodb" "table" deletion is initiated
     Given rid in rule_status
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+    When a "dynamodb" "table" is created
+    When a "dynamodb" "table" deletion is initiated
+    And every existing item references a "dynamodb" "table" that exists
+    And every matched event references a rule that exists
+
+  @sequence
+  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a "dynamodb" "table" deletion is initiated then an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    Given rid in rule_status
+    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+    When a "dynamodb" "table" deletion is initiated
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    And every existing item references a "dynamodb" "table" that exists
+    And every matched event references a rule that exists
+
+  @sequence
+  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an "eventbridge" "rule" is created targeting a "dynamodb" "table" then an "eventbridge" "rule" was "ENABLED"
+    Given rid in rule_status
+    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    When an "eventbridge" "rule" was "ENABLED"
+    And every existing item references a "dynamodb" "table" that exists
+    And every matched event references a rule that exists
+
+  @sequence
+  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an "eventbridge" "rule" was "ENABLED" then an "eventbridge" "rule" was "DISABLED"
+    Given rid in rule_status
+    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+    When an "eventbridge" "rule" was "ENABLED"
+    When an "eventbridge" "rule" was "DISABLED"
+    And every existing item references a "dynamodb" "table" that exists
+    And every matched event references a rule that exists
+
+  @sequence
+  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an "eventbridge" "rule" was "DISABLED" then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    Given rid in rule_status
+    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+    When an "eventbridge" "rule" was "DISABLED"
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    And every existing item references a "dynamodb" "table" that exists
+    And every matched event references a rule that exists
+
+  @sequence
+  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then an EventBridge event bus is created
+    Given rid in rule_status
+    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
     When an EventBridge event bus is created
-    When a table deletion is initiated
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge event bus is created then an EventBridge rule is created targeting a DynamoDB table
+  @sequence
+  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then an EventBridge event bus is created then a "dynamodb" "table" deletion is initiated
     Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
     When an EventBridge event bus is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
+    When a "dynamodb" "table" deletion is initiated
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge event bus is created then an EventBridge rule is enabled
+  @sequence
+  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then a "dynamodb" "table" is created then an "eventbridge" "rule" is created targeting a "dynamodb" "table"
     Given rid in rule_status
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    When a "dynamodb" "table" is created
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    And every existing item references a "dynamodb" "table" that exists
+    And every matched event references a rule that exists
+
+  @sequence
+  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then a "dynamodb" "table" deletion is initiated then an "eventbridge" "rule" was "ENABLED"
+    Given rid in rule_status
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    When a "dynamodb" "table" deletion is initiated
+    When an "eventbridge" "rule" was "ENABLED"
+    And every existing item references a "dynamodb" "table" that exists
+    And every matched event references a rule that exists
+
+  @sequence
+  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then an "eventbridge" "rule" is created targeting a "dynamodb" "table" then an "eventbridge" "rule" was "DISABLED"
+    Given rid in rule_status
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    When an "eventbridge" "rule" is created targeting a "dynamodb" "table"
+    When an "eventbridge" "rule" was "DISABLED"
+    And every existing item references a "dynamodb" "table" that exists
+    And every matched event references a rule that exists
+
+  @sequence
+  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then an "eventbridge" "rule" was "ENABLED" then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+    Given rid in rule_status
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    When an "eventbridge" "rule" was "ENABLED"
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
+    And every existing item references a "dynamodb" "table" that exists
+    And every matched event references a rule that exists
+
+  @sequence
+  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then an "eventbridge" "rule" was "DISABLED" then an EventBridge event bus is created
+    Given rid in rule_status
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
+    When an "eventbridge" "rule" was "DISABLED"
     When an EventBridge event bus is created
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists
 
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge event bus is created then an EventBridge rule is disabled
+  @sequence
+  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a "dynamodb" "table" is created
     Given rid in rule_status
+    When an event matches an "ENABLED" rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge event bus is created
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge event bus is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a DynamoDB table is created then an EventBridge event bus is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a DynamoDB table is created
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a DynamoDB table is created then a table deletion is initiated
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a DynamoDB table is created
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a DynamoDB table is created then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a DynamoDB table is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a DynamoDB table is created then an EventBridge rule is enabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a DynamoDB table is created
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a DynamoDB table is created then an EventBridge rule is disabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a DynamoDB table is created
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a DynamoDB table is created then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a table deletion is initiated then an EventBridge event bus is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a table deletion is initiated
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a table deletion is initiated then a DynamoDB table is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a table deletion is initiated
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a table deletion is initiated then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a table deletion is initiated
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a table deletion is initiated then an EventBridge rule is enabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a table deletion is initiated
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a table deletion is initiated then an EventBridge rule is disabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a table deletion is initiated
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a table deletion is initiated then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is created targeting a DynamoDB table then an EventBridge event bus is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is created targeting a DynamoDB table then a DynamoDB table is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is created targeting a DynamoDB table then a table deletion is initiated
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is enabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is disabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is enabled then an EventBridge event bus is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is enabled
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is enabled then a DynamoDB table is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is enabled
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is enabled then a table deletion is initiated
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is enabled
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is enabled then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is enabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is enabled then an EventBridge rule is disabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is enabled
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is enabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is disabled then an EventBridge event bus is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is disabled
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is disabled then a DynamoDB table is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is disabled
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is disabled then a table deletion is initiated
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is disabled
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is disabled then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is disabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is disabled then an EventBridge rule is enabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is disabled
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is disabled then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge event bus is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a DynamoDB table is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a table deletion is initiated
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is enabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is disabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge event bus is created then a DynamoDB table is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge event bus is created
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge event bus is created then a table deletion is initiated
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge event bus is created
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge event bus is created then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge event bus is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge event bus is created then an EventBridge rule is enabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge event bus is created
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge event bus is created then an EventBridge rule is disabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge event bus is created
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge event bus is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge event bus is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a DynamoDB table is created then an EventBridge event bus is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a DynamoDB table is created
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a DynamoDB table is created then a table deletion is initiated
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a DynamoDB table is created
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a DynamoDB table is created then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a DynamoDB table is created
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a DynamoDB table is created then an EventBridge rule is enabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a DynamoDB table is created
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a DynamoDB table is created then an EventBridge rule is disabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a DynamoDB table is created
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a DynamoDB table is created then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a DynamoDB table is created
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a table deletion is initiated then an EventBridge event bus is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a table deletion is initiated
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a table deletion is initiated then a DynamoDB table is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a table deletion is initiated
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a table deletion is initiated then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a table deletion is initiated
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a table deletion is initiated then an EventBridge rule is enabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a table deletion is initiated
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a table deletion is initiated then an EventBridge rule is disabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a table deletion is initiated
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then a table deletion is initiated then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When a table deletion is initiated
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is created targeting a DynamoDB table then an EventBridge event bus is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is created targeting a DynamoDB table then a DynamoDB table is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is created targeting a DynamoDB table then a table deletion is initiated
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is created targeting a DynamoDB table
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is enabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is created targeting a DynamoDB table then an EventBridge rule is disabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is created targeting a DynamoDB table then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is created targeting a DynamoDB table
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is enabled then an EventBridge event bus is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is enabled
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is enabled then a DynamoDB table is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is enabled
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is enabled then a table deletion is initiated
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is enabled
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is enabled then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is enabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is enabled then an EventBridge rule is disabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is enabled
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is enabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is enabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is disabled then an EventBridge event bus is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is disabled
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is disabled then a DynamoDB table is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is disabled
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is disabled then a table deletion is initiated
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is disabled
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is disabled then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is disabled
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is disabled then an EventBridge rule is enabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is disabled
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an EventBridge rule is disabled then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an EventBridge rule is disabled
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge event bus is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge event bus is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a DynamoDB table is created
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a DynamoDB table is created
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then a table deletion is initiated
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When a table deletion is initiated
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is created targeting a DynamoDB table
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is created targeting a DynamoDB table
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is enabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is enabled
-    And every existing item references a table that exists
-    And every matched event references a rule that exists
-
-  @exhaustive @sequence
-  Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted then an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target then an EventBridge rule is disabled
-    Given rid in rule_status
-    When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
-    When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
-    When an EventBridge rule is disabled
-    And every existing item references a table that exists
+    When a "dynamodb" "table" is created
+    And every existing item references a "dynamodb" "table" that exists
     And every matched event references a rule that exists

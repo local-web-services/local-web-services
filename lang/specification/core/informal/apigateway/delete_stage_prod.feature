@@ -1,5 +1,5 @@
 @apigateway @generated
-Feature: Apigateway - The Prod Stage Is Deleted
+Feature: Apigateway - The "Api Gateway" "Prod Stage" Is Deleted
 
   # Generated from FizzBee spec: apigateway.fizz
   # Safety invariants: ResourcesBelongToExistingApis, MethodsBelongToExistingResources, IntegrationsBelongToExistingMethods, DeploymentsBelongToExistingApis, StagesReferenceExistingDeployments, StagesBelongToExistingApis, RootResourcePreserved
@@ -8,11 +8,11 @@ Feature: Apigateway - The Prod Stage Is Deleted
     Given the system is initialized
 
   @minimal @happy @delete_stage_prod
-  Scenario: the prod stage is deleted
-    Given the prod stage exists
-    And the prod stage is active
-    When the prod stage is deleted
-    Then the prod stage no longer exists
+  Scenario: the "api gateway" "prod stage" is deleted
+    Given the "api gateway" "prod stage" existed
+    And the "api gateway" "prod stage" is "ACTIVE"
+    When the "api gateway" "prod stage" is deleted
+    Then the "api gateway" "prod stage" no longer will exist
     And all "ACTIVE" resources belong to "ACTIVE" APIs
     And all "EXISTING" methods belong to "ACTIVE" resources
     And all "EXISTING" integrations correspond to "EXISTING" methods
@@ -21,15 +21,15 @@ Feature: Apigateway - The Prod Stage Is Deleted
     And all active stages belong to "ACTIVE" APIs
     And each "ACTIVE" "API" has at least one "ACTIVE" root resource
 
-  @standard @negative @delete_stage_prod
-  Scenario: the prod stage is deleted fails when the prod stage does not exist
-    Given the prod stage does not exist
-    When the prod stage is deleted
+  @guard @negative @delete_stage_prod
+  Scenario: the "api gateway" "prod stage" is deleted fails when the "api gateway" "prod stage" did not exist
+    Given the "api gateway" "prod stage" did not exist
+    When the "api gateway" "prod stage" is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_stage_prod @lifecycle
-  Scenario: the prod stage is deleted fails when the prod stage is not active
-    Given the prod stage exists
-    And the prod stage is not active
-    When the prod stage is deleted
+  @guard @negative @delete_stage_prod @lifecycle
+  Scenario: the "api gateway" "prod stage" is deleted fails when the "api gateway" "prod stage" is not "ACTIVE"
+    Given the "api gateway" "prod stage" existed
+    And the "api gateway" "prod stage" is not "ACTIVE"
+    When the "api gateway" "prod stage" is deleted
     Then the operation is rejected

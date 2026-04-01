@@ -1,0 +1,22 @@
+"""Then: the "organizations" "policy" will be attached to the "organizations" "target" """
+
+from __future__ import annotations
+
+from pytest_bdd import then
+from starlette.testclient import TestClient
+
+from ..client import OrganizationsTestClient
+
+
+@then('the "organizations" "policy" will be attached to the "organizations" "target"')
+def policy_is_attached_to_target(client: TestClient, world):
+    assert world["error"] is None, f"Expected AttachPolicy to succeed but got: {world['error']}"
+    policy_id = world["policy_id"]
+    target_id = world["target_id"]
+    _, list_body = OrganizationsTestClient(client).post(
+        "ListTargetsForPolicy", {"PolicyId": policy_id}
+    )
+    actual_target_ids = [t["TargetId"] for t in list_body.get("Targets", [])]
+    assert (
+        target_id in actual_target_ids
+    ), f"Expected target '{target_id}' in policy targets but found: {actual_target_ids}"

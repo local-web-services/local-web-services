@@ -1,5 +1,5 @@
 @docdb @generated
-Feature: Docdb - A Database Instance Configuration Is Modified
+Feature: Docdb - A "Documentdb" "Instance" Configuration Is Modified
 
   # Generated from FizzBee spec: docdb.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, NoNonDeletedInstancesOnDeletedCluster, NoAvailableInstancesOnFailedCluster, DeletingClusterGetsNoNewInstances, SnapshotHasValidClusterReference
@@ -8,13 +8,13 @@ Feature: Docdb - A Database Instance Configuration Is Modified
     Given the system is initialized
 
   @minimal @happy @modify_d_b_instance
-  Scenario: a database instance configuration is modified
-    Given the instance exists
-    And the instance is "AVAILABLE"
-    And the cluster exists
-    And the cluster is "AVAILABLE"
-    When a database instance configuration is modified
-    Then the instance is in "MODIFYING" state
+  Scenario: a "documentdb" "instance" configuration is modified
+    Given the "documentdb" "instance" existed
+    And the "documentdb" "instance" was "AVAILABLE"
+    And the "documentdb" "cluster" existed
+    And the "documentdb" "cluster" was "AVAILABLE"
+    When a "documentdb" "instance" configuration is modified
+    Then the "documentdb" "INSTANCE" will be in "MODIFYING" state
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -23,32 +23,32 @@ Feature: Docdb - A Database Instance Configuration Is Modified
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @modify_d_b_instance
-  Scenario: a database instance configuration is modified fails when the instance does not exist
-    Given the instance does not exist
-    When a database instance configuration is modified
+  @guard @negative @modify_d_b_instance
+  Scenario: a "documentdb" "instance" configuration is modified fails when the "documentdb" "instance" did not exist
+    Given the "documentdb" "instance" did not exist
+    When a "documentdb" "instance" configuration is modified
     Then the operation is rejected
 
-  @standard @negative @modify_d_b_instance @lifecycle
-  Scenario: a database instance configuration is modified fails when the instance is not "AVAILABLE"
-    Given the instance exists
-    And the instance is not "AVAILABLE"
-    When a database instance configuration is modified
+  @guard @negative @modify_d_b_instance @lifecycle
+  Scenario: a "documentdb" "instance" configuration is modified fails when the "documentdb" "instance" was not "AVAILABLE"
+    Given the "documentdb" "instance" existed
+    And the "documentdb" "instance" was not "AVAILABLE"
+    When a "documentdb" "instance" configuration is modified
     Then the operation is rejected
 
-  @standard @negative @modify_d_b_instance
-  Scenario: a database instance configuration is modified fails when the cluster does not exist
-    Given the instance exists
-    And the instance is "AVAILABLE"
-    And the cluster does not exist
-    When a database instance configuration is modified
+  @guard @negative @modify_d_b_instance
+  Scenario: a "documentdb" "instance" configuration is modified fails when the "documentdb" "cluster" did not exist
+    Given the "documentdb" "instance" existed
+    And the "documentdb" "instance" was "AVAILABLE"
+    And the "documentdb" "cluster" did not exist
+    When a "documentdb" "instance" configuration is modified
     Then the operation is rejected
 
-  @standard @negative @modify_d_b_instance @lifecycle
-  Scenario: a database instance configuration is modified fails when the cluster is not "AVAILABLE"
-    Given the instance exists
-    And the instance is "AVAILABLE"
-    And the cluster exists
-    And the cluster is not "AVAILABLE"
-    When a database instance configuration is modified
+  @guard @negative @modify_d_b_instance @lifecycle
+  Scenario: a "documentdb" "instance" configuration is modified fails when the "documentdb" "cluster" was not "AVAILABLE"
+    Given the "documentdb" "instance" existed
+    And the "documentdb" "instance" was "AVAILABLE"
+    And the "documentdb" "cluster" existed
+    And the "documentdb" "cluster" was not "AVAILABLE"
+    When a "documentdb" "instance" configuration is modified
     Then the operation is rejected

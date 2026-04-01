@@ -29,8 +29,13 @@ from lws.providers._shared.aws_operation_fake import (
     AwsFakeConfig,
     AwsOperationFakeMiddleware,
 )
+from lws.providers.dynamodb.provider import SqliteDynamoProvider
 from lws.providers.eventbridge._eventbridge_handlers import TARGET_HANDLERS
+from lws.providers.eventbridge._eventbridge_target_validators import (
+    _check_put_targets_validation,
+)
 from lws.providers.eventbridge.provider import EventBridgeProvider
+from lws.providers.lambda_runtime._lambda_registry import LambdaRegistry
 from lws.providers.sns.provider import SnsProvider
 from lws.providers.sqs.provider import SqsProvider
 
@@ -85,13 +90,13 @@ def _check_sf_targets(
     body: dict,
     sf_tracker: ResourceStateTracker,
 ) -> Response | None:
-    """Return an error response if any Step Functions target is not ACTIVE."""
+    """Return an error response if any Step Functions target does not exist or is not ACTIVE."""
     for t in body.get("Targets", []):
         arn = t.get("Arn", "")
         if ":stateMachine:" in arn:
             sm_name = arn.rsplit(":", 1)[-1]
             sm_state = sf_tracker.get_state(sm_name)
-            if sm_state in ("CREATING", "DELETING"):
+            if sm_state is None or sm_state in ("CREATING", "DELETING"):
                 return Response(
                     content=json.dumps(
                         {"Error": f"State machine is not ACTIVE: {arn} (status: {sm_state})"}
@@ -178,92 +183,6 @@ def _check_sf_target_lifecycle(
     return _check_sf_targets(body, sf_tracker)
 
 
-def _check_sqs_targets(
-    body: dict,
-    sqs_provider: SqsProvider,
-    sqs_tracker: ResourceStateTracker | None,
-) -> Response | None:
-    """Return an error response if any SQS target queue does not exist or is not ACTIVE."""
-    for t in body.get("Targets", []):
-        arn = t.get("Arn", "")
-        if ":sqs:" not in arn:
-            continue
-        queue_name = arn.rsplit(":", 1)[-1]
-        queue = sqs_provider.get_queue(queue_name)
-        if queue is None:
-            return Response(
-                content=json.dumps({"Error": f"SQS queue does not exist: {arn}"}),
-                status_code=400,
-                media_type="application/json",
-            )
-        if sqs_tracker is not None:
-            state = sqs_tracker.get_state(queue_name)
-            if state in ("CREATING", "DELETING"):
-                return Response(
-                    content=json.dumps(
-                        {"Error": f"SQS queue is not ACTIVE: {arn} (status: {state})"}
-                    ),
-                    status_code=400,
-                    media_type="application/json",
-                )
-    return None
-
-
-def _check_sns_targets(
-    body: dict,
-    sns_provider: SnsProvider,
-    sns_tracker: ResourceStateTracker | None,
-) -> Response | None:
-    """Return an error response if any SNS target topic does not exist or is not ACTIVE."""
-    for t in body.get("Targets", []):
-        arn = t.get("Arn", "")
-        if ":sns:" not in arn:
-            continue
-        topic_name = arn.rsplit(":", 1)[-1]
-        topic = None
-        try:
-            topic = sns_provider.get_topic(topic_name)
-        except (KeyError, Exception):  # noqa: BLE001
-            topic = None
-        if topic is None:
-            return Response(
-                content=json.dumps({"Error": f"SNS topic does not exist: {arn}"}),
-                status_code=400,
-                media_type="application/json",
-            )
-        if sns_tracker is not None:
-            state = sns_tracker.get_state(topic_name)
-            if state in ("CREATING", "DELETING"):
-                return Response(
-                    content=json.dumps(
-                        {"Error": f"SNS topic is not ACTIVE: {arn} (status: {state})"}
-                    ),
-                    status_code=400,
-                    media_type="application/json",
-                )
-    return None
-
-
-def _check_put_targets_validation(
-    target: str,
-    body: dict,
-    sqs_provider: SqsProvider | None,
-    sqs_tracker: ResourceStateTracker | None,
-    sns_provider: SnsProvider | None,
-    sns_tracker: ResourceStateTracker | None,
-) -> Response | None:
-    """Validate SQS and SNS targets when PutTargets is called."""
-    if target != "AWSEvents.PutTargets":
-        return None
-    if sqs_provider is not None:
-        err = _check_sqs_targets(body, sqs_provider, sqs_tracker)
-        if err is not None:
-            return err
-    if sns_provider is not None:
-        return _check_sns_targets(body, sns_provider, sns_tracker)
-    return None
-
-
 async def _handle_eventbridge_lifecycle(
     target: str,
     handler: Any,
@@ -277,6 +196,97 @@ async def _handle_eventbridge_lifecycle(
     if target == "AWSEvents.DeleteEventBus":
         return await _lifecycle_delete_event_bus(handler, provider, body, lc, tracker)
     return None
+
+
+def _check_rule_target_state(
+    arn: str,
+    sqs_tracker: ResourceStateTracker | None,
+    sf_tracker: ResourceStateTracker | None,
+    sns_tracker: ResourceStateTracker | None = None,
+) -> Response | None:
+    """Return an error response if a single rule target is not ACTIVE."""
+    if ":sqs:" in arn and sqs_tracker is not None:
+        queue_name = arn.rsplit(":", 1)[-1]
+        state = sqs_tracker.get_state(queue_name)
+        if state in ("CREATING", "DELETING"):
+            return Response(
+                content=json.dumps(
+                    {"Error": f"Target SQS queue is not ACTIVE: {arn} (status: {state})"}
+                ),
+                status_code=400,
+                media_type="application/json",
+            )
+    elif ":stateMachine:" in arn and sf_tracker is not None:
+        sm_name = arn.rsplit(":", 1)[-1]
+        sm_state = sf_tracker.get_state(sm_name)
+        if sm_state in ("CREATING", "DELETING"):
+            return Response(
+                content=json.dumps(
+                    {
+                        "Error": (
+                            f"Target state machine is not ACTIVE: {arn}" f" (status: {sm_state})"
+                        )
+                    }
+                ),
+                status_code=400,
+                media_type="application/json",
+            )
+    elif ":sns:" in arn and sns_tracker is not None:
+        topic_name = arn.rsplit(":", 1)[-1]
+        state = sns_tracker.get_state(topic_name)
+        if state in ("CREATING", "DELETING"):
+            return Response(
+                content=json.dumps(
+                    {"Error": f"Target SNS topic is not ACTIVE: {arn} (status: {state})"}
+                ),
+                status_code=400,
+                media_type="application/json",
+            )
+    return None
+
+
+def _check_all_rule_targets(
+    enabled_rules: list,
+    sqs_tracker: ResourceStateTracker | None,
+    sf_tracker: ResourceStateTracker | None,
+    sns_tracker: ResourceStateTracker | None = None,
+) -> Response | None:
+    """Check every target on every enabled rule; return first error or None."""
+    for rule in enabled_rules:
+        for t in rule.targets:
+            err = _check_rule_target_state(t.arn, sqs_tracker, sf_tracker, sns_tracker)
+            if err is not None:
+                return err
+    return None
+
+
+def _check_put_events_routing(
+    target: str,
+    body: dict,
+    provider: EventBridgeProvider,
+    sqs_tracker: ResourceStateTracker | None,
+    sf_tracker: ResourceStateTracker | None,
+    sns_tracker: ResourceStateTracker | None = None,
+) -> Response | None:
+    """Reject put_events if no enabled rules exist or a target resource is not ACTIVE."""
+    if target != "AWSEvents.PutEvents":
+        return None
+    entries = body.get("Entries", [])
+    if not entries:
+        return None
+    bus_name = entries[0].get("EventBusName") or "default"
+    try:
+        rules = provider.list_rules(bus_name)
+    except KeyError:
+        return None
+    enabled_rules = [r for r in rules if r.enabled]
+    if not enabled_rules:
+        return Response(
+            content=json.dumps({"Error": f"No enabled rules on event bus: {bus_name}"}),
+            status_code=400,
+            media_type="application/json",
+        )
+    return _check_all_rule_targets(enabled_rules, sqs_tracker, sf_tracker, sns_tracker)
 
 
 def _check_capacity(
@@ -311,6 +321,10 @@ async def _eventbridge_dispatch(
     sqs_tracker: ResourceStateTracker | None = None,
     sns_provider: SnsProvider | None = None,
     sns_tracker: ResourceStateTracker | None = None,
+    lambda_registry: LambdaRegistry | None = None,
+    lambda_tracker: ResourceStateTracker | None = None,
+    dynamodb_provider: SqliteDynamoProvider | None = None,
+    dynamodb_tracker: ResourceStateTracker | None = None,
 ) -> Response:
     """Route a single EventBridge request."""
     target = request.headers.get("x-amz-target", "")
@@ -325,8 +339,21 @@ async def _eventbridge_dispatch(
         return err
 
     err = _check_put_targets_validation(
-        target, body, sqs_provider, sqs_tracker, sns_provider, sns_tracker
+        target,
+        body,
+        sqs_provider,
+        sqs_tracker,
+        sns_provider,
+        sns_tracker,
+        lambda_registry,
+        lambda_tracker,
+        dynamodb_provider,
+        dynamodb_tracker,
     )
+    if err is not None:
+        return err
+
+    err = _check_put_events_routing(target, body, provider, sqs_tracker, sf_tracker, sns_tracker)
     if err is not None:
         return err
 
@@ -368,6 +395,10 @@ def create_eventbridge_app(
     sqs_tracker: ResourceStateTracker | None = None,
     sns_provider: SnsProvider | None = None,
     sns_tracker: ResourceStateTracker | None = None,
+    lambda_registry: LambdaRegistry | None = None,
+    lambda_tracker: ResourceStateTracker | None = None,
+    dynamodb_provider: SqliteDynamoProvider | None = None,
+    dynamodb_tracker: ResourceStateTracker | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the EventBridge wire protocol.
 
@@ -403,6 +434,10 @@ def create_eventbridge_app(
             sqs_tracker,
             sns_provider,
             sns_tracker,
+            lambda_registry,
+            lambda_tracker,
+            dynamodb_provider,
+            dynamodb_tracker,
         )
 
     return app

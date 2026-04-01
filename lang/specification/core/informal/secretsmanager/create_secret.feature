@@ -1,5 +1,5 @@
 @secretsmanager @generated
-Feature: Secretsmanager - A Secret Is Created
+Feature: Secretsmanager - A "Secrets Manager" "Secret" Is Created
 
   # Generated from FizzBee spec: secretsmanager.fizz
   # Safety invariants: ActiveSecretHasCurrentVersion, AtMostOneCurrentVersionPerSecret, AtMostOnePreviousVersionPerSecret, DeletedSecretWithClosedWindowNotRestored, SecretNamesAreUnique, VersionIdsAreUnique, DeletedSecretRecoveryWindowIsOpen, ActiveSecretHasVersion
@@ -8,10 +8,10 @@ Feature: Secretsmanager - A Secret Is Created
     Given the system is initialized
 
   @minimal @happy @create_secret
-  Scenario: a secret is created
-    Given the secret does not already exist
-    When a secret is created
-    Then the secret is "ACTIVE" with an initial version
+  Scenario: a "secrets manager" "secret" is created
+    Given the "secrets manager" "secret" did not already exist
+    When a "secrets manager" "secret" is created
+    Then the "secrets manager" "secret" will be "ACTIVE" with an initial version
     And every "ACTIVE" secret has a current version assigned
     And at most one current version exists per secret
     And at most one previous version exists per secret
@@ -21,8 +21,8 @@ Feature: Secretsmanager - A Secret Is Created
     And every deleted secret with an open recovery window can still be restored or expired
     And every active secret has a current version assigned
 
-  @standard @negative @create_secret
-  Scenario: a secret is created fails when the secret already exists
-    Given the secret already exists
-    When a secret is created
+  @guard @negative @create_secret
+  Scenario: a "secrets manager" "secret" is created fails when the "secrets manager" "secret" already existed
+    Given the "secrets manager" "secret" already existed
+    When a "secrets manager" "secret" is created
     Then the operation is rejected

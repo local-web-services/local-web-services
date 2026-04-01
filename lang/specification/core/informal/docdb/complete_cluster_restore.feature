@@ -1,5 +1,5 @@
 @docdb @generated
-Feature: Docdb - A Database Cluster Restore From Snapshot Completes
+Feature: Docdb - A "Documentdb" "Cluster" Restore From Documentdb Snapshot Completes
 
   # Generated from FizzBee spec: docdb.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, NoNonDeletedInstancesOnDeletedCluster, NoAvailableInstancesOnFailedCluster, DeletingClusterGetsNoNewInstances, SnapshotHasValidClusterReference
@@ -8,11 +8,11 @@ Feature: Docdb - A Database Cluster Restore From Snapshot Completes
     Given the system is initialized
 
   @minimal @happy @complete_cluster_restore @internal
-  Scenario: a database cluster restore from snapshot completes
-    Given the cluster exists
-    And the cluster is "RESTORING"
-    When a database cluster restore from snapshot completes
-    Then the cluster is "AVAILABLE"
+  Scenario: a "documentdb" "cluster" restore from documentdb snapshot completes
+    Given the "documentdb" "cluster" existed
+    And the "documentdb" "cluster" was "RESTORING"
+    When a "documentdb" "cluster" restore from documentdb snapshot completes
+    Then the "documentdb" "cluster" will be "AVAILABLE"
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -21,15 +21,15 @@ Feature: Docdb - A Database Cluster Restore From Snapshot Completes
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @complete_cluster_restore @internal
-  Scenario: a database cluster restore from snapshot completes fails when the cluster does not exist
-    Given the cluster does not exist
-    When a database cluster restore from snapshot completes
+  @guard @negative @complete_cluster_restore @internal
+  Scenario: a "documentdb" "cluster" restore from documentdb snapshot completes fails when the "documentdb" "cluster" did not exist
+    Given the "documentdb" "cluster" did not exist
+    When a "documentdb" "cluster" restore from documentdb snapshot completes
     Then the operation is rejected
 
-  @standard @negative @complete_cluster_restore @internal
-  Scenario: a database cluster restore from snapshot completes fails when the cluster is not "RESTORING"
-    Given the cluster exists
-    And the cluster is not "RESTORING"
-    When a database cluster restore from snapshot completes
+  @guard @negative @complete_cluster_restore @internal
+  Scenario: a "documentdb" "cluster" restore from documentdb snapshot completes fails when the "documentdb" "cluster" was not "RESTORING"
+    Given the "documentdb" "cluster" existed
+    And the "documentdb" "cluster" was not "RESTORING"
+    When a "documentdb" "cluster" restore from documentdb snapshot completes
     Then the operation is rejected

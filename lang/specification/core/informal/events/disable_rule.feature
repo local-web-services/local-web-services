@@ -1,5 +1,5 @@
 @events @generated
-Feature: Events - A Rule Is Disabled
+Feature: events - An "Eventbridge" "Rule" Was "Disabled"
 
   # Generated from FizzBee spec: events.fizz
   # Safety invariants: EventBusStatusValid, RuleStatusValid, RulePatternTypeValid, RuleBusExists, DefaultBusCannotBeDeleted, DeleteRuleRequiresNoTargets, RuleOnlyEnabledOnActiveBus, DeadLetterQueueBounded
@@ -8,11 +8,11 @@ Feature: Events - A Rule Is Disabled
     Given the system is initialized
 
   @minimal @happy @disable_rule
-  Scenario: a rule is disabled
-    Given the rule exists
-    And the rule is "ENABLED"
-    When a rule is disabled
-    Then the rule is "DISABLED"
+  Scenario: an "eventbridge" "rule" was "DISABLED"
+    Given the "eventbridge" "rule" existed
+    And the "eventbridge" "rule" was "ENABLED"
+    When an "eventbridge" "rule" was "DISABLED"
+    Then the "eventbridge" "rule" will be "DISABLED"
     And every event bus has a valid status ("ACTIVE" or "DELETED")
     And every rule has a valid status ("ENABLED", "DISABLED", or "DELETED")
     And every rule has a valid pattern type ("EVENT_PATTERN" or "SCHEDULE")
@@ -22,15 +22,15 @@ Feature: Events - A Rule Is Disabled
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @disable_rule
-  Scenario: a rule is disabled fails when the rule does not exist
-    Given the rule does not exist
-    When a rule is disabled
+  @guard @negative @disable_rule
+  Scenario: an "eventbridge" "rule" was "DISABLED" fails when the "eventbridge" "rule" did not exist
+    Given the "eventbridge" "rule" did not exist
+    When an "eventbridge" "rule" was "DISABLED"
     Then the operation is rejected
 
-  @standard @negative @disable_rule
-  Scenario: a rule is disabled fails when the rule is not "ENABLED"
-    Given the rule exists
-    And the rule is not "ENABLED"
-    When a rule is disabled
+  @guard @negative @disable_rule
+  Scenario: an "eventbridge" "rule" was "DISABLED" fails when the "eventbridge" "rule" was not "ENABLED"
+    Given the "eventbridge" "rule" existed
+    And the "eventbridge" "rule" was not "ENABLED"
+    When an "eventbridge" "rule" was "DISABLED"
     Then the operation is rejected

@@ -1,5 +1,5 @@
 @s3tables @generated
-Feature: S3tables - An Expired Snapshot Is Removed From A Table
+Feature: S3tables - An Expired S3 Tables Snapshot Is Removed From A "S3 Tables" "Table"
 
   # Generated from FizzBee spec: s3tables.fizz
   # Safety invariants: BucketDeletionRequiresNoNamespaces, NamespaceDeletionRequiresNoTables, SnapshotCountNonNegative, SchemaVersionAtLeastOne
@@ -8,55 +8,55 @@ Feature: S3tables - An Expired Snapshot Is Removed From A Table
     Given the system is initialized
 
   @minimal @happy @expire_snapshot
-  Scenario: an expired snapshot is removed from a table
-    Given the table exists
-    And the table is "ACTIVE"
-    And the table has more than one snapshot
-    And the snapshot exists
-    And the snapshot is "ACTIVE"
-    When an expired snapshot is removed from a table
-    Then the snapshot is "DELETED" and the table snapshot count decreases
+  Scenario: an expired s3 tables snapshot is removed from a "s3 tables" "table"
+    Given the "s3 tables" "table" existed
+    And the "s3 tables" "table" was "ACTIVE"
+    And the "s3 tables" "table" has more than one s3 tables snapshot
+    And the "s3 tables" "snapshot" existed
+    And the "s3 tables" "snapshot" was "ACTIVE"
+    When an expired s3 tables snapshot is removed from a "s3 tables" "table"
+    Then the "s3 tables" "SNAPSHOT" will be "DELETED" and the "s3 tables" "table" s3 tables snapshot count decreases
     And a bucket in "DELETING" state has no "ACTIVE" namespaces
-    And a namespace in "DELETING" state has no "ACTIVE" tables
+    And a "s3 tables" "namespace" in "DELETING" state has no "ACTIVE" tables
     And snapshot count is never negative
     And schema version is always at least one
 
-  @standard @negative @expire_snapshot
-  Scenario: an expired snapshot is removed from a table fails when the table does not exist
-    Given the table does not exist
-    When an expired snapshot is removed from a table
+  @guard @negative @expire_snapshot
+  Scenario: an expired s3 tables snapshot is removed from a "s3 tables" "table" fails when the "s3 tables" "table" did not exist
+    Given the "s3 tables" "table" did not exist
+    When an expired s3 tables snapshot is removed from a "s3 tables" "table"
     Then the operation is rejected
 
-  @standard @negative @expire_snapshot @lifecycle
-  Scenario: an expired snapshot is removed from a table fails when the table is not "ACTIVE"
-    Given the table exists
-    And the table is not "ACTIVE"
-    When an expired snapshot is removed from a table
+  @guard @negative @expire_snapshot @lifecycle
+  Scenario: an expired s3 tables snapshot is removed from a "s3 tables" "table" fails when the "s3 tables" "table" was not "ACTIVE"
+    Given the "s3 tables" "table" existed
+    And the "s3 tables" "table" was not "ACTIVE"
+    When an expired s3 tables snapshot is removed from a "s3 tables" "table"
     Then the operation is rejected
 
-  @standard @negative @expire_snapshot
-  Scenario: an expired snapshot is removed from a table fails when the table has one or fewer snapshots
-    Given the table exists
-    And the table is "ACTIVE"
-    And the table has one or fewer snapshots
-    When an expired snapshot is removed from a table
+  @guard @negative @expire_snapshot
+  Scenario: an expired s3 tables snapshot is removed from a "s3 tables" "table" fails when the "s3 tables" "table" had one or fewer snapshots
+    Given the "s3 tables" "table" existed
+    And the "s3 tables" "table" was "ACTIVE"
+    And the "s3 tables" "table" had one or fewer snapshots
+    When an expired s3 tables snapshot is removed from a "s3 tables" "table"
     Then the operation is rejected
 
-  @standard @negative @expire_snapshot
-  Scenario: an expired snapshot is removed from a table fails when the snapshot does not exist
-    Given the table exists
-    And the table is "ACTIVE"
-    And the table has more than one snapshot
-    And the snapshot does not exist
-    When an expired snapshot is removed from a table
+  @guard @negative @expire_snapshot
+  Scenario: an expired s3 tables snapshot is removed from a "s3 tables" "table" fails when the "s3 tables" "snapshot" did not exist
+    Given the "s3 tables" "table" existed
+    And the "s3 tables" "table" was "ACTIVE"
+    And the "s3 tables" "table" has more than one s3 tables snapshot
+    And the "s3 tables" "snapshot" did not exist
+    When an expired s3 tables snapshot is removed from a "s3 tables" "table"
     Then the operation is rejected
 
-  @standard @negative @expire_snapshot
-  Scenario: an expired snapshot is removed from a table fails when the snapshot is not "ACTIVE"
-    Given the table exists
-    And the table is "ACTIVE"
-    And the table has more than one snapshot
-    And the snapshot exists
-    And the snapshot is not "ACTIVE"
-    When an expired snapshot is removed from a table
+  @guard @negative @expire_snapshot
+  Scenario: an expired s3 tables snapshot is removed from a "s3 tables" "table" fails when the "s3 tables" "snapshot" was not "ACTIVE"
+    Given the "s3 tables" "table" existed
+    And the "s3 tables" "table" was "ACTIVE"
+    And the "s3 tables" "table" has more than one s3 tables snapshot
+    And the "s3 tables" "snapshot" existed
+    And the "s3 tables" "snapshot" was not "ACTIVE"
+    When an expired s3 tables snapshot is removed from a "s3 tables" "table"
     Then the operation is rejected

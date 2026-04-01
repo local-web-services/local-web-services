@@ -1,5 +1,5 @@
 @events @generated
-Feature: Events - An Eventbridge Rule Is Deleted
+Feature: events - An "Eventbridge" "Rule" Is Deleted
 
   # Generated from FizzBee spec: events.fizz
   # Safety invariants: EventBusStatusValid, RuleStatusValid, RulePatternTypeValid, RuleBusExists, DefaultBusCannotBeDeleted, DeleteRuleRequiresNoTargets, RuleOnlyEnabledOnActiveBus, DeadLetterQueueBounded
@@ -8,12 +8,12 @@ Feature: Events - An Eventbridge Rule Is Deleted
     Given the system is initialized
 
   @minimal @happy @delete_rule
-  Scenario: an EventBridge rule is deleted
-    Given the rule exists
-    And the rule is not already "DELETED"
-    And the rule has no active targets
-    When an EventBridge rule is deleted
-    Then the rule is "DELETED"
+  Scenario: an "eventbridge" "rule" is deleted
+    Given the "eventbridge" "rule" existed
+    And the "eventbridge" "rule" is not already "DELETED"
+    And the "eventbridge" "rule" has no active targets
+    When an "eventbridge" "rule" is deleted
+    Then the "eventbridge" "rule" will be "DELETED"
     And every event bus has a valid status ("ACTIVE" or "DELETED")
     And every rule has a valid status ("ENABLED", "DISABLED", or "DELETED")
     And every rule has a valid pattern type ("EVENT_PATTERN" or "SCHEDULE")
@@ -23,23 +23,23 @@ Feature: Events - An Eventbridge Rule Is Deleted
     And no enabled rule references a deleted event bus
     And the dead-letter queue never exceeds its bounded capacity
 
-  @standard @negative @delete_rule
-  Scenario: an EventBridge rule is deleted fails when the rule does not exist
-    Given the rule does not exist
-    When an EventBridge rule is deleted
+  @guard @negative @delete_rule
+  Scenario: an "eventbridge" "rule" is deleted fails when the "eventbridge" "rule" did not exist
+    Given the "eventbridge" "rule" did not exist
+    When an "eventbridge" "rule" is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_rule
-  Scenario: an EventBridge rule is deleted fails when the rule is already "DELETED"
-    Given the rule exists
-    And the rule is already "DELETED"
-    When an EventBridge rule is deleted
+  @guard @negative @delete_rule
+  Scenario: an "eventbridge" "rule" is deleted fails when the "eventbridge" "rule" is already "DELETED"
+    Given the "eventbridge" "rule" existed
+    And the "eventbridge" "rule" is already "DELETED"
+    When an "eventbridge" "rule" is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_rule
-  Scenario: an EventBridge rule is deleted fails when the rule has active targets
-    Given the rule exists
-    And the rule is not already "DELETED"
-    And the rule has active targets
-    When an EventBridge rule is deleted
+  @guard @negative @delete_rule
+  Scenario: an "eventbridge" "rule" is deleted fails when the "eventbridge" "rule" has active targets
+    Given the "eventbridge" "rule" existed
+    And the "eventbridge" "rule" is not already "DELETED"
+    And the "eventbridge" "rule" has active targets
+    When an "eventbridge" "rule" is deleted
     Then the operation is rejected

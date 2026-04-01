@@ -1,5 +1,5 @@
 @s3api @generated
-Feature: S3api - An Object Is Uploaded To A Bucket
+Feature: S3api - A "S3" "Object" Is Uploaded To A "S3" "Bucket"
 
   # Generated from FizzBee spec: s3api.fizz
   # Safety invariants: BucketStatusValid, VersioningStateValid, MultipartUploadStatusValid, DeleteBucketRequiresEmpty
@@ -8,25 +8,25 @@ Feature: S3api - An Object Is Uploaded To A Bucket
     Given the system is initialized
 
   @minimal @happy @put_object
-  Scenario: an object is uploaded to a bucket
-    Given the bucket exists
-    And the bucket is "ACTIVE"
-    When an object is uploaded to a bucket
-    Then the object "EXISTS" in the bucket
+  Scenario: a "s3" "object" is uploaded to a "s3" "bucket"
+    Given the "s3" "bucket" existed
+    And the "s3" "bucket" was "ACTIVE"
+    When a "s3" "object" is uploaded to a "s3" "bucket"
+    Then the "s3" "object" will exist in the "s3" "bucket"
     And every bucket has a valid status ("ACTIVE" or "DELETED")
     And every bucket versioning state is valid ("DISABLED", "ENABLED", or "SUSPENDED")
     And every multipart upload has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
     And deleting a bucket requires it to be empty
 
-  @standard @negative @put_object
-  Scenario: an object is uploaded to a bucket fails when the bucket does not exist
-    Given the bucket does not exist
-    When an object is uploaded to a bucket
+  @guard @negative @put_object
+  Scenario: a "s3" "object" is uploaded to a "s3" "bucket" fails when the "s3" "bucket" did not exist
+    Given the "s3" "bucket" did not exist
+    When a "s3" "object" is uploaded to a "s3" "bucket"
     Then the operation is rejected
 
-  @standard @negative @put_object @lifecycle
-  Scenario: an object is uploaded to a bucket fails when the bucket is not "ACTIVE"
-    Given the bucket exists
-    And the bucket is not "ACTIVE"
-    When an object is uploaded to a bucket
+  @guard @negative @put_object @lifecycle
+  Scenario: a "s3" "object" is uploaded to a "s3" "bucket" fails when the "s3" "bucket" was not "ACTIVE"
+    Given the "s3" "bucket" existed
+    And the "s3" "bucket" was not "ACTIVE"
+    When a "s3" "object" is uploaded to a "s3" "bucket"
     Then the operation is rejected

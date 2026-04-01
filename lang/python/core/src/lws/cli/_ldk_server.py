@@ -17,11 +17,9 @@ from typing import Any
 import typer
 
 from lws.cli._ldk_http_registry import (
-    _build_resource_metadata,
     _CoreProviderSet,
     _mount_management_api,
     _register_http_providers_from_set,
-    _service_ports,
 )
 from lws.cli._ldk_provider_factory import (
     _create_chaos_configs,
@@ -33,11 +31,13 @@ from lws.cli._ldk_provider_factory import (
     _register_fake_provider,
 )
 from lws.cli._ldk_providers_extended import _register_organizations_provider
+from lws.cli._ldk_resource_metadata import _build_resource_metadata, _service_ports
 from lws.cli.display import print_error
 from lws.cli.experimental import EXPERIMENTAL_SERVICES
 from lws.config.loader import LdkConfig
 from lws.interfaces import Provider
 from lws.providers._shared.aws_iam_auth import IamAuthBundle
+from lws.providers._shared.aws_lifecycle import TrackerRegistry
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig
 from lws.runtime.orchestrator import Orchestrator
 from lws.runtime.sdk_env import build_sdk_env
@@ -57,6 +57,7 @@ def _create_terraform_providers(
     data_dir: Path,
     project_dir: Path | None = None,
     iam_auth_bundle: IamAuthBundle | None = None,
+    registry: TrackerRegistry | None = None,
 ) -> tuple[
     dict[str, Provider],
     dict[str, int],
@@ -192,7 +193,7 @@ def _create_terraform_providers(
         ports["secretsmanager"],
     )
 
-    _register_experimental_providers(providers, ports)
+    _register_experimental_providers(providers, ports, registry=registry)
 
     # Fake server provider
     _register_fake_provider(providers, port, project_dir)
@@ -234,8 +235,15 @@ async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
 
     # Create all providers in always-on mode (no app model)
     iam_auth_bundle = _create_iam_auth_bundle(config, project_dir)
+    tracker_registry: TrackerRegistry = {}
     providers, ports, chaos_configs, aws_fake_configs, lifecycle_configs = (
-        _create_terraform_providers(config, data_dir, project_dir, iam_auth_bundle=iam_auth_bundle)
+        _create_terraform_providers(
+            config,
+            data_dir,
+            project_dir,
+            iam_auth_bundle=iam_auth_bundle,
+            registry=tracker_registry,
+        )
     )
 
     orchestrator = Orchestrator()
@@ -267,10 +275,8 @@ async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
         aws_fake_configs,
         iam_auth_bundle=iam_auth_bundle,
         lifecycle_configs=lifecycle_configs,
+        tracker_registry=tracker_registry,
     )
-
-    for _key in providers:
-        pass  # All keys are already in the dict
 
     startup_order = list(providers.keys())
 

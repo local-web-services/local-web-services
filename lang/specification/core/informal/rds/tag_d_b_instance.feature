@@ -1,5 +1,5 @@
 @rds @generated
-Feature: Rds - A Tag Is Applied To A Database Instance
+Feature: Rds - A Tag Is Applied To A "Rds" "Instance"
 
   # Generated from FizzBee spec: rds.fizz
   # Safety invariants: ValidDBInstanceStatus, ValidDBSnapshotStatus, BackingUpInstanceHasSnapshot
@@ -8,24 +8,24 @@ Feature: Rds - A Tag Is Applied To A Database Instance
     Given the system is initialized
 
   @minimal @happy @tag_d_b_instance
-  Scenario: a tag is applied to a database instance
-    Given the database instance exists
-    And the instance is "AVAILABLE"
-    When a tag is applied to a database instance
-    Then the instance tag state is unchanged (no-op model)
+  Scenario: a tag is applied to a "rds" "instance"
+    Given the "rds" "instance" existed
+    And the "rds" "instance" was "AVAILABLE"
+    When a tag is applied to a "rds" "instance"
+    Then the "rds" "instance" tag state will be unchanged (no-op model)
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
 
-  @standard @negative @tag_d_b_instance
-  Scenario: a tag is applied to a database instance fails when the database instance does not exist
-    Given the database instance does not exist
-    When a tag is applied to a database instance
+  @guard @negative @tag_d_b_instance
+  Scenario: a tag is applied to a "rds" "instance" fails when the "rds" "instance" did not exist
+    Given the "rds" "instance" did not exist
+    When a tag is applied to a "rds" "instance"
     Then the operation is rejected
 
-  @standard @negative @tag_d_b_instance @lifecycle
-  Scenario: a tag is applied to a database instance fails when the instance is not "AVAILABLE"
-    Given the database instance exists
-    And the instance is not "AVAILABLE"
-    When a tag is applied to a database instance
+  @guard @negative @tag_d_b_instance @lifecycle
+  Scenario: a tag is applied to a "rds" "instance" fails when the "rds" "instance" was not "AVAILABLE"
+    Given the "rds" "instance" existed
+    And the "rds" "instance" was not "AVAILABLE"
+    When a tag is applied to a "rds" "instance"
     Then the operation is rejected

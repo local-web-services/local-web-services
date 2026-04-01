@@ -29,37 +29,37 @@ action Init:
 
 
 # step: an EventBridge event bus is created
-# result: the event bus is ACTIVE
-# guard: the event bus does not already exist
-# guard_violation: the event bus already exists
+# result: the event bus will be "ACTIVE"
+# guard: the event bus did not already exist
+# guard_violation: the event bus already existed
 atomic action CreateEventBus:
     oneof bid in BUS_IDS:
         if bid not in bus_status:
             bus_status[bid] = "ACTIVE"
 
 
-# step: an SQS queue is created
-# result: the queue is ACTIVE
-# guard: the queue does not already exist
-# guard_violation: the queue already exists
+# step: a "sqs" "queue" is created
+# result: the "sqs" "queue" will be "ACTIVE"
+# guard: the queue did not already exist
+# guard_violation: the queue already existed
 atomic action CreateQueue:
     oneof qid in QUEUE_IDS:
         if qid not in queue_status:
             queue_status[qid] = "ACTIVE"
 
 
-# step: an EventBridge rule is created to route matching events to the SQS queue
-# result: the rule is ENABLED and will forward matching events to the queue
-# guard: the event bus exists
-# guard_violation: the event bus does not exist
-# guard: the event bus is ACTIVE
-# guard_violation_lifecycle: the event bus is not ACTIVE
-# guard: the queue exists
-# guard_violation: the queue does not exist
-# guard: the queue is ACTIVE
-# guard_violation_lifecycle: the queue is not ACTIVE
-# guard: the rule does not already exist
-# guard_violation: the rule already exists
+# step: an "eventbridge" "rule" is created to route matching events to the "sqs" "queue"
+# result: the rule will be "ENABLED" and will forward matching events to the queue
+# guard: the event bus existed
+# guard_violation: the event bus did not exist
+# guard: the event bus was "ACTIVE"
+# guard_violation_lifecycle: the event bus was not "ACTIVE"
+# guard: the "sqs" "queue" existed
+# guard_violation: the "sqs" "queue" did not exist
+# guard: the "sqs" "queue" was "ACTIVE"
+# guard_violation_lifecycle: the "sqs" "queue" was not "ACTIVE"
+# guard: the rule did not already exist
+# guard_violation: the rule already existed
 atomic action PutRule:
     oneof rid in RULE_IDS:
         if rid not in rule_status:
@@ -75,15 +75,15 @@ atomic action PutRule:
 
 
 # step: an event is published to the bus and routed to the target SQS queue
-# result: the message is AVAILABLE in the target queue
-# guard: the event bus exists
-# guard_violation: the event bus does not exist
-# guard: the event bus is ACTIVE
-# guard_violation_lifecycle: the event bus is not ACTIVE
-# guard: an ENABLED rule exists on the bus targeting a queue
-# guard_violation_lifecycle: no ENABLED rule exists on the bus targeting a queue
-# guard: the target queue is ACTIVE
-# guard_violation_lifecycle: the target queue is not ACTIVE
+# result: the message will be "AVAILABLE" in the target queue
+# guard: the event bus existed
+# guard_violation: the event bus did not exist
+# guard: the event bus was "ACTIVE"
+# guard_violation_lifecycle: the event bus was not "ACTIVE"
+# guard: an ENABLED rule existed on the bus targeting a queue
+# guard_violation_lifecycle: no ENABLED rule existed on the bus targeting a queue
+# guard: the target queue was "ACTIVE"
+# guard_violation_lifecycle: the target queue was not "ACTIVE"
 # guard: a message slot is available
 # guard_violation_capacity: no message slot is available
 atomic action PutEvent:
@@ -103,10 +103,10 @@ atomic action PutEvent:
                                                 msg_queue[mid] = qid
 
 
-# step: a message is consumed from the SQS queue
-# result: the message is DELETED
-# guard: an AVAILABLE message exists in the queue
-# guard_violation_lifecycle: no AVAILABLE message exists in the queue
+# step: a message is consumed from the "sqs" "queue"
+# result: the message will be deleted
+# guard: an "AVAILABLE" message existed in the queue
+# guard_violation_lifecycle: no "AVAILABLE" message existed in the queue
 atomic action ConsumeMessage:
     oneof mid in MSG_IDS:
         if mid in msg_status:

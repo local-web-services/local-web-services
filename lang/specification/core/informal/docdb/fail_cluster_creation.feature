@@ -1,5 +1,5 @@
 @docdb @generated
-Feature: Docdb - A Database Cluster Creation Fails
+Feature: Docdb - A "Documentdb" "Cluster" Creation Fails
 
   # Generated from FizzBee spec: docdb.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, NoNonDeletedInstancesOnDeletedCluster, NoAvailableInstancesOnFailedCluster, DeletingClusterGetsNoNewInstances, SnapshotHasValidClusterReference
@@ -8,11 +8,11 @@ Feature: Docdb - A Database Cluster Creation Fails
     Given the system is initialized
 
   @minimal @happy @fail_cluster_creation @internal
-  Scenario: a database cluster creation fails
-    Given the cluster exists
-    And the cluster is "CREATING"
-    When a database cluster creation fails
-    Then the cluster is in "FAILED" state
+  Scenario: a "documentdb" "cluster" creation fails
+    Given the "documentdb" "cluster" existed
+    And the "documentdb" "cluster" was "CREATING"
+    When a "documentdb" "cluster" creation fails
+    Then the "documentdb" "cluster" will be in "FAILED" state
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -21,15 +21,15 @@ Feature: Docdb - A Database Cluster Creation Fails
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @fail_cluster_creation @internal
-  Scenario: a database cluster creation fails fails when the cluster does not exist
-    Given the cluster does not exist
-    When a database cluster creation fails
+  @guard @negative @fail_cluster_creation @internal
+  Scenario: a "documentdb" "cluster" creation fails fails when the "documentdb" "cluster" did not exist
+    Given the "documentdb" "cluster" did not exist
+    When a "documentdb" "cluster" creation fails
     Then the operation is rejected
 
-  @standard @negative @fail_cluster_creation @internal
-  Scenario: a database cluster creation fails fails when the cluster is not "CREATING"
-    Given the cluster exists
-    And the cluster is not "CREATING"
-    When a database cluster creation fails
+  @guard @negative @fail_cluster_creation @internal
+  Scenario: a "documentdb" "cluster" creation fails fails when the "documentdb" "cluster" was not "CREATING"
+    Given the "documentdb" "cluster" existed
+    And the "documentdb" "cluster" was not "CREATING"
+    When a "documentdb" "cluster" creation fails
     Then the operation is rejected

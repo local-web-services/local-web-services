@@ -2,16 +2,20 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
+from collections.abc import Callable
 
 from fastapi import Response
 
 from lws.interfaces.key_value_store import (
     GsiDefinition,
+    IKeyValueStore,
     KeyAttribute,
     KeySchema,
     TableConfig,
 )
+from lws.providers.dynamodb.expressions import evaluate_filter_expression
 
 _DYNAMO_TYPE_KEYS = {"S", "N", "B", "BOOL", "NULL", "L", "M", "SS", "NS", "BS"}
 
@@ -138,3 +142,136 @@ def _extract_condition_params(
         values = op.get("ExpressionAttributeValues")
         return condition, names, values, table, key
     return None, None, None, "", {}
+
+
+async def check_transact_lifecycle(
+    get_lifecycle_error: Callable[[str], Response | None],
+    transact_items: list,
+) -> Response | None:
+    """Reject if any referenced table is not ACTIVE."""
+    for transact_item in transact_items:
+        for op_key in ("Put", "Delete", "Update", "ConditionCheck"):
+            if op_key in transact_item:
+                table_name = transact_item[op_key]["TableName"]
+                err = get_lifecycle_error(table_name)
+                if err is not None:
+                    return err
+    return None
+
+
+async def check_transact_conditions(
+    store: IKeyValueStore,
+    transact_items: list,
+) -> Response | None:
+    """Evaluate ConditionExpressions across all transact items.
+
+    Returns an error Response if any condition fails, or None if all pass.
+    """
+    reasons: list[dict] = []
+    any_failed = False
+
+    for transact_item in transact_items:
+        condition_expr, names, values, table_name, key = _extract_condition_params(transact_item)
+
+        if condition_expr is None:
+            reasons.append({"Code": "None"})
+            continue
+
+        item = await store.get_item(table_name, key)
+        target = _unwrap_item(item) if item is not None else {}
+        passed = evaluate_filter_expression(target, condition_expr, names, values)
+        if passed:
+            reasons.append({"Code": "None"})
+        else:
+            reasons.append(
+                {
+                    "Code": "ConditionalCheckFailed",
+                    "Message": "The conditional request failed",
+                }
+            )
+            any_failed = True
+
+    if any_failed:
+        return _json_response(
+            {
+                "__type": "com.amazonaws.dynamodb.v20120810" "#TransactionCanceledException",
+                "Message": "Transaction cancelled, please refer "
+                "cancellation reasons for specific reasons "
+                "[ConditionalCheckFailed]",
+                "CancellationReasons": reasons,
+            },
+            status_code=400,
+        )
+    return None
+
+
+def transact_item_lock_key(table_name: str, key: dict) -> str:
+    """Return a string key identifying a DynamoDB item for lock tracking."""
+    sorted_key = sorted(key.items())
+    return f"{table_name}:{sorted_key}"
+
+
+def collect_transact_lock_keys(transact_items: list) -> list[str]:
+    """Collect lock keys for all write operations in a transaction."""
+    lock_keys: list[str] = []
+    for transact_item in transact_items:
+        if "Put" in transact_item:
+            item_key = transact_item["Put"].get("Item", {})
+            lock_keys.append(transact_item_lock_key(transact_item["Put"]["TableName"], item_key))
+        elif "Delete" in transact_item:
+            lock_keys.append(
+                transact_item_lock_key(
+                    transact_item["Delete"]["TableName"],
+                    transact_item["Delete"].get("Key", {}),
+                )
+            )
+        elif "Update" in transact_item:
+            lock_keys.append(
+                transact_item_lock_key(
+                    transact_item["Update"]["TableName"],
+                    transact_item["Update"].get("Key", {}),
+                )
+            )
+    return lock_keys
+
+
+async def try_acquire_transact_locks(
+    transaction_locks: dict[str, asyncio.Lock], lock_keys: list[str]
+) -> tuple[list[str], Response | None]:
+    """Try to acquire item locks; return (acquired, conflict_error) or (keys, None)."""
+    acquired: list[str] = []
+    for lock_key in lock_keys:
+        if lock_key not in transaction_locks:
+            transaction_locks[lock_key] = asyncio.Lock()
+        lock = transaction_locks[lock_key]
+        if not lock.locked():
+            await lock.acquire()
+            acquired.append(lock_key)
+        else:
+            for held_key in acquired:
+                transaction_locks[held_key].release()
+            return [], _error_response(
+                "TransactionCanceledException",
+                "Transaction cancelled due to conflict with a concurrent transaction",
+            )
+    return acquired, None
+
+
+async def execute_transact_writes(store: IKeyValueStore, transact_items: list) -> None:
+    """Execute the write operations in a transaction."""
+    for transact_item in transact_items:
+        if "Put" in transact_item:
+            put = transact_item["Put"]
+            await store.put_item(put["TableName"], put["Item"])
+        elif "Delete" in transact_item:
+            delete = transact_item["Delete"]
+            await store.delete_item(delete["TableName"], delete["Key"])
+        elif "Update" in transact_item:
+            update = transact_item["Update"]
+            await store.update_item(
+                update["TableName"],
+                update["Key"],
+                update.get("UpdateExpression", ""),
+                expression_values=update.get("ExpressionAttributeValues"),
+                expression_names=update.get("ExpressionAttributeNames"),
+            )

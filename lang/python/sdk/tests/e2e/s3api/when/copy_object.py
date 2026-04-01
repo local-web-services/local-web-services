@@ -1,0 +1,22 @@
+"""When: a "s3" "object" is copied from one "s3" "bucket" to another"""
+
+from __future__ import annotations
+
+from botocore.exceptions import ClientError
+from pytest_bdd import when
+
+from ..constants import TEST_BUCKET, TEST_KEY, TEST_KEY2, TEST_SRC_BUCKET
+
+
+@when('a "s3" "object" is copied from one "s3" "bucket" to another')
+def copy_object(lws_session, world):
+    try:
+        world["result"] = lws_session.client("s3").copy_object(
+            Bucket=TEST_BUCKET,
+            Key=TEST_KEY2,
+            CopySource={"Bucket": TEST_SRC_BUCKET, "Key": TEST_KEY},
+        )
+        world["error"] = None
+    except (ClientError, Exception) as exc:
+        world["result"] = None
+        world["error"] = exc

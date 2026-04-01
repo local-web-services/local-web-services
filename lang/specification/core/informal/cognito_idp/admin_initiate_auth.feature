@@ -9,12 +9,12 @@ Feature: CognitoIdp - An Admin Initiates Authentication On Behalf Of A Confirmed
 
   @minimal @happy @admin_initiate_auth
   Scenario: an admin initiates authentication on behalf of a confirmed enabled user
-    Given the user exists
-    And the user is "CONFIRMED"
-    And the user is enabled
-    And the session slot is available
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was "CONFIRMED"
+    And the "cognito" "user" was "ENABLED"
+    And the "cognito" "session" slot is available
     When an admin initiates authentication on behalf of a confirmed enabled user
-    Then a session is created in "AUTHENTICATED" state
+    Then a "cognito" "session" will be created in "AUTHENTICATED" state
     And every user pool has a valid status ("ACTIVE" or "DELETED")
     And every user has a valid status
     And every non-deleted user has an enabled flag set
@@ -23,32 +23,32 @@ Feature: CognitoIdp - An Admin Initiates Authentication On Behalf Of A Confirmed
     And deleted users do not have active authenticated sessions
     And disabled users do not have active authenticated sessions
 
-  @standard @negative @admin_initiate_auth
-  Scenario: an admin initiates authentication on behalf of a confirmed enabled user fails when the user does not exist
-    Given the user does not exist
+  @guard @negative @admin_initiate_auth
+  Scenario: an admin initiates authentication on behalf of a confirmed enabled user fails when the "cognito" "user" did not exist
+    Given the "cognito" "user" did not exist
     When an admin initiates authentication on behalf of a confirmed enabled user
     Then the operation is rejected
 
-  @standard @negative @admin_initiate_auth
-  Scenario: an admin initiates authentication on behalf of a confirmed enabled user fails when the user is not "CONFIRMED"
-    Given the user exists
-    And the user is not "CONFIRMED"
+  @guard @negative @admin_initiate_auth
+  Scenario: an admin initiates authentication on behalf of a confirmed enabled user fails when the "cognito" "user" was not "CONFIRMED"
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was not "CONFIRMED"
     When an admin initiates authentication on behalf of a confirmed enabled user
     Then the operation is rejected
 
-  @standard @negative @admin_initiate_auth
-  Scenario: an admin initiates authentication on behalf of a confirmed enabled user fails when the user is not enabled
-    Given the user exists
-    And the user is "CONFIRMED"
-    And the user is not enabled
+  @guard @negative @admin_initiate_auth
+  Scenario: an admin initiates authentication on behalf of a confirmed enabled user fails when the "cognito" "user" was not "ENABLED"
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was "CONFIRMED"
+    And the "cognito" "user" was not "ENABLED"
     When an admin initiates authentication on behalf of a confirmed enabled user
     Then the operation is rejected
 
-  @standard @negative @admin_initiate_auth @capacity
-  Scenario: an admin initiates authentication on behalf of a confirmed enabled user fails when the session slot is not available
-    Given the user exists
-    And the user is "CONFIRMED"
-    And the user is enabled
-    And the session slot is not available
+  @guard @negative @admin_initiate_auth @capacity
+  Scenario: an admin initiates authentication on behalf of a confirmed enabled user fails when the "cognito" "session" slot is not available
+    Given the "cognito" "user" existed
+    And the "cognito" "user" was "CONFIRMED"
+    And the "cognito" "user" was "ENABLED"
+    And the "cognito" "session" slot is not available
     When an admin initiates authentication on behalf of a confirmed enabled user
     Then the operation is rejected

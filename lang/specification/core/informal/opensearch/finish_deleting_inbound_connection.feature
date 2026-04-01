@@ -1,5 +1,5 @@
 @opensearch @generated
-Feature: Opensearch - An Inbound Connection Finishes Deleting
+Feature: Opensearch - An "Opensearch" "Inbound Connection" Finishes Deleting
 
   # Generated from FizzBee spec: opensearch.fizz
   # Safety invariants: ActiveConnectionsReferenceActiveDomains, TrafficSwapRequiresNewCluster, ConnectionStatusConsistency, PendingConfigOnlyOnProcessingDomain
@@ -8,25 +8,25 @@ Feature: Opensearch - An Inbound Connection Finishes Deleting
     Given the system is initialized
 
   @minimal @happy @finish_deleting_inbound_connection @internal
-  Scenario: an inbound connection finishes deleting
-    Given the inbound connection exists
-    And the inbound connection is "DELETING"
-    When an inbound connection finishes deleting
-    Then the inbound connection is "DELETED"
+  Scenario: an "opensearch" "inbound connection" finishes deleting
+    Given the "opensearch" "inbound connection" existed
+    And the "opensearch" "inbound connection" was "DELETING"
+    When an "opensearch" "inbound connection" finishes deleting
+    Then the "opensearch" "inbound connection" will be "DELETED"
     And no active connection references a deleted domain
-    And traffic can only be swapped after the new cluster is ready
-    And an outbound connection that is "ACTIVE" cannot have a "REJECTED" inbound connection
-    And a pending config change only exists on a domain that is "PROCESSING"
+    And traffic can only be swapped after the new "opensearch" "cluster" was ready
+    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" inbound connection
+    And a pending config change only exists on a "opensearch" "domain" that is "PROCESSING"
 
-  @standard @negative @finish_deleting_inbound_connection @internal
-  Scenario: an inbound connection finishes deleting fails when the inbound connection does not exist
-    Given the inbound connection does not exist
-    When an inbound connection finishes deleting
+  @guard @negative @finish_deleting_inbound_connection @internal
+  Scenario: an "opensearch" "inbound connection" finishes deleting fails when the "opensearch" "inbound connection" did not exist
+    Given the "opensearch" "inbound connection" did not exist
+    When an "opensearch" "inbound connection" finishes deleting
     Then the operation is rejected
 
-  @standard @negative @finish_deleting_inbound_connection @internal
-  Scenario: an inbound connection finishes deleting fails when the inbound connection is not "DELETING"
-    Given the inbound connection exists
-    And the inbound connection is not "DELETING"
-    When an inbound connection finishes deleting
+  @guard @negative @finish_deleting_inbound_connection @internal
+  Scenario: an "opensearch" "inbound connection" finishes deleting fails when the "opensearch" "inbound connection" was not "DELETING"
+    Given the "opensearch" "inbound connection" existed
+    And the "opensearch" "inbound connection" was not "DELETING"
+    When an "opensearch" "inbound connection" finishes deleting
     Then the operation is rejected

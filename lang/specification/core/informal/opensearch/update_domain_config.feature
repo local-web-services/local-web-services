@@ -1,5 +1,5 @@
 @opensearch @generated
-Feature: Opensearch - A Domain Configuration Update Is Requested
+Feature: Opensearch - An "Opensearch" "Domain" Configuration Update Is Requested
 
   # Generated from FizzBee spec: opensearch.fizz
   # Safety invariants: ActiveConnectionsReferenceActiveDomains, TrafficSwapRequiresNewCluster, ConnectionStatusConsistency, PendingConfigOnlyOnProcessingDomain
@@ -8,25 +8,25 @@ Feature: Opensearch - A Domain Configuration Update Is Requested
     Given the system is initialized
 
   @minimal @happy @update_domain_config
-  Scenario: a domain configuration update is requested
-    Given the domain exists
-    And the domain is "ACTIVE"
-    When a domain configuration update is requested
-    Then the domain is in "PROCESSING" state and a blue-green deployment begins
+  Scenario: an "opensearch" "domain" configuration update is requested
+    Given the "opensearch" "domain" existed
+    And the "opensearch" "domain" was "ACTIVE"
+    When an "opensearch" "domain" configuration update is requested
+    Then the "opensearch" "domain" will be in "PROCESSING" state and a blue-green deployment begins
     And no active connection references a deleted domain
-    And traffic can only be swapped after the new cluster is ready
-    And an outbound connection that is "ACTIVE" cannot have a "REJECTED" inbound connection
-    And a pending config change only exists on a domain that is "PROCESSING"
+    And traffic can only be swapped after the new "opensearch" "cluster" was ready
+    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" inbound connection
+    And a pending config change only exists on a "opensearch" "domain" that is "PROCESSING"
 
-  @standard @negative @update_domain_config
-  Scenario: a domain configuration update is requested fails when the domain does not exist
-    Given the domain does not exist
-    When a domain configuration update is requested
+  @guard @negative @update_domain_config
+  Scenario: an "opensearch" "domain" configuration update is requested fails when the "opensearch" "domain" did not exist
+    Given the "opensearch" "domain" did not exist
+    When an "opensearch" "domain" configuration update is requested
     Then the operation is rejected
 
-  @standard @negative @update_domain_config @lifecycle
-  Scenario: a domain configuration update is requested fails when the domain is not "ACTIVE"
-    Given the domain exists
-    And the domain is not "ACTIVE"
-    When a domain configuration update is requested
+  @guard @negative @update_domain_config @lifecycle
+  Scenario: an "opensearch" "domain" configuration update is requested fails when the "opensearch" "domain" was not "ACTIVE"
+    Given the "opensearch" "domain" existed
+    And the "opensearch" "domain" was not "ACTIVE"
+    When an "opensearch" "domain" configuration update is requested
     Then the operation is rejected

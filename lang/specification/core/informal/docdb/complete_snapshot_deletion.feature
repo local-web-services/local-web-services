@@ -1,5 +1,5 @@
 @docdb @generated
-Feature: Docdb - A Database Cluster Snapshot Deletion Completes
+Feature: Docdb - A "Documentdb" "Cluster" Documentdb Snapshot Deletion Completes
 
   # Generated from FizzBee spec: docdb.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, NoNonDeletedInstancesOnDeletedCluster, NoAvailableInstancesOnFailedCluster, DeletingClusterGetsNoNewInstances, SnapshotHasValidClusterReference
@@ -8,11 +8,11 @@ Feature: Docdb - A Database Cluster Snapshot Deletion Completes
     Given the system is initialized
 
   @minimal @happy @complete_snapshot_deletion @internal
-  Scenario: a database cluster snapshot deletion completes
-    Given the snapshot exists
-    And the snapshot is "DELETING"
-    When a database cluster snapshot deletion completes
-    Then the snapshot is "DELETED"
+  Scenario: a "documentdb" "cluster" documentdb snapshot deletion completes
+    Given the "documentdb" "snapshot" existed
+    And the "documentdb" "snapshot" was "DELETING"
+    When a "documentdb" "cluster" documentdb snapshot deletion completes
+    Then the "documentdb" "SNAPSHOT" will be "DELETED"
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -21,15 +21,15 @@ Feature: Docdb - A Database Cluster Snapshot Deletion Completes
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @complete_snapshot_deletion @internal
-  Scenario: a database cluster snapshot deletion completes fails when the snapshot does not exist
-    Given the snapshot does not exist
-    When a database cluster snapshot deletion completes
+  @guard @negative @complete_snapshot_deletion @internal
+  Scenario: a "documentdb" "cluster" documentdb snapshot deletion completes fails when the "documentdb" "snapshot" did not exist
+    Given the "documentdb" "snapshot" did not exist
+    When a "documentdb" "cluster" documentdb snapshot deletion completes
     Then the operation is rejected
 
-  @standard @negative @complete_snapshot_deletion @internal
-  Scenario: a database cluster snapshot deletion completes fails when the snapshot is not "DELETING"
-    Given the snapshot exists
-    And the snapshot is not "DELETING"
-    When a database cluster snapshot deletion completes
+  @guard @negative @complete_snapshot_deletion @internal
+  Scenario: a "documentdb" "cluster" documentdb snapshot deletion completes fails when the "documentdb" "snapshot" was not "DELETING"
+    Given the "documentdb" "snapshot" existed
+    And the "documentdb" "snapshot" was not "DELETING"
+    When a "documentdb" "cluster" documentdb snapshot deletion completes
     Then the operation is rejected
