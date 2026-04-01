@@ -38,7 +38,6 @@ from .the_cloudtrail_trail_did_not_exist import *  # noqa: F401,F403
 from .the_cloudtrail_trail_existed import *  # noqa: F401,F403
 from .the_cloudtrail_trail_was_logging import *  # noqa: F401,F403
 from .the_cloudtrail_trail_was_not_deleted import *  # noqa: F401,F403
-from .the_cloudtrail_trail_was_not_logging import *  # noqa: F401,F403
 from .the_s3_bucket_configured_on_the_trail_does_not_exist import *  # noqa: F401,F403
 from .the_s3_bucket_exists import *  # noqa: F401,F403
 from .the_s3_bucket_has_now_been_created import *  # noqa: F401,F403

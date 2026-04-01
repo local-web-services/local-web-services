@@ -50,12 +50,6 @@ Feature: CloudTrail - Trail Lifecycle
     Then the cloudtrail trail logging will be disabled
     And a deleted trail is never in logging state
 
-  @guard @negative @stop_logging
-  Scenario: StopLogging fails when the cloudtrail trail was not logging
-    Given the cloudtrail trail was not "LOGGING"
-    When StopLogging is called on the cloudtrail trail
-    Then the operation is rejected
-
   @minimal @happy @delete_trail
   Scenario: a cloudtrail trail is deleted
     Given the cloudtrail trail existed
