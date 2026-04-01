@@ -8,6 +8,7 @@ from typing import Any
 
 from lws.providers._shared.async_state_store import AsyncStateStore
 
+from lws_testing._transport._management_app import _create_management_app
 from lws_testing._transport._provider_wrappers import (
     _ApiGatewayStateProvider,
     _ClusterDBStateProvider,
@@ -19,7 +20,6 @@ from lws_testing._transport._provider_wrappers import (
     _S3TablesStateProvider,
     _SecretsManagerStateProvider,
     _SsmStateProvider,
-    _StubOrchestrator,
 )
 from lws_testing._transport._spec_converters import convert_spec
 
@@ -43,47 +43,6 @@ def _unbox(ref: list[Any]) -> Any | None:
     return ref[0] if ref else None
 
 
-def _create_management_app(
-    providers: dict[str, Any],
-    chaos_configs: dict[str, Any],
-    fake_configs: dict[str, Any],
-    lifecycle_configs: dict[str, Any],
-    capacity_configs: dict[str, Any] | None = None,
-    fake_provider: Any | None = None,
-    state_store: Any | None = None,
-    tracker_registry: dict | None = None,
-) -> Any:
-    """Build a FastAPI management app with reset, fake, chaos, lifecycle, and capacity endpoints."""
-    from fastapi import FastAPI
-    from fastapi.responses import JSONResponse
-    from lws.api.management import _handle_reset, create_management_router
-    from lws.providers._shared.capacity_control import create_capacity_control_router
-
-    orchestrator = _StubOrchestrator(providers)
-    app = FastAPI(title="LWS Testing Management")
-
-    router = create_management_router(
-        orchestrator=orchestrator,
-        providers=providers,
-        chaos_configs=chaos_configs,
-        aws_fake_configs=fake_configs,
-        lifecycle_configs=lifecycle_configs,
-        capacity_configs=capacity_configs,
-        fake_provider=fake_provider,
-        state_store=state_store,
-        tracker_registry=tracker_registry,
-    )
-    app.include_router(router)
-    app.include_router(create_capacity_control_router(capacity_configs or {}))
-
-    # Alias endpoint used by LwsSession.reset()
-    @app.post("/_ldk/state/clear")
-    async def state_clear() -> JSONResponse:
-        return await _handle_reset(providers, state_store=state_store)
-
-    return app
-
-
 def _setup_logging() -> Any:
     """Initialise WebSocketLogHandler and install it globally."""
     from lws.logging.logger import WebSocketLogHandler, set_ws_handler
@@ -95,6 +54,7 @@ def _setup_logging() -> Any:
 
 def _create_providers(cfg: dict[str, list[Any]], data_dir: Path) -> dict[str, Any]:
     """Instantiate all service providers."""
+    from lws.providers.cloudtrail.provider import CloudTrailProvider
     from lws.providers.cognito._cognito_auth import UserPoolConfig
     from lws.providers.cognito.provider import CognitoProvider
     from lws.providers.dynamodb.provider import SqliteDynamoProvider
@@ -114,6 +74,7 @@ def _create_providers(cfg: dict[str, list[Any]], data_dir: Path) -> dict[str, An
         "sns": SnsProvider(topics=cfg["topics"]),
         "stepfunctions": StepFunctionsProvider(state_machines=cfg["state_machines"]),
         "events": EventBridgeProvider(),
+        "cloudtrail": CloudTrailProvider(),
         "cognito-idp": CognitoProvider(
             data_dir=data_dir / "cognito",
             config=UserPoolConfig(user_pool_id="us-east-1_e2etest001"),
@@ -143,6 +104,11 @@ def _wire_providers(
     eb.set_queue_provider(sqs)
     eb.set_sns_provider(sns)
     s3.set_notification_providers(sns_provider=sns, sqs_provider=sqs, events_provider=eb)
+
+    ct = providers.get("cloudtrail")
+    if ct is not None:
+        ct.set_s3_provider(s3)
+        ct.set_eventbridge_provider(eb)
 
     svc: dict[str, Any] = {
         "dynamodb": providers["dynamodb"],
@@ -176,6 +142,7 @@ def _build_service_apps(
     - dict of extra providers (ssm, secretsmanager state wrappers) for reset support
     """
     from lws.providers.apigateway.routes import create_apigateway_management_app
+    from lws.providers.cloudtrail.routes import create_cloudtrail_app
     from lws.providers.dynamodb.routes import create_dynamodb_app
     from lws.providers.eventbridge.routes import create_eventbridge_app
     from lws.providers.organizations.routes import create_organizations_app
@@ -189,12 +156,14 @@ def _build_service_apps(
     from lws_testing._transport._extended_services import build_extended_service_apps
 
     _cap = capacity_configs or {}
+    _ct = providers.get("cloudtrail")
     extended_apps, extended_extra_providers = build_extended_service_apps(
         providers,
         lifecycle_configs,
         capacity_configs=_cap,
         dynamodb_tracker_ref=(_dynamodb_tracker_ref := []),
         tracker_registry=tracker_registry,
+        cloudtrail_provider=_ct,
     )
 
     ssm_app, ssm_state = create_ssm_app(
@@ -202,12 +171,14 @@ def _build_service_apps(
         chaos=chaos_configs["ssm"],
         aws_fake=fake_configs["ssm"],
         lifecycle=lifecycle_configs["ssm"],
+        cloudtrail_provider=_ct,
     )
     secretsmanager_app, secretsmanager_state = create_secretsmanager_app(
         initial_secrets=cfg["secrets"] or None,
         chaos=chaos_configs["secretsmanager"],
         aws_fake=fake_configs["secretsmanager"],
         lifecycle=lifecycle_configs["secretsmanager"],
+        cloudtrail_provider=_ct,
     )
 
     service_apps = [
@@ -220,6 +191,7 @@ def _build_service_apps(
                 lifecycle=lifecycle_configs["dynamodb"],
                 capacity=_cap.get("dynamodb"),
                 tracker_ref=_dynamodb_tracker_ref,
+                cloudtrail_provider=_ct,
             ),
         ),
         (
@@ -232,6 +204,7 @@ def _build_service_apps(
                 lifecycle=lifecycle_configs["sqs"],
                 tracker_ref=(_sqs_tracker_ref := []),
                 capacity=_cap.get("sqs"),
+                cloudtrail_provider=_ct,
             ),
         ),
         (
@@ -246,6 +219,7 @@ def _build_service_apps(
                 sqs_provider=providers["sqs"],
                 compute_providers=extended_extra_providers["lambda_registry"].compute,
                 tracker_ref=(_s3_tracker_ref := []),
+                cloudtrail_provider=_ct,
             ),
         ),
         (
@@ -260,6 +234,7 @@ def _build_service_apps(
                 sqs_provider=providers["sqs"],
                 sqs_tracker=_unbox(_sqs_tracker_ref),
                 tracker_ref=(_sns_tracker_ref := []),
+                cloudtrail_provider=_ct,
             ),
         ),
         (
@@ -273,6 +248,7 @@ def _build_service_apps(
                 capacity=_cap.get("stepfunctions"),
                 sqs_provider=providers["sqs"],
                 sqs_tracker=_unbox(_sqs_tracker_ref),
+                cloudtrail_provider=_ct,
             ),
         ),
         ("ssm", ssm_app),
@@ -294,6 +270,15 @@ def _build_service_apps(
                 lambda_tracker=extended_extra_providers.get("lambda_tracker"),
                 dynamodb_provider=providers["dynamodb"],
                 dynamodb_tracker=_unbox(_dynamodb_tracker_ref),
+                cloudtrail_provider=_ct,
+            ),
+        ),
+        (
+            "cloudtrail",
+            create_cloudtrail_app(
+                providers["cloudtrail"],
+                chaos=chaos_configs["cloudtrail"],
+                aws_fake=fake_configs["cloudtrail"],
             ),
         ),
         (
@@ -326,6 +311,7 @@ def _build_service_apps(
     organizations_app, organizations_state = create_organizations_app(
         chaos=chaos_configs["organizations"],
         aws_fake=fake_configs["organizations"],
+        cloudtrail_provider=_ct,
     )
     service_apps.append(("organizations", organizations_app))
 
@@ -379,6 +365,7 @@ _SERVICE_NAMES = [
     "events",
     "apigateway",
     "organizations",
+    "cloudtrail",
     "cognito-idp",
     "docdb",
     "neptune",

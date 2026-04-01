@@ -12,6 +12,7 @@ from typing import Any
 
 from fastapi import FastAPI, Request, Response
 
+from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_capacity import AwsCapacityConfig
@@ -20,6 +21,7 @@ from lws.providers._shared.aws_chaos import (
     AwsChaosMiddleware,
     ErrorFormat,
 )
+from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_lifecycle import (
     ResourceLifecycleConfig,
@@ -399,6 +401,7 @@ def create_eventbridge_app(
     lambda_tracker: ResourceStateTracker | None = None,
     dynamodb_provider: SqliteDynamoProvider | None = None,
     dynamodb_tracker: ResourceStateTracker | None = None,
+    cloudtrail_provider: ICloudTrail | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the EventBridge wire protocol.
 
@@ -440,4 +443,5 @@ def create_eventbridge_app(
             dynamodb_tracker,
         )
 
+    apply_cloudtrail_middleware(app, cloudtrail_provider, "events")
     return app

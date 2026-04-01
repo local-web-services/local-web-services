@@ -10,8 +10,10 @@ import json
 
 from fastapi import FastAPI, Query, Request, Response
 
+from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
 from lws.providers._shared.aws_lifecycle import (
     ResourceLifecycleConfig,
     ResourceStateTracker,
@@ -420,6 +422,7 @@ def _register_table_routes(
 def create_s3tables_app(
     lifecycle: ResourceLifecycleConfig | None = None,
     registry: TrackerRegistry | None = None,
+    cloudtrail_provider: ICloudTrail | None = None,
 ) -> tuple[FastAPI, _S3TablesState]:
     """Create a FastAPI application that speaks the S3 Tables REST API."""
     _lc = lifecycle or ResourceLifecycleConfig()
@@ -437,4 +440,5 @@ def create_s3tables_app(
     _register_namespace_routes(app, state, _tracker, _lc)
     _register_table_routes(app, state, _tracker, _lc)
 
+    apply_cloudtrail_middleware(app, cloudtrail_provider, "s3tables")
     return app, state

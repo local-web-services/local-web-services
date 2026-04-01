@@ -9,6 +9,8 @@ from dataclasses import replace
 
 from fastapi import FastAPI
 
+from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
+from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, TrackerRegistry
 from lws.providers._shared.search_service import (
     SearchServiceConfig,
@@ -43,6 +45,7 @@ def create_elasticsearch_app(
     container_manager=None,
     lifecycle: ResourceLifecycleConfig | None = None,
     registry: TrackerRegistry | None = None,
+    cloudtrail_provider: ICloudTrail | None = None,
 ) -> tuple[FastAPI, _SearchState]:
     """Create a FastAPI application that speaks the Elasticsearch Service wire protocol.
 
@@ -54,4 +57,6 @@ def create_elasticsearch_app(
     if lifecycle is not None:
         updates["lifecycle"] = lifecycle
     config = replace(_ES_CONFIG, **updates) if updates else _ES_CONFIG
-    return create_search_service_app(config, registry=registry)
+    app, state = create_search_service_app(config, registry=registry)
+    apply_cloudtrail_middleware(app, cloudtrail_provider, "es")
+    return app, state

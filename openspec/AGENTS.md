@@ -51,10 +51,13 @@ Track these steps as TODOs and complete them one by one.
 1. **Read proposal.md** - Understand what's being built
 2. **Read design.md** (if exists) - Review technical decisions
 3. **Read tasks.md** - Get implementation checklist
-4. **Implement tasks sequentially** - Complete in order
-5. **Confirm completion** - Ensure every item in `tasks.md` is finished before updating statuses
-6. **Update checklist** - After all work is done, set every task to `- [x]` so the list reflects reality
-7. **Approval gate** - Do not start implementation until the proposal is reviewed and approved
+4. **Approval gate** - Do not start implementation until the proposal is reviewed and approved
+5. **Run `/discover <change-id>`** - Run pattern discovery before writing any code; read the full report before proceeding
+6. **Plan parallel workstreams** - Use the discovery report to group independent tasks; launch each workstream as a parallel agent with `isolation: "worktree"` where possible
+7. **Implement** - Complete all tasks; check file-length risks flagged by discovery before adding to any file near the 500-line limit
+8. **Validate once** - Run `make check` once after all implementation is done, not after each file
+9. **Confirm completion** - Ensure every item in `tasks.md` is finished before updating statuses
+10. **Update checklist** - After all work is done, set every task to `- [x]` so the list reflects reality
 
 ### Stage 3: Archiving Changes
 After deployment, create separate PR to:
@@ -62,6 +65,8 @@ After deployment, create separate PR to:
 - Update `specs/` if capabilities changed
 - Use `openspec archive <change-id> --skip-specs --yes` for tooling-only changes (always pass the change ID explicitly)
 - Run `openspec validate --strict --no-interactive` to confirm the archived change passes checks
+
+**PR title:** Use the proposal name from `proposal.md` (the `# Change: ...` header, trimmed to ≤70 characters) as the PR title.
 
 ## Before Any Task
 

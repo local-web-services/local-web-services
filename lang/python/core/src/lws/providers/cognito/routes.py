@@ -5,10 +5,12 @@ from __future__ import annotations
 import jwt
 from fastapi import APIRouter, FastAPI, Request, Response
 
+from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_capacity import AwsCapacityConfig, check_capacity
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
+from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
@@ -482,6 +484,7 @@ def create_cognito_app(
     iam_auth: IamAuthBundle | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
     capacity: AwsCapacityConfig | None = None,
+    cloudtrail_provider: ICloudTrail | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the Cognito wire protocol."""
     app = FastAPI(title="LDK Cognito")
@@ -493,4 +496,5 @@ def create_cognito_app(
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="cognito")
     cognito_router = CognitoRouter(provider, lifecycle=lifecycle, capacity=capacity)
     app.include_router(cognito_router.router)
+    apply_cloudtrail_middleware(app, cloudtrail_provider, "cognito-idp")
     return app

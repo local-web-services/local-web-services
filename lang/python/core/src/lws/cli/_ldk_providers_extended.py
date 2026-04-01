@@ -8,10 +8,15 @@ RDS, Glacier, S3 Tables).
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from lws.interfaces import Provider
 from lws.parser.assembly import AppModel
 from lws.providers._shared.aws_iam_auth import IamAuthBundle
 from lws.providers._shared.aws_lifecycle import TrackerRegistry
+
+if TYPE_CHECKING:
+    from lws.providers.cloudtrail.provider import CloudTrailProvider
 
 
 def _register_ssm_secretsmanager_providers(
@@ -101,6 +106,48 @@ def _register_organizations_provider(
         ): create_organizations_app(chaos=c, aws_fake=m),
         organizations_port,
     )
+
+
+def _register_cloudtrail_provider(
+    providers: dict,
+    *,
+    cloudtrail_port: int,
+    chaos_configs: dict,
+    aws_fake_configs: dict,
+    iam_auth_bundle: IamAuthBundle | None = None,
+    s3_provider: object | None = None,
+    eb_provider: object | None = None,
+) -> CloudTrailProvider:
+    """Register the CloudTrail HTTP provider and return the provider instance.
+
+    Wires S3 and EventBridge dependencies if provided so event delivery and
+    EventBridge forwarding work without requiring further caller configuration.
+    """
+    from lws.cli._ldk_http_registry import (  # pylint: disable=import-outside-toplevel
+        _HttpServiceProvider,
+    )
+    from lws.providers.cloudtrail.provider import (  # pylint: disable=import-outside-toplevel
+        CloudTrailProvider,
+    )
+    from lws.providers.cloudtrail.routes import (  # pylint: disable=import-outside-toplevel
+        create_cloudtrail_app,
+    )
+
+    ct_provider = CloudTrailProvider()
+    if s3_provider is not None:
+        ct_provider.set_s3_provider(s3_provider)  # type: ignore[arg-type]
+    if eb_provider is not None:
+        ct_provider.set_eventbridge_provider(eb_provider)  # type: ignore[arg-type]
+
+    providers["__cloudtrail__"] = ct_provider
+    providers["__cloudtrail_http__"] = _HttpServiceProvider(
+        "cloudtrail-http",
+        lambda p=ct_provider, c=chaos_configs.get("cloudtrail"), m=aws_fake_configs.get(
+            "cloudtrail"
+        ), ia=iam_auth_bundle: create_cloudtrail_app(p, chaos=c, aws_fake=m, iam_auth=ia),
+        cloudtrail_port,
+    )
+    return ct_provider
 
 
 def _register_experimental_providers(

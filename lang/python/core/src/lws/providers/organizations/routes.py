@@ -8,9 +8,11 @@ from __future__ import annotations
 
 from fastapi import FastAPI, Request, Response
 
+from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
+from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
 from lws.providers.organizations._org_handlers import (
     _ACTION_HANDLERS,
@@ -29,6 +31,7 @@ _TARGET_PREFIXES = (
 def create_organizations_app(
     chaos: AwsChaosConfig | None = None,
     aws_fake: AwsFakeConfig | None = None,
+    cloudtrail_provider: ICloudTrail | None = None,
 ) -> tuple[FastAPI, _OrganizationsState]:
     """Create a FastAPI application that speaks the AWS Organizations wire protocol.
 
@@ -64,4 +67,5 @@ def create_organizations_app(
             )
         return await handler(state, body)
 
+    apply_cloudtrail_middleware(app, cloudtrail_provider, "organizations")
     return app, state

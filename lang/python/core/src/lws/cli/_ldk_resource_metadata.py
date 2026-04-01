@@ -41,6 +41,7 @@ def _service_ports(port: int) -> dict[str, int]:
         "rds": port + 20,
         "glacier": port + 21,
         "s3tables": port + 22,
+        "cloudtrail": port + 23,
         "organizations": port + 50,
     }
 

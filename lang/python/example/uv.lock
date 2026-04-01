@@ -3,6 +3,18 @@ revision = 3
 requires-python = ">=3.11"
 
 [[package]]
+name = "agency-pytest-agent-reporter"
+version = "0.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/20/16/c72fc62bdcd6fa9cdfbdd796e57d0ae3551110d1c9844a966a4f96f391b8/agency_pytest_agent_reporter-0.1.0.tar.gz", hash = "sha256:7c0c800692229b9876db047a60d519da41d3c998c65fa361c46775a817533a3b", size = 15720, upload-time = "2026-03-27T18:48:36.274Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/df/60/69223d85684e8154d539a31a064bfd8c0e4751efa04e34ff47df41efdc59/agency_pytest_agent_reporter-0.1.0-py3-none-any.whl", hash = "sha256:b63e3027cc154ab4ac4c22751b4f719342a5715d1ed2badb6760f90081778e90", size = 5418, upload-time = "2026-03-27T18:48:34.986Z" },
+]
+
+[[package]]
 name = "aiosqlite"
 version = "0.22.1"
 source = { registry = "https://pypi.org/simple" }
@@ -532,6 +544,7 @@ provides-extras = ["grpc"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "agency-pytest-agent-reporter", specifier = ">=0.1.0" },
     { name = "black", specifier = ">=24.0.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "lws-arch-tests", editable = "../arch_tests" },
@@ -565,6 +578,7 @@ provides-extras = ["pytest"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "agency-pytest-agent-reporter", specifier = ">=0.1.0" },
     { name = "black", specifier = ">=24.0.0" },
     { name = "boto3", specifier = ">=1.34.0" },
     { name = "lws-arch-tests", editable = "../arch_tests" },
@@ -590,6 +604,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "agency-pytest-agent-reporter" },
     { name = "black" },
     { name = "boto3" },
     { name = "local-web-services" },
@@ -609,6 +624,7 @@ provides-extras = ["test"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "agency-pytest-agent-reporter", specifier = ">=0.1.0" },
     { name = "black", specifier = ">=24.0.0" },
     { name = "boto3", specifier = ">=1.34.0" },
     { name = "local-web-services", editable = "../core" },
