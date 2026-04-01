@@ -11,7 +11,7 @@ from ..constants import TEST_SECRET, _secretsmanager_get_secret_definition, _sm_
 @when('a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds')
 def execution_reads_secret_succeeds(lws_session, world):
     # Arrange
-    if "execution_arn" not in world:
+    if world.get("execution_arn") is None:
         world["result"] = None
         world["error"] = RuntimeError("No execution is RUNNING")
         return
