@@ -12,9 +12,9 @@ Feature: ApigatewayStepfunctions - A "Step Functions" "Express Workflow State Ma
     Given the "step functions" "state machine" did not already exist
     When a "step functions" "Express Workflow state machine" is created
     Then the "step functions" "state machine" will be "ACTIVE"
-    And every "IN_PROGRESS" request references an "ACTIVE" "API"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution has a corresponding "IN_PROGRESS" request
+    And every "IN_PROGRESS" "api gateway" "request" references an "ACTIVE" "api gateway" "API"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" has a corresponding "IN_PROGRESS" "api gateway" "request"
 
   @guard @negative @create_state_machine
   Scenario: a "step functions" "Express Workflow state machine" is created fails when the "step functions" "state machine" already existed

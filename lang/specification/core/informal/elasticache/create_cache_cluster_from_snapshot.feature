@@ -14,11 +14,11 @@ Feature: Elasticache - An "Elasticache" "Cluster" Is Created From An "Elasticach
     And the target "elasticache" "cluster" slot is available
     When an "elasticache" "cluster" is created from an "elasticache" "snapshot"
     Then the "elasticache" "cluster" will be in "RESTORING" state
-    And memcached clusters are never associated with a "elasticache" "replication group"
-    And all snapshots reference redis clusters only
-    And every available replication group has a primary cluster assigned
-    And every active cluster, replication group, and snapshot has tags
-    And every snapshotting cluster has a corresponding in-progress snapshot
+    And "memcached" "elasticache" "cluster"s are never associated with a "elasticache" "replication group"
+    And all "elasticache" "snapshot"s reference "redis" "elasticache" "cluster"s only
+    And every "AVAILABLE" "elasticache" "replication group" has a primary "elasticache" "cluster" assigned
+    And every active "elasticache" "cluster", "replication group", and "snapshot" has tags
+    And every snapshotting "elasticache" "cluster" has a corresponding in-progress "elasticache" "snapshot"
 
   @guard @negative @create_cache_cluster_from_snapshot
   Scenario: an "elasticache" "cluster" is created from an "elasticache" "snapshot" fails when the "elasticache" "snapshot" did not exist

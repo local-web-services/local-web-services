@@ -16,9 +16,9 @@ Feature: ApigatewayStepfunctions - A Step Functions Direct Integration Is Config
     And the "step functions" "state machine" was "ACTIVE"
     When a Step Functions direct integration is configured on the "api gateway" "api"
     Then the "api gateway" "API" will synchronously start and await an Express Workflow execution per request
-    And every "IN_PROGRESS" request references an "ACTIVE" "API"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution has a corresponding "IN_PROGRESS" request
+    And every "IN_PROGRESS" "api gateway" "request" references an "ACTIVE" "api gateway" "API"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" has a corresponding "IN_PROGRESS" "api gateway" "request"
 
   @guard @negative @configure_integration
   Scenario: a Step Functions direct integration is configured on the "api gateway" "api" fails when the "api gateway" "API" did not exist

@@ -15,10 +15,10 @@ Feature: CognitoLambda - A Lambda Pre-Signup Trigger Is Configured On The "Cogni
     And the "lambda" "function" existed
     And the "lambda" "function" was "ACTIVE"
     When a Lambda pre-signup trigger is configured on the "cognito" "user pool"
-    Then all subsequent signups will synchronously invoke the function before confirming
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+    Then all subsequent signups will synchronously invoke the "lambda" "function" before confirming
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "IN_PROGRESS" "lambda" "invocation" is for a "PENDING" "cognito" "user"
+    And every "PENDING" "cognito" "user" has a corresponding "IN_PROGRESS" "lambda" "invocation"
 
   @guard @negative @configure_trigger
   Scenario: a Lambda pre-signup trigger is configured on the "cognito" "user pool" fails when the "cognito" "user pool" did not exist

@@ -13,12 +13,12 @@ Feature: SnsSqs - A "Sqs" "Queue" Subscribes To A "Sns" "Topic"
     And the "sns" "topic" was "ACTIVE"
     And the "sqs" "queue" existed
     And the "sqs" "queue" was "ACTIVE"
-    And the subscription slot is available
+    And an "sns" "subscription" "slot" was "available"
     When a "sqs" "queue" subscribes to a "sns" "topic"
-    Then the subscription will be "CONFIRMED" and the queue will receive published messages
-    And every confirmed subscription references an "ACTIVE" "SNS" topic
-    And every "AVAILABLE" message belongs to an "ACTIVE" queue
-    And a message can only be delivered if a confirmed subscription exists for the topic
+    Then the "sns" "subscription" will be "CONFIRMED" and the "sqs" "queue" will receive published messages
+    And every "CONFIRMED" "sns" "subscription" references an "ACTIVE" "sns" "topic"
+    And every "AVAILABLE" "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
+    And an "sqs" "message" can only be delivered if a "CONFIRMED" "sns" "subscription" exists for the "sns" "topic"
 
   @guard @negative @subscribe_queue_to_topic
   Scenario: a "sqs" "queue" subscribes to a "sns" "topic" fails when the "sns" "topic" did not exist
@@ -51,11 +51,11 @@ Feature: SnsSqs - A "Sqs" "Queue" Subscribes To A "Sns" "Topic"
     Then the operation is rejected
 
   @guard @negative @subscribe_queue_to_topic @capacity
-  Scenario: a "sqs" "queue" subscribes to a "sns" "topic" fails when the subscription slot is not available
+  Scenario: a "sqs" "queue" subscribes to a "sns" "topic" fails when no "sns" "subscription" "slot" was "available"
     Given the "sns" "topic" existed
     And the "sns" "topic" was "ACTIVE"
     And the "sqs" "queue" existed
     And the "sqs" "queue" was "ACTIVE"
-    And the subscription slot is not available
+    And no "sns" "subscription" "slot" was "available"
     When a "sqs" "queue" subscribes to a "sns" "topic"
     Then the operation is rejected

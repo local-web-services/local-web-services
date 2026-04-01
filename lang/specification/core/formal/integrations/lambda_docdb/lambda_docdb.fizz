@@ -70,13 +70,13 @@ atomic action StartCluster:
 
 
 # step: the "lambda" "function" is invoked
-# result: the invocation will be "IN_PROGRESS"
+# result: the "lambda" "invocation" will be "IN_PROGRESS"
 # guard: the "lambda" "function" existed
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
 # guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
-# guard: a "lambda" "invocation" slot is available
-# guard_violation_capacity: no invocation slot is available
+# guard: a "lambda" "invocation" "slot" was "available"
+# guard_violation_capacity: no "lambda" "invocation" "slot" was "available"
 atomic action InvokeFunction:
     oneof fid in FUNC_IDS:
         if fid in func_status:
@@ -89,13 +89,13 @@ atomic action InvokeFunction:
 
 # fake_skip: internal
 # step: the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
-# result: the document will exist and the invocation will be "SUCCESS"
+# result: the "documentdb" "document" will exist and the "lambda" "invocation" will be "SUCCESS"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 # guard: the "documentdb" "cluster" was "AVAILABLE"
 # guard_violation_lifecycle: the "documentdb" "cluster" was not "AVAILABLE"
-# guard: a document slot is available
-# guard_violation_capacity: no document slot is available
+# guard: a "documentdb" "document" "slot" was "available"
+# guard_violation_capacity: no "documentdb" "document" "slot" was "available"
 atomic action WriteDocument:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -112,7 +112,7 @@ atomic action WriteDocument:
 
 
 # step: the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
-# result: the invocation will be "FAILED" with a connection error
+# result: the "lambda" "invocation" will be "FAILED" with a connection error
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 # guard: the "documentdb" "cluster" was "STOPPED"
@@ -127,7 +127,7 @@ atomic action InvocationFailsClusterStopped:
                             inv_status[iid] = "FAILED"
 
 
-# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+# check: every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
 always assertion InvocationRequiresActiveFunction:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":

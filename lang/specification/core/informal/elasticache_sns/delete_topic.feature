@@ -13,7 +13,7 @@ Feature: ElasticacheSns - The "Sns" "Topic" Is Deleted
     And the "sns" "topic" was "ACTIVE"
     When the "sns" "topic" is deleted
     Then the "sns" "topic" will be deleted and ElastiCache event notifications will fail
-    And every "PUBLISHED" notification references a cluster that exists
+    And every "PUBLISHED" "sns" "notification" references a "elasticache" "cluster" that exists
     And every "PUBLISHED" notification references a "sns" "topic" that exists
 
   @guard @negative @delete_topic

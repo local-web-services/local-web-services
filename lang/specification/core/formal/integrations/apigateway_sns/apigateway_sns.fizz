@@ -80,17 +80,17 @@ atomic action ConfigureDirectIntegration:
 
 
 # step: a request is received, the "api gateway" "API" publishes to the "sns" "topic", and returns 200
-# result: the message will be "PUBLISHED" and the request will be "SUCCESS"
+# result: the "sns" "message" will be "PUBLISHED" and the "api gateway" "request" will be "SUCCESS"
 # guard: the "api gateway" "api" was "ACTIVE"
 # guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
 # guard: the "api gateway" "api" has a SNS integration configured
 # guard_violation: the "api gateway" "api" has no SNS integration configured
-# guard: the target topic was "ACTIVE"
-# guard_violation_lifecycle: the target topic was not "ACTIVE"
-# guard: a request slot is available
-# guard_violation_capacity: no request slot is available
-# guard: a message slot is available
-# guard_violation_capacity: no message slot is available
+# guard: the target "sns" "topic" was "ACTIVE"
+# guard_violation_lifecycle: the target "sns" "topic" was not "ACTIVE"
+# guard: a "api gateway" "request" "slot" was "available"
+# guard_violation_capacity: no "api gateway" "request" "slot" was "available"
+# guard: a "sns" "message" "slot" was "available"
+# guard_violation_capacity: no "sns" "message" "slot" was "available"
 atomic action RequestSucceeds:
     oneof aid in API_IDS:
         if aid in api_status:
@@ -111,15 +111,15 @@ atomic action RequestSucceeds:
 
 
 # step: a request is received but the SNS publish fails because the "sns" "topic" has been deleted
-# result: the request will be "FAILED" and no message will be published
+# result: the "api gateway" "request" will be "FAILED" and no message will be published
 # guard: the "api gateway" "api" was "ACTIVE"
 # guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
 # guard: the "api gateway" "api" has a SNS integration configured
 # guard_violation: the "api gateway" "api" has no SNS integration configured
-# guard: the target topic was "DELETED"
-# guard_violation_lifecycle: the target topic was not "DELETED"
-# guard: a request slot is available
-# guard_violation_capacity: no request slot is available
+# guard: the target "sns" "topic" was "DELETED"
+# guard_violation_lifecycle: the target "sns" "topic" was not "DELETED"
+# guard: a "api gateway" "request" "slot" was "available"
+# guard_violation_capacity: no "api gateway" "request" "slot" was "available"
 atomic action RequestFails:
     oneof aid in API_IDS:
         if aid in api_status:

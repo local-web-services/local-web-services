@@ -11,10 +11,10 @@ Feature: LambdaDocdb - The "Lambda" "Function" Writes A Document To The "Documen
   Scenario: the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "documentdb" "cluster" was "AVAILABLE"
-    And a document slot is available
+    And a "documentdb" "document" "slot" was "available"
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
-    Then the document will exist and the invocation will be "SUCCESS"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then the "documentdb" "document" will exist and the "lambda" "invocation" will be "SUCCESS"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @guard @negative @write_document @internal
@@ -31,9 +31,9 @@ Feature: LambdaDocdb - The "Lambda" "Function" Writes A Document To The "Documen
     Then the operation is rejected
 
   @guard @negative @write_document @internal
-  Scenario: the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds fails when no document slot is available
+  Scenario: the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds fails when no "documentdb" "document" "slot" was "available"
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "documentdb" "cluster" was "AVAILABLE"
-    And no document slot is available
+    And no "documentdb" "document" "slot" was "available"
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     Then the operation is rejected

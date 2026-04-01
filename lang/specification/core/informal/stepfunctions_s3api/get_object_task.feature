@@ -10,11 +10,11 @@ Feature: StepfunctionsS3api - A Running "Step Functions" "Execution" Reads An Ex
   @minimal @happy @get_object_task
   Scenario: a running "step functions" "execution" reads an existing object from the "s3" "bucket" and succeeds
     Given a "step functions" "execution" was "RUNNING"
-    And an object existed in the target bucket
+    And an "s3" "object" existed in the target "s3" "bucket"
     When a running "step functions" "execution" reads an existing object from the "s3" "bucket" and succeeds
     Then the "step functions" "execution" will be "SUCCEEDED"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every existing object belongs to an "ACTIVE" bucket
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every existing "s3" "object" belongs to an "ACTIVE" "s3" "bucket"
 
   @guard @negative @get_object_task
   Scenario: a running "step functions" "execution" reads an existing object from the "s3" "bucket" and succeeds fails when no "step functions" "execution" was "RUNNING"
@@ -23,8 +23,8 @@ Feature: StepfunctionsS3api - A Running "Step Functions" "Execution" Reads An Ex
     Then the operation is rejected
 
   @guard @negative @get_object_task
-  Scenario: a running "step functions" "execution" reads an existing object from the "s3" "bucket" and succeeds fails when no object existed in the target bucket
+  Scenario: a running "step functions" "execution" reads an existing object from the "s3" "bucket" and succeeds fails when no "s3" "object" existed in the target "s3" "bucket"
     Given a "step functions" "execution" was "RUNNING"
-    And no object existed in the target bucket
+    And no "s3" "object" existed in the target "s3" "bucket"
     When a running "step functions" "execution" reads an existing object from the "s3" "bucket" and succeeds
     Then the operation is rejected

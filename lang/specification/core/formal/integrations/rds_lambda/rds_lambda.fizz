@@ -24,10 +24,10 @@ action Init:
     inv_func = {}               # inv_func[iid] = func_id
 
 
-# step: a RDS DB instance is created
+# step: an "rds" "DB instance" is created
 # result: the DB instance will be "AVAILABLE" with no Lambda integration configured
-# guard: the DB instance did not already exist
-# guard_violation: the DB instance already existed
+# guard: the "rds" "instance" did not already exist
+# guard_violation: the "rds" "instance" already existed
 atomic action CreateDBInstance:
     oneof dbid in DB_IDS:
         if dbid not in db_status:
@@ -50,7 +50,7 @@ atomic action DeployFunction:
 # guard: the "lambda" "function" existed
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
-# guard_violation_lifecycle: the function is already "DELETED"
+# guard_violation_lifecycle: the "lambda" "function" is already "DELETED"
 atomic action DeleteFunction:
     oneof fid in FUNC_IDS:
         if fid in func_status:
@@ -60,10 +60,10 @@ atomic action DeleteFunction:
 
 # step: the DB instance is configured with an IAM role to invoke the "lambda" "function"
 # result: stored procedures on the DB can invoke the "lambda" "function"
-# guard: the DB instance existed and was "AVAILABLE"
+# guard: the "rds" "instance" existed and was "AVAILABLE"
 # guard_violation_lifecycle: the DB instance did not exist or was "AVAILABLE"
-# guard: the DB instance has no Lambda integration configured
-# guard_violation: the DB instance already has a Lambda integration configured
+# guard: the "rds" "instance" has no "lambda" "function" integration configured
+# guard_violation: the "rds" "DB instance" already has a "lambda" "function" integration configured
 # guard: the "lambda" "function" existed and was "ACTIVE"
 # guard_violation: the "lambda" "function" did not exist or was "ACTIVE"
 atomic action ConfigureLambdaIntegration:
@@ -78,15 +78,15 @@ atomic action ConfigureLambdaIntegration:
 
 
 # step: a RDS stored procedure invokes the "lambda" "function" and succeeds
-# result: the invocation will be "SUCCESS"
-# guard: the DB instance was "AVAILABLE"
-# guard_violation_lifecycle: the DB instance was not "AVAILABLE"
-# guard: the DB instance has a Lambda integration configured
-# guard_violation: the DB instance has no Lambda integration configured
+# result: the "lambda" "invocation" will be "SUCCESS"
+# guard: the "rds" "instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "rds" "instance" was not "AVAILABLE"
+# guard: the "rds" "instance" has a "lambda" "function" integration configured
+# guard_violation: the "rds" "instance" has no "lambda" "function" integration configured
 # guard: the "lambda" "function" was "ACTIVE"
 # guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
 # guard: a "lambda" "invocation" slot is available
-# guard_violation_capacity: no invocation slot is available
+# guard_violation_capacity: no "lambda" "invocation" "slot" was "available"
 atomic action StoredProcInvokesLambda:
     oneof dbid in DB_IDS:
         if dbid in db_status:
@@ -102,16 +102,16 @@ atomic action StoredProcInvokesLambda:
                                     inv_func[iid] = fid
 
 
-# step: a RDS stored procedure fails to invoke Lambda because the function has been deleted
-# result: the invocation will be "FAILED" with a function not found error
-# guard: the DB instance was "AVAILABLE"
-# guard_violation_lifecycle: the DB instance was not "AVAILABLE"
-# guard: the DB instance has a Lambda integration configured
-# guard_violation: the DB instance has no Lambda integration configured
+# step: an "rds" stored procedure fails to invoke "lambda" because the "lambda" "function" has been deleted
+# result: the "lambda" "invocation" will be "FAILED" with a function not found error
+# guard: the "rds" "instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "rds" "instance" was not "AVAILABLE"
+# guard: the "rds" "instance" has a "lambda" "function" integration configured
+# guard_violation: the "rds" "instance" has no "lambda" "function" integration configured
 # guard: the "lambda" "function" was "DELETED"
 # guard_violation_lifecycle: the "lambda" "function" was not "DELETED"
 # guard: a "lambda" "invocation" slot is available
-# guard_violation_capacity: no invocation slot is available
+# guard_violation_capacity: no "lambda" "invocation" "slot" was "available"
 atomic action InvocationFailsFunctionDeleted:
     oneof dbid in DB_IDS:
         if dbid in db_status:
@@ -127,7 +127,7 @@ atomic action InvocationFailsFunctionDeleted:
                                     inv_func[iid] = fid
 
 
-# check: every successful invocation references a DB instance that exists
+# check: every successful "lambda" "invocation" references an "rds" "DB instance" that exists
 always assertion SuccessfulInvocationReferencesExistingDB:
     for iid in inv_status:
         if inv_status[iid] == "SUCCESS":
@@ -137,7 +137,7 @@ always assertion SuccessfulInvocationReferencesExistingDB:
     return True
 
 
-# check: every successful invocation recorded which function it invoked
+# check: every successful "rds" "invocation" recorded which "lambda" "function" it invoked
 always assertion SuccessfulInvocationInvokedAFunction:
     for iid in inv_status:
         if inv_status[iid] == "SUCCESS":

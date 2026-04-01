@@ -13,8 +13,8 @@ Feature: LambdaNeptune - The "Neptune" "Cluster" Is Stopped
     And the "neptune" "cluster" was "AVAILABLE"
     When the "neptune" "cluster" is stopped
     Then the "neptune" "cluster" will be "STOPPED" and graph queries will be rejected
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which cluster it queried
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every successful "lambda" "invocation" recorded which "neptune" "cluster" it queried
 
   @guard @negative @stop_cluster
   Scenario: the "neptune" "cluster" is stopped fails when the "neptune" "cluster" did not exist

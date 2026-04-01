@@ -15,10 +15,10 @@ Feature: S3api - A "S3" "Object" Is Retrieved From A "S3" "Bucket"
     And the "s3" "object" was not "deleted"
     When a "s3" "object" is retrieved from a "s3" "bucket"
     Then the "s3" "object" data will be returned
-    And every bucket has a valid status ("ACTIVE" or "DELETED")
-    And every bucket versioning state is valid ("DISABLED", "ENABLED", or "SUSPENDED")
-    And every multipart upload has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
-    And deleting a bucket requires it to be empty
+    And every "s3" "bucket" has a valid status ("ACTIVE" or "DELETED")
+    And every "s3" "bucket" versioning state is valid ("DISABLED", "ENABLED", or "SUSPENDED")
+    And every "s3" "multipart upload" has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
+    And deleting an "s3" "bucket" requires it to be empty
 
   @guard @negative @get_object
   Scenario: a "s3" "object" is retrieved from a "s3" "bucket" fails when the "s3" "bucket" did not exist

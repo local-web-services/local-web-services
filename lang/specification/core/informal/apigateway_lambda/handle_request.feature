@@ -12,14 +12,14 @@ Feature: ApigatewayLambda - The "Api Gateway" "Api" Receives A Http Request And 
     Given the "api gateway" "API" existed
     And the "api gateway" "api" was "ACTIVE"
     And the "api gateway" "API" had a Lambda integration configured
-    And the integrated function was "ACTIVE"
-    And a request slot is available
+    And the integrated "lambda" "function" was "ACTIVE"
+    And a "request" "slot" was "available"
     And a "lambda" "invocation" slot is available
     When the "api gateway" "API" receives a "HTTP" request and synchronously invokes the "lambda" "function"
-    Then the request and invocation are both "IN_PROGRESS"
-    And every "IN_PROGRESS" request references an "ACTIVE" "API"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation has a corresponding "IN_PROGRESS" request
+    Then the "api gateway" "request" and "lambda" "invocation" are both "IN_PROGRESS"
+    And every "IN_PROGRESS" "api gateway" "request" references an "ACTIVE" "api gateway" "API"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "IN_PROGRESS" "lambda" "invocation" has a corresponding "IN_PROGRESS" "api gateway" "request"
 
   @guard @negative @handle_request
   Scenario: the "api gateway" "API" receives a "HTTP" request and synchronously invokes the "lambda" "function" fails when the "api gateway" "API" did not exist
@@ -43,31 +43,31 @@ Feature: ApigatewayLambda - The "Api Gateway" "Api" Receives A Http Request And 
     Then the operation is rejected
 
   @guard @negative @handle_request @lifecycle
-  Scenario: the "api gateway" "API" receives a "HTTP" request and synchronously invokes the "lambda" "function" fails when the integrated function was not "ACTIVE"
+  Scenario: the "api gateway" "API" receives a "HTTP" request and synchronously invokes the "lambda" "function" fails when the integrated "lambda" "function" was not "ACTIVE"
     Given the "api gateway" "API" existed
     And the "api gateway" "api" was "ACTIVE"
     And the "api gateway" "API" had a Lambda integration configured
-    And the integrated function was not "ACTIVE"
+    And the integrated "lambda" "function" was not "ACTIVE"
     When the "api gateway" "API" receives a "HTTP" request and synchronously invokes the "lambda" "function"
     Then the operation is rejected
 
   @guard @negative @handle_request @capacity
-  Scenario: the "api gateway" "API" receives a "HTTP" request and synchronously invokes the "lambda" "function" fails when no request slot is available
+  Scenario: the "api gateway" "API" receives a "HTTP" request and synchronously invokes the "lambda" "function" fails when no "request" "slot" was "available"
     Given the "api gateway" "API" existed
     And the "api gateway" "api" was "ACTIVE"
     And the "api gateway" "API" had a Lambda integration configured
-    And the integrated function was "ACTIVE"
-    And no request slot is available
+    And the integrated "lambda" "function" was "ACTIVE"
+    And no "request" "slot" was "available"
     When the "api gateway" "API" receives a "HTTP" request and synchronously invokes the "lambda" "function"
     Then the operation is rejected
 
   @guard @negative @handle_request @capacity
-  Scenario: the "api gateway" "API" receives a "HTTP" request and synchronously invokes the "lambda" "function" fails when no invocation slot is available
+  Scenario: the "api gateway" "API" receives a "HTTP" request and synchronously invokes the "lambda" "function" fails when no "lambda" "invocation" "slot" was "available"
     Given the "api gateway" "API" existed
     And the "api gateway" "api" was "ACTIVE"
     And the "api gateway" "API" had a Lambda integration configured
-    And the integrated function was "ACTIVE"
-    And a request slot is available
-    And no invocation slot is available
+    And the integrated "lambda" "function" was "ACTIVE"
+    And a "request" "slot" was "available"
+    And no "lambda" "invocation" "slot" was "available"
     When the "api gateway" "API" receives a "HTTP" request and synchronously invokes the "lambda" "function"
     Then the operation is rejected

@@ -12,13 +12,13 @@ Feature: Opensearch - Traffic Is Swapped To The New "Opensearch" "Cluster" Durin
     Given the "opensearch" "domain" existed
     And the "opensearch" "domain" was "PROCESSING"
     And the new "opensearch" "cluster" was ready
-    And traffic has not been swapped yet
+    And the "opensearch" "domain" blue-green traffic had not been swapped yet
     When traffic is swapped to the new "opensearch" "cluster" during a blue-green deployment
     Then the "opensearch" "domain" will now be serving requests from the new "opensearch" "cluster"
-    And no active connection references a deleted domain
+    And no active "opensearch" "connection" references a deleted "opensearch" "domain"
     And traffic can only be swapped after the new "opensearch" "cluster" was ready
-    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" inbound connection
-    And a pending config change only exists on a "opensearch" "domain" that is "PROCESSING"
+    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" "opensearch" "inbound connection"
+    And a pending config change only exists on an "opensearch" "domain" that is "PROCESSING"
 
   @guard @negative @blue_green_swap_traffic @internal
   Scenario: traffic is swapped to the new "opensearch" "cluster" during a blue-green deployment fails when the "opensearch" "domain" did not exist
@@ -42,10 +42,10 @@ Feature: Opensearch - Traffic Is Swapped To The New "Opensearch" "Cluster" Durin
     Then the operation is rejected
 
   @guard @negative @blue_green_swap_traffic @internal
-  Scenario: traffic is swapped to the new "opensearch" "cluster" during a blue-green deployment fails when traffic has already been swapped
+  Scenario: traffic is swapped to the new "opensearch" "cluster" during a blue-green deployment fails when the "opensearch" "domain" blue-green traffic had already been swapped
     Given the "opensearch" "domain" existed
     And the "opensearch" "domain" was "PROCESSING"
     And the new "opensearch" "cluster" was ready
-    And traffic has already been swapped
+    And the "opensearch" "domain" blue-green traffic had already been swapped
     When traffic is swapped to the new "opensearch" "cluster" during a blue-green deployment
     Then the operation is rejected

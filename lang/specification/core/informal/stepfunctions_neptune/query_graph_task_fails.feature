@@ -13,8 +13,8 @@ Feature: StepfunctionsNeptune - A Running "Step Functions" "Execution" Fails To 
     And the "neptune" "cluster" was "STOPPED"
     When a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped
     Then the "step functions" "execution" will be "FAILED" with a connection error
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which cluster it queried
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "neptune" "cluster" it queried
 
   @guard @negative @query_graph_task_fails @internal
   Scenario: a running "step functions" "execution" fails to query because the "neptune" "cluster" is stopped fails when no "step functions" "execution" was "RUNNING"

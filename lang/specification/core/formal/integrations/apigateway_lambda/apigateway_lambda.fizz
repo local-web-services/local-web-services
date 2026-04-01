@@ -76,19 +76,19 @@ atomic action ConfigureIntegration:
 
 
 # step: the "api gateway" "API" receives a HTTP request and synchronously invokes the "lambda" "function"
-# result: the request and invocation are both "IN_PROGRESS"
+# result: the "api gateway" "request" and "lambda" "invocation" are both "IN_PROGRESS"
 # guard: the "api gateway" "API" existed
 # guard_violation: the "api gateway" "API" did not exist
 # guard: the "api gateway" "api" was "ACTIVE"
 # guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
 # guard: the "api gateway" "API" had a Lambda integration configured
 # guard_violation: the "api gateway" "API" had no Lambda integration configured
-# guard: the integrated function was "ACTIVE"
-# guard_violation_lifecycle: the integrated function was not "ACTIVE"
-# guard: a request slot is available
-# guard_violation_capacity: no request slot is available
+# guard: the integrated "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the integrated "lambda" "function" was not "ACTIVE"
+# guard: a "request" "slot" was "available"
+# guard_violation_capacity: no "request" "slot" was "available"
 # guard: a "lambda" "invocation" slot is available
-# guard_violation_capacity: no invocation slot is available
+# guard_violation_capacity: no "lambda" "invocation" "slot" was "available"
 atomic action HandleRequest:
     oneof aid in API_IDS:
         if aid in api_status:
@@ -108,8 +108,8 @@ atomic action HandleRequest:
 
 
 # fake_skip: internal
-# step: the Lambda invocation completes successfully and the "api gateway" "API" returns a successful response
-# result: the invocation will be "SUCCESS" and the request will be "SUCCESS"
+# step: the "lambda" "function" invocation completes successfully and the "api gateway" "API" returns a successful response
+# result: the "lambda" "invocation" will be "SUCCESS" and the "api gateway" "request" will be "SUCCESS"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationSucceeds:
@@ -122,8 +122,8 @@ atomic action InvocationSucceeds:
 
 
 # fake_skip: internal
-# step: the Lambda invocation fails and the "api gateway" "API" returns an error response
-# result: the invocation will be "FAILED" and the request will be "FAILED"
+# step: the "lambda" "function" invocation fails and the "api gateway" "API" returns an error response
+# result: the "lambda" "invocation" will be "FAILED" and the "api gateway" "request" will be "FAILED"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationFails:
@@ -135,7 +135,7 @@ atomic action InvocationFails:
                 req_status[rid] = "FAILED"
 
 
-# check: every IN_PROGRESS request references an ACTIVE API
+# check: every "IN_PROGRESS" "api gateway" "request" references an "ACTIVE" "api gateway" "API"
 always assertion RequestRequiresActiveApi:
     for rid in req_status:
         if req_status[rid] == "IN_PROGRESS":
@@ -146,7 +146,7 @@ always assertion RequestRequiresActiveApi:
     return True
 
 
-# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+# check: every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
 always assertion InvocationRequiresActiveFunction:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":
@@ -161,7 +161,7 @@ always assertion InvocationRequiresActiveFunction:
     return True
 
 
-# check: every IN_PROGRESS invocation has a corresponding IN_PROGRESS request
+# check: every "IN_PROGRESS" "lambda" "invocation" has a corresponding "IN_PROGRESS" "api gateway" "request"
 always assertion InvocationLinkedToRequest:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":

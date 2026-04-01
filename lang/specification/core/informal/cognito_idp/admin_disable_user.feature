@@ -13,13 +13,13 @@ Feature: CognitoIdp - A "Cognito" "User" Was "Disabled" By An Admin
     And the "cognito" "user" was "ENABLED"
     When a "cognito" "user" was "DISABLED" by an admin
     Then the "cognito" "user" will be "DISABLED"
-    And every user pool has a valid status ("ACTIVE" or "DELETED")
-    And every user has a valid status
-    And every non-deleted user has an enabled flag set
-    And every group membership references an existing active group
-    And every auth session has a valid status
-    And deleted users do not have active authenticated sessions
-    And disabled users do not have active authenticated sessions
+    And every "cognito" "user pool" has a valid status ("ACTIVE" or "DELETED")
+    And every "cognito" "user" has a valid status
+    And every non-deleted "cognito" "user" has an enabled flag set
+    And every "cognito" "group" membership references an existing active "cognito" "group"
+    And every "cognito" "session" has a valid status
+    And deleted "cognito" "user"s do not have active authenticated "cognito" "session"s
+    And disabled "cognito" "user"s do not have active authenticated "cognito" "session"s
 
   @guard @negative @admin_disable_user
   Scenario: a "cognito" "user" was "DISABLED" by an admin fails when the "cognito" "user" did not have an enabled flag

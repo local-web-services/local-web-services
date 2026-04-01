@@ -12,13 +12,13 @@ Feature: Ssm - Tags Are Removed From A "Ssm" "Parameter"
     Given the "ssm" "parameter" existed
     And the "ssm" "parameter" was "active"
     And the tag was associated with the "ssm" "parameter"
-    And the tag association was "ACTIVE"
+    And the "ssm" "parameter" tag association was "ACTIVE"
     When tags are removed from a "ssm" "parameter"
     Then the tags are disassociated from the "ssm" "parameter"
-    And every parameter version is a positive integer
-    And every parameter has a valid type (String, SecureString, or StringList)
-    And param_exists values are always valid booleans
-    And the error log only contains ParameterAlreadyExists entries
+    And every "ssm" "parameter" version is a positive integer
+    And every "ssm" "parameter" has a valid type (String, SecureString, or StringList)
+    And "ssm" "parameter" param_exists values are always valid booleans
+    And the "ssm" error log only contains "ParameterAlreadyExists" entries
 
   @guard @negative @remove_tags_from_resource
   Scenario: tags are removed from a "ssm" "parameter" fails when the "ssm" "parameter" did not exist
@@ -42,10 +42,10 @@ Feature: Ssm - Tags Are Removed From A "Ssm" "Parameter"
     Then the operation is rejected
 
   @guard @negative @remove_tags_from_resource
-  Scenario: tags are removed from a "ssm" "parameter" fails when the tag association was not "ACTIVE"
+  Scenario: tags are removed from a "ssm" "parameter" fails when the "ssm" "parameter" tag association was not "ACTIVE"
     Given the "ssm" "parameter" existed
     And the "ssm" "parameter" was "active"
     And the tag was associated with the "ssm" "parameter"
-    And the tag association was not "ACTIVE"
+    And the "ssm" "parameter" tag association was not "ACTIVE"
     When tags are removed from a "ssm" "parameter"
     Then the operation is rejected

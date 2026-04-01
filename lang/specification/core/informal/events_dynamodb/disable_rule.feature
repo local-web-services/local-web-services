@@ -9,22 +9,22 @@ Feature: EventsDynamodb - An "Eventbridge" "Rule" Was "Disabled"
 
   @minimal @happy @disable_rule
   Scenario: an "eventbridge" "rule" was "DISABLED"
-    Given the rule existed
-    And the rule was "ENABLED"
+    Given the "eventbridge" "rule" existed
+    And the "eventbridge" "rule" was "ENABLED"
     When an "eventbridge" "rule" was "DISABLED"
-    Then the rule will be "DISABLED" and will not match events
+    Then the "eventbridge" "rule" will be "DISABLED" and will not match events
     And every existing item references a "dynamodb" "table" that exists
-    And every matched event references a rule that exists
+    And every matched "eventbridge" "event" references an "eventbridge" "rule" that exists
 
   @guard @negative @disable_rule
-  Scenario: an "eventbridge" "rule" was "DISABLED" fails when the rule did not exist
-    Given the rule did not exist
+  Scenario: an "eventbridge" "rule" was "DISABLED" fails when the "eventbridge" "rule" did not exist
+    Given the "eventbridge" "rule" did not exist
     When an "eventbridge" "rule" was "DISABLED"
     Then the operation is rejected
 
   @guard @negative @disable_rule @lifecycle
-  Scenario: an "eventbridge" "rule" was "DISABLED" fails when the rule is already "DISABLED"
-    Given the rule existed
-    And the rule is already "DISABLED"
+  Scenario: an "eventbridge" "rule" was "DISABLED" fails when the "eventbridge" "rule" is already "DISABLED"
+    Given the "eventbridge" "rule" existed
+    And the "eventbridge" "rule" is already "DISABLED"
     When an "eventbridge" "rule" was "DISABLED"
     Then the operation is rejected

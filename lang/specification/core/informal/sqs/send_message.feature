@@ -11,12 +11,12 @@ Feature: Sqs - A "Sqs" "Message" Is Sent To The "Sqs" "Queue"
   Scenario: a "sqs" "message" is sent to the "sqs" "queue"
     Given the "sqs" "queue" existed
     And the "sqs" "queue" was "ACTIVE"
-    And the message slot is available
+    And an "sqs" "message" "slot" was "available"
     When a "sqs" "message" is sent to the "sqs" "queue"
     Then the "sqs" "message" will be "AVAILABLE" for delivery
-    And every non-deleted message belongs to an "ACTIVE" queue
-    And every in-flight message belongs to an "ACTIVE" queue
-    And every message has a non-negative receive count
+    And every non-deleted "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
+    And every "IN_FLIGHT" "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
+    And every "sqs" "message" has a non-negative receive count
 
   @guard @negative @send_message
   Scenario: a "sqs" "message" is sent to the "sqs" "queue" fails when the "sqs" "queue" did not exist
@@ -32,9 +32,9 @@ Feature: Sqs - A "Sqs" "Message" Is Sent To The "Sqs" "Queue"
     Then the operation is rejected
 
   @guard @negative @send_message @capacity
-  Scenario: a "sqs" "message" is sent to the "sqs" "queue" fails when the message slot is not available
+  Scenario: a "sqs" "message" is sent to the "sqs" "queue" fails when no "sqs" "message" "slot" was "available"
     Given the "sqs" "queue" existed
     And the "sqs" "queue" was "ACTIVE"
-    And the message slot is not available
+    And no "sqs" "message" "slot" was "available"
     When a "sqs" "message" is sent to the "sqs" "queue"
     Then the operation is rejected

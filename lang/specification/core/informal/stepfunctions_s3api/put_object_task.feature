@@ -10,12 +10,12 @@ Feature: StepfunctionsS3api - A Running "Step Functions" "Execution" Writes An O
   @minimal @happy @put_object_task
   Scenario: a running "step functions" "execution" writes an object to the "s3" "bucket" and succeeds
     Given a "step functions" "execution" was "RUNNING"
-    And the target bucket was "ACTIVE"
-    And an object slot is available
+    And the target "s3" "bucket" was "ACTIVE"
+    And a "s3" "object" "slot" was "available"
     When a running "step functions" "execution" writes an object to the "s3" "bucket" and succeeds
-    Then the object will exist in the bucket and the "step functions" "execution" will be "SUCCEEDED"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every existing object belongs to an "ACTIVE" bucket
+    Then the "s3" "object" will exist in the "s3" "bucket" and the "step functions" "execution" will be "SUCCEEDED"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every existing "s3" "object" belongs to an "ACTIVE" "s3" "bucket"
 
   @guard @negative @put_object_task
   Scenario: a running "step functions" "execution" writes an object to the "s3" "bucket" and succeeds fails when no "step functions" "execution" was "RUNNING"
@@ -24,16 +24,16 @@ Feature: StepfunctionsS3api - A Running "Step Functions" "Execution" Writes An O
     Then the operation is rejected
 
   @guard @negative @put_object_task @lifecycle
-  Scenario: a running "step functions" "execution" writes an object to the "s3" "bucket" and succeeds fails when the target bucket was not "ACTIVE"
+  Scenario: a running "step functions" "execution" writes an object to the "s3" "bucket" and succeeds fails when the target "s3" "bucket" was not "ACTIVE"
     Given a "step functions" "execution" was "RUNNING"
-    And the target bucket was not "ACTIVE"
+    And the target "s3" "bucket" was not "ACTIVE"
     When a running "step functions" "execution" writes an object to the "s3" "bucket" and succeeds
     Then the operation is rejected
 
   @guard @negative @put_object_task @capacity
-  Scenario: a running "step functions" "execution" writes an object to the "s3" "bucket" and succeeds fails when no object slot is available
+  Scenario: a running "step functions" "execution" writes an object to the "s3" "bucket" and succeeds fails when no "s3" "object" "slot" was "available"
     Given a "step functions" "execution" was "RUNNING"
-    And the target bucket was "ACTIVE"
-    And no object slot is available
+    And the target "s3" "bucket" was "ACTIVE"
+    And no "s3" "object" "slot" was "available"
     When a running "step functions" "execution" writes an object to the "s3" "bucket" and succeeds
     Then the operation is rejected

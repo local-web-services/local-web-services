@@ -9,14 +9,14 @@ Feature: EventsSqs - A "Sqs" "Queue" Is Created
 
   @minimal @happy @create_queue
   Scenario: a "sqs" "queue" is created
-    Given the queue did not already exist
+    Given the "sqs" "queue" did not already exist
     When a "sqs" "queue" is created
     Then the "sqs" "queue" will be "ACTIVE"
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "AVAILABLE" message belongs to an "ACTIVE" queue
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "AVAILABLE" "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
 
   @guard @negative @create_queue
-  Scenario: a "sqs" "queue" is created fails when the queue already existed
-    Given the queue already existed
+  Scenario: a "sqs" "queue" is created fails when the "sqs" "queue" already existed
+    Given the "sqs" "queue" already existed
     When a "sqs" "queue" is created
     Then the operation is rejected

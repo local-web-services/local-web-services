@@ -34,15 +34,15 @@ atomic action CreateStateMachine:
 
 # step: an "elasticache" "cluster" is created and becomes AVAILABLE
 # result: the "elasticache" "cluster" will be "AVAILABLE"
-# guard: the cluster did not already exist
-# guard_violation: the cluster already existed
+# guard: the "elasticache" "cluster" did not already exist
+# guard_violation: the "elasticache" "cluster" already existed
 atomic action CreateCluster:
     oneof cid in CLUSTER_IDS:
         if cid not in cluster_status:
             cluster_status[cid] = "AVAILABLE"
 
 
-# step: a cluster modification begins
+# step: an "elasticache" "cluster" modification begins
 # result: the "elasticache" "cluster" will be "MODIFYING" and connections may be refused
 # guard: the "elasticache" "cluster" existed
 # guard_violation: the "elasticache" "cluster" did not exist
@@ -56,7 +56,7 @@ atomic action ClusterModificationBegins:
 
 
 # fake_skip: internal
-# step: the cluster modification completes
+# step: the "elasticache" "cluster" modification completes
 # result: the "elasticache" "cluster" will be "AVAILABLE" again
 # guard: the "elasticache" "cluster" was "MODIFYING"
 # guard_violation_lifecycle: the "elasticache" "cluster" was not "MODIFYING"
@@ -74,7 +74,7 @@ atomic action ClusterModificationComplete:
 # guard: the "step functions" "state machine" was "ACTIVE"
 # guard_violation_lifecycle: the "step functions" "state machine" was not "ACTIVE"
 # guard: an "step functions" "execution" slot is available
-# guard_violation_capacity: no execution slot is available
+# guard_violation_capacity: no "step functions" "execution" "slot" was "available"
 atomic action StartExecution:
     oneof smid in SM_IDS:
         if smid in sm_status:
@@ -121,7 +121,7 @@ atomic action ReadCacheTaskFails:
                             exec_cluster[eid] = cid
 
 
-# check: every RUNNING execution references an ACTIVE state machine
+# check: every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
 always assertion ExecutionRequiresActiveStateMachine:
     for eid in exec_status:
         if exec_status[eid] == "RUNNING":
@@ -132,7 +132,7 @@ always assertion ExecutionRequiresActiveStateMachine:
     return True
 
 
-# check: every succeeded execution recorded which cluster it read
+# check: every "SUCCEEDED" "step functions" "execution" recorded which "elasticache" "cluster" it read
 # (verifies an execution cannot succeed without connecting to a cluster; cluster may enter MODIFYING afterwards)
 always assertion SuccessfulExecutionReadACluster:
     for eid in exec_status:

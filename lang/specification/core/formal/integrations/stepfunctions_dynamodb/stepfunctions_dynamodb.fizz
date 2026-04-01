@@ -47,14 +47,14 @@ atomic action CreateTable:
             table_status[tid] = "ACTIVE"
 
 
-# step: a DynamoDB PutItem task is configured on the state machine
+# step: a "dynamodb" "PutItem" task is configured on the "step functions" "state machine"
 # result: the state machine will write an item to the "dynamodb" "table" when it reaches the task state
 # guard: the "step functions" "state machine" existed
 # guard_violation: the "step functions" "state machine" did not exist
 # guard: the "step functions" "state machine" was "ACTIVE"
 # guard_violation_lifecycle: the "step functions" "state machine" was not "ACTIVE"
-# guard: the state machine had no DynamoDB task configured
-# guard_violation: the state machine already has a DynamoDB task configured
+# guard: the "step functions" "state machine" had no "dynamodb" task configured
+# guard_violation: the "step functions" "state machine" already has a "dynamodb" task configured
 # guard: the "dynamodb" "table" existed
 # guard_violation: the "dynamodb" "table" did not exist
 # guard: the "dynamodb" "table" was "ACTIVE"
@@ -76,10 +76,10 @@ atomic action ConfigureDynamoDBTask:
 # guard_violation: the "step functions" "state machine" did not exist
 # guard: the "step functions" "state machine" was "ACTIVE"
 # guard_violation_lifecycle: the "step functions" "state machine" was not "ACTIVE"
-# guard: the state machine had a DynamoDB task configured
-# guard_violation: the state machine had no DynamoDB task configured
+# guard: the "step functions" "state machine" had a "dynamodb" task configured
+# guard_violation: the "step functions" "state machine" had no "dynamodb" task configured
 # guard: an "step functions" "execution" slot is available
-# guard_violation_capacity: no execution slot is available
+# guard_violation_capacity: no "step functions" "execution" "slot" was "available"
 atomic action StartExecution:
     oneof smid in SM_IDS:
         if smid in sm_status:
@@ -97,8 +97,8 @@ atomic action StartExecution:
 # guard_violation: no "step functions" "execution" was "RUNNING"
 # guard: the target "dynamodb" "table" was "ACTIVE"
 # guard_violation_lifecycle: the target "dynamodb" "table" was not "ACTIVE"
-# guard: an item slot is available
-# guard_violation_capacity: no item slot is available
+# guard: an "item" "slot" was "available"
+# guard_violation_capacity: no "dynamodb" "item" "slot" was "available"
 atomic action PutItemTask:
     oneof eid in EXEC_IDS:
         if eid in exec_status:
@@ -121,8 +121,8 @@ atomic action PutItemTask:
 # result: the "step functions" "execution" will be "FAILED" because the item was not found
 # guard: a "step functions" "execution" was "RUNNING"
 # guard_violation: no "step functions" "execution" was "RUNNING"
-# guard: no item existed in the target table
-# guard_violation: an item existed in the target table
+# guard: no "dynamodb" "item" existed in the target "dynamodb" "table"
+# guard_violation: a "dynamodb" "item" existed in the target "dynamodb" "table"
 atomic action GetItemNotFoundTask:
     oneof eid in EXEC_IDS:
         if eid in exec_status:
@@ -140,7 +140,7 @@ atomic action GetItemNotFoundTask:
                             exec_status[eid] = "FAILED"
 
 
-# check: every RUNNING execution references an ACTIVE state machine
+# check: every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
 always assertion ExecutionRequiresActiveStateMachine:
     for eid in exec_status:
         if exec_status[eid] == "RUNNING":
@@ -151,7 +151,7 @@ always assertion ExecutionRequiresActiveStateMachine:
     return True
 
 
-# check: every existing item belongs to an ACTIVE table
+# check: every existing "dynamodb" "item" belongs to an "ACTIVE" "dynamodb" "table"
 always assertion ItemRequiresActiveTable:
     for iid in item_status:
         if item_status[iid] == "EXISTS":

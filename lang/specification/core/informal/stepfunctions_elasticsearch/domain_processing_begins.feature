@@ -13,8 +13,8 @@ Feature: StepfunctionsElasticsearch - A "Elasticsearch" "Domain" Configuration U
     And the "elasticsearch" "domain" was "AVAILABLE"
     When a "elasticsearch" "domain" configuration update begins
     Then the "elasticsearch" "domain" will be "PROCESSING" and "API" calls may fail
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which domain it called
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "elasticsearch" "domain" it called
 
   @guard @negative @domain_processing_begins
   Scenario: a "elasticsearch" "domain" configuration update begins fails when the "elasticsearch" "domain" did not exist

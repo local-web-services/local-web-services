@@ -13,9 +13,9 @@ Feature: Rds - A Tag Is Applied To A "Rds" "Instance"
     And the "rds" "instance" was "AVAILABLE"
     When a tag is applied to a "rds" "instance"
     Then the "rds" "instance" tag state will be unchanged (no-op model)
-    And every database instance has a valid status
-    And every database snapshot has a valid status
-    And every backing-up instance has a corresponding in-progress snapshot
+    And every "rds" "instance" has a valid status
+    And every "rds" "snapshot" has a valid status
+    And every backing-up "rds" "instance" has a corresponding in-progress "rds" "snapshot"
 
   @guard @negative @tag_d_b_instance
   Scenario: a tag is applied to a "rds" "instance" fails when the "rds" "instance" did not exist

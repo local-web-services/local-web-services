@@ -12,9 +12,9 @@ Feature: LambdaNeptune - The "Lambda" "Function" Fails To Connect Because The "N
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "neptune" "cluster" was "STOPPED"
     When the "lambda" "function" fails to connect because the "neptune" "cluster" is stopped
-    Then the invocation will be "FAILED" with a connection error
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which cluster it queried
+    Then the "lambda" "invocation" will be "FAILED" with a connection error
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every successful "lambda" "invocation" recorded which "neptune" "cluster" it queried
 
   @guard @negative @invocation_fails_cluster_stopped @lifecycle
   Scenario: the "lambda" "function" fails to connect because the "neptune" "cluster" is stopped fails when no "lambda" "invocation" was "IN_PROGRESS"

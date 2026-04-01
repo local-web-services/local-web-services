@@ -13,7 +13,7 @@ Feature: DocdbEvents - The "Documentdb" "Cluster" Modification Completes
     When the "documentdb" "cluster" modification completes
     Then the "documentdb" "cluster" will be "AVAILABLE" again
     And every "DELIVERED" event references a "documentdb" "cluster" that exists
-    And every "DELIVERED" event references a bus that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @guard @negative @cluster_modify_complete @internal
   Scenario: the "documentdb" "cluster" modification completes fails when the "documentdb" "cluster" was not "MODIFYING"

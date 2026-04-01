@@ -12,8 +12,8 @@ Feature: StepfunctionsGlacier - A "Glacier" "Vault" Is Created
     Given the "glacier" "vault" did not already exist
     When a "glacier" "vault" is created
     Then the "glacier" "vault" will exist
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which vault it called
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "glacier" "vault" it called
 
   @guard @negative @create_vault
   Scenario: a "glacier" "vault" is created fails when the "glacier" "vault" already existed

@@ -13,11 +13,11 @@ Feature: Glacier - A Multipart "Glacier" "Upload" Is Aborted
     And the "glacier" "upload" was "InProgress"
     When a multipart "glacier" "upload" is aborted
     Then the "glacier" "upload" will be "Aborted"
-    And every in-progress job references an active vault
-    And vault archive count is never negative
-    And all stored archives belong to an "ACTIVE" vault
-    And job output is only available for succeeded jobs
-    And every archive retrieval job references a non-empty archive "ID"
+    And every in-progress "glacier" "job" references an active "glacier" "vault"
+    And "glacier" "vault" archive count is never negative
+    And all stored "glacier" "archive"s belong to an "ACTIVE" "glacier" "vault"
+    And "glacier" "job" output is only available for succeeded "glacier" "job"s
+    And every "glacier" "archive" retrieval "glacier" "job" references a non-empty "glacier" "archive" "ID"
 
   @guard @negative @abort_multipart_upload
   Scenario: a multipart "glacier" "upload" is aborted fails when the "glacier" "upload" did not exist

@@ -13,10 +13,10 @@ Feature: Opensearch - An "Opensearch" "Inbound Connection" Finishes Deleting
     And the "opensearch" "inbound connection" was "DELETING"
     When an "opensearch" "inbound connection" finishes deleting
     Then the "opensearch" "inbound connection" will be "DELETED"
-    And no active connection references a deleted domain
+    And no active "opensearch" "connection" references a deleted "opensearch" "domain"
     And traffic can only be swapped after the new "opensearch" "cluster" was ready
-    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" inbound connection
-    And a pending config change only exists on a "opensearch" "domain" that is "PROCESSING"
+    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" "opensearch" "inbound connection"
+    And a pending config change only exists on an "opensearch" "domain" that is "PROCESSING"
 
   @guard @negative @finish_deleting_inbound_connection @internal
   Scenario: an "opensearch" "inbound connection" finishes deleting fails when the "opensearch" "inbound connection" did not exist

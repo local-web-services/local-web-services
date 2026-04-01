@@ -11,10 +11,10 @@ Feature: ApigatewaySns - A Request Is Received But The Sns Publish Fails Because
   Scenario: a request is received but the "SNS" publish fails because the "sns" "topic" has been deleted
     Given the "api gateway" "api" was "ACTIVE"
     And the "api gateway" "api" has a "SNS" integration configured
-    And the target topic was "DELETED"
-    And a request slot is available
+    And the target "sns" "topic" was "DELETED"
+    And a "api gateway" "request" "slot" was "available"
     When a request is received but the "SNS" publish fails because the "sns" "topic" has been deleted
-    Then the request will be "FAILED" and no message will be published
+    Then the "api gateway" "request" will be "FAILED" and no message will be published
     And every "PUBLISHED" message references a "sns" "topic" that exists
     And every successful request references an "api gateway" "API" that exists
 
@@ -32,18 +32,18 @@ Feature: ApigatewaySns - A Request Is Received But The Sns Publish Fails Because
     Then the operation is rejected
 
   @guard @negative @request_fails @lifecycle
-  Scenario: a request is received but the "SNS" publish fails because the "sns" "topic" has been deleted fails when the target topic was not "DELETED"
+  Scenario: a request is received but the "SNS" publish fails because the "sns" "topic" has been deleted fails when the target "sns" "topic" was not "DELETED"
     Given the "api gateway" "api" was "ACTIVE"
     And the "api gateway" "api" has a "SNS" integration configured
-    And the target topic was not "DELETED"
+    And the target "sns" "topic" was not "DELETED"
     When a request is received but the "SNS" publish fails because the "sns" "topic" has been deleted
     Then the operation is rejected
 
   @guard @negative @request_fails @capacity
-  Scenario: a request is received but the "SNS" publish fails because the "sns" "topic" has been deleted fails when no request slot is available
+  Scenario: a request is received but the "SNS" publish fails because the "sns" "topic" has been deleted fails when no "api gateway" "request" "slot" was "available"
     Given the "api gateway" "api" was "ACTIVE"
     And the "api gateway" "api" has a "SNS" integration configured
-    And the target topic was "DELETED"
-    And no request slot is available
+    And the target "sns" "topic" was "DELETED"
+    And no "api gateway" "request" "slot" was "available"
     When a request is received but the "SNS" publish fails because the "sns" "topic" has been deleted
     Then the operation is rejected

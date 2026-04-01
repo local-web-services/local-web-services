@@ -14,13 +14,13 @@ Feature: CognitoIdp - A "Cognito" "Group" Is Created In An Active "Cognito" "Use
     And the "cognito" "group" did not already exist
     When a "cognito" "group" is created in an active "cognito" "user pool"
     Then the "cognito" "group" will be "ACTIVE" and associated with the "cognito" "user pool"
-    And every user pool has a valid status ("ACTIVE" or "DELETED")
-    And every user has a valid status
-    And every non-deleted user has an enabled flag set
-    And every group membership references an existing active group
-    And every auth session has a valid status
-    And deleted users do not have active authenticated sessions
-    And disabled users do not have active authenticated sessions
+    And every "cognito" "user pool" has a valid status ("ACTIVE" or "DELETED")
+    And every "cognito" "user" has a valid status
+    And every non-deleted "cognito" "user" has an enabled flag set
+    And every "cognito" "group" membership references an existing active "cognito" "group"
+    And every "cognito" "session" has a valid status
+    And deleted "cognito" "user"s do not have active authenticated "cognito" "session"s
+    And disabled "cognito" "user"s do not have active authenticated "cognito" "session"s
 
   @guard @negative @create_group
   Scenario: a "cognito" "group" is created in an active "cognito" "user pool" fails when the "cognito" "user pool" did not exist

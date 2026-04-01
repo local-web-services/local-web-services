@@ -13,8 +13,8 @@ Feature: LambdaStepfunctions - A "Step Functions" "State Machine" Is Deleted
     And the "step functions" "state machine" was "ACTIVE"
     When a "step functions" "state machine" is deleted
     Then the "step functions" "state machine" will be deleted and Lambda StartExecution calls will fail
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "RUNNING" execution references a state machine that exists
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "RUNNING" "step functions" "execution" references a "step functions" "state machine" that exists
 
   @guard @negative @delete_state_machine
   Scenario: a "step functions" "state machine" is deleted fails when the "step functions" "state machine" did not exist
@@ -23,8 +23,8 @@ Feature: LambdaStepfunctions - A "Step Functions" "State Machine" Is Deleted
     Then the operation is rejected
 
   @guard @negative @delete_state_machine @lifecycle
-  Scenario: a "step functions" "state machine" is deleted fails when the state machine is already "DELETED"
+  Scenario: a "step functions" "state machine" is deleted fails when the "step functions" "state machine" is already "DELETED"
     Given the "step functions" "state machine" existed
-    And the state machine is already "DELETED"
+    And the "step functions" "state machine" is already "DELETED"
     When a "step functions" "state machine" is deleted
     Then the operation is rejected

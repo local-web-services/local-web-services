@@ -11,13 +11,13 @@ Feature: StepfunctionsLambda - An "Step Functions" "Execution" Of The "Step Func
   Scenario: an "step functions" "execution" of the "step functions" "state machine" is started
     Given the "step functions" "state machine" existed
     And the "step functions" "state machine" was "ACTIVE"
-    And the state machine has a Lambda task configured
+    And the "step functions" "state machine" has a "lambda" task configured
     And an "step functions" "execution" slot is available
     When an "step functions" "execution" of the "step functions" "state machine" is started
     Then the "step functions" "execution" will be "RUNNING"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation has a corresponding "RUNNING" execution
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "IN_PROGRESS" "lambda" "invocation" has a corresponding "RUNNING" "step functions" "execution"
 
   @guard @negative @start_execution
   Scenario: an "step functions" "execution" of the "step functions" "state machine" is started fails when the "step functions" "state machine" did not exist
@@ -33,18 +33,18 @@ Feature: StepfunctionsLambda - An "Step Functions" "Execution" Of The "Step Func
     Then the operation is rejected
 
   @guard @negative @start_execution
-  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started fails when the state machine has no Lambda task configured
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started fails when the "step functions" "state machine" has no "lambda" task configured
     Given the "step functions" "state machine" existed
     And the "step functions" "state machine" was "ACTIVE"
-    And the state machine has no Lambda task configured
+    And the "step functions" "state machine" has no "lambda" task configured
     When an "step functions" "execution" of the "step functions" "state machine" is started
     Then the operation is rejected
 
   @guard @negative @start_execution @capacity
-  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started fails when no execution slot is available
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started fails when no "step functions" "execution" "slot" was "available"
     Given the "step functions" "state machine" existed
     And the "step functions" "state machine" was "ACTIVE"
-    And the state machine has a Lambda task configured
-    And no execution slot is available
+    And the "step functions" "state machine" has a "lambda" task configured
+    And no "step functions" "execution" "slot" was "available"
     When an "step functions" "execution" of the "step functions" "state machine" is started
     Then the operation is rejected

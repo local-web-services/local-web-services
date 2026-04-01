@@ -12,8 +12,8 @@ Feature: LambdaDynamodb - A "Dynamodb" "Table" Is Created
     Given the "dynamodb" "table" did not already exist
     When a "dynamodb" "table" is created
     Then the "dynamodb" "table" will be "ACTIVE"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing item belongs to an "ACTIVE" table
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every existing "dynamodb" "item" belongs to an "ACTIVE" "dynamodb" "table"
 
   @guard @negative @create_table
   Scenario: a "dynamodb" "table" is created fails when the "dynamodb" "table" already existed

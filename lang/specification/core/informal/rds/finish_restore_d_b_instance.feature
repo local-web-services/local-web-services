@@ -13,9 +13,9 @@ Feature: Rds - A "Rds" "Instance" Restore From "Rds" "Snapshot" Completes
     And the "rds" "instance" was "RESTORING"
     When a "rds" "instance" restore from "rds" "snapshot" completes
     Then the "rds" "instance" will be "AVAILABLE"
-    And every database instance has a valid status
-    And every database snapshot has a valid status
-    And every backing-up instance has a corresponding in-progress snapshot
+    And every "rds" "instance" has a valid status
+    And every "rds" "snapshot" has a valid status
+    And every backing-up "rds" "instance" has a corresponding in-progress "rds" "snapshot"
 
   @guard @negative @finish_restore_d_b_instance @internal
   Scenario: a "rds" "instance" restore from "rds" "snapshot" completes fails when the "rds" "instance" did not exist

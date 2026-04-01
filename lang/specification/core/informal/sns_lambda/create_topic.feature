@@ -9,15 +9,15 @@ Feature: SnsLambda - A "Sns" "Topic" Is Created
 
   @minimal @happy @create_topic
   Scenario: a "sns" "topic" is created
-    Given the topic did not already exist
+    Given the "sns" "topic" did not already exist
     When a "sns" "topic" is created
     Then the "sns" "topic" will be "ACTIVE"
-    And every "CONFIRMED" subscription references an "ACTIVE" "SNS" topic
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation was triggered by a "CONFIRMED" subscription
+    And every "CONFIRMED" "sns" "subscription" references an "ACTIVE" "sns" "topic"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by a "CONFIRMED" "sns" "subscription"
 
   @guard @negative @create_topic
-  Scenario: a "sns" "topic" is created fails when the topic already existed
-    Given the topic already existed
+  Scenario: a "sns" "topic" is created fails when the "sns" "topic" already existed
+    Given the "sns" "topic" already existed
     When a "sns" "topic" is created
     Then the operation is rejected

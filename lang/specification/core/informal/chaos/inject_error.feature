@@ -1,5 +1,5 @@
 @chaos @generated
-Feature: Chaos - A Service Call Is Injected With A Chaos Error
+Feature: Chaos - A "Service" Call Is Injected With A "Chaos" "Error"
 
   # Generated from FizzBee spec: chaos.fizz
   # Safety invariants: ChaosConfigOnlyForKnownServices
@@ -8,22 +8,22 @@ Feature: Chaos - A Service Call Is Injected With A Chaos Error
     Given the system is initialized
 
   @minimal @happy @inject_error
-  Scenario: a service call is injected with a chaos error
+  Scenario: a "service" call is injected with a "chaos" "error"
     Given chaos was "ENABLED" for the service
-    And the error rate is set to full for the service
-    When a service call is injected with a chaos error
-    Then the service call receives a chaos error response
-    And every chaos-configured service is a known service
+    And the "chaos" "error rate" is set to full for the "service"
+    When a "service" call is injected with a "chaos" "error"
+    Then the "service" call receives a "chaos" "error" response
+    And every "chaos"-configured "service" is a known "service"
 
   @guard @negative @inject_error
-  Scenario: a service call is injected with a chaos error fails when chaos was not "ENABLED" for the service
+  Scenario: a "service" call is injected with a "chaos" "error" fails when chaos was not "ENABLED" for the service
     Given chaos was not "ENABLED" for the service
-    When a service call is injected with a chaos error
+    When a "service" call is injected with a "chaos" "error"
     Then the operation is rejected
 
   @guard @negative @inject_error
-  Scenario: a service call is injected with a chaos error fails when the error rate is not set to full for the service
+  Scenario: a "service" call is injected with a "chaos" "error" fails when the "chaos" "error rate" is not set to full for the "service"
     Given chaos was "ENABLED" for the service
-    And the error rate is not set to full for the service
-    When a service call is injected with a chaos error
+    And the "chaos" "error rate" is not set to full for the "service"
+    When a "service" call is injected with a "chaos" "error"
     Then the operation is rejected

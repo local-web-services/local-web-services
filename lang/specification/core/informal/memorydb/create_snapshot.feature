@@ -14,11 +14,11 @@ Feature: Memorydb - A "Memorydb" "Snapshot" Is Created From An Available "Memory
     And the "memorydb" "snapshot" slot is available
     When a "memorydb" "snapshot" is created from an available "memorydb" "cluster"
     Then the "memorydb" "snapshot" will be in "CREATING" state and the "memorydb" "cluster" will be "SNAPSHOTTING"
-    And every active cluster has write durability enabled
-    And every snapshotting cluster has a corresponding in-progress snapshot
-    And no "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"
-    And no user in "DELETING" state is currently a member of an "memorydb" "ACL"
-    And every active cluster and snapshot has tags
+    And every active "memorydb" "cluster" has write durability enabled
+    And every snapshotting "memorydb" "cluster" has a corresponding in-progress "memorydb" "snapshot"
+    And no "memorydb" "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"
+    And no "memorydb" "user" in "DELETING" state is currently a member of a "memorydb" "ACL"
+    And every active "memorydb" "cluster" and "snapshot" has tags
 
   @guard @negative @create_snapshot
   Scenario: a "memorydb" "snapshot" is created from an available "memorydb" "cluster" fails when the "memorydb" "cluster" did not exist

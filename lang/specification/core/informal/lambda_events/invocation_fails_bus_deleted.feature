@@ -10,11 +10,11 @@ Feature: LambdaEvents - The "Lambda" "Function" Fails To Publish Because The Eve
   @minimal @happy @invocation_fails_bus_deleted
   Scenario: the "lambda" "function" fails to publish because the event bus has been deleted
     Given a "lambda" "invocation" was "IN_PROGRESS"
-    And the bus was "DELETED"
+    And the "eventbridge" "bus" was "DELETED"
     When the "lambda" "function" fails to publish because the event bus has been deleted
-    Then the invocation will be "FAILED" with a ResourceNotFoundException
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "PUBLISHED" event references a bus that exists
+    Then the "lambda" "invocation" will be "FAILED" with a ResourceNotFoundException
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "PUBLISHED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @guard @negative @invocation_fails_bus_deleted @lifecycle
   Scenario: the "lambda" "function" fails to publish because the event bus has been deleted fails when no "lambda" "invocation" was "IN_PROGRESS"
@@ -23,8 +23,8 @@ Feature: LambdaEvents - The "Lambda" "Function" Fails To Publish Because The Eve
     Then the operation is rejected
 
   @guard @negative @invocation_fails_bus_deleted @lifecycle
-  Scenario: the "lambda" "function" fails to publish because the event bus has been deleted fails when the bus was not "DELETED"
+  Scenario: the "lambda" "function" fails to publish because the event bus has been deleted fails when the "eventbridge" "bus" was not "DELETED"
     Given a "lambda" "invocation" was "IN_PROGRESS"
-    And the bus was not "DELETED"
+    And the "eventbridge" "bus" was not "DELETED"
     When the "lambda" "function" fails to publish because the event bus has been deleted
     Then the operation is rejected

@@ -12,8 +12,8 @@ Feature: StepfunctionsDocdb - The "Documentdb" "Cluster" Is Started
     Given the "documentdb" "cluster" was "STOPPED"
     When the "documentdb" "cluster" is started
     Then the "documentdb" "cluster" will be "AVAILABLE" and ready to accept connections
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which cluster it connected to
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "documentdb" "cluster" it connected to
 
   @guard @negative @start_cluster @lifecycle
   Scenario: the "documentdb" "cluster" is started fails when the "documentdb" "cluster" was not "STOPPED"

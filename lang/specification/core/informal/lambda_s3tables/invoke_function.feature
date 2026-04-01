@@ -11,11 +11,11 @@ Feature: LambdaS3tables - The "Lambda" "Function" Is Invoked
   Scenario: the "lambda" "function" is invoked
     Given the "lambda" "function" existed
     And the "lambda" "function" was "ACTIVE"
-    And a "lambda" "invocation" slot is available
+    And a "lambda" "invocation" "slot" was "available"
     When the "lambda" "function" is invoked
-    Then the invocation will be "IN_PROGRESS"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a table that exists
+    Then the "lambda" "invocation" will be "IN_PROGRESS"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every existing "s3 tables" "record" references a "s3 tables" "table" that exists
 
   @guard @negative @invoke_function
   Scenario: the "lambda" "function" is invoked fails when the "lambda" "function" did not exist
@@ -31,9 +31,9 @@ Feature: LambdaS3tables - The "Lambda" "Function" Is Invoked
     Then the operation is rejected
 
   @guard @negative @invoke_function @capacity
-  Scenario: the "lambda" "function" is invoked fails when no invocation slot is available
+  Scenario: the "lambda" "function" is invoked fails when no "lambda" "invocation" "slot" was "available"
     Given the "lambda" "function" existed
     And the "lambda" "function" was "ACTIVE"
-    And no invocation slot is available
+    And no "lambda" "invocation" "slot" was "available"
     When the "lambda" "function" is invoked
     Then the operation is rejected

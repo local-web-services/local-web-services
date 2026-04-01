@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: lambda - Reserved Concurrency Is Set For A "Lambda" "Function"
+Feature: Lambda - Reserved Concurrency Is Set For A "Lambda" "Function"
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions
@@ -13,13 +13,13 @@ Feature: lambda - Reserved Concurrency Is Set For A "Lambda" "Function"
     And the "lambda" "function" was "ACTIVE"
     When reserved concurrency is set for a "lambda" "function"
     Then the "lambda" "function" has an unreserved, throttled, or explicit concurrency limit
-    And every active event source mapping references an existing non-deleted function
-    And no function in "DELETING" state has active executions
-    And active execution count never exceeds reserved concurrency when set
-    And async retry count never exceeds two
-    And every event source mapping has a valid status
-    And every function has a valid status
-    And all async slots reference known function IDs or are empty
+    And every active "lambda" "event source mapping" references an existing non-deleted "lambda" "function"
+    And no "lambda" "function" in "DELETING" state has active executions
+    And "lambda" "function" active execution count never exceeds reserved concurrency when set
+    And "lambda" "function" async retry count never exceeds two
+    And every "lambda" "event source mapping" has a valid status
+    And every "lambda" "function" has a valid status
+    And all "lambda" "async" "slot"s reference known "lambda" "function" IDs or are empty
 
   @guard @negative @set_reserved_concurrency
   Scenario: reserved concurrency is set for a "lambda" "function" fails when the "lambda" "function" did not exist

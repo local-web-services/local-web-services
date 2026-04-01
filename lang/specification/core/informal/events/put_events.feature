@@ -1,5 +1,5 @@
 @events @generated
-Feature: events - Events Are Published To An "Eventbridge" "Bus"
+Feature: Events - Events Are Published To An "Eventbridge" "Bus"
 
   # Generated from FizzBee spec: events.fizz
   # Safety invariants: EventBusStatusValid, RuleStatusValid, RulePatternTypeValid, RuleBusExists, DefaultBusCannotBeDeleted, DeleteRuleRequiresNoTargets, RuleOnlyEnabledOnActiveBus, DeadLetterQueueBounded
@@ -15,17 +15,17 @@ Feature: events - Events Are Published To An "Eventbridge" "Bus"
     And the "eventbridge" "rule"'s event eventbridge bus matches
     And the "eventbridge" "rule" was "ENABLED"
     And a target is associated with the "eventbridge" "rule"
-    And the target association was "ACTIVE"
+    And the "eventbridge" "rule" target association was "ACTIVE"
     When events are published to an "eventbridge" "bus"
-    Then matching enabled rules route the event to their targets
-    And every event bus has a valid status ("ACTIVE" or "DELETED")
-    And every rule has a valid status ("ENABLED", "DISABLED", or "DELETED")
-    And every rule has a valid pattern type ("EVENT_PATTERN" or "SCHEDULE")
-    And every rule references an event bus that exists
-    And the default event bus cannot be deleted
-    And a rule can only be deleted when it has no targets
-    And no enabled rule references a deleted event bus
-    And the dead-letter queue never exceeds its bounded capacity
+    Then matching enabled "eventbridge" "rule"s will route the event to their targets
+    And every "eventbridge" "bus" has a valid status ("ACTIVE" or "DELETED")
+    And every "eventbridge" "rule" has a valid status ("ENABLED", "DISABLED", or "DELETED")
+    And every "eventbridge" "rule" has a valid pattern type ("EVENT_PATTERN" or "SCHEDULE")
+    And every "eventbridge" "rule" references an "eventbridge" "bus" that exists
+    And the default "eventbridge" "bus" cannot be deleted
+    And an "eventbridge" "rule" can only be deleted when it has no targets
+    And no enabled "eventbridge" "rule" references a deleted "eventbridge" "bus"
+    And the "eventbridge" "dead-letter queue" never exceeds its bounded capacity
 
   @guard @negative @put_events
   Scenario: events are published to an "eventbridge" "bus" fails when the "eventbridge" "bus" did not exist
@@ -79,13 +79,13 @@ Feature: events - Events Are Published To An "Eventbridge" "Bus"
     Then the operation is rejected
 
   @guard @negative @put_events
-  Scenario: events are published to an "eventbridge" "bus" fails when the target association was not "ACTIVE"
+  Scenario: events are published to an "eventbridge" "bus" fails when the "eventbridge" "rule" target association was not "ACTIVE"
     Given the "eventbridge" "bus" existed
     And the "eventbridge" "bus" was "ACTIVE"
     And an "eventbridge" "rule" is associated with the "eventbridge" "bus"
     And the "eventbridge" "rule"'s event eventbridge bus matches
     And the "eventbridge" "rule" was "ENABLED"
     And a target is associated with the "eventbridge" "rule"
-    And the target association was not "ACTIVE"
+    And the "eventbridge" "rule" target association was not "ACTIVE"
     When events are published to an "eventbridge" "bus"
     Then the operation is rejected

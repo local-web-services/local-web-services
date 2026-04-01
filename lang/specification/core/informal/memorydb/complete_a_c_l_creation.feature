@@ -13,11 +13,11 @@ Feature: Memorydb - An "Memorydb" "Acl" Finishes Creating
     And the "memorydb" "ACL" was "CREATING"
     When an "memorydb" "ACL" finishes creating
     Then the "memorydb" "ACL" will be "ACTIVE"
-    And every active cluster has write durability enabled
-    And every snapshotting cluster has a corresponding in-progress snapshot
-    And no "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"
-    And no user in "DELETING" state is currently a member of an "memorydb" "ACL"
-    And every active cluster and snapshot has tags
+    And every active "memorydb" "cluster" has write durability enabled
+    And every snapshotting "memorydb" "cluster" has a corresponding in-progress "memorydb" "snapshot"
+    And no "memorydb" "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"
+    And no "memorydb" "user" in "DELETING" state is currently a member of a "memorydb" "ACL"
+    And every active "memorydb" "cluster" and "snapshot" has tags
 
   @guard @negative @complete_a_c_l_creation @internal
   Scenario: an "memorydb" "ACL" finishes creating fails when the "memorydb" "ACL" did not exist

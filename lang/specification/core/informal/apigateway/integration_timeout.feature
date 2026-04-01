@@ -1,5 +1,5 @@
 @apigateway @generated
-Feature: Apigateway - A Backend Integration Is Called
+Feature: Apigateway - A "Api Gateway" "Backend Integration" Is Called
 
   # Generated from FizzBee spec: apigateway.fizz
   # Safety invariants: ResourcesBelongToExistingApis, MethodsBelongToExistingResources, IntegrationsBelongToExistingMethods, DeploymentsBelongToExistingApis, StagesReferenceExistingDeployments, StagesBelongToExistingApis, RootResourcePreserved
@@ -8,28 +8,28 @@ Feature: Apigateway - A Backend Integration Is Called
     Given the system is initialized
 
   @minimal @happy @integration_timeout @internal
-  Scenario: a backend integration is called
+  Scenario: a "api gateway" "backend integration" is called
     Given the "api gateway" "integration" existed
     And the "api gateway" "integration" existed
-    When a backend integration is called
+    When a "api gateway" "backend integration" is called
     Then the "api gateway" "integration" times out or responds non-deterministically
-    And all "ACTIVE" resources belong to "ACTIVE" APIs
-    And all "EXISTING" methods belong to "ACTIVE" resources
-    And all "EXISTING" integrations correspond to "EXISTING" methods
-    And all "ACTIVE" deployments belong to "ACTIVE" APIs
-    And all active stages reference "ACTIVE" deployments
-    And all active stages belong to "ACTIVE" APIs
-    And each "ACTIVE" "API" has at least one "ACTIVE" root resource
+    And all "ACTIVE" "api gateway" "resource"s belong to "ACTIVE" "api gateway" "API"s
+    And all "api gateway" "method"s belong to "ACTIVE" "api gateway" "resource"s
+    And all "api gateway" "integration"s correspond to existing "api gateway" "method"s
+    And all "ACTIVE" "api gateway" "deployment"s belong to "ACTIVE" "api gateway" "API"s
+    And all active "api gateway" "stage"s reference "ACTIVE" "api gateway" "deployment"s
+    And all active "api gateway" "stage"s belong to "ACTIVE" "api gateway" "API"s
+    And each "ACTIVE" "api gateway" "API" has at least one "ACTIVE" root "api gateway" "resource"
 
   @guard @negative @integration_timeout @internal
-  Scenario: a backend integration is called fails when the "api gateway" "integration" did not exist
+  Scenario: a "api gateway" "backend integration" is called fails when the "api gateway" "integration" did not exist
     Given the "api gateway" "integration" did not exist
-    When a backend integration is called
+    When a "api gateway" "backend integration" is called
     Then the operation is rejected
 
   @guard @negative @integration_timeout @internal
-  Scenario: a backend integration is called fails when the "api gateway" "integration" did not exist
+  Scenario: a "api gateway" "backend integration" is called fails when the "api gateway" "integration" did not exist
     Given the "api gateway" "integration" existed
     And the "api gateway" "integration" did not exist
-    When a backend integration is called
+    When a "api gateway" "backend integration" is called
     Then the operation is rejected

@@ -12,15 +12,15 @@ Feature: Neptune - A "Neptune" "Instance" Is Deleted
     Given the "neptune" "instance" existed
     And the "neptune" "instance" was "AVAILABLE"
     When a "neptune" "instance" is deleted
-    Then the "neptune" "INSTANCE" will be in "DELETING" state
-    And every cluster has a valid status
-    And every instance has a valid status
-    And every snapshot has a valid status
-    And a stopped cluster has no available instances
-    And instances on a stopped or stopping cluster are not in "MODIFYING" state
-    And a deleted cluster has no available instances
-    And every backing-up cluster has a corresponding in-progress snapshot
-    And a failed cluster has no available instances
+    Then the "neptune" "instance" will be in "DELETING" state
+    And every "neptune" "cluster" has a valid status
+    And every "neptune" "instance" has a valid status
+    And every "neptune" "snapshot" has a valid status
+    And a stopped "neptune" "cluster" has no available "neptune" "instance"s
+    And "neptune" "instance"s on a stopped or stopping "neptune" "cluster" are not in "MODIFYING" state
+    And a deleted "neptune" "cluster" has no available "neptune" "instance"s
+    And every backing-up "neptune" "cluster" has a corresponding in-progress "neptune" "snapshot"
+    And a failed "neptune" "cluster" has no available "neptune" "instance"s
 
   @guard @negative @delete_d_b_instance
   Scenario: a "neptune" "instance" is deleted fails when the "neptune" "instance" did not exist

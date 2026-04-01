@@ -14,10 +14,10 @@ Feature: Opensearch - The New "Opensearch" "Cluster" For A Blue-Green Deployment
     And the new "opensearch" "cluster" has not been prepared yet
     When the new "opensearch" "cluster" for a blue-green deployment becomes ready
     Then the "opensearch" "domain" will have a new cluster prepared but traffic will not yet be swapped
-    And no active connection references a deleted domain
+    And no active "opensearch" "connection" references a deleted "opensearch" "domain"
     And traffic can only be swapped after the new "opensearch" "cluster" was ready
-    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" inbound connection
-    And a pending config change only exists on a "opensearch" "domain" that is "PROCESSING"
+    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" "opensearch" "inbound connection"
+    And a pending config change only exists on an "opensearch" "domain" that is "PROCESSING"
 
   @guard @negative @blue_green_new_cluster_ready @internal
   Scenario: the new "opensearch" "cluster" for a blue-green deployment becomes ready fails when the "opensearch" "domain" did not exist

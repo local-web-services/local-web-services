@@ -16,9 +16,9 @@ Feature: ApigatewayLambda - A Lambda Integration Is Configured On The "Api Gatew
     And the "lambda" "function" was "ACTIVE"
     When a Lambda integration is configured on the "api gateway" "api"
     Then the "api gateway" "API" will synchronously invoke the function when a request arrives
-    And every "IN_PROGRESS" request references an "ACTIVE" "API"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation has a corresponding "IN_PROGRESS" request
+    And every "IN_PROGRESS" "api gateway" "request" references an "ACTIVE" "api gateway" "API"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "IN_PROGRESS" "lambda" "invocation" has a corresponding "IN_PROGRESS" "api gateway" "request"
 
   @guard @negative @configure_integration
   Scenario: a Lambda integration is configured on the "api gateway" "api" fails when the "api gateway" "API" did not exist

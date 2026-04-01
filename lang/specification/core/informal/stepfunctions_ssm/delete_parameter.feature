@@ -13,8 +13,8 @@ Feature: StepfunctionsSsm - A "Ssm" "Parameter" Is Deleted
     And the "ssm" "parameter" existed
     When a "ssm" "parameter" is deleted
     Then the "ssm" "parameter" will be deleted and will cause task failures when read
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which parameter it read
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "ssm" "parameter" it read
 
   @guard @negative @delete_parameter
   Scenario: a "ssm" "parameter" is deleted fails when the "ssm" "parameter" did not exist
@@ -23,8 +23,8 @@ Feature: StepfunctionsSsm - A "Ssm" "Parameter" Is Deleted
     Then the operation is rejected
 
   @guard @negative @delete_parameter @lifecycle
-  Scenario: a "ssm" "parameter" is deleted fails when the parameter is already "DELETED"
+  Scenario: a "ssm" "parameter" is deleted fails when the "ssm" "parameter" is already "DELETED"
     Given the "ssm" "parameter" existed
-    And the parameter is already "DELETED"
+    And the "ssm" "parameter" is already "DELETED"
     When a "ssm" "parameter" is deleted
     Then the operation is rejected

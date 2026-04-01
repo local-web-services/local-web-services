@@ -13,8 +13,8 @@ Feature: StepfunctionsRds - A Running "Step Functions" "Execution" Fails To Quer
     And the "rds" "DB instance" was "FAILING_OVER"
     When a running "step functions" "execution" fails to query the "DB" because it is failing over
     Then the "step functions" "execution" will be "FAILED" with a connection error
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which "DB" instance it queried
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "rds" "DB instance" it queried
 
   @guard @negative @query_d_b_task_fails @internal
   Scenario: a running "step functions" "execution" fails to query the "DB" because it is failing over fails when no "step functions" "execution" was "RUNNING"

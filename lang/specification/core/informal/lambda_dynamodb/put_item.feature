@@ -12,11 +12,11 @@ Feature: LambdaDynamodb - The "Lambda" "Function" Writes An Item To The "Dynamod
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "dynamodb" "table" existed
     And the "dynamodb" "table" was "ACTIVE"
-    And an item slot is available
+    And a "dynamodb" "item" "slot" was "available"
     When the "lambda" "function" writes an item to the "dynamodb" "table" during invocation
-    Then the item will exist in the "dynamodb" "table"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing item belongs to an "ACTIVE" table
+    Then the "dynamodb" "item" will exist in the "dynamodb" "table"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every existing "dynamodb" "item" belongs to an "ACTIVE" "dynamodb" "table"
 
   @guard @negative @put_item @lifecycle
   Scenario: the "lambda" "function" writes an item to the "dynamodb" "table" during invocation fails when no "lambda" "invocation" was "IN_PROGRESS"
@@ -40,10 +40,10 @@ Feature: LambdaDynamodb - The "Lambda" "Function" Writes An Item To The "Dynamod
     Then the operation is rejected
 
   @guard @negative @put_item @capacity
-  Scenario: the "lambda" "function" writes an item to the "dynamodb" "table" during invocation fails when no item slot is available
+  Scenario: the "lambda" "function" writes an item to the "dynamodb" "table" during invocation fails when no "dynamodb" "item" "slot" was "available"
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "dynamodb" "table" existed
     And the "dynamodb" "table" was "ACTIVE"
-    And no item slot is available
+    And no "dynamodb" "item" "slot" was "available"
     When the "lambda" "function" writes an item to the "dynamodb" "table" during invocation
     Then the operation is rejected

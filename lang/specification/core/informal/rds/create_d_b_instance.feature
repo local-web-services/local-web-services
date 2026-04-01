@@ -12,9 +12,9 @@ Feature: Rds - A "Rds" "Instance" Is Created
     Given the "rds" "instance" did not already exist
     When a "rds" "instance" is created
     Then the "rds" "instance" will be in "CREATING" state
-    And every database instance has a valid status
-    And every database snapshot has a valid status
-    And every backing-up instance has a corresponding in-progress snapshot
+    And every "rds" "instance" has a valid status
+    And every "rds" "snapshot" has a valid status
+    And every backing-up "rds" "instance" has a corresponding in-progress "rds" "snapshot"
 
   @guard @negative @create_d_b_instance
   Scenario: a "rds" "instance" is created fails when the "rds" "instance" already existed

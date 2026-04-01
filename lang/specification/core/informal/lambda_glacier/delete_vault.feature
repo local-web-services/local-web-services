@@ -13,7 +13,7 @@ Feature: LambdaGlacier - A "Glacier" "Vault" Is Deleted
     And the "glacier" "vault" existed (not already "DELETED")
     When a "glacier" "vault" is deleted
     Then the "glacier" "vault" will be deleted and archive uploads will fail
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @guard @negative @delete_vault

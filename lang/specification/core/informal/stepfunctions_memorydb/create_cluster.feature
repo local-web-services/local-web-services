@@ -12,8 +12,8 @@ Feature: StepfunctionsMemorydb - A "Memorydb" "Cluster" Is Created
     Given the "memorydb" "cluster" did not already exist
     When a "memorydb" "cluster" is created
     Then the "memorydb" "cluster" will be "AVAILABLE"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which cluster it connected to
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "memorydb" "cluster" it connected to
 
   @guard @negative @create_cluster
   Scenario: a "memorydb" "cluster" is created fails when the "memorydb" "cluster" already existed

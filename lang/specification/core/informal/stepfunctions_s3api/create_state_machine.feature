@@ -12,8 +12,8 @@ Feature: StepfunctionsS3api - A "Step Functions" "State Machine" Is Created
     Given the "step functions" "state machine" did not already exist
     When a "step functions" "state machine" is created
     Then the "step functions" "state machine" will be "ACTIVE" with no S3 task configured
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every existing object belongs to an "ACTIVE" bucket
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every existing "s3" "object" belongs to an "ACTIVE" "s3" "bucket"
 
   @guard @negative @create_state_machine
   Scenario: a "step functions" "state machine" is created fails when the "step functions" "state machine" already existed

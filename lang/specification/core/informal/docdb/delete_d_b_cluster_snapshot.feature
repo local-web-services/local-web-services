@@ -12,14 +12,14 @@ Feature: Docdb - A "Documentdb" "Cluster" Documentdb Snapshot Is Deleted
     Given the "documentdb" "snapshot" existed
     And the "documentdb" "snapshot" was "AVAILABLE"
     When a "documentdb" "cluster" documentdb snapshot is deleted
-    Then the "documentdb" "SNAPSHOT" will be in "DELETING" state
-    And every cluster has a valid status
-    And every instance has a valid status
-    And every snapshot has a valid status
-    And a deleted cluster has no non-deleted instances
-    And a failed cluster has no available instances
-    And a deleting cluster receives no new instances
-    And every creating snapshot references a cluster that has not been deleted
+    Then the "documentdb" "snapshot" will be in "DELETING" state
+    And every "documentdb" "cluster" has a valid status
+    And every "documentdb" "instance" has a valid status
+    And every "documentdb" "snapshot" has a valid status
+    And a deleted "documentdb" "cluster" has no non-deleted "documentdb" "instance"s
+    And a failed "documentdb" "cluster" has no available "documentdb" "instance"s
+    And a deleting "documentdb" "cluster" receives no new "documentdb" "instance"s
+    And every creating "documentdb" "snapshot" references a "documentdb" "cluster" that has not been deleted
 
   @guard @negative @delete_d_b_cluster_snapshot
   Scenario: a "documentdb" "cluster" documentdb snapshot is deleted fails when the "documentdb" "snapshot" did not exist

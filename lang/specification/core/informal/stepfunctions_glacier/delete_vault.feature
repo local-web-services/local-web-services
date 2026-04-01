@@ -13,8 +13,8 @@ Feature: StepfunctionsGlacier - A "Glacier" "Vault" Is Deleted
     And the "glacier" "vault" existed (not already "DELETED")
     When a "glacier" "vault" is deleted
     Then the "glacier" "vault" will be deleted and "SDK" task calls targeting it will fail
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which vault it called
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "glacier" "vault" it called
 
   @guard @negative @delete_vault
   Scenario: a "glacier" "vault" is deleted fails when the "glacier" "vault" did not exist

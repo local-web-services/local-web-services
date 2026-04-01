@@ -13,13 +13,13 @@ Feature: Sns - A "Sns" "Message" Is Published To A "Sns" "Topic"
     And the "sns" "topic" was "ACTIVE"
     And a confirmed subscription existed for the "sns" "topic"
     And the "sns" "subscription" belongs to this "sns" "topic"
-    And a delivery slot is available
+    And an "sns" "delivery" "slot" was "available"
     When a "sns" "message" is published to a "sns" "topic"
     Then the "sns" "message" will be delivered to confirmed subscriptions
-    And no delivery is in-flight to a deleted subscription
-    And no delivery is in-flight to an unconfirmed subscription
-    And every active subscription references an "ACTIVE" topic
-    And every delivery retry count is within the allowed limit
+    And no "sns" "delivery" is "IN_FLIGHT" to a deleted "sns" "subscription"
+    And no "sns" "delivery" is "IN_FLIGHT" to an unconfirmed "sns" "subscription"
+    And every active "sns" "subscription" references an "ACTIVE" "sns" "topic"
+    And every "sns" "delivery" retry count is within the allowed limit
 
   @guard @negative @publish
   Scenario: a "sns" "message" is published to a "sns" "topic" fails when the "sns" "topic" did not exist
@@ -52,11 +52,11 @@ Feature: Sns - A "Sns" "Message" Is Published To A "Sns" "Topic"
     Then the operation is rejected
 
   @guard @negative @publish @capacity
-  Scenario: a "sns" "message" is published to a "sns" "topic" fails when no delivery slot is available
+  Scenario: a "sns" "message" is published to a "sns" "topic" fails when no "sns" "delivery" "slot" was "available"
     Given the "sns" "topic" existed
     And the "sns" "topic" was "ACTIVE"
     And a confirmed subscription existed for the "sns" "topic"
     And the "sns" "subscription" belongs to this "sns" "topic"
-    And no delivery slot is available
+    And no "sns" "delivery" "slot" was "available"
     When a "sns" "message" is published to a "sns" "topic"
     Then the operation is rejected

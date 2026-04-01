@@ -282,7 +282,7 @@ atomic action LifecycleExpireObject:
                         if object_status[obj_key] == "EXISTS":
                             object_status[obj_key] = "DELETED"
 
-# check: every bucket has a valid status (ACTIVE or DELETED)
+# check: every "s3" "bucket" has a valid status ("ACTIVE" or "DELETED")
 always assertion BucketStatusValid:
     for bname in BUCKET_NAMES:
         if bname in bucket_status:
@@ -290,7 +290,7 @@ always assertion BucketStatusValid:
                 return False
     return True
 
-# check: every bucket versioning state is valid (DISABLED, ENABLED, or SUSPENDED)
+# check: every "s3" "bucket" versioning state is valid ("DISABLED", "ENABLED", or "SUSPENDED")
 always assertion VersioningStateValid:
     for bname in BUCKET_NAMES:
         if bname in bucket_versioning:
@@ -298,7 +298,7 @@ always assertion VersioningStateValid:
                 return False
     return True
 
-# check: every multipart upload has a valid status (IN_PROGRESS, COMPLETED, or ABORTED)
+# check: every "s3" "multipart upload" has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
 always assertion MultipartUploadStatusValid:
     for bname in BUCKET_NAMES:
         for uid in UPLOAD_IDS:
@@ -308,7 +308,7 @@ always assertion MultipartUploadStatusValid:
                     return False
     return True
 
-# check: deleting a bucket requires it to be empty
+# check: deleting an "s3" "bucket" requires it to be empty
 always assertion DeleteBucketRequiresEmpty:
     for bname in BUCKET_NAMES:
         if bname in bucket_status:

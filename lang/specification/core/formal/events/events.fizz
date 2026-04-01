@@ -58,8 +58,8 @@ atomic action DescribeEventBus:
             if bus_status[name] == "ACTIVE":
                 pass
 
-# step: all event buses are listed
-# result: the list of event buses will be returned
+# step: all "eventbridge" "bus"es are listed
+# result: the list of "eventbridge" "bus"es will be returned
 atomic action ListEventBuses:
     pass
 
@@ -115,7 +115,7 @@ atomic action DescribeRule:
                 pass
 
 # step: all rules on an "eventbridge" "bus" are listed
-# result: the list of rules will be returned
+# result: the list of "eventbridge" "rule"s will be returned
 # guard: the "eventbridge" "bus" existed
 # guard_violation: the "eventbridge" "bus" did not exist
 # guard: the "eventbridge" "bus" was "ACTIVE"
@@ -171,8 +171,8 @@ atomic action PutTargets:
 # guard_violation: the "eventbridge" "rule" was "DELETED"
 # guard: the target is associated with the "eventbridge" "rule"
 # guard_violation: the target is not associated with the "eventbridge" "rule"
-# guard: the target association was "ACTIVE"
-# guard_violation: the target association was not "ACTIVE"
+# guard: the "eventbridge" "rule" target association was "ACTIVE"
+# guard_violation: the "eventbridge" "rule" target association was not "ACTIVE"
 atomic action RemoveTargets:
     oneof rule_name in RULE_NAMES:
         if rule_name in rule_status:
@@ -183,7 +183,7 @@ atomic action RemoveTargets:
                             rule_target[rule_name + "#" + target_id] = False
 
 # step: targets for an "eventbridge" "rule" are listed
-# result: the list of targets will be returned
+# result: the list of "eventbridge" "rule" targets will be returned
 # guard: the "eventbridge" "rule" existed
 # guard_violation: the "eventbridge" "rule" did not exist
 # guard: the "eventbridge" "rule" was not "DELETED"
@@ -195,7 +195,7 @@ atomic action ListTargetsByRule:
                 pass
 
 # step: events are published to an "eventbridge" "bus"
-# result: matching enabled rules route the event to their targets
+# result: matching enabled "eventbridge" "rule"s will route the event to their targets
 # guard: the "eventbridge" "bus" existed
 # guard_violation: the "eventbridge" "bus" did not exist
 # guard: the "eventbridge" "bus" was "ACTIVE"
@@ -208,8 +208,8 @@ atomic action ListTargetsByRule:
 # guard_violation: the "eventbridge" "rule" was not "ENABLED"
 # guard: a target is associated with the "eventbridge" "rule"
 # guard_violation: no target is associated with the "eventbridge" "rule"
-# guard: the target association was "ACTIVE"
-# guard_violation: the target association was not "ACTIVE"
+# guard: the "eventbridge" "rule" target association was "ACTIVE"
+# guard_violation: the "eventbridge" "rule" target association was not "ACTIVE"
 atomic action PutEvents:
     oneof bus_name in BUS_NAMES:
         if bus_name in bus_status:
@@ -227,7 +227,7 @@ atomic action PutEvents:
                                                     dlq.append(rule_name + "#" + target_id)
 
 # fake_skip: internal
-# step: a dead-letter eventbridge queue entry is retried or discarded
+# step: a dead-letter "eventbridge" "dead-letter queue" entry is retried or discarded
 # result: the entry will be removed from the "eventbridge" "dead-letter queue"
 # guard: the "eventbridge" "dead-letter queue" was not empty
 # guard_violation: the "eventbridge" "dead-letter queue" was empty
@@ -238,7 +238,7 @@ atomic action RetryDeadLetter:
                 dlq.remove(entry)
                 pass
 
-# check: every event bus has a valid status (ACTIVE or DELETED)
+# check: every "eventbridge" "bus" has a valid status (ACTIVE or DELETED)
 always assertion EventBusStatusValid:
     for name in BUS_NAMES:
         if name in bus_status:
@@ -246,7 +246,7 @@ always assertion EventBusStatusValid:
                 return False
     return True
 
-# check: every rule has a valid status (ENABLED, DISABLED, or DELETED)
+# check: every "eventbridge" "rule" has a valid status (ENABLED, DISABLED, or DELETED)
 always assertion RuleStatusValid:
     for rule_name in RULE_NAMES:
         if rule_name in rule_status:
@@ -254,7 +254,7 @@ always assertion RuleStatusValid:
                 return False
     return True
 
-# check: every rule has a valid pattern type (EVENT_PATTERN or SCHEDULE)
+# check: every "eventbridge" "rule" has a valid pattern type (EVENT_PATTERN or SCHEDULE)
 always assertion RulePatternTypeValid:
     for rule_name in RULE_NAMES:
         if rule_name in rule_pattern_type:
@@ -262,7 +262,7 @@ always assertion RulePatternTypeValid:
                 return False
     return True
 
-# check: every rule references an event bus that exists
+# check: every "eventbridge" "rule" references an "eventbridge" "bus" that exists
 always assertion RuleBusExists:
     for rule_name in RULE_NAMES:
         if rule_name in rule_bus:
@@ -271,14 +271,14 @@ always assertion RuleBusExists:
                 return False
     return True
 
-# check: the default event bus cannot be deleted
+# check: the default "eventbridge" "bus" cannot be deleted
 always assertion DefaultBusCannotBeDeleted:
     if "default" in bus_status:
         if bus_status["default"] == "DELETED":
             return False
     return True
 
-# check: a rule can only be deleted when it has no targets
+# check: an "eventbridge" "rule" can only be deleted when it has no targets
 always assertion DeleteRuleRequiresNoTargets:
     for rule_name in RULE_NAMES:
         if rule_name in rule_status:
@@ -290,7 +290,7 @@ always assertion DeleteRuleRequiresNoTargets:
                             return False
     return True
 
-# check: no enabled rule references a deleted event bus
+# check: no enabled "eventbridge" "rule" references a deleted "eventbridge" "bus"
 always assertion RuleOnlyEnabledOnActiveBus:
     for rule_name in RULE_NAMES:
         if rule_name in rule_status:
@@ -302,7 +302,7 @@ always assertion RuleOnlyEnabledOnActiveBus:
                             return False
     return True
 
-# check: the dead-letter queue never exceeds its bounded capacity
+# check: the "eventbridge" "dead-letter queue" never exceeds its bounded capacity
 always assertion DeadLetterQueueBounded:
     if len(dlq) > 2:
         return False

@@ -14,9 +14,9 @@ Feature: Rds - A "Rds" "Instance" Is Restored From A "Rds" "Snapshot"
     And the target "rds" "instance" slot is available
     When a "rds" "instance" is restored from a "rds" "snapshot"
     Then the restored "rds" "instance" will be in "RESTORING" state
-    And every database instance has a valid status
-    And every database snapshot has a valid status
-    And every backing-up instance has a corresponding in-progress snapshot
+    And every "rds" "instance" has a valid status
+    And every "rds" "snapshot" has a valid status
+    And every backing-up "rds" "instance" has a corresponding in-progress "rds" "snapshot"
 
   @guard @negative @restore_d_b_instance_from_d_b_snapshot
   Scenario: a "rds" "instance" is restored from a "rds" "snapshot" fails when the "rds" "snapshot" did not exist

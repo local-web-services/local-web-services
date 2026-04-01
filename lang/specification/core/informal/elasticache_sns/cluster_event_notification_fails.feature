@@ -14,7 +14,7 @@ Feature: ElasticacheSns - A Cluster Event Occurs But The Sns Notification Fails 
     And the "sns" "topic" was "DELETED"
     When a cluster event occurs but the "SNS" notification fails because the "sns" "topic" has been deleted
     Then the "elasticache" "cluster" will be "MODIFYING" but no notification will be published
-    And every "PUBLISHED" notification references a cluster that exists
+    And every "PUBLISHED" "sns" "notification" references a "elasticache" "cluster" that exists
     And every "PUBLISHED" notification references a "sns" "topic" that exists
 
   @guard @negative @cluster_event_notification_fails @internal

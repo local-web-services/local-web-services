@@ -15,9 +15,9 @@ Feature: Rds - A "Rds" "Snapshot" Finishes Creating
     And the "rds" "instance" was "BACKING_UP"
     When a "rds" "snapshot" finishes creating
     Then the "rds" "snapshot" will be "AVAILABLE" and the "rds" "instance" returns to "AVAILABLE" state
-    And every database instance has a valid status
-    And every database snapshot has a valid status
-    And every backing-up instance has a corresponding in-progress snapshot
+    And every "rds" "instance" has a valid status
+    And every "rds" "snapshot" has a valid status
+    And every backing-up "rds" "instance" has a corresponding in-progress "rds" "snapshot"
 
   @guard @negative @finish_create_d_b_snapshot @internal
   Scenario: a "rds" "snapshot" finishes creating fails when the "rds" "snapshot" did not exist

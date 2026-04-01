@@ -13,8 +13,8 @@ Feature: StepfunctionsSsm - A Running "Step Functions" "Execution" Fails To Read
     And the "ssm" "parameter" was "DELETED"
     When a running "step functions" "execution" fails to read the parameter because it has been deleted
     Then the "step functions" "execution" will be "FAILED" with a ParameterNotFound error
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which parameter it read
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "ssm" "parameter" it read
 
   @guard @negative @read_parameter_task_fails @internal
   Scenario: a running "step functions" "execution" fails to read the parameter because it has been deleted fails when no "step functions" "execution" was "RUNNING"

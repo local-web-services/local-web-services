@@ -12,8 +12,8 @@ Feature: RdsLambda - A "Lambda" "Function" Is Deployed
     Given the "lambda" "function" did not already exist
     When a "lambda" "function" is deployed
     Then the "lambda" "function" will be "ACTIVE"
-    And every successful invocation references a "DB" instance that exists
-    And every successful invocation recorded which function it invoked
+    And every successful "lambda" "invocation" references an "rds" "DB instance" that exists
+    And every successful "rds" "invocation" recorded which "lambda" "function" it invoked
 
   @guard @negative @deploy_function
   Scenario: a "lambda" "function" is deployed fails when the "lambda" "function" already existed

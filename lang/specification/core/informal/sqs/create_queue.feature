@@ -12,9 +12,9 @@ Feature: Sqs - A "Sqs" "Queue" Is Created
     Given the "sqs" "queue" did not already exist
     When a "sqs" "queue" is created
     Then the "sqs" "queue" will be "ACTIVE"
-    And every non-deleted message belongs to an "ACTIVE" queue
-    And every in-flight message belongs to an "ACTIVE" queue
-    And every message has a non-negative receive count
+    And every non-deleted "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
+    And every "IN_FLIGHT" "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
+    And every "sqs" "message" has a non-negative receive count
 
   @guard @negative @create_queue
   Scenario: a "sqs" "queue" is created fails when the "sqs" "queue" already existed

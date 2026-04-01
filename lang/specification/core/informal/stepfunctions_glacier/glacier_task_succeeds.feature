@@ -13,8 +13,8 @@ Feature: StepfunctionsGlacier - A Running "Step Functions" "Execution" Calls A "
     And the "glacier" "vault" existed
     When a running "step functions" "execution" calls a "glacier" "vault" that "EXISTS" and the task succeeds
     Then the "step functions" "execution" will be "SUCCEEDED"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which vault it called
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "glacier" "vault" it called
 
   @guard @negative @glacier_task_succeeds @internal
   Scenario: a running "step functions" "execution" calls a "glacier" "vault" that "EXISTS" and the task succeeds fails when no "step functions" "execution" was "RUNNING"

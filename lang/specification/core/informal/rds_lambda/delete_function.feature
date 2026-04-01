@@ -13,8 +13,8 @@ Feature: RdsLambda - The "Lambda" "Function" Is Deleted
     And the "lambda" "function" was "ACTIVE"
     When the "lambda" "function" is deleted
     Then the "lambda" "function" will be deleted and stored procedure invocations targeting it will fail
-    And every successful invocation references a "DB" instance that exists
-    And every successful invocation recorded which function it invoked
+    And every successful "lambda" "invocation" references an "rds" "DB instance" that exists
+    And every successful "rds" "invocation" recorded which "lambda" "function" it invoked
 
   @guard @negative @delete_function
   Scenario: the "lambda" "function" is deleted fails when the "lambda" "function" did not exist
@@ -23,8 +23,8 @@ Feature: RdsLambda - The "Lambda" "Function" Is Deleted
     Then the operation is rejected
 
   @guard @negative @delete_function @lifecycle
-  Scenario: the "lambda" "function" is deleted fails when the function is already "DELETED"
+  Scenario: the "lambda" "function" is deleted fails when the "lambda" "function" is already "DELETED"
     Given the "lambda" "function" existed
-    And the function is already "DELETED"
+    And the "lambda" "function" is already "DELETED"
     When the "lambda" "function" is deleted
     Then the operation is rejected

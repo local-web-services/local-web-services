@@ -14,9 +14,9 @@ Feature: LambdaOpensearch - An "Opensearch" "Index" Is Created In The "Opensearc
     And the "opensearch" "index" did not already exist
     When an "opensearch" "index" is created in the "opensearch" "domain"
     Then the "opensearch" "index" will exist and will be ready to receive documents
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @guard @negative @create_index
   Scenario: an "opensearch" "index" is created in the "opensearch" "domain" fails when the "opensearch" "domain" did not exist

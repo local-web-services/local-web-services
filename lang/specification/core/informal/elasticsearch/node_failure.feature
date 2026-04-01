@@ -13,9 +13,9 @@ Feature: Elasticsearch - A Node Failure Occurs In An Active "Elasticsearch" "Dom
     And the "elasticsearch" "domain" was "ACTIVE"
     When a node failure occurs in an active "elasticsearch" "domain"
     Then the "elasticsearch" "domain" will be in "PROCESSING" state while recovering
-    And every active index belongs to an existing non-deleted domain
-    And every active tag belongs to an existing non-deleted domain
-    And a pending config change only exists on a "elasticsearch" "domain" that is "PROCESSING"
+    And every active "elasticsearch" "index" belongs to an existing non-deleted "elasticsearch" "domain"
+    And every active "elasticsearch" "tag" belongs to an existing non-deleted "elasticsearch" "domain"
+    And a pending config change only exists on an "elasticsearch" "domain" that is "PROCESSING"
 
   @guard @negative @node_failure @internal
   Scenario: a node failure occurs in an active "elasticsearch" "domain" fails when the "elasticsearch" "domain" did not exist

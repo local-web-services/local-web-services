@@ -10,12 +10,12 @@ Feature: DocdbEvents - A "Documentdb" "Cluster" Modification Begins And Document
   @minimal @happy @cluster_modify_event_delivered @internal
   Scenario: a "documentdb" "cluster" modification begins and DocumentDB delivers the event to the EventBridge bus
     Given the "documentdb" "cluster" was "AVAILABLE"
-    And the bus was "ACTIVE"
-    And an event slot is available
+    And the "eventbridge" "bus" was "ACTIVE"
+    And an "event" "slot" was "available"
     When a "documentdb" "cluster" modification begins and DocumentDB delivers the event to the EventBridge bus
     Then the "documentdb" "cluster" will be "MODIFYING" and the "MODIFIED" event will be "DELIVERED"
     And every "DELIVERED" event references a "documentdb" "cluster" that exists
-    And every "DELIVERED" event references a bus that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @guard @negative @cluster_modify_event_delivered @internal
   Scenario: a "documentdb" "cluster" modification begins and DocumentDB delivers the event to the EventBridge bus fails when the "documentdb" "cluster" was not "AVAILABLE"
@@ -24,16 +24,16 @@ Feature: DocdbEvents - A "Documentdb" "Cluster" Modification Begins And Document
     Then the operation is rejected
 
   @guard @negative @cluster_modify_event_delivered @internal
-  Scenario: a "documentdb" "cluster" modification begins and DocumentDB delivers the event to the EventBridge bus fails when the bus was "DELETED"
+  Scenario: a "documentdb" "cluster" modification begins and DocumentDB delivers the event to the EventBridge bus fails when the "eventbridge" "bus" was "DELETED"
     Given the "documentdb" "cluster" was "AVAILABLE"
-    And the bus was "DELETED"
+    And the "eventbridge" "bus" was "DELETED"
     When a "documentdb" "cluster" modification begins and DocumentDB delivers the event to the EventBridge bus
     Then the operation is rejected
 
   @guard @negative @cluster_modify_event_delivered @internal
-  Scenario: a "documentdb" "cluster" modification begins and DocumentDB delivers the event to the EventBridge bus fails when no event slot is available
+  Scenario: a "documentdb" "cluster" modification begins and DocumentDB delivers the event to the EventBridge bus fails when no "eventbridge" "event" "slot" was "available"
     Given the "documentdb" "cluster" was "AVAILABLE"
-    And the bus was "ACTIVE"
-    And no event slot is available
+    And the "eventbridge" "bus" was "ACTIVE"
+    And no "eventbridge" "event" "slot" was "available"
     When a "documentdb" "cluster" modification begins and DocumentDB delivers the event to the EventBridge bus
     Then the operation is rejected

@@ -1,5 +1,5 @@
 @s3apievents @generated
-Feature: S3apiEvents - An Object Is Uploaded And S3 Delivers An Event To The Eventbridge Bus
+Feature: S3apiEvents - An "S3" "Object" Is Uploaded And "S3" Delivers An "Eventbridge" "Event" To The "Eventbridge" "Bus"
 
   # Generated from FizzBee spec: s3api_events.fizz
   # Safety invariants: DeliveredEventReferencesExistingObject, DeliveredEventReferencesExistingBus
@@ -8,53 +8,53 @@ Feature: S3apiEvents - An Object Is Uploaded And S3 Delivers An Event To The Eve
     Given the system is initialized
 
   @minimal @happy @put_object_with_event
-  Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus
-    Given the bucket was "ACTIVE"
-    And the bucket has an EventBridge notification configured
-    And the target bus was "ACTIVE"
-    And an object slot is available
-    And an event slot is available
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    Then the object will exist and an event will be "DELIVERED" to the bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+  Scenario: an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    Given the "s3" "bucket" was "ACTIVE"
+    And the "s3" "bucket" has an "eventbridge" notification configured
+    And the target "eventbridge" "bus" was "ACTIVE"
+    And an "s3" "object" "slot" was "available"
+    And an "eventbridge" "event" "slot" was "available"
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    Then the "s3" "object" will exist and an "eventbridge" "event" will be "DELIVERED" to the "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @guard @negative @put_object_with_event @lifecycle
-  Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus fails when the bucket was not "ACTIVE"
-    Given the bucket was not "ACTIVE"
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
+  Scenario: an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" fails when the "s3" "bucket" was not "ACTIVE"
+    Given the "s3" "bucket" was not "ACTIVE"
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
     Then the operation is rejected
 
   @guard @negative @put_object_with_event
-  Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus fails when the bucket has no EventBridge notification configured
-    Given the bucket was "ACTIVE"
-    And the bucket has no EventBridge notification configured
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
+  Scenario: an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" fails when the "s3" "bucket" has no "eventbridge" notification configured
+    Given the "s3" "bucket" was "ACTIVE"
+    And the "s3" "bucket" has no "eventbridge" notification configured
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
     Then the operation is rejected
 
   @guard @negative @put_object_with_event @lifecycle
-  Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus fails when the target bus was "DELETED"
-    Given the bucket was "ACTIVE"
-    And the bucket has an EventBridge notification configured
-    And the target bus was "DELETED"
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
+  Scenario: an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" fails when the target "eventbridge" "bus" was "DELETED"
+    Given the "s3" "bucket" was "ACTIVE"
+    And the "s3" "bucket" has an "eventbridge" notification configured
+    And the target "eventbridge" "bus" was "DELETED"
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
     Then the operation is rejected
 
   @guard @negative @put_object_with_event @capacity
-  Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus fails when no object slot is available
-    Given the bucket was "ACTIVE"
-    And the bucket has an EventBridge notification configured
-    And the target bus was "ACTIVE"
-    And no object slot is available
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
+  Scenario: an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" fails when no "s3" "object" "slot" was "available"
+    Given the "s3" "bucket" was "ACTIVE"
+    And the "s3" "bucket" has an "eventbridge" notification configured
+    And the target "eventbridge" "bus" was "ACTIVE"
+    And no "s3" "object" "slot" was "available"
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
     Then the operation is rejected
 
   @guard @negative @put_object_with_event @capacity
-  Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus fails when no event slot is available
-    Given the bucket was "ACTIVE"
-    And the bucket has an EventBridge notification configured
-    And the target bus was "ACTIVE"
-    And an object slot is available
-    And no event slot is available
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
+  Scenario: an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" fails when no "eventbridge" "event" "slot" was "available"
+    Given the "s3" "bucket" was "ACTIVE"
+    And the "s3" "bucket" has an "eventbridge" notification configured
+    And the target "eventbridge" "bus" was "ACTIVE"
+    And an "s3" "object" "slot" was "available"
+    And no "eventbridge" "event" "slot" was "available"
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
     Then the operation is rejected

@@ -12,8 +12,8 @@ Feature: ApigatewaySqs - An "Api Gateway" "Api" Is Created
     Given the "api gateway" "API" did not already exist
     When an "api gateway" "api" is created
     Then the "api gateway" "api" will be "ACTIVE" with no "SQS" integration configured
-    And every "ACCEPTED" request references an "ACTIVE" "API"
-    And every "AVAILABLE" message belongs to an "ACTIVE" queue
+    And every "ACCEPTED" "api gateway" "request" references an "ACTIVE" "api gateway" "API"
+    And every "AVAILABLE" "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
 
   @guard @negative @create_rest_api
   Scenario: an "api gateway" "api" is created fails when the "api gateway" "API" already existed

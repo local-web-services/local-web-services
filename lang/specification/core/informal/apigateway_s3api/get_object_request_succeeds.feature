@@ -13,7 +13,7 @@ Feature: ApigatewayS3api - A Get Request Is Received And The "Api Gateway" "Api"
     And the "api gateway" "api" has a S3 integration configured
     And an "s3" "object" existed in the target bucket
     When a "GET" request is received and the "api gateway" "API" retrieves an existing object from S3
-    Then the request will be "SUCCESS"
+    Then the "api gateway" "request" will be "SUCCESS"
     And every existing object references a "s3" "bucket" that exists
     And every successful request references an "api gateway" "API" that exists
 

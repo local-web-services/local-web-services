@@ -45,13 +45,13 @@ atomic action CreateTable:
 
 
 # step: the "lambda" "function" is invoked
-# result: the invocation will be "IN_PROGRESS"
+# result: the "lambda" "invocation" will be "IN_PROGRESS"
 # guard: the "lambda" "function" existed
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
 # guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
-# guard: a "lambda" "invocation" slot is available
-# guard_violation_capacity: no invocation slot is available
+# guard: a "lambda" "invocation" "slot" was "available"
+# guard_violation_capacity: no "lambda" "invocation" "slot" was "available"
 atomic action InvokeFunction:
     oneof fid in FUNC_IDS:
         if fid in func_status:
@@ -63,15 +63,15 @@ atomic action InvokeFunction:
 
 
 # step: the "lambda" "function" writes an item to the "dynamodb" "table" during invocation
-# result: the item will exist in the "dynamodb" "table"
+# result: the "dynamodb" "item" will exist in the "dynamodb" "table"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 # guard: the "dynamodb" "table" existed
 # guard_violation: the "dynamodb" "table" did not exist
 # guard: the "dynamodb" "table" was "ACTIVE"
 # guard_violation_lifecycle: the "dynamodb" "table" was not "ACTIVE"
-# guard: an item slot is available
-# guard_violation_capacity: no item slot is available
+# guard: a "dynamodb" "item" "slot" was "available"
+# guard_violation_capacity: no "dynamodb" "item" "slot" was "available"
 atomic action PutItem:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -87,8 +87,8 @@ atomic action PutItem:
 
 
 # fake_skip: internal
-# step: the Lambda invocation completes successfully
-# result: the invocation will be "SUCCESS"
+# step: the "lambda" "function" invocation completes successfully
+# result: the "lambda" "invocation" will be "SUCCESS"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationSucceeds:
@@ -99,8 +99,8 @@ atomic action InvocationSucceeds:
 
 
 # fake_skip: internal
-# step: the Lambda invocation fails
-# result: the invocation will be "FAILED"
+# step: the "lambda" "function" invocation fails
+# result: the "lambda" "invocation" will be "FAILED"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationFails:
@@ -110,7 +110,7 @@ atomic action InvocationFails:
                 inv_status[iid] = "FAILED"
 
 
-# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+# check: every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
 always assertion InvocationRequiresActiveFunction:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":
@@ -121,7 +121,7 @@ always assertion InvocationRequiresActiveFunction:
     return True
 
 
-# check: every existing item belongs to an ACTIVE table
+# check: every existing "dynamodb" "item" belongs to an "ACTIVE" "dynamodb" "table"
 always assertion ItemRequiresActiveTable:
     for oid in item_status:
         if item_status[oid] == "EXISTS":

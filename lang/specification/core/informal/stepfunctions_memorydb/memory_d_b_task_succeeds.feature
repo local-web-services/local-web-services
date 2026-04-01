@@ -13,8 +13,8 @@ Feature: StepfunctionsMemorydb - A Running "Step Functions" "Execution" Connects
     And the "memorydb" "cluster" was "AVAILABLE"
     When a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds
     Then the "step functions" "execution" will be "SUCCEEDED"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which cluster it connected to
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "memorydb" "cluster" it connected to
 
   @guard @negative @memory_d_b_task_succeeds @internal
   Scenario: a running "step functions" "execution" connects to the "AVAILABLE" MemoryDB cluster and the task succeeds fails when no "step functions" "execution" was "RUNNING"

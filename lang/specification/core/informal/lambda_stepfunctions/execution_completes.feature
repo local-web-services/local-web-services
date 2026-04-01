@@ -12,8 +12,8 @@ Feature: LambdaStepfunctions - A Running "Step Functions" "Execution" Completes 
     Given a "step functions" "execution" was "RUNNING"
     When a running "step functions" "execution" completes successfully
     Then the "step functions" "execution" will be "SUCCEEDED"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "RUNNING" execution references a state machine that exists
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "RUNNING" "step functions" "execution" references a "step functions" "state machine" that exists
 
   @guard @negative @execution_completes @internal
   Scenario: a running "step functions" "execution" completes successfully fails when no "step functions" "execution" was "RUNNING"

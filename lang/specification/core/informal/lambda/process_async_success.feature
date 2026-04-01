@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: lambda - An Async Invocation Succeeds
+Feature: Lambda - A "Lambda" "Async" Invocation Succeeds
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions
@@ -8,47 +8,47 @@ Feature: lambda - An Async Invocation Succeeds
     Given the system is initialized
 
   @minimal @happy @process_async_success @internal
-  Scenario: an async invocation succeeds
-    Given the async slot is occupied
+  Scenario: a "lambda" "async" invocation succeeds
+    Given the "lambda" "async" "slot" was occupied
     And the async slot has a "lambda" "function" assigned
     And the "lambda" "function" existed
     And the "lambda" "function" was "ACTIVE"
-    When an async invocation succeeds
-    Then the async slot will be freed
-    And every active event source mapping references an existing non-deleted function
-    And no function in "DELETING" state has active executions
-    And active execution count never exceeds reserved concurrency when set
-    And async retry count never exceeds two
-    And every event source mapping has a valid status
-    And every function has a valid status
-    And all async slots reference known function IDs or are empty
+    When a "lambda" "async" invocation succeeds
+    Then the "lambda" "async" "slot" will be freed
+    And every active "lambda" "event source mapping" references an existing non-deleted "lambda" "function"
+    And no "lambda" "function" in "DELETING" state has active executions
+    And "lambda" "function" active execution count never exceeds reserved concurrency when set
+    And "lambda" "function" async retry count never exceeds two
+    And every "lambda" "event source mapping" has a valid status
+    And every "lambda" "function" has a valid status
+    And all "lambda" "async" "slot"s reference known "lambda" "function" IDs or are empty
 
   @guard @negative @process_async_success @internal
-  Scenario: an async invocation succeeds fails when the async slot was empty
-    Given the async slot was empty
-    When an async invocation succeeds
+  Scenario: a "lambda" "async" invocation succeeds fails when the "lambda" "async" "slot" was empty
+    Given the "lambda" "async" "slot" was empty
+    When a "lambda" "async" invocation succeeds
     Then the operation is rejected
 
   @guard @negative @process_async_success @internal
-  Scenario: an async invocation succeeds fails when the async slot does not have a "lambda" "function" assigned
-    Given the async slot is occupied
+  Scenario: a "lambda" "async" invocation succeeds fails when the async slot does not have a "lambda" "function" assigned
+    Given the "lambda" "async" "slot" was occupied
     And the async slot does not have a "lambda" "function" assigned
-    When an async invocation succeeds
+    When a "lambda" "async" invocation succeeds
     Then the operation is rejected
 
   @guard @negative @process_async_success @internal
-  Scenario: an async invocation succeeds fails when the "lambda" "function" did not exist
-    Given the async slot is occupied
+  Scenario: a "lambda" "async" invocation succeeds fails when the "lambda" "function" did not exist
+    Given the "lambda" "async" "slot" was occupied
     And the async slot has a "lambda" "function" assigned
     And the "lambda" "function" did not exist
-    When an async invocation succeeds
+    When a "lambda" "async" invocation succeeds
     Then the operation is rejected
 
   @guard @negative @process_async_success @internal
-  Scenario: an async invocation succeeds fails when the "lambda" "function" was not "ACTIVE"
-    Given the async slot is occupied
+  Scenario: a "lambda" "async" invocation succeeds fails when the "lambda" "function" was not "ACTIVE"
+    Given the "lambda" "async" "slot" was occupied
     And the async slot has a "lambda" "function" assigned
     And the "lambda" "function" existed
     And the "lambda" "function" was not "ACTIVE"
-    When an async invocation succeeds
+    When a "lambda" "async" invocation succeeds
     Then the operation is rejected

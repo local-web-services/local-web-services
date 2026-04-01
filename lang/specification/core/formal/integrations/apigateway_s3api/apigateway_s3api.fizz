@@ -87,10 +87,10 @@ atomic action ConfigureS3Integration:
 # guard_violation: the "api gateway" "api" has no S3 integration configured
 # guard: the "s3" "bucket" was "ACTIVE"
 # guard_violation_lifecycle: the "s3" "bucket" was not "ACTIVE"
-# guard: a request slot is available
-# guard_violation_capacity: no request slot is available
+# guard: a "request" "slot" was "available"
+# guard_violation_capacity: no "request" "slot" was "available"
 # guard: an "s3" "object" slot is available
-# guard_violation_capacity: no object slot is available
+# guard_violation_capacity: no "s3" "object" "slot" was "available"
 atomic action PutObjectRequestSucceeds:
     oneof aid in API_IDS:
         if aid in api_status:
@@ -111,15 +111,15 @@ atomic action PutObjectRequestSucceeds:
 
 
 # step: a GET request is received and the "api gateway" "API" retrieves an existing object from S3
-# result: the request will be "SUCCESS"
+# result: the "api gateway" "request" will be "SUCCESS"
 # guard: the "api gateway" "api" was "ACTIVE"
 # guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
 # guard: the "api gateway" "api" has a S3 integration configured
 # guard_violation: the "api gateway" "api" has no S3 integration configured
 # guard: an "s3" "object" existed in the target bucket
 # guard_violation_lifecycle: no "s3" "object" existed in the target "s3" "bucket"
-# guard: a request slot is available
-# guard_violation_capacity: no request slot is available
+# guard: a "request" "slot" was "available"
+# guard_violation_capacity: no "request" "slot" was "available"
 atomic action GetObjectRequestSucceeds:
     oneof aid in API_IDS:
         if aid in api_status:
@@ -139,15 +139,15 @@ atomic action GetObjectRequestSucceeds:
 
 
 # step: a request fails because the "s3" "bucket" has been deleted
-# result: the request will be "FAILED" with a NoSuchBucket error
+# result: the "api gateway" "request" will be "FAILED" with a NoSuchBucket error
 # guard: the "api gateway" "api" was "ACTIVE"
 # guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
 # guard: the "api gateway" "api" has a S3 integration configured
 # guard_violation: the "api gateway" "api" has no S3 integration configured
 # guard: the "s3" "bucket" was "DELETED"
 # guard_violation_lifecycle: the "s3" "bucket" was not "DELETED"
-# guard: a request slot is available
-# guard_violation_capacity: no request slot is available
+# guard: a "request" "slot" was "available"
+# guard_violation_capacity: no "request" "slot" was "available"
 atomic action RequestFails:
     oneof aid in API_IDS:
         if aid in api_status:

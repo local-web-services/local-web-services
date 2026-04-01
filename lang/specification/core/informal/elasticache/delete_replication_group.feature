@@ -13,11 +13,11 @@ Feature: Elasticache - A "Elasticache" "Replication Group" Is Deleted
     And the "elasticache" "replication group" was "AVAILABLE"
     When a "elasticache" "replication group" is deleted
     Then the "elasticache" "replication group" and its clusters are in "DELETING" state
-    And memcached clusters are never associated with a "elasticache" "replication group"
-    And all snapshots reference redis clusters only
-    And every available replication group has a primary cluster assigned
-    And every active cluster, replication group, and snapshot has tags
-    And every snapshotting cluster has a corresponding in-progress snapshot
+    And "memcached" "elasticache" "cluster"s are never associated with a "elasticache" "replication group"
+    And all "elasticache" "snapshot"s reference "redis" "elasticache" "cluster"s only
+    And every "AVAILABLE" "elasticache" "replication group" has a primary "elasticache" "cluster" assigned
+    And every active "elasticache" "cluster", "replication group", and "snapshot" has tags
+    And every snapshotting "elasticache" "cluster" has a corresponding in-progress "elasticache" "snapshot"
 
   @guard @negative @delete_replication_group
   Scenario: a "elasticache" "replication group" is deleted fails when the "elasticache" "replication group" did not exist

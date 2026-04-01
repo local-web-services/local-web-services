@@ -51,7 +51,7 @@ atomic action DeployFunction:
 
 
 # step: a "lambda" "event source mapping" is created to process the DynamoDB Stream
-# result: the event source mapping will be "ENABLED" and will poll the stream for change records
+# result: the "lambda" "event source mapping" will be "ENABLED" and will poll the stream for change records
 # guard: the "dynamodb" "table" existed
 # guard_violation: the "dynamodb" "table" did not exist
 # guard: the "dynamodb" "table" was "ACTIVE"
@@ -62,8 +62,8 @@ atomic action DeployFunction:
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
 # guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
-# guard: the event source mapping did not already exist
-# guard_violation: the event source mapping already existed
+# guard: the "lambda" "event source mapping" did not already exist
+# guard_violation: the "lambda" "event source mapping" already existed
 atomic action CreateEventSourceMapping:
     oneof eid in ESM_IDS:
         if eid not in esm_status:
@@ -80,15 +80,15 @@ atomic action CreateEventSourceMapping:
 
 
 # step: a change to the "dynamodb" "table" produces a stream record
-# result: a change record will be "AVAILABLE" for the event source mapping to process
+# result: a "dynamodb" "change record" will be "AVAILABLE" for the "lambda" "event source mapping" to process
 # guard: the "dynamodb" "table" existed
 # guard_violation: the "dynamodb" "table" did not exist
 # guard: the "dynamodb" "table" was "ACTIVE"
 # guard_violation_lifecycle: the "dynamodb" "table" was not "ACTIVE"
 # guard: the "dynamodb" "table" has a stream enabled
 # guard_violation: the "dynamodb" "table" does not have a stream enabled
-# guard: a record slot is available
-# guard_violation_capacity: no record slot is available
+# guard: a "dynamodb" "record" "slot" was "available"
+# guard_violation_capacity: no "dynamodb" "record" "slot" was "available"
 atomic action TableChangeProducesRecord:
     oneof tid in TABLE_IDS:
         if tid in table_status:
@@ -102,17 +102,17 @@ atomic action TableChangeProducesRecord:
 
 # fake_skip: internal
 # step: the event source mapping polls the stream and invokes the "lambda" "function" with the record
-# result: the record will be being processed and a Lambda invocation will be "IN_PROGRESS"
-# guard: the event source mapping existed
-# guard_violation: the event source mapping did not exist
-# guard: the event source mapping was "ENABLED"
-# guard_violation_lifecycle: the event source mapping was not "ENABLED"
-# guard: the mapped function was "ACTIVE"
-# guard_violation_lifecycle: the mapped function was not "ACTIVE"
-# guard: an "AVAILABLE" record existed in the mapped table's stream
-# guard_violation_lifecycle: no "AVAILABLE" record existed in the mapped table's stream
-# guard: a "lambda" "invocation" slot is available
-# guard_violation_capacity: no invocation slot is available
+# result: the "dynamodb" "record" will be being processed and a "lambda" "invocation" will be "IN_PROGRESS"
+# guard: the "lambda" "event source mapping" existed
+# guard_violation: the "lambda" "event source mapping" did not exist
+# guard: the "lambda" "event source mapping" was "ENABLED"
+# guard_violation_lifecycle: the "lambda" "event source mapping" was not "ENABLED"
+# guard: the mapped "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the mapped "lambda" "function" was not "ACTIVE"
+# guard: an "AVAILABLE" "dynamodb" "record" existed in the mapped table's stream
+# guard_violation_lifecycle: no "AVAILABLE" "dynamodb" "record" existed in the mapped table's stream
+# guard: a "lambda" "invocation" "slot" was "available"
+# guard_violation_capacity: no "lambda" "invocation" "slot" was "available"
 atomic action ESMPollAndInvoke:
     oneof eid in ESM_IDS:
         if eid in esm_status:
@@ -133,8 +133,8 @@ atomic action ESMPollAndInvoke:
 
 
 # fake_skip: internal
-# step: the Lambda invocation processes the stream record successfully
-# result: the invocation will be "SUCCESS" and the record will be "PROCESSED"
+# step: the "lambda" "function" invocation processes the "dynamodb" "stream" record successfully
+# result: the "lambda" "invocation" will be "SUCCESS" and the "dynamodb" "record" will be "PROCESSED"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationSucceeds:
@@ -147,8 +147,8 @@ atomic action InvocationSucceeds:
 
 
 # fake_skip: internal
-# step: the Lambda invocation fails and the stream record is retried
-# result: the invocation will be "FAILED" and the record will be "AVAILABLE" again for reprocessing
+# step: the "lambda" "function" invocation fails and the stream record is retried
+# result: the "lambda" "invocation" will be "FAILED" and the "dynamodb" "record" will be "AVAILABLE" again for reprocessing
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationFails:
@@ -160,7 +160,7 @@ atomic action InvocationFails:
                 record_status[rid] = "AVAILABLE"
 
 
-# check: every IN_PROGRESS invocation was initiated by an ENABLED event source mapping
+# check: every "IN_PROGRESS" "lambda" "function" invocation was initiated by an "ENABLED" "lambda" "event source mapping"
 always assertion InvocationRequiresEnabledESM:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":
@@ -171,7 +171,7 @@ always assertion InvocationRequiresEnabledESM:
     return True
 
 
-# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+# check: every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
 always assertion InvocationRequiresActiveFunction:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":
@@ -184,7 +184,7 @@ always assertion InvocationRequiresActiveFunction:
     return True
 
 
-# check: every ENABLED event source mapping references an ACTIVE table with streaming enabled
+# check: every "ENABLED" "lambda" "event source mapping" references an "ACTIVE" "dynamodb" "table" with streaming enabled
 always assertion ESMReferencesActiveStream:
     for eid in esm_status:
         if esm_status[eid] == "ENABLED":

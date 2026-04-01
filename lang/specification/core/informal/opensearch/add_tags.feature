@@ -14,10 +14,10 @@ Feature: Opensearch - Tags Are Added To An "Opensearch" "Domain"
     And the "opensearch" "domain" was not "DELETED"
     When tags are added to an "opensearch" "domain"
     Then the specified tags are associated with the "opensearch" "domain"
-    And no active connection references a deleted domain
+    And no active "opensearch" "connection" references a deleted "opensearch" "domain"
     And traffic can only be swapped after the new "opensearch" "cluster" was ready
-    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" inbound connection
-    And a pending config change only exists on a "opensearch" "domain" that is "PROCESSING"
+    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" "opensearch" "inbound connection"
+    And a pending config change only exists on an "opensearch" "domain" that is "PROCESSING"
 
   @guard @negative @add_tags
   Scenario: tags are added to an "opensearch" "domain" fails when the "opensearch" "domain" did not exist

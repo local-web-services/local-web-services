@@ -12,7 +12,7 @@ Feature: LambdaMemorydb - A "Memorydb" "Cluster" Is Created
     Given the "memorydb" "cluster" did not already exist
     When a "memorydb" "cluster" is created
     Then the "memorydb" "cluster" will be "AVAILABLE"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing record references a "memorydb" "cluster" that exists
 
   @guard @negative @create_cluster

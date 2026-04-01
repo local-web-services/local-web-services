@@ -53,14 +53,14 @@ atomic action DeployFunction:
             func_status[fid] = "ACTIVE"
 
 
-# step: a Lambda task is configured on the state machine
-# result: the state machine will invoke the function when it reaches the task state
+# step: a "lambda" task is configured on the "step functions" "state machine"
+# result: the "step functions" "state machine" will invoke the "lambda" "function" when it reaches the task state
 # guard: the "step functions" "state machine" existed
 # guard_violation: the "step functions" "state machine" did not exist
 # guard: the "step functions" "state machine" was "ACTIVE"
 # guard_violation_lifecycle: the "step functions" "state machine" was not "ACTIVE"
-# guard: the state machine has no Lambda task configured
-# guard_violation: the state machine already has a Lambda task configured
+# guard: the "step functions" "state machine" has no "lambda" task configured
+# guard_violation: the "step functions" "state machine" already has a "lambda" task configured
 # guard: the "lambda" "function" existed
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
@@ -82,10 +82,10 @@ atomic action ConfigureTask:
 # guard_violation: the "step functions" "state machine" did not exist
 # guard: the "step functions" "state machine" was "ACTIVE"
 # guard_violation_lifecycle: the "step functions" "state machine" was not "ACTIVE"
-# guard: the state machine has a Lambda task configured
-# guard_violation: the state machine has no Lambda task configured
+# guard: the "step functions" "state machine" has a "lambda" task configured
+# guard_violation: the "step functions" "state machine" has no "lambda" task configured
 # guard: an "step functions" "execution" slot is available
-# guard_violation_capacity: no execution slot is available
+# guard_violation_capacity: no "step functions" "execution" "slot" was "available"
 atomic action StartExecution:
     oneof smid in SM_IDS:
         if smid in sm_status:
@@ -98,15 +98,15 @@ atomic action StartExecution:
 
 
 # step: a running "step functions" "execution" reaches the Lambda task state and invokes the function
-# result: the invocation will be "IN_PROGRESS"
+# result: the "lambda" "invocation" will be "IN_PROGRESS"
 # guard: a "step functions" "execution" was "RUNNING"
 # guard_violation: no "step functions" "execution" was "RUNNING"
-# guard: the execution's state machine has a configured Lambda task
-# guard_violation: the execution's state machine has no Lambda task configured
-# guard: the configured function was "ACTIVE"
-# guard_violation_lifecycle: the configured function was not "ACTIVE"
+# guard: the "step functions" "execution"'s state machine has a configured "lambda" task
+# guard_violation: the "step functions" "execution"'s state machine has no "lambda" task configured
+# guard: the configured "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the configured "lambda" "function" was not "ACTIVE"
 # guard: a "lambda" "invocation" slot is available
-# guard_violation_capacity: no invocation slot is available
+# guard_violation_capacity: no "lambda" "invocation" "slot" was "available"
 atomic action InvokeTask:
     oneof eid in EXEC_IDS:
         if eid in exec_status:
@@ -125,7 +125,7 @@ atomic action InvokeTask:
 
 
 # fake_skip: internal
-# step: the Lambda task completes successfully and the execution succeeds
+# step: the "lambda" task completes successfully and the "step functions" "execution" succeeds
 # result: the invocation will be "SUCCESS" and the "step functions" "execution" will be "SUCCEEDED"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation: no "lambda" "invocation" was "IN_PROGRESS"
@@ -139,7 +139,7 @@ atomic action TaskSucceeds:
 
 
 # fake_skip: internal
-# step: the Lambda task fails and the execution fails
+# step: the "lambda" task fails and the "step functions" "execution" fails
 # result: the invocation will be "FAILED" and the "step functions" "execution" will be "FAILED"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation: no "lambda" "invocation" was "IN_PROGRESS"
@@ -152,7 +152,7 @@ atomic action TaskFails:
                 exec_status[eid] = "FAILED"
 
 
-# check: every RUNNING execution references an ACTIVE state machine
+# check: every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
 always assertion ExecutionRequiresActiveStateMachine:
     for eid in exec_status:
         if exec_status[eid] == "RUNNING":
@@ -163,7 +163,7 @@ always assertion ExecutionRequiresActiveStateMachine:
     return True
 
 
-# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+# check: every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
 always assertion InvocationRequiresActiveFunction:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":
@@ -174,7 +174,7 @@ always assertion InvocationRequiresActiveFunction:
     return True
 
 
-# check: every IN_PROGRESS invocation has a corresponding RUNNING execution
+# check: every "IN_PROGRESS" "lambda" "invocation" has a corresponding "RUNNING" "step functions" "execution"
 always assertion InvocationLinkedToRunningExecution:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":

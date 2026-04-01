@@ -11,13 +11,13 @@ Feature: LambdaSqs - A Message Arrives In The "Sqs" "Queue"
   Scenario: a message arrives in the "sqs" "queue"
     Given the "sqs" "queue" existed
     And the "sqs" "queue" was "ACTIVE"
-    And a message slot is available
+    And a "sqs" "message" "slot" was "available"
     When a message arrives in the "sqs" "queue"
-    Then the message will be "AVAILABLE" for processing
-    And every in-progress invocation was initiated by an "ENABLED" event source mapping
-    And every in-progress invocation references an "ACTIVE" Lambda function
-    And every "AVAILABLE" or "IN_FLIGHT" message belongs to an "ACTIVE" queue
-    And every "ENABLED" event source mapping references an "ACTIVE" queue
+    Then the "sqs" "message" will be "AVAILABLE" for processing
+    And every "IN_PROGRESS" "lambda" "function" invocation was initiated by an "ENABLED" "lambda" "event source mapping"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "AVAILABLE" or "IN_FLIGHT" "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
+    And every "ENABLED" "lambda" "event source mapping" references an "ACTIVE" "sqs" "queue"
 
   @guard @negative @message_arrives @internal
   Scenario: a message arrives in the "sqs" "queue" fails when the "sqs" "queue" did not exist
@@ -33,9 +33,9 @@ Feature: LambdaSqs - A Message Arrives In The "Sqs" "Queue"
     Then the operation is rejected
 
   @guard @negative @message_arrives @internal
-  Scenario: a message arrives in the "sqs" "queue" fails when no message slot is available
+  Scenario: a message arrives in the "sqs" "queue" fails when no "sqs" "message" "slot" was "available"
     Given the "sqs" "queue" existed
     And the "sqs" "queue" was "ACTIVE"
-    And no message slot is available
+    And no "sqs" "message" "slot" was "available"
     When a message arrives in the "sqs" "queue"
     Then the operation is rejected

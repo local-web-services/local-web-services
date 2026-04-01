@@ -11,9 +11,9 @@ Feature: StepfunctionsSsm - A "Ssm" "Parameter" Is Created
   Scenario: a "ssm" "parameter" is created
     Given the "ssm" "parameter" did not already exist
     When a "ssm" "parameter" is created
-    Then the parameter will exist
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which parameter it read
+    Then the "ssm" "parameter" will exist
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "ssm" "parameter" it read
 
   @guard @negative @create_parameter
   Scenario: a "ssm" "parameter" is created fails when the "ssm" "parameter" already existed

@@ -56,7 +56,7 @@ atomic action DBFailoverBegins:
 
 
 # fake_skip: internal
-# step: the Multi-AZ failover completes and the new primary is promoted
+# step: the "rds" "instance" Multi-AZ failover completes and the new primary is promoted
 # result: the "rds" "instance" will be "AVAILABLE" again
 # guard: the "rds" "instance" was "FAILING_OVER"
 # guard_violation_lifecycle: the "rds" "instance" was not "FAILING_OVER"
@@ -68,13 +68,13 @@ atomic action DBFailoverComplete:
 
 
 # step: the "lambda" "function" is invoked
-# result: the invocation will be "IN_PROGRESS"
+# result: the "lambda" "invocation" will be "IN_PROGRESS"
 # guard: the "lambda" "function" existed
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
 # guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
-# guard: a "lambda" "invocation" slot is available
-# guard_violation_capacity: no invocation slot is available
+# guard: a "lambda" "invocation" "slot" was "available"
+# guard_violation_capacity: no "lambda" "invocation" "slot" was "available"
 atomic action InvokeFunction:
     oneof fid in FUNC_IDS:
         if fid in func_status:
@@ -87,11 +87,11 @@ atomic action InvokeFunction:
 
 # fake_skip: internal
 # step: the "lambda" "function" executes a SQL query against the AVAILABLE database and succeeds
-# result: the invocation will be "SUCCESS"
+# result: the "lambda" "invocation" will be "SUCCESS"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
-# guard: the database instance was "AVAILABLE"
-# guard_violation_lifecycle: the database instance was not "AVAILABLE"
+# guard: the "rds" "database instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "rds" "database instance" was not "AVAILABLE"
 atomic action InvocationSucceeds:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -104,7 +104,7 @@ atomic action InvocationSucceeds:
 
 
 # step: the "lambda" "function" fails to connect because the database is failing over
-# result: the invocation will be "FAILED" with a connection error
+# result: the "lambda" "invocation" will be "FAILED" with a connection error
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 # guard: the "rds" "database instance" was "FAILING_OVER"
@@ -120,7 +120,7 @@ atomic action InvocationFailsDBUnavailable:
                             inv_db[iid] = did
 
 
-# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+# check: every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
 always assertion InvocationRequiresActiveFunction:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":
@@ -131,7 +131,7 @@ always assertion InvocationRequiresActiveFunction:
     return True
 
 
-# check: every successful invocation recorded which database it queried
+# check: every successful "lambda" "invocation" recorded which "rds" "database instance" it queried
 # (verifies Lambda cannot succeed without connecting to a database; DB may fail over afterwards)
 always assertion SuccessfulInvocationQueriedADB:
     for iid in inv_status:

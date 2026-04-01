@@ -14,11 +14,11 @@ Feature: Elasticache - A Standalone "Elasticache" "Cluster" Is Deleted
     And the "elasticache" "cluster" is standalone (not part of a "elasticache" "replication group")
     When a standalone "elasticache" "cluster" is deleted
     Then the "elasticache" "cluster" will be in "DELETING" state
-    And memcached clusters are never associated with a "elasticache" "replication group"
-    And all snapshots reference redis clusters only
-    And every available replication group has a primary cluster assigned
-    And every active cluster, replication group, and snapshot has tags
-    And every snapshotting cluster has a corresponding in-progress snapshot
+    And "memcached" "elasticache" "cluster"s are never associated with a "elasticache" "replication group"
+    And all "elasticache" "snapshot"s reference "redis" "elasticache" "cluster"s only
+    And every "AVAILABLE" "elasticache" "replication group" has a primary "elasticache" "cluster" assigned
+    And every active "elasticache" "cluster", "replication group", and "snapshot" has tags
+    And every snapshotting "elasticache" "cluster" has a corresponding in-progress "elasticache" "snapshot"
 
   @guard @negative @delete_cache_cluster
   Scenario: a standalone "elasticache" "cluster" is deleted fails when the "elasticache" "cluster" did not exist

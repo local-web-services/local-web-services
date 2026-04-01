@@ -8,334 +8,334 @@ Feature: EventsStepfunctions - Action Sequences
     Given the system is initialized
 
   @sequence
-  Scenario: an EventBridge event bus is created then a "step functions" "state machine" is created
+  Scenario: an "eventbridge" "bus" is created then a "step functions" "state machine" is created
     Given bid not in bus_status
-    When an EventBridge event bus is created
+    When an "eventbridge" "bus" is created
     When a "step functions" "state machine" is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an EventBridge event bus is created then an "eventbridge" "rule" is created to start a Step Functions execution on matching events
+  Scenario: an "eventbridge" "bus" is created then an "eventbridge" "rule" is created to start a Step Functions execution on matching events
     Given bid not in bus_status
-    When an EventBridge event bus is created
+    When an "eventbridge" "bus" is created
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an EventBridge event bus is created then an event is published to the bus and triggers a new Step Functions execution
+  Scenario: an "eventbridge" "bus" is created then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     Given bid not in bus_status
-    When an EventBridge event bus is created
-    When an event is published to the bus and triggers a new Step Functions execution
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "bus" is created
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an EventBridge event bus is created then a running "step functions" "execution" completes successfully
+  Scenario: an "eventbridge" "bus" is created then a running "step functions" "execution" completes successfully
     Given bid not in bus_status
-    When an EventBridge event bus is created
+    When an "eventbridge" "bus" is created
     When a running "step functions" "execution" completes successfully
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an EventBridge event bus is created then a running "step functions" "execution" fails
+  Scenario: an "eventbridge" "bus" is created then a running "step functions" "execution" fails
     Given bid not in bus_status
-    When an EventBridge event bus is created
+    When an "eventbridge" "bus" is created
     When a running "step functions" "execution" fails
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: a "step functions" "state machine" is created then an EventBridge event bus is created
+  Scenario: a "step functions" "state machine" is created then an "eventbridge" "bus" is created
     Given smid not in sm_status
     When a "step functions" "state machine" is created
-    When an EventBridge event bus is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "bus" is created
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: a "step functions" "state machine" is created then an "eventbridge" "rule" is created to start a Step Functions execution on matching events
     Given smid not in sm_status
     When a "step functions" "state machine" is created
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: a "step functions" "state machine" is created then an event is published to the bus and triggers a new Step Functions execution
+  Scenario: a "step functions" "state machine" is created then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     Given smid not in sm_status
     When a "step functions" "state machine" is created
-    When an event is published to the bus and triggers a new Step Functions execution
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" completes successfully
     Given smid not in sm_status
     When a "step functions" "state machine" is created
     When a running "step functions" "execution" completes successfully
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" fails
     Given smid not in sm_status
     When a "step functions" "state machine" is created
     When a running "step functions" "execution" fails
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an "eventbridge" "rule" is created to start a Step Functions execution on matching events then an EventBridge event bus is created
+  Scenario: an "eventbridge" "rule" is created to start a Step Functions execution on matching events then an "eventbridge" "bus" is created
     Given rid not in rule_status
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
-    When an EventBridge event bus is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "bus" is created
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: an "eventbridge" "rule" is created to start a Step Functions execution on matching events then a "step functions" "state machine" is created
     Given rid not in rule_status
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
     When a "step functions" "state machine" is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an "eventbridge" "rule" is created to start a Step Functions execution on matching events then an event is published to the bus and triggers a new Step Functions execution
+  Scenario: an "eventbridge" "rule" is created to start a Step Functions execution on matching events then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     Given rid not in rule_status
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
-    When an event is published to the bus and triggers a new Step Functions execution
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: an "eventbridge" "rule" is created to start a Step Functions execution on matching events then a running "step functions" "execution" completes successfully
     Given rid not in rule_status
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
     When a running "step functions" "execution" completes successfully
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: an "eventbridge" "rule" is created to start a Step Functions execution on matching events then a running "step functions" "execution" fails
     Given rid not in rule_status
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
     When a running "step functions" "execution" fails
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an event is published to the bus and triggers a new Step Functions execution then an EventBridge event bus is created
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution" then an "eventbridge" "bus" is created
     Given bid in bus_status
-    When an event is published to the bus and triggers a new Step Functions execution
-    When an EventBridge event bus is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
+    When an "eventbridge" "bus" is created
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an event is published to the bus and triggers a new Step Functions execution then a "step functions" "state machine" is created
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution" then a "step functions" "state machine" is created
     Given bid in bus_status
-    When an event is published to the bus and triggers a new Step Functions execution
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     When a "step functions" "state machine" is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an event is published to the bus and triggers a new Step Functions execution then an "eventbridge" "rule" is created to start a Step Functions execution on matching events
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution" then an "eventbridge" "rule" is created to start a Step Functions execution on matching events
     Given bid in bus_status
-    When an event is published to the bus and triggers a new Step Functions execution
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an event is published to the bus and triggers a new Step Functions execution then a running "step functions" "execution" completes successfully
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution" then a running "step functions" "execution" completes successfully
     Given bid in bus_status
-    When an event is published to the bus and triggers a new Step Functions execution
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     When a running "step functions" "execution" completes successfully
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an event is published to the bus and triggers a new Step Functions execution then a running "step functions" "execution" fails
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution" then a running "step functions" "execution" fails
     Given bid in bus_status
-    When an event is published to the bus and triggers a new Step Functions execution
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     When a running "step functions" "execution" fails
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: a running "step functions" "execution" completes successfully then an EventBridge event bus is created
+  Scenario: a running "step functions" "execution" completes successfully then an "eventbridge" "bus" is created
     Given eid in exec_status
     When a running "step functions" "execution" completes successfully
-    When an EventBridge event bus is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "bus" is created
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: a running "step functions" "execution" completes successfully then a "step functions" "state machine" is created
     Given eid in exec_status
     When a running "step functions" "execution" completes successfully
     When a "step functions" "state machine" is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: a running "step functions" "execution" completes successfully then an "eventbridge" "rule" is created to start a Step Functions execution on matching events
     Given eid in exec_status
     When a running "step functions" "execution" completes successfully
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: a running "step functions" "execution" completes successfully then an event is published to the bus and triggers a new Step Functions execution
+  Scenario: a running "step functions" "execution" completes successfully then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     Given eid in exec_status
     When a running "step functions" "execution" completes successfully
-    When an event is published to the bus and triggers a new Step Functions execution
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: a running "step functions" "execution" completes successfully then a running "step functions" "execution" fails
     Given eid in exec_status
     When a running "step functions" "execution" completes successfully
     When a running "step functions" "execution" fails
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: a running "step functions" "execution" fails then an EventBridge event bus is created
+  Scenario: a running "step functions" "execution" fails then an "eventbridge" "bus" is created
     Given eid in exec_status
     When a running "step functions" "execution" fails
-    When an EventBridge event bus is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "bus" is created
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: a running "step functions" "execution" fails then a "step functions" "state machine" is created
     Given eid in exec_status
     When a running "step functions" "execution" fails
     When a "step functions" "state machine" is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: a running "step functions" "execution" fails then an "eventbridge" "rule" is created to start a Step Functions execution on matching events
     Given eid in exec_status
     When a running "step functions" "execution" fails
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: a running "step functions" "execution" fails then an event is published to the bus and triggers a new Step Functions execution
+  Scenario: a running "step functions" "execution" fails then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     Given eid in exec_status
     When a running "step functions" "execution" fails
-    When an event is published to the bus and triggers a new Step Functions execution
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: a running "step functions" "execution" fails then a running "step functions" "execution" completes successfully
     Given eid in exec_status
     When a running "step functions" "execution" fails
     When a running "step functions" "execution" completes successfully
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an EventBridge event bus is created then a "step functions" "state machine" is created then an "eventbridge" "rule" is created to start a Step Functions execution on matching events
+  Scenario: an "eventbridge" "bus" is created then a "step functions" "state machine" is created then an "eventbridge" "rule" is created to start a Step Functions execution on matching events
     Given bid not in bus_status
-    When an EventBridge event bus is created
+    When an "eventbridge" "bus" is created
     When a "step functions" "state machine" is created
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an EventBridge event bus is created then an "eventbridge" "rule" is created to start a Step Functions execution on matching events then an event is published to the bus and triggers a new Step Functions execution
+  Scenario: an "eventbridge" "bus" is created then an "eventbridge" "rule" is created to start a Step Functions execution on matching events then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     Given bid not in bus_status
-    When an EventBridge event bus is created
+    When an "eventbridge" "bus" is created
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
-    When an event is published to the bus and triggers a new Step Functions execution
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an EventBridge event bus is created then an event is published to the bus and triggers a new Step Functions execution then a running "step functions" "execution" completes successfully
+  Scenario: an "eventbridge" "bus" is created then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution" then a running "step functions" "execution" completes successfully
     Given bid not in bus_status
-    When an EventBridge event bus is created
-    When an event is published to the bus and triggers a new Step Functions execution
+    When an "eventbridge" "bus" is created
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     When a running "step functions" "execution" completes successfully
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an EventBridge event bus is created then a running "step functions" "execution" completes successfully then a running "step functions" "execution" fails
+  Scenario: an "eventbridge" "bus" is created then a running "step functions" "execution" completes successfully then a running "step functions" "execution" fails
     Given bid not in bus_status
-    When an EventBridge event bus is created
+    When an "eventbridge" "bus" is created
     When a running "step functions" "execution" completes successfully
     When a running "step functions" "execution" fails
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an EventBridge event bus is created then a running "step functions" "execution" fails then a "step functions" "state machine" is created
+  Scenario: an "eventbridge" "bus" is created then a running "step functions" "execution" fails then a "step functions" "state machine" is created
     Given bid not in bus_status
-    When an EventBridge event bus is created
+    When an "eventbridge" "bus" is created
     When a running "step functions" "execution" fails
     When a "step functions" "state machine" is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: a "step functions" "state machine" is created then an EventBridge event bus is created then an event is published to the bus and triggers a new Step Functions execution
+  Scenario: a "step functions" "state machine" is created then an "eventbridge" "bus" is created then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     Given smid not in sm_status
     When a "step functions" "state machine" is created
-    When an EventBridge event bus is created
-    When an event is published to the bus and triggers a new Step Functions execution
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "bus" is created
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: a "step functions" "state machine" is created then an "eventbridge" "rule" is created to start a Step Functions execution on matching events then a running "step functions" "execution" completes successfully
@@ -343,29 +343,29 @@ Feature: EventsStepfunctions - Action Sequences
     When a "step functions" "state machine" is created
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
     When a running "step functions" "execution" completes successfully
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: a "step functions" "state machine" is created then an event is published to the bus and triggers a new Step Functions execution then a running "step functions" "execution" fails
+  Scenario: a "step functions" "state machine" is created then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution" then a running "step functions" "execution" fails
     Given smid not in sm_status
     When a "step functions" "state machine" is created
-    When an event is published to the bus and triggers a new Step Functions execution
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     When a running "step functions" "execution" fails
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" completes successfully then an EventBridge event bus is created
+  Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" completes successfully then an "eventbridge" "bus" is created
     Given smid not in sm_status
     When a "step functions" "state machine" is created
     When a running "step functions" "execution" completes successfully
-    When an EventBridge event bus is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "bus" is created
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: a "step functions" "state machine" is created then a running "step functions" "execution" fails then an "eventbridge" "rule" is created to start a Step Functions execution on matching events
@@ -373,19 +373,19 @@ Feature: EventsStepfunctions - Action Sequences
     When a "step functions" "state machine" is created
     When a running "step functions" "execution" fails
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an "eventbridge" "rule" is created to start a Step Functions execution on matching events then an EventBridge event bus is created then a running "step functions" "execution" completes successfully
+  Scenario: an "eventbridge" "rule" is created to start a Step Functions execution on matching events then an "eventbridge" "bus" is created then a running "step functions" "execution" completes successfully
     Given rid not in rule_status
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
-    When an EventBridge event bus is created
+    When an "eventbridge" "bus" is created
     When a running "step functions" "execution" completes successfully
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: an "eventbridge" "rule" is created to start a Step Functions execution on matching events then a "step functions" "state machine" is created then a running "step functions" "execution" fails
@@ -393,19 +393,19 @@ Feature: EventsStepfunctions - Action Sequences
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
     When a "step functions" "state machine" is created
     When a running "step functions" "execution" fails
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an "eventbridge" "rule" is created to start a Step Functions execution on matching events then an event is published to the bus and triggers a new Step Functions execution then an EventBridge event bus is created
+  Scenario: an "eventbridge" "rule" is created to start a Step Functions execution on matching events then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution" then an "eventbridge" "bus" is created
     Given rid not in rule_status
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
-    When an event is published to the bus and triggers a new Step Functions execution
-    When an EventBridge event bus is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
+    When an "eventbridge" "bus" is created
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: an "eventbridge" "rule" is created to start a Step Functions execution on matching events then a running "step functions" "execution" completes successfully then a "step functions" "state machine" is created
@@ -413,79 +413,79 @@ Feature: EventsStepfunctions - Action Sequences
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
     When a running "step functions" "execution" completes successfully
     When a "step functions" "state machine" is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an "eventbridge" "rule" is created to start a Step Functions execution on matching events then a running "step functions" "execution" fails then an event is published to the bus and triggers a new Step Functions execution
+  Scenario: an "eventbridge" "rule" is created to start a Step Functions execution on matching events then a running "step functions" "execution" fails then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     Given rid not in rule_status
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
     When a running "step functions" "execution" fails
-    When an event is published to the bus and triggers a new Step Functions execution
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an event is published to the bus and triggers a new Step Functions execution then an EventBridge event bus is created then a running "step functions" "execution" fails
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution" then an "eventbridge" "bus" is created then a running "step functions" "execution" fails
     Given bid in bus_status
-    When an event is published to the bus and triggers a new Step Functions execution
-    When an EventBridge event bus is created
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
+    When an "eventbridge" "bus" is created
     When a running "step functions" "execution" fails
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an event is published to the bus and triggers a new Step Functions execution then a "step functions" "state machine" is created then an EventBridge event bus is created
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution" then a "step functions" "state machine" is created then an "eventbridge" "bus" is created
     Given bid in bus_status
-    When an event is published to the bus and triggers a new Step Functions execution
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     When a "step functions" "state machine" is created
-    When an EventBridge event bus is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "bus" is created
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an event is published to the bus and triggers a new Step Functions execution then an "eventbridge" "rule" is created to start a Step Functions execution on matching events then a "step functions" "state machine" is created
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution" then an "eventbridge" "rule" is created to start a Step Functions execution on matching events then a "step functions" "state machine" is created
     Given bid in bus_status
-    When an event is published to the bus and triggers a new Step Functions execution
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
     When a "step functions" "state machine" is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an event is published to the bus and triggers a new Step Functions execution then a running "step functions" "execution" completes successfully then an "eventbridge" "rule" is created to start a Step Functions execution on matching events
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution" then a running "step functions" "execution" completes successfully then an "eventbridge" "rule" is created to start a Step Functions execution on matching events
     Given bid in bus_status
-    When an event is published to the bus and triggers a new Step Functions execution
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     When a running "step functions" "execution" completes successfully
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: an event is published to the bus and triggers a new Step Functions execution then a running "step functions" "execution" fails then a running "step functions" "execution" completes successfully
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution" then a running "step functions" "execution" fails then a running "step functions" "execution" completes successfully
     Given bid in bus_status
-    When an event is published to the bus and triggers a new Step Functions execution
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     When a running "step functions" "execution" fails
     When a running "step functions" "execution" completes successfully
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: a running "step functions" "execution" completes successfully then an EventBridge event bus is created then a "step functions" "state machine" is created
+  Scenario: a running "step functions" "execution" completes successfully then an "eventbridge" "bus" is created then a "step functions" "state machine" is created
     Given eid in exec_status
     When a running "step functions" "execution" completes successfully
-    When an EventBridge event bus is created
+    When an "eventbridge" "bus" is created
     When a "step functions" "state machine" is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: a running "step functions" "execution" completes successfully then a "step functions" "state machine" is created then an "eventbridge" "rule" is created to start a Step Functions execution on matching events
@@ -493,59 +493,59 @@ Feature: EventsStepfunctions - Action Sequences
     When a running "step functions" "execution" completes successfully
     When a "step functions" "state machine" is created
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: a running "step functions" "execution" completes successfully then an "eventbridge" "rule" is created to start a Step Functions execution on matching events then an event is published to the bus and triggers a new Step Functions execution
+  Scenario: a running "step functions" "execution" completes successfully then an "eventbridge" "rule" is created to start a Step Functions execution on matching events then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     Given eid in exec_status
     When a running "step functions" "execution" completes successfully
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
-    When an event is published to the bus and triggers a new Step Functions execution
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: a running "step functions" "execution" completes successfully then an event is published to the bus and triggers a new Step Functions execution then a running "step functions" "execution" fails
+  Scenario: a running "step functions" "execution" completes successfully then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution" then a running "step functions" "execution" fails
     Given eid in exec_status
     When a running "step functions" "execution" completes successfully
-    When an event is published to the bus and triggers a new Step Functions execution
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     When a running "step functions" "execution" fails
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: a running "step functions" "execution" completes successfully then a running "step functions" "execution" fails then an EventBridge event bus is created
+  Scenario: a running "step functions" "execution" completes successfully then a running "step functions" "execution" fails then an "eventbridge" "bus" is created
     Given eid in exec_status
     When a running "step functions" "execution" completes successfully
     When a running "step functions" "execution" fails
-    When an EventBridge event bus is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "bus" is created
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: a running "step functions" "execution" fails then an EventBridge event bus is created then an "eventbridge" "rule" is created to start a Step Functions execution on matching events
+  Scenario: a running "step functions" "execution" fails then an "eventbridge" "bus" is created then an "eventbridge" "rule" is created to start a Step Functions execution on matching events
     Given eid in exec_status
     When a running "step functions" "execution" fails
-    When an EventBridge event bus is created
+    When an "eventbridge" "bus" is created
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: a running "step functions" "execution" fails then a "step functions" "state machine" is created then an event is published to the bus and triggers a new Step Functions execution
+  Scenario: a running "step functions" "execution" fails then a "step functions" "state machine" is created then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
     Given eid in exec_status
     When a running "step functions" "execution" fails
     When a "step functions" "state machine" is created
-    When an event is published to the bus and triggers a new Step Functions execution
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: a running "step functions" "execution" fails then an "eventbridge" "rule" is created to start a Step Functions execution on matching events then a running "step functions" "execution" completes successfully
@@ -553,19 +553,19 @@ Feature: EventsStepfunctions - Action Sequences
     When a running "step functions" "execution" fails
     When an "eventbridge" "rule" is created to start a Step Functions execution on matching events
     When a running "step functions" "execution" completes successfully
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
-  Scenario: a running "step functions" "execution" fails then an event is published to the bus and triggers a new Step Functions execution then an EventBridge event bus is created
+  Scenario: a running "step functions" "execution" fails then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution" then an "eventbridge" "bus" is created
     Given eid in exec_status
     When a running "step functions" "execution" fails
-    When an event is published to the bus and triggers a new Step Functions execution
-    When an EventBridge event bus is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"
+    When an "eventbridge" "bus" is created
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @sequence
   Scenario: a running "step functions" "execution" fails then a running "step functions" "execution" completes successfully then a "step functions" "state machine" is created
@@ -573,6 +573,6 @@ Feature: EventsStepfunctions - Action Sequences
     When a running "step functions" "execution" fails
     When a running "step functions" "execution" completes successfully
     When a "step functions" "state machine" is created
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"

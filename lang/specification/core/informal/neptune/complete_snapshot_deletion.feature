@@ -12,15 +12,15 @@ Feature: Neptune - A "Neptune" "Cluster" Neptune Snapshot Deletion Completes
     Given the "neptune" "snapshot" existed
     And the "neptune" "snapshot" was "DELETING"
     When a "neptune" "cluster" neptune snapshot deletion completes
-    Then the "neptune" "SNAPSHOT" will be "DELETED"
-    And every cluster has a valid status
-    And every instance has a valid status
-    And every snapshot has a valid status
-    And a stopped cluster has no available instances
-    And instances on a stopped or stopping cluster are not in "MODIFYING" state
-    And a deleted cluster has no available instances
-    And every backing-up cluster has a corresponding in-progress snapshot
-    And a failed cluster has no available instances
+    Then the "neptune" "snapshot" will be "DELETED"
+    And every "neptune" "cluster" has a valid status
+    And every "neptune" "instance" has a valid status
+    And every "neptune" "snapshot" has a valid status
+    And a stopped "neptune" "cluster" has no available "neptune" "instance"s
+    And "neptune" "instance"s on a stopped or stopping "neptune" "cluster" are not in "MODIFYING" state
+    And a deleted "neptune" "cluster" has no available "neptune" "instance"s
+    And every backing-up "neptune" "cluster" has a corresponding in-progress "neptune" "snapshot"
+    And a failed "neptune" "cluster" has no available "neptune" "instance"s
 
   @guard @negative @complete_snapshot_deletion @internal
   Scenario: a "neptune" "cluster" neptune snapshot deletion completes fails when the "neptune" "snapshot" did not exist

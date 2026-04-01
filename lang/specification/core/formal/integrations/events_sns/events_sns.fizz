@@ -25,10 +25,10 @@ action Init:
     msg_topic = {}              # msg_topic[mid] = topic_id
 
 
-# step: an EventBridge event bus is created
-# result: the event bus will be "ACTIVE"
-# guard: the event bus did not already exist
-# guard_violation: the event bus already existed
+# step: an "eventbridge" "bus" is created
+# result: the "eventbridge" "bus" will be "ACTIVE"
+# guard: the "eventbridge" "bus" did not already exist
+# guard_violation: the "eventbridge" "bus" already existed
 atomic action CreateEventBus:
     oneof bid in BUS_IDS:
         if bid not in bus_status:
@@ -37,8 +37,8 @@ atomic action CreateEventBus:
 
 # step: a "sns" "topic" is created
 # result: the "sns" "topic" will be "ACTIVE"
-# guard: the topic did not already exist
-# guard_violation: the topic already existed
+# guard: the "sns" "topic" did not already exist
+# guard_violation: the "sns" "topic" already existed
 atomic action CreateTopic:
     oneof tid in TOPIC_IDS:
         if tid not in topic_status:
@@ -46,17 +46,17 @@ atomic action CreateTopic:
 
 
 # step: an "eventbridge" "rule" is created to route matching events to a "sns" "topic"
-# result: the rule will be "ENABLED" and will publish to the topic when matching events are received
-# guard: the event bus existed
-# guard_violation: the event bus did not exist
-# guard: the event bus was "ACTIVE"
-# guard_violation_lifecycle: the event bus was not "ACTIVE"
+# result: the "eventbridge" "rule" will be "ENABLED" and will publish to the "sns" "topic" when matching events are received
+# guard: the "eventbridge" "bus" existed
+# guard_violation: the "eventbridge" "bus" did not exist
+# guard: the "eventbridge" "bus" was "ACTIVE"
+# guard_violation_lifecycle: the "eventbridge" "bus" was not "ACTIVE"
 # guard: the "sns" "topic" existed
 # guard_violation: the "sns" "topic" did not exist
 # guard: the "sns" "topic" was "ACTIVE"
 # guard_violation_lifecycle: the "sns" "topic" was not "ACTIVE"
-# guard: the rule did not already exist
-# guard_violation: the rule already existed
+# guard: the "eventbridge" "rule" did not already exist
+# guard_violation: the "eventbridge" "rule" already existed
 atomic action PutRule:
     oneof rid in RULE_IDS:
         if rid not in rule_status:
@@ -71,18 +71,18 @@ atomic action PutRule:
                                     rule_topic[rid] = tid
 
 
-# step: an event is published to the bus and routed to the target SNS topic
-# result: the message will be "AVAILABLE" on the topic
-# guard: the event bus existed
-# guard_violation: the event bus did not exist
-# guard: the event bus was "ACTIVE"
-# guard_violation_lifecycle: the event bus was not "ACTIVE"
-# guard: an ENABLED rule existed on the bus targeting a topic
-# guard_violation_lifecycle: no ENABLED rule existed on the bus targeting a topic
-# guard: the target topic was "ACTIVE"
-# guard_violation_lifecycle: the target topic was not "ACTIVE"
-# guard: a message slot is available
-# guard_violation_capacity: no message slot is available
+# step: an "eventbridge" "event" is published to the "eventbridge" "bus" and routed to the target "sns" "topic"
+# result: the "sns" "message" will be "AVAILABLE" on the "sns" "topic"
+# guard: the "eventbridge" "bus" existed
+# guard_violation: the "eventbridge" "bus" did not exist
+# guard: the "eventbridge" "bus" was "ACTIVE"
+# guard_violation_lifecycle: the "eventbridge" "bus" was not "ACTIVE"
+# guard: an "ENABLED" "eventbridge" "rule" existed on the "eventbridge" "bus" targeting a "sns" "topic"
+# guard_violation_lifecycle: no "ENABLED" "eventbridge" "rule" existed on the "eventbridge" "bus" targeting a "sns" "topic"
+# guard: the target "sns" "topic" was "ACTIVE"
+# guard_violation_lifecycle: the target "sns" "topic" was not "ACTIVE"
+# guard: a "sns" "message" "slot" was "available"
+# guard_violation_capacity: no "sns" "message" "slot" was "available"
 atomic action PutEvent:
     oneof bid in BUS_IDS:
         if bid in bus_status:
@@ -101,9 +101,9 @@ atomic action PutEvent:
 
 
 # step: a subscriber consumes a message from the "sns" "topic"
-# result: the message will be deleted
-# guard: an "AVAILABLE" message existed on the topic
-# guard_violation_lifecycle: no "AVAILABLE" message existed on the topic
+# result: the "sns" "message" will be "DELETED"
+# guard: an "AVAILABLE" "sns" "message" existed on the "sns" "topic"
+# guard_violation_lifecycle: no "AVAILABLE" "sns" "message" existed on the "sns" "topic"
 atomic action ConsumeMessage:
     oneof mid in MSG_IDS:
         if mid in msg_status:
@@ -111,7 +111,7 @@ atomic action ConsumeMessage:
                 msg_status[mid] = "DELETED"
 
 
-# check: every ENABLED rule references an ACTIVE event bus
+# check: every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 always assertion RuleReferencesActiveBus:
     for rid in rule_status:
         if rule_status[rid] == "ENABLED":
@@ -122,7 +122,7 @@ always assertion RuleReferencesActiveBus:
     return True
 
 
-# check: every AVAILABLE message belongs to an ACTIVE topic
+# check: every "AVAILABLE" "sns" "message" belongs to an "ACTIVE" "sns" "topic"
 always assertion MessageRequiresActiveTopic:
     for mid in msg_status:
         if msg_status[mid] == "AVAILABLE":

@@ -14,9 +14,9 @@ Feature: Elasticsearch - An "Elasticsearch" "Domain" Finishes Processing Its Con
     And the "elasticsearch" "domain" has a pending configuration change
     When an "elasticsearch" "domain" finishes processing its configuration update
     Then the "elasticsearch" "domain" will be "ACTIVE" with the new configuration applied
-    And every active index belongs to an existing non-deleted domain
-    And every active tag belongs to an existing non-deleted domain
-    And a pending config change only exists on a "elasticsearch" "domain" that is "PROCESSING"
+    And every active "elasticsearch" "index" belongs to an existing non-deleted "elasticsearch" "domain"
+    And every active "elasticsearch" "tag" belongs to an existing non-deleted "elasticsearch" "domain"
+    And a pending config change only exists on an "elasticsearch" "domain" that is "PROCESSING"
 
   @guard @negative @finish_processing_domain_config @internal
   Scenario: an "elasticsearch" "domain" finishes processing its configuration update fails when the "elasticsearch" "domain" did not exist

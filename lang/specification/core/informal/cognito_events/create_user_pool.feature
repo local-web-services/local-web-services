@@ -13,7 +13,7 @@ Feature: CognitoEvents - A "Cognito" "User Pool" Is Created
     When a "cognito" "user pool" is created
     Then the "cognito" "user pool" will be "ACTIVE" with no EventBridge configuration
     And every "DELIVERED" event references a "cognito" "user pool" that exists
-    And every "DELIVERED" event references a bus that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @guard @negative @create_user_pool
   Scenario: a "cognito" "user pool" is created fails when the "cognito" "user pool" already existed

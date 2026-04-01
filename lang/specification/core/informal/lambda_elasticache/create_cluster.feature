@@ -9,14 +9,14 @@ Feature: LambdaElasticache - An "Elasticache" "Cluster" Is Created
 
   @minimal @happy @create_cluster
   Scenario: an "elasticache" "cluster" is created
-    Given the cluster did not already exist
+    Given the "elasticache" "cluster" did not already exist
     When an "elasticache" "cluster" is created
     Then the "elasticache" "cluster" will be "AVAILABLE"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "CACHED" entry belongs to an "AVAILABLE" cluster
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "CACHED" "elasticache" "entry" belongs to an "AVAILABLE" "elasticache" "cluster"
 
   @guard @negative @create_cluster
-  Scenario: an "elasticache" "cluster" is created fails when the cluster already existed
-    Given the cluster already existed
+  Scenario: an "elasticache" "cluster" is created fails when the "elasticache" "cluster" already existed
+    Given the "elasticache" "cluster" already existed
     When an "elasticache" "cluster" is created
     Then the operation is rejected

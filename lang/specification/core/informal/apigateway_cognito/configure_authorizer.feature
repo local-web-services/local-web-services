@@ -16,8 +16,8 @@ Feature: ApigatewayCognito - A "Cognito" "User Pool" Authorizer Is Configured On
     And the "cognito" "user pool" was "ACTIVE"
     When a "cognito" "user pool" authorizer is configured on the "api gateway" "api"
     Then the "api gateway" "API" will validate "JWT" tokens against the configured pool before routing requests
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
+    And every "api gateway" "API" with a configured authorizer references an "ACTIVE" "cognito" "user pool"
+    And every "AUTHORIZED" "api gateway" "request" was validated against a "VALID" "token"
     And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
     And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 

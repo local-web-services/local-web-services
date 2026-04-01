@@ -13,9 +13,9 @@ Feature: Sqs - All "Sqs" "Message"S In A "Sqs" "Queue" Are Purged
     And the "sqs" "queue" was "ACTIVE"
     When all "sqs" "message"s in a "sqs" "queue" are purged
     Then all messages in the "sqs" "queue" will be "DELETED"
-    And every non-deleted message belongs to an "ACTIVE" queue
-    And every in-flight message belongs to an "ACTIVE" queue
-    And every message has a non-negative receive count
+    And every non-deleted "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
+    And every "IN_FLIGHT" "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
+    And every "sqs" "message" has a non-negative receive count
 
   @guard @negative @purge_queue
   Scenario: all "sqs" "message"s in a "sqs" "queue" are purged fails when the "sqs" "queue" did not exist

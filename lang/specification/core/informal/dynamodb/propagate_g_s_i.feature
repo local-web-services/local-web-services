@@ -1,5 +1,5 @@
 @dynamodb @generated
-Feature: Dynamodb - A Gsi Catches Up With Pending Write Propagation
+Feature: Dynamodb - A "Dynamodb" "Gsi" Catches Up With Pending Write Propagation
 
   # Generated from FizzBee spec: dynamodb.fizz
   # Safety invariants: TableStatusValid, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
@@ -8,27 +8,27 @@ Feature: Dynamodb - A Gsi Catches Up With Pending Write Propagation
     Given the system is initialized
 
   @minimal @happy @propagate_g_s_i @internal
-  Scenario: a "GSI" catches up with pending write propagation
+  Scenario: a "dynamodb" "GSI" catches up with pending write propagation
     Given the "dynamodb" "table" had pending "GSI" propagation
-    And there were writes pending propagation to the "GSI"
-    When a "GSI" catches up with pending write propagation
-    Then the "GSI" will be consistent with the "dynamodb" "table"
-    And every table has a valid status ("CREATING", "ACTIVE", or "DELETED")
-    And "GSI" pending write count is never negative
-    And transaction status is always a valid value
-    And a pending transaction always references an existing table
-    And items only exist in non-deleted tables
-    And deleted tables are never the target of a pending transaction
+    And there were writes pending propagation to the "dynamodb" "GSI"
+    When a "dynamodb" "GSI" catches up with pending write propagation
+    Then the "dynamodb" "GSI" will be consistent with the "dynamodb" "table"
+    And every "dynamodb" "table" has a valid status ("CREATING", "ACTIVE", or "DELETED")
+    And "dynamodb" "GSI" pending write count is never negative
+    And "dynamodb" "transaction" status is always a valid value
+    And a pending "dynamodb" "transaction" always references an existing "dynamodb" "table"
+    And "dynamodb" "item"s only exist in non-deleted "dynamodb" "table"s
+    And deleted "dynamodb" "table"s are never the target of a pending "dynamodb" "transaction"
 
   @guard @negative @propagate_g_s_i @internal
-  Scenario: a "GSI" catches up with pending write propagation fails when the "dynamodb" "table" did not have pending "GSI" propagation
+  Scenario: a "dynamodb" "GSI" catches up with pending write propagation fails when the "dynamodb" "table" did not have pending "GSI" propagation
     Given the "dynamodb" "table" did not have pending "GSI" propagation
-    When a "GSI" catches up with pending write propagation
+    When a "dynamodb" "GSI" catches up with pending write propagation
     Then the operation is rejected
 
   @guard @negative @propagate_g_s_i @internal
-  Scenario: a "GSI" catches up with pending write propagation fails when there were no writes pending propagation to the "GSI"
+  Scenario: a "dynamodb" "GSI" catches up with pending write propagation fails when there were no writes pending propagation to the "dynamodb" "GSI"
     Given the "dynamodb" "table" had pending "GSI" propagation
-    And there were no writes pending propagation to the "GSI"
-    When a "GSI" catches up with pending write propagation
+    And there were no writes pending propagation to the "dynamodb" "GSI"
+    When a "dynamodb" "GSI" catches up with pending write propagation
     Then the operation is rejected

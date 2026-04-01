@@ -10,11 +10,11 @@ Feature: LambdaRds - The "Lambda" "Function" Executes A Sql Query Against The Av
   @minimal @happy @invocation_succeeds @internal
   Scenario: the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
     Given a "lambda" "invocation" was "IN_PROGRESS"
-    And the database instance was "AVAILABLE"
+    And the "rds" "database instance" was "AVAILABLE"
     When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
-    Then the invocation will be "SUCCESS"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
+    Then the "lambda" "invocation" will be "SUCCESS"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every successful "lambda" "invocation" recorded which "rds" "database instance" it queried
 
   @guard @negative @invocation_succeeds @internal
   Scenario: the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds fails when no "lambda" "invocation" was "IN_PROGRESS"
@@ -23,8 +23,8 @@ Feature: LambdaRds - The "Lambda" "Function" Executes A Sql Query Against The Av
     Then the operation is rejected
 
   @guard @negative @invocation_succeeds @internal
-  Scenario: the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds fails when the database instance was not "AVAILABLE"
+  Scenario: the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds fails when the "rds" "database instance" was not "AVAILABLE"
     Given a "lambda" "invocation" was "IN_PROGRESS"
-    And the database instance was not "AVAILABLE"
+    And the "rds" "database instance" was not "AVAILABLE"
     When the "lambda" "function" executes a "SQL" query against the "AVAILABLE" database and succeeds
     Then the operation is rejected

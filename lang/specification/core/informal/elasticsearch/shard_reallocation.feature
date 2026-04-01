@@ -15,9 +15,9 @@ Feature: Elasticsearch - Shards Are Reallocated Across Nodes In An Active "Elast
     And the "elasticsearch" "index" was "ACTIVE"
     When shards are reallocated across nodes in an active "elasticsearch" "domain"
     Then the "elasticsearch" "domain" shard layout will be updated without changing document counts
-    And every active index belongs to an existing non-deleted domain
-    And every active tag belongs to an existing non-deleted domain
-    And a pending config change only exists on a "elasticsearch" "domain" that is "PROCESSING"
+    And every active "elasticsearch" "index" belongs to an existing non-deleted "elasticsearch" "domain"
+    And every active "elasticsearch" "tag" belongs to an existing non-deleted "elasticsearch" "domain"
+    And a pending config change only exists on an "elasticsearch" "domain" that is "PROCESSING"
 
   @guard @negative @shard_reallocation @internal
   Scenario: shards are reallocated across nodes in an active "elasticsearch" "domain" fails when the "elasticsearch" "domain" did not exist

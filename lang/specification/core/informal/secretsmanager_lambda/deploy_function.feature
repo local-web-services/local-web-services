@@ -12,8 +12,8 @@ Feature: SecretsmanagerLambda - A "Lambda" "Rotation Function" Is Deployed
     Given the "lambda" "function" did not already exist
     When a "lambda" "rotation function" is deployed
     Then the "lambda" "function" will be "ACTIVE"
-    And every "ROTATING" secret has an "IN_PROGRESS" rotation invocation
-    And every successful rotation invocation recorded which secret it rotated
+    And every "ROTATING" "secrets manager" "secret" has an "IN_PROGRESS" "lambda" "rotation invocation"
+    And every successful "lambda" "rotation invocation" recorded which "secrets manager" "secret" it rotated
 
   @guard @negative @deploy_function
   Scenario: a "lambda" "rotation function" is deployed fails when the "lambda" "function" already existed

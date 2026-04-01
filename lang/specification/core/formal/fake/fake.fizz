@@ -20,10 +20,10 @@ action Init:
     route_server = {}
 
 
-# step: a fake server is created
-# result: the server will be "ACTIVE" with chaos disabled by default
-# guard: the server did not already exist
-# guard_violation: the server already existed
+# step: a "fake" "server" is created
+# result: the "fake" "server" will be "ACTIVE" with chaos disabled by default
+# guard: the "fake" "server" did not already exist
+# guard_violation: the "fake" "server" already existed
 atomic action CreateServer:
     oneof sid in SERVER_IDS:
         if sid not in server_status:
@@ -35,12 +35,12 @@ atomic action CreateServer:
                 server_protocol[sid] = "grpc"
 
 
-# step: a fake server is deleted
-# result: the server will be deleted and its routes will be removed
-# guard: the server existed
-# guard_violation: the server did not exist
-# guard: the server was "ACTIVE"
-# guard_violation: the server was not "ACTIVE"
+# step: a "fake" "server" is deleted
+# result: the "fake" "server" will be deleted and its "route"s will be removed
+# guard: the "fake" "server" existed
+# guard_violation: the "fake" "server" did not exist
+# guard: the "fake" "server" was "ACTIVE"
+# guard_violation: the "fake" "server" was not "ACTIVE"
 atomic action DeleteServer:
     oneof sid in SERVER_IDS:
         if sid in server_status:
@@ -52,14 +52,14 @@ atomic action DeleteServer:
                             route_status[rid] = "DELETED"
 
 
-# step: a route is added to a fake server
-# result: the route will be "ACTIVE" on the server
-# guard: the server existed
-# guard_violation: the server did not exist
-# guard: the server was "ACTIVE"
-# guard_violation: the server was not "ACTIVE"
-# guard: a route slot is available
-# guard_violation: no route slot is available
+# step: a "route" is added to a "fake" "server"
+# result: the "fake" "route" will be "ACTIVE" on the "fake" "server"
+# guard: the "fake" "server" existed
+# guard_violation: the "fake" "server" did not exist
+# guard: the "fake" "server" was "ACTIVE"
+# guard_violation: the "fake" "server" was not "ACTIVE"
+# guard: a "route" "slot" was "available"
+# guard_violation_capacity: no "route" "slot" was "available"
 atomic action AddRoute:
     oneof sid in SERVER_IDS:
         if sid in server_status:
@@ -70,12 +70,12 @@ atomic action AddRoute:
                         route_status[rid] = "ACTIVE"
 
 
-# step: a route is removed from a fake server
-# result: the route will be deleted
-# guard: the route existed
-# guard_violation: the route did not exist
-# guard: the route was "ACTIVE"
-# guard_violation: the route was not "ACTIVE"
+# step: a "route" is removed from a "fake" "server"
+# result: the "fake" "route" will be deleted
+# guard: the "fake" "route" existed
+# guard_violation: the "fake" "route" did not exist
+# guard: the "fake" "route" was "ACTIVE"
+# guard_violation: the "fake" "route" was not "ACTIVE"
 atomic action RemoveRoute:
     oneof rid in ROUTE_IDS:
         if rid in route_status:
@@ -83,12 +83,12 @@ atomic action RemoveRoute:
                 route_status[rid] = "DELETED"
 
 
-# step: the status of a fake server is retrieved
-# result: the server name, protocol, and route count will be returned
-# guard: the server existed
-# guard_violation: the server did not exist
-# guard: the server was "ACTIVE"
-# guard_violation: the server was not "ACTIVE"
+# step: the status of a "fake" "server" is retrieved
+# result: the "fake" "server" name, protocol, and "route" count will be returned
+# guard: the "fake" "server" existed
+# guard_violation: the "fake" "server" did not exist
+# guard: the "fake" "server" was "ACTIVE"
+# guard_violation: the "fake" "server" was not "ACTIVE"
 atomic action GetStatus:
     oneof sid in SERVER_IDS:
         if sid in server_status:
@@ -96,12 +96,12 @@ atomic action GetStatus:
                 pass
 
 
-# step: chaos was "ENABLED" or disabled for a fake server
-# result: the chaos enabled flag will be updated
-# guard: the server existed
-# guard_violation: the server did not exist
-# guard: the server was "ACTIVE"
-# guard_violation: the server was not "ACTIVE"
+# step: chaos was "ENABLED" or disabled for a "fake" "server"
+# result: the "fake" "server" chaos enabled flag will be updated
+# guard: the "fake" "server" existed
+# guard_violation: the "fake" "server" did not exist
+# guard: the "fake" "server" was "ACTIVE"
+# guard_violation: the "fake" "server" was not "ACTIVE"
 atomic action SetChaosEnabled:
     oneof sid in SERVER_IDS:
         if sid in server_status:
@@ -111,7 +111,7 @@ atomic action SetChaosEnabled:
                     server_chaos_enabled[sid] = False
 
 
-# check: every ACTIVE route belongs to an ACTIVE server
+# check: every "ACTIVE" "route" belongs to an "ACTIVE" "fake" "server"
 always assertion ActiveRoutesBelongToActiveServers:
     for rid in route_status:
         if route_status[rid] == "ACTIVE":
@@ -121,7 +121,7 @@ always assertion ActiveRoutesBelongToActiveServers:
     return True
 
 
-# check: every server has a valid protocol
+# check: every "fake" "server" has a valid protocol
 always assertion ServerProtocolIsValid:
     for sid in server_protocol:
         if server_protocol[sid] not in ["rest", "graphql", "grpc"]:

@@ -12,9 +12,9 @@ Feature: LambdaCognito - The "Lambda" "Function" Calls A Cognito Admin Api On An
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "cognito" "user pool" was "ACTIVE"
     When the "lambda" "function" calls a Cognito admin "API" on an "ACTIVE" pool and succeeds
-    Then the invocation will be "SUCCESS"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which pool it called
+    Then the "lambda" "invocation" will be "SUCCESS"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every successful "lambda" "invocation" recorded which "cognito" "user pool" it called
 
   @guard @negative @invocation_succeeds @internal
   Scenario: the "lambda" "function" calls a Cognito admin "API" on an "ACTIVE" pool and succeeds fails when no "lambda" "invocation" was "IN_PROGRESS"

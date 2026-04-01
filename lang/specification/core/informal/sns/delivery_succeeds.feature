@@ -9,24 +9,24 @@ Feature: Sns - A "Sns" "Delivery" Attempt Succeeds
 
   @minimal @happy @delivery_succeeds @internal
   Scenario: a "sns" "delivery" attempt succeeds
-    Given the delivery existed
+    Given the "sns" "delivery" existed
     And the "sns" "delivery" was "IN_FLIGHT"
     When a "sns" "delivery" attempt succeeds
     Then the "sns" "delivery" will be "DONE"
-    And no delivery is in-flight to a deleted subscription
-    And no delivery is in-flight to an unconfirmed subscription
-    And every active subscription references an "ACTIVE" topic
-    And every delivery retry count is within the allowed limit
+    And no "sns" "delivery" is "IN_FLIGHT" to a deleted "sns" "subscription"
+    And no "sns" "delivery" is "IN_FLIGHT" to an unconfirmed "sns" "subscription"
+    And every active "sns" "subscription" references an "ACTIVE" "sns" "topic"
+    And every "sns" "delivery" retry count is within the allowed limit
 
   @guard @negative @delivery_succeeds @internal
-  Scenario: a "sns" "delivery" attempt succeeds fails when the delivery did not exist
-    Given the delivery did not exist
+  Scenario: a "sns" "delivery" attempt succeeds fails when the "sns" "delivery" did not exist
+    Given the "sns" "delivery" did not exist
     When a "sns" "delivery" attempt succeeds
     Then the operation is rejected
 
   @guard @negative @delivery_succeeds @internal
   Scenario: a "sns" "delivery" attempt succeeds fails when the "sns" "delivery" was not "IN_FLIGHT"
-    Given the delivery existed
+    Given the "sns" "delivery" existed
     And the "sns" "delivery" was not "IN_FLIGHT"
     When a "sns" "delivery" attempt succeeds
     Then the operation is rejected

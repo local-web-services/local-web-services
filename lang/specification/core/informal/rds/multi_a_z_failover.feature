@@ -14,9 +14,9 @@ Feature: Rds - A Multi-Az Failover Is Triggered On A "Rds" "Instance"
     And the "rds" "instance" has multi-"AZ" enabled
     When a multi-"AZ" failover is triggered on a "rds" "instance"
     Then the "rds" "instance" will be in "MODIFYING" state during promotion
-    And every database instance has a valid status
-    And every database snapshot has a valid status
-    And every backing-up instance has a corresponding in-progress snapshot
+    And every "rds" "instance" has a valid status
+    And every "rds" "snapshot" has a valid status
+    And every backing-up "rds" "instance" has a corresponding in-progress "rds" "snapshot"
 
   @guard @negative @multi_a_z_failover @internal
   Scenario: a multi-"AZ" failover is triggered on a "rds" "instance" fails when the "rds" "instance" did not exist

@@ -10,11 +10,11 @@ Feature: StepfunctionsSecretsmanager - A Running "Step Functions" "Execution" Re
   @minimal @happy @read_secret_task_succeeds @internal
   Scenario: a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
     Given a "step functions" "execution" was "RUNNING"
-    And the secrets manager secret existed and was "ACTIVE"
+    And the "secrets manager" "secret" existed and was "ACTIVE"
     When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
     Then the "step functions" "execution" will be "SUCCEEDED"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which secret it read
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "secrets manager" "secret" it read
 
   @guard @negative @read_secret_task_succeeds @internal
   Scenario: a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds fails when no "step functions" "execution" was "RUNNING"
@@ -23,8 +23,8 @@ Feature: StepfunctionsSecretsmanager - A Running "Step Functions" "Execution" Re
     Then the operation is rejected
 
   @guard @negative @read_secret_task_succeeds @internal
-  Scenario: a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds fails when the secrets manager secret did not exist or was "ACTIVE"
+  Scenario: a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds fails when the "secrets manager" "secret" did not exist or was not "ACTIVE"
     Given a "step functions" "execution" was "RUNNING"
-    And the secrets manager secret did not exist or was "ACTIVE"
+    And the "secrets manager" "secret" did not exist or was not "ACTIVE"
     When a running "step functions" "execution" reads an "ACTIVE" secret and the task succeeds
     Then the operation is rejected

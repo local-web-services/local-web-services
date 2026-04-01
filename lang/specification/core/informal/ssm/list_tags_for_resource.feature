@@ -12,11 +12,11 @@ Feature: Ssm - Tags For A "Ssm" "Parameter" Are Listed
     Given the "ssm" "parameter" existed
     And the "ssm" "parameter" was "active"
     When tags for a "ssm" "parameter" are listed
-    Then the list of tags will be returned
-    And every parameter version is a positive integer
-    And every parameter has a valid type (String, SecureString, or StringList)
-    And param_exists values are always valid booleans
-    And the error log only contains ParameterAlreadyExists entries
+    Then the list of "ssm" "parameter" tags will be returned
+    And every "ssm" "parameter" version is a positive integer
+    And every "ssm" "parameter" has a valid type (String, SecureString, or StringList)
+    And "ssm" "parameter" param_exists values are always valid booleans
+    And the "ssm" error log only contains "ParameterAlreadyExists" entries
 
   @guard @negative @list_tags_for_resource
   Scenario: tags for a "ssm" "parameter" are listed fails when the "ssm" "parameter" did not exist

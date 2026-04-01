@@ -13,11 +13,11 @@ Feature: Memorydb - A "Memorydb" "Cluster" Deletion Completes
     And the "memorydb" "cluster" was "DELETING"
     When a "memorydb" "cluster" deletion completes
     Then the "memorydb" "cluster" will be "DELETED" and its tags will be removed
-    And every active cluster has write durability enabled
-    And every snapshotting cluster has a corresponding in-progress snapshot
-    And no "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"
-    And no user in "DELETING" state is currently a member of an "memorydb" "ACL"
-    And every active cluster and snapshot has tags
+    And every active "memorydb" "cluster" has write durability enabled
+    And every snapshotting "memorydb" "cluster" has a corresponding in-progress "memorydb" "snapshot"
+    And no "memorydb" "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"
+    And no "memorydb" "user" in "DELETING" state is currently a member of a "memorydb" "ACL"
+    And every active "memorydb" "cluster" and "snapshot" has tags
 
   @guard @negative @complete_cluster_deletion @internal
   Scenario: a "memorydb" "cluster" deletion completes fails when the "memorydb" "cluster" did not exist

@@ -29,10 +29,10 @@ action Init:
     item_event = {}             # item_event[iid] = event_id
 
 
-# step: an EventBridge event bus is created
-# result: the bus will be "ACTIVE"
-# guard: the bus did not already exist
-# guard_violation: the bus already existed
+# step: an "eventbridge" "bus" is created
+# result: the "eventbridge" "bus" will be "ACTIVE"
+# guard: the "eventbridge" "bus" did not already exist
+# guard_violation: the "eventbridge" "bus" already existed
 atomic action CreateEventBus:
     oneof busid in BUS_IDS:
         if busid not in bus_status:
@@ -63,11 +63,11 @@ atomic action DeleteTable:
 
 
 # step: an "eventbridge" "rule" is created targeting a "dynamodb" "table"
-# result: the rule will be "DISABLED" on the bus with the DynamoDB target configured
-# guard: the bus existed and was "ACTIVE"
-# guard_violation: the bus did not exist or was "ACTIVE"
-# guard: the rule did not already exist
-# guard_violation: the rule already existed
+# result: the "eventbridge" "rule" will be "DISABLED" on the "eventbridge" "bus" with the "dynamodb" "table" target configured
+# guard: the "eventbridge" "bus" existed and was "ACTIVE"
+# guard_violation: the "eventbridge" "bus" did not exist or was "ACTIVE"
+# guard: the "eventbridge" "rule" did not already exist
+# guard_violation: the "eventbridge" "rule" already existed
 # guard: the "dynamodb" "table" existed and was "ACTIVE"
 # guard_violation: the "dynamodb" "table" did not exist or was "ACTIVE"
 atomic action CreateRule:
@@ -85,11 +85,11 @@ atomic action CreateRule:
 
 
 # step: an "eventbridge" "rule" was "ENABLED"
-# result: the rule will be "ENABLED" and will match events
-# guard: the rule existed
-# guard_violation: the rule did not exist
-# guard: the rule was "DISABLED"
-# guard_violation_lifecycle: the rule is already ENABLED
+# result: the "eventbridge" "rule" will be "ENABLED" and will match events
+# guard: the "eventbridge" "rule" existed
+# guard_violation: the "eventbridge" "rule" did not exist
+# guard: the "eventbridge" "rule" was "DISABLED"
+# guard_violation_lifecycle: the "eventbridge" "rule" is already "ENABLED"
 atomic action EnableRule:
     oneof rid in RULE_IDS:
         if rid in rule_status:
@@ -98,11 +98,11 @@ atomic action EnableRule:
 
 
 # step: an "eventbridge" "rule" was "DISABLED"
-# result: the rule will be "DISABLED" and will not match events
-# guard: the rule existed
-# guard_violation: the rule did not exist
-# guard: the rule was "ENABLED"
-# guard_violation_lifecycle: the rule is already DISABLED
+# result: the "eventbridge" "rule" will be "DISABLED" and will not match events
+# guard: the "eventbridge" "rule" existed
+# guard_violation: the "eventbridge" "rule" did not exist
+# guard: the "eventbridge" "rule" was "ENABLED"
+# guard_violation_lifecycle: the "eventbridge" "rule" is already "DISABLED"
 atomic action DisableRule:
     oneof rid in RULE_IDS:
         if rid in rule_status:
@@ -110,16 +110,16 @@ atomic action DisableRule:
                 rule_status[rid] = "DISABLED"
 
 
-# step: an event matches an ENABLED rule and EventBridge writes an item to the DynamoDB target
-# result: the item will exist in the "dynamodb" "table" and the event will be recorded as "MATCHED"
-# guard: a rule was "ENABLED"
-# guard_violation_lifecycle: no rule was "ENABLED"
+# step: an "eventbridge" "event" matches an "ENABLED" "eventbridge" "rule" and writes an "item" to the "dynamodb" target
+# result: the "dynamodb" "item" will exist in the "dynamodb" "table" and the "eventbridge" "event" will be "MATCHED"
+# guard: a "eventbridge" "rule" was "ENABLED"
+# guard_violation_lifecycle: no "eventbridge" "rule" was "ENABLED"
 # guard: the target "dynamodb" "table" was "ACTIVE"
 # guard_violation_lifecycle: the target "dynamodb" "table" was not "ACTIVE"
-# guard: an event slot is available
-# guard_violation_capacity: no event slot is available
-# guard: an item slot is available
-# guard_violation_capacity: no item slot is available
+# guard: an "eventbridge" "event" "slot" was "available"
+# guard_violation_capacity: no "eventbridge" "event" "slot" was "available"
+# guard: a "dynamodb" "item" "slot" was "available"
+# guard_violation_capacity: no "dynamodb" "item" "slot" was "available"
 atomic action EventTargetsDynamoDB:
     oneof rid in RULE_IDS:
         if rid in rule_status:
@@ -139,13 +139,13 @@ atomic action EventTargetsDynamoDB:
 
 
 # step: an event matches an ENABLED rule but the DynamoDB write fails because the "dynamodb" "table" is being deleted
-# result: the event will be "MATCHED" but no item will be written
-# guard: a rule was "ENABLED"
-# guard_violation_lifecycle: no rule was "ENABLED"
+# result: the "eventbridge" "event" will be "MATCHED" but no "dynamodb" "item" will be written
+# guard: a "eventbridge" "rule" was "ENABLED"
+# guard_violation_lifecycle: no "eventbridge" "rule" was "ENABLED"
 # guard: the target "dynamodb" "table" was "DELETING"
 # guard_violation_lifecycle: the target "dynamodb" "table" was not "DELETING"
-# guard: an event slot is available
-# guard_violation_capacity: no event slot is available
+# guard: an "eventbridge" "event" "slot" was "available"
+# guard_violation_capacity: no "eventbridge" "event" "slot" was "available"
 atomic action EventTargetFails:
     oneof rid in RULE_IDS:
         if rid in rule_status:
@@ -169,7 +169,7 @@ always assertion ItemReferencesExistingTable:
     return True
 
 
-# check: every matched event references a rule that exists
+# check: every matched "eventbridge" "event" references an "eventbridge" "rule" that exists
 always assertion MatchedEventReferencesExistingRule:
     for eid in event_status:
         if event_status[eid] == "MATCHED":

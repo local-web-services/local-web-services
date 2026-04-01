@@ -13,12 +13,12 @@ Feature: SnsLambda - A "Lambda" "Function" Subscribes To A "Sns" "Topic"
     And the "sns" "topic" was "ACTIVE"
     And the "lambda" "function" existed
     And the "lambda" "function" was "ACTIVE"
-    And the subscription slot is available
+    And a "sns" "subscription" "slot" was "available"
     When a "lambda" "function" subscribes to a "sns" "topic"
-    Then the subscription will be "CONFIRMED" and the "lambda" "function" will be invoked on published messages
-    And every "CONFIRMED" subscription references an "ACTIVE" "SNS" topic
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation was triggered by a "CONFIRMED" subscription
+    Then the "sns" "subscription" will be "CONFIRMED" and the "lambda" "function" will be invoked on published messages
+    And every "CONFIRMED" "sns" "subscription" references an "ACTIVE" "sns" "topic"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by a "CONFIRMED" "sns" "subscription"
 
   @guard @negative @subscribe_function_to_topic
   Scenario: a "lambda" "function" subscribes to a "sns" "topic" fails when the "sns" "topic" did not exist
@@ -51,11 +51,11 @@ Feature: SnsLambda - A "Lambda" "Function" Subscribes To A "Sns" "Topic"
     Then the operation is rejected
 
   @guard @negative @subscribe_function_to_topic @capacity
-  Scenario: a "lambda" "function" subscribes to a "sns" "topic" fails when the subscription slot is not available
+  Scenario: a "lambda" "function" subscribes to a "sns" "topic" fails when no "sns" "subscription" "slot" was "available"
     Given the "sns" "topic" existed
     And the "sns" "topic" was "ACTIVE"
     And the "lambda" "function" existed
     And the "lambda" "function" was "ACTIVE"
-    And the subscription slot is not available
+    And no "sns" "subscription" "slot" was "available"
     When a "lambda" "function" subscribes to a "sns" "topic"
     Then the operation is rejected

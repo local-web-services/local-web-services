@@ -12,8 +12,8 @@ Feature: StepfunctionsElasticsearch - The "Elasticsearch" "Domain" Configuration
     Given the "elasticsearch" "domain" was "PROCESSING"
     When the "elasticsearch" "domain" configuration update completes
     Then the "elasticsearch" "domain" will be "AVAILABLE" again
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which domain it called
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "elasticsearch" "domain" it called
 
   @guard @negative @domain_processing_complete @internal
   Scenario: the "elasticsearch" "domain" configuration update completes fails when the "elasticsearch" "domain" was not "PROCESSING"

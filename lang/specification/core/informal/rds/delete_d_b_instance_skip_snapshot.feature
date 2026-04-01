@@ -13,9 +13,9 @@ Feature: Rds - A "Rds" "Instance" Is Deleted Without A Final "Rds" "Snapshot"
     And the "rds" "instance" was "AVAILABLE" or "FAILED"
     When a "rds" "instance" is deleted without a final "rds" "snapshot"
     Then the "rds" "instance" will be in "DELETING" state
-    And every database instance has a valid status
-    And every database snapshot has a valid status
-    And every backing-up instance has a corresponding in-progress snapshot
+    And every "rds" "instance" has a valid status
+    And every "rds" "snapshot" has a valid status
+    And every backing-up "rds" "instance" has a corresponding in-progress "rds" "snapshot"
 
   @guard @negative @delete_d_b_instance_skip_snapshot
   Scenario: a "rds" "instance" is deleted without a final "rds" "snapshot" fails when the "rds" "instance" did not exist

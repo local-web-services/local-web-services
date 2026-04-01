@@ -16,13 +16,13 @@ Feature: CognitoIdp - An Admin Adds A "Cognito" "User" To A "Cognito" "Group" In
     And the "cognito" "user" and group belonged to the same pool
     When an admin adds a "cognito" "user" to a "cognito" "group" in the same pool
     Then the "cognito" "user" will be a member of the "cognito" "group"
-    And every user pool has a valid status ("ACTIVE" or "DELETED")
-    And every user has a valid status
-    And every non-deleted user has an enabled flag set
-    And every group membership references an existing active group
-    And every auth session has a valid status
-    And deleted users do not have active authenticated sessions
-    And disabled users do not have active authenticated sessions
+    And every "cognito" "user pool" has a valid status ("ACTIVE" or "DELETED")
+    And every "cognito" "user" has a valid status
+    And every non-deleted "cognito" "user" has an enabled flag set
+    And every "cognito" "group" membership references an existing active "cognito" "group"
+    And every "cognito" "session" has a valid status
+    And deleted "cognito" "user"s do not have active authenticated "cognito" "session"s
+    And disabled "cognito" "user"s do not have active authenticated "cognito" "session"s
 
   @guard @negative @admin_add_user_to_group
   Scenario: an admin adds a "cognito" "user" to a "cognito" "group" in the same pool fails when the "cognito" "user" did not exist

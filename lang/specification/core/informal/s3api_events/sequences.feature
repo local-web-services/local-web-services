@@ -8,511 +8,511 @@ Feature: S3apiEvents - Action Sequences
     Given the system is initialized
 
   @sequence
-  Scenario: a "s3" "bucket" is created then an EventBridge event bus is created
+  Scenario: a "s3" "bucket" is created then an "eventbridge" "bus" is created
     Given bid not in bucket_status
     When a "s3" "bucket" is created
-    When an EventBridge event bus is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "eventbridge" "bus" is created
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: a "s3" "bucket" is created then the EventBridge event bus is deleted
+  Scenario: a "s3" "bucket" is created then the "eventbridge" "bus" is deleted
     Given bid not in bucket_status
     When a "s3" "bucket" is created
-    When the EventBridge event bus is deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When the "eventbridge" "bus" is deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: a "s3" "bucket" is created then EventBridge notifications are enabled on the bucket targeting a specific bus
+  Scenario: a "s3" "bucket" is created then "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
     Given bid not in bucket_status
     When a "s3" "bucket" is created
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: a "s3" "bucket" is created then an object is uploaded and S3 delivers an event to the EventBridge bus
+  Scenario: a "s3" "bucket" is created then an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
     Given bid not in bucket_status
     When a "s3" "bucket" is created
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: a "s3" "bucket" is created then an object is uploaded but event delivery fails because the bus has been deleted
+  Scenario: a "s3" "bucket" is created then an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
     Given bid not in bucket_status
     When a "s3" "bucket" is created
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an EventBridge event bus is created then a "s3" "bucket" is created
+  Scenario: an "eventbridge" "bus" is created then a "s3" "bucket" is created
     Given busid not in bus_status
-    When an EventBridge event bus is created
+    When an "eventbridge" "bus" is created
     When a "s3" "bucket" is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an EventBridge event bus is created then the EventBridge event bus is deleted
+  Scenario: an "eventbridge" "bus" is created then the "eventbridge" "bus" is deleted
     Given busid not in bus_status
-    When an EventBridge event bus is created
-    When the EventBridge event bus is deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "eventbridge" "bus" is created
+    When the "eventbridge" "bus" is deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an EventBridge event bus is created then EventBridge notifications are enabled on the bucket targeting a specific bus
+  Scenario: an "eventbridge" "bus" is created then "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
     Given busid not in bus_status
-    When an EventBridge event bus is created
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "eventbridge" "bus" is created
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an EventBridge event bus is created then an object is uploaded and S3 delivers an event to the EventBridge bus
+  Scenario: an "eventbridge" "bus" is created then an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
     Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "eventbridge" "bus" is created
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an EventBridge event bus is created then an object is uploaded but event delivery fails because the bus has been deleted
+  Scenario: an "eventbridge" "bus" is created then an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
     Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "eventbridge" "bus" is created
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: the EventBridge event bus is deleted then a "s3" "bucket" is created
+  Scenario: the "eventbridge" "bus" is deleted then a "s3" "bucket" is created
     Given busid in bus_status
-    When the EventBridge event bus is deleted
+    When the "eventbridge" "bus" is deleted
     When a "s3" "bucket" is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: the EventBridge event bus is deleted then an EventBridge event bus is created
+  Scenario: the "eventbridge" "bus" is deleted then an "eventbridge" "bus" is created
     Given busid in bus_status
-    When the EventBridge event bus is deleted
-    When an EventBridge event bus is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When the "eventbridge" "bus" is deleted
+    When an "eventbridge" "bus" is created
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: the EventBridge event bus is deleted then EventBridge notifications are enabled on the bucket targeting a specific bus
+  Scenario: the "eventbridge" "bus" is deleted then "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
     Given busid in bus_status
-    When the EventBridge event bus is deleted
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When the "eventbridge" "bus" is deleted
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: the EventBridge event bus is deleted then an object is uploaded and S3 delivers an event to the EventBridge bus
+  Scenario: the "eventbridge" "bus" is deleted then an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
     Given busid in bus_status
-    When the EventBridge event bus is deleted
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When the "eventbridge" "bus" is deleted
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: the EventBridge event bus is deleted then an object is uploaded but event delivery fails because the bus has been deleted
+  Scenario: the "eventbridge" "bus" is deleted then an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
     Given busid in bus_status
-    When the EventBridge event bus is deleted
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When the "eventbridge" "bus" is deleted
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: EventBridge notifications are enabled on the bucket targeting a specific bus then a "s3" "bucket" is created
+  Scenario: "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus" then a "s3" "bucket" is created
     Given bid in bucket_status
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
     When a "s3" "bucket" is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: EventBridge notifications are enabled on the bucket targeting a specific bus then an EventBridge event bus is created
+  Scenario: "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus" then an "eventbridge" "bus" is created
     Given bid in bucket_status
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    When an EventBridge event bus is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    When an "eventbridge" "bus" is created
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: EventBridge notifications are enabled on the bucket targeting a specific bus then the EventBridge event bus is deleted
+  Scenario: "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus" then the "eventbridge" "bus" is deleted
     Given bid in bucket_status
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    When the EventBridge event bus is deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    When the "eventbridge" "bus" is deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: EventBridge notifications are enabled on the bucket targeting a specific bus then an object is uploaded and S3 delivers an event to the EventBridge bus
+  Scenario: "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus" then an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
     Given bid in bucket_status
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: EventBridge notifications are enabled on the bucket targeting a specific bus then an object is uploaded but event delivery fails because the bus has been deleted
+  Scenario: "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus" then an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
     Given bid in bucket_status
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus then a "s3" "bucket" is created
+  Scenario: an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" then a "s3" "bucket" is created
     Given bid in bucket_status
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
     When a "s3" "bucket" is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus then an EventBridge event bus is created
+  Scenario: an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" then an "eventbridge" "bus" is created
     Given bid in bucket_status
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    When an EventBridge event bus is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    When an "eventbridge" "bus" is created
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus then the EventBridge event bus is deleted
+  Scenario: an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" then the "eventbridge" "bus" is deleted
     Given bid in bucket_status
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    When the EventBridge event bus is deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    When the "eventbridge" "bus" is deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus then EventBridge notifications are enabled on the bucket targeting a specific bus
+  Scenario: an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" then "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
     Given bid in bucket_status
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus then an object is uploaded but event delivery fails because the bus has been deleted
+  Scenario: an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" then an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
     Given bid in bucket_status
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded but event delivery fails because the bus has been deleted then a "s3" "bucket" is created
+  Scenario: an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted then a "s3" "bucket" is created
     Given bid in bucket_status
-    When an object is uploaded but event delivery fails because the bus has been deleted
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
     When a "s3" "bucket" is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded but event delivery fails because the bus has been deleted then an EventBridge event bus is created
+  Scenario: an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted then an "eventbridge" "bus" is created
     Given bid in bucket_status
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    When an EventBridge event bus is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    When an "eventbridge" "bus" is created
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded but event delivery fails because the bus has been deleted then the EventBridge event bus is deleted
+  Scenario: an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted then the "eventbridge" "bus" is deleted
     Given bid in bucket_status
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    When the EventBridge event bus is deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    When the "eventbridge" "bus" is deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded but event delivery fails because the bus has been deleted then EventBridge notifications are enabled on the bucket targeting a specific bus
+  Scenario: an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted then "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
     Given bid in bucket_status
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded but event delivery fails because the bus has been deleted then an object is uploaded and S3 delivers an event to the EventBridge bus
+  Scenario: an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted then an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
     Given bid in bucket_status
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: a "s3" "bucket" is created then an EventBridge event bus is created then the EventBridge event bus is deleted
+  Scenario: a "s3" "bucket" is created then an "eventbridge" "bus" is created then the "eventbridge" "bus" is deleted
     Given bid not in bucket_status
     When a "s3" "bucket" is created
-    When an EventBridge event bus is created
-    When the EventBridge event bus is deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "eventbridge" "bus" is created
+    When the "eventbridge" "bus" is deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: a "s3" "bucket" is created then the EventBridge event bus is deleted then EventBridge notifications are enabled on the bucket targeting a specific bus
+  Scenario: a "s3" "bucket" is created then the "eventbridge" "bus" is deleted then "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
     Given bid not in bucket_status
     When a "s3" "bucket" is created
-    When the EventBridge event bus is deleted
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When the "eventbridge" "bus" is deleted
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: a "s3" "bucket" is created then EventBridge notifications are enabled on the bucket targeting a specific bus then an object is uploaded and S3 delivers an event to the EventBridge bus
+  Scenario: a "s3" "bucket" is created then "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus" then an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
     Given bid not in bucket_status
     When a "s3" "bucket" is created
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: a "s3" "bucket" is created then an object is uploaded and S3 delivers an event to the EventBridge bus then an object is uploaded but event delivery fails because the bus has been deleted
+  Scenario: a "s3" "bucket" is created then an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" then an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
     Given bid not in bucket_status
     When a "s3" "bucket" is created
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: a "s3" "bucket" is created then an object is uploaded but event delivery fails because the bus has been deleted then an EventBridge event bus is created
+  Scenario: a "s3" "bucket" is created then an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted then an "eventbridge" "bus" is created
     Given bid not in bucket_status
     When a "s3" "bucket" is created
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    When an EventBridge event bus is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    When an "eventbridge" "bus" is created
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an EventBridge event bus is created then a "s3" "bucket" is created then EventBridge notifications are enabled on the bucket targeting a specific bus
+  Scenario: an "eventbridge" "bus" is created then a "s3" "bucket" is created then "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
     Given busid not in bus_status
-    When an EventBridge event bus is created
+    When an "eventbridge" "bus" is created
     When a "s3" "bucket" is created
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an EventBridge event bus is created then the EventBridge event bus is deleted then an object is uploaded and S3 delivers an event to the EventBridge bus
+  Scenario: an "eventbridge" "bus" is created then the "eventbridge" "bus" is deleted then an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
     Given busid not in bus_status
-    When an EventBridge event bus is created
-    When the EventBridge event bus is deleted
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "eventbridge" "bus" is created
+    When the "eventbridge" "bus" is deleted
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an EventBridge event bus is created then EventBridge notifications are enabled on the bucket targeting a specific bus then an object is uploaded but event delivery fails because the bus has been deleted
+  Scenario: an "eventbridge" "bus" is created then "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus" then an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
     Given busid not in bus_status
-    When an EventBridge event bus is created
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "eventbridge" "bus" is created
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an EventBridge event bus is created then an object is uploaded and S3 delivers an event to the EventBridge bus then a "s3" "bucket" is created
+  Scenario: an "eventbridge" "bus" is created then an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" then a "s3" "bucket" is created
     Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
+    When an "eventbridge" "bus" is created
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
     When a "s3" "bucket" is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an EventBridge event bus is created then an object is uploaded but event delivery fails because the bus has been deleted then the EventBridge event bus is deleted
+  Scenario: an "eventbridge" "bus" is created then an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted then the "eventbridge" "bus" is deleted
     Given busid not in bus_status
-    When an EventBridge event bus is created
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    When the EventBridge event bus is deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "eventbridge" "bus" is created
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    When the "eventbridge" "bus" is deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: the EventBridge event bus is deleted then a "s3" "bucket" is created then an object is uploaded and S3 delivers an event to the EventBridge bus
+  Scenario: the "eventbridge" "bus" is deleted then a "s3" "bucket" is created then an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
     Given busid in bus_status
-    When the EventBridge event bus is deleted
+    When the "eventbridge" "bus" is deleted
     When a "s3" "bucket" is created
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: the EventBridge event bus is deleted then an EventBridge event bus is created then an object is uploaded but event delivery fails because the bus has been deleted
+  Scenario: the "eventbridge" "bus" is deleted then an "eventbridge" "bus" is created then an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
     Given busid in bus_status
-    When the EventBridge event bus is deleted
-    When an EventBridge event bus is created
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When the "eventbridge" "bus" is deleted
+    When an "eventbridge" "bus" is created
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: the EventBridge event bus is deleted then EventBridge notifications are enabled on the bucket targeting a specific bus then a "s3" "bucket" is created
+  Scenario: the "eventbridge" "bus" is deleted then "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus" then a "s3" "bucket" is created
     Given busid in bus_status
-    When the EventBridge event bus is deleted
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
+    When the "eventbridge" "bus" is deleted
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
     When a "s3" "bucket" is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: the EventBridge event bus is deleted then an object is uploaded and S3 delivers an event to the EventBridge bus then an EventBridge event bus is created
+  Scenario: the "eventbridge" "bus" is deleted then an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" then an "eventbridge" "bus" is created
     Given busid in bus_status
-    When the EventBridge event bus is deleted
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    When an EventBridge event bus is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When the "eventbridge" "bus" is deleted
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    When an "eventbridge" "bus" is created
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: the EventBridge event bus is deleted then an object is uploaded but event delivery fails because the bus has been deleted then EventBridge notifications are enabled on the bucket targeting a specific bus
+  Scenario: the "eventbridge" "bus" is deleted then an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted then "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
     Given busid in bus_status
-    When the EventBridge event bus is deleted
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When the "eventbridge" "bus" is deleted
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: EventBridge notifications are enabled on the bucket targeting a specific bus then a "s3" "bucket" is created then an object is uploaded but event delivery fails because the bus has been deleted
+  Scenario: "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus" then a "s3" "bucket" is created then an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
     Given bid in bucket_status
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
     When a "s3" "bucket" is created
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: EventBridge notifications are enabled on the bucket targeting a specific bus then an EventBridge event bus is created then a "s3" "bucket" is created
+  Scenario: "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus" then an "eventbridge" "bus" is created then a "s3" "bucket" is created
     Given bid in bucket_status
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    When an EventBridge event bus is created
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    When an "eventbridge" "bus" is created
     When a "s3" "bucket" is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: EventBridge notifications are enabled on the bucket targeting a specific bus then the EventBridge event bus is deleted then an EventBridge event bus is created
+  Scenario: "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus" then the "eventbridge" "bus" is deleted then an "eventbridge" "bus" is created
     Given bid in bucket_status
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    When the EventBridge event bus is deleted
-    When an EventBridge event bus is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    When the "eventbridge" "bus" is deleted
+    When an "eventbridge" "bus" is created
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: EventBridge notifications are enabled on the bucket targeting a specific bus then an object is uploaded and S3 delivers an event to the EventBridge bus then the EventBridge event bus is deleted
+  Scenario: "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus" then an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" then the "eventbridge" "bus" is deleted
     Given bid in bucket_status
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    When the EventBridge event bus is deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    When the "eventbridge" "bus" is deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: EventBridge notifications are enabled on the bucket targeting a specific bus then an object is uploaded but event delivery fails because the bus has been deleted then an object is uploaded and S3 delivers an event to the EventBridge bus
+  Scenario: "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus" then an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted then an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
     Given bid in bucket_status
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus then a "s3" "bucket" is created then an EventBridge event bus is created
+  Scenario: an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" then a "s3" "bucket" is created then an "eventbridge" "bus" is created
     Given bid in bucket_status
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
     When a "s3" "bucket" is created
-    When an EventBridge event bus is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "eventbridge" "bus" is created
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus then an EventBridge event bus is created then the EventBridge event bus is deleted
+  Scenario: an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" then an "eventbridge" "bus" is created then the "eventbridge" "bus" is deleted
     Given bid in bucket_status
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    When an EventBridge event bus is created
-    When the EventBridge event bus is deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    When an "eventbridge" "bus" is created
+    When the "eventbridge" "bus" is deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus then the EventBridge event bus is deleted then EventBridge notifications are enabled on the bucket targeting a specific bus
+  Scenario: an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" then the "eventbridge" "bus" is deleted then "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
     Given bid in bucket_status
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    When the EventBridge event bus is deleted
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    When the "eventbridge" "bus" is deleted
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus then EventBridge notifications are enabled on the bucket targeting a specific bus then an object is uploaded but event delivery fails because the bus has been deleted
+  Scenario: an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" then "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus" then an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
     Given bid in bucket_status
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus then an object is uploaded but event delivery fails because the bus has been deleted then a "s3" "bucket" is created
+  Scenario: an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" then an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted then a "s3" "bucket" is created
     Given bid in bucket_status
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    When an object is uploaded but event delivery fails because the bus has been deleted
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
     When a "s3" "bucket" is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded but event delivery fails because the bus has been deleted then a "s3" "bucket" is created then the EventBridge event bus is deleted
+  Scenario: an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted then a "s3" "bucket" is created then the "eventbridge" "bus" is deleted
     Given bid in bucket_status
-    When an object is uploaded but event delivery fails because the bus has been deleted
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
     When a "s3" "bucket" is created
-    When the EventBridge event bus is deleted
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When the "eventbridge" "bus" is deleted
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded but event delivery fails because the bus has been deleted then an EventBridge event bus is created then EventBridge notifications are enabled on the bucket targeting a specific bus
+  Scenario: an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted then an "eventbridge" "bus" is created then "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
     Given bid in bucket_status
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    When an EventBridge event bus is created
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    When an "eventbridge" "bus" is created
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded but event delivery fails because the bus has been deleted then the EventBridge event bus is deleted then an object is uploaded and S3 delivers an event to the EventBridge bus
+  Scenario: an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted then the "eventbridge" "bus" is deleted then an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
     Given bid in bucket_status
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    When the EventBridge event bus is deleted
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    When the "eventbridge" "bus" is deleted
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded but event delivery fails because the bus has been deleted then EventBridge notifications are enabled on the bucket targeting a specific bus then a "s3" "bucket" is created
+  Scenario: an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted then "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus" then a "s3" "bucket" is created
     Given bid in bucket_status
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    When EventBridge notifications are enabled on the bucket targeting a specific bus
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    When "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"
     When a "s3" "bucket" is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @sequence
-  Scenario: an object is uploaded but event delivery fails because the bus has been deleted then an object is uploaded and S3 delivers an event to the EventBridge bus then an EventBridge event bus is created
+  Scenario: an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted then an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" then an "eventbridge" "bus" is created
     Given bid in bucket_status
-    When an object is uploaded but event delivery fails because the bus has been deleted
-    When an object is uploaded and S3 delivers an event to the EventBridge bus
-    When an EventBridge event bus is created
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    When an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted
+    When an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"
+    When an "eventbridge" "bus" is created
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists

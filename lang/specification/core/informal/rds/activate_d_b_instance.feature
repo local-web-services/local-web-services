@@ -13,9 +13,9 @@ Feature: Rds - A "Rds" "Instance" Finishes Creating
     And the "rds" "instance" was "CREATING"
     When a "rds" "instance" finishes creating
     Then the "rds" "instance" will be "AVAILABLE" or "FAILED"
-    And every database instance has a valid status
-    And every database snapshot has a valid status
-    And every backing-up instance has a corresponding in-progress snapshot
+    And every "rds" "instance" has a valid status
+    And every "rds" "snapshot" has a valid status
+    And every backing-up "rds" "instance" has a corresponding in-progress "rds" "snapshot"
 
   @guard @negative @activate_d_b_instance @internal
   Scenario: a "rds" "instance" finishes creating fails when the "rds" "instance" did not exist

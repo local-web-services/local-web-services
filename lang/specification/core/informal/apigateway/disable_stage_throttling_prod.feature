@@ -12,14 +12,14 @@ Feature: Apigateway - Throttling Was "Disabled" For The "Api Gateway" "Prod Stag
     Given the "api gateway" "prod stage" existed
     And the "api gateway" "prod stage" is "ACTIVE"
     When throttling was "DISABLED" for the "api gateway" "prod stage"
-    Then prod stage requests are not throttled
-    And all "ACTIVE" resources belong to "ACTIVE" APIs
-    And all "EXISTING" methods belong to "ACTIVE" resources
-    And all "EXISTING" integrations correspond to "EXISTING" methods
-    And all "ACTIVE" deployments belong to "ACTIVE" APIs
-    And all active stages reference "ACTIVE" deployments
-    And all active stages belong to "ACTIVE" APIs
-    And each "ACTIVE" "API" has at least one "ACTIVE" root resource
+    Then "api gateway" "prod stage" requests will not be throttled
+    And all "ACTIVE" "api gateway" "resource"s belong to "ACTIVE" "api gateway" "API"s
+    And all "api gateway" "method"s belong to "ACTIVE" "api gateway" "resource"s
+    And all "api gateway" "integration"s correspond to existing "api gateway" "method"s
+    And all "ACTIVE" "api gateway" "deployment"s belong to "ACTIVE" "api gateway" "API"s
+    And all active "api gateway" "stage"s reference "ACTIVE" "api gateway" "deployment"s
+    And all active "api gateway" "stage"s belong to "ACTIVE" "api gateway" "API"s
+    And each "ACTIVE" "api gateway" "API" has at least one "ACTIVE" root "api gateway" "resource"
 
   @guard @negative @disable_stage_throttling_prod
   Scenario: throttling was "DISABLED" for the "api gateway" "prod stage" fails when the "api gateway" "prod stage" did not exist

@@ -13,11 +13,11 @@ Feature: Glacier - A "Glacier" "Job" Fails
     And the "glacier" "job" was "InProgress"
     When a "glacier" "job" fails
     Then the "glacier" "JOB" will be "Failed"
-    And every in-progress job references an active vault
-    And vault archive count is never negative
-    And all stored archives belong to an "ACTIVE" vault
-    And job output is only available for succeeded jobs
-    And every archive retrieval job references a non-empty archive "ID"
+    And every in-progress "glacier" "job" references an active "glacier" "vault"
+    And "glacier" "vault" archive count is never negative
+    And all stored "glacier" "archive"s belong to an "ACTIVE" "glacier" "vault"
+    And "glacier" "job" output is only available for succeeded "glacier" "job"s
+    And every "glacier" "archive" retrieval "glacier" "job" references a non-empty "glacier" "archive" "ID"
 
   @guard @negative @job_fails @internal
   Scenario: a "glacier" "job" fails fails when the "glacier" "job" did not exist

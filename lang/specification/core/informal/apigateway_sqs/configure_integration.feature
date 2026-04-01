@@ -16,8 +16,8 @@ Feature: ApigatewaySqs - A Sqs Direct Integration Is Configured On The "Api Gate
     And the "sqs" "queue" was "ACTIVE"
     When a "SQS" direct integration is configured on the "api gateway" "api"
     Then the "api gateway" "API" will enqueue incoming requests as "SQS" messages without invoking Lambda
-    And every "ACCEPTED" request references an "ACTIVE" "API"
-    And every "AVAILABLE" message belongs to an "ACTIVE" queue
+    And every "ACCEPTED" "api gateway" "request" references an "ACTIVE" "api gateway" "API"
+    And every "AVAILABLE" "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
 
   @guard @negative @configure_integration
   Scenario: a "SQS" direct integration is configured on the "api gateway" "api" fails when the "api gateway" "API" did not exist

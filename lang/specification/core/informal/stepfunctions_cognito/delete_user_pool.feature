@@ -13,8 +13,8 @@ Feature: StepfunctionsCognito - A "Cognito" "User Pool" Is Deleted
     And the "cognito" "user pool" was "ACTIVE"
     When a "cognito" "user pool" is deleted
     Then the "cognito" "user pool" will be deleted and "SDK" task calls targeting it will fail
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which pool it called
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "cognito" "user pool" it called
 
   @guard @negative @delete_user_pool
   Scenario: a "cognito" "user pool" is deleted fails when the "cognito" "user pool" did not exist

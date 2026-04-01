@@ -12,9 +12,9 @@ Feature: LambdaOpensearch - An "Opensearch" "Domain" Is Created
     Given the "opensearch" "domain" did not already exist
     When an "opensearch" "domain" is created
     Then the "opensearch" "domain" will be "ACTIVE"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @guard @negative @create_domain
   Scenario: an "opensearch" "domain" is created fails when the "opensearch" "domain" already existed

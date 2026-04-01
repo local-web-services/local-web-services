@@ -13,8 +13,8 @@ Feature: S3apiSqs - The "Sqs" "Queue" Is Deleted
     And the "sqs" "queue" was "ACTIVE"
     When the "sqs" "queue" is deleted
     Then the "sqs" "queue" will be deleted and notification delivery to it will fail
-    And every "QUEUED" message references an object that exists
-    And every "QUEUED" message references a queue that exists
+    And every "QUEUED" "sqs" "message" references an "s3" "object" that exists
+    And every "QUEUED" "sqs" "message" references an "sqs" "queue" that exists
 
   @guard @negative @delete_queue
   Scenario: the "sqs" "queue" is deleted fails when the "sqs" "queue" did not exist
@@ -23,8 +23,8 @@ Feature: S3apiSqs - The "Sqs" "Queue" Is Deleted
     Then the operation is rejected
 
   @guard @negative @delete_queue @lifecycle
-  Scenario: the "sqs" "queue" is deleted fails when the queue is already "DELETED"
+  Scenario: the "sqs" "queue" is deleted fails when the "sqs" "queue" is already "DELETED"
     Given the "sqs" "queue" existed
-    And the queue is already "DELETED"
+    And the "sqs" "queue" is already "DELETED"
     When the "sqs" "queue" is deleted
     Then the operation is rejected

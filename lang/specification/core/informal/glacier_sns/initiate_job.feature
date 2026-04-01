@@ -10,7 +10,7 @@ Feature: GlacierSns - A Glacier Archive Retrieval Job Is Initiated On The "Glaci
   @minimal @happy @initiate_job
   Scenario: a Glacier archive retrieval job is initiated on the "glacier" "vault"
     Given the "glacier" "vault" existed
-    And a "glacier" "job" slot is available
+    And a "glacier" "job" "slot" was "available"
     When a Glacier archive retrieval job is initiated on the "glacier" "vault"
     Then the "glacier" "job" will be "IN_PROGRESS"
     And every "PUBLISHED" notification references a "glacier" "job" that exists
@@ -23,8 +23,8 @@ Feature: GlacierSns - A Glacier Archive Retrieval Job Is Initiated On The "Glaci
     Then the operation is rejected
 
   @guard @negative @initiate_job @capacity
-  Scenario: a Glacier archive retrieval job is initiated on the "glacier" "vault" fails when no job slot is available
+  Scenario: a Glacier archive retrieval job is initiated on the "glacier" "vault" fails when no "glacier" "job" "slot" was "available"
     Given the "glacier" "vault" existed
-    And no job slot is available
+    And no "glacier" "job" "slot" was "available"
     When a Glacier archive retrieval job is initiated on the "glacier" "vault"
     Then the operation is rejected

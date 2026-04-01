@@ -9,14 +9,14 @@ Feature: EventsSqs - A Message Is Consumed From The "Sqs" "Queue"
 
   @minimal @happy @consume_message
   Scenario: a message is consumed from the "sqs" "queue"
-    Given an "AVAILABLE" message existed in the queue
+    Given an "AVAILABLE" "sqs" "message" existed in the "sqs" "queue"
     When a message is consumed from the "sqs" "queue"
-    Then the message will be deleted
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "AVAILABLE" message belongs to an "ACTIVE" queue
+    Then the "sqs" "message" will be "DELETED"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "AVAILABLE" "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
 
   @guard @negative @consume_message @lifecycle
-  Scenario: a message is consumed from the "sqs" "queue" fails when no "AVAILABLE" message existed in the queue
-    Given no "AVAILABLE" message existed in the queue
+  Scenario: a message is consumed from the "sqs" "queue" fails when no "AVAILABLE" "sqs" "message" existed in the "sqs" "queue"
+    Given no "AVAILABLE" "sqs" "message" existed in the "sqs" "queue"
     When a message is consumed from the "sqs" "queue"
     Then the operation is rejected

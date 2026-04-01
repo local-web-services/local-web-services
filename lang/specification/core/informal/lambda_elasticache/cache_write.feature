@@ -12,11 +12,11 @@ Feature: LambdaElasticache - The "Lambda" "Function" Writes A Value To The "Elas
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "elasticache" "cluster" existed
     And the "elasticache" "cluster" was "AVAILABLE"
-    And a key slot is available
+    And an "elasticache" "key" "slot" was "available"
     When the "lambda" "function" writes a value to the "elasticache" "cluster" during invocation
-    Then the cache entry will be "CACHED" in the cluster
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "CACHED" entry belongs to an "AVAILABLE" cluster
+    Then the "elasticache" "cache" "entry" will be "CACHED" in the "elasticache" "cluster"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "CACHED" "elasticache" "entry" belongs to an "AVAILABLE" "elasticache" "cluster"
 
   @guard @negative @cache_write @lifecycle
   Scenario: the "lambda" "function" writes a value to the "elasticache" "cluster" during invocation fails when no "lambda" "invocation" was "IN_PROGRESS"
@@ -40,10 +40,10 @@ Feature: LambdaElasticache - The "Lambda" "Function" Writes A Value To The "Elas
     Then the operation is rejected
 
   @guard @negative @cache_write @capacity
-  Scenario: the "lambda" "function" writes a value to the "elasticache" "cluster" during invocation fails when no key slot is available
+  Scenario: the "lambda" "function" writes a value to the "elasticache" "cluster" during invocation fails when no "elasticache" "key" "slot" was "available"
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "elasticache" "cluster" existed
     And the "elasticache" "cluster" was "AVAILABLE"
-    And no key slot is available
+    And no "elasticache" "key" "slot" was "available"
     When the "lambda" "function" writes a value to the "elasticache" "cluster" during invocation
     Then the operation is rejected

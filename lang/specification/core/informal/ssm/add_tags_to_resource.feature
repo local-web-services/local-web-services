@@ -13,10 +13,10 @@ Feature: Ssm - Tags Are Added To A "Ssm" "Parameter"
     And the "ssm" "parameter" was "active"
     When tags are added to a "ssm" "parameter"
     Then the tags are associated with the "ssm" "parameter"
-    And every parameter version is a positive integer
-    And every parameter has a valid type (String, SecureString, or StringList)
-    And param_exists values are always valid booleans
-    And the error log only contains ParameterAlreadyExists entries
+    And every "ssm" "parameter" version is a positive integer
+    And every "ssm" "parameter" has a valid type (String, SecureString, or StringList)
+    And "ssm" "parameter" param_exists values are always valid booleans
+    And the "ssm" error log only contains "ParameterAlreadyExists" entries
 
   @guard @negative @add_tags_to_resource
   Scenario: tags are added to a "ssm" "parameter" fails when the "ssm" "parameter" did not exist

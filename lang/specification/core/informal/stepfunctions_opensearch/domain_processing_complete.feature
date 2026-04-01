@@ -12,8 +12,8 @@ Feature: StepfunctionsOpensearch - The "Opensearch" "Domain" Configuration Updat
     Given the "opensearch" "domain" was "PROCESSING"
     When the "opensearch" "domain" configuration update completes
     Then the "opensearch" "domain" will be "ACTIVE" again
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which domain it called
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "opensearch" "domain" it called
 
   @guard @negative @domain_processing_complete @internal
   Scenario: the "opensearch" "domain" configuration update completes fails when the "opensearch" "domain" was not "PROCESSING"

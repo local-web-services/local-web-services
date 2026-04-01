@@ -10,11 +10,11 @@ Feature: StepfunctionsEvents - A Running "Step Functions" "Execution" Succeeds B
   @minimal @happy @execution_succeeds_event_fails
   Scenario: a running "step functions" "execution" succeeds but the "SUCCEEDED" event delivery fails because the bus is deleted
     Given a "step functions" "execution" was "RUNNING"
-    And the bus was "DELETED"
+    And the "eventbridge" "bus" was "DELETED"
     When a running "step functions" "execution" succeeds but the "SUCCEEDED" event delivery fails because the bus is deleted
     Then the "step functions" "execution" will be "SUCCEEDED" but no "SUCCEEDED" event will be delivered
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "DELIVERED" event references an execution that exists
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "DELIVERED" "eventbridge" "event" references a "step functions" "execution" that exists
 
   @guard @negative @execution_succeeds_event_fails
   Scenario: a running "step functions" "execution" succeeds but the "SUCCEEDED" event delivery fails because the bus is deleted fails when no "step functions" "execution" was "RUNNING"
@@ -23,8 +23,8 @@ Feature: StepfunctionsEvents - A Running "Step Functions" "Execution" Succeeds B
     Then the operation is rejected
 
   @guard @negative @execution_succeeds_event_fails @lifecycle
-  Scenario: a running "step functions" "execution" succeeds but the "SUCCEEDED" event delivery fails because the bus is deleted fails when the bus was not "DELETED"
+  Scenario: a running "step functions" "execution" succeeds but the "SUCCEEDED" event delivery fails because the bus is deleted fails when the "eventbridge" "bus" was not "DELETED"
     Given a "step functions" "execution" was "RUNNING"
-    And the bus was not "DELETED"
+    And the "eventbridge" "bus" was not "DELETED"
     When a running "step functions" "execution" succeeds but the "SUCCEEDED" event delivery fails because the bus is deleted
     Then the operation is rejected

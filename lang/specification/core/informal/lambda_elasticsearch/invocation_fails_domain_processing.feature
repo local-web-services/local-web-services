@@ -12,8 +12,8 @@ Feature: LambdaElasticsearch - The "Lambda" "Function" Fails To Write Because Th
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "elasticsearch" "domain" was "PROCESSING"
     When the "lambda" "function" fails to write because the "elasticsearch" "domain" is processing a config update
-    Then the invocation will be "FAILED" with a connection error
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then the "lambda" "invocation" will be "FAILED" with a connection error
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "elasticsearch" "domain" that exists
 
   @guard @negative @invocation_fails_domain_processing @lifecycle

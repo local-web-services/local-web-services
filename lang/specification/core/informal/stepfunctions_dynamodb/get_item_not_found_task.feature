@@ -10,11 +10,11 @@ Feature: StepfunctionsDynamodb - A Running "Step Functions" "Execution" Attempts
   @minimal @happy @get_item_not_found_task
   Scenario: a running "step functions" "execution" attempts to get an item that does not exist and the execution fails
     Given a "step functions" "execution" was "RUNNING"
-    And no item existed in the target table
+    And no "dynamodb" "item" existed in the target "dynamodb" "table"
     When a running "step functions" "execution" attempts to get an item that does not exist and the execution fails
     Then the "step functions" "execution" will be "FAILED" because the item was not found
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every existing item belongs to an "ACTIVE" table
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every existing "dynamodb" "item" belongs to an "ACTIVE" "dynamodb" "table"
 
   @guard @negative @get_item_not_found_task
   Scenario: a running "step functions" "execution" attempts to get an item that does not exist and the execution fails fails when no "step functions" "execution" was "RUNNING"
@@ -23,8 +23,8 @@ Feature: StepfunctionsDynamodb - A Running "Step Functions" "Execution" Attempts
     Then the operation is rejected
 
   @guard @negative @get_item_not_found_task
-  Scenario: a running "step functions" "execution" attempts to get an item that does not exist and the execution fails fails when an item existed in the target table
+  Scenario: a running "step functions" "execution" attempts to get an item that does not exist and the execution fails fails when a "dynamodb" "item" existed in the target "dynamodb" "table"
     Given a "step functions" "execution" was "RUNNING"
-    And an item existed in the target table
+    And a "dynamodb" "item" existed in the target "dynamodb" "table"
     When a running "step functions" "execution" attempts to get an item that does not exist and the execution fails
     Then the operation is rejected

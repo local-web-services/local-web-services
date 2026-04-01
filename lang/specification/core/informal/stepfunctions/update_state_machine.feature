@@ -13,11 +13,11 @@ Feature: Stepfunctions - A "Step Functions" "State Machine" Definition Is Update
     And the "step functions" "state machine" was "ACTIVE"
     When a "step functions" "state machine" definition is updated
     Then the "step functions" "state machine" version will be incremented
-    And every state machine has a valid status ("ACTIVE", "DELETING", or "DELETED")
-    And every execution has a valid status ("RUNNING", "SUCCEEDED", "FAILED", "TIMED_OUT", or "ABORTED")
-    And every state machine has a valid type ("STANDARD" or "EXPRESS")
-    And synchronous executions only run on express state machines
-    And every execution belongs to a known state machine
+    And every "step functions" "state machine" has a valid status ("ACTIVE", "DELETING", or "DELETED")
+    And every "step functions" "execution" has a valid status ("RUNNING", "SUCCEEDED", "FAILED", "TIMED_OUT", or "ABORTED")
+    And every "step functions" "state machine" has a valid type ("STANDARD" or "EXPRESS")
+    And synchronous "step functions" "execution"s only run on express "step functions" "state machine"s
+    And every "step functions" "execution" belongs to a known "step functions" "state machine"
 
   @guard @negative @update_state_machine
   Scenario: a "step functions" "state machine" definition is updated fails when the "step functions" "state machine" did not exist

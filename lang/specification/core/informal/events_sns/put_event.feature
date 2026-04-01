@@ -1,5 +1,5 @@
 @eventssns @generated
-Feature: EventsSns - An Event Is Published To The Bus And Routed To The Target Sns Topic
+Feature: EventsSns - An "Eventbridge" "Event" Is Published To The "Eventbridge" "Bus" And Routed To The Target "Sns" "Topic"
 
   # Generated from FizzBee spec: events_sns.fizz
   # Safety invariants: RuleReferencesActiveBus, MessageRequiresActiveTopic
@@ -8,53 +8,53 @@ Feature: EventsSns - An Event Is Published To The Bus And Routed To The Target S
     Given the system is initialized
 
   @minimal @happy @put_event
-  Scenario: an event is published to the bus and routed to the target "SNS" topic
-    Given the event bus existed
-    And the event bus was "ACTIVE"
-    And an "ENABLED" rule existed on the bus targeting a topic
-    And the target topic was "ACTIVE"
-    And a message slot is available
-    When an event is published to the bus and routed to the target "SNS" topic
-    Then the message will be "AVAILABLE" on the topic
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "AVAILABLE" message belongs to an "ACTIVE" topic
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and routed to the target "sns" "topic"
+    Given the "eventbridge" "bus" existed
+    And the "eventbridge" "bus" was "ACTIVE"
+    And an "ENABLED" "eventbridge" "rule" existed on the "eventbridge" "bus" targeting a "sns" "topic"
+    And the target "sns" "topic" was "ACTIVE"
+    And a "sns" "message" "slot" was "available"
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and routed to the target "sns" "topic"
+    Then the "sns" "message" will be "AVAILABLE" on the "sns" "topic"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "AVAILABLE" "sns" "message" belongs to an "ACTIVE" "sns" "topic"
 
   @guard @negative @put_event
-  Scenario: an event is published to the bus and routed to the target "SNS" topic fails when the event bus did not exist
-    Given the event bus did not exist
-    When an event is published to the bus and routed to the target "SNS" topic
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and routed to the target "sns" "topic" fails when the "eventbridge" "bus" did not exist
+    Given the "eventbridge" "bus" did not exist
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and routed to the target "sns" "topic"
     Then the operation is rejected
 
   @guard @negative @put_event @lifecycle
-  Scenario: an event is published to the bus and routed to the target "SNS" topic fails when the event bus was not "ACTIVE"
-    Given the event bus existed
-    And the event bus was not "ACTIVE"
-    When an event is published to the bus and routed to the target "SNS" topic
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and routed to the target "sns" "topic" fails when the "eventbridge" "bus" was not "ACTIVE"
+    Given the "eventbridge" "bus" existed
+    And the "eventbridge" "bus" was not "ACTIVE"
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and routed to the target "sns" "topic"
     Then the operation is rejected
 
   @guard @negative @put_event @lifecycle
-  Scenario: an event is published to the bus and routed to the target "SNS" topic fails when no "ENABLED" rule existed on the bus targeting a topic
-    Given the event bus existed
-    And the event bus was "ACTIVE"
-    And no "ENABLED" rule existed on the bus targeting a topic
-    When an event is published to the bus and routed to the target "SNS" topic
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and routed to the target "sns" "topic" fails when no "ENABLED" "eventbridge" "rule" existed on the "eventbridge" "bus" targeting a "sns" "topic"
+    Given the "eventbridge" "bus" existed
+    And the "eventbridge" "bus" was "ACTIVE"
+    And no "ENABLED" "eventbridge" "rule" existed on the "eventbridge" "bus" targeting a "sns" "topic"
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and routed to the target "sns" "topic"
     Then the operation is rejected
 
   @guard @negative @put_event @lifecycle
-  Scenario: an event is published to the bus and routed to the target "SNS" topic fails when the target topic was not "ACTIVE"
-    Given the event bus existed
-    And the event bus was "ACTIVE"
-    And an "ENABLED" rule existed on the bus targeting a topic
-    And the target topic was not "ACTIVE"
-    When an event is published to the bus and routed to the target "SNS" topic
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and routed to the target "sns" "topic" fails when the target "sns" "topic" was not "ACTIVE"
+    Given the "eventbridge" "bus" existed
+    And the "eventbridge" "bus" was "ACTIVE"
+    And an "ENABLED" "eventbridge" "rule" existed on the "eventbridge" "bus" targeting a "sns" "topic"
+    And the target "sns" "topic" was not "ACTIVE"
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and routed to the target "sns" "topic"
     Then the operation is rejected
 
   @guard @negative @put_event @capacity
-  Scenario: an event is published to the bus and routed to the target "SNS" topic fails when no message slot is available
-    Given the event bus existed
-    And the event bus was "ACTIVE"
-    And an "ENABLED" rule existed on the bus targeting a topic
-    And the target topic was "ACTIVE"
-    And no message slot is available
-    When an event is published to the bus and routed to the target "SNS" topic
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and routed to the target "sns" "topic" fails when no "sns" "message" "slot" was "available"
+    Given the "eventbridge" "bus" existed
+    And the "eventbridge" "bus" was "ACTIVE"
+    And an "ENABLED" "eventbridge" "rule" existed on the "eventbridge" "bus" targeting a "sns" "topic"
+    And the target "sns" "topic" was "ACTIVE"
+    And no "sns" "message" "slot" was "available"
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and routed to the target "sns" "topic"
     Then the operation is rejected

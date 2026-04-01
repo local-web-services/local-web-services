@@ -12,7 +12,7 @@ Feature: LambdaDocdb - A "Documentdb" "Cluster" Is Created
     Given the "documentdb" "cluster" did not already exist
     When a "documentdb" "cluster" is created
     Then the "documentdb" "cluster" will be "AVAILABLE"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @guard @negative @create_cluster

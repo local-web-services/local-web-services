@@ -10,12 +10,12 @@ Feature: StepfunctionsEvents - A Running "Step Functions" "Execution" Succeeds A
   @minimal @happy @execution_succeeds_event_delivered
   Scenario: a running "step functions" "execution" succeeds and Step Functions delivers a "SUCCEEDED" event to the bus
     Given a "step functions" "execution" was "RUNNING"
-    And the bus was "ACTIVE"
-    And an event slot is available
+    And the "eventbridge" "bus" was "ACTIVE"
+    And an "eventbridge" "event" "slot" was "available"
     When a running "step functions" "execution" succeeds and Step Functions delivers a "SUCCEEDED" event to the bus
     Then the "step functions" "execution" will be "SUCCEEDED" and the "SUCCEEDED" event will be "DELIVERED"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "DELIVERED" event references an execution that exists
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "DELIVERED" "eventbridge" "event" references a "step functions" "execution" that exists
 
   @guard @negative @execution_succeeds_event_delivered
   Scenario: a running "step functions" "execution" succeeds and Step Functions delivers a "SUCCEEDED" event to the bus fails when no "step functions" "execution" was "RUNNING"
@@ -24,16 +24,16 @@ Feature: StepfunctionsEvents - A Running "Step Functions" "Execution" Succeeds A
     Then the operation is rejected
 
   @guard @negative @execution_succeeds_event_delivered @lifecycle
-  Scenario: a running "step functions" "execution" succeeds and Step Functions delivers a "SUCCEEDED" event to the bus fails when the bus was "DELETED"
+  Scenario: a running "step functions" "execution" succeeds and Step Functions delivers a "SUCCEEDED" event to the bus fails when the "eventbridge" "bus" was "DELETED"
     Given a "step functions" "execution" was "RUNNING"
-    And the bus was "DELETED"
+    And the "eventbridge" "bus" was "DELETED"
     When a running "step functions" "execution" succeeds and Step Functions delivers a "SUCCEEDED" event to the bus
     Then the operation is rejected
 
   @guard @negative @execution_succeeds_event_delivered @capacity
-  Scenario: a running "step functions" "execution" succeeds and Step Functions delivers a "SUCCEEDED" event to the bus fails when no event slot is available
+  Scenario: a running "step functions" "execution" succeeds and Step Functions delivers a "SUCCEEDED" event to the bus fails when no "eventbridge" "event" "slot" was "available"
     Given a "step functions" "execution" was "RUNNING"
-    And the bus was "ACTIVE"
-    And no event slot is available
+    And the "eventbridge" "bus" was "ACTIVE"
+    And no "eventbridge" "event" "slot" was "available"
     When a running "step functions" "execution" succeeds and Step Functions delivers a "SUCCEEDED" event to the bus
     Then the operation is rejected

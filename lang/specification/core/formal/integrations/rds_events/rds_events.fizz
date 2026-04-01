@@ -23,32 +23,32 @@ action Init:
     event_bus = {}              # event_bus[eid] = bus_id
 
 
-# step: a RDS DB instance is created and becomes AVAILABLE
-# result: the DB instance will be "AVAILABLE"
-# guard: the DB instance did not already exist
-# guard_violation: the DB instance already existed
+# step: an "rds" "DB instance" is created and becomes "AVAILABLE"
+# result: the "rds" "DB instance" will be "AVAILABLE"
+# guard: the "rds" "instance" did not already exist
+# guard_violation: the "rds" "instance" already existed
 atomic action CreateDBInstance:
     oneof dbid in DB_IDS:
         if dbid not in db_status:
             db_status[dbid] = "AVAILABLE"
 
 
-# step: an EventBridge event bus is created
-# result: the bus will be "ACTIVE"
-# guard: the bus did not already exist
-# guard_violation: the bus already existed
+# step: an "eventbridge" "bus" is created
+# result: the "eventbridge" "bus" will be "ACTIVE"
+# guard: the "eventbridge" "bus" did not already exist
+# guard_violation: the "eventbridge" "bus" already existed
 atomic action CreateEventBus:
     oneof busid in BUS_IDS:
         if busid not in bus_status:
             bus_status[busid] = "ACTIVE"
 
 
-# step: the EventBridge event bus is deleted
-# result: the bus will be deleted and RDS event delivery will fail
-# guard: the bus existed
-# guard_violation: the bus did not exist
-# guard: the bus was "ACTIVE"
-# guard_violation_lifecycle: the bus is already "DELETED"
+# step: the "eventbridge" "bus" is deleted
+# result: the "eventbridge" "bus" will be deleted and RDS event delivery will fail
+# guard: the "eventbridge" "bus" existed
+# guard_violation: the "eventbridge" "bus" did not exist
+# guard: the "eventbridge" "bus" was "ACTIVE"
+# guard_violation_lifecycle: the "eventbridge" "bus" is already "DELETED"
 atomic action DeleteEventBus:
     oneof busid in BUS_IDS:
         if busid in bus_status:
@@ -58,13 +58,13 @@ atomic action DeleteEventBus:
 
 # fake_skip: internal
 # step: the "rds" "instance" stops and delivers the state change event to the EventBridge bus
-# result: the DB instance will be "STOPPING" and the event will be "DELIVERED"
-# guard: the DB instance was "AVAILABLE"
-# guard_violation_lifecycle: the DB instance was not "AVAILABLE"
-# guard: the bus was "ACTIVE"
-# guard_violation_lifecycle: the bus was "DELETED"
-# guard: an event slot is available
-# guard_violation_capacity: no event slot is available
+# result: the "rds" "DB instance" will be "STOPPING" and the "eventbridge" "event" will be "DELIVERED"
+# guard: the "rds" "DB instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "rds" "DB instance" was not "AVAILABLE"
+# guard: the "eventbridge" "bus" was "ACTIVE"
+# guard_violation_lifecycle: the "eventbridge" "bus" was "DELETED"
+# guard: an "eventbridge" "event" "slot" was "available"
+# guard_violation_capacity: no "eventbridge" "event" "slot" was "available"
 atomic action DBStopEventDelivered:
     oneof dbid in DB_IDS:
         if dbid in db_status:
@@ -82,11 +82,11 @@ atomic action DBStopEventDelivered:
 
 # fake_skip: internal
 # step: the "rds" "instance" stops but the state change event delivery fails because the bus is deleted
-# result: the DB instance will be "STOPPING" but no event will be delivered
-# guard: the DB instance was "AVAILABLE"
-# guard_violation_lifecycle: the DB instance was not "AVAILABLE"
-# guard: the bus was "DELETED"
-# guard_violation_lifecycle: the bus was not "DELETED"
+# result: the "rds" "DB instance" will be "STOPPING" but no event will be delivered
+# guard: the "rds" "DB instance" was "AVAILABLE"
+# guard_violation_lifecycle: the "rds" "DB instance" was not "AVAILABLE"
+# guard: the "eventbridge" "bus" was "DELETED"
+# guard_violation_lifecycle: the "eventbridge" "bus" was not "DELETED"
 atomic action DBStopEventFails:
     oneof dbid in DB_IDS:
         if dbid in db_status:
@@ -98,10 +98,10 @@ atomic action DBStopEventFails:
 
 
 # fake_skip: internal
-# step: the DB instance finishes stopping
-# result: the DB instance will be "STOPPED"
-# guard: the DB instance was "STOPPING"
-# guard_violation_lifecycle: the DB instance was not "STOPPING"
+# step: the "rds" "DB instance" finishes stopping
+# result: the "rds" "DB instance" will be "STOPPED"
+# guard: the "rds" "DB instance" was "STOPPING"
+# guard_violation_lifecycle: the "rds" "DB instance" was not "STOPPING"
 atomic action DBStopComplete:
     oneof dbid in DB_IDS:
         if dbid in db_status:
@@ -109,7 +109,7 @@ atomic action DBStopComplete:
                 db_status[dbid] = "STOPPED"
 
 
-# check: every DELIVERED event references a DB instance that exists
+# check: every "DELIVERED" "eventbridge" "event" references an "rds" "DB instance" that exists
 always assertion DeliveredEventReferencesExistingDB:
     for eid in event_status:
         if event_status[eid] == "DELIVERED":
@@ -119,7 +119,7 @@ always assertion DeliveredEventReferencesExistingDB:
     return True
 
 
-# check: every DELIVERED event references a bus that exists
+# check: every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 always assertion DeliveredEventReferencesExistingBus:
     for eid in event_status:
         if event_status[eid] == "DELIVERED":

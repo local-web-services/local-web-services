@@ -80,17 +80,17 @@ atomic action ConfigureDirectIntegration:
 
 
 # step: a request is received, the "api gateway" "API" writes to the "dynamodb" "table", and returns 200
-# result: the item will exist and the request will be "SUCCESS"
+# result: the "dynamodb" "item" will exist and the "api gateway" "request" will be "SUCCESS"
 # guard: the "api gateway" "api" was "ACTIVE"
 # guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
 # guard: the "api gateway" "api" has a "dynamodb" integration configured
 # guard_violation: the "api gateway" "api" has no "dynamodb" integration configured
 # guard: the target "dynamodb" "table" was "ACTIVE"
 # guard_violation_lifecycle: the target "dynamodb" "table" was not "ACTIVE"
-# guard: a request slot is available
-# guard_violation_capacity: no request slot is available
-# guard: an item slot is available
-# guard_violation_capacity: no item slot is available
+# guard: a "request" "slot" was "available"
+# guard_violation_capacity: no "request" "slot" was "available"
+# guard: an "item" "slot" was "available"
+# guard_violation_capacity: no "item" "slot" was "available"
 atomic action RequestSucceeds:
     oneof aid in API_IDS:
         if aid in api_status:
@@ -111,15 +111,15 @@ atomic action RequestSucceeds:
 
 
 # step: a request is received but the DynamoDB write fails because the "dynamodb" "table" is being deleted
-# result: the request will be "FAILED" and no item will be written
+# result: the "api gateway" "request" will be "FAILED" and no "dynamodb" "item" will be written
 # guard: the "api gateway" "api" was "ACTIVE"
 # guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
 # guard: the "api gateway" "api" has a "dynamodb" integration configured
 # guard_violation: the "api gateway" "api" has no "dynamodb" integration configured
 # guard: the target "dynamodb" "table" was "DELETING"
 # guard_violation_lifecycle: the target "dynamodb" "table" was not "DELETING"
-# guard: a request slot is available
-# guard_violation_capacity: no request slot is available
+# guard: a "request" "slot" was "available"
+# guard_violation_capacity: no "request" "slot" was "available"
 atomic action RequestFails:
     oneof aid in API_IDS:
         if aid in api_status:

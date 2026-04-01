@@ -9,31 +9,31 @@ Feature: SecretsmanagerEvents - A "Secretsmanager" "Secret" Rotation Occurs And 
 
   @minimal @happy @rotate_secret_event_delivered @internal
   Scenario: a "secretsmanager" "secret" rotation occurs and Secrets Manager delivers a "ROTATED" event to the bus
-    Given the secrets manager secret existed and was "ACTIVE"
-    And the bus was "ACTIVE"
-    And an event slot is available
+    Given the "secrets manager" "secret" existed and was "ACTIVE"
+    And the "eventbridge" "bus" was "ACTIVE"
+    And an "eventbridge" "event" "slot" was "available"
     When a "secretsmanager" "secret" rotation occurs and Secrets Manager delivers a "ROTATED" event to the bus
     Then the "secrets manager" "secret" will be "ACTIVE" with a new version and the "ROTATED" event will be "DELIVERED"
     And every "DELIVERED" event references a "secretsmanager" "secret" that exists
-    And every "DELIVERED" event references a bus that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @guard @negative @rotate_secret_event_delivered @internal
-  Scenario: a "secretsmanager" "secret" rotation occurs and Secrets Manager delivers a "ROTATED" event to the bus fails when the secrets manager secret did not exist or was "ACTIVE"
-    Given the secrets manager secret did not exist or was "ACTIVE"
+  Scenario: a "secretsmanager" "secret" rotation occurs and Secrets Manager delivers a "ROTATED" event to the bus fails when the "secrets manager" "secret" did not exist or was not "ACTIVE"
+    Given the "secrets manager" "secret" did not exist or was not "ACTIVE"
     When a "secretsmanager" "secret" rotation occurs and Secrets Manager delivers a "ROTATED" event to the bus
     Then the operation is rejected
 
   @guard @negative @rotate_secret_event_delivered @internal
-  Scenario: a "secretsmanager" "secret" rotation occurs and Secrets Manager delivers a "ROTATED" event to the bus fails when the bus was "DELETED"
-    Given the secrets manager secret existed and was "ACTIVE"
-    And the bus was "DELETED"
+  Scenario: a "secretsmanager" "secret" rotation occurs and Secrets Manager delivers a "ROTATED" event to the bus fails when the "eventbridge" "bus" was "DELETED"
+    Given the "secrets manager" "secret" existed and was "ACTIVE"
+    And the "eventbridge" "bus" was "DELETED"
     When a "secretsmanager" "secret" rotation occurs and Secrets Manager delivers a "ROTATED" event to the bus
     Then the operation is rejected
 
   @guard @negative @rotate_secret_event_delivered @internal
-  Scenario: a "secretsmanager" "secret" rotation occurs and Secrets Manager delivers a "ROTATED" event to the bus fails when no event slot is available
-    Given the secrets manager secret existed and was "ACTIVE"
-    And the bus was "ACTIVE"
-    And no event slot is available
+  Scenario: a "secretsmanager" "secret" rotation occurs and Secrets Manager delivers a "ROTATED" event to the bus fails when no "eventbridge" "event" "slot" was "available"
+    Given the "secrets manager" "secret" existed and was "ACTIVE"
+    And the "eventbridge" "bus" was "ACTIVE"
+    And no "eventbridge" "event" "slot" was "available"
     When a "secretsmanager" "secret" rotation occurs and Secrets Manager delivers a "ROTATED" event to the bus
     Then the operation is rejected

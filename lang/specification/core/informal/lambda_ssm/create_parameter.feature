@@ -11,9 +11,9 @@ Feature: LambdaSsm - A "Ssm" "Parameter" Is Created
   Scenario: a "ssm" "parameter" is created
     Given the "ssm" "parameter" did not already exist
     When a "ssm" "parameter" is created
-    Then the parameter will exist and can be read by Lambda
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which parameter it read
+    Then the "ssm" "parameter" will exist and can be read by "lambda"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every successful "lambda" "invocation" recorded which "ssm" "parameter" it read
 
   @guard @negative @create_parameter
   Scenario: a "ssm" "parameter" is created fails when the "ssm" "parameter" already existed

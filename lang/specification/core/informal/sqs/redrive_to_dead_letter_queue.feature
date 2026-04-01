@@ -18,9 +18,9 @@ Feature: Sqs - A "Sqs" "Message" Exceeding Its Receive Count Is Moved To The Dea
     And the dead-letter "sqs" "queue" was "ACTIVE"
     When a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue"
     Then the "sqs" "message" will be "AVAILABLE" in the dead-letter "sqs" "queue"
-    And every non-deleted message belongs to an "ACTIVE" queue
-    And every in-flight message belongs to an "ACTIVE" queue
-    And every message has a non-negative receive count
+    And every non-deleted "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
+    And every "IN_FLIGHT" "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
+    And every "sqs" "message" has a non-negative receive count
 
   @guard @negative @redrive_to_dead_letter_queue @internal
   Scenario: a "sqs" "message" exceeding its receive count is moved to the dead-letter "sqs" "queue" fails when the "sqs" "message" did not exist

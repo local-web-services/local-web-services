@@ -14,10 +14,10 @@ Feature: CognitoLambda - A "Cognito" "User" Signs Up To A "Cognito" "User Pool" 
     And the "cognito" "user pool" has no pre-signup trigger configured
     And the "cognito" "user" slot is available
     When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
-    Then the cognito user will be immediately "CONFIRMED"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+    Then the "cognito" "user" will be immediately "CONFIRMED"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "IN_PROGRESS" "lambda" "invocation" is for a "PENDING" "cognito" "user"
+    And every "PENDING" "cognito" "user" has a corresponding "IN_PROGRESS" "lambda" "invocation"
 
   @guard @negative @signup_without_trigger
   Scenario: a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured fails when the "cognito" "user pool" did not exist
@@ -41,10 +41,10 @@ Feature: CognitoLambda - A "Cognito" "User" Signs Up To A "Cognito" "User Pool" 
     Then the operation is rejected
 
   @guard @negative @signup_without_trigger @capacity
-  Scenario: a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured fails when no user slot is available
+  Scenario: a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured fails when no "cognito" "user" "slot" was "available"
     Given the "cognito" "user pool" existed
     And the "cognito" "user pool" was "ACTIVE"
     And the "cognito" "user pool" has no pre-signup trigger configured
-    And no user slot is available
+    And no "cognito" "user" "slot" was "available"
     When a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
     Then the operation is rejected

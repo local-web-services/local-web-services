@@ -11,11 +11,11 @@ Feature: LambdaLambda - The Caller "Lambda" "Function" Is Invoked
   Scenario: the caller "lambda" "function" is invoked
     Given the caller "lambda" "function" existed
     And the caller "lambda" "function" was "ACTIVE"
-    And an invocation slot is available
+    And a "lambda" "invocation" "slot" was "available"
     When the caller "lambda" "function" is invoked
-    Then the invocation will be "IN_PROGRESS"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" caller function
-    And every successful invocation recorded which callee was invoked
+    Then the "lambda" "invocation" will be "IN_PROGRESS"
+    And every "IN_PROGRESS" "lambda" "invocation" references an "ACTIVE" caller "lambda" "function"
+    And every successful "lambda" "invocation" recorded which callee "lambda" "function" was invoked
 
   @guard @negative @invoke_caller
   Scenario: the caller "lambda" "function" is invoked fails when the caller "lambda" "function" did not exist
@@ -31,9 +31,9 @@ Feature: LambdaLambda - The Caller "Lambda" "Function" Is Invoked
     Then the operation is rejected
 
   @guard @negative @invoke_caller @capacity
-  Scenario: the caller "lambda" "function" is invoked fails when no invocation slot is available
+  Scenario: the caller "lambda" "function" is invoked fails when no "lambda" "invocation" "slot" was "available"
     Given the caller "lambda" "function" existed
     And the caller "lambda" "function" was "ACTIVE"
-    And no invocation slot is available
+    And no "lambda" "invocation" "slot" was "available"
     When the caller "lambda" "function" is invoked
     Then the operation is rejected

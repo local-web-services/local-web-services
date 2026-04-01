@@ -13,8 +13,8 @@ Feature: StepfunctionsOpensearch - A "Opensearch" "Domain" Configuration Update 
     And the "opensearch" "domain" was "ACTIVE"
     When a "opensearch" "domain" configuration update begins
     Then the "opensearch" "domain" will be "PROCESSING" and "API" calls may fail
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which domain it called
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "opensearch" "domain" it called
 
   @guard @negative @domain_processing_begins
   Scenario: a "opensearch" "domain" configuration update begins fails when the "opensearch" "domain" did not exist

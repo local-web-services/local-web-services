@@ -12,7 +12,7 @@ Feature: LambdaElasticsearch - A "Lambda" "Function" Is Deployed
     Given the "lambda" "function" did not already exist
     When a "lambda" "function" is deployed
     Then the "lambda" "function" will be "ACTIVE"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "elasticsearch" "domain" that exists
 
   @guard @negative @deploy_function

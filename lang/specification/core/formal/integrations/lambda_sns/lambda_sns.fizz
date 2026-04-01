@@ -34,8 +34,8 @@ atomic action DeployFunction:
 
 # step: a "sns" "topic" is created
 # result: the "sns" "topic" will be "ACTIVE"
-# guard: the topic did not already exist
-# guard_violation: the topic already existed
+# guard: the "sns" "topic" did not already exist
+# guard_violation: the "sns" "topic" already existed
 atomic action CreateTopic:
     oneof tid in TOPIC_IDS:
         if tid not in topic_status:
@@ -43,13 +43,13 @@ atomic action CreateTopic:
 
 
 # step: the "lambda" "function" is invoked
-# result: the invocation will be "IN_PROGRESS"
+# result: the "lambda" "invocation" will be "IN_PROGRESS"
 # guard: the "lambda" "function" existed
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
 # guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
 # guard: a "lambda" "invocation" slot is available
-# guard_violation_capacity: no invocation slot is available
+# guard_violation_capacity: no "lambda" "invocation" "slot" was "available"
 atomic action InvokeFunction:
     oneof fid in FUNC_IDS:
         if fid in func_status:
@@ -81,8 +81,8 @@ atomic action PublishToTopic:
 
 
 # fake_skip: internal
-# step: the Lambda invocation completes successfully
-# result: the invocation will be "SUCCESS"
+# step: the "lambda" "function" invocation completes successfully
+# result: the "lambda" "invocation" will be "SUCCESS"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationSucceeds:
@@ -93,8 +93,8 @@ atomic action InvocationSucceeds:
 
 
 # fake_skip: internal
-# step: the Lambda invocation fails
-# result: the invocation will be "FAILED"
+# step: the "lambda" "function" invocation fails
+# result: the "lambda" "invocation" will be "FAILED"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationFails:
@@ -104,7 +104,7 @@ atomic action InvocationFails:
                 inv_status[iid] = "FAILED"
 
 
-# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+# check: every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
 always assertion InvocationRequiresActiveFunction:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":
@@ -115,7 +115,7 @@ always assertion InvocationRequiresActiveFunction:
     return True
 
 
-# check: publishing requires an ACTIVE topic to be present
+# check: "sns" publishing requires an "ACTIVE" "sns" "topic" to be present
 always assertion PublishRequiresActiveTopic:
     for iid in inv_status:
         if inv_published[iid] == True:

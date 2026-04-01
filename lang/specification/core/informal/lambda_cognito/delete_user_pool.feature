@@ -13,8 +13,8 @@ Feature: LambdaCognito - A "Cognito" "User Pool" Is Deleted
     And the "cognito" "user pool" was "ACTIVE"
     When a "cognito" "user pool" is deleted
     Then the "cognito" "user pool" will be deleted and Lambda calls targeting it will fail
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which pool it called
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every successful "lambda" "invocation" recorded which "cognito" "user pool" it called
 
   @guard @negative @delete_user_pool
   Scenario: a "cognito" "user pool" is deleted fails when the "cognito" "user pool" did not exist

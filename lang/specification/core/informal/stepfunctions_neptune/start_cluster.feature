@@ -12,8 +12,8 @@ Feature: StepfunctionsNeptune - The "Neptune" "Cluster" Is Started
     Given the "neptune" "cluster" was "STOPPED"
     When the "neptune" "cluster" is started
     Then the "neptune" "cluster" will be "AVAILABLE" and ready to accept graph queries
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which cluster it queried
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "neptune" "cluster" it queried
 
   @guard @negative @start_cluster @lifecycle
   Scenario: the "neptune" "cluster" is started fails when the "neptune" "cluster" was not "STOPPED"

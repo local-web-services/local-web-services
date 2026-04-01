@@ -12,13 +12,13 @@ Feature: SnsSqs - A Message Is Published To A "Sns" "Topic" And Delivered To The
     Given the "sns" "topic" existed
     And the "sns" "topic" was "ACTIVE"
     And a confirmed subscription existed for the "sns" "topic"
-    And the subscribed queue was "ACTIVE"
-    And a message slot is available
+    And the subscribed "sqs" "queue" was "ACTIVE"
+    And a "sqs" "message" "slot" was "available"
     When a message is published to a "sns" "topic" and delivered to the subscribed "SQS" queue
-    Then the message will be "AVAILABLE" in the queue
-    And every confirmed subscription references an "ACTIVE" "SNS" topic
-    And every "AVAILABLE" message belongs to an "ACTIVE" queue
-    And a message can only be delivered if a confirmed subscription exists for the topic
+    Then the "sqs" "message" will be "AVAILABLE" in the "sqs" "queue"
+    And every "CONFIRMED" "sns" "subscription" references an "ACTIVE" "sns" "topic"
+    And every "AVAILABLE" "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
+    And an "sqs" "message" can only be delivered if a "CONFIRMED" "sns" "subscription" exists for the "sns" "topic"
 
   @guard @negative @publish_and_deliver
   Scenario: a message is published to a "sns" "topic" and delivered to the subscribed "SQS" queue fails when the "sns" "topic" did not exist
@@ -34,28 +34,28 @@ Feature: SnsSqs - A Message Is Published To A "Sns" "Topic" And Delivered To The
     Then the operation is rejected
 
   @guard @negative @publish_and_deliver @lifecycle
-  Scenario: a message is published to a "sns" "topic" and delivered to the subscribed "SQS" queue fails when no confirmed subscription existed for the topic
+  Scenario: a message is published to a "sns" "topic" and delivered to the subscribed "SQS" queue fails when no "confirmed" "subscription" existed for the "sns" "topic"
     Given the "sns" "topic" existed
     And the "sns" "topic" was "ACTIVE"
-    And no confirmed subscription existed for the topic
+    And no "confirmed" "subscription" existed for the "sns" "topic"
     When a message is published to a "sns" "topic" and delivered to the subscribed "SQS" queue
     Then the operation is rejected
 
   @guard @negative @publish_and_deliver @lifecycle
-  Scenario: a message is published to a "sns" "topic" and delivered to the subscribed "SQS" queue fails when the subscribed queue was not "ACTIVE"
+  Scenario: a message is published to a "sns" "topic" and delivered to the subscribed "SQS" queue fails when the subscribed "sqs" "queue" was not "ACTIVE"
     Given the "sns" "topic" existed
     And the "sns" "topic" was "ACTIVE"
     And a confirmed subscription existed for the "sns" "topic"
-    And the subscribed queue was not "ACTIVE"
+    And the subscribed "sqs" "queue" was not "ACTIVE"
     When a message is published to a "sns" "topic" and delivered to the subscribed "SQS" queue
     Then the operation is rejected
 
   @guard @negative @publish_and_deliver @capacity
-  Scenario: a message is published to a "sns" "topic" and delivered to the subscribed "SQS" queue fails when no message slot is available
+  Scenario: a message is published to a "sns" "topic" and delivered to the subscribed "SQS" queue fails when no "sqs" "message" "slot" was "available"
     Given the "sns" "topic" existed
     And the "sns" "topic" was "ACTIVE"
     And a confirmed subscription existed for the "sns" "topic"
-    And the subscribed queue was "ACTIVE"
-    And no message slot is available
+    And the subscribed "sqs" "queue" was "ACTIVE"
+    And no "sqs" "message" "slot" was "available"
     When a message is published to a "sns" "topic" and delivered to the subscribed "SQS" queue
     Then the operation is rejected

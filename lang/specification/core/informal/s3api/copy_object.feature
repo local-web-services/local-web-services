@@ -17,10 +17,10 @@ Feature: S3api - A "S3" "Object" Is Copied From One "S3" "Bucket" To Another
     And the destination "s3" "bucket" was "ACTIVE"
     When a "s3" "object" is copied from one "s3" "bucket" to another
     Then the "s3" "object" will exist in the destination "s3" "bucket"
-    And every bucket has a valid status ("ACTIVE" or "DELETED")
-    And every bucket versioning state is valid ("DISABLED", "ENABLED", or "SUSPENDED")
-    And every multipart upload has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
-    And deleting a bucket requires it to be empty
+    And every "s3" "bucket" has a valid status ("ACTIVE" or "DELETED")
+    And every "s3" "bucket" versioning state is valid ("DISABLED", "ENABLED", or "SUSPENDED")
+    And every "s3" "multipart upload" has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
+    And deleting an "s3" "bucket" requires it to be empty
 
   @guard @negative @copy_object
   Scenario: a "s3" "object" is copied from one "s3" "bucket" to another fails when the source "s3" "bucket" did not exist

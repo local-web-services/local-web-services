@@ -32,22 +32,22 @@ atomic action CreateStateMachine:
             sm_status[smid] = "ACTIVE"
 
 
-# step: a S3 Tables table is created
-# result: the table will be "ACTIVE"
-# guard: the table did not already exist
-# guard_violation: the table already existed
+# step: a "s3 tables" "table" is created
+# result: the "s3 tables" "table" will be "ACTIVE"
+# guard: the "s3 tables" "table" did not already exist
+# guard_violation: the "s3 tables" "table" already existed
 atomic action CreateTable:
     oneof tid in TABLE_IDS:
         if tid not in table_status:
             table_status[tid] = "ACTIVE"
 
 
-# step: a table deletion is initiated
-# result: the table will be "DELETING" and SDK task calls targeting it will fail
-# guard: the table existed
-# guard_violation: the table did not exist
-# guard: the table was "ACTIVE"
-# guard_violation_lifecycle: the table is already "DELETING"
+# step: a "s3 tables" "table" deletion is initiated
+# result: the "s3 tables" "table" will be "DELETING" and SDK task calls targeting it will fail
+# guard: the "s3 tables" "table" existed
+# guard_violation: the "s3 tables" "table" did not exist
+# guard: the "s3 tables" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "s3 tables" "table" is already "DELETING"
 atomic action DeleteTable:
     oneof tid in TABLE_IDS:
         if tid in table_status:
@@ -61,8 +61,8 @@ atomic action DeleteTable:
 # guard_violation: the "step functions" "state machine" did not exist
 # guard: the "step functions" "state machine" was "ACTIVE"
 # guard_violation_lifecycle: the "step functions" "state machine" was not "ACTIVE"
-# guard: an "step functions" "execution" slot is available
-# guard_violation_capacity: no execution slot is available
+# guard: a "step functions" "execution" "slot" was "available"
+# guard_violation_capacity: no "step functions" "execution" "slot" was "available"
 atomic action StartExecution:
     oneof smid in SM_IDS:
         if smid in sm_status:
@@ -78,8 +78,8 @@ atomic action StartExecution:
 # result: the "step functions" "execution" will be "SUCCEEDED"
 # guard: a "step functions" "execution" was "RUNNING"
 # guard_violation_lifecycle: no "step functions" "execution" was "RUNNING"
-# guard: the table was "ACTIVE"
-# guard_violation_lifecycle: the table did not exist or was "DELETING"
+# guard: the "s3 tables" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "s3 tables" "table" did not exist or was "DELETING"
 atomic action S3TablesTaskSucceeds:
     oneof eid in EXEC_IDS:
         if eid in exec_status:
@@ -96,8 +96,8 @@ atomic action S3TablesTaskSucceeds:
 # result: the "step functions" "execution" will be "FAILED" with a ResourceNotFoundException
 # guard: a "step functions" "execution" was "RUNNING"
 # guard_violation_lifecycle: no "step functions" "execution" was "RUNNING"
-# guard: the table was "DELETING"
-# guard_violation_lifecycle: the table was not "DELETING"
+# guard: the "s3 tables" "table" was "DELETING"
+# guard_violation_lifecycle: the "s3 tables" "table" was not "DELETING"
 atomic action S3TablesTaskFails:
     oneof eid in EXEC_IDS:
         if eid in exec_status:
@@ -109,7 +109,7 @@ atomic action S3TablesTaskFails:
                             exec_table[eid] = tid
 
 
-# check: every RUNNING execution references an ACTIVE state machine
+# check: every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
 always assertion ExecutionRequiresActiveStateMachine:
     for eid in exec_status:
         if exec_status[eid] == "RUNNING":
@@ -120,7 +120,7 @@ always assertion ExecutionRequiresActiveStateMachine:
     return True
 
 
-# check: every succeeded execution recorded which table it called
+# check: every "SUCCEEDED" "step functions" "execution" recorded which "s3 tables" "table" it called
 # (verifies an execution cannot succeed without calling a table; table may enter DELETING afterwards)
 always assertion SuccessfulExecutionCalledATable:
     for eid in exec_status:

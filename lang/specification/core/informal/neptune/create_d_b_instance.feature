@@ -13,15 +13,15 @@ Feature: Neptune - A "Neptune" "Instance" Is Created In An Available Neptune Clu
     And the "neptune" "cluster" was "AVAILABLE"
     And the "neptune" "instance" slot is available
     When a "neptune" "instance" is created in an available neptune cluster
-    Then the "neptune" "INSTANCE" will be in "CREATING" state and associated with the "neptune" "cluster"
-    And every cluster has a valid status
-    And every instance has a valid status
-    And every snapshot has a valid status
-    And a stopped cluster has no available instances
-    And instances on a stopped or stopping cluster are not in "MODIFYING" state
-    And a deleted cluster has no available instances
-    And every backing-up cluster has a corresponding in-progress snapshot
-    And a failed cluster has no available instances
+    Then the "neptune" "instance" will be in "CREATING" state and associated with the "neptune" "cluster"
+    And every "neptune" "cluster" has a valid status
+    And every "neptune" "instance" has a valid status
+    And every "neptune" "snapshot" has a valid status
+    And a stopped "neptune" "cluster" has no available "neptune" "instance"s
+    And "neptune" "instance"s on a stopped or stopping "neptune" "cluster" are not in "MODIFYING" state
+    And a deleted "neptune" "cluster" has no available "neptune" "instance"s
+    And every backing-up "neptune" "cluster" has a corresponding in-progress "neptune" "snapshot"
+    And a failed "neptune" "cluster" has no available "neptune" "instance"s
 
   @guard @negative @create_d_b_instance
   Scenario: a "neptune" "instance" is created in an available neptune cluster fails when the "neptune" "cluster" did not exist

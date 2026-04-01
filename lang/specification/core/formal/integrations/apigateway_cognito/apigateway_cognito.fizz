@@ -101,14 +101,14 @@ atomic action ConfirmUser:
                         user_pool[uid] = pid
 
 
-# step: Cognito issues a JWT token for a confirmed user
+# step: a "cognito" "user" receives a "VALID" "JWT" token from the "cognito" "user pool"
 # result: a "VALID" token will be issued that can be presented to API Gateway for authorization
 # guard: the "cognito" "user" existed
 # guard_violation: the "cognito" "user" did not exist
 # guard: the "cognito" "user" was "CONFIRMED"
 # guard_violation_lifecycle: the "cognito" "user" was not "CONFIRMED"
-# guard: a token slot is available
-# guard_violation_capacity: no token slot is available
+# guard: a "cognito" "token" "slot" was "available"
+# guard_violation_capacity: no "cognito" "token" "slot" was "available"
 atomic action IssueToken:
     oneof uid in USER_IDS:
         if uid in user_status:
@@ -121,19 +121,19 @@ atomic action IssueToken:
 
 
 # step: a request with a valid token from a "cognito" "user" in the "api gateway" "API"'s configured pool is authorized
-# result: the request will be "AUTHORIZED" and routed to the backend
+# result: the "api gateway" "request" will be "AUTHORIZED" and routed to the backend
 # guard: the "api gateway" "API" existed
 # guard_violation: the "api gateway" "API" did not exist
 # guard: the "api gateway" "api" was "ACTIVE"
 # guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
 # guard: the "api gateway" "api" has a Cognito authorizer configured
 # guard_violation: the "api gateway" "api" has no Cognito authorizer configured
-# guard: a VALID token existed
-# guard_violation_lifecycle: no VALID token existed
-# guard: the token belongs to a CONFIRMED user in the "api gateway" "API"'s configured pool
-# guard_violation_lifecycle: the token does not belong to a CONFIRMED user in the configured pool
-# guard: a request slot is available
-# guard_violation_capacity: no request slot is available
+# guard: a "VALID" "cognito" "token" existed
+# guard_violation_lifecycle: no "VALID" "cognito" "token" existed
+# guard: the "cognito" "token" belongs to a "CONFIRMED" "cognito" "user" in the "api gateway" "API"'s configured pool
+# guard_violation_lifecycle: the "cognito" "token" does not belong to a "CONFIRMED" "cognito" "user" in the configured pool
+# guard: a "api gateway" "request" "slot" was "available"
+# guard_violation_capacity: no "api gateway" "request" "slot" was "available"
 atomic action AuthorizeRequest:
     oneof rid in REQ_IDS:
         if rid not in req_status:
@@ -155,17 +155,17 @@ atomic action AuthorizeRequest:
 
 
 # step: a request with a valid token from a "cognito" "user" in a different pool is rejected
-# result: the request will be rejected because the token's issuing pool does not match the configured authorizer
+# result: the "api gateway" "request" will be "REJECTED" because the "cognito" "token" issuing "cognito" "user pool" does not match the configured authorizer
 # guard: the "api gateway" "API" existed
 # guard_violation: the "api gateway" "API" did not exist
 # guard: the "api gateway" "api" was "ACTIVE"
 # guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
 # guard: the "api gateway" "api" has a Cognito authorizer configured
 # guard_violation: the "api gateway" "api" has no Cognito authorizer configured
-# guard: a VALID token existed from a "cognito" "user" in a different pool than the configured authorizer
-# guard_violation_lifecycle: no such mismatched token existed
-# guard: a request slot is available
-# guard_violation_capacity: no request slot is available
+# guard: a "VALID" "cognito" "token" existed from a "cognito" "user" in a different "cognito" "user pool" than the configured authorizer
+# guard_violation_lifecycle: no such mismatched "cognito" "token" existed
+# guard: a "api gateway" "request" "slot" was "available"
+# guard_violation_capacity: no "api gateway" "request" "slot" was "available"
 atomic action RejectRequest:
     oneof rid in REQ_IDS:
         if rid not in req_status:
@@ -183,7 +183,7 @@ atomic action RejectRequest:
                                             req_token[rid] = tkid
 
 
-# check: every API with a configured authorizer references an ACTIVE pool
+# check: every "api gateway" "API" with a configured authorizer references an "ACTIVE" "cognito" "user pool"
 always assertion AuthorizerRequiresActivePool:
     for aid in api_pool:
         if api_pool[aid] != "":
@@ -194,7 +194,7 @@ always assertion AuthorizerRequiresActivePool:
     return True
 
 
-# check: every AUTHORIZED request was validated against a VALID token
+# check: every "AUTHORIZED" "api gateway" "request" was validated against a "VALID" "token"
 always assertion AuthorizedRequestRequiresValidToken:
     for rid in req_status:
         if req_status[rid] == "AUTHORIZED":

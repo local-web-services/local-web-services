@@ -12,8 +12,8 @@ Feature: LambdaRds - A "Rds" "Database Instance" Is Created
     Given the "rds" "instance" did not already exist
     When a "rds" "database instance" is created
     Then the "rds" "instance" will be "AVAILABLE"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every successful "lambda" "invocation" recorded which "rds" "database instance" it queried
 
   @guard @negative @create_d_b_instance
   Scenario: a "rds" "database instance" is created fails when the "rds" "instance" already existed

@@ -14,9 +14,9 @@ Feature: Elasticsearch - Tags Are Added To An "Elasticsearch" "Domain"
     And the "elasticsearch" "domain" was not "DELETED"
     When tags are added to an "elasticsearch" "domain"
     Then the specified tags are associated with the "elasticsearch" "domain"
-    And every active index belongs to an existing non-deleted domain
-    And every active tag belongs to an existing non-deleted domain
-    And a pending config change only exists on a "elasticsearch" "domain" that is "PROCESSING"
+    And every active "elasticsearch" "index" belongs to an existing non-deleted "elasticsearch" "domain"
+    And every active "elasticsearch" "tag" belongs to an existing non-deleted "elasticsearch" "domain"
+    And a pending config change only exists on an "elasticsearch" "domain" that is "PROCESSING"
 
   @guard @negative @add_tags
   Scenario: tags are added to an "elasticsearch" "domain" fails when the "elasticsearch" "domain" did not exist

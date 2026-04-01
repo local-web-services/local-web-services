@@ -13,8 +13,8 @@ Feature: S3apiSns - The "Sns" "Topic" Is Deleted
     And the "sns" "topic" was "ACTIVE"
     When the "sns" "topic" is deleted
     Then the "sns" "topic" will be deleted and notification delivery to it will fail
-    And every "PUBLISHED" notification references an object that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" "sns" notification references an "s3" "object" that exists
+    And every "PUBLISHED" "sns" notification references an "sns" "topic" that exists
 
   @guard @negative @delete_topic
   Scenario: the "sns" "topic" is deleted fails when the "sns" "topic" did not exist
@@ -23,8 +23,8 @@ Feature: S3apiSns - The "Sns" "Topic" Is Deleted
     Then the operation is rejected
 
   @guard @negative @delete_topic @lifecycle
-  Scenario: the "sns" "topic" is deleted fails when the topic is already "DELETED"
+  Scenario: the "sns" "topic" is deleted fails when the "sns" "topic" is already "DELETED"
     Given the "sns" "topic" existed
-    And the topic is already "DELETED"
+    And the "sns" "topic" is already "DELETED"
     When the "sns" "topic" is deleted
     Then the operation is rejected

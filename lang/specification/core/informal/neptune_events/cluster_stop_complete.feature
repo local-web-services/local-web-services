@@ -12,8 +12,8 @@ Feature: NeptuneEvents - The "Neptune" "Cluster" Finishes Stopping
     Given the "neptune" "cluster" was "STOPPING"
     When the "neptune" "cluster" finishes stopping
     Then the "neptune" "cluster" will be "STOPPED"
-    And every "DELIVERED" event references a cluster that exists
-    And every "DELIVERED" event references a bus that exists
+    And every "DELIVERED" "eventbridge" "event" references a "neptune" "cluster" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @guard @negative @cluster_stop_complete @internal
   Scenario: the "neptune" "cluster" finishes stopping fails when the "neptune" "cluster" was not "STOPPING"

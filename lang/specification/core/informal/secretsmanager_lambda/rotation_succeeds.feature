@@ -10,11 +10,11 @@ Feature: SecretsmanagerLambda - The "Lambda" "Rotation Function" Succeeds And Th
   @minimal @happy @rotation_succeeds @internal
   Scenario: the "lambda" "rotation function" succeeds and the "secretsmanager" "secret" is rotated to a new version
     Given a "lambda" "invocation" was "IN_PROGRESS"
-    And the rotation function was "ACTIVE"
+    And the rotation "lambda" "function" was "ACTIVE"
     When the "lambda" "rotation function" succeeds and the "secretsmanager" "secret" is rotated to a new version
     Then the invocation will be "SUCCESS" and the "secrets manager" "secret" will be "ACTIVE" with a new version
-    And every "ROTATING" secret has an "IN_PROGRESS" rotation invocation
-    And every successful rotation invocation recorded which secret it rotated
+    And every "ROTATING" "secrets manager" "secret" has an "IN_PROGRESS" "lambda" "rotation invocation"
+    And every successful "lambda" "rotation invocation" recorded which "secrets manager" "secret" it rotated
 
   @guard @negative @rotation_succeeds @internal
   Scenario: the "lambda" "rotation function" succeeds and the "secretsmanager" "secret" is rotated to a new version fails when no "lambda" "invocation" was "IN_PROGRESS"
@@ -23,8 +23,8 @@ Feature: SecretsmanagerLambda - The "Lambda" "Rotation Function" Succeeds And Th
     Then the operation is rejected
 
   @guard @negative @rotation_succeeds @internal
-  Scenario: the "lambda" "rotation function" succeeds and the "secretsmanager" "secret" is rotated to a new version fails when the rotation function was not "ACTIVE"
+  Scenario: the "lambda" "rotation function" succeeds and the "secretsmanager" "secret" is rotated to a new version fails when the rotation "lambda" "function" was not "ACTIVE"
     Given a "lambda" "invocation" was "IN_PROGRESS"
-    And the rotation function was not "ACTIVE"
+    And the rotation "lambda" "function" was not "ACTIVE"
     When the "lambda" "rotation function" succeeds and the "secretsmanager" "secret" is rotated to a new version
     Then the operation is rejected

@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: lambda - A Pending "Lambda" "Function" Resolves Its Deployment
+Feature: Lambda - A Pending "Lambda" "Function" Resolves Its Deployment
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions
@@ -13,13 +13,13 @@ Feature: lambda - A Pending "Lambda" "Function" Resolves Its Deployment
     And the "lambda" "function" was "PENDING"
     When a pending "lambda" "function" resolves its deployment
     Then the "lambda" "function" becomes "ACTIVE" or "FAILED" non-deterministically
-    And every active event source mapping references an existing non-deleted function
-    And no function in "DELETING" state has active executions
-    And active execution count never exceeds reserved concurrency when set
-    And async retry count never exceeds two
-    And every event source mapping has a valid status
-    And every function has a valid status
-    And all async slots reference known function IDs or are empty
+    And every active "lambda" "event source mapping" references an existing non-deleted "lambda" "function"
+    And no "lambda" "function" in "DELETING" state has active executions
+    And "lambda" "function" active execution count never exceeds reserved concurrency when set
+    And "lambda" "function" async retry count never exceeds two
+    And every "lambda" "event source mapping" has a valid status
+    And every "lambda" "function" has a valid status
+    And all "lambda" "async" "slot"s reference known "lambda" "function" IDs or are empty
 
   @guard @negative @activate_function @internal
   Scenario: a pending "lambda" "function" resolves its deployment fails when the "lambda" "function" did not exist

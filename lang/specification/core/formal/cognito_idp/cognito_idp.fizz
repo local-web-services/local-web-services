@@ -165,7 +165,7 @@ atomic action AdminEnableUser:
             if not user_enabled[user_id]:
                 user_enabled[user_id] = True
 
-# step: an admin updates attributes for a confirmed user
+# step: an admin updates attributes for a confirmed "cognito" "user"
 # result: the "cognito" "user" attributes are updated
 # guard: the "cognito" "user" existed
 # guard_violation: the "cognito" "user" did not exist
@@ -262,7 +262,7 @@ atomic action AdminRemoveUserFromGroup:
                         if group_status[group_id] == "ACTIVE":
                             user_in_group[user_id + "#" + group_id] = False
 
-# step: a confirmed enabled user initiates authentication
+# step: a confirmed enabled "cognito" "user" initiates authentication
 # result: a "cognito" "session" will be created in "CHALLENGE_REQUIRED" state
 # guard: the "cognito" "user" existed
 # guard_violation: the "cognito" "user" did not exist
@@ -297,7 +297,7 @@ atomic action RespondToAuthChallenge:
                     session_status[session_id] = "AUTHENTICATED"
                     session_status[session_id] = "CHALLENGE_FAILED"
 
-# step: an admin initiates authentication on behalf of a confirmed enabled user
+# step: an admin initiates authentication on behalf of a confirmed enabled "cognito" "user"
 # result: a "cognito" "session" will be created in "AUTHENTICATED" state
 # guard: the "cognito" "user" existed
 # guard_violation: the "cognito" "user" did not exist
@@ -319,7 +319,7 @@ atomic action AdminInitiateAuth:
                             session_pool[session_id] = user_pool[user_id]
 
 # fake_skip: internal
-# step: an authenticated session expires
+# step: an authenticated "cognito" "session" expires
 # result: the "cognito" "session" will be in "EXPIRED" state
 # guard: the "cognito" "session" existed
 # guard_violation: the "cognito" "session" did not exist
@@ -331,7 +331,7 @@ atomic action ExpireAuthSession:
             if session_status[session_id] == "AUTHENTICATED":
                 session_status[session_id] = "EXPIRED"
 
-# step: a verification code delivery fails for an unconfirmed user
+# step: a verification code delivery fails for an unconfirmed "cognito" "user"
 # result: the "cognito" "user" remains in "UNCONFIRMED" state
 # guard: the "cognito" "user" existed
 # guard_violation: the "cognito" "user" did not exist
@@ -343,7 +343,7 @@ atomic action VerificationCodeDeliveryFailure:
             if user_status[user_id] == "UNCONFIRMED":
                 pass
 
-# check: every user pool has a valid status (ACTIVE or DELETED)
+# check: every "cognito" "user pool" has a valid status (ACTIVE or DELETED)
 always assertion ValidUserPoolStatus:
     for pool_id in pool_status:
         if pool_status[pool_id] != "ACTIVE":
@@ -351,7 +351,7 @@ always assertion ValidUserPoolStatus:
                 return False
     return True
 
-# check: every user has a valid status
+# check: every "cognito" "user" has a valid status
 always assertion ValidUserStatus:
     for user_id in user_status:
         s = user_status[user_id]
@@ -365,7 +365,7 @@ always assertion ValidUserStatus:
                                     return False
     return True
 
-# check: every non-deleted user has an enabled flag set
+# check: every non-deleted "cognito" "user" has an enabled flag set
 always assertion UserGroupMembershipEntryExists:
     for user_id in user_status:
         if user_status[user_id] != "DELETED":
@@ -373,7 +373,7 @@ always assertion UserGroupMembershipEntryExists:
                 return False
     return True
 
-# check: every group membership references an existing active group
+# check: every "cognito" "group" membership references an existing active "cognito" "group"
 always assertion GroupMembershipReferencesExistingGroups:
     for user_id in USER_IDS:
         for group_id in GROUP_IDS:
@@ -386,7 +386,7 @@ always assertion GroupMembershipReferencesExistingGroups:
                         return False
     return True
 
-# check: every auth session has a valid status
+# check: every "cognito" "session" has a valid status
 always assertion ValidAuthSessionStatus:
     for session_id in session_status:
         s = session_status[session_id]
@@ -397,7 +397,7 @@ always assertion ValidAuthSessionStatus:
                         return False
     return True
 
-# check: deleted users do not have active authenticated sessions
+# check: deleted "cognito" "user"s do not have active authenticated "cognito" "session"s
 always assertion DeletedUsersNotAuthenticated:
     for session_id in SESSION_IDS:
         if session_id in session_status:
@@ -408,7 +408,7 @@ always assertion DeletedUsersNotAuthenticated:
                         return False
     return True
 
-# check: disabled users do not have active authenticated sessions
+# check: disabled "cognito" "user"s do not have active authenticated "cognito" "session"s
 always assertion DisabledUsersNotAuthenticated:
     for session_id in SESSION_IDS:
         if session_id in session_status:

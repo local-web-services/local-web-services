@@ -12,8 +12,8 @@ Feature: LambdaNeptune - The "Neptune" "Cluster" Is Started
     Given the "neptune" "cluster" was "STOPPED"
     When the "neptune" "cluster" is started
     Then the "neptune" "cluster" will be "AVAILABLE" and ready to accept graph queries
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which cluster it queried
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every successful "lambda" "invocation" recorded which "neptune" "cluster" it queried
 
   @guard @negative @start_cluster @lifecycle
   Scenario: the "neptune" "cluster" is started fails when the "neptune" "cluster" was not "STOPPED"

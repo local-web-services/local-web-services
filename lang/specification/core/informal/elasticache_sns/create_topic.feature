@@ -12,7 +12,7 @@ Feature: ElasticacheSns - A "Sns" "Topic" Is Created
     Given the "sns" "topic" did not already exist
     When a "sns" "topic" is created
     Then the "sns" "topic" will be "ACTIVE"
-    And every "PUBLISHED" notification references a cluster that exists
+    And every "PUBLISHED" "sns" "notification" references a "elasticache" "cluster" that exists
     And every "PUBLISHED" notification references a "sns" "topic" that exists
 
   @guard @negative @create_topic

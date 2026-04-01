@@ -14,7 +14,7 @@ Feature: ElasticacheSns - A Sns Notification Is Configured On The "Elasticache" 
     And the "sns" "topic" existed and was "ACTIVE"
     When a "SNS" notification is configured on the "elasticache" "cluster"
     Then the "elasticache" "cluster" will publish lifecycle events to the "sns" "topic"
-    And every "PUBLISHED" notification references a cluster that exists
+    And every "PUBLISHED" "sns" "notification" references a "elasticache" "cluster" that exists
     And every "PUBLISHED" notification references a "sns" "topic" that exists
 
   @guard @negative @configure_notification @lifecycle

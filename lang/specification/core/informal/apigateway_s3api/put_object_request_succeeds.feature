@@ -12,7 +12,7 @@ Feature: ApigatewayS3api - A Put Request Is Received And The "Api Gateway" "Api"
     Given the "api gateway" "api" was "ACTIVE"
     And the "api gateway" "api" has a S3 integration configured
     And the "s3" "bucket" was "ACTIVE"
-    And a request slot is available
+    And a "request" "slot" was "available"
     And an "s3" "object" slot is available
     When a "PUT" request is received and the "api gateway" "API" writes an "s3" "object" to the "s3" "bucket"
     Then the "s3" "object" will exist and the request will be "SUCCESS"
@@ -41,20 +41,20 @@ Feature: ApigatewayS3api - A Put Request Is Received And The "Api Gateway" "Api"
     Then the operation is rejected
 
   @guard @negative @put_object_request_succeeds @capacity
-  Scenario: a "PUT" request is received and the "api gateway" "API" writes an "s3" "object" to the "s3" "bucket" fails when no request slot is available
+  Scenario: a "PUT" request is received and the "api gateway" "API" writes an "s3" "object" to the "s3" "bucket" fails when no "request" "slot" was "available"
     Given the "api gateway" "api" was "ACTIVE"
     And the "api gateway" "api" has a S3 integration configured
     And the "s3" "bucket" was "ACTIVE"
-    And no request slot is available
+    And no "request" "slot" was "available"
     When a "PUT" request is received and the "api gateway" "API" writes an "s3" "object" to the "s3" "bucket"
     Then the operation is rejected
 
   @guard @negative @put_object_request_succeeds @capacity
-  Scenario: a "PUT" request is received and the "api gateway" "API" writes an "s3" "object" to the "s3" "bucket" fails when no object slot is available
+  Scenario: a "PUT" request is received and the "api gateway" "API" writes an "s3" "object" to the "s3" "bucket" fails when no "s3" "object" "slot" was "available"
     Given the "api gateway" "api" was "ACTIVE"
     And the "api gateway" "api" has a S3 integration configured
     And the "s3" "bucket" was "ACTIVE"
-    And a request slot is available
-    And no object slot is available
+    And a "request" "slot" was "available"
+    And no "s3" "object" "slot" was "available"
     When a "PUT" request is received and the "api gateway" "API" writes an "s3" "object" to the "s3" "bucket"
     Then the operation is rejected

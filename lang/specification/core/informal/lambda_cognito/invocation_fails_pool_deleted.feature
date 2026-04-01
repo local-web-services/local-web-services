@@ -12,9 +12,9 @@ Feature: LambdaCognito - The "Lambda" "Function" Fails To Call Cognito Because T
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "cognito" "user pool" was "DELETED"
     When the "lambda" "function" fails to call Cognito because the "cognito" "user pool" has been deleted
-    Then the invocation will be "FAILED" with a ResourceNotFoundException
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which pool it called
+    Then the "lambda" "invocation" will be "FAILED" with a ResourceNotFoundException
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every successful "lambda" "invocation" recorded which "cognito" "user pool" it called
 
   @guard @negative @invocation_fails_pool_deleted @lifecycle
   Scenario: the "lambda" "function" fails to call Cognito because the "cognito" "user pool" has been deleted fails when no "lambda" "invocation" was "IN_PROGRESS"

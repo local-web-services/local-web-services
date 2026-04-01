@@ -9,22 +9,22 @@ Feature: LambdaLambda - The Caller "Lambda" "Function" Invokes The Active Callee
 
   @minimal @happy @callee_invocation_succeeds @internal
   Scenario: the caller "lambda" "function" invokes the "ACTIVE" callee and the call succeeds
-    Given an invocation was "IN_PROGRESS"
+    Given a "lambda" "invocation" was "IN_PROGRESS"
     And the callee "lambda" "function" was "ACTIVE"
     When the caller "lambda" "function" invokes the "ACTIVE" callee and the call succeeds
-    Then the invocation will be "SUCCESS"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" caller function
-    And every successful invocation recorded which callee was invoked
+    Then the "lambda" "invocation" will be "SUCCESS"
+    And every "IN_PROGRESS" "lambda" "invocation" references an "ACTIVE" caller "lambda" "function"
+    And every successful "lambda" "invocation" recorded which callee "lambda" "function" was invoked
 
   @guard @negative @callee_invocation_succeeds @internal
-  Scenario: the caller "lambda" "function" invokes the "ACTIVE" callee and the call succeeds fails when no invocation was "IN_PROGRESS"
-    Given no invocation was "IN_PROGRESS"
+  Scenario: the caller "lambda" "function" invokes the "ACTIVE" callee and the call succeeds fails when no "lambda" "invocation" was "IN_PROGRESS"
+    Given no "lambda" "invocation" was "IN_PROGRESS"
     When the caller "lambda" "function" invokes the "ACTIVE" callee and the call succeeds
     Then the operation is rejected
 
   @guard @negative @callee_invocation_succeeds @internal
   Scenario: the caller "lambda" "function" invokes the "ACTIVE" callee and the call succeeds fails when the callee "lambda" "function" did not exist or was "DELETED"
-    Given an invocation was "IN_PROGRESS"
+    Given a "lambda" "invocation" was "IN_PROGRESS"
     And the callee "lambda" "function" did not exist or was "DELETED"
     When the caller "lambda" "function" invokes the "ACTIVE" callee and the call succeeds
     Then the operation is rejected

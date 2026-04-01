@@ -12,8 +12,8 @@ Feature: LambdaMemorydb - The "Lambda" "Function" Fails To Write Because The "Me
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "memorydb" "cluster" was "UPDATING"
     When the "lambda" "function" fails to write because the "memorydb" "cluster" is updating
-    Then the invocation will be "FAILED" with a connection refused error
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then the "lambda" "invocation" will be "FAILED" with a connection refused error
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing record references a "memorydb" "cluster" that exists
 
   @guard @negative @invocation_fails_cluster_updating @internal
