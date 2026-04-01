@@ -33,8 +33,10 @@ from lws.cli._ldk_providers_core import (  # noqa: F401  # pylint: disable=unuse
     _wire_remaining_providers,
 )
 from lws.cli._ldk_providers_extended import (  # noqa: F401  # pylint: disable=unused-import
+    _register_cloudformation_provider,
     _register_experimental_providers,
     _register_organizations_provider,
+    _register_service_catalog_provider,
     _register_ssm_secretsmanager_providers,
 )
 from lws.config.loader import LdkConfig
@@ -157,6 +159,7 @@ def _create_providers(  # pylint: disable=too-many-statements
     config: LdkConfig,
     data_dir: Path,
     iam_auth_bundle: IamAuthBundle | None = None,
+    organizations_seed: str | None = None,
 ) -> tuple[
     dict[str, Provider], dict[str, AwsChaosConfig], dict[str, AwsFakeConfig], dict[str, Any]
 ]:
@@ -313,9 +316,26 @@ def _create_providers(  # pylint: disable=too-many-statements
         chaos_configs=chaos_configs,
         aws_fake_configs=aws_fake_configs,
         organizations_port=ports["organizations"],
+        organizations_seed=organizations_seed,
     )
 
-    # 13. Wire service providers into the StepFunctions engine
+    # 13. CloudFormation
+    _register_cloudformation_provider(
+        providers,
+        chaos_configs=chaos_configs,
+        aws_fake_configs=aws_fake_configs,
+        cloudformation_port=ports["cloudformation"],
+    )
+
+    # 14. Service Catalog
+    _register_service_catalog_provider(
+        providers,
+        chaos_configs=chaos_configs,
+        aws_fake_configs=aws_fake_configs,
+        service_catalog_port=ports["servicecatalog"],
+    )
+
+    # 15. Wire service providers into the StepFunctions engine
     from lws.providers.stepfunctions._service_task_bridge import (  # pylint: disable=import-outside-toplevel
         SecretsManagerStateAdapter,
         SsmStateAdapter,

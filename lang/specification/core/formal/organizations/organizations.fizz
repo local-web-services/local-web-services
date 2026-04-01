@@ -22,6 +22,7 @@ ACCOUNT_IDS = ["acc-1", "acc-2"]
 POLICY_IDS = ["pol-1"]
 PARENT_IDS = ["root-1", "ou-1", "ou-2"]
 ALL_MEMBER_IDS = ["root-1", "ou-1", "ou-2", "acc-1", "acc-2"]
+TAG_RESOURCE_IDS = ["acc-1"]
 
 action Init:
     org_status = {}
@@ -29,6 +30,7 @@ action Init:
     node_parent = {}
     policy_status = {}
     policy_attached = {}
+    resource_tags_set = {}
 
 # step: an "organizations" "organization" is created
 # result: the "organizations" "organization" and its root will exist
@@ -151,6 +153,15 @@ atomic action DetachPolicy:
                 if policy_attached[pol_id + "#" + target_id] == True:
                     policy_attached[pol_id + "#" + target_id] = False
 
+# step: an "organizations" resource is tagged
+# result: the "organizations" resource tags will be set
+# guard: the "organizations" resource existed
+# guard_violation: the "organizations" resource did not exist
+atomic action TagResource:
+    oneof node_id in TAG_RESOURCE_IDS:
+        if node_id in node_status:
+            resource_tags_set[node_id] = True
+
 # check: the root was "ACTIVE" whenever the "organizations" "organization" exists
 always assertion OrgRootConsistency:
     if "org-1" in org_status:
@@ -199,6 +210,15 @@ always assertion NoChildOfDeletedOu:
                     if child_id in node_parent:
                         if node_parent[child_id] == ou_id:
                             return False
+    return True
+
+# check: tags only exist on nodes that are present in the org
+always assertion TagsOnlyForKnownNodes:
+    for node_id in ALL_MEMBER_IDS:
+        if node_id in resource_tags_set:
+            if resource_tags_set[node_id] == True:
+                if node_id not in node_status:
+                    return False
     return True
 
 # check: every active policy attachment targets an ACTIVE node

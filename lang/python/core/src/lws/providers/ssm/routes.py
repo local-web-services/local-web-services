@@ -20,7 +20,17 @@ from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_mid
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
+from lws.providers._shared.per_account_state import (
+    DEFAULT_ACCOUNT_ID,
+    PerAccountStateRegistry,
+    extract_account_id_from_token,
+)
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
+from lws.providers.ssm._ssm_lifecycle import (
+    check_multi_param_lifecycle,
+    check_single_param_lifecycle,
+    handle_ssm_lifecycle,
+)
 from lws.providers.ssm._ssm_state import (
     _apply_parameter_filters,
     _format_parameter,
@@ -243,156 +253,6 @@ _ACTION_HANDLERS: dict[str, Any] = {
 
 
 # ------------------------------------------------------------------
-# App factory helpers
-# ------------------------------------------------------------------
-
-_SINGLE_PARAM_READ_ACTIONS = {"GetParameter"}
-_MULTI_PARAM_READ_ACTIONS = {"GetParameters"}
-_DELETE_SINGLE_ACTION = "DeleteParameter"
-_DELETE_MULTI_ACTION = "DeleteParameters"
-
-
-def _ssm_param_not_found(name: str, param_state: str) -> Response:
-    return Response(
-        content=json.dumps(
-            {
-                "__type": "ParameterNotFound",
-                "message": f"Parameter {name} not found (status: {param_state})",
-            }
-        ),
-        status_code=400,
-        media_type="application/json",
-    )
-
-
-def _ssm_param_still_creating(name: str) -> Response:
-    return Response(
-        content=json.dumps(
-            {
-                "__type": "ParameterNotFound",
-                "message": f"Parameter {name} is still being created",
-            }
-        ),
-        status_code=400,
-        media_type="application/json",
-    )
-
-
-def _check_single_param_lifecycle(
-    action: str, body: dict, lc: ResourceLifecycleConfig, tracker: ResourceStateTracker
-) -> Response | None:
-    if not lc.enabled or action not in _SINGLE_PARAM_READ_ACTIONS:
-        return None
-    name = body.get("Name", "")
-    if not name:
-        return None
-    param_state = tracker.get_state(name)
-    if param_state in ("CREATING", "DELETING"):
-        return _ssm_param_not_found(name, param_state)
-    return None
-
-
-def _check_multi_param_lifecycle(
-    action: str, body: dict, lc: ResourceLifecycleConfig, tracker: ResourceStateTracker
-) -> Response | None:
-    if not lc.enabled or action not in _MULTI_PARAM_READ_ACTIONS:
-        return None
-    for name in body.get("Names", []):
-        param_state = tracker.get_state(name)
-        if param_state in ("CREATING", "DELETING"):
-            return _ssm_param_not_found(name, param_state)
-    return None
-
-
-async def _lifecycle_put_parameter(
-    handler: Any,
-    state: Any,
-    body: dict,
-    lc: ResourceLifecycleConfig,
-    tracker: ResourceStateTracker,
-) -> Response | None:
-    """Handle lifecycle for PutParameter. Returns a Response or None to fall through."""
-    name = body.get("Name", "")
-    overwrite = body.get("Overwrite", False)
-    if overwrite and name:
-        param_state = tracker.get_state(name)
-        if param_state in ("CREATING", "DELETING"):
-            return _ssm_param_not_found(name, param_state)
-    if lc.create_dwell_ms > 0:
-        resp = await handler(state, body)
-        if resp.status_code == 200:
-            tracker.set_state(name, "CREATING")
-            tracker.schedule_transition(name, "ACTIVE", lc.create_dwell_ms)
-        return resp
-    return None
-
-
-async def _lifecycle_delete_parameter(
-    handler: Any,
-    state: Any,
-    body: dict,
-    lc: ResourceLifecycleConfig,
-    tracker: ResourceStateTracker,
-) -> Response:
-    """Handle lifecycle-aware DeleteParameter."""
-    name = body.get("Name", "")
-    if tracker.get_state(name) == "CREATING":
-        return _ssm_param_still_creating(name)
-    resp = await handler(state, body)
-    if resp.status_code == 200:
-        if lc.delete_dwell_ms > 0:
-            tracker.set_state(name, "DELETING")
-            tracker.schedule_transition(name, None, lc.delete_dwell_ms)
-        else:
-            tracker.remove(name)
-    return resp
-
-
-async def _lifecycle_delete_parameters(
-    handler: Any,
-    state: Any,
-    body: dict,
-    lc: ResourceLifecycleConfig,
-    tracker: ResourceStateTracker,
-) -> Response:
-    """Handle lifecycle-aware DeleteParameters."""
-    names = body.get("Names", [])
-    for name in names:
-        if tracker.get_state(name) == "CREATING":
-            return _ssm_param_still_creating(name)
-    resp = await handler(state, body)
-    if resp.status_code == 200:
-        for name in names:
-            if lc.delete_dwell_ms > 0:
-                tracker.set_state(name, "DELETING")
-                tracker.schedule_transition(name, None, lc.delete_dwell_ms)
-            else:
-                tracker.remove(name)
-    return resp
-
-
-def _check_resource_tag_lifecycle(
-    body: dict, _lc: ResourceLifecycleConfig, tracker: ResourceStateTracker
-) -> Response | None:
-    resource_id = body.get("ResourceId", "")
-    resource_type = body.get("ResourceType", "Parameter")
-    if resource_type == "Parameter" and resource_id:
-        param_state = tracker.get_state(resource_id)
-        if param_state in ("CREATING", "DELETING"):
-            return Response(
-                content=json.dumps(
-                    {
-                        "__type": "InvalidResourceId",
-                        "message": f"Parameter {resource_id} not found (status: {param_state})",
-                    }
-                ),
-                status_code=400,
-                media_type="application/json",
-            )
-    return None
-
-
-# ------------------------------------------------------------------
 # App factory
 # ------------------------------------------------------------------
 
@@ -419,11 +279,11 @@ async def _ssm_dispatch(
     body = await parse_json_body(request)
     action = resolve_api_action(target, body)
 
-    err = _check_single_param_lifecycle(action, body, lc, tracker)
+    err = check_single_param_lifecycle(action, body, lc, tracker)
     if err is not None:
         return err
 
-    err = _check_multi_param_lifecycle(action, body, lc, tracker)
+    err = check_multi_param_lifecycle(action, body, lc, tracker)
     if err is not None:
         return err
 
@@ -436,30 +296,11 @@ async def _ssm_dispatch(
         )
 
     if lc.enabled:
-        result = await _handle_ssm_lifecycle(action, handler, state, body, lc, tracker)
+        result = await handle_ssm_lifecycle(action, handler, state, body, lc, tracker)
         if result is not None:
             return result
 
     return await handler(state, body)
-
-
-async def _handle_ssm_lifecycle(
-    action: str,
-    handler: Any,
-    state: _SsmState,
-    body: dict,
-    lc: ResourceLifecycleConfig,
-    tracker: ResourceStateTracker,
-) -> Response | None:
-    if action == "PutParameter":
-        return await _lifecycle_put_parameter(handler, state, body, lc, tracker)
-    if action == _DELETE_SINGLE_ACTION:
-        return await _lifecycle_delete_parameter(handler, state, body, lc, tracker)
-    if action == _DELETE_MULTI_ACTION:
-        return await _lifecycle_delete_parameters(handler, state, body, lc, tracker)
-    if action in ("AddTagsToResource", "ListTagsForResource"):
-        return _check_resource_tag_lifecycle(body, lc, tracker)
-    return None
 
 
 def create_ssm_app(
@@ -470,14 +311,25 @@ def create_ssm_app(
     state: _SsmState | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
     cloudtrail_provider: ICloudTrail | None = None,
+    registry: PerAccountStateRegistry[_SsmState] | None = None,
 ) -> tuple[FastAPI, _SsmState]:
     """Create a FastAPI application that speaks the SSM wire protocol.
 
     Returns a tuple of (app, state) so callers can retain a reference to the
-    state object for lifecycle management (e.g. reset).
+    state object for lifecycle management (e.g. reset).  The returned state is
+    always the default-account state.
     """
     _lc = lifecycle or ResourceLifecycleConfig()
-    _tracker = ResourceStateTracker(_lc)
+    _account_trackers: dict[str, ResourceStateTracker] = {}
+
+    if registry is None:
+        registry = PerAccountStateRegistry(_SsmState)
+        if state is not None:
+            registry._accounts[DEFAULT_ACCOUNT_ID] = state  # pylint: disable=protected-access
+
+    default_state = registry.get(DEFAULT_ACCOUNT_ID)
+    if initial_parameters:
+        _populate_ssm_state(default_state, initial_parameters)
 
     app = FastAPI(title="LDK SSM")
     if aws_fake is not None:
@@ -486,15 +338,15 @@ def create_ssm_app(
     if chaos is not None:
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="ssm")
-    if state is None:
-        state = _SsmState()
-
-    if initial_parameters:
-        _populate_ssm_state(state, initial_parameters)
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:
-        return await _ssm_dispatch(request, state, _lc, _tracker)
+        token = request.headers.get("X-Amz-Security-Token", "")
+        account_id = extract_account_id_from_token(token) if token else DEFAULT_ACCOUNT_ID
+        _state = registry.get(account_id)
+        if account_id not in _account_trackers:
+            _account_trackers[account_id] = ResourceStateTracker(_lc)
+        return await _ssm_dispatch(request, _state, _lc, _account_trackers[account_id])
 
     apply_cloudtrail_middleware(app, cloudtrail_provider, "ssm")
-    return app, state
+    return app, default_state

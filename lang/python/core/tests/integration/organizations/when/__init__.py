@@ -5,4 +5,9 @@ from .create_organizational_unit import *  # noqa: F401,F403
 from .create_policy import *  # noqa: F401,F403
 from .delete_organizational_unit import *  # noqa: F401,F403
 from .detach_policy import *  # noqa: F401,F403
+from .list_children_account_type import *  # noqa: F401,F403
+from .list_children_invalid_type import *  # noqa: F401,F403
+from .list_children_ou_type import *  # noqa: F401,F403
+from .list_tags_for_resource_with_account_id import *  # noqa: F401,F403
+from .list_tags_for_resource_with_unknown_id import *  # noqa: F401,F403
 from .move_account import *  # noqa: F401,F403

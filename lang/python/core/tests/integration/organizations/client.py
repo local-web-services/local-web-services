@@ -53,3 +53,25 @@ class OrganizationsTestClient:
 
     def attach_policy(self, policy_id: str, target_id: str) -> None:
         self.post("AttachPolicy", {"PolicyId": policy_id, "TargetId": target_id})
+
+    def move_account(self, account_id: str, source_parent_id: str, dest_parent_id: str) -> None:
+        self.post(
+            "MoveAccount",
+            {
+                "AccountId": account_id,
+                "SourceParentId": source_parent_id,
+                "DestinationParentId": dest_parent_id,
+            },
+        )
+
+    def tag_resource(self, resource_id: str, tags: dict) -> None:
+        tags_list = [{"Key": k, "Value": v} for k, v in tags.items()]
+        self.post("TagResource", {"ResourceId": resource_id, "Tags": tags_list})
+
+    def list_tags_for_resource(self, resource_id: str) -> dict:
+        _, body = self.post("ListTagsForResource", {"ResourceId": resource_id})
+        return body
+
+    def list_children(self, parent_id: str, child_type: str) -> dict:
+        _, body = self.post("ListChildren", {"ParentId": parent_id, "ChildType": child_type})
+        return body

@@ -142,16 +142,19 @@ def _build_service_apps(
     - dict of extra providers (ssm, secretsmanager state wrappers) for reset support
     """
     from lws.providers.apigateway.routes import create_apigateway_management_app
+    from lws.providers.cloudformation.routes import create_cloudformation_app
     from lws.providers.cloudtrail.routes import create_cloudtrail_app
     from lws.providers.dynamodb.routes import create_dynamodb_app
     from lws.providers.eventbridge.routes import create_eventbridge_app
     from lws.providers.organizations.routes import create_organizations_app
     from lws.providers.s3.routes import create_s3_app
     from lws.providers.secretsmanager.routes import create_secretsmanager_app
+    from lws.providers.service_catalog.routes import create_service_catalog_app
     from lws.providers.sns.routes import create_sns_app
     from lws.providers.sqs.routes import create_sqs_app
     from lws.providers.ssm.routes import create_ssm_app
     from lws.providers.stepfunctions.routes import create_stepfunctions_app
+    from lws.providers.sts.routes import create_sts_app
 
     from lws_testing._transport._extended_services import build_extended_service_apps
 
@@ -314,6 +317,15 @@ def _build_service_apps(
         cloudtrail_provider=_ct,
     )
     service_apps.append(("organizations", organizations_app))
+    service_apps.append(("sts", create_sts_app()))
+    cfn_app = create_cloudformation_app(
+        chaos=chaos_configs["cloudformation"], aws_fake=fake_configs["cloudformation"]
+    )
+    service_apps.append(("cloudformation", cfn_app))
+    sc_app, _ = create_service_catalog_app(
+        chaos=chaos_configs["servicecatalog"], aws_fake=fake_configs["servicecatalog"]
+    )
+    service_apps.append(("servicecatalog", sc_app))
 
     extra_providers = {
         "ssm": _SsmStateProvider(ssm_state),
@@ -377,6 +389,9 @@ _SERVICE_NAMES = [
     "glacier",
     "s3tables",
     "lambda",
+    "sts",
+    "cloudformation",
+    "servicecatalog",
 ]
 
 

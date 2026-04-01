@@ -1,0 +1,33 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 10
+---
+RECORD_IDS = ["r1", "r2", "r3"]
+
+action Init:
+    provisioned = {}
+
+# step: a product is provisioned
+# result: the "service_catalog" "record" will be "SUCCEEDED"
+# guard: a product and launch path exist
+# guard_violation: a product did not exist
+atomic action ProvisionProduct:
+    oneof rid in RECORD_IDS:
+        if rid not in provisioned:
+            provisioned[rid] = "SUCCEEDED"
+
+# check: every provisioned record has status SUCCEEDED
+always assertion RecordAlwaysSucceeded:
+    for rid in provisioned:
+        if provisioned[rid] != "SUCCEEDED":
+            return False
+    return True
+
+# check: every provisioned product has an associated record
+always assertion ProvisionedProductHasRecord:
+    for rid in provisioned:
+        if provisioned[rid] not in ["SUCCEEDED", "FAILED"]:
+            return False
+    return True

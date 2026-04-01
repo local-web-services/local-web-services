@@ -1,0 +1,590 @@
+organization:
+  id: o-enterprise01
+  master_account_id: "000000000000"
+  feature_set: ALL
+
+roots:
+  - id: r-ent1
+    name: Root
+
+ous:
+  - id: ou-ent1-prod
+    name: Production
+    parent: r-ent1
+  - id: ou-ent1-nonprod
+    name: NonProduction
+    parent: r-ent1
+  - id: ou-ent1-sandbox
+    name: Sandbox
+    parent: r-ent1
+  - id: ou-ent1-security
+    name: Security
+    parent: r-ent1
+  - id: ou-ent1-shared
+    name: SharedServices
+    parent: r-ent1
+  - id: ou-ent1-decom
+    name: Decommissioned
+    parent: r-ent1
+
+accounts:
+  # Production accounts
+  - id: "100000000001"
+    name: prod-payments
+    email: prod-payments@enterprise.example.com
+    ou: ou-ent1-prod
+    tags:
+      env: prod
+      team: payments
+      cost-center: cc-100
+      data-classification: confidential
+      region-primary: eu-west-1
+
+  - id: "100000000002"
+    name: prod-orders
+    email: prod-orders@enterprise.example.com
+    ou: ou-ent1-prod
+    tags:
+      env: prod
+      team: orders
+      cost-center: cc-101
+      data-classification: confidential
+      region-primary: eu-west-1
+
+  - id: "100000000003"
+    name: prod-identity
+    email: prod-identity@enterprise.example.com
+    ou: ou-ent1-prod
+    tags:
+      env: prod
+      team: platform
+      cost-center: cc-102
+      data-classification: restricted
+      region-primary: eu-west-1
+
+  - id: "100000000004"
+    name: prod-data-platform
+    email: prod-data-platform@enterprise.example.com
+    ou: ou-ent1-prod
+    tags:
+      env: prod
+      team: data
+      cost-center: cc-103
+      data-classification: confidential
+      region-primary: us-east-1
+
+  - id: "100000000005"
+    name: prod-analytics
+    email: prod-analytics@enterprise.example.com
+    ou: ou-ent1-prod
+    tags:
+      env: prod
+      team: analytics
+      cost-center: cc-104
+      data-classification: internal
+      region-primary: us-east-1
+
+  - id: "100000000006"
+    name: prod-notifications
+    email: prod-notifications@enterprise.example.com
+    ou: ou-ent1-prod
+    tags:
+      env: prod
+      team: messaging
+      cost-center: cc-105
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "100000000007"
+    name: prod-inventory
+    email: prod-inventory@enterprise.example.com
+    ou: ou-ent1-prod
+    tags:
+      env: prod
+      team: supply-chain
+      cost-center: cc-106
+      data-classification: confidential
+      region-primary: ap-southeast-1
+
+  - id: "100000000008"
+    name: prod-catalog
+    email: prod-catalog@enterprise.example.com
+    ou: ou-ent1-prod
+    tags:
+      env: prod
+      team: catalog
+      cost-center: cc-107
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "100000000009"
+    name: prod-search
+    email: prod-search@enterprise.example.com
+    ou: ou-ent1-prod
+    tags:
+      env: prod
+      team: catalog
+      cost-center: cc-107
+      data-classification: internal
+      region-primary: ap-southeast-1
+
+  - id: "100000000010"
+    name: prod-recommendations
+    email: prod-recommendations@enterprise.example.com
+    ou: ou-ent1-prod
+    tags:
+      env: prod
+      team: ml
+      cost-center: cc-108
+      data-classification: internal
+      region-primary: us-east-1
+
+  - id: "100000000011"
+    name: prod-infrastructure
+    email: prod-infrastructure@enterprise.example.com
+    ou: ou-ent1-prod
+    tags:
+      env: prod
+      team: platform
+      cost-center: cc-109
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "100000000012"
+    name: prod-ml-platform
+    email: prod-ml-platform@enterprise.example.com
+    ou: ou-ent1-prod
+    tags:
+      env: prod
+      team: ml
+      cost-center: cc-110
+      data-classification: confidential
+      region-primary: us-east-1
+
+  # NonProduction accounts
+  - id: "200000000001"
+    name: staging-payments
+    email: staging-payments@enterprise.example.com
+    ou: ou-ent1-nonprod
+    tags:
+      env: staging
+      team: payments
+      cost-center: cc-200
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "200000000002"
+    name: staging-orders
+    email: staging-orders@enterprise.example.com
+    ou: ou-ent1-nonprod
+    tags:
+      env: staging
+      team: orders
+      cost-center: cc-201
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "200000000003"
+    name: staging-data-platform
+    email: staging-data-platform@enterprise.example.com
+    ou: ou-ent1-nonprod
+    tags:
+      env: staging
+      team: data
+      cost-center: cc-202
+      data-classification: internal
+      region-primary: us-east-1
+
+  - id: "200000000004"
+    name: dev-payments
+    email: dev-payments@enterprise.example.com
+    ou: ou-ent1-nonprod
+    tags:
+      env: dev
+      team: payments
+      cost-center: cc-200
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "200000000005"
+    name: dev-orders
+    email: dev-orders@enterprise.example.com
+    ou: ou-ent1-nonprod
+    tags:
+      env: dev
+      team: orders
+      cost-center: cc-201
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "200000000006"
+    name: dev-identity
+    email: dev-identity@enterprise.example.com
+    ou: ou-ent1-nonprod
+    tags:
+      env: dev
+      team: platform
+      cost-center: cc-202
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "200000000007"
+    name: dev-data-platform
+    email: dev-data-platform@enterprise.example.com
+    ou: ou-ent1-nonprod
+    tags:
+      env: dev
+      team: data
+      cost-center: cc-203
+      data-classification: internal
+      region-primary: us-east-1
+
+  - id: "200000000008"
+    name: dev-analytics
+    email: dev-analytics@enterprise.example.com
+    ou: ou-ent1-nonprod
+    tags:
+      env: dev
+      team: analytics
+      cost-center: cc-204
+      data-classification: internal
+      region-primary: us-east-1
+
+  - id: "200000000009"
+    name: dev-notifications
+    email: dev-notifications@enterprise.example.com
+    ou: ou-ent1-nonprod
+    tags:
+      env: dev
+      team: messaging
+      cost-center: cc-205
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "200000000010"
+    name: dev-inventory
+    email: dev-inventory@enterprise.example.com
+    ou: ou-ent1-nonprod
+    tags:
+      env: dev
+      team: supply-chain
+      cost-center: cc-206
+      data-classification: internal
+      region-primary: ap-southeast-1
+
+  - id: "200000000011"
+    name: dev-search
+    email: dev-search@enterprise.example.com
+    ou: ou-ent1-nonprod
+    tags:
+      env: dev
+      team: catalog
+      cost-center: cc-207
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "200000000012"
+    name: dev-recommendations
+    email: dev-recommendations@enterprise.example.com
+    ou: ou-ent1-nonprod
+    tags:
+      env: dev
+      team: ml
+      cost-center: cc-208
+      data-classification: internal
+      region-primary: us-east-1
+
+  - id: "200000000013"
+    name: dev-catalog
+    email: dev-catalog@enterprise.example.com
+    ou: ou-ent1-nonprod
+    tags:
+      env: dev
+      team: catalog
+      cost-center: cc-207
+      data-classification: internal
+      region-primary: eu-west-1
+
+  # Sandbox accounts
+  - id: "300000000001"
+    name: sandbox-alice
+    email: sandbox-alice@enterprise.example.com
+    ou: ou-ent1-sandbox
+    tags:
+      env: sandbox
+      team: platform
+      cost-center: cc-300
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "300000000002"
+    name: sandbox-bob
+    email: sandbox-bob@enterprise.example.com
+    ou: ou-ent1-sandbox
+    tags:
+      env: sandbox
+      team: data
+      cost-center: cc-300
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "300000000003"
+    name: sandbox-carol
+    email: sandbox-carol@enterprise.example.com
+    ou: ou-ent1-sandbox
+    tags:
+      env: sandbox
+      team: ml
+      cost-center: cc-300
+      data-classification: internal
+      region-primary: us-east-1
+
+  - id: "300000000004"
+    name: sandbox-david
+    email: sandbox-david@enterprise.example.com
+    ou: ou-ent1-sandbox
+    tags:
+      env: sandbox
+      team: orders
+      cost-center: cc-300
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "300000000005"
+    name: sandbox-eve
+    email: sandbox-eve@enterprise.example.com
+    ou: ou-ent1-sandbox
+    tags:
+      env: sandbox
+      team: payments
+      cost-center: cc-300
+      data-classification: internal
+      region-primary: ap-southeast-1
+
+  - id: "300000000006"
+    name: sandbox-frank
+    email: sandbox-frank@enterprise.example.com
+    ou: ou-ent1-sandbox
+    tags:
+      env: sandbox
+      team: analytics
+      cost-center: cc-300
+      data-classification: internal
+      region-primary: us-east-1
+
+  - id: "300000000007"
+    name: sandbox-grace
+    email: sandbox-grace@enterprise.example.com
+    ou: ou-ent1-sandbox
+    tags:
+      env: sandbox
+      team: supply-chain
+      cost-center: cc-300
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "300000000008"
+    name: sandbox-henry
+    email: sandbox-henry@enterprise.example.com
+    ou: ou-ent1-sandbox
+    tags:
+      env: sandbox
+      team: messaging
+      cost-center: cc-300
+      data-classification: internal
+      region-primary: eu-west-1
+
+  # Security accounts
+  - id: "400000000001"
+    name: security-audit-log
+    email: security-audit-log@enterprise.example.com
+    ou: ou-ent1-security
+    tags:
+      env: prod
+      team: security
+      cost-center: cc-400
+      data-classification: restricted
+      region-primary: eu-west-1
+
+  - id: "400000000002"
+    name: security-guardduty
+    email: security-guardduty@enterprise.example.com
+    ou: ou-ent1-security
+    tags:
+      env: prod
+      team: security
+      cost-center: cc-400
+      data-classification: restricted
+      region-primary: eu-west-1
+
+  - id: "400000000003"
+    name: security-siem
+    email: security-siem@enterprise.example.com
+    ou: ou-ent1-security
+    tags:
+      env: prod
+      team: security
+      cost-center: cc-400
+      data-classification: restricted
+      region-primary: eu-west-1
+
+  - id: "400000000004"
+    name: security-vuln-scanning
+    email: security-vuln-scanning@enterprise.example.com
+    ou: ou-ent1-security
+    tags:
+      env: prod
+      team: security
+      cost-center: cc-401
+      data-classification: restricted
+      region-primary: us-east-1
+
+  - id: "400000000005"
+    name: security-pentest
+    email: security-pentest@enterprise.example.com
+    ou: ou-ent1-security
+    tags:
+      env: staging
+      team: security
+      cost-center: cc-401
+      data-classification: restricted
+      region-primary: eu-west-1
+
+  # SharedServices accounts
+  - id: "500000000001"
+    name: shared-networking
+    email: shared-networking@enterprise.example.com
+    ou: ou-ent1-shared
+    tags:
+      env: prod
+      team: platform
+      cost-center: cc-500
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "500000000002"
+    name: shared-dns
+    email: shared-dns@enterprise.example.com
+    ou: ou-ent1-shared
+    tags:
+      env: prod
+      team: platform
+      cost-center: cc-500
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "500000000003"
+    name: shared-monitoring
+    email: shared-monitoring@enterprise.example.com
+    ou: ou-ent1-shared
+    tags:
+      env: prod
+      team: platform
+      cost-center: cc-501
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "500000000004"
+    name: shared-logging
+    email: shared-logging@enterprise.example.com
+    ou: ou-ent1-shared
+    tags:
+      env: prod
+      team: platform
+      cost-center: cc-501
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "500000000005"
+    name: shared-backup
+    email: shared-backup@enterprise.example.com
+    ou: ou-ent1-shared
+    tags:
+      env: prod
+      team: platform
+      cost-center: cc-502
+      data-classification: confidential
+      region-primary: eu-west-1
+
+  - id: "500000000006"
+    name: shared-artifact-registry
+    email: shared-artifact-registry@enterprise.example.com
+    ou: ou-ent1-shared
+    tags:
+      env: prod
+      team: platform
+      cost-center: cc-502
+      data-classification: internal
+      region-primary: us-east-1
+
+  - id: "500000000007"
+    name: shared-cicd
+    email: shared-cicd@enterprise.example.com
+    ou: ou-ent1-shared
+    tags:
+      env: prod
+      team: platform
+      cost-center: cc-503
+      data-classification: internal
+      region-primary: eu-west-1
+
+  # Decommissioned accounts (SUSPENDED)
+  - id: "600000000001"
+    name: legacy-monolith
+    email: legacy-monolith@enterprise.example.com
+    ou: ou-ent1-decom
+    status: SUSPENDED
+    tags:
+      env: prod
+      team: platform
+      cost-center: cc-600
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "600000000002"
+    name: legacy-batch-jobs
+    email: legacy-batch-jobs@enterprise.example.com
+    ou: ou-ent1-decom
+    status: SUSPENDED
+    tags:
+      env: prod
+      team: data
+      cost-center: cc-600
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "600000000003"
+    name: legacy-etl-pipeline
+    email: legacy-etl-pipeline@enterprise.example.com
+    ou: ou-ent1-decom
+    status: SUSPENDED
+    tags:
+      env: prod
+      team: data
+      cost-center: cc-601
+      data-classification: confidential
+      region-primary: eu-west-1
+
+  - id: "600000000004"
+    name: legacy-reporting
+    email: legacy-reporting@enterprise.example.com
+    ou: ou-ent1-decom
+    status: SUSPENDED
+    tags:
+      env: prod
+      team: analytics
+      cost-center: cc-601
+      data-classification: internal
+      region-primary: eu-west-1
+
+  - id: "600000000005"
+    name: legacy-crm
+    email: legacy-crm@enterprise.example.com
+    ou: ou-ent1-decom
+    status: SUSPENDED
+    tags:
+      env: prod
+      team: orders
+      cost-center: cc-602
+      data-classification: confidential
+      region-primary: us-east-1

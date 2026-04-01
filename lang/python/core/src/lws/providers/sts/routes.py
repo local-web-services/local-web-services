@@ -6,7 +6,9 @@ Implements the STS Action-based form-encoded API.  Only
 
 from __future__ import annotations
 
+import re
 import uuid
+from datetime import UTC, datetime
 
 from fastapi import FastAPI, Request, Response
 
@@ -18,6 +20,7 @@ from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_mid
 _logger = get_logger("ldk.sts")
 
 _ACCOUNT_ID = "000000000000"
+_TOKEN_RE = re.compile(r"^lws-acct-(\d{12})-")
 
 
 async def _parse_form(request: Request) -> dict[str, str]:
@@ -30,13 +33,21 @@ def _request_id() -> str:
     return str(uuid.uuid4())
 
 
-async def _handle_get_caller_identity(_params: dict[str, str]) -> Response:
+def _extract_account_from_token(token: str) -> str:
+    """Return the account ID embedded in an lws-acct-* session token, or the default."""
+    match = _TOKEN_RE.match(token)
+    return match.group(1) if match else _ACCOUNT_ID
+
+
+async def _handle_get_caller_identity(params: dict[str, str]) -> Response:
+    token = params.get("_security_token", "")
+    account_id = _extract_account_from_token(token) if token else _ACCOUNT_ID
     xml = (
         '<GetCallerIdentityResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">'
         "<GetCallerIdentityResult>"
-        f"<Arn>arn:aws:iam::{_ACCOUNT_ID}:root</Arn>"
-        f"<UserId>{_ACCOUNT_ID}</UserId>"
-        f"<Account>{_ACCOUNT_ID}</Account>"
+        f"<Arn>arn:aws:iam::{account_id}:root</Arn>"
+        f"<UserId>{account_id}</UserId>"
+        f"<Account>{account_id}</Account>"
         "</GetCallerIdentityResult>"
         f"<ResponseMetadata><RequestId>{_request_id()}</RequestId></ResponseMetadata>"
         "</GetCallerIdentityResponse>"
@@ -47,21 +58,30 @@ async def _handle_get_caller_identity(_params: dict[str, str]) -> Response:
 async def _handle_assume_role(params: dict[str, str]) -> Response:
     role_arn = params.get("RoleArn", f"arn:aws:iam::{_ACCOUNT_ID}:role/assumed-role")
     session_name = params.get("RoleSessionName", "session")
+    duration = int(params.get("DurationSeconds", "3600"))
+
+    arn_parts = role_arn.split(":")
+    account_id = arn_parts[4] if len(arn_parts) >= 5 else _ACCOUNT_ID
+
     access_key_id = "ASIALWSLOCALKEY"
     secret_access_key = "lws-local-secret"
-    session_token = f"lws-session-token-{uuid.uuid4()}"
+    session_token = f"lws-acct-{account_id}-{uuid.uuid4()}"
+    expiration = datetime.fromtimestamp(datetime.now(UTC).timestamp() + duration, tz=UTC).strftime(
+        "%Y-%m-%dT%H:%M:%SZ"
+    )
+
     xml = (
         '<AssumeRoleResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">'
         "<AssumeRoleResult>"
         "<AssumedRoleUser>"
-        f"<AssumedRoleId>{_ACCOUNT_ID}:{session_name}</AssumedRoleId>"
+        f"<AssumedRoleId>{account_id}:{session_name}</AssumedRoleId>"
         f"<Arn>{role_arn}</Arn>"
         "</AssumedRoleUser>"
         "<Credentials>"
         f"<AccessKeyId>{access_key_id}</AccessKeyId>"
         f"<SecretAccessKey>{secret_access_key}</SecretAccessKey>"
         f"<SessionToken>{session_token}</SessionToken>"
-        "<Expiration>2099-12-31T23:59:59Z</Expiration>"
+        f"<Expiration>{expiration}</Expiration>"
         "</Credentials>"
         "</AssumeRoleResult>"
         f"<ResponseMetadata><RequestId>{_request_id()}</RequestId></ResponseMetadata>"
@@ -86,6 +106,7 @@ def create_sts_app(
     @app.post("/")
     async def dispatch(request: Request) -> Response:
         params = await _parse_form(request)
+        params["_security_token"] = request.headers.get("X-Amz-Security-Token", "")
         action = params.get("Action", "")
         handler = _ACTION_HANDLERS.get(action)
         if handler is None:

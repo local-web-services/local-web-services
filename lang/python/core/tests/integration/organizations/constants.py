@@ -14,4 +14,8 @@ INT_ACCOUNT_NAME = "int-test-account-1"
 
 INT_ACCOUNT_EMAIL = "int-test-account-1@example.com"
 
+INT_ACCOUNT_TAGS = {"env": "prod", "team": "payments"}
+
+INT_OU_NAMES = ["int-test-ou-alpha", "int-test-ou-beta", "int-test-ou-gamma"]
+
 _ORG_TARGET = "AmazonOrganizationsV20161128"

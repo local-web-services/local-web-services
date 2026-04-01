@@ -58,13 +58,18 @@ def dev(
     background: bool = typer.Option(
         False, "--background", "-b", help="Run in the background (detached)"
     ),
+    seed: str = typer.Option(
+        None, "--seed", help="Pre-populate Organizations from a seed (e.g. 'enterprise' or a path)"
+    ),
 ) -> None:
     """Start the local development environment."""
     if background:
         _start_background(project_dir, port, no_persist, force_synth, log_level, mode)
         return
     try:
-        asyncio.run(_run_dev(project_dir, port, no_persist, force_synth, log_level, mode))
+        asyncio.run(
+            _run_dev(project_dir, port, no_persist, force_synth, log_level, mode, seed=seed)
+        )
     except KeyboardInterrupt:
         pass
 

@@ -9,21 +9,23 @@ PROVIDERS_DIR = Path(__file__).parent.parent.parent.parent.parent / "src" / "lws
 # Providers that do not need a provider.py file.
 # These are stateless routes-only or non-provider directories.
 PROVIDER_PY_EXCEPTIONS = {
-    "iam",
-    "organizations",
-    "sts",
-    "lambda_runtime",
-    "secretsmanager",
-    "ssm",
-    "glacier",
-    "s3tables",
-    "elasticache",
-    "memorydb",
+    "cloudformation",
     "docdb",
-    "neptune",
     "elasticsearch",
+    "elasticache",
+    "glacier",
+    "iam",
+    "lambda_runtime",
+    "memorydb",
+    "neptune",
     "opensearch",
+    "organizations",
     "rds",
+    "s3tables",
+    "secretsmanager",
+    "service_catalog",
+    "ssm",
+    "sts",
 }
 
 

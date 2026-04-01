@@ -43,6 +43,8 @@ def _service_ports(port: int) -> dict[str, int]:
         "s3tables": port + 22,
         "cloudtrail": port + 23,
         "organizations": port + 50,
+        "cloudformation": port + 51,
+        "servicecatalog": port + 52,
     }
 
 
