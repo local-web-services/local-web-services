@@ -66,6 +66,7 @@ dev = [
     "ruff>=0.4.0",
     "radon>=6.0.0",
     "lws-arch-tests",
+    "agency-pytest-agent-reporter>=0.1.0",
 ]
 
 [tool.black]
