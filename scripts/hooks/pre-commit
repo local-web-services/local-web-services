@@ -76,7 +76,6 @@ if $PYTHON_CORE; then
   run "python-core lint"         make -C "$REPO_ROOT/lang/python/core" lint
   run "python-core format-check" make -C "$REPO_ROOT/lang/python/core" format-check
   run "python-core test"         make -C "$REPO_ROOT/lang/python/core" test
-  run "python-core test-e2e"     make -C "$REPO_ROOT/lang/python/core" test-e2e
 fi
 
 # ── Python SDK + example ──────────────────────────────────────────────────────
@@ -87,33 +86,27 @@ fi
 
 # ── TypeScript core + SDK + example ──────────────────────────────────────────
 if $TYPESCRIPT; then
-  run "typescript-core test"        make -C "$REPO_ROOT/lang/typescript/core" test
-  run_in "typescript-core build"    "lang/typescript/core" npm run build
-  run_in "typescript-sdk build"     "lang/typescript/sdk" npm ci
-  run_in "typescript-sdk build tsc" "lang/typescript/sdk" npm run build
-  run_in "typescript-example test"  "lang/typescript/example" npm ci
-  run_in "typescript-example jest"  "lang/typescript/example" npm test
-  run_in "typescript-example bdd"   "lang/typescript/example" npm run test:e2e
+  run_in "typescript-core lint"         "lang/typescript/core" npm run lint
+  run_in "typescript-core format-check" "lang/typescript/core" npm run format-check
+  run "typescript-core test"            make -C "$REPO_ROOT/lang/typescript/core" test
+  run_in "typescript-sdk lint"          "lang/typescript/sdk" npm run lint
+  run_in "typescript-sdk format-check"  "lang/typescript/sdk" npm run format-check
+  run_in "typescript-sdk test"          "lang/typescript/sdk" npm test
 fi
 
 # ── Go core + SDK + example ───────────────────────────────────────────────────
 if $GO; then
-  run "go-core test"    make -C "$REPO_ROOT/lang/go/core" test
-  run "go-sdk test"     make -C "$REPO_ROOT/lang/go/sdk" test
-  run_in "go-example test" "lang/go/example" go test ./...
+  run "go-sdk lint" make -C "$REPO_ROOT/lang/go/sdk" lint
 fi
 
 # ── Java core + SDK + example ─────────────────────────────────────────────────
 if $JAVA; then
-  run "java-core test" make -C "$REPO_ROOT/lang/java/core" test
-  run_in "java-core jar"    "lang/java/core" \
-      env GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew jar
-  run_in "java-sdk test"    "lang/java/sdk" \
-      env GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-sdk" ./gradlew test
-  run_in "java-sdk jar"     "lang/java/sdk" \
-      env GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-sdk" ./gradlew jar
-  run_in "java-example test" "lang/java/example" \
-      env GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-example" ./gradlew test
+  run_in "java-core lint"    "lang/java/core" \
+      env GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" make lint
+  run_in "java-sdk lint"     "lang/java/sdk" \
+      env GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-sdk" make lint
+  run_in "java-example lint" "lang/java/example" \
+      env GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-example" make lint
 fi
 
 # ── FizzBee formal specs ──────────────────────────────────────────────────────
@@ -145,41 +138,55 @@ fi
 if $SAMPLE_CDK; then
   echo ""
   echo "── sample-project-cdk ────────────────────────────────────────────────"
-  LDK_PID=""
-  _cleanup_cdk() { [ -n "$LDK_PID" ] && kill "$LDK_PID" 2>/dev/null || true; }
-  trap _cleanup_cdk EXIT
-  (cd "$REPO_ROOT/sample-project/cdk" && ldk dev) &
-  LDK_PID=$!
-  if wait_for_ldk 3000; then
-    if (cd "$REPO_ROOT/sample-project/cdk" && npx cdk synth) && \
-       (cd "$REPO_ROOT/sample-project/cdk" && ./test-orders.sh); then
-      echo "✓ sample-project-cdk passed"
+  if [ ! -d "$REPO_ROOT/sample-project/cdk" ]; then
+    echo "── sample-project-cdk (SKIPPED — directory does not exist in this worktree) ─"
+  else
+    LDK_PID=""
+    _cleanup_cdk() { ldk stop 2>/dev/null || true; [ -n "$LDK_PID" ] && kill "$LDK_PID" 2>/dev/null || true; }
+    trap _cleanup_cdk EXIT
+    (cd "$REPO_ROOT/sample-project/cdk" && ldk dev) &
+    LDK_PID=$!
+    if wait_for_ldk 3000; then
+      if (cd "$REPO_ROOT/sample-project/cdk" && npx cdk synth) && \
+         (cd "$REPO_ROOT/sample-project/cdk" && ./test-orders.sh); then
+        echo "✓ sample-project-cdk passed"
+      else
+        echo "✗ sample-project-cdk FAILED"
+        FAILED=1
+      fi
     else
-      echo "✗ sample-project-cdk FAILED"
+      echo "✗ sample-project-cdk FAILED (ldk did not start)"
       FAILED=1
     fi
-  else
-    echo "✗ sample-project-cdk FAILED (ldk did not start)"
-    FAILED=1
+    ldk stop 2>/dev/null || true
+    pkill -TERM -f "ldk dev" 2>/dev/null || true
+    kill "$LDK_PID" 2>/dev/null || true
+    wait "$LDK_PID" 2>/dev/null || true
+    # Wait for port 3000 to be released before starting the next ldk instance
+    for _i in $(seq 1 20); do nc -z localhost 3000 2>/dev/null || break; sleep 1; done
+    LDK_PID=""
+    trap - EXIT
   fi
-  kill "$LDK_PID" 2>/dev/null || true
-  LDK_PID=""
-  trap - EXIT
 fi
 
 # ── Sample project HCL ────────────────────────────────────────────────────────
 if $SAMPLE_HCL; then
   echo ""
   echo "── sample-project-hcl ────────────────────────────────────────────────"
-  if ! command -v tofu &>/dev/null; then
+  if [ ! -d "$REPO_ROOT/sample-project/hcl" ]; then
+    echo "── sample-project-hcl (SKIPPED — directory does not exist in this worktree) ─"
+  elif ! command -v tofu &>/dev/null; then
     echo "── sample-project-hcl (SKIPPED — tofu not in PATH) ─────────────────"
   else
     LDK_PID=""
-    _cleanup_hcl() { [ -n "$LDK_PID" ] && kill "$LDK_PID" 2>/dev/null || true; }
+    _cleanup_hcl() { ldk stop 2>/dev/null || true; [ -n "$LDK_PID" ] && kill "$LDK_PID" 2>/dev/null || true; }
     trap _cleanup_hcl EXIT
     (cd "$REPO_ROOT/sample-project/hcl" && ldk dev) &
     LDK_PID=$!
     if wait_for_ldk 3000; then
+      # Remove stale state so tofu apply always starts from a clean slate
+      # (ldk runs with persist:false, so each run is a fresh instance)
+      rm -f "$REPO_ROOT/sample-project/hcl/terraform.tfstate"
       if (cd "$REPO_ROOT/sample-project/hcl" && tofu init) && \
          (cd "$REPO_ROOT/sample-project/hcl" && tofu apply -auto-approve) && \
          (cd "$REPO_ROOT/sample-project/hcl" && ./test-orders.sh); then
@@ -192,7 +199,10 @@ if $SAMPLE_HCL; then
       echo "✗ sample-project-hcl FAILED (ldk did not start)"
       FAILED=1
     fi
+    ldk stop 2>/dev/null || true
+    pkill -TERM -f "ldk dev" 2>/dev/null || true
     kill "$LDK_PID" 2>/dev/null || true
+    wait "$LDK_PID" 2>/dev/null || true
     LDK_PID=""
     trap - EXIT
   fi

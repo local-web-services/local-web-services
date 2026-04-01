@@ -47,3 +47,4 @@ Never work around a failing quality check (lint, formatting, CPD, tests) by disg
 - Disabling or suppressing a check without explicit instruction
 
 When a check fails, identify the correct fix. If the fix is non-trivial, explain it and propose it. Shortcuts require explicit user approval.
+
