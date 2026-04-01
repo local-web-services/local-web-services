@@ -245,14 +245,14 @@ without any hardcoded mappings.
 Each annotation maps to a Gherkin keyword with a required grammatical tense:
 
 - **`# step:` → present tense** (`When`) — describes the action as it happens now
-  - `a dynamodb table is created`
-  - `an sqs message is sent to the queue`
+  - `a "dynamodb" "table" is created`
+  - `an "sqs" "message" is sent to the queue`
 - **`# result:` → future tense** (`Then`) — uses "will be" or "will" to describe what happens next
   - `the "dynamodb" "table" will be in "CREATING" state`
   - `the "sqs" "message" will be "AVAILABLE" for delivery`
 - **`# guard:` and `# guard_violation:` → past tense** (`Given`) — describes preconditions that were true before the action
-  - `the dynamodb table existed`
-  - `the dynamodb table did not exist`
+  - `the "dynamodb" "table" existed`
+  - `the "dynamodb" "table" did not exist`
   - `the "dynamodb" "table" was "ACTIVE"`
   - `the "dynamodb" "table" was not "ACTIVE"`
 
@@ -289,17 +289,18 @@ For integration specs (under `integrations/`), use the correct service name for 
 
 ### Property/Value Quoting Rule
 
-When an annotation describes a **status or state value** being set on a service resource, wrap the service name, resource type, and value in double quotes:
+Always quote the service name and resource type whenever they appear in an annotation. Also quote any status or state value.
 
 - `the "dynamodb" "table" was "ACTIVE"` ← service, resource type, and status all quoted
 - `the "dynamodb" "table" will be in "CREATING" state`
 - `the "sqs" "queue" was not "ACTIVE"`
+- `the "dynamodb" "table" existed` ← service and resource type quoted even for existence checks
+- `the "dynamodb" "table" did not exist` ← same rule applies to negations
+- `an "sts" "session" "slot" was "available"` ← service, resource type, qualifier, and state all quoted
 
-**Do quote** when describing a status/lifecycle state (ACTIVE, CREATING, DELETED, DELETING, PENDING, COMMITTED, ROLLED_BACK, DISABLED, ENABLED, SUSPENDED, IN_PROGRESS, COMPLETED, ABORTED, AVAILABLE, FAILED, MODIFYING, etc.).
+**Always quote** the service name and resource type in every annotation (`# step:`, `# result:`, `# guard:`, `# guard_violation:`, `# check:`), regardless of whether a status value is present.
 
-**Do not quote** for plain existence or emptiness checks:
-- `the dynamodb table existed` ← no quoting needed
-- `the s3 bucket was empty` ← no quoting needed
+**Also quote** status/lifecycle values (ACTIVE, CREATING, DELETED, DELETING, PENDING, COMMITTED, ROLLED_BACK, DISABLED, ENABLED, SUSPENDED, IN_PROGRESS, COMPLETED, ABORTED, AVAILABLE, FAILED, MODIFYING, SUCCEEDED, CREATE_COMPLETE, UPDATE_COMPLETE, etc.).
 
 Rules:
 - Place annotations on lines immediately preceding the `action`/`assertion` header (blank lines between are OK)
@@ -342,22 +343,22 @@ always assertion TableStatusValid:
 Example using all annotation variants:
 
 ```fizzbee
-# step: an sqs message is sent to the sqs queue
+# step: an "sqs" "message" is sent to the "sqs" "queue"
 # result: the "sqs" "message" will be "AVAILABLE" for delivery
-# guard: the sqs queue existed
-# guard_violation: the sqs queue did not exist
+# guard: the "sqs" "queue" existed
+# guard_violation: the "sqs" "queue" did not exist
 # guard: the "sqs" "queue" was "ACTIVE"
 # guard_violation_lifecycle: the "sqs" "queue" was not "ACTIVE"
-# guard: a message slot was available
-# guard_violation_capacity: no message slot was available
+# guard: an "sqs" "message" "slot" was "available"
+# guard_violation_capacity: no "sqs" "message" "slot" was "available"
 atomic action SendMessage:
     ...
 
 # fake_skip: internal
-# step: the visibility timeout expires
+# step: the "sqs" "message" visibility timeout expires
 # result: the "sqs" "message" will be "AVAILABLE" again
-# guard: the sqs message existed
-# guard_violation: the sqs message did not exist
+# guard: the "sqs" "message" existed
+# guard_violation: the "sqs" "message" did not exist
 # guard: the "sqs" "message" was "IN_FLIGHT"
 # guard_violation_lifecycle: the "sqs" "message" was not "IN_FLIGHT"
 atomic action VisibilityTimeoutExpires:
