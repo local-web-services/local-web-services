@@ -325,7 +325,7 @@
           }
         ]
       },
-      "pyCode": "def SuccessfulInvocationReferencesExistingDB():\n    for iid in inv_status:\n        if inv_status[iid] == \"SUCCESS\":\n            dbid = inv_db[iid]\n            if dbid not in db_status:\n                return False\n    return True\n\n\n# check: every successful invocation recorded which function it invoked\n"
+      "pyCode": "def SuccessfulInvocationReferencesExistingDB():\n    for iid in inv_status:\n        if inv_status[iid] == \"SUCCESS\":\n            dbid = inv_db[iid]\n            if dbid not in db_status:\n                return False\n    return True\n\n\n# check: every successful \"rds\" \"invocation\" recorded which \"lambda\" \"function\" it invoked\n"
     },
     {
       "sourceInfo": {
@@ -979,11 +979,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 32,
-                    "column": 17
+                    "column": 19
                   },
                   "end": {
                     "line": 32,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "DB_IDS"
@@ -1147,11 +1147,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 43,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 43,
-                    "column": 23
+                    "column": 25
                   }
                 },
                 "pyExpr": "FUNC_IDS"
@@ -1377,11 +1377,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 55,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 55,
-                    "column": 23
+                    "column": 25
                   }
                 },
                 "pyExpr": "FUNC_IDS"
@@ -1771,11 +1771,11 @@
                                                             "sourceInfo": {
                                                               "start": {
                                                                 "line": 74,
-                                                                "column": 32
+                                                                "column": 34
                                                               },
                                                               "end": {
                                                                 "line": 74,
-                                                                "column": 39
+                                                                "column": 41
                                                               }
                                                             },
                                                             "pyExpr": "FUNC_IDS"
@@ -1845,11 +1845,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 70,
-                    "column": 17
+                    "column": 19
                   },
                   "end": {
                     "line": 70,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "DB_IDS"
@@ -2338,11 +2338,11 @@
                                                                                     "sourceInfo": {
                                                                                       "start": {
                                                                                         "line": 98,
-                                                                                        "column": 40
+                                                                                        "column": 42
                                                                                       },
                                                                                       "end": {
                                                                                         "line": 98,
-                                                                                        "column": 46
+                                                                                        "column": 48
                                                                                       }
                                                                                     },
                                                                                     "pyExpr": "INV_IDS"
@@ -2450,11 +2450,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 91,
-                    "column": 17
+                    "column": 19
                   },
                   "end": {
                     "line": 91,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "DB_IDS"
@@ -2943,11 +2943,11 @@
                                                                                     "sourceInfo": {
                                                                                       "start": {
                                                                                         "line": 123,
-                                                                                        "column": 40
+                                                                                        "column": 42
                                                                                       },
                                                                                       "end": {
                                                                                         "line": 123,
-                                                                                        "column": 46
+                                                                                        "column": 48
                                                                                       }
                                                                                     },
                                                                                     "pyExpr": "INV_IDS"
@@ -3055,11 +3055,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 116,
-                    "column": 17
+                    "column": 19
                   },
                   "end": {
                     "line": 116,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "DB_IDS"

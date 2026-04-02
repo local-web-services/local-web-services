@@ -12,6 +12,10 @@ from ..constants import TEST_ACCOUNT_ID
 @when("an sts role is assumed for an account")
 @when('an "sts" "role" is assumed for an account')
 def an_sts_role_is_assumed_for_an_account(lws_session, world):
+    if world.get("session_slot_available") is False:
+        world["result"] = None
+        world["error"] = ValueError("Guard: no session slot available")
+        return
     try:
         resp = StsTestClient(lws_session).assume_role()
         world["result"] = resp

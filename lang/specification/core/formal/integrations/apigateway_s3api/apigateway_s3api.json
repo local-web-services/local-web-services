@@ -325,7 +325,7 @@
           }
         ]
       },
-      "pyCode": "def ObjectReferencesExistingBucket():\n    for oid in obj_status:\n        if obj_status[oid] == \"EXISTS\":\n            bid = obj_bucket[oid]\n            if bid not in bucket_status:\n                return False\n    return True\n\n\n# check: every successful request references an API that exists\n"
+      "pyCode": "def ObjectReferencesExistingBucket():\n    for oid in obj_status:\n        if obj_status[oid] == \"EXISTS\":\n            bid = obj_bucket[oid]\n            if bid not in bucket_status:\n                return False\n    return True\n\n\n# check: every successful request references an \"api gateway\" \"API\" that exists\n"
     },
     {
       "sourceInfo": {
@@ -1054,11 +1054,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 34,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 34,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "API_IDS"
@@ -1222,11 +1222,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 45,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 45,
-                    "column": 25
+                    "column": 27
                   }
                 },
                 "pyExpr": "BUCKET_IDS"
@@ -1452,11 +1452,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 57,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 57,
-                    "column": 25
+                    "column": 27
                   }
                 },
                 "pyExpr": "BUCKET_IDS"
@@ -1846,11 +1846,11 @@
                                                             "sourceInfo": {
                                                               "start": {
                                                                 "line": 76,
-                                                                "column": 32
+                                                                "column": 34
                                                               },
                                                               "end": {
                                                                 "line": 76,
-                                                                "column": 41
+                                                                "column": 43
                                                               }
                                                             },
                                                             "pyExpr": "BUCKET_IDS"
@@ -1920,11 +1920,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 72,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 72,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "API_IDS"
@@ -2541,11 +2541,11 @@
                                                                                                         "sourceInfo": {
                                                                                                           "start": {
                                                                                                             "line": 104,
-                                                                                                            "column": 48
+                                                                                                            "column": 50
                                                                                                           },
                                                                                                           "end": {
                                                                                                             "line": 104,
-                                                                                                            "column": 54
+                                                                                                            "column": 56
                                                                                                           }
                                                                                                         },
                                                                                                         "pyExpr": "OBJ_IDS"
@@ -2577,11 +2577,11 @@
                                                                                     "sourceInfo": {
                                                                                       "start": {
                                                                                         "line": 102,
-                                                                                        "column": 40
+                                                                                        "column": 42
                                                                                       },
                                                                                       "end": {
                                                                                         "line": 102,
-                                                                                        "column": 46
+                                                                                        "column": 48
                                                                                       }
                                                                                     },
                                                                                     "pyExpr": "REQ_IDS"
@@ -2689,11 +2689,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 95,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 95,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "API_IDS"
@@ -3351,11 +3351,11 @@
                                                                         "sourceInfo": {
                                                                           "start": {
                                                                             "line": 135,
-                                                                            "column": 36
+                                                                            "column": 38
                                                                           },
                                                                           "end": {
                                                                             "line": 135,
-                                                                            "column": 42
+                                                                            "column": 44
                                                                           }
                                                                         },
                                                                         "pyExpr": "REQ_IDS"
@@ -3444,11 +3444,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 124,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 124,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "API_IDS"
@@ -3912,11 +3912,11 @@
                                                                                     "sourceInfo": {
                                                                                       "start": {
                                                                                         "line": 159,
-                                                                                        "column": 40
+                                                                                        "column": 42
                                                                                       },
                                                                                       "end": {
                                                                                         "line": 159,
-                                                                                        "column": 46
+                                                                                        "column": 48
                                                                                       }
                                                                                     },
                                                                                     "pyExpr": "REQ_IDS"
@@ -4024,11 +4024,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 152,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 152,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "API_IDS"

@@ -6,5 +6,6 @@ from pytest_bdd import given
 
 
 @given('the "cloudformation" "stack" did not exist')
-def stack_did_not_exist():
-    """No-op: lws_session fixture provides a fresh state for each scenario."""
+def stack_did_not_exist(world):
+    """Signal that the stack does not exist so guard-aware When steps can reject."""
+    world["stack_exists"] = False

@@ -391,7 +391,7 @@
           }
         ]
       },
-      "pyCode": "def RequestRequiresActiveApi():\n    for rid in req_status:\n        if req_status[rid] == \"ACCEPTED\":\n            aid = req_api[rid]\n            if aid in api_status:\n                if api_status[aid] != \"ACTIVE\":\n                    return False\n    return True\n\n\n# check: every AVAILABLE message belongs to an ACTIVE queue\n"
+      "pyCode": "def RequestRequiresActiveApi():\n    for rid in req_status:\n        if req_status[rid] == \"ACCEPTED\":\n            aid = req_api[rid]\n            if aid in api_status:\n                if api_status[aid] != \"ACTIVE\":\n                    return False\n    return True\n\n\n# check: every \"AVAILABLE\" \"sqs\" \"message\" belongs to an \"ACTIVE\" \"sqs\" \"queue\"\n"
     },
     {
       "sourceInfo": {
@@ -1186,11 +1186,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 34,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 34,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "API_IDS"
@@ -1354,11 +1354,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 45,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 45,
-                    "column": 24
+                    "column": 26
                   }
                 },
                 "pyExpr": "QUEUE_IDS"
@@ -1748,11 +1748,11 @@
                                                             "sourceInfo": {
                                                               "start": {
                                                                 "line": 67,
-                                                                "column": 32
+                                                                "column": 34
                                                               },
                                                               "end": {
                                                                 "line": 67,
-                                                                "column": 40
+                                                                "column": 42
                                                               }
                                                             },
                                                             "pyExpr": "QUEUE_IDS"
@@ -1822,11 +1822,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 63,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 63,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "API_IDS"
@@ -2443,11 +2443,11 @@
                                                                                                         "sourceInfo": {
                                                                                                           "start": {
                                                                                                             "line": 97,
-                                                                                                            "column": 48
+                                                                                                            "column": 50
                                                                                                           },
                                                                                                           "end": {
                                                                                                             "line": 97,
-                                                                                                            "column": 54
+                                                                                                            "column": 56
                                                                                                           }
                                                                                                         },
                                                                                                         "pyExpr": "MSG_IDS"
@@ -2479,11 +2479,11 @@
                                                                                     "sourceInfo": {
                                                                                       "start": {
                                                                                         "line": 95,
-                                                                                        "column": 40
+                                                                                        "column": 42
                                                                                       },
                                                                                       "end": {
                                                                                         "line": 95,
-                                                                                        "column": 46
+                                                                                        "column": 48
                                                                                       }
                                                                                     },
                                                                                     "pyExpr": "REQ_IDS"
@@ -2591,11 +2591,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 88,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 88,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "API_IDS"
@@ -2821,11 +2821,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 111,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 111,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "MSG_IDS"

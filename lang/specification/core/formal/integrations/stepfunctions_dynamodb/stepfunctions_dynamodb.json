@@ -391,7 +391,7 @@
           }
         ]
       },
-      "pyCode": "def ExecutionRequiresActiveStateMachine():\n    for eid in exec_status:\n        if exec_status[eid] == \"RUNNING\":\n            smid = exec_sm[eid]\n            if smid in sm_status:\n                if sm_status[smid] != \"ACTIVE\":\n                    return False\n    return True\n\n\n# check: every existing item belongs to an ACTIVE table\n"
+      "pyCode": "def ExecutionRequiresActiveStateMachine():\n    for eid in exec_status:\n        if exec_status[eid] == \"RUNNING\":\n            smid = exec_sm[eid]\n            if smid in sm_status:\n                if sm_status[smid] != \"ACTIVE\":\n                    return False\n    return True\n\n\n# check: every existing \"dynamodb\" \"item\" belongs to an \"ACTIVE\" \"dynamodb\" \"table\"\n"
     },
     {
       "sourceInfo": {
@@ -1186,11 +1186,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 34,
-                    "column": 17
+                    "column": 19
                   },
                   "end": {
                     "line": 34,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "SM_IDS"
@@ -1354,11 +1354,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 45,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 45,
-                    "column": 24
+                    "column": 26
                   }
                 },
                 "pyExpr": "TABLE_IDS"
@@ -1748,11 +1748,11 @@
                                                             "sourceInfo": {
                                                               "start": {
                                                                 "line": 67,
-                                                                "column": 32
+                                                                "column": 34
                                                               },
                                                               "end": {
                                                                 "line": 67,
-                                                                "column": 40
+                                                                "column": 42
                                                               }
                                                             },
                                                             "pyExpr": "TABLE_IDS"
@@ -1822,11 +1822,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 63,
-                    "column": 17
+                    "column": 19
                   },
                   "end": {
                     "line": 63,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "SM_IDS"
@@ -2179,11 +2179,11 @@
                                                             "sourceInfo": {
                                                               "start": {
                                                                 "line": 88,
-                                                                "column": 32
+                                                                "column": 34
                                                               },
                                                               "end": {
                                                                 "line": 88,
-                                                                "column": 39
+                                                                "column": 41
                                                               }
                                                             },
                                                             "pyExpr": "EXEC_IDS"
@@ -2253,11 +2253,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 84,
-                    "column": 17
+                    "column": 19
                   },
                   "end": {
                     "line": 84,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "SM_IDS"
@@ -2839,11 +2839,11 @@
                                                                                                 "sourceInfo": {
                                                                                                   "start": {
                                                                                                     "line": 112,
-                                                                                                    "column": 44
+                                                                                                    "column": 46
                                                                                                   },
                                                                                                   "end": {
                                                                                                     "line": 112,
-                                                                                                    "column": 51
+                                                                                                    "column": 53
                                                                                                   }
                                                                                                 },
                                                                                                 "pyExpr": "ITEM_IDS"
@@ -2970,11 +2970,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 103,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 103,
-                    "column": 23
+                    "column": 25
                   }
                 },
                 "pyExpr": "EXEC_IDS"
@@ -3673,11 +3673,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 127,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 127,
-                    "column": 23
+                    "column": 25
                   }
                 },
                 "pyExpr": "EXEC_IDS"

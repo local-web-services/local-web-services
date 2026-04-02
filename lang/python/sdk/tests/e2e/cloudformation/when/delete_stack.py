@@ -11,6 +11,10 @@ from ..constants import TEST_STACK_NAME
 @when("a cloudformation stack is deleted")
 @when('a "cloudformation" "stack" is deleted')
 def delete_stack(lws_session, world):
+    if world.get("stack_exists") is False:
+        world["result"] = None
+        world["error"] = ValueError("Guard: stack does not exist")
+        return
     try:
         result = lws_session.client("cloudformation").delete_stack(StackName=TEST_STACK_NAME)
         world["result"] = result
