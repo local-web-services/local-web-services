@@ -1,4 +1,4 @@
-"""Given: the table already existed"""
+"""Given: the "s3 tables" "table" already existed"""
 
 from __future__ import annotations
 

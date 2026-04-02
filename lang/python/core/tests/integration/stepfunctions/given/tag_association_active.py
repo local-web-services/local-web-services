@@ -1,10 +1,10 @@
-"""Given: the tag association was "ACTIVE" """
+"""Given: the "step functions" "state machine" tag association was "ACTIVE" """
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given('the tag association was "ACTIVE"')
+@given('the "step functions" "state machine" tag association was "ACTIVE"')
 def tag_association_active():
     """No-op: tag associations are always active after creation."""

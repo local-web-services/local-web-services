@@ -14,11 +14,11 @@ Feature: Memorydb - A "Memorydb" "Cluster" Is Restored From A "Memorydb" "Snapsh
     And the target "memorydb" "cluster" slot is available
     When a "memorydb" "cluster" is restored from a "memorydb" "snapshot"
     Then the restored "memorydb" "cluster" will be in "RESTORING" state
-    And every active cluster has write durability enabled
-    And every snapshotting cluster has a corresponding in-progress snapshot
-    And no "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"
-    And no user in "DELETING" state is currently a member of an "memorydb" "ACL"
-    And every active cluster and snapshot has tags
+    And every active "memorydb" "cluster" has write durability enabled
+    And every snapshotting "memorydb" "cluster" has a corresponding in-progress "memorydb" "snapshot"
+    And no "memorydb" "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"
+    And no "memorydb" "user" in "DELETING" state is currently a member of a "memorydb" "ACL"
+    And every active "memorydb" "cluster" and "snapshot" has tags
 
   @guard @negative @restore_cluster
   Scenario: a "memorydb" "cluster" is restored from a "memorydb" "snapshot" fails when the "memorydb" "snapshot" did not exist

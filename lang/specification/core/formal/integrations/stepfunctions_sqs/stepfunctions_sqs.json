@@ -391,7 +391,7 @@
           }
         ]
       },
-      "pyCode": "def ExecutionRequiresActiveStateMachine():\n    for eid in exec_status:\n        if exec_status[eid] == \"RUNNING\":\n            smid = exec_sm[eid]\n            if smid in sm_status:\n                if sm_status[smid] != \"ACTIVE\":\n                    return False\n    return True\n\n\n# check: every AVAILABLE message belongs to an ACTIVE queue\n"
+      "pyCode": "def ExecutionRequiresActiveStateMachine():\n    for eid in exec_status:\n        if exec_status[eid] == \"RUNNING\":\n            smid = exec_sm[eid]\n            if smid in sm_status:\n                if sm_status[smid] != \"ACTIVE\":\n                    return False\n    return True\n\n\n# check: every \"AVAILABLE\" \"sqs\" \"message\" belongs to an \"ACTIVE\" \"sqs\" \"queue\"\n"
     },
     {
       "sourceInfo": {
@@ -1186,11 +1186,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 33,
-                    "column": 17
+                    "column": 19
                   },
                   "end": {
                     "line": 33,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "SM_IDS"
@@ -1354,11 +1354,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 44,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 44,
-                    "column": 24
+                    "column": 26
                   }
                 },
                 "pyExpr": "QUEUE_IDS"
@@ -1748,11 +1748,11 @@
                                                             "sourceInfo": {
                                                               "start": {
                                                                 "line": 66,
-                                                                "column": 32
+                                                                "column": 34
                                                               },
                                                               "end": {
                                                                 "line": 66,
-                                                                "column": 40
+                                                                "column": 42
                                                               }
                                                             },
                                                             "pyExpr": "QUEUE_IDS"
@@ -1822,11 +1822,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 62,
-                    "column": 17
+                    "column": 19
                   },
                   "end": {
                     "line": 62,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "SM_IDS"
@@ -2179,11 +2179,11 @@
                                                             "sourceInfo": {
                                                               "start": {
                                                                 "line": 87,
-                                                                "column": 32
+                                                                "column": 34
                                                               },
                                                               "end": {
                                                                 "line": 87,
-                                                                "column": 39
+                                                                "column": 41
                                                               }
                                                             },
                                                             "pyExpr": "EXEC_IDS"
@@ -2253,11 +2253,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 83,
-                    "column": 17
+                    "column": 19
                   },
                   "end": {
                     "line": 83,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "SM_IDS"
@@ -2839,11 +2839,11 @@
                                                                                                 "sourceInfo": {
                                                                                                   "start": {
                                                                                                     "line": 113,
-                                                                                                    "column": 44
+                                                                                                    "column": 46
                                                                                                   },
                                                                                                   "end": {
                                                                                                     "line": 113,
-                                                                                                    "column": 50
+                                                                                                    "column": 52
                                                                                                   }
                                                                                                 },
                                                                                                 "pyExpr": "MSG_IDS"
@@ -2970,11 +2970,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 104,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 104,
-                    "column": 23
+                    "column": 25
                   }
                 },
                 "pyExpr": "EXEC_IDS"

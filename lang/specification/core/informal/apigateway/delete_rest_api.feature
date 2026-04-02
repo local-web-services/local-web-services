@@ -13,13 +13,13 @@ Feature: Apigateway - A "Api Gateway" "Rest Api" Is Deleted
     And the "api gateway" "API" was "ACTIVE"
     When a "api gateway" "REST API" is deleted
     Then the "api gateway" "API" will be deleted along with all its resources, methods, integrations, deployments, and stages
-    And all "ACTIVE" resources belong to "ACTIVE" APIs
-    And all "EXISTING" methods belong to "ACTIVE" resources
-    And all "EXISTING" integrations correspond to "EXISTING" methods
-    And all "ACTIVE" deployments belong to "ACTIVE" APIs
-    And all active stages reference "ACTIVE" deployments
-    And all active stages belong to "ACTIVE" APIs
-    And each "ACTIVE" "API" has at least one "ACTIVE" root resource
+    And all "ACTIVE" "api gateway" "resource"s belong to "ACTIVE" "api gateway" "API"s
+    And all "api gateway" "method"s belong to "ACTIVE" "api gateway" "resource"s
+    And all "api gateway" "integration"s correspond to existing "api gateway" "method"s
+    And all "ACTIVE" "api gateway" "deployment"s belong to "ACTIVE" "api gateway" "API"s
+    And all active "api gateway" "stage"s reference "ACTIVE" "api gateway" "deployment"s
+    And all active "api gateway" "stage"s belong to "ACTIVE" "api gateway" "API"s
+    And each "ACTIVE" "api gateway" "API" has at least one "ACTIVE" root "api gateway" "resource"
 
   @guard @negative @delete_rest_api
   Scenario: a "api gateway" "REST API" is deleted fails when the "api gateway" "API" did not exist

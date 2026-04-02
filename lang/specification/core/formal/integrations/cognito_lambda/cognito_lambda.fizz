@@ -48,7 +48,7 @@ atomic action DeployFunction:
 
 
 # step: a Lambda pre-signup trigger is configured on the "cognito" "user pool"
-# result: all subsequent signups will synchronously invoke the function before confirming
+# result: all subsequent signups will synchronously invoke the "lambda" "function" before confirming
 # guard: the "cognito" "user pool" existed
 # guard_violation: the "cognito" "user pool" did not exist
 # guard: the "cognito" "user pool" was "ACTIVE"
@@ -71,7 +71,7 @@ atomic action ConfigureTrigger:
 
 
 # step: a "cognito" "user" signs up to a "cognito" "user pool" that has no pre-signup trigger configured
-# result: the cognito user will be immediately "CONFIRMED"
+# result: the "cognito" "user" will be immediately "CONFIRMED"
 # guard: the "cognito" "user pool" existed
 # guard_violation: the "cognito" "user pool" did not exist
 # guard: the "cognito" "user pool" was "ACTIVE"
@@ -79,7 +79,7 @@ atomic action ConfigureTrigger:
 # guard: the "cognito" "user pool" has no pre-signup trigger configured
 # guard_violation: the "cognito" "user pool" has a pre-signup trigger configured
 # guard: the "cognito" "user" slot is available
-# guard_violation_capacity: no user slot is available
+# guard_violation_capacity: no "cognito" "user" "slot" was "available"
 atomic action SignupWithoutTrigger:
     oneof pid in POOL_IDS:
         if pid in pool_status:
@@ -99,12 +99,12 @@ atomic action SignupWithoutTrigger:
 # guard_violation_lifecycle: the "cognito" "user pool" was not "ACTIVE"
 # guard: the "cognito" "user pool" has a pre-signup trigger configured
 # guard_violation: the "cognito" "user pool" has no pre-signup trigger configured
-# guard: the trigger function was "ACTIVE"
-# guard_violation_lifecycle: the trigger function was not "ACTIVE"
+# guard: the trigger "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the trigger "lambda" "function" was not "ACTIVE"
 # guard: the "cognito" "user" slot is available
-# guard_violation_capacity: no user slot is available
+# guard_violation_capacity: no "cognito" "user" "slot" was "available"
 # guard: a "lambda" "invocation" slot is available
-# guard_violation_capacity: no invocation slot is available
+# guard_violation_capacity: no "lambda" "invocation" "slot" was "available"
 atomic action InitiateSignupWithTrigger:
     oneof pid in POOL_IDS:
         if pid in pool_status:
@@ -125,7 +125,7 @@ atomic action InitiateSignupWithTrigger:
 
 
 # fake_skip: internal
-# step: the pre-signup Lambda allows the signup
+# step: the pre-signup "lambda" "function" allows the signup
 # result: the invocation will be "SUCCESS" and the "cognito" "user" will be "CONFIRMED"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
@@ -139,7 +139,7 @@ atomic action TriggerAllows:
 
 
 # fake_skip: internal
-# step: the pre-signup Lambda denies the signup
+# step: the pre-signup "lambda" "function" denies the signup
 # result: the invocation will be "FAILED" and the "cognito" "user" will be rejected
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
@@ -152,7 +152,7 @@ atomic action TriggerDenies:
                 user_status[uid] = "REJECTED"
 
 
-# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+# check: every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
 always assertion InvocationRequiresActiveFunction:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":
@@ -167,7 +167,7 @@ always assertion InvocationRequiresActiveFunction:
     return True
 
 
-# check: every IN_PROGRESS invocation is for a PENDING user
+# check: every "IN_PROGRESS" "lambda" "invocation" is for a "PENDING" "cognito" "user"
 always assertion InvocationLinkedToPendingUser:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":
@@ -178,7 +178,7 @@ always assertion InvocationLinkedToPendingUser:
     return True
 
 
-# check: every PENDING user has a corresponding IN_PROGRESS invocation
+# check: every "PENDING" "cognito" "user" has a corresponding "IN_PROGRESS" "lambda" "invocation"
 always assertion PendingSignupHasInProgressInvocation:
     for uid in user_status:
         if user_status[uid] == "PENDING":

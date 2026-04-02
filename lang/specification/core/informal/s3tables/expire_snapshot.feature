@@ -15,11 +15,11 @@ Feature: S3tables - An Expired S3 Tables Snapshot Is Removed From A "S3 Tables" 
     And the "s3 tables" "snapshot" existed
     And the "s3 tables" "snapshot" was "ACTIVE"
     When an expired s3 tables snapshot is removed from a "s3 tables" "table"
-    Then the "s3 tables" "SNAPSHOT" will be "DELETED" and the "s3 tables" "table" s3 tables snapshot count decreases
-    And a bucket in "DELETING" state has no "ACTIVE" namespaces
-    And a "s3 tables" "namespace" in "DELETING" state has no "ACTIVE" tables
-    And snapshot count is never negative
-    And schema version is always at least one
+    Then the "s3 tables" "snapshot" will be "DELETED" and the "s3 tables" "table" snapshot count will decrease
+    And a "s3 tables" "bucket" in "DELETING" state has no "ACTIVE" "s3 tables" "namespace"s
+    And a "s3 tables" "namespace" in "DELETING" state has no "ACTIVE" "s3 tables" "table"s
+    And "s3 tables" "table" snapshot count is never negative
+    And "s3 tables" "table" schema version is always at least one
 
   @guard @negative @expire_snapshot
   Scenario: an expired s3 tables snapshot is removed from a "s3 tables" "table" fails when the "s3 tables" "table" did not exist

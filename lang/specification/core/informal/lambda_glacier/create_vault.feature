@@ -12,7 +12,7 @@ Feature: LambdaGlacier - A "Glacier" "Vault" Is Created
     Given the "glacier" "vault" did not already exist
     When a "glacier" "vault" is created
     Then the "glacier" "vault" will exist
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @guard @negative @create_vault

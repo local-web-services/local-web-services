@@ -1,4 +1,4 @@
-"""When: an "elasticache" parameter group is deleted"""
+"""When: an "elasticache" "parameter group" is deleted"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import TEST_PARAMETER_GROUP
 
 
-@when('an "elasticache" parameter group is deleted')
+@when('an "elasticache" "parameter group" is deleted')
 def delete_parameter_group(lws_session, world):
     pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
     try:

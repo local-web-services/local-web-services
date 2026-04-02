@@ -1,4 +1,4 @@
-"""Given: the mapped function was not "ACTIVE" """
+"""Given: the mapped "lambda" "function" was not "ACTIVE" """
 
 from __future__ import annotations
 

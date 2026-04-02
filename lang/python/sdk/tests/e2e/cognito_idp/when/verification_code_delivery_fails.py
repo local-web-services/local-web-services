@@ -1,4 +1,4 @@
-"""When: a verification code delivery fails for an unconfirmed user"""
+"""When: a verification code delivery fails for an unconfirmed "cognito" "user" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_USERNAME, _skip_if_not_implemented
 
 
-@when("a verification code delivery fails for an unconfirmed user")
+@when('a verification code delivery fails for an unconfirmed "cognito" "user"')
 def verification_code_delivery_fails(lws_session, world):
     try:
         pool_id = world.get("pool_id", "")

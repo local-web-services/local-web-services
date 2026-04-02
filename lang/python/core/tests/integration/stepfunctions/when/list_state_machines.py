@@ -1,4 +1,4 @@
-"""When: all state machines are listed"""
+"""When: all "step functions" "state machine"s are listed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SFN_TARGET
 
 
-@when("all state machines are listed")
+@when('all "step functions" "state machine"s are listed')
 def list_state_machines(client: TestClient, world):
     r = client.post(
         "/",

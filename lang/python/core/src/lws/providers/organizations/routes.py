@@ -14,6 +14,7 @@ from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
+from lws.providers.organizations._org_config import load_organizations_config
 from lws.providers.organizations._org_handlers import (
     _ACTION_HANDLERS,
     _error_response,
@@ -32,6 +33,7 @@ def create_organizations_app(
     chaos: AwsChaosConfig | None = None,
     aws_fake: AwsFakeConfig | None = None,
     cloudtrail_provider: ICloudTrail | None = None,
+    config_path: str | None = None,
 ) -> tuple[FastAPI, _OrganizationsState]:
     """Create a FastAPI application that speaks the AWS Organizations wire protocol.
 
@@ -46,7 +48,10 @@ def create_organizations_app(
     if chaos is not None:
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="organizations")
-    state = _OrganizationsState()
+    if config_path is not None:
+        state = load_organizations_config(config_path)
+    else:
+        state = _OrganizationsState()
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:

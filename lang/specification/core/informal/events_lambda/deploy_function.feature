@@ -12,9 +12,9 @@ Feature: EventsLambda - A "Lambda" "Function" Is Deployed
     Given the "lambda" "function" did not already exist
     When a "lambda" "function" is deployed
     Then the "lambda" "function" will be "ACTIVE"
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @guard @negative @deploy_function
   Scenario: a "lambda" "function" is deployed fails when the "lambda" "function" already existed

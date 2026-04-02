@@ -36,8 +36,8 @@ atomic action DeployFunction:
 
 # step: an "elasticache" "cluster" is created
 # result: the "elasticache" "cluster" will be "AVAILABLE"
-# guard: the cluster did not already exist
-# guard_violation: the cluster already existed
+# guard: the "elasticache" "cluster" did not already exist
+# guard_violation: the "elasticache" "cluster" already existed
 atomic action CreateCluster:
     oneof cid in CLUSTER_IDS:
         if cid not in cluster_status:
@@ -45,13 +45,13 @@ atomic action CreateCluster:
 
 
 # step: the "lambda" "function" is invoked
-# result: the invocation will be "IN_PROGRESS"
+# result: the "lambda" "invocation" will be "IN_PROGRESS"
 # guard: the "lambda" "function" existed
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
 # guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
-# guard: a "lambda" "invocation" slot is available
-# guard_violation_capacity: no invocation slot is available
+# guard: a "lambda" "invocation" "slot" was "available"
+# guard_violation_capacity: no "lambda" "invocation" "slot" was "available"
 atomic action InvokeFunction:
     oneof fid in FUNC_IDS:
         if fid in func_status:
@@ -63,15 +63,15 @@ atomic action InvokeFunction:
 
 
 # step: the "lambda" "function" writes a value to the "elasticache" "cluster" during invocation
-# result: the cache entry will be "CACHED" in the cluster
+# result: the "elasticache" "cache" "entry" will be "CACHED" in the "elasticache" "cluster"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 # guard: the "elasticache" "cluster" existed
 # guard_violation: the "elasticache" "cluster" did not exist
 # guard: the "elasticache" "cluster" was "AVAILABLE"
 # guard_violation_lifecycle: the "elasticache" "cluster" was not "AVAILABLE"
-# guard: a key slot is available
-# guard_violation_capacity: no key slot is available
+# guard: an "elasticache" "key" "slot" was "available"
+# guard_violation_capacity: no "elasticache" "key" "slot" was "available"
 atomic action CacheWrite:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -86,10 +86,10 @@ atomic action CacheWrite:
 
 
 # fake_skip: internal
-# step: ElastiCache evicts a cache entry due to memory pressure or TTL expiry
-# result: the cache entry will be "EVICTED"
-# guard: a CACHED entry existed
-# guard_violation_lifecycle: no CACHED entry existed
+# step: the "elasticache" "cluster" evicts a "cache" "entry" due to memory pressure or TTL expiry
+# result: the "elasticache" "cache entry" will be "EVICTED"
+# guard: a "CACHED" "elasticache" "entry" existed
+# guard_violation_lifecycle: no "CACHED" "elasticache" "entry" existed
 atomic action CacheEvict:
     oneof kid in KEY_IDS:
         if kid in key_status:
@@ -98,12 +98,12 @@ atomic action CacheEvict:
 
 
 # fake_skip: internal
-# step: the Lambda invocation reads an existing cache entry and completes successfully
-# result: the invocation will be "SUCCESS"
+# step: the "lambda" "function" invocation reads an existing cache entry and completes successfully
+# result: the "lambda" "invocation" will be "SUCCESS"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
-# guard: a CACHED entry existed in the cluster
-# guard_violation_lifecycle: no CACHED entry existed in the cluster
+# guard: a "CACHED" "elasticache" "entry" existed in the "elasticache" "cluster"
+# guard_violation_lifecycle: no "CACHED" "elasticache" "entry" existed in the "elasticache" "cluster"
 atomic action InvocationSucceedsCacheHit:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -117,12 +117,12 @@ atomic action InvocationSucceedsCacheHit:
 
 
 # fake_skip: internal
-# step: the Lambda invocation fails because all cache entries have been evicted
-# result: the invocation will be "FAILED"
+# step: the "lambda" "function" invocation fails because all cache entries have been evicted
+# result: the "lambda" "invocation" will be "FAILED"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
-# guard: no CACHED entries exist in the cluster
-# guard_violation_lifecycle: a CACHED entry existed in the cluster
+# guard: no "CACHED" "elasticache" "entries" existed in the "elasticache" "cluster"
+# guard_violation_lifecycle: a "CACHED" "elasticache" "entry" existed in the "elasticache" "cluster"
 atomic action InvocationFailsCacheMiss:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -135,7 +135,7 @@ atomic action InvocationFailsCacheMiss:
                     inv_status[iid] = "FAILED"
 
 
-# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+# check: every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
 always assertion InvocationRequiresActiveFunction:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":
@@ -146,7 +146,7 @@ always assertion InvocationRequiresActiveFunction:
     return True
 
 
-# check: every CACHED entry belongs to an AVAILABLE cluster
+# check: every "CACHED" "elasticache" "entry" belongs to an "AVAILABLE" "elasticache" "cluster"
 always assertion CachedEntryRequiresAvailableCluster:
     for kid in key_status:
         if key_status[kid] == "CACHED":

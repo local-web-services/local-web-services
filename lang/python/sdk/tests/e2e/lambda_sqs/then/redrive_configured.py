@@ -1,4 +1,4 @@
-"""Then: failed messages will be redriven to the dead-letter queue after two receives"""
+"""Then: failed "sqs" "message"s will be redriven to the "sqs" "dead-letter queue" after two receives"""
 
 from __future__ import annotations
 
@@ -7,12 +7,15 @@ from pytest_bdd import then
 from ..client import LambdaSqsTestClient
 
 
-@then("failed messages will be redriven to the dead-letter queue after two receives")
+@then(
+    'failed "sqs" "message"s will be redriven to the "sqs" "dead-letter queue" after two receives'
+)
 def redrive_configured(lws_session):
     import json
 
     resp = lws_session.client("sqs").get_queue_attributes(
-        QueueUrl=LambdaSqsTestClient(lws_session).queue_url(), AttributeNames=["RedrivePolicy"]
+        QueueUrl=LambdaSqsTestClient(lws_session).queue_url(),
+        AttributeNames=["RedrivePolicy"],
     )
     actual_policy = resp["Attributes"].get("RedrivePolicy", "")
     assert actual_policy != "", "Expected a RedrivePolicy to be configured but got none"

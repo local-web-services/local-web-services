@@ -14,10 +14,10 @@ Feature: S3tables - A "S3 Tables" "Table"'S Policy Is Deleted
     And the "s3 tables" "table" has a policy
     When a "s3 tables" "table"'s policy is deleted
     Then the "s3 tables" "table" has no policy
-    And a bucket in "DELETING" state has no "ACTIVE" namespaces
-    And a "s3 tables" "namespace" in "DELETING" state has no "ACTIVE" tables
-    And snapshot count is never negative
-    And schema version is always at least one
+    And a "s3 tables" "bucket" in "DELETING" state has no "ACTIVE" "s3 tables" "namespace"s
+    And a "s3 tables" "namespace" in "DELETING" state has no "ACTIVE" "s3 tables" "table"s
+    And "s3 tables" "table" snapshot count is never negative
+    And "s3 tables" "table" schema version is always at least one
 
   @guard @negative @delete_table_policy
   Scenario: a "s3 tables" "table"'s policy is deleted fails when the "s3 tables" "table" did not exist

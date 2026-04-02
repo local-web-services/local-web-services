@@ -10,12 +10,12 @@ Feature: NeptuneEvents - The "Neptune" "Cluster" Stops And Delivers The State Ch
   @minimal @happy @cluster_stop_event_delivered @internal
   Scenario: the "neptune" "cluster" stops and delivers the state change event to the EventBridge bus
     Given the "neptune" "cluster" was "AVAILABLE"
-    And the bus was "ACTIVE"
-    And an event slot is available
+    And the "eventbridge" "bus" was "ACTIVE"
+    And an "event" "slot" was "available"
     When the "neptune" "cluster" stops and delivers the state change event to the EventBridge bus
     Then the "neptune" "cluster" will be "STOPPING" and the "STOPPED" event will be "DELIVERED"
-    And every "DELIVERED" event references a cluster that exists
-    And every "DELIVERED" event references a bus that exists
+    And every "DELIVERED" "eventbridge" "event" references a "neptune" "cluster" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @guard @negative @cluster_stop_event_delivered @internal
   Scenario: the "neptune" "cluster" stops and delivers the state change event to the EventBridge bus fails when the "neptune" "cluster" was not "AVAILABLE"
@@ -24,16 +24,16 @@ Feature: NeptuneEvents - The "Neptune" "Cluster" Stops And Delivers The State Ch
     Then the operation is rejected
 
   @guard @negative @cluster_stop_event_delivered @internal
-  Scenario: the "neptune" "cluster" stops and delivers the state change event to the EventBridge bus fails when the bus was "DELETED"
+  Scenario: the "neptune" "cluster" stops and delivers the state change event to the EventBridge bus fails when the "eventbridge" "bus" was "DELETED"
     Given the "neptune" "cluster" was "AVAILABLE"
-    And the bus was "DELETED"
+    And the "eventbridge" "bus" was "DELETED"
     When the "neptune" "cluster" stops and delivers the state change event to the EventBridge bus
     Then the operation is rejected
 
   @guard @negative @cluster_stop_event_delivered @internal
-  Scenario: the "neptune" "cluster" stops and delivers the state change event to the EventBridge bus fails when no event slot is available
+  Scenario: the "neptune" "cluster" stops and delivers the state change event to the EventBridge bus fails when no "eventbridge" "event" "slot" was "available"
     Given the "neptune" "cluster" was "AVAILABLE"
-    And the bus was "ACTIVE"
-    And no event slot is available
+    And the "eventbridge" "bus" was "ACTIVE"
+    And no "eventbridge" "event" "slot" was "available"
     When the "neptune" "cluster" stops and delivers the state change event to the EventBridge bus
     Then the operation is rejected

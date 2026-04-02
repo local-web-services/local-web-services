@@ -12,9 +12,9 @@ Feature: ApigatewayStepfunctions - An "Api Gateway" "Api" Is Created
     Given the "api gateway" "API" did not already exist
     When an "api gateway" "api" is created
     Then the "api gateway" "api" will be "ACTIVE" with no Step Functions integration configured
-    And every "IN_PROGRESS" request references an "ACTIVE" "API"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution has a corresponding "IN_PROGRESS" request
+    And every "IN_PROGRESS" "api gateway" "request" references an "ACTIVE" "api gateway" "API"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" has a corresponding "IN_PROGRESS" "api gateway" "request"
 
   @guard @negative @create_rest_api
   Scenario: an "api gateway" "api" is created fails when the "api gateway" "API" already existed

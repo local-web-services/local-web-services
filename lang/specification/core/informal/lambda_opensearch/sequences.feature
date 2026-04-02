@@ -12,378 +12,378 @@ Feature: LambdaOpensearch - Action Sequences
     Given fid not in func_status
     When a "lambda" "function" is deployed
     When an "opensearch" "domain" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: a "lambda" "function" is deployed then an "opensearch" "index" is created in the "opensearch" "domain"
     Given fid not in func_status
     When a "lambda" "function" is deployed
     When an "opensearch" "index" is created in the "opensearch" "domain"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: a "lambda" "function" is deployed then the "lambda" "function" is invoked
     Given fid not in func_status
     When a "lambda" "function" is deployed
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: a "lambda" "function" is deployed then the "lambda" "function" indexes a document into the OpenSearch index during invocation
     Given fid not in func_status
     When a "lambda" "function" is deployed
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: a "lambda" "function" is deployed then the Lambda invocation completes successfully
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" invocation completes successfully
     Given fid not in func_status
     When a "lambda" "function" is deployed
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: a "lambda" "function" is deployed then the Lambda invocation fails
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" invocation fails
     Given fid not in func_status
     When a "lambda" "function" is deployed
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: an "opensearch" "domain" is created then a "lambda" "function" is deployed
     Given did not in domain_status
     When an "opensearch" "domain" is created
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: an "opensearch" "domain" is created then an "opensearch" "index" is created in the "opensearch" "domain"
     Given did not in domain_status
     When an "opensearch" "domain" is created
     When an "opensearch" "index" is created in the "opensearch" "domain"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: an "opensearch" "domain" is created then the "lambda" "function" is invoked
     Given did not in domain_status
     When an "opensearch" "domain" is created
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: an "opensearch" "domain" is created then the "lambda" "function" indexes a document into the OpenSearch index during invocation
     Given did not in domain_status
     When an "opensearch" "domain" is created
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: an "opensearch" "domain" is created then the Lambda invocation completes successfully
+  Scenario: an "opensearch" "domain" is created then the "lambda" "function" invocation completes successfully
     Given did not in domain_status
     When an "opensearch" "domain" is created
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: an "opensearch" "domain" is created then the Lambda invocation fails
+  Scenario: an "opensearch" "domain" is created then the "lambda" "function" invocation fails
     Given did not in domain_status
     When an "opensearch" "domain" is created
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: an "opensearch" "index" is created in the "opensearch" "domain" then a "lambda" "function" is deployed
     Given did in domain_status
     When an "opensearch" "index" is created in the "opensearch" "domain"
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: an "opensearch" "index" is created in the "opensearch" "domain" then an "opensearch" "domain" is created
     Given did in domain_status
     When an "opensearch" "index" is created in the "opensearch" "domain"
     When an "opensearch" "domain" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: an "opensearch" "index" is created in the "opensearch" "domain" then the "lambda" "function" is invoked
     Given did in domain_status
     When an "opensearch" "index" is created in the "opensearch" "domain"
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: an "opensearch" "index" is created in the "opensearch" "domain" then the "lambda" "function" indexes a document into the OpenSearch index during invocation
     Given did in domain_status
     When an "opensearch" "index" is created in the "opensearch" "domain"
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: an "opensearch" "index" is created in the "opensearch" "domain" then the Lambda invocation completes successfully
+  Scenario: an "opensearch" "index" is created in the "opensearch" "domain" then the "lambda" "function" invocation completes successfully
     Given did in domain_status
     When an "opensearch" "index" is created in the "opensearch" "domain"
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: an "opensearch" "index" is created in the "opensearch" "domain" then the Lambda invocation fails
+  Scenario: an "opensearch" "index" is created in the "opensearch" "domain" then the "lambda" "function" invocation fails
     Given did in domain_status
     When an "opensearch" "index" is created in the "opensearch" "domain"
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: the "lambda" "function" is invoked then a "lambda" "function" is deployed
     Given fid in func_status
     When the "lambda" "function" is invoked
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: the "lambda" "function" is invoked then an "opensearch" "domain" is created
     Given fid in func_status
     When the "lambda" "function" is invoked
     When an "opensearch" "domain" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: the "lambda" "function" is invoked then an "opensearch" "index" is created in the "opensearch" "domain"
     Given fid in func_status
     When the "lambda" "function" is invoked
     When an "opensearch" "index" is created in the "opensearch" "domain"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: the "lambda" "function" is invoked then the "lambda" "function" indexes a document into the OpenSearch index during invocation
     Given fid in func_status
     When the "lambda" "function" is invoked
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the "lambda" "function" is invoked then the Lambda invocation completes successfully
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" invocation completes successfully
     Given fid in func_status
     When the "lambda" "function" is invoked
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the "lambda" "function" is invoked then the Lambda invocation fails
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" invocation fails
     Given fid in func_status
     When the "lambda" "function" is invoked
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation then a "lambda" "function" is deployed
     Given iid in inv_status
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation then an "opensearch" "domain" is created
     Given iid in inv_status
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
     When an "opensearch" "domain" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation then an "opensearch" "index" is created in the "opensearch" "domain"
     Given iid in inv_status
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
     When an "opensearch" "index" is created in the "opensearch" "domain"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation then the "lambda" "function" is invoked
     Given iid in inv_status
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation then the Lambda invocation completes successfully
+  Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation then the "lambda" "function" invocation completes successfully
     Given iid in inv_status
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation then the Lambda invocation fails
+  Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation then the "lambda" "function" invocation fails
     Given iid in inv_status
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then a "lambda" "function" is deployed
+  Scenario: the "lambda" "function" invocation completes successfully then a "lambda" "function" is deployed
     Given iid in inv_status
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then an "opensearch" "domain" is created
+  Scenario: the "lambda" "function" invocation completes successfully then an "opensearch" "domain" is created
     Given iid in inv_status
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When an "opensearch" "domain" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then an "opensearch" "index" is created in the "opensearch" "domain"
+  Scenario: the "lambda" "function" invocation completes successfully then an "opensearch" "index" is created in the "opensearch" "domain"
     Given iid in inv_status
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When an "opensearch" "index" is created in the "opensearch" "domain"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then the "lambda" "function" is invoked
+  Scenario: the "lambda" "function" invocation completes successfully then the "lambda" "function" is invoked
     Given iid in inv_status
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then the "lambda" "function" indexes a document into the OpenSearch index during invocation
+  Scenario: the "lambda" "function" invocation completes successfully then the "lambda" "function" indexes a document into the OpenSearch index during invocation
     Given iid in inv_status
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then the Lambda invocation fails
+  Scenario: the "lambda" "function" invocation completes successfully then the "lambda" "function" invocation fails
     Given iid in inv_status
-    When the Lambda invocation completes successfully
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation completes successfully
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation fails then a "lambda" "function" is deployed
+  Scenario: the "lambda" "function" invocation fails then a "lambda" "function" is deployed
     Given iid in inv_status
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation fails then an "opensearch" "domain" is created
+  Scenario: the "lambda" "function" invocation fails then an "opensearch" "domain" is created
     Given iid in inv_status
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When an "opensearch" "domain" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation fails then an "opensearch" "index" is created in the "opensearch" "domain"
+  Scenario: the "lambda" "function" invocation fails then an "opensearch" "index" is created in the "opensearch" "domain"
     Given iid in inv_status
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When an "opensearch" "index" is created in the "opensearch" "domain"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation fails then the "lambda" "function" is invoked
+  Scenario: the "lambda" "function" invocation fails then the "lambda" "function" is invoked
     Given iid in inv_status
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation fails then the "lambda" "function" indexes a document into the OpenSearch index during invocation
+  Scenario: the "lambda" "function" invocation fails then the "lambda" "function" indexes a document into the OpenSearch index during invocation
     Given iid in inv_status
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation fails then the Lambda invocation completes successfully
+  Scenario: the "lambda" "function" invocation fails then the "lambda" "function" invocation completes successfully
     Given iid in inv_status
-    When the Lambda invocation fails
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation fails
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: a "lambda" "function" is deployed then an "opensearch" "domain" is created then an "opensearch" "index" is created in the "opensearch" "domain"
@@ -391,9 +391,9 @@ Feature: LambdaOpensearch - Action Sequences
     When a "lambda" "function" is deployed
     When an "opensearch" "domain" is created
     When an "opensearch" "index" is created in the "opensearch" "domain"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: a "lambda" "function" is deployed then an "opensearch" "index" is created in the "opensearch" "domain" then the "lambda" "function" is invoked
@@ -401,9 +401,9 @@ Feature: LambdaOpensearch - Action Sequences
     When a "lambda" "function" is deployed
     When an "opensearch" "index" is created in the "opensearch" "domain"
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: a "lambda" "function" is deployed then the "lambda" "function" is invoked then the "lambda" "function" indexes a document into the OpenSearch index during invocation
@@ -411,39 +411,39 @@ Feature: LambdaOpensearch - Action Sequences
     When a "lambda" "function" is deployed
     When the "lambda" "function" is invoked
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: a "lambda" "function" is deployed then the "lambda" "function" indexes a document into the OpenSearch index during invocation then the Lambda invocation completes successfully
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" indexes a document into the OpenSearch index during invocation then the "lambda" "function" invocation completes successfully
     Given fid not in func_status
     When a "lambda" "function" is deployed
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: a "lambda" "function" is deployed then the Lambda invocation completes successfully then the Lambda invocation fails
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" invocation completes successfully then the "lambda" "function" invocation fails
     Given fid not in func_status
     When a "lambda" "function" is deployed
-    When the Lambda invocation completes successfully
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation completes successfully
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: a "lambda" "function" is deployed then the Lambda invocation fails then an "opensearch" "domain" is created
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" invocation fails then an "opensearch" "domain" is created
     Given fid not in func_status
     When a "lambda" "function" is deployed
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When an "opensearch" "domain" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: an "opensearch" "domain" is created then a "lambda" "function" is deployed then the "lambda" "function" is invoked
@@ -451,9 +451,9 @@ Feature: LambdaOpensearch - Action Sequences
     When an "opensearch" "domain" is created
     When a "lambda" "function" is deployed
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: an "opensearch" "domain" is created then an "opensearch" "index" is created in the "opensearch" "domain" then the "lambda" "function" indexes a document into the OpenSearch index during invocation
@@ -461,49 +461,49 @@ Feature: LambdaOpensearch - Action Sequences
     When an "opensearch" "domain" is created
     When an "opensearch" "index" is created in the "opensearch" "domain"
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: an "opensearch" "domain" is created then the "lambda" "function" is invoked then the Lambda invocation completes successfully
+  Scenario: an "opensearch" "domain" is created then the "lambda" "function" is invoked then the "lambda" "function" invocation completes successfully
     Given did not in domain_status
     When an "opensearch" "domain" is created
     When the "lambda" "function" is invoked
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: an "opensearch" "domain" is created then the "lambda" "function" indexes a document into the OpenSearch index during invocation then the Lambda invocation fails
+  Scenario: an "opensearch" "domain" is created then the "lambda" "function" indexes a document into the OpenSearch index during invocation then the "lambda" "function" invocation fails
     Given did not in domain_status
     When an "opensearch" "domain" is created
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: an "opensearch" "domain" is created then the Lambda invocation completes successfully then a "lambda" "function" is deployed
+  Scenario: an "opensearch" "domain" is created then the "lambda" "function" invocation completes successfully then a "lambda" "function" is deployed
     Given did not in domain_status
     When an "opensearch" "domain" is created
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: an "opensearch" "domain" is created then the Lambda invocation fails then an "opensearch" "index" is created in the "opensearch" "domain"
+  Scenario: an "opensearch" "domain" is created then the "lambda" "function" invocation fails then an "opensearch" "index" is created in the "opensearch" "domain"
     Given did not in domain_status
     When an "opensearch" "domain" is created
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When an "opensearch" "index" is created in the "opensearch" "domain"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: an "opensearch" "index" is created in the "opensearch" "domain" then a "lambda" "function" is deployed then the "lambda" "function" indexes a document into the OpenSearch index during invocation
@@ -511,29 +511,29 @@ Feature: LambdaOpensearch - Action Sequences
     When an "opensearch" "index" is created in the "opensearch" "domain"
     When a "lambda" "function" is deployed
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: an "opensearch" "index" is created in the "opensearch" "domain" then an "opensearch" "domain" is created then the Lambda invocation completes successfully
+  Scenario: an "opensearch" "index" is created in the "opensearch" "domain" then an "opensearch" "domain" is created then the "lambda" "function" invocation completes successfully
     Given did in domain_status
     When an "opensearch" "index" is created in the "opensearch" "domain"
     When an "opensearch" "domain" is created
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: an "opensearch" "index" is created in the "opensearch" "domain" then the "lambda" "function" is invoked then the Lambda invocation fails
+  Scenario: an "opensearch" "index" is created in the "opensearch" "domain" then the "lambda" "function" is invoked then the "lambda" "function" invocation fails
     Given did in domain_status
     When an "opensearch" "index" is created in the "opensearch" "domain"
     When the "lambda" "function" is invoked
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: an "opensearch" "index" is created in the "opensearch" "domain" then the "lambda" "function" indexes a document into the OpenSearch index during invocation then a "lambda" "function" is deployed
@@ -541,49 +541,49 @@ Feature: LambdaOpensearch - Action Sequences
     When an "opensearch" "index" is created in the "opensearch" "domain"
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: an "opensearch" "index" is created in the "opensearch" "domain" then the Lambda invocation completes successfully then an "opensearch" "domain" is created
+  Scenario: an "opensearch" "index" is created in the "opensearch" "domain" then the "lambda" "function" invocation completes successfully then an "opensearch" "domain" is created
     Given did in domain_status
     When an "opensearch" "index" is created in the "opensearch" "domain"
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When an "opensearch" "domain" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: an "opensearch" "index" is created in the "opensearch" "domain" then the Lambda invocation fails then the "lambda" "function" is invoked
+  Scenario: an "opensearch" "index" is created in the "opensearch" "domain" then the "lambda" "function" invocation fails then the "lambda" "function" is invoked
     Given did in domain_status
     When an "opensearch" "index" is created in the "opensearch" "domain"
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the "lambda" "function" is invoked then a "lambda" "function" is deployed then the Lambda invocation completes successfully
+  Scenario: the "lambda" "function" is invoked then a "lambda" "function" is deployed then the "lambda" "function" invocation completes successfully
     Given fid in func_status
     When the "lambda" "function" is invoked
     When a "lambda" "function" is deployed
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the "lambda" "function" is invoked then an "opensearch" "domain" is created then the Lambda invocation fails
+  Scenario: the "lambda" "function" is invoked then an "opensearch" "domain" is created then the "lambda" "function" invocation fails
     Given fid in func_status
     When the "lambda" "function" is invoked
     When an "opensearch" "domain" is created
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: the "lambda" "function" is invoked then an "opensearch" "index" is created in the "opensearch" "domain" then a "lambda" "function" is deployed
@@ -591,9 +591,9 @@ Feature: LambdaOpensearch - Action Sequences
     When the "lambda" "function" is invoked
     When an "opensearch" "index" is created in the "opensearch" "domain"
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: the "lambda" "function" is invoked then the "lambda" "function" indexes a document into the OpenSearch index during invocation then an "opensearch" "domain" is created
@@ -601,39 +601,39 @@ Feature: LambdaOpensearch - Action Sequences
     When the "lambda" "function" is invoked
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
     When an "opensearch" "domain" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the "lambda" "function" is invoked then the Lambda invocation completes successfully then an "opensearch" "index" is created in the "opensearch" "domain"
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" invocation completes successfully then an "opensearch" "index" is created in the "opensearch" "domain"
     Given fid in func_status
     When the "lambda" "function" is invoked
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When an "opensearch" "index" is created in the "opensearch" "domain"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the "lambda" "function" is invoked then the Lambda invocation fails then the "lambda" "function" indexes a document into the OpenSearch index during invocation
+  Scenario: the "lambda" "function" is invoked then the "lambda" "function" invocation fails then the "lambda" "function" indexes a document into the OpenSearch index during invocation
     Given fid in func_status
     When the "lambda" "function" is invoked
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation then a "lambda" "function" is deployed then the Lambda invocation fails
+  Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation then a "lambda" "function" is deployed then the "lambda" "function" invocation fails
     Given iid in inv_status
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
     When a "lambda" "function" is deployed
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation then an "opensearch" "domain" is created then a "lambda" "function" is deployed
@@ -641,9 +641,9 @@ Feature: LambdaOpensearch - Action Sequences
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
     When an "opensearch" "domain" is created
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation then an "opensearch" "index" is created in the "opensearch" "domain" then an "opensearch" "domain" is created
@@ -651,9 +651,9 @@ Feature: LambdaOpensearch - Action Sequences
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
     When an "opensearch" "index" is created in the "opensearch" "domain"
     When an "opensearch" "domain" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
   Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation then the "lambda" "function" is invoked then an "opensearch" "index" is created in the "opensearch" "domain"
@@ -661,146 +661,146 @@ Feature: LambdaOpensearch - Action Sequences
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
     When the "lambda" "function" is invoked
     When an "opensearch" "index" is created in the "opensearch" "domain"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation then the Lambda invocation completes successfully then the "lambda" "function" is invoked
+  Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation then the "lambda" "function" invocation completes successfully then the "lambda" "function" is invoked
     Given iid in inv_status
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation then the Lambda invocation fails then the Lambda invocation completes successfully
+  Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation then the "lambda" "function" invocation fails then the "lambda" "function" invocation completes successfully
     Given iid in inv_status
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    When the Lambda invocation fails
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation fails
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then a "lambda" "function" is deployed then an "opensearch" "domain" is created
+  Scenario: the "lambda" "function" invocation completes successfully then a "lambda" "function" is deployed then an "opensearch" "domain" is created
     Given iid in inv_status
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When a "lambda" "function" is deployed
     When an "opensearch" "domain" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then an "opensearch" "domain" is created then an "opensearch" "index" is created in the "opensearch" "domain"
+  Scenario: the "lambda" "function" invocation completes successfully then an "opensearch" "domain" is created then an "opensearch" "index" is created in the "opensearch" "domain"
     Given iid in inv_status
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When an "opensearch" "domain" is created
     When an "opensearch" "index" is created in the "opensearch" "domain"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then an "opensearch" "index" is created in the "opensearch" "domain" then the "lambda" "function" is invoked
+  Scenario: the "lambda" "function" invocation completes successfully then an "opensearch" "index" is created in the "opensearch" "domain" then the "lambda" "function" is invoked
     Given iid in inv_status
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When an "opensearch" "index" is created in the "opensearch" "domain"
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then the "lambda" "function" is invoked then the "lambda" "function" indexes a document into the OpenSearch index during invocation
+  Scenario: the "lambda" "function" invocation completes successfully then the "lambda" "function" is invoked then the "lambda" "function" indexes a document into the OpenSearch index during invocation
     Given iid in inv_status
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When the "lambda" "function" is invoked
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then the "lambda" "function" indexes a document into the OpenSearch index during invocation then the Lambda invocation fails
+  Scenario: the "lambda" "function" invocation completes successfully then the "lambda" "function" indexes a document into the OpenSearch index during invocation then the "lambda" "function" invocation fails
     Given iid in inv_status
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then the Lambda invocation fails then a "lambda" "function" is deployed
+  Scenario: the "lambda" "function" invocation completes successfully then the "lambda" "function" invocation fails then a "lambda" "function" is deployed
     Given iid in inv_status
-    When the Lambda invocation completes successfully
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation completes successfully
+    When the "lambda" "function" invocation fails
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation fails then a "lambda" "function" is deployed then an "opensearch" "index" is created in the "opensearch" "domain"
+  Scenario: the "lambda" "function" invocation fails then a "lambda" "function" is deployed then an "opensearch" "index" is created in the "opensearch" "domain"
     Given iid in inv_status
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When a "lambda" "function" is deployed
     When an "opensearch" "index" is created in the "opensearch" "domain"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation fails then an "opensearch" "domain" is created then the "lambda" "function" is invoked
+  Scenario: the "lambda" "function" invocation fails then an "opensearch" "domain" is created then the "lambda" "function" is invoked
     Given iid in inv_status
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When an "opensearch" "domain" is created
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation fails then an "opensearch" "index" is created in the "opensearch" "domain" then the "lambda" "function" indexes a document into the OpenSearch index during invocation
+  Scenario: the "lambda" "function" invocation fails then an "opensearch" "index" is created in the "opensearch" "domain" then the "lambda" "function" indexes a document into the OpenSearch index during invocation
     Given iid in inv_status
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When an "opensearch" "index" is created in the "opensearch" "domain"
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation fails then the "lambda" "function" is invoked then the Lambda invocation completes successfully
+  Scenario: the "lambda" "function" invocation fails then the "lambda" "function" is invoked then the "lambda" "function" invocation completes successfully
     Given iid in inv_status
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When the "lambda" "function" is invoked
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation fails then the "lambda" "function" indexes a document into the OpenSearch index during invocation then a "lambda" "function" is deployed
+  Scenario: the "lambda" "function" invocation fails then the "lambda" "function" indexes a document into the OpenSearch index during invocation then a "lambda" "function" is deployed
     Given iid in inv_status
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @sequence
-  Scenario: the Lambda invocation fails then the Lambda invocation completes successfully then an "opensearch" "domain" is created
+  Scenario: the "lambda" "function" invocation fails then the "lambda" "function" invocation completes successfully then an "opensearch" "domain" is created
     Given iid in inv_status
-    When the Lambda invocation fails
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation fails
+    When the "lambda" "function" invocation completes successfully
     When an "opensearch" "domain" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"

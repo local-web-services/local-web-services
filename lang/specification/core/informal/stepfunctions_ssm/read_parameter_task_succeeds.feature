@@ -13,8 +13,8 @@ Feature: StepfunctionsSsm - A Running "Step Functions" "Execution" Reads An Exis
     And the "ssm" "parameter" existed
     When a running "step functions" "execution" reads an existing parameter and the task succeeds
     Then the "step functions" "execution" will be "SUCCEEDED"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which parameter it read
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "ssm" "parameter" it read
 
   @guard @negative @read_parameter_task_succeeds @internal
   Scenario: a running "step functions" "execution" reads an existing parameter and the task succeeds fails when no "step functions" "execution" was "RUNNING"

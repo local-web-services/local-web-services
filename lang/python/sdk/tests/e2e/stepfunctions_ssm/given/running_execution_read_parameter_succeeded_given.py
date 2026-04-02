@@ -21,7 +21,8 @@ def running_execution_read_parameter_succeeded_given(lws_session, world):
         pass
     try:
         lws_session.client("stepfunctions").update_state_machine(
-            stateMachineArn=_sm_arn(), definition=_ssm_get_parameter_definition(TEST_PARAM)
+            stateMachineArn=_sm_arn(),
+            definition=_ssm_get_parameter_definition(TEST_PARAM),
         )
     except Exception:
         pass

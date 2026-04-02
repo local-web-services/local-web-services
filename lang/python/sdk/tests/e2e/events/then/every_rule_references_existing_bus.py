@@ -1,11 +1,11 @@
-"""Then: every rule references an event bus that exists"""
+"""Then: every "eventbridge" "rule" references an "eventbridge" "bus" that exists"""
 
 from __future__ import annotations
 
 from pytest_bdd import step
 
 
-@step("every rule references an event bus that exists")
+@step('every "eventbridge" "rule" references an "eventbridge" "bus" that exists')
 def every_rule_references_existing_bus(lws_session):
     """Invariant: no rule references a non-existent event bus.
 

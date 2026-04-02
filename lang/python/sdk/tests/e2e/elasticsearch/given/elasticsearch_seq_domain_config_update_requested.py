@@ -13,5 +13,8 @@ def elasticsearch_seq_domain_config_update_requested(lws_session):
     ElasticsearchTestClient(lws_session).create_domain()
     ElasticsearchTestClient(lws_session).update_elasticsearch_domain_config(
         DomainName=TEST_DOMAIN,
-        ElasticsearchClusterConfig={"InstanceType": "t2.small.elasticsearch", "InstanceCount": 1},
+        ElasticsearchClusterConfig={
+            "InstanceType": "t2.small.elasticsearch",
+            "InstanceCount": 1,
+        },
     )

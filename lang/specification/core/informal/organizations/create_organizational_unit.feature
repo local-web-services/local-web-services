@@ -2,7 +2,7 @@
 Feature: Organizations - An "Organizations" "Organizational Unit" Is Created Under A Parent
 
   # Generated from FizzBee spec: organizations.fizz
-  # Safety invariants: OrgRootConsistency, AccountParentValid, OuParentValid, NoChildOfDeletedOu, PolicyAttachmentTargetValid
+  # Safety invariants: OrgRootConsistency, AccountParentValid, OuParentValid, NoChildOfDeletedOu, TagsOnlyForKnownNodes, PolicyAttachmentTargetValid
 
   Background:
     Given the system is initialized
@@ -15,10 +15,11 @@ Feature: Organizations - An "Organizations" "Organizational Unit" Is Created Und
     When an "organizations" "organizational unit" is created under a parent
     Then the "organizations" "organizational unit" will be "ACTIVE"
     And the root was "ACTIVE" whenever the "organizations" "organization" exists
-    And every active account has an "ACTIVE" parent
-    And every active organizational unit has an "ACTIVE" parent
-    And no active node is a child of a deleted organizational unit
-    And every active policy attachment targets an "ACTIVE" node
+    And every active "organizations" "account" has an "ACTIVE" parent
+    And every active "organizations" "organizational unit" has an "ACTIVE" parent
+    And no active "organizations" "node" is a child of a "DELETED" "organizations" "organizational unit"
+    And "organizations" tags only exist on "organizations" "node"s that are present in the org
+    And every active "organizations" "policy" attachment targets an "ACTIVE" "organizations" "node"
 
   @guard @negative @create_organizational_unit
   Scenario: an "organizations" "organizational unit" is created under a parent fails when the "organizations" "organization" did not exist

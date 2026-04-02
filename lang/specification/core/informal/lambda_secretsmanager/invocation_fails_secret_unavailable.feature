@@ -12,9 +12,9 @@ Feature: LambdaSecretsmanager - The "Lambda" "Function" Fails Because The "Secre
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "secretsmanager" "secret" was "PENDING_DELETION"
     When the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion
-    Then the invocation will be "FAILED" with a ResourceNotFoundException
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which secret it read
+    Then the "lambda" "invocation" will be "FAILED" with a ResourceNotFoundException
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every successful "lambda" "invocation" recorded which "secrets manager" "secret" it read
 
   @guard @negative @invocation_fails_secret_unavailable @lifecycle
   Scenario: the "lambda" "function" fails because the "secretsmanager" "secret" is pending deletion fails when no "lambda" "invocation" was "IN_PROGRESS"

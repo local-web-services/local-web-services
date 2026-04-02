@@ -11,10 +11,10 @@ Feature: SnsSqs - A Message Is Consumed From The "Sqs" "Queue"
   Scenario: a message is consumed from the "sqs" "queue"
     Given an "AVAILABLE" message existed in the queue
     When a message is consumed from the "sqs" "queue"
-    Then the message will be deleted
-    And every confirmed subscription references an "ACTIVE" "SNS" topic
-    And every "AVAILABLE" message belongs to an "ACTIVE" queue
-    And a message can only be delivered if a confirmed subscription exists for the topic
+    Then the "sqs" "message" will be "DELETED"
+    And every "CONFIRMED" "sns" "subscription" references an "ACTIVE" "sns" "topic"
+    And every "AVAILABLE" "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
+    And an "sqs" "message" can only be delivered if a "CONFIRMED" "sns" "subscription" exists for the "sns" "topic"
 
   @guard @negative @consume_message @lifecycle
   Scenario: a message is consumed from the "sqs" "queue" fails when no "AVAILABLE" message existed in the queue

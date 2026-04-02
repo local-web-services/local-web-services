@@ -22,6 +22,7 @@ ACCOUNT_IDS = ["acc-1", "acc-2"]
 POLICY_IDS = ["pol-1"]
 PARENT_IDS = ["root-1", "ou-1", "ou-2"]
 ALL_MEMBER_IDS = ["root-1", "ou-1", "ou-2", "acc-1", "acc-2"]
+TAG_RESOURCE_IDS = ["acc-1"]
 
 action Init:
     org_status = {}
@@ -29,6 +30,7 @@ action Init:
     node_parent = {}
     policy_status = {}
     policy_attached = {}
+    resource_tags_set = {}
 
 # step: an "organizations" "organization" is created
 # result: the "organizations" "organization" and its root will exist
@@ -151,6 +153,15 @@ atomic action DetachPolicy:
                 if policy_attached[pol_id + "#" + target_id] == True:
                     policy_attached[pol_id + "#" + target_id] = False
 
+# step: an "organizations" resource is tagged
+# result: the "organizations" resource tags will be set
+# guard: the "organizations" resource existed
+# guard_violation: the "organizations" resource did not exist
+atomic action TagResource:
+    oneof node_id in TAG_RESOURCE_IDS:
+        if node_id in node_status:
+            resource_tags_set[node_id] = True
+
 # check: the root was "ACTIVE" whenever the "organizations" "organization" exists
 always assertion OrgRootConsistency:
     if "org-1" in org_status:
@@ -160,7 +171,7 @@ always assertion OrgRootConsistency:
             return False
     return True
 
-# check: every active account has an ACTIVE parent
+# check: every active "organizations" "account" has an "ACTIVE" parent
 always assertion AccountParentValid:
     for acc_id in ACCOUNT_IDS:
         if acc_id in node_status:
@@ -173,7 +184,7 @@ always assertion AccountParentValid:
                     return False
     return True
 
-# check: every active organizational unit has an ACTIVE parent
+# check: every active "organizations" "organizational unit" has an "ACTIVE" parent
 always assertion OuParentValid:
     for ou_id in OU_IDS:
         if ou_id in node_status:
@@ -186,7 +197,7 @@ always assertion OuParentValid:
                     return False
     return True
 
-# check: no active node is a child of a deleted organizational unit
+# check: no active "organizations" "node" is a child of a "DELETED" "organizations" "organizational unit"
 always assertion NoChildOfDeletedOu:
     for ou_id in OU_IDS:
         if ou_id in node_status:
@@ -201,7 +212,16 @@ always assertion NoChildOfDeletedOu:
                             return False
     return True
 
-# check: every active policy attachment targets an ACTIVE node
+# check: "organizations" tags only exist on "organizations" "node"s that are present in the org
+always assertion TagsOnlyForKnownNodes:
+    for node_id in ALL_MEMBER_IDS:
+        if node_id in resource_tags_set:
+            if resource_tags_set[node_id] == True:
+                if node_id not in node_status:
+                    return False
+    return True
+
+# check: every active "organizations" "policy" attachment targets an "ACTIVE" "organizations" "node"
 always assertion PolicyAttachmentTargetValid:
     for pol_id in POLICY_IDS:
         for target_id in ALL_MEMBER_IDS:

@@ -1,10 +1,10 @@
-"""Given: a 200 method response is configured"""
+"""Given: a 200 "api gateway" "method" response is configured"""
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given("a 200 method response is configured")
+@given('a 200 "api gateway" "method" response is configured')
 def method_response_configured():
     """No-op: method response is part of API setup in the test."""

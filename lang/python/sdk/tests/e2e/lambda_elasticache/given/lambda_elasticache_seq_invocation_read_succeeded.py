@@ -1,4 +1,4 @@
-"""Given: the Lambda invocation reads an existing cache entry and completes successfully"""
+"""Given: the "lambda" "function" invocation reads an existing cache entry and completes successfully"""
 
 from __future__ import annotations
 
@@ -7,7 +7,9 @@ import uuid
 from pytest_bdd import given
 
 
-@given("the Lambda invocation reads an existing cache entry and completes successfully")
+@given(
+    'the "lambda" "function" invocation reads an existing cache entry and completes successfully'
+)
 def lambda_elasticache_seq_invocation_read_succeeded(lws_session, world):
     # Arrange
     invocation_id = str(uuid.uuid4())

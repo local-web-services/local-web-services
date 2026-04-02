@@ -15,10 +15,10 @@ Feature: S3api - A Lifecycle "S3" Rule Expires A "S3" "Object"
     And the "s3" "object" was not "deleted"
     When a lifecycle "s3" rule expires a "s3" "object"
     Then the "s3" "object" will be "DELETED" by the lifecycle policy
-    And every bucket has a valid status ("ACTIVE" or "DELETED")
-    And every bucket versioning state is valid ("DISABLED", "ENABLED", or "SUSPENDED")
-    And every multipart upload has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
-    And deleting a bucket requires it to be empty
+    And every "s3" "bucket" has a valid status ("ACTIVE" or "DELETED")
+    And every "s3" "bucket" versioning state is valid ("DISABLED", "ENABLED", or "SUSPENDED")
+    And every "s3" "multipart upload" has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
+    And deleting an "s3" "bucket" requires it to be empty
 
   @guard @negative @lifecycle_expire_object @internal
   Scenario: a lifecycle "s3" rule expires a "s3" "object" fails when the "s3" "bucket" did not exist

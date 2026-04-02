@@ -12,9 +12,9 @@ Feature: DynamodbLambda - A "Dynamodb" "Table" Is Created With Streaming Enabled
     Given the "dynamodb" "table" did not already exist
     When a "dynamodb" "table" is created with streaming enabled
     Then the "dynamodb" "table" will be "ACTIVE" and its stream will be ready to receive change records
-    And every "IN_PROGRESS" invocation was initiated by an "ENABLED" event source mapping
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" event source mapping references an "ACTIVE" table with streaming enabled
+    And every "IN_PROGRESS" "lambda" "function" invocation was initiated by an "ENABLED" "lambda" "event source mapping"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "lambda" "event source mapping" references an "ACTIVE" "dynamodb" "table" with streaming enabled
 
   @guard @negative @create_table_with_stream
   Scenario: a "dynamodb" "table" is created with streaming enabled fails when the "dynamodb" "table" already existed

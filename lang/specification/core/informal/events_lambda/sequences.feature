@@ -8,571 +8,571 @@ Feature: EventsLambda - Action Sequences
     Given the system is initialized
 
   @sequence
-  Scenario: an EventBridge event bus is created then a "lambda" "function" is deployed
+  Scenario: an "eventbridge" "bus" is created then a "lambda" "function" is deployed
     Given bid not in bus_status
-    When an EventBridge event bus is created
+    When an "eventbridge" "bus" is created
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an EventBridge event bus is created then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
+  Scenario: an "eventbridge" "bus" is created then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
     Given bid not in bus_status
-    When an EventBridge event bus is created
+    When an "eventbridge" "bus" is created
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an EventBridge event bus is created then an event is published to the bus and triggers an asynchronous Lambda invocation
+  Scenario: an "eventbridge" "bus" is created then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
     Given bid not in bus_status
-    When an EventBridge event bus is created
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "bus" is created
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an EventBridge event bus is created then the Lambda invocation completes successfully
+  Scenario: an "eventbridge" "bus" is created then the "lambda" "function" invocation completes successfully
     Given bid not in bus_status
-    When an EventBridge event bus is created
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "bus" is created
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an EventBridge event bus is created then the Lambda invocation fails
+  Scenario: an "eventbridge" "bus" is created then the "lambda" "function" invocation fails
     Given bid not in bus_status
-    When an EventBridge event bus is created
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "bus" is created
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: a "lambda" "function" is deployed then an EventBridge event bus is created
+  Scenario: a "lambda" "function" is deployed then an "eventbridge" "bus" is created
     Given fid not in func_status
     When a "lambda" "function" is deployed
-    When an EventBridge event bus is created
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "bus" is created
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
   Scenario: a "lambda" "function" is deployed then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
     Given fid not in func_status
     When a "lambda" "function" is deployed
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: a "lambda" "function" is deployed then an event is published to the bus and triggers an asynchronous Lambda invocation
+  Scenario: a "lambda" "function" is deployed then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
     Given fid not in func_status
     When a "lambda" "function" is deployed
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: a "lambda" "function" is deployed then the Lambda invocation completes successfully
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" invocation completes successfully
     Given fid not in func_status
     When a "lambda" "function" is deployed
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: a "lambda" "function" is deployed then the Lambda invocation fails
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" invocation fails
     Given fid not in func_status
     When a "lambda" "function" is deployed
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then an EventBridge event bus is created
+  Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then an "eventbridge" "bus" is created
     Given rid not in rule_status
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    When an EventBridge event bus is created
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "bus" is created
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
   Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then a "lambda" "function" is deployed
     Given rid not in rule_status
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then an event is published to the bus and triggers an asynchronous Lambda invocation
+  Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
     Given rid not in rule_status
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then the Lambda invocation completes successfully
+  Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then the "lambda" "function" invocation completes successfully
     Given rid not in rule_status
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then the Lambda invocation fails
+  Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then the "lambda" "function" invocation fails
     Given rid not in rule_status
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation then an EventBridge event bus is created
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation then an "eventbridge" "bus" is created
     Given bid in bus_status
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    When an EventBridge event bus is created
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    When an "eventbridge" "bus" is created
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation then a "lambda" "function" is deployed
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation then a "lambda" "function" is deployed
     Given bid in bus_status
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
     Given bid in bus_status
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation then the Lambda invocation completes successfully
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation then the "lambda" "function" invocation completes successfully
     Given bid in bus_status
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation then the Lambda invocation fails
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation then the "lambda" "function" invocation fails
     Given bid in bus_status
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then an EventBridge event bus is created
+  Scenario: the "lambda" "function" invocation completes successfully then an "eventbridge" "bus" is created
     Given iid in inv_status
-    When the Lambda invocation completes successfully
-    When an EventBridge event bus is created
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When the "lambda" "function" invocation completes successfully
+    When an "eventbridge" "bus" is created
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then a "lambda" "function" is deployed
+  Scenario: the "lambda" "function" invocation completes successfully then a "lambda" "function" is deployed
     Given iid in inv_status
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
+  Scenario: the "lambda" "function" invocation completes successfully then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
     Given iid in inv_status
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then an event is published to the bus and triggers an asynchronous Lambda invocation
+  Scenario: the "lambda" "function" invocation completes successfully then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
     Given iid in inv_status
-    When the Lambda invocation completes successfully
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When the "lambda" "function" invocation completes successfully
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then the Lambda invocation fails
+  Scenario: the "lambda" "function" invocation completes successfully then the "lambda" "function" invocation fails
     Given iid in inv_status
-    When the Lambda invocation completes successfully
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When the "lambda" "function" invocation completes successfully
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation fails then an EventBridge event bus is created
+  Scenario: the "lambda" "function" invocation fails then an "eventbridge" "bus" is created
     Given iid in inv_status
-    When the Lambda invocation fails
-    When an EventBridge event bus is created
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When the "lambda" "function" invocation fails
+    When an "eventbridge" "bus" is created
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation fails then a "lambda" "function" is deployed
+  Scenario: the "lambda" "function" invocation fails then a "lambda" "function" is deployed
     Given iid in inv_status
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation fails then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
+  Scenario: the "lambda" "function" invocation fails then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
     Given iid in inv_status
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation fails then an event is published to the bus and triggers an asynchronous Lambda invocation
+  Scenario: the "lambda" "function" invocation fails then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
     Given iid in inv_status
-    When the Lambda invocation fails
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When the "lambda" "function" invocation fails
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation fails then the Lambda invocation completes successfully
+  Scenario: the "lambda" "function" invocation fails then the "lambda" "function" invocation completes successfully
     Given iid in inv_status
-    When the Lambda invocation fails
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When the "lambda" "function" invocation fails
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an EventBridge event bus is created then a "lambda" "function" is deployed then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
+  Scenario: an "eventbridge" "bus" is created then a "lambda" "function" is deployed then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
     Given bid not in bus_status
-    When an EventBridge event bus is created
+    When an "eventbridge" "bus" is created
     When a "lambda" "function" is deployed
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an EventBridge event bus is created then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then an event is published to the bus and triggers an asynchronous Lambda invocation
+  Scenario: an "eventbridge" "bus" is created then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
     Given bid not in bus_status
-    When an EventBridge event bus is created
+    When an "eventbridge" "bus" is created
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an EventBridge event bus is created then an event is published to the bus and triggers an asynchronous Lambda invocation then the Lambda invocation completes successfully
+  Scenario: an "eventbridge" "bus" is created then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation then the "lambda" "function" invocation completes successfully
     Given bid not in bus_status
-    When an EventBridge event bus is created
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "bus" is created
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an EventBridge event bus is created then the Lambda invocation completes successfully then the Lambda invocation fails
+  Scenario: an "eventbridge" "bus" is created then the "lambda" "function" invocation completes successfully then the "lambda" "function" invocation fails
     Given bid not in bus_status
-    When an EventBridge event bus is created
-    When the Lambda invocation completes successfully
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "bus" is created
+    When the "lambda" "function" invocation completes successfully
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an EventBridge event bus is created then the Lambda invocation fails then a "lambda" "function" is deployed
+  Scenario: an "eventbridge" "bus" is created then the "lambda" "function" invocation fails then a "lambda" "function" is deployed
     Given bid not in bus_status
-    When an EventBridge event bus is created
-    When the Lambda invocation fails
+    When an "eventbridge" "bus" is created
+    When the "lambda" "function" invocation fails
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: a "lambda" "function" is deployed then an EventBridge event bus is created then an event is published to the bus and triggers an asynchronous Lambda invocation
+  Scenario: a "lambda" "function" is deployed then an "eventbridge" "bus" is created then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
     Given fid not in func_status
     When a "lambda" "function" is deployed
-    When an EventBridge event bus is created
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "bus" is created
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: a "lambda" "function" is deployed then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then the Lambda invocation completes successfully
+  Scenario: a "lambda" "function" is deployed then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then the "lambda" "function" invocation completes successfully
     Given fid not in func_status
     When a "lambda" "function" is deployed
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: a "lambda" "function" is deployed then an event is published to the bus and triggers an asynchronous Lambda invocation then the Lambda invocation fails
+  Scenario: a "lambda" "function" is deployed then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation then the "lambda" "function" invocation fails
     Given fid not in func_status
     When a "lambda" "function" is deployed
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: a "lambda" "function" is deployed then the Lambda invocation completes successfully then an EventBridge event bus is created
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" invocation completes successfully then an "eventbridge" "bus" is created
     Given fid not in func_status
     When a "lambda" "function" is deployed
-    When the Lambda invocation completes successfully
-    When an EventBridge event bus is created
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When the "lambda" "function" invocation completes successfully
+    When an "eventbridge" "bus" is created
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: a "lambda" "function" is deployed then the Lambda invocation fails then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
+  Scenario: a "lambda" "function" is deployed then the "lambda" "function" invocation fails then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
     Given fid not in func_status
     When a "lambda" "function" is deployed
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then an EventBridge event bus is created then the Lambda invocation completes successfully
+  Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then an "eventbridge" "bus" is created then the "lambda" "function" invocation completes successfully
     Given rid not in rule_status
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    When an EventBridge event bus is created
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "bus" is created
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then a "lambda" "function" is deployed then the Lambda invocation fails
+  Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then a "lambda" "function" is deployed then the "lambda" "function" invocation fails
     Given rid not in rule_status
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
     When a "lambda" "function" is deployed
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then an event is published to the bus and triggers an asynchronous Lambda invocation then an EventBridge event bus is created
+  Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation then an "eventbridge" "bus" is created
     Given rid not in rule_status
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    When an EventBridge event bus is created
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    When an "eventbridge" "bus" is created
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then the Lambda invocation completes successfully then a "lambda" "function" is deployed
+  Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then the "lambda" "function" invocation completes successfully then a "lambda" "function" is deployed
     Given rid not in rule_status
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then the Lambda invocation fails then an event is published to the bus and triggers an asynchronous Lambda invocation
+  Scenario: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then the "lambda" "function" invocation fails then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
     Given rid not in rule_status
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    When the Lambda invocation fails
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When the "lambda" "function" invocation fails
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation then an EventBridge event bus is created then the Lambda invocation fails
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation then an "eventbridge" "bus" is created then the "lambda" "function" invocation fails
     Given bid in bus_status
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    When an EventBridge event bus is created
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    When an "eventbridge" "bus" is created
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation then a "lambda" "function" is deployed then an EventBridge event bus is created
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation then a "lambda" "function" is deployed then an "eventbridge" "bus" is created
     Given bid in bus_status
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
     When a "lambda" "function" is deployed
-    When an EventBridge event bus is created
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "bus" is created
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then a "lambda" "function" is deployed
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then a "lambda" "function" is deployed
     Given bid in bus_status
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation then the Lambda invocation completes successfully then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation then the "lambda" "function" invocation completes successfully then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
     Given bid in bus_status
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    When the Lambda invocation completes successfully
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    When the "lambda" "function" invocation completes successfully
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation then the Lambda invocation fails then the Lambda invocation completes successfully
+  Scenario: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation then the "lambda" "function" invocation fails then the "lambda" "function" invocation completes successfully
     Given bid in bus_status
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    When the Lambda invocation fails
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    When the "lambda" "function" invocation fails
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then an EventBridge event bus is created then a "lambda" "function" is deployed
+  Scenario: the "lambda" "function" invocation completes successfully then an "eventbridge" "bus" is created then a "lambda" "function" is deployed
     Given iid in inv_status
-    When the Lambda invocation completes successfully
-    When an EventBridge event bus is created
+    When the "lambda" "function" invocation completes successfully
+    When an "eventbridge" "bus" is created
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then a "lambda" "function" is deployed then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
+  Scenario: the "lambda" "function" invocation completes successfully then a "lambda" "function" is deployed then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
     Given iid in inv_status
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When a "lambda" "function" is deployed
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then an event is published to the bus and triggers an asynchronous Lambda invocation
+  Scenario: the "lambda" "function" invocation completes successfully then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
     Given iid in inv_status
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation completes successfully
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then an event is published to the bus and triggers an asynchronous Lambda invocation then the Lambda invocation fails
+  Scenario: the "lambda" "function" invocation completes successfully then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation then the "lambda" "function" invocation fails
     Given iid in inv_status
-    When the Lambda invocation completes successfully
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    When the Lambda invocation fails
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When the "lambda" "function" invocation completes successfully
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    When the "lambda" "function" invocation fails
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation completes successfully then the Lambda invocation fails then an EventBridge event bus is created
+  Scenario: the "lambda" "function" invocation completes successfully then the "lambda" "function" invocation fails then an "eventbridge" "bus" is created
     Given iid in inv_status
-    When the Lambda invocation completes successfully
-    When the Lambda invocation fails
-    When an EventBridge event bus is created
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When the "lambda" "function" invocation completes successfully
+    When the "lambda" "function" invocation fails
+    When an "eventbridge" "bus" is created
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation fails then an EventBridge event bus is created then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
+  Scenario: the "lambda" "function" invocation fails then an "eventbridge" "bus" is created then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
     Given iid in inv_status
-    When the Lambda invocation fails
-    When an EventBridge event bus is created
+    When the "lambda" "function" invocation fails
+    When an "eventbridge" "bus" is created
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation fails then a "lambda" "function" is deployed then an event is published to the bus and triggers an asynchronous Lambda invocation
+  Scenario: the "lambda" "function" invocation fails then a "lambda" "function" is deployed then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
     Given iid in inv_status
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When a "lambda" "function" is deployed
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation fails then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then the Lambda invocation completes successfully
+  Scenario: the "lambda" "function" invocation fails then an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events then the "lambda" "function" invocation completes successfully
     Given iid in inv_status
-    When the Lambda invocation fails
+    When the "lambda" "function" invocation fails
     When an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-    When the Lambda invocation completes successfully
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When the "lambda" "function" invocation completes successfully
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation fails then an event is published to the bus and triggers an asynchronous Lambda invocation then an EventBridge event bus is created
+  Scenario: the "lambda" "function" invocation fails then an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation then an "eventbridge" "bus" is created
     Given iid in inv_status
-    When the Lambda invocation fails
-    When an event is published to the bus and triggers an asynchronous Lambda invocation
-    When an EventBridge event bus is created
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    When the "lambda" "function" invocation fails
+    When an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+    When an "eventbridge" "bus" is created
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 
   @sequence
-  Scenario: the Lambda invocation fails then the Lambda invocation completes successfully then a "lambda" "function" is deployed
+  Scenario: the "lambda" "function" invocation fails then the "lambda" "function" invocation completes successfully then a "lambda" "function" is deployed
     Given iid in inv_status
-    When the Lambda invocation fails
-    When the Lambda invocation completes successfully
+    When the "lambda" "function" invocation fails
+    When the "lambda" "function" invocation completes successfully
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" rule references an "ACTIVE" event bus
+    And every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"

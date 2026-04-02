@@ -1,4 +1,4 @@
-"""When: an execution is described"""
+"""When: a "step functions" "execution" is described"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SFN_TARGET
 
 
-@when("an execution is described")
+@when('a "step functions" "execution" is described')
 def describe_execution(client: TestClient, world):
     execution_arn = world.get("execution_arn", "")
     r = client.post(

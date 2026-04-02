@@ -18,7 +18,10 @@ def transact_write_items(client: TestClient, world: dict):
                 {
                     "Put": {
                         "TableName": TEST_TABLE,
-                        "Item": {TEST_PK: {"S": TEST_ITEM_KEY}, "data": {"S": TEST_ATTR_VAL}},
+                        "Item": {
+                            TEST_PK: {"S": TEST_ITEM_KEY},
+                            "data": {"S": TEST_ATTR_VAL},
+                        },
                     }
                 }
             ]

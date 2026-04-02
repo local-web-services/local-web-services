@@ -14,13 +14,13 @@ Feature: Apigateway - A Get Method Is Created On A "Api Gateway" "Resource"
     And the "api gateway" "resource" was "ACTIVE"
     When a "GET" method is created on a "api gateway" "resource"
     Then the "api gateway" "method" will exist on the "api gateway" "resource"
-    And all "ACTIVE" resources belong to "ACTIVE" APIs
-    And all "EXISTING" methods belong to "ACTIVE" resources
-    And all "EXISTING" integrations correspond to "EXISTING" methods
-    And all "ACTIVE" deployments belong to "ACTIVE" APIs
-    And all active stages reference "ACTIVE" deployments
-    And all active stages belong to "ACTIVE" APIs
-    And each "ACTIVE" "API" has at least one "ACTIVE" root resource
+    And all "ACTIVE" "api gateway" "resource"s belong to "ACTIVE" "api gateway" "API"s
+    And all "api gateway" "method"s belong to "ACTIVE" "api gateway" "resource"s
+    And all "api gateway" "integration"s correspond to existing "api gateway" "method"s
+    And all "ACTIVE" "api gateway" "deployment"s belong to "ACTIVE" "api gateway" "API"s
+    And all active "api gateway" "stage"s reference "ACTIVE" "api gateway" "deployment"s
+    And all active "api gateway" "stage"s belong to "ACTIVE" "api gateway" "API"s
+    And each "ACTIVE" "api gateway" "API" has at least one "ACTIVE" root "api gateway" "resource"
 
   @guard @negative @put_method_get
   Scenario: a "GET" method is created on a "api gateway" "resource" fails when the "api gateway" "method" already existed

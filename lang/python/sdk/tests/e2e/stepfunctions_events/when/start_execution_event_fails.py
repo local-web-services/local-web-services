@@ -1,4 +1,4 @@
-"""When: an execution starts but the "STARTED" event delivery fails because the bus is deleted"""
+"""When: a "step functions" "execution" starts but the "STARTED" "eventbridge" "event" delivery fails because the "eventbridge" "bus" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from pytest_bdd import when
 from ..constants import TEST_INPUT, _sm_arn
 
 
-@when('an execution starts but the "STARTED" event delivery fails because the bus is deleted')
+@when(
+    'a "step functions" "execution" starts but the "STARTED" "eventbridge" "event" delivery fails because the "eventbridge" "bus" is deleted'
+)
 def start_execution_event_fails(lws_session, world):
     try:
         resp = lws_session.client("stepfunctions").start_execution(

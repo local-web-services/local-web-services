@@ -1,5 +1,5 @@
 @secretsmanagerlambda @generated
-Feature: SecretsmanagerLambda - The Rotation Function Is Deleted
+Feature: SecretsmanagerLambda - The "Lambda" "Rotation Function" Is Deleted
 
   # Generated from FizzBee spec: secretsmanager_lambda.fizz
   # Safety invariants: RotatingSecretHasInProgressInvocation, SuccessfulRotationRotatedASecret
@@ -8,23 +8,23 @@ Feature: SecretsmanagerLambda - The Rotation Function Is Deleted
     Given the system is initialized
 
   @minimal @happy @delete_function
-  Scenario: the rotation function is deleted
+  Scenario: the "lambda" "rotation function" is deleted
     Given the "lambda" "function" existed
     And the "lambda" "function" was "ACTIVE"
-    When the rotation function is deleted
+    When the "lambda" "rotation function" is deleted
     Then the "lambda" "function" will be deleted and rotation will fail
-    And every "ROTATING" secret has an "IN_PROGRESS" rotation invocation
-    And every successful rotation invocation recorded which secret it rotated
+    And every "ROTATING" "secrets manager" "secret" has an "IN_PROGRESS" "lambda" "rotation invocation"
+    And every successful "lambda" "rotation invocation" recorded which "secrets manager" "secret" it rotated
 
   @guard @negative @delete_function
-  Scenario: the rotation function is deleted fails when the "lambda" "function" did not exist
+  Scenario: the "lambda" "rotation function" is deleted fails when the "lambda" "function" did not exist
     Given the "lambda" "function" did not exist
-    When the rotation function is deleted
+    When the "lambda" "rotation function" is deleted
     Then the operation is rejected
 
   @guard @negative @delete_function @lifecycle
-  Scenario: the rotation function is deleted fails when the function is already "DELETED"
+  Scenario: the "lambda" "rotation function" is deleted fails when the "lambda" "function" is already "DELETED"
     Given the "lambda" "function" existed
-    And the function is already "DELETED"
-    When the rotation function is deleted
+    And the "lambda" "function" is already "DELETED"
+    When the "lambda" "rotation function" is deleted
     Then the operation is rejected

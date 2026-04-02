@@ -1,11 +1,11 @@
-"""Then: the instance count will be updated without data loss"""
+"""Then: the "opensearch" "domain" instance count will be updated without data loss"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the instance count will be updated without data loss")
+@then('the "opensearch" "domain" instance count will be updated without data loss')
 def instance_count_updated_without_data_loss(world: dict):
     actual_result = world["result"]
     assert (

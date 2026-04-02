@@ -30,7 +30,10 @@ from lws.cli._ldk_provider_factory import (
     _register_experimental_providers,
     _register_fake_provider,
 )
-from lws.cli._ldk_providers_extended import _register_organizations_provider
+from lws.cli._ldk_providers_extended import (
+    _register_organizations_provider,
+    _register_service_catalog_provider,
+)
 from lws.cli._ldk_resource_metadata import _build_resource_metadata, _service_ports
 from lws.cli.display import print_error
 from lws.cli.experimental import EXPERIMENTAL_SERVICES
@@ -163,6 +166,14 @@ def _create_terraform_providers(
         chaos_configs=chaos_configs,
         aws_fake_configs=aws_fake_configs,
         organizations_port=ports["organizations"],
+    )
+
+    # Service Catalog
+    _register_service_catalog_provider(
+        providers,
+        chaos_configs=chaos_configs,
+        aws_fake_configs=aws_fake_configs,
+        service_catalog_port=ports["servicecatalog"],
     )
 
     # SSM Parameter Store
@@ -352,6 +363,7 @@ async def _run_dev(
     force_synth: bool,
     log_level_override: str | None,
     mode_override: str | None = None,
+    seed: str | None = None,
 ) -> None:
     """Async implementation of the ``ldk dev`` command."""
     from lws.cli._ldk_dev_runner import (  # pylint: disable=import-outside-toplevel
@@ -392,7 +404,7 @@ async def _run_dev(
     data_dir.mkdir(parents=True, exist_ok=True)
     iam_auth_bundle = _create_iam_auth_bundle(config, project_dir)
     providers, chaos_configs, aws_fake_configs, lifecycle_configs = _create_providers(
-        app_model, graph, config, data_dir, iam_auth_bundle=iam_auth_bundle
+        app_model, graph, config, data_dir, iam_auth_bundle=iam_auth_bundle, organizations_seed=seed
     )
 
     orchestrator = Orchestrator()

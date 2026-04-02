@@ -13,9 +13,9 @@ Feature: Elasticsearch - An "Elasticsearch" "Domain" Finishes Creating
     And the "elasticsearch" "domain" was "CREATING"
     When an "elasticsearch" "domain" finishes creating
     Then the "elasticsearch" "domain" will be "ACTIVE" and ready for use
-    And every active index belongs to an existing non-deleted domain
-    And every active tag belongs to an existing non-deleted domain
-    And a pending config change only exists on a "elasticsearch" "domain" that is "PROCESSING"
+    And every active "elasticsearch" "index" belongs to an existing non-deleted "elasticsearch" "domain"
+    And every active "elasticsearch" "tag" belongs to an existing non-deleted "elasticsearch" "domain"
+    And a pending config change only exists on an "elasticsearch" "domain" that is "PROCESSING"
 
   @guard @negative @finish_creating_domain @internal
   Scenario: an "elasticsearch" "domain" finishes creating fails when the "elasticsearch" "domain" did not exist

@@ -14,7 +14,7 @@ Feature: EventsDynamodb - A "Dynamodb" "Table" Deletion Is Initiated
     When a "dynamodb" "table" deletion is initiated
     Then the "dynamodb" "table" will be "DELETING" and item writes to it will fail
     And every existing item references a "dynamodb" "table" that exists
-    And every matched event references a rule that exists
+    And every matched "eventbridge" "event" references an "eventbridge" "rule" that exists
 
   @guard @negative @delete_table
   Scenario: a "dynamodb" "table" deletion is initiated fails when the "dynamodb" "table" did not exist

@@ -1,4 +1,4 @@
-"""When: an event is published to the bus and routed to the target "SQS" queue"""
+"""When: an "eventbridge" "event" is published to the "eventbridge" "bus" and routed to the target "sqs" "queue" """
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from pytest_bdd import when
 from ..constants import TEST_BUS
 
 
-@when('an event is published to the bus and routed to the target "SQS" queue')
+@when(
+    'an "eventbridge" "event" is published to the "eventbridge" "bus" and routed to the target "sqs" "queue"'
+)
 def put_event_routed_to_sqs(lws_session, world):
     try:
         world["result"] = lws_session.client("events").put_events(

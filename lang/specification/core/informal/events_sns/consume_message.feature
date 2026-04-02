@@ -9,14 +9,14 @@ Feature: EventsSns - A Subscriber Consumes A Message From The "Sns" "Topic"
 
   @minimal @happy @consume_message
   Scenario: a subscriber consumes a message from the "sns" "topic"
-    Given an "AVAILABLE" message existed on the topic
+    Given an "AVAILABLE" "sns" "message" existed on the "sns" "topic"
     When a subscriber consumes a message from the "sns" "topic"
-    Then the message will be deleted
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "AVAILABLE" message belongs to an "ACTIVE" topic
+    Then the "sns" "message" will be "DELETED"
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "AVAILABLE" "sns" "message" belongs to an "ACTIVE" "sns" "topic"
 
   @guard @negative @consume_message @lifecycle
-  Scenario: a subscriber consumes a message from the "sns" "topic" fails when no "AVAILABLE" message existed on the topic
-    Given no "AVAILABLE" message existed on the topic
+  Scenario: a subscriber consumes a message from the "sns" "topic" fails when no "AVAILABLE" "sns" "message" existed on the "sns" "topic"
+    Given no "AVAILABLE" "sns" "message" existed on the "sns" "topic"
     When a subscriber consumes a message from the "sns" "topic"
     Then the operation is rejected

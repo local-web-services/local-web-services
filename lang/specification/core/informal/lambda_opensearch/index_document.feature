@@ -12,12 +12,12 @@ Feature: LambdaOpensearch - The "Lambda" "Function" Indexes A Document Into The 
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "opensearch" "index" existed
     And the "opensearch" "index"'s domain was "ACTIVE"
-    And a document slot is available
+    And a "document" "slot" was "available"
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
-    Then the document will be "INDEXED"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every indexed document belongs to an existing index
-    And every existing index belongs to an "ACTIVE" domain
+    Then the "opensearch" "document" will be "INDEXED"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "INDEXED" "opensearch" "document" belongs to an existing "opensearch" "index"
+    And every existing "opensearch" "index" belongs to an "ACTIVE" "opensearch" "domain"
 
   @guard @negative @index_document @lifecycle
   Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation fails when no "lambda" "invocation" was "IN_PROGRESS"
@@ -41,10 +41,10 @@ Feature: LambdaOpensearch - The "Lambda" "Function" Indexes A Document Into The 
     Then the operation is rejected
 
   @guard @negative @index_document @capacity
-  Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation fails when no document slot is available
+  Scenario: the "lambda" "function" indexes a document into the OpenSearch index during invocation fails when no "opensearch" "document" "slot" was "available"
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "opensearch" "index" existed
     And the "opensearch" "index"'s domain was "ACTIVE"
-    And no document slot is available
+    And no "opensearch" "document" "slot" was "available"
     When the "lambda" "function" indexes a document into the OpenSearch index during invocation
     Then the operation is rejected

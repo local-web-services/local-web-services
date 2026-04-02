@@ -12,11 +12,11 @@ Feature: Opensearch - Shards Are Rebalanced Across Nodes In An Active "Opensearc
     Given the "opensearch" "domain" existed
     And the "opensearch" "domain" was "ACTIVE"
     When shards are rebalanced across nodes in an active "opensearch" "domain"
-    Then the instance count will be updated without data loss
-    And no active connection references a deleted domain
+    Then the "opensearch" "domain" instance count will be updated without data loss
+    And no active "opensearch" "connection" references a deleted "opensearch" "domain"
     And traffic can only be swapped after the new "opensearch" "cluster" was ready
-    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" inbound connection
-    And a pending config change only exists on a "opensearch" "domain" that is "PROCESSING"
+    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" "opensearch" "inbound connection"
+    And a pending config change only exists on an "opensearch" "domain" that is "PROCESSING"
 
   @guard @negative @shard_rebalancing @internal
   Scenario: shards are rebalanced across nodes in an active "opensearch" "domain" fails when the "opensearch" "domain" did not exist

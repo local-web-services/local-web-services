@@ -1,5 +1,5 @@
 @lambda @generated
-Feature: lambda - A Synchronous "Lambda" "Function" Invocation Completes
+Feature: Lambda - A Synchronous "Lambda" "Function" Invocation Completes
 
   # Generated from FizzBee spec: lambda.fizz
   # Safety invariants: ActiveMappingReferencesActiveFunction, NoExecutionsOnDeletingFunction, ConcurrencyLimitRespected, AsyncRetryLimitRespected, ValidEventSourceMappingStatus, ValidFunctionStatus, AsyncSlotsReferenceKnownFunctions
@@ -12,14 +12,14 @@ Feature: lambda - A Synchronous "Lambda" "Function" Invocation Completes
     Given the "lambda" "function" had active execution tracking
     And the "lambda" "function" had at least one active execution
     When a synchronous "lambda" "function" invocation completes
-    Then the active execution count decreases
-    And every active event source mapping references an existing non-deleted function
-    And no function in "DELETING" state has active executions
-    And active execution count never exceeds reserved concurrency when set
-    And async retry count never exceeds two
-    And every event source mapping has a valid status
-    And every function has a valid status
-    And all async slots reference known function IDs or are empty
+    Then the "lambda" "function" active execution count will decrease
+    And every active "lambda" "event source mapping" references an existing non-deleted "lambda" "function"
+    And no "lambda" "function" in "DELETING" state has active executions
+    And "lambda" "function" active execution count never exceeds reserved concurrency when set
+    And "lambda" "function" async retry count never exceeds two
+    And every "lambda" "event source mapping" has a valid status
+    And every "lambda" "function" has a valid status
+    And all "lambda" "async" "slot"s reference known "lambda" "function" IDs or are empty
 
   @guard @negative @finish_invoke_function_sync @internal
   Scenario: a synchronous "lambda" "function" invocation completes fails when the "lambda" "function" did not have active execution tracking

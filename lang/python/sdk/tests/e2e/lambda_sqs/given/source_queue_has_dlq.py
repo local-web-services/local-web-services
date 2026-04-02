@@ -1,4 +1,4 @@
-"""Given: the source queue already has a dead-letter queue configured"""
+"""Given: the source "sqs" "queue" already has a dead-letter queue configured"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaSqsTestClient
 from ..constants import TEST_DLQ, _queue_arn
 
 
-@given("the source queue already has a dead-letter queue configured")
+@given('the source "sqs" "queue" already has a dead-letter queue configured')
 def source_queue_has_dlq(lws_session):
     import json
 
@@ -23,5 +23,6 @@ def source_queue_has_dlq(lws_session):
     dlq_arn = _queue_arn(TEST_DLQ)
     redrive = json.dumps({"deadLetterTargetArn": dlq_arn, "maxReceiveCount": 2})
     LambdaSqsTestClient(lws_session)._sqs.set_queue_attributes(
-        QueueUrl=LambdaSqsTestClient(lws_session).queue_url(), Attributes={"RedrivePolicy": redrive}
+        QueueUrl=LambdaSqsTestClient(lws_session).queue_url(),
+        Attributes={"RedrivePolicy": redrive},
     )

@@ -1,4 +1,4 @@
-"""Given: the event source mapping existed"""
+"""Given: the "lambda" "event source mapping" existed"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import LambdaTestClient
 
 
 @given('the "lambda" "event source mapping" existed')
-@given("the event source mapping existed")
+@given('the "lambda" "event source mapping" existed')
 def esm_exists(client: TestClient):
     LambdaTestClient(client).create_function()
     LambdaTestClient(client).create_esm()

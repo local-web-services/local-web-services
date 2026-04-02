@@ -19,5 +19,8 @@ def table_is_not_active_given(lws_session):
         pass
     lws_session.lifecycle("s3tables").create_dwell_ms(5000).apply()
     lws_session.client("s3tables").create_table(
-        tableBucketARN=bucket_arn, namespace=TEST_NAMESPACE, name=TEST_TABLE, format="ICEBERG"
+        tableBucketARN=bucket_arn,
+        namespace=TEST_NAMESPACE,
+        name=TEST_TABLE,
+        format="ICEBERG",
     )

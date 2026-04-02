@@ -385,42 +385,42 @@ atomic action CompleteClusterRestore:
             if cluster_status[cid] == "RESTORING":
                 cluster_status[cid] = "AVAILABLE"
 
-# step: an "elasticache" parameter group is created
-# result: the "elasticache" parameter group will exist
-# guard: the "elasticache" parameter group did not already exist
-# guard_violation: the "elasticache" parameter group already existed
+# step: an "elasticache" "parameter group" is created
+# result: the "elasticache" "parameter group" will exist
+# guard: the "elasticache" "parameter group" did not already exist
+# guard_violation: the "elasticache" "parameter group" already existed
 atomic action CreateCacheParameterGroup:
     oneof pgid in PG_IDS:
         if pgid not in pg_exists:
             pg_exists[pgid] = True
 
-# step: an "elasticache" parameter group is deleted
-# result: the "elasticache" parameter group no longer will exist
-# guard: the "elasticache" parameter group existed
-# guard_violation: the "elasticache" parameter group did not exist
-# guard: the "elasticache" parameter group was present
-# guard_violation: the "elasticache" parameter group was not present
+# step: an "elasticache" "parameter group" is deleted
+# result: the "elasticache" "parameter group" will no longer exist
+# guard: the "elasticache" "parameter group" existed
+# guard_violation: the "elasticache" "parameter group" did not exist
+# guard: the "elasticache" "parameter group" was "present"
+# guard_violation: the "elasticache" "parameter group" was not "present"
 atomic action DeleteCacheParameterGroup:
     oneof pgid in PG_IDS:
         if pgid in pg_exists:
             if pg_exists[pgid]:
                 pg_exists[pgid] = False
 
-# step: an "elasticache" subnet group is created
-# result: the "elasticache" subnet group will exist
-# guard: the "elasticache" subnet group did not already exist
-# guard_violation: the "elasticache" subnet group already existed
+# step: an "elasticache" "subnet group" is created
+# result: the "elasticache" "subnet group" will exist
+# guard: the "elasticache" "subnet group" did not already exist
+# guard_violation: the "elasticache" "subnet group" already existed
 atomic action CreateCacheSubnetGroup:
     oneof sgid in SG_IDS:
         if sgid not in sg_exists:
             sg_exists[sgid] = True
 
-# step: an "elasticache" subnet group is deleted
-# result: the "elasticache" subnet group no longer will exist
-# guard: the "elasticache" subnet group existed
-# guard_violation: the "elasticache" subnet group did not exist
-# guard: the "elasticache" subnet group was present
-# guard_violation: the "elasticache" subnet group was not present
+# step: an "elasticache" "subnet group" is deleted
+# result: the "elasticache" "subnet group" will no longer exist
+# guard: the "elasticache" "subnet group" existed
+# guard_violation: the "elasticache" "subnet group" did not exist
+# guard: the "elasticache" "subnet group" was "present"
+# guard_violation: the "elasticache" "subnet group" was not "present"
 atomic action DeleteCacheSubnetGroup:
     oneof sgid in SG_IDS:
         if sgid in sg_exists:
@@ -452,7 +452,7 @@ atomic action RemoveTagsFromResource:
                 tag_exists[cid] = True
 
 # Memcached clusters must not belong to a replication group
-# check: memcached clusters are never associated with a "elasticache" "replication group"
+# check: "memcached" "elasticache" "cluster"s are never associated with a "elasticache" "replication group"
 always assertion MemcachedNotInReplicationGroup:
     for cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -463,7 +463,7 @@ always assertion MemcachedNotInReplicationGroup:
     return True
 
 # Snapshots can only be taken from redis clusters
-# check: all snapshots reference redis clusters only
+# check: all "elasticache" "snapshot"s reference "redis" "elasticache" "cluster"s only
 always assertion SnapshotOnlyFromRedis:
     for sid in SNAPSHOT_IDS:
         if sid in snapshot_status:
@@ -475,7 +475,7 @@ always assertion SnapshotOnlyFromRedis:
     return True
 
 # An available replication group must have a primary cluster set
-# check: every available replication group has a primary cluster assigned
+# check: every "AVAILABLE" "elasticache" "replication group" has a primary "elasticache" "cluster" assigned
 always assertion AvailableRGHasPrimary:
     for rgid in RG_IDS:
         if rgid in rg_status:
@@ -485,7 +485,7 @@ always assertion AvailableRGHasPrimary:
     return True
 
 # Tags exist for every active resource
-# check: every active cluster, replication group, and snapshot has tags
+# check: every active "elasticache" "cluster", "replication group", and "snapshot" has tags
 always assertion TagsExistForResources:
     for cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -511,7 +511,7 @@ always assertion TagsExistForResources:
     return True
 
 # A cluster in SNAPSHOTTING state must have a corresponding in-progress snapshot
-# check: every snapshotting cluster has a corresponding in-progress snapshot
+# check: every snapshotting "elasticache" "cluster" has a corresponding in-progress "elasticache" "snapshot"
 always assertion SnapshottingClusterHasSnapshot:
     for cid in CLUSTER_IDS:
         if cid in cluster_status:

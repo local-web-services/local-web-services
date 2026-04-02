@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from pytest_bdd import then
+from pytest_bdd import step, then
 
 
 @then("a deleted trail is never in logging state")
+@step('a "DELETED" "cloudtrail" "trail" is never in "LOGGING" state')
 def a_deleted_trail_is_never_in_logging_state(lws_session):
     ct = lws_session.client("cloudtrail")
     resp = ct.list_trails()

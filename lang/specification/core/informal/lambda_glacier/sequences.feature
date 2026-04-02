@@ -12,7 +12,7 @@ Feature: LambdaGlacier - Action Sequences
     Given fid not in func_status
     When a "lambda" "function" is deployed
     When a "glacier" "vault" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -20,7 +20,7 @@ Feature: LambdaGlacier - Action Sequences
     Given fid not in func_status
     When a "lambda" "function" is deployed
     When a "glacier" "vault" is deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -28,7 +28,7 @@ Feature: LambdaGlacier - Action Sequences
     Given fid not in func_status
     When a "lambda" "function" is deployed
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -36,7 +36,7 @@ Feature: LambdaGlacier - Action Sequences
     Given fid not in func_status
     When a "lambda" "function" is deployed
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -44,7 +44,7 @@ Feature: LambdaGlacier - Action Sequences
     Given fid not in func_status
     When a "lambda" "function" is deployed
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -52,7 +52,7 @@ Feature: LambdaGlacier - Action Sequences
     Given vid not in vault_status
     When a "glacier" "vault" is created
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -60,7 +60,7 @@ Feature: LambdaGlacier - Action Sequences
     Given vid not in vault_status
     When a "glacier" "vault" is created
     When a "glacier" "vault" is deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -68,7 +68,7 @@ Feature: LambdaGlacier - Action Sequences
     Given vid not in vault_status
     When a "glacier" "vault" is created
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -76,7 +76,7 @@ Feature: LambdaGlacier - Action Sequences
     Given vid not in vault_status
     When a "glacier" "vault" is created
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -84,7 +84,7 @@ Feature: LambdaGlacier - Action Sequences
     Given vid not in vault_status
     When a "glacier" "vault" is created
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -92,7 +92,7 @@ Feature: LambdaGlacier - Action Sequences
     Given vid in vault_status
     When a "glacier" "vault" is deleted
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -100,7 +100,7 @@ Feature: LambdaGlacier - Action Sequences
     Given vid in vault_status
     When a "glacier" "vault" is deleted
     When a "glacier" "vault" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -108,7 +108,7 @@ Feature: LambdaGlacier - Action Sequences
     Given vid in vault_status
     When a "glacier" "vault" is deleted
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -116,7 +116,7 @@ Feature: LambdaGlacier - Action Sequences
     Given vid in vault_status
     When a "glacier" "vault" is deleted
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -124,7 +124,7 @@ Feature: LambdaGlacier - Action Sequences
     Given vid in vault_status
     When a "glacier" "vault" is deleted
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -132,7 +132,7 @@ Feature: LambdaGlacier - Action Sequences
     Given fid in func_status
     When the "lambda" "function" is invoked
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -140,7 +140,7 @@ Feature: LambdaGlacier - Action Sequences
     Given fid in func_status
     When the "lambda" "function" is invoked
     When a "glacier" "vault" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -148,7 +148,7 @@ Feature: LambdaGlacier - Action Sequences
     Given fid in func_status
     When the "lambda" "function" is invoked
     When a "glacier" "vault" is deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -156,7 +156,7 @@ Feature: LambdaGlacier - Action Sequences
     Given fid in func_status
     When the "lambda" "function" is invoked
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -164,7 +164,7 @@ Feature: LambdaGlacier - Action Sequences
     Given fid in func_status
     When the "lambda" "function" is invoked
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -172,7 +172,7 @@ Feature: LambdaGlacier - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -180,7 +180,7 @@ Feature: LambdaGlacier - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     When a "glacier" "vault" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -188,7 +188,7 @@ Feature: LambdaGlacier - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     When a "glacier" "vault" is deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -196,7 +196,7 @@ Feature: LambdaGlacier - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -204,7 +204,7 @@ Feature: LambdaGlacier - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -212,7 +212,7 @@ Feature: LambdaGlacier - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -220,7 +220,7 @@ Feature: LambdaGlacier - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
     When a "glacier" "vault" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -228,7 +228,7 @@ Feature: LambdaGlacier - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
     When a "glacier" "vault" is deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -236,7 +236,7 @@ Feature: LambdaGlacier - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -244,7 +244,7 @@ Feature: LambdaGlacier - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -253,7 +253,7 @@ Feature: LambdaGlacier - Action Sequences
     When a "lambda" "function" is deployed
     When a "glacier" "vault" is created
     When a "glacier" "vault" is deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -262,7 +262,7 @@ Feature: LambdaGlacier - Action Sequences
     When a "lambda" "function" is deployed
     When a "glacier" "vault" is deleted
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -271,7 +271,7 @@ Feature: LambdaGlacier - Action Sequences
     When a "lambda" "function" is deployed
     When the "lambda" "function" is invoked
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -280,7 +280,7 @@ Feature: LambdaGlacier - Action Sequences
     When a "lambda" "function" is deployed
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -289,7 +289,7 @@ Feature: LambdaGlacier - Action Sequences
     When a "lambda" "function" is deployed
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
     When a "glacier" "vault" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -298,7 +298,7 @@ Feature: LambdaGlacier - Action Sequences
     When a "glacier" "vault" is created
     When a "lambda" "function" is deployed
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -307,7 +307,7 @@ Feature: LambdaGlacier - Action Sequences
     When a "glacier" "vault" is created
     When a "glacier" "vault" is deleted
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -316,7 +316,7 @@ Feature: LambdaGlacier - Action Sequences
     When a "glacier" "vault" is created
     When the "lambda" "function" is invoked
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -325,7 +325,7 @@ Feature: LambdaGlacier - Action Sequences
     When a "glacier" "vault" is created
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -334,7 +334,7 @@ Feature: LambdaGlacier - Action Sequences
     When a "glacier" "vault" is created
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
     When a "glacier" "vault" is deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -343,7 +343,7 @@ Feature: LambdaGlacier - Action Sequences
     When a "glacier" "vault" is deleted
     When a "lambda" "function" is deployed
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -352,7 +352,7 @@ Feature: LambdaGlacier - Action Sequences
     When a "glacier" "vault" is deleted
     When a "glacier" "vault" is created
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -361,7 +361,7 @@ Feature: LambdaGlacier - Action Sequences
     When a "glacier" "vault" is deleted
     When the "lambda" "function" is invoked
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -370,7 +370,7 @@ Feature: LambdaGlacier - Action Sequences
     When a "glacier" "vault" is deleted
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     When a "glacier" "vault" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -379,7 +379,7 @@ Feature: LambdaGlacier - Action Sequences
     When a "glacier" "vault" is deleted
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -388,7 +388,7 @@ Feature: LambdaGlacier - Action Sequences
     When the "lambda" "function" is invoked
     When a "lambda" "function" is deployed
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -397,7 +397,7 @@ Feature: LambdaGlacier - Action Sequences
     When the "lambda" "function" is invoked
     When a "glacier" "vault" is created
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -406,7 +406,7 @@ Feature: LambdaGlacier - Action Sequences
     When the "lambda" "function" is invoked
     When a "glacier" "vault" is deleted
     When a "glacier" "vault" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -415,7 +415,7 @@ Feature: LambdaGlacier - Action Sequences
     When the "lambda" "function" is invoked
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     When a "glacier" "vault" is deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -424,7 +424,7 @@ Feature: LambdaGlacier - Action Sequences
     When the "lambda" "function" is invoked
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -433,7 +433,7 @@ Feature: LambdaGlacier - Action Sequences
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     When a "lambda" "function" is deployed
     When a "glacier" "vault" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -442,7 +442,7 @@ Feature: LambdaGlacier - Action Sequences
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     When a "glacier" "vault" is created
     When a "glacier" "vault" is deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -451,7 +451,7 @@ Feature: LambdaGlacier - Action Sequences
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     When a "glacier" "vault" is deleted
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -460,7 +460,7 @@ Feature: LambdaGlacier - Action Sequences
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     When the "lambda" "function" is invoked
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -469,7 +469,7 @@ Feature: LambdaGlacier - Action Sequences
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -478,7 +478,7 @@ Feature: LambdaGlacier - Action Sequences
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
     When a "lambda" "function" is deployed
     When a "glacier" "vault" is deleted
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -487,7 +487,7 @@ Feature: LambdaGlacier - Action Sequences
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
     When a "glacier" "vault" is created
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -496,7 +496,7 @@ Feature: LambdaGlacier - Action Sequences
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
     When a "glacier" "vault" is deleted
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -505,7 +505,7 @@ Feature: LambdaGlacier - Action Sequences
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
     When the "lambda" "function" is invoked
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @sequence
@@ -514,5 +514,5 @@ Feature: LambdaGlacier - Action Sequences
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     When a "glacier" "vault" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists

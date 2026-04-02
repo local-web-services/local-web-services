@@ -1,4 +1,4 @@
-"""When: an event is published to the bus and triggers a new Step Functions execution"""
+"""When: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution" """
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from pytest_bdd import when
 from ..constants import TEST_BUS
 
 
-@when("an event is published to the bus and triggers a new Step Functions execution")
+@when(
+    'an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers a new "step functions" "execution"'
+)
 def put_event_triggers_sfn(lws_session, world):
     try:
         world["result"] = lws_session.client("events").put_events(

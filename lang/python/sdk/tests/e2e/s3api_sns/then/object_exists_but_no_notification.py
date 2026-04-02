@@ -1,4 +1,4 @@
-"""Then: the object will exist but no notification will be published"""
+"""Then: the "s3" "object" will exist but no "sns" notification will be published"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_BUCKET, TEST_KEY
 
 
-@then("the object will exist but no notification will be published")
+@then('the "s3" "object" will exist but no "sns" notification will be published')
 def object_exists_but_no_notification(lws_session, world):
     expected_error = None
     expected_key = TEST_KEY

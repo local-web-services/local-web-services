@@ -11,14 +11,14 @@ Feature: Glacier - A Part Is Uploaded For A Multipart "Glacier" "Upload"
   Scenario: a part is uploaded for a multipart "glacier" "upload"
     Given the "glacier" "upload" existed
     And the "glacier" "upload" was "InProgress"
-    And the part has not already been uploaded
+    And the "glacier" "upload" part has not already been uploaded
     When a part is uploaded for a multipart "glacier" "upload"
-    Then the part will be recorded for the "glacier" "glacier" "upload"
-    And every in-progress job references an active vault
-    And vault archive count is never negative
-    And all stored archives belong to an "ACTIVE" vault
-    And job output is only available for succeeded jobs
-    And every archive retrieval job references a non-empty archive "ID"
+    Then the "glacier" "upload" part will be recorded
+    And every in-progress "glacier" "job" references an active "glacier" "vault"
+    And "glacier" "vault" archive count is never negative
+    And all stored "glacier" "archive"s belong to an "ACTIVE" "glacier" "vault"
+    And "glacier" "job" output is only available for succeeded "glacier" "job"s
+    And every "glacier" "archive" retrieval "glacier" "job" references a non-empty "glacier" "archive" "ID"
 
   @guard @negative @upload_multipart_part
   Scenario: a part is uploaded for a multipart "glacier" "upload" fails when the "glacier" "upload" did not exist
@@ -34,9 +34,9 @@ Feature: Glacier - A Part Is Uploaded For A Multipart "Glacier" "Upload"
     Then the operation is rejected
 
   @guard @negative @upload_multipart_part
-  Scenario: a part is uploaded for a multipart "glacier" "upload" fails when the part has already been uploaded
+  Scenario: a part is uploaded for a multipart "glacier" "upload" fails when the "glacier" "upload" part has already been uploaded
     Given the "glacier" "upload" existed
     And the "glacier" "upload" was "InProgress"
-    And the part has already been uploaded
+    And the "glacier" "upload" part has already been uploaded
     When a part is uploaded for a multipart "glacier" "upload"
     Then the operation is rejected

@@ -15,9 +15,9 @@ Feature: Elasticsearch - A "Elasticsearch" "Document" Is Indexed In An Active In
     And the "elasticsearch" "index" was "ACTIVE"
     When a "elasticsearch" "document" is indexed in an active index
     Then the "elasticsearch" "document" count for the "elasticsearch" "index" increases by one
-    And every active index belongs to an existing non-deleted domain
-    And every active tag belongs to an existing non-deleted domain
-    And a pending config change only exists on a "elasticsearch" "domain" that is "PROCESSING"
+    And every active "elasticsearch" "index" belongs to an existing non-deleted "elasticsearch" "domain"
+    And every active "elasticsearch" "tag" belongs to an existing non-deleted "elasticsearch" "domain"
+    And a pending config change only exists on an "elasticsearch" "domain" that is "PROCESSING"
 
   @guard @negative @index_document
   Scenario: a "elasticsearch" "document" is indexed in an active index fails when the "elasticsearch" "domain" did not exist

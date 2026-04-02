@@ -12,8 +12,8 @@ Feature: StepfunctionsOpensearch - A "Step Functions" "State Machine" Is Created
     Given the "step functions" "state machine" did not already exist
     When a "step functions" "state machine" is created
     Then the "step functions" "state machine" will be "ACTIVE"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which domain it called
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "opensearch" "domain" it called
 
   @guard @negative @create_state_machine
   Scenario: a "step functions" "state machine" is created fails when the "step functions" "state machine" already existed

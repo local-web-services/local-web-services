@@ -12,7 +12,8 @@ from ..constants import TEST_ATTR_VAL, TEST_ITEM_KEY, TEST_PK, TEST_TABLE
 def put_item(lws_session, world):
     try:
         world["result"] = lws_session.client("dynamodb").put_item(
-            TableName=TEST_TABLE, Item={TEST_PK: {"S": TEST_ITEM_KEY}, "data": {"S": TEST_ATTR_VAL}}
+            TableName=TEST_TABLE,
+            Item={TEST_PK: {"S": TEST_ITEM_KEY}, "data": {"S": TEST_ATTR_VAL}},
         )
         world["error"] = None
     except (ClientError, Exception) as exc:

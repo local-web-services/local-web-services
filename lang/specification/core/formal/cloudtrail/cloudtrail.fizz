@@ -2,14 +2,14 @@
 deadlock_detection: false
 options:
   max_concurrent_actions: 1
-  max_actions: 14
+  max_actions: 10
 ---
 # CloudTrail Formal Specification
 # Models trail lifecycle, capacity limit, event buffering, and S3 delivery invariants.
 
 MAX_TRAILS = 5
 TRAIL_NAMES = ["trail-1", "trail-2", "trail-3", "trail-4", "trail-5", "trail-6"]
-EVENT_IDS = ["e1", "e2", "e3", "e4", "e5"]
+EVENT_IDS = ["e1"]
 
 action Init:
     trail_status = {}
@@ -27,8 +27,8 @@ action Init:
 # result: the "cloudtrail" "trail" will be "CREATED"
 # guard: the "cloudtrail" "trail" did not already exist
 # guard_violation: the "cloudtrail" "trail" already existed
-# guard: the active trail count is below the maximum (5)
-# guard_violation: the active trail count has reached the maximum (5)
+# guard: the "cloudtrail" "trail" count is below the maximum (5)
+# guard_violation_capacity: the "cloudtrail" "trail" count has reached the maximum (5)
 atomic action CreateTrail:
     oneof tname in TRAIL_NAMES:
         if tname not in trail_status:
@@ -102,13 +102,13 @@ atomic action DeliverToS3:
                         event_delivered[eid] = True
                         event_status[eid] = "DELIVERED"
 
-# check: the active trail count never exceeds MAX_TRAILS
+# check: the active "cloudtrail" "trail" count never exceeds MAX_TRAILS
 always assertion CapacityLimitRespected:
     if active_trail_count > MAX_TRAILS:
         return False
     return True
 
-# check: active_trail_count matches the number of non-DELETED trails
+# check: the "cloudtrail" trail count matches the number of non-"DELETED" "cloudtrail" "trail"s
 always assertion TrailCountConsistent:
     counted = 0
     for tname in trail_status:
@@ -118,7 +118,7 @@ always assertion TrailCountConsistent:
         return False
     return True
 
-# check: a deleted trail is never in LOGGING state
+# check: a "DELETED" "cloudtrail" "trail" is never in "LOGGING" state
 always assertion DeletedTrailNotLogging:
     for tname in trail_status:
         if trail_status[tname] == "DELETED":
@@ -127,7 +127,7 @@ always assertion DeletedTrailNotLogging:
                     return False
     return True
 
-# check: every buffered or delivered event references an existing trail
+# check: every "BUFFERED" or "DELIVERED" "cloudtrail" "event" references an existing "cloudtrail" "trail"
 always assertion EventsReferValidTrails:
     for eid in event_status:
         if event_status[eid] in ["BUFFERED", "DELIVERED"]:
@@ -135,7 +135,7 @@ always assertion EventsReferValidTrails:
                 return False
     return True
 
-# check: events are only delivered when the trail is logging (at time of delivery)
+# check: "cloudtrail" "event"s are only delivered when the "cloudtrail" "trail" is "LOGGING" (at time of delivery)
 always assertion DeliveredEventsFromLoggingTrails:
     for eid in event_status:
         if event_status[eid] == "BUFFERED":

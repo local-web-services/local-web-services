@@ -6,7 +6,14 @@ from pytest_bdd import when
 from starlette.testclient import TestClient
 
 from ..client import DynamodbTestClient
-from ..constants import TEST_ITEM_KEY, TEST_PK, TEST_TABLE, TEST_UPDATED_VAL, _store, _try_json
+from ..constants import (
+    TEST_ITEM_KEY,
+    TEST_PK,
+    TEST_TABLE,
+    TEST_UPDATED_VAL,
+    _store,
+    _try_json,
+)
 
 
 @when('an existing "dynamodb" "item" is updated in the "dynamodb" "table"')

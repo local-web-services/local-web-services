@@ -14,12 +14,12 @@ Feature: DynamodbLambda - A "Lambda" "Event Source Mapping" Is Created To Proces
     And the "dynamodb" "table" has a stream enabled
     And the "lambda" "function" existed
     And the "lambda" "function" was "ACTIVE"
-    And the event source mapping did not already exist
+    And the "lambda" "event source mapping" did not already exist
     When a "lambda" "event source mapping" is created to process the DynamoDB Stream
-    Then the event source mapping will be "ENABLED" and will poll the stream for change records
-    And every "IN_PROGRESS" invocation was initiated by an "ENABLED" event source mapping
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" event source mapping references an "ACTIVE" table with streaming enabled
+    Then the "lambda" "event source mapping" will be "ENABLED" and will poll the stream for change records
+    And every "IN_PROGRESS" "lambda" "function" invocation was initiated by an "ENABLED" "lambda" "event source mapping"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "lambda" "event source mapping" references an "ACTIVE" "dynamodb" "table" with streaming enabled
 
   @guard @negative @create_event_source_mapping
   Scenario: a "lambda" "event source mapping" is created to process the DynamoDB Stream fails when the "dynamodb" "table" did not exist
@@ -62,12 +62,12 @@ Feature: DynamodbLambda - A "Lambda" "Event Source Mapping" Is Created To Proces
     Then the operation is rejected
 
   @guard @negative @create_event_source_mapping
-  Scenario: a "lambda" "event source mapping" is created to process the DynamoDB Stream fails when the event source mapping already existed
+  Scenario: a "lambda" "event source mapping" is created to process the DynamoDB Stream fails when the "lambda" "event source mapping" already existed
     Given the "dynamodb" "table" existed
     And the "dynamodb" "table" was "ACTIVE"
     And the "dynamodb" "table" has a stream enabled
     And the "lambda" "function" existed
     And the "lambda" "function" was "ACTIVE"
-    And the event source mapping already existed
+    And the "lambda" "event source mapping" already existed
     When a "lambda" "event source mapping" is created to process the DynamoDB Stream
     Then the operation is rejected

@@ -15,7 +15,10 @@ class SnsTestClient:
         return _extract_xml_tag(r.text, "TopicArn")
 
     def subscribe(
-        self, topic_arn: str, protocol: str = "email", endpoint: str = TEST_EMAIL_ENDPOINT
+        self,
+        topic_arn: str,
+        protocol: str = "email",
+        endpoint: str = TEST_EMAIL_ENDPOINT,
     ) -> str:
         r = self._client.post(
             "/",

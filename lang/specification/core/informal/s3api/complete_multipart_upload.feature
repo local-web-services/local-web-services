@@ -16,10 +16,10 @@ Feature: S3api - A Multipart "S3" "Upload" Is Completed
     And the "s3" "upload" had at least one part
     When a multipart "s3" "upload" is completed
     Then the "s3" "upload" will be "COMPLETED" and the assembled "s3" "object" will exist in the "s3" "bucket"
-    And every bucket has a valid status ("ACTIVE" or "DELETED")
-    And every bucket versioning state is valid ("DISABLED", "ENABLED", or "SUSPENDED")
-    And every multipart upload has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
-    And deleting a bucket requires it to be empty
+    And every "s3" "bucket" has a valid status ("ACTIVE" or "DELETED")
+    And every "s3" "bucket" versioning state is valid ("DISABLED", "ENABLED", or "SUSPENDED")
+    And every "s3" "multipart upload" has a valid status ("IN_PROGRESS", "COMPLETED", or "ABORTED")
+    And deleting an "s3" "bucket" requires it to be empty
 
   @guard @negative @complete_multipart_upload
   Scenario: a multipart "s3" "upload" is completed fails when the "s3" "bucket" did not exist

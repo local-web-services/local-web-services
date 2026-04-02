@@ -1,4 +1,4 @@
-"""Given: the target function was not "ACTIVE" """
+"""Given: the target "lambda" "function" was not "ACTIVE" """
 
 from __future__ import annotations
 

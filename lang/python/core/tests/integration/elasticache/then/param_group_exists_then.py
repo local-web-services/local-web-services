@@ -1,4 +1,4 @@
-"""Then: the "elasticache" parameter group will exist"""
+"""Then: the "elasticache" "parameter group" will exist"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_PARAM_GROUP_ID
 
 
-@then('the "elasticache" parameter group will exist')
+@then('the "elasticache" "parameter group" will exist')
 def param_group_exists_then(client: TestClient, world):
     actual_error = world["error"]
     assert (

@@ -1,4 +1,4 @@
-"""When: a "SNS" notification configuration is added to the bucket"""
+"""When: a "sns" notification configuration is added to the "s3" "bucket" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUCKET, _topic_arn
 
 
-@when('a "SNS" notification configuration is added to the bucket')
+@when('a "sns" notification configuration is added to the "s3" "bucket"')
 def add_sns_notification_config(lws_session, world):
     try:
         world["result"] = lws_session.client("s3").put_bucket_notification_configuration(

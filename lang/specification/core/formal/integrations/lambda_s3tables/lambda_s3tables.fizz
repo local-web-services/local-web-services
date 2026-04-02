@@ -37,7 +37,7 @@ atomic action DeployFunction:
             func_status[fid] = "ACTIVE"
 
 
-# step: a S3 table bucket is created
+# step: a "s3 tables" "bucket" is created
 # result: the "s3" "bucket" will be "ACTIVE"
 # guard: the "s3" "bucket" did not already exist
 # guard_violation: the "s3" "bucket" already existed
@@ -47,12 +47,12 @@ atomic action CreateTableBucket:
             bucket_status[bid] = "ACTIVE"
 
 
-# step: a table is created in the table bucket
-# result: the table will be "ACTIVE"
-# guard: the table did not already exist
-# guard_violation: the table already existed
-# guard: the table bucket was "ACTIVE"
-# guard_violation_lifecycle: the table bucket was not "ACTIVE"
+# step: a "s3 tables" "table" is created in the "s3 tables" "bucket"
+# result: the "s3 tables" "table" will be "ACTIVE"
+# guard: the "s3 tables" "table" did not already exist
+# guard_violation: the "s3 tables" "table" already existed
+# guard: the "s3 tables" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3 tables" "bucket" was not "ACTIVE"
 atomic action CreateTable:
     oneof bid in BUCKET_IDS:
         if bid in bucket_status:
@@ -63,12 +63,12 @@ atomic action CreateTable:
                         table_bucket[tid] = bid
 
 
-# step: a table deletion is initiated
-# result: the table will be "DELETING" and write operations will fail
-# guard: the table existed
-# guard_violation: the table did not exist
-# guard: the table was "ACTIVE"
-# guard_violation_lifecycle: the table is already "DELETING"
+# step: a "s3 tables" "table" deletion is initiated
+# result: the "s3 tables" "table" will be "DELETING" and write operations will fail
+# guard: the "s3 tables" "table" existed
+# guard_violation: the "s3 tables" "table" did not exist
+# guard: the "s3 tables" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "s3 tables" "table" is already "DELETING"
 atomic action DeleteTable:
     oneof tid in TABLE_IDS:
         if tid in table_status:
@@ -77,13 +77,13 @@ atomic action DeleteTable:
 
 
 # step: the "lambda" "function" is invoked
-# result: the invocation will be "IN_PROGRESS"
+# result: the "lambda" "invocation" will be "IN_PROGRESS"
 # guard: the "lambda" "function" existed
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
 # guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
-# guard: a "lambda" "invocation" slot is available
-# guard_violation_capacity: no invocation slot is available
+# guard: a "lambda" "invocation" "slot" was "available"
+# guard_violation_capacity: no "lambda" "invocation" "slot" was "available"
 atomic action InvokeFunction:
     oneof fid in FUNC_IDS:
         if fid in func_status:
@@ -96,13 +96,13 @@ atomic action InvokeFunction:
 
 # fake_skip: internal
 # step: the "lambda" "function" writes a record to an ACTIVE table and succeeds
-# result: the record will exist and the invocation will be "SUCCESS"
+# result: the "s3 tables" "record" will exist and the "lambda" "invocation" will be "SUCCESS"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
-# guard: a table was "ACTIVE"
-# guard_violation_lifecycle: no table was "ACTIVE"
-# guard: a record slot is available
-# guard_violation_capacity: no record slot is available
+# guard: a "s3 tables" "table" was "ACTIVE"
+# guard_violation_lifecycle: no "s3 tables" "table" was "ACTIVE"
+# guard: a "s3 tables" "record" "slot" was "available"
+# guard_violation_capacity: no "s3 tables" "record" "slot" was "available"
 atomic action WriteRecord:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -119,11 +119,11 @@ atomic action WriteRecord:
 
 
 # step: the "lambda" "function" fails to write because the table is being deleted
-# result: the invocation will be "FAILED" with a ResourceNotFoundException
+# result: the "lambda" "invocation" will be "FAILED" with a ResourceNotFoundException
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
-# guard: the table was "DELETING"
-# guard_violation_lifecycle: the table was not "DELETING"
+# guard: the "s3 tables" "table" was "DELETING"
+# guard_violation_lifecycle: the "s3 tables" "table" was not "DELETING"
 atomic action InvocationFailsTableDeleting:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -134,7 +134,7 @@ atomic action InvocationFailsTableDeleting:
                             inv_status[iid] = "FAILED"
 
 
-# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+# check: every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
 always assertion InvocationRequiresActiveFunction:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":
@@ -145,7 +145,7 @@ always assertion InvocationRequiresActiveFunction:
     return True
 
 
-# check: every existing record references a table that exists
+# check: every existing "s3 tables" "record" references a "s3 tables" "table" that exists
 # (records are stored in the table bucket and persist structurally)
 always assertion RecordReferencesExistingTable:
     for rid in record_status:

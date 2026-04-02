@@ -1,4 +1,4 @@
-"""Given: the bucket already existed"""
+"""Given: the "s3" "bucket" already existed"""
 
 from __future__ import annotations
 

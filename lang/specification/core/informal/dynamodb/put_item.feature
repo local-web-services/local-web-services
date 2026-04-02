@@ -11,15 +11,15 @@ Feature: Dynamodb - A "Dynamodb" "Item" Is Written To The "Dynamodb" "Table"
   Scenario: a "dynamodb" "item" is written to the "dynamodb" "table"
     Given the "dynamodb" "table" existed
     And the "dynamodb" "table" was "ACTIVE"
-    And writes were not throttled
+    And "dynamodb" "write" throttling was not active
     When a "dynamodb" "item" is written to the "dynamodb" "table"
     Then the "dynamodb" "item" will exist in the "dynamodb" "table" and "GSI" propagation will be pending
-    And every table has a valid status ("CREATING", "ACTIVE", or "DELETED")
-    And "GSI" pending write count is never negative
-    And transaction status is always a valid value
-    And a pending transaction always references an existing table
-    And items only exist in non-deleted tables
-    And deleted tables are never the target of a pending transaction
+    And every "dynamodb" "table" has a valid status ("CREATING", "ACTIVE", or "DELETED")
+    And "dynamodb" "GSI" pending write count is never negative
+    And "dynamodb" "transaction" status is always a valid value
+    And a pending "dynamodb" "transaction" always references an existing "dynamodb" "table"
+    And "dynamodb" "item"s only exist in non-deleted "dynamodb" "table"s
+    And deleted "dynamodb" "table"s are never the target of a pending "dynamodb" "transaction"
 
   @guard @negative @put_item
   Scenario: a "dynamodb" "item" is written to the "dynamodb" "table" fails when the "dynamodb" "table" did not exist
@@ -35,9 +35,9 @@ Feature: Dynamodb - A "Dynamodb" "Item" Is Written To The "Dynamodb" "Table"
     Then the operation is rejected
 
   @guard @negative @put_item @capacity
-  Scenario: a "dynamodb" "item" is written to the "dynamodb" "table" fails when writes were throttled
+  Scenario: a "dynamodb" "item" is written to the "dynamodb" "table" fails when "dynamodb" "write" throttling was active
     Given the "dynamodb" "table" existed
     And the "dynamodb" "table" was "ACTIVE"
-    And writes were throttled
+    And "dynamodb" "write" throttling was active
     When a "dynamodb" "item" is written to the "dynamodb" "table"
     Then the operation is rejected

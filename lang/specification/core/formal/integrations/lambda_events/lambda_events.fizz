@@ -34,22 +34,22 @@ atomic action DeployFunction:
             func_status[fid] = "ACTIVE"
 
 
-# step: an EventBridge event bus is created
-# result: the bus will be "ACTIVE"
-# guard: the bus did not already exist
-# guard_violation: the bus already existed
+# step: an "eventbridge" "bus" is created
+# result: the "eventbridge" "bus" will be "ACTIVE"
+# guard: the "eventbridge" "bus" did not already exist
+# guard_violation: the "eventbridge" "bus" already existed
 atomic action CreateEventBus:
     oneof busid in BUS_IDS:
         if busid not in bus_status:
             bus_status[busid] = "ACTIVE"
 
 
-# step: the EventBridge event bus is deleted
-# result: the bus will be deleted and Lambda PutEvents calls targeting it will fail
-# guard: the bus existed
-# guard_violation: the bus did not exist
-# guard: the bus was "ACTIVE"
-# guard_violation_lifecycle: the bus is already "DELETED"
+# step: the "eventbridge" "bus" is deleted
+# result: the "eventbridge" "bus" will be deleted and Lambda PutEvents calls targeting it will fail
+# guard: the "eventbridge" "bus" existed
+# guard_violation: the "eventbridge" "bus" did not exist
+# guard: the "eventbridge" "bus" was "ACTIVE"
+# guard_violation_lifecycle: the "eventbridge" "bus" is already "DELETED"
 atomic action DeleteEventBus:
     oneof busid in BUS_IDS:
         if busid in bus_status:
@@ -58,13 +58,13 @@ atomic action DeleteEventBus:
 
 
 # step: the "lambda" "function" is invoked
-# result: the invocation will be "IN_PROGRESS"
+# result: the "lambda" "invocation" will be "IN_PROGRESS"
 # guard: the "lambda" "function" existed
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
 # guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
-# guard: a "lambda" "invocation" slot is available
-# guard_violation_capacity: no invocation slot is available
+# guard: a "lambda" "invocation" "slot" was "available"
+# guard_violation_capacity: no "lambda" "invocation" "slot" was "available"
 atomic action InvokeFunction:
     oneof fid in FUNC_IDS:
         if fid in func_status:
@@ -77,13 +77,13 @@ atomic action InvokeFunction:
 
 # fake_skip: internal
 # step: the "lambda" "function" publishes an event to the ACTIVE event bus and succeeds
-# result: the event will be "PUBLISHED" and the invocation will be "SUCCESS"
+# result: the "eventbridge" "event" will be "PUBLISHED" and the "lambda" "invocation" will be "SUCCESS"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
-# guard: the bus was "ACTIVE"
-# guard_violation_lifecycle: the bus did not exist or was "DELETED"
-# guard: an event slot is available
-# guard_violation_capacity: no event slot is available
+# guard: the "eventbridge" "bus" was "ACTIVE"
+# guard_violation_lifecycle: the "eventbridge" "bus" did not exist or was "DELETED"
+# guard: an "eventbridge" "event" "slot" was "available"
+# guard_violation_capacity: no "eventbridge" "event" "slot" was "available"
 atomic action PublishEventTask:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -100,11 +100,11 @@ atomic action PublishEventTask:
 
 
 # step: the "lambda" "function" fails to publish because the event bus has been deleted
-# result: the invocation will be "FAILED" with a ResourceNotFoundException
+# result: the "lambda" "invocation" will be "FAILED" with a ResourceNotFoundException
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
-# guard: the bus was "DELETED"
-# guard_violation_lifecycle: the bus was not "DELETED"
+# guard: the "eventbridge" "bus" was "DELETED"
+# guard_violation_lifecycle: the "eventbridge" "bus" was not "DELETED"
 atomic action InvocationFailsBusDeleted:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -115,7 +115,7 @@ atomic action InvocationFailsBusDeleted:
                             inv_status[iid] = "FAILED"
 
 
-# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+# check: every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
 always assertion InvocationRequiresActiveFunction:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":
@@ -126,7 +126,7 @@ always assertion InvocationRequiresActiveFunction:
     return True
 
 
-# check: every PUBLISHED event references a bus that exists
+# check: every "PUBLISHED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 always assertion PublishedEventReferencesExistingBus:
     for eid in event_status:
         if event_status[eid] == "PUBLISHED":

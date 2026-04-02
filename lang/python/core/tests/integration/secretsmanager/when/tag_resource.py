@@ -22,7 +22,10 @@ def tag_resource(sync_client: TestClient, world):
     r = sync_client.post(
         "/",
         headers={"X-Amz-Target": f"{_SM_TARGET_PREFIX}.TagResource"},
-        json={"SecretId": INT_SECRET, "Tags": [{"Key": INT_TAG_KEY, "Value": INT_TAG_VALUE}]},
+        json={
+            "SecretId": INT_SECRET,
+            "Tags": [{"Key": INT_TAG_KEY, "Value": INT_TAG_VALUE}],
+        },
     )
     if r.status_code == 200:
         world["result"] = r.json()

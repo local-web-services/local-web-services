@@ -12,9 +12,9 @@ Feature: EventsStepfunctions - A Running "Step Functions" "Execution" Completes 
     Given a "step functions" "execution" was "RUNNING"
     When a running "step functions" "execution" completes successfully
     Then the "step functions" "execution" will be "SUCCEEDED"
-    And every "ENABLED" rule references an "ACTIVE" event bus
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "RUNNING" execution was started by an "ENABLED" rule
+    And every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "RUNNING" "step functions" "execution" was started by an "ENABLED" "eventbridge" "rule"
 
   @guard @negative @execution_succeeds @internal
   Scenario: a running "step functions" "execution" completes successfully fails when no "step functions" "execution" was "RUNNING"

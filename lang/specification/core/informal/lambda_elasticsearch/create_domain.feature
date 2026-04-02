@@ -12,7 +12,7 @@ Feature: LambdaElasticsearch - An "Elasticsearch" "Domain" Is Created And Become
     Given the "elasticsearch" "domain" did not already exist
     When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
     Then the "elasticsearch" "domain" will be "AVAILABLE"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "elasticsearch" "domain" that exists
 
   @guard @negative @create_domain

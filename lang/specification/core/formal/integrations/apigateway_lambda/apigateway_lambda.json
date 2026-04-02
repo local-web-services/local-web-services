@@ -6,18 +6,18 @@
       "column": 1
     },
     "end": {
-      "line": 171
+      "line": 173
     }
   },
   "invariants": [
     {
       "sourceInfo": {
         "start": {
-          "line": 137,
+          "line": 139,
           "column": 1
         },
         "end": {
-          "line": 148
+          "line": 150
         }
       },
       "name": "RequestRequiresActiveApi",
@@ -27,11 +27,11 @@
       "block": {
         "sourceInfo": {
           "start": {
-            "line": 138,
+            "line": 140,
             "column": 5
           },
           "end": {
-            "line": 148
+            "line": 150
           }
         },
         "flow": "FLOW_ATOMIC",
@@ -39,22 +39,22 @@
           {
             "sourceInfo": {
               "start": {
-                "line": 138,
+                "line": 140,
                 "column": 5
               },
               "end": {
-                "line": 144,
+                "line": 146,
                 "column": 4
               }
             },
             "forStmt": {
               "sourceInfo": {
                 "start": {
-                  "line": 138,
+                  "line": 140,
                   "column": 5
                 },
                 "end": {
-                  "line": 144,
+                  "line": 146,
                   "column": 4
                 }
               },
@@ -65,11 +65,11 @@
               "block": {
                 "sourceInfo": {
                   "start": {
-                    "line": 139,
+                    "line": 141,
                     "column": 9
                   },
                   "end": {
-                    "line": 144,
+                    "line": 146,
                     "column": 4
                   }
                 },
@@ -77,22 +77,22 @@
                   {
                     "sourceInfo": {
                       "start": {
-                        "line": 139,
+                        "line": 141,
                         "column": 9
                       },
                       "end": {
-                        "line": 144,
+                        "line": 146,
                         "column": 4
                       }
                     },
                     "ifStmt": {
                       "sourceInfo": {
                         "start": {
-                          "line": 139,
+                          "line": 141,
                           "column": 9
                         },
                         "end": {
-                          "line": 144,
+                          "line": 146,
                           "column": 4
                         }
                       },
@@ -100,11 +100,11 @@
                         {
                           "sourceInfo": {
                             "start": {
-                              "line": 139,
+                              "line": 141,
                               "column": 12
                             },
                             "end": {
-                              "line": 144,
+                              "line": 146,
                               "column": 4
                             }
                           },
@@ -112,11 +112,11 @@
                           "block": {
                             "sourceInfo": {
                               "start": {
-                                "line": 140,
+                                "line": 142,
                                 "column": 13
                               },
                               "end": {
-                                "line": 144,
+                                "line": 146,
                                 "column": 4
                               }
                             },
@@ -124,22 +124,22 @@
                               {
                                 "sourceInfo": {
                                   "start": {
-                                    "line": 140,
+                                    "line": 142,
                                     "column": 13
                                   },
                                   "end": {
-                                    "line": 141,
+                                    "line": 143,
                                     "column": 12
                                   }
                                 },
                                 "pyStmt": {
                                   "sourceInfo": {
                                     "start": {
-                                      "line": 140,
+                                      "line": 142,
                                       "column": 13
                                     },
                                     "end": {
-                                      "line": 140,
+                                      "line": 142,
                                       "column": 30
                                     }
                                   },
@@ -149,22 +149,22 @@
                               {
                                 "sourceInfo": {
                                   "start": {
-                                    "line": 141,
+                                    "line": 143,
                                     "column": 13
                                   },
                                   "end": {
-                                    "line": 144,
+                                    "line": 146,
                                     "column": 4
                                   }
                                 },
                                 "ifStmt": {
                                   "sourceInfo": {
                                     "start": {
-                                      "line": 141,
+                                      "line": 143,
                                       "column": 13
                                     },
                                     "end": {
-                                      "line": 144,
+                                      "line": 146,
                                       "column": 4
                                     }
                                   },
@@ -172,11 +172,11 @@
                                     {
                                       "sourceInfo": {
                                         "start": {
-                                          "line": 141,
+                                          "line": 143,
                                           "column": 16
                                         },
                                         "end": {
-                                          "line": 144,
+                                          "line": 146,
                                           "column": 4
                                         }
                                       },
@@ -184,11 +184,11 @@
                                       "block": {
                                         "sourceInfo": {
                                           "start": {
-                                            "line": 142,
+                                            "line": 144,
                                             "column": 17
                                           },
                                           "end": {
-                                            "line": 144,
+                                            "line": 146,
                                             "column": 4
                                           }
                                         },
@@ -196,22 +196,22 @@
                                           {
                                             "sourceInfo": {
                                               "start": {
-                                                "line": 142,
+                                                "line": 144,
                                                 "column": 17
                                               },
                                               "end": {
-                                                "line": 144,
+                                                "line": 146,
                                                 "column": 4
                                               }
                                             },
                                             "ifStmt": {
                                               "sourceInfo": {
                                                 "start": {
-                                                  "line": 142,
+                                                  "line": 144,
                                                   "column": 17
                                                 },
                                                 "end": {
-                                                  "line": 144,
+                                                  "line": 146,
                                                   "column": 4
                                                 }
                                               },
@@ -219,11 +219,11 @@
                                                 {
                                                   "sourceInfo": {
                                                     "start": {
-                                                      "line": 142,
+                                                      "line": 144,
                                                       "column": 20
                                                     },
                                                     "end": {
-                                                      "line": 144,
+                                                      "line": 146,
                                                       "column": 4
                                                     }
                                                   },
@@ -231,11 +231,11 @@
                                                   "block": {
                                                     "sourceInfo": {
                                                       "start": {
-                                                        "line": 143,
+                                                        "line": 145,
                                                         "column": 21
                                                       },
                                                       "end": {
-                                                        "line": 144,
+                                                        "line": 146,
                                                         "column": 4
                                                       }
                                                     },
@@ -243,22 +243,22 @@
                                                       {
                                                         "sourceInfo": {
                                                           "start": {
-                                                            "line": 143,
+                                                            "line": 145,
                                                             "column": 21
                                                           },
                                                           "end": {
-                                                            "line": 144,
+                                                            "line": 146,
                                                             "column": 4
                                                           }
                                                         },
                                                         "returnStmt": {
                                                           "sourceInfo": {
                                                             "start": {
-                                                              "line": 143,
+                                                              "line": 145,
                                                               "column": 21
                                                             },
                                                             "end": {
-                                                              "line": 143,
+                                                              "line": 145,
                                                               "column": 32
                                                             }
                                                           },
@@ -266,11 +266,11 @@
                                                           "expr": {
                                                             "sourceInfo": {
                                                               "start": {
-                                                                "line": 143,
+                                                                "line": 145,
                                                                 "column": 28
                                                               },
                                                               "end": {
-                                                                "line": 143,
+                                                                "line": 145,
                                                                 "column": 32
                                                               }
                                                             },
@@ -283,11 +283,11 @@
                                                   "conditionExpr": {
                                                     "sourceInfo": {
                                                       "start": {
-                                                        "line": 142,
+                                                        "line": 144,
                                                         "column": 20
                                                       },
                                                       "end": {
-                                                        "line": 142,
+                                                        "line": 144,
                                                         "column": 46
                                                       }
                                                     },
@@ -302,11 +302,11 @@
                                       "conditionExpr": {
                                         "sourceInfo": {
                                           "start": {
-                                            "line": 141,
+                                            "line": 143,
                                             "column": 16
                                           },
                                           "end": {
-                                            "line": 141,
+                                            "line": 143,
                                             "column": 32
                                           }
                                         },
@@ -321,11 +321,11 @@
                           "conditionExpr": {
                             "sourceInfo": {
                               "start": {
-                                "line": 139,
+                                "line": 141,
                                 "column": 12
                               },
                               "end": {
-                                "line": 139,
+                                "line": 141,
                                 "column": 43
                               }
                             },
@@ -340,11 +340,11 @@
               "iterExpr": {
                 "sourceInfo": {
                   "start": {
-                    "line": 138,
+                    "line": 140,
                     "column": 16
                   },
                   "end": {
-                    "line": 138,
+                    "line": 140,
                     "column": 25
                   }
                 },
@@ -355,21 +355,21 @@
           {
             "sourceInfo": {
               "start": {
-                "line": 144,
+                "line": 146,
                 "column": 5
               },
               "end": {
-                "line": 148
+                "line": 150
               }
             },
             "returnStmt": {
               "sourceInfo": {
                 "start": {
-                  "line": 144,
+                  "line": 146,
                   "column": 5
                 },
                 "end": {
-                  "line": 144,
+                  "line": 146,
                   "column": 15
                 }
               },
@@ -377,11 +377,11 @@
               "expr": {
                 "sourceInfo": {
                   "start": {
-                    "line": 144,
+                    "line": 146,
                     "column": 12
                   },
                   "end": {
-                    "line": 144,
+                    "line": 146,
                     "column": 15
                   }
                 },
@@ -391,16 +391,16 @@
           }
         ]
       },
-      "pyCode": "def RequestRequiresActiveApi():\n    for rid in req_status:\n        if req_status[rid] == \"IN_PROGRESS\":\n            aid = req_api[rid]\n            if aid in api_status:\n                if api_status[aid] != \"ACTIVE\":\n                    return False\n    return True\n\n\n# check: every IN_PROGRESS invocation references an ACTIVE Lambda function\n"
+      "pyCode": "def RequestRequiresActiveApi():\n    for rid in req_status:\n        if req_status[rid] == \"IN_PROGRESS\":\n            aid = req_api[rid]\n            if aid in api_status:\n                if api_status[aid] != \"ACTIVE\":\n                    return False\n    return True\n\n\n# check: every \"IN_PROGRESS\" \"lambda\" \"function\" invocation references an \"ACTIVE\" \"lambda\" \"function\"\n"
     },
     {
       "sourceInfo": {
         "start": {
-          "line": 148,
+          "line": 150,
           "column": 1
         },
         "end": {
-          "line": 163
+          "line": 165
         }
       },
       "name": "InvocationRequiresActiveFunction",
@@ -410,11 +410,11 @@
       "block": {
         "sourceInfo": {
           "start": {
-            "line": 149,
+            "line": 151,
             "column": 5
           },
           "end": {
-            "line": 163
+            "line": 165
           }
         },
         "flow": "FLOW_ATOMIC",
@@ -422,22 +422,22 @@
           {
             "sourceInfo": {
               "start": {
-                "line": 149,
+                "line": 151,
                 "column": 5
               },
               "end": {
-                "line": 159,
+                "line": 161,
                 "column": 4
               }
             },
             "forStmt": {
               "sourceInfo": {
                 "start": {
-                  "line": 149,
+                  "line": 151,
                   "column": 5
                 },
                 "end": {
-                  "line": 159,
+                  "line": 161,
                   "column": 4
                 }
               },
@@ -448,11 +448,11 @@
               "block": {
                 "sourceInfo": {
                   "start": {
-                    "line": 150,
+                    "line": 152,
                     "column": 9
                   },
                   "end": {
-                    "line": 159,
+                    "line": 161,
                     "column": 4
                   }
                 },
@@ -460,22 +460,22 @@
                   {
                     "sourceInfo": {
                       "start": {
-                        "line": 150,
+                        "line": 152,
                         "column": 9
                       },
                       "end": {
-                        "line": 159,
+                        "line": 161,
                         "column": 4
                       }
                     },
                     "ifStmt": {
                       "sourceInfo": {
                         "start": {
-                          "line": 150,
+                          "line": 152,
                           "column": 9
                         },
                         "end": {
-                          "line": 159,
+                          "line": 161,
                           "column": 4
                         }
                       },
@@ -483,11 +483,11 @@
                         {
                           "sourceInfo": {
                             "start": {
-                              "line": 150,
+                              "line": 152,
                               "column": 12
                             },
                             "end": {
-                              "line": 159,
+                              "line": 161,
                               "column": 4
                             }
                           },
@@ -495,11 +495,11 @@
                           "block": {
                             "sourceInfo": {
                               "start": {
-                                "line": 151,
+                                "line": 153,
                                 "column": 13
                               },
                               "end": {
-                                "line": 159,
+                                "line": 161,
                                 "column": 4
                               }
                             },
@@ -507,22 +507,22 @@
                               {
                                 "sourceInfo": {
                                   "start": {
-                                    "line": 151,
+                                    "line": 153,
                                     "column": 13
                                   },
                                   "end": {
-                                    "line": 152,
+                                    "line": 154,
                                     "column": 12
                                   }
                                 },
                                 "pyStmt": {
                                   "sourceInfo": {
                                     "start": {
-                                      "line": 151,
+                                      "line": 153,
                                       "column": 13
                                     },
                                     "end": {
-                                      "line": 151,
+                                      "line": 153,
                                       "column": 30
                                     }
                                   },
@@ -532,22 +532,22 @@
                               {
                                 "sourceInfo": {
                                   "start": {
-                                    "line": 152,
+                                    "line": 154,
                                     "column": 13
                                   },
                                   "end": {
-                                    "line": 159,
+                                    "line": 161,
                                     "column": 4
                                   }
                                 },
                                 "ifStmt": {
                                   "sourceInfo": {
                                     "start": {
-                                      "line": 152,
+                                      "line": 154,
                                       "column": 13
                                     },
                                     "end": {
-                                      "line": 159,
+                                      "line": 161,
                                       "column": 4
                                     }
                                   },
@@ -555,11 +555,11 @@
                                     {
                                       "sourceInfo": {
                                         "start": {
-                                          "line": 152,
+                                          "line": 154,
                                           "column": 16
                                         },
                                         "end": {
-                                          "line": 159,
+                                          "line": 161,
                                           "column": 4
                                         }
                                       },
@@ -567,11 +567,11 @@
                                       "block": {
                                         "sourceInfo": {
                                           "start": {
-                                            "line": 153,
+                                            "line": 155,
                                             "column": 17
                                           },
                                           "end": {
-                                            "line": 159,
+                                            "line": 161,
                                             "column": 4
                                           }
                                         },
@@ -579,22 +579,22 @@
                                           {
                                             "sourceInfo": {
                                               "start": {
-                                                "line": 153,
+                                                "line": 155,
                                                 "column": 17
                                               },
                                               "end": {
-                                                "line": 154,
+                                                "line": 156,
                                                 "column": 16
                                               }
                                             },
                                             "pyStmt": {
                                               "sourceInfo": {
                                                 "start": {
-                                                  "line": 153,
+                                                  "line": 155,
                                                   "column": 17
                                                 },
                                                 "end": {
-                                                  "line": 153,
+                                                  "line": 155,
                                                   "column": 34
                                                 }
                                               },
@@ -604,22 +604,22 @@
                                           {
                                             "sourceInfo": {
                                               "start": {
-                                                "line": 154,
+                                                "line": 156,
                                                 "column": 17
                                               },
                                               "end": {
-                                                "line": 159,
+                                                "line": 161,
                                                 "column": 4
                                               }
                                             },
                                             "ifStmt": {
                                               "sourceInfo": {
                                                 "start": {
-                                                  "line": 154,
+                                                  "line": 156,
                                                   "column": 17
                                                 },
                                                 "end": {
-                                                  "line": 159,
+                                                  "line": 161,
                                                   "column": 4
                                                 }
                                               },
@@ -627,11 +627,11 @@
                                                 {
                                                   "sourceInfo": {
                                                     "start": {
-                                                      "line": 154,
+                                                      "line": 156,
                                                       "column": 20
                                                     },
                                                     "end": {
-                                                      "line": 159,
+                                                      "line": 161,
                                                       "column": 4
                                                     }
                                                   },
@@ -639,11 +639,11 @@
                                                   "block": {
                                                     "sourceInfo": {
                                                       "start": {
-                                                        "line": 155,
+                                                        "line": 157,
                                                         "column": 21
                                                       },
                                                       "end": {
-                                                        "line": 159,
+                                                        "line": 161,
                                                         "column": 4
                                                       }
                                                     },
@@ -651,22 +651,22 @@
                                                       {
                                                         "sourceInfo": {
                                                           "start": {
-                                                            "line": 155,
+                                                            "line": 157,
                                                             "column": 21
                                                           },
                                                           "end": {
-                                                            "line": 156,
+                                                            "line": 158,
                                                             "column": 20
                                                           }
                                                         },
                                                         "pyStmt": {
                                                           "sourceInfo": {
                                                             "start": {
-                                                              "line": 155,
+                                                              "line": 157,
                                                               "column": 21
                                                             },
                                                             "end": {
-                                                              "line": 155,
+                                                              "line": 157,
                                                               "column": 39
                                                             }
                                                           },
@@ -676,22 +676,22 @@
                                                       {
                                                         "sourceInfo": {
                                                           "start": {
-                                                            "line": 156,
+                                                            "line": 158,
                                                             "column": 21
                                                           },
                                                           "end": {
-                                                            "line": 159,
+                                                            "line": 161,
                                                             "column": 4
                                                           }
                                                         },
                                                         "ifStmt": {
                                                           "sourceInfo": {
                                                             "start": {
-                                                              "line": 156,
+                                                              "line": 158,
                                                               "column": 21
                                                             },
                                                             "end": {
-                                                              "line": 159,
+                                                              "line": 161,
                                                               "column": 4
                                                             }
                                                           },
@@ -699,11 +699,11 @@
                                                             {
                                                               "sourceInfo": {
                                                                 "start": {
-                                                                  "line": 156,
+                                                                  "line": 158,
                                                                   "column": 24
                                                                 },
                                                                 "end": {
-                                                                  "line": 159,
+                                                                  "line": 161,
                                                                   "column": 4
                                                                 }
                                                               },
@@ -711,11 +711,11 @@
                                                               "block": {
                                                                 "sourceInfo": {
                                                                   "start": {
-                                                                    "line": 157,
+                                                                    "line": 159,
                                                                     "column": 25
                                                                   },
                                                                   "end": {
-                                                                    "line": 159,
+                                                                    "line": 161,
                                                                     "column": 4
                                                                   }
                                                                 },
@@ -723,22 +723,22 @@
                                                                   {
                                                                     "sourceInfo": {
                                                                       "start": {
-                                                                        "line": 157,
+                                                                        "line": 159,
                                                                         "column": 25
                                                                       },
                                                                       "end": {
-                                                                        "line": 159,
+                                                                        "line": 161,
                                                                         "column": 4
                                                                       }
                                                                     },
                                                                     "ifStmt": {
                                                                       "sourceInfo": {
                                                                         "start": {
-                                                                          "line": 157,
+                                                                          "line": 159,
                                                                           "column": 25
                                                                         },
                                                                         "end": {
-                                                                          "line": 159,
+                                                                          "line": 161,
                                                                           "column": 4
                                                                         }
                                                                       },
@@ -746,11 +746,11 @@
                                                                         {
                                                                           "sourceInfo": {
                                                                             "start": {
-                                                                              "line": 157,
+                                                                              "line": 159,
                                                                               "column": 28
                                                                             },
                                                                             "end": {
-                                                                              "line": 159,
+                                                                              "line": 161,
                                                                               "column": 4
                                                                             }
                                                                           },
@@ -758,11 +758,11 @@
                                                                           "block": {
                                                                             "sourceInfo": {
                                                                               "start": {
-                                                                                "line": 158,
+                                                                                "line": 160,
                                                                                 "column": 29
                                                                               },
                                                                               "end": {
-                                                                                "line": 159,
+                                                                                "line": 161,
                                                                                 "column": 4
                                                                               }
                                                                             },
@@ -770,22 +770,22 @@
                                                                               {
                                                                                 "sourceInfo": {
                                                                                   "start": {
-                                                                                    "line": 158,
+                                                                                    "line": 160,
                                                                                     "column": 29
                                                                                   },
                                                                                   "end": {
-                                                                                    "line": 159,
+                                                                                    "line": 161,
                                                                                     "column": 4
                                                                                   }
                                                                                 },
                                                                                 "returnStmt": {
                                                                                   "sourceInfo": {
                                                                                     "start": {
-                                                                                      "line": 158,
+                                                                                      "line": 160,
                                                                                       "column": 29
                                                                                     },
                                                                                     "end": {
-                                                                                      "line": 158,
+                                                                                      "line": 160,
                                                                                       "column": 40
                                                                                     }
                                                                                   },
@@ -793,11 +793,11 @@
                                                                                   "expr": {
                                                                                     "sourceInfo": {
                                                                                       "start": {
-                                                                                        "line": 158,
+                                                                                        "line": 160,
                                                                                         "column": 36
                                                                                       },
                                                                                       "end": {
-                                                                                        "line": 158,
+                                                                                        "line": 160,
                                                                                         "column": 40
                                                                                       }
                                                                                     },
@@ -810,11 +810,11 @@
                                                                           "conditionExpr": {
                                                                             "sourceInfo": {
                                                                               "start": {
-                                                                                "line": 157,
+                                                                                "line": 159,
                                                                                 "column": 28
                                                                               },
                                                                               "end": {
-                                                                                "line": 157,
+                                                                                "line": 159,
                                                                                 "column": 55
                                                                               }
                                                                             },
@@ -829,11 +829,11 @@
                                                               "conditionExpr": {
                                                                 "sourceInfo": {
                                                                   "start": {
-                                                                    "line": 156,
+                                                                    "line": 158,
                                                                     "column": 24
                                                                   },
                                                                   "end": {
-                                                                    "line": 156,
+                                                                    "line": 158,
                                                                     "column": 41
                                                                   }
                                                                 },
@@ -848,11 +848,11 @@
                                                   "conditionExpr": {
                                                     "sourceInfo": {
                                                       "start": {
-                                                        "line": 154,
+                                                        "line": 156,
                                                         "column": 20
                                                       },
                                                       "end": {
-                                                        "line": 154,
+                                                        "line": 156,
                                                         "column": 34
                                                       }
                                                     },
@@ -867,11 +867,11 @@
                                       "conditionExpr": {
                                         "sourceInfo": {
                                           "start": {
-                                            "line": 152,
+                                            "line": 154,
                                             "column": 16
                                           },
                                           "end": {
-                                            "line": 152,
+                                            "line": 154,
                                             "column": 29
                                           }
                                         },
@@ -886,11 +886,11 @@
                           "conditionExpr": {
                             "sourceInfo": {
                               "start": {
-                                "line": 150,
+                                "line": 152,
                                 "column": 12
                               },
                               "end": {
-                                "line": 150,
+                                "line": 152,
                                 "column": 43
                               }
                             },
@@ -905,11 +905,11 @@
               "iterExpr": {
                 "sourceInfo": {
                   "start": {
-                    "line": 149,
+                    "line": 151,
                     "column": 16
                   },
                   "end": {
-                    "line": 149,
+                    "line": 151,
                     "column": 25
                   }
                 },
@@ -920,21 +920,21 @@
           {
             "sourceInfo": {
               "start": {
-                "line": 159,
+                "line": 161,
                 "column": 5
               },
               "end": {
-                "line": 163
+                "line": 165
               }
             },
             "returnStmt": {
               "sourceInfo": {
                 "start": {
-                  "line": 159,
+                  "line": 161,
                   "column": 5
                 },
                 "end": {
-                  "line": 159,
+                  "line": 161,
                   "column": 15
                 }
               },
@@ -942,11 +942,11 @@
               "expr": {
                 "sourceInfo": {
                   "start": {
-                    "line": 159,
+                    "line": 161,
                     "column": 12
                   },
                   "end": {
-                    "line": 159,
+                    "line": 161,
                     "column": 15
                   }
                 },
@@ -956,16 +956,16 @@
           }
         ]
       },
-      "pyCode": "def InvocationRequiresActiveFunction():\n    for iid in inv_status:\n        if inv_status[iid] == \"IN_PROGRESS\":\n            rid = inv_req[iid]\n            if rid in req_api:\n                aid = req_api[rid]\n                if aid in api_func:\n                    fid = api_func[aid]\n                    if fid in func_status:\n                        if func_status[fid] != \"ACTIVE\":\n                            return False\n    return True\n\n\n# check: every IN_PROGRESS invocation has a corresponding IN_PROGRESS request\n"
+      "pyCode": "def InvocationRequiresActiveFunction():\n    for iid in inv_status:\n        if inv_status[iid] == \"IN_PROGRESS\":\n            rid = inv_req[iid]\n            if rid in req_api:\n                aid = req_api[rid]\n                if aid in api_func:\n                    fid = api_func[aid]\n                    if fid in func_status:\n                        if func_status[fid] != \"ACTIVE\":\n                            return False\n    return True\n\n\n# check: every \"IN_PROGRESS\" \"lambda\" \"invocation\" has a corresponding \"IN_PROGRESS\" \"api gateway\" \"request\"\n"
     },
     {
       "sourceInfo": {
         "start": {
-          "line": 163,
+          "line": 165,
           "column": 1
         },
         "end": {
-          "line": 171
+          "line": 173
         }
       },
       "name": "InvocationLinkedToRequest",
@@ -975,11 +975,11 @@
       "block": {
         "sourceInfo": {
           "start": {
-            "line": 164,
+            "line": 166,
             "column": 5
           },
           "end": {
-            "line": 171
+            "line": 173
           }
         },
         "flow": "FLOW_ATOMIC",
@@ -987,22 +987,22 @@
           {
             "sourceInfo": {
               "start": {
-                "line": 164,
+                "line": 166,
                 "column": 5
               },
               "end": {
-                "line": 170,
+                "line": 172,
                 "column": 4
               }
             },
             "forStmt": {
               "sourceInfo": {
                 "start": {
-                  "line": 164,
+                  "line": 166,
                   "column": 5
                 },
                 "end": {
-                  "line": 170,
+                  "line": 172,
                   "column": 4
                 }
               },
@@ -1013,11 +1013,11 @@
               "block": {
                 "sourceInfo": {
                   "start": {
-                    "line": 165,
+                    "line": 167,
                     "column": 9
                   },
                   "end": {
-                    "line": 170,
+                    "line": 172,
                     "column": 4
                   }
                 },
@@ -1025,22 +1025,22 @@
                   {
                     "sourceInfo": {
                       "start": {
-                        "line": 165,
+                        "line": 167,
                         "column": 9
                       },
                       "end": {
-                        "line": 170,
+                        "line": 172,
                         "column": 4
                       }
                     },
                     "ifStmt": {
                       "sourceInfo": {
                         "start": {
-                          "line": 165,
+                          "line": 167,
                           "column": 9
                         },
                         "end": {
-                          "line": 170,
+                          "line": 172,
                           "column": 4
                         }
                       },
@@ -1048,11 +1048,11 @@
                         {
                           "sourceInfo": {
                             "start": {
-                              "line": 165,
+                              "line": 167,
                               "column": 12
                             },
                             "end": {
-                              "line": 170,
+                              "line": 172,
                               "column": 4
                             }
                           },
@@ -1060,11 +1060,11 @@
                           "block": {
                             "sourceInfo": {
                               "start": {
-                                "line": 166,
+                                "line": 168,
                                 "column": 13
                               },
                               "end": {
-                                "line": 170,
+                                "line": 172,
                                 "column": 4
                               }
                             },
@@ -1072,22 +1072,22 @@
                               {
                                 "sourceInfo": {
                                   "start": {
-                                    "line": 166,
+                                    "line": 168,
                                     "column": 13
                                   },
                                   "end": {
-                                    "line": 167,
+                                    "line": 169,
                                     "column": 12
                                   }
                                 },
                                 "pyStmt": {
                                   "sourceInfo": {
                                     "start": {
-                                      "line": 166,
+                                      "line": 168,
                                       "column": 13
                                     },
                                     "end": {
-                                      "line": 166,
+                                      "line": 168,
                                       "column": 30
                                     }
                                   },
@@ -1097,22 +1097,22 @@
                               {
                                 "sourceInfo": {
                                   "start": {
-                                    "line": 167,
+                                    "line": 169,
                                     "column": 13
                                   },
                                   "end": {
-                                    "line": 170,
+                                    "line": 172,
                                     "column": 4
                                   }
                                 },
                                 "ifStmt": {
                                   "sourceInfo": {
                                     "start": {
-                                      "line": 167,
+                                      "line": 169,
                                       "column": 13
                                     },
                                     "end": {
-                                      "line": 170,
+                                      "line": 172,
                                       "column": 4
                                     }
                                   },
@@ -1120,11 +1120,11 @@
                                     {
                                       "sourceInfo": {
                                         "start": {
-                                          "line": 167,
+                                          "line": 169,
                                           "column": 16
                                         },
                                         "end": {
-                                          "line": 170,
+                                          "line": 172,
                                           "column": 4
                                         }
                                       },
@@ -1132,11 +1132,11 @@
                                       "block": {
                                         "sourceInfo": {
                                           "start": {
-                                            "line": 168,
+                                            "line": 170,
                                             "column": 17
                                           },
                                           "end": {
-                                            "line": 170,
+                                            "line": 172,
                                             "column": 4
                                           }
                                         },
@@ -1144,22 +1144,22 @@
                                           {
                                             "sourceInfo": {
                                               "start": {
-                                                "line": 168,
+                                                "line": 170,
                                                 "column": 17
                                               },
                                               "end": {
-                                                "line": 170,
+                                                "line": 172,
                                                 "column": 4
                                               }
                                             },
                                             "ifStmt": {
                                               "sourceInfo": {
                                                 "start": {
-                                                  "line": 168,
+                                                  "line": 170,
                                                   "column": 17
                                                 },
                                                 "end": {
-                                                  "line": 170,
+                                                  "line": 172,
                                                   "column": 4
                                                 }
                                               },
@@ -1167,11 +1167,11 @@
                                                 {
                                                   "sourceInfo": {
                                                     "start": {
-                                                      "line": 168,
+                                                      "line": 170,
                                                       "column": 20
                                                     },
                                                     "end": {
-                                                      "line": 170,
+                                                      "line": 172,
                                                       "column": 4
                                                     }
                                                   },
@@ -1179,11 +1179,11 @@
                                                   "block": {
                                                     "sourceInfo": {
                                                       "start": {
-                                                        "line": 169,
+                                                        "line": 171,
                                                         "column": 21
                                                       },
                                                       "end": {
-                                                        "line": 170,
+                                                        "line": 172,
                                                         "column": 4
                                                       }
                                                     },
@@ -1191,22 +1191,22 @@
                                                       {
                                                         "sourceInfo": {
                                                           "start": {
-                                                            "line": 169,
+                                                            "line": 171,
                                                             "column": 21
                                                           },
                                                           "end": {
-                                                            "line": 170,
+                                                            "line": 172,
                                                             "column": 4
                                                           }
                                                         },
                                                         "returnStmt": {
                                                           "sourceInfo": {
                                                             "start": {
-                                                              "line": 169,
+                                                              "line": 171,
                                                               "column": 21
                                                             },
                                                             "end": {
-                                                              "line": 169,
+                                                              "line": 171,
                                                               "column": 32
                                                             }
                                                           },
@@ -1214,11 +1214,11 @@
                                                           "expr": {
                                                             "sourceInfo": {
                                                               "start": {
-                                                                "line": 169,
+                                                                "line": 171,
                                                                 "column": 28
                                                               },
                                                               "end": {
-                                                                "line": 169,
+                                                                "line": 171,
                                                                 "column": 32
                                                               }
                                                             },
@@ -1231,11 +1231,11 @@
                                                   "conditionExpr": {
                                                     "sourceInfo": {
                                                       "start": {
-                                                        "line": 168,
+                                                        "line": 170,
                                                         "column": 20
                                                       },
                                                       "end": {
-                                                        "line": 168,
+                                                        "line": 170,
                                                         "column": 51
                                                       }
                                                     },
@@ -1250,11 +1250,11 @@
                                       "conditionExpr": {
                                         "sourceInfo": {
                                           "start": {
-                                            "line": 167,
+                                            "line": 169,
                                             "column": 16
                                           },
                                           "end": {
-                                            "line": 167,
+                                            "line": 169,
                                             "column": 32
                                           }
                                         },
@@ -1269,11 +1269,11 @@
                           "conditionExpr": {
                             "sourceInfo": {
                               "start": {
-                                "line": 165,
+                                "line": 167,
                                 "column": 12
                               },
                               "end": {
-                                "line": 165,
+                                "line": 167,
                                 "column": 43
                               }
                             },
@@ -1288,11 +1288,11 @@
               "iterExpr": {
                 "sourceInfo": {
                   "start": {
-                    "line": 164,
+                    "line": 166,
                     "column": 16
                   },
                   "end": {
-                    "line": 164,
+                    "line": 166,
                     "column": 25
                   }
                 },
@@ -1303,21 +1303,21 @@
           {
             "sourceInfo": {
               "start": {
-                "line": 170,
+                "line": 172,
                 "column": 5
               },
               "end": {
-                "line": 171
+                "line": 173
               }
             },
             "returnStmt": {
               "sourceInfo": {
                 "start": {
-                  "line": 170,
+                  "line": 172,
                   "column": 5
                 },
                 "end": {
-                  "line": 170,
+                  "line": 172,
                   "column": 15
                 }
               },
@@ -1325,11 +1325,11 @@
               "expr": {
                 "sourceInfo": {
                   "start": {
-                    "line": 170,
+                    "line": 172,
                     "column": 12
                   },
                   "end": {
-                    "line": 170,
+                    "line": 172,
                     "column": 15
                   }
                 },
@@ -1726,11 +1726,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 39,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 39,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "API_IDS"
@@ -1894,11 +1894,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 50,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 50,
-                    "column": 23
+                    "column": 25
                   }
                 },
                 "pyExpr": "FUNC_IDS"
@@ -2288,11 +2288,11 @@
                                                             "sourceInfo": {
                                                               "start": {
                                                                 "line": 72,
-                                                                "column": 32
+                                                                "column": 34
                                                               },
                                                               "end": {
                                                                 "line": 72,
-                                                                "column": 39
+                                                                "column": 41
                                                               }
                                                             },
                                                             "pyExpr": "FUNC_IDS"
@@ -2362,11 +2362,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 68,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 68,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "API_IDS"
@@ -2383,7 +2383,7 @@
           "column": 1
         },
         "end": {
-          "line": 114
+          "line": 115
         }
       },
       "name": "HandleRequest",
@@ -2398,7 +2398,7 @@
             "column": 5
           },
           "end": {
-            "line": 114
+            "line": 115
           }
         },
         "flow": "FLOW_ATOMIC",
@@ -2410,7 +2410,7 @@
                 "column": 5
               },
               "end": {
-                "line": 114
+                "line": 115
               }
             },
             "anyStmt": {
@@ -2420,7 +2420,7 @@
                   "column": 5
                 },
                 "end": {
-                  "line": 114
+                  "line": 115
                 }
               },
               "loopVars": [
@@ -2434,7 +2434,7 @@
                     "column": 9
                   },
                   "end": {
-                    "line": 114
+                    "line": 115
                   }
                 },
                 "stmts": [
@@ -2445,7 +2445,7 @@
                         "column": 9
                       },
                       "end": {
-                        "line": 114
+                        "line": 115
                       }
                     },
                     "ifStmt": {
@@ -2455,7 +2455,7 @@
                           "column": 9
                         },
                         "end": {
-                          "line": 114
+                          "line": 115
                         }
                       },
                       "branches": [
@@ -2466,7 +2466,7 @@
                               "column": 12
                             },
                             "end": {
-                              "line": 114
+                              "line": 115
                             }
                           },
                           "condition": "aid in api_status",
@@ -2477,7 +2477,7 @@
                                 "column": 13
                               },
                               "end": {
-                                "line": 114
+                                "line": 115
                               }
                             },
                             "stmts": [
@@ -2488,7 +2488,7 @@
                                     "column": 13
                                   },
                                   "end": {
-                                    "line": 114
+                                    "line": 115
                                   }
                                 },
                                 "ifStmt": {
@@ -2498,7 +2498,7 @@
                                       "column": 13
                                     },
                                     "end": {
-                                      "line": 114
+                                      "line": 115
                                     }
                                   },
                                   "branches": [
@@ -2509,7 +2509,7 @@
                                           "column": 16
                                         },
                                         "end": {
-                                          "line": 114
+                                          "line": 115
                                         }
                                       },
                                       "condition": "api_status[aid] == \"ACTIVE\"",
@@ -2520,7 +2520,7 @@
                                             "column": 17
                                           },
                                           "end": {
-                                            "line": 114
+                                            "line": 115
                                           }
                                         },
                                         "stmts": [
@@ -2531,7 +2531,7 @@
                                                 "column": 17
                                               },
                                               "end": {
-                                                "line": 114
+                                                "line": 115
                                               }
                                             },
                                             "ifStmt": {
@@ -2541,7 +2541,7 @@
                                                   "column": 17
                                                 },
                                                 "end": {
-                                                  "line": 114
+                                                  "line": 115
                                                 }
                                               },
                                               "branches": [
@@ -2552,7 +2552,7 @@
                                                       "column": 20
                                                     },
                                                     "end": {
-                                                      "line": 114
+                                                      "line": 115
                                                     }
                                                   },
                                                   "condition": "api_func[aid] != \"\"",
@@ -2563,7 +2563,7 @@
                                                         "column": 21
                                                       },
                                                       "end": {
-                                                        "line": 114
+                                                        "line": 115
                                                       }
                                                     },
                                                     "stmts": [
@@ -2599,7 +2599,7 @@
                                                             "column": 21
                                                           },
                                                           "end": {
-                                                            "line": 114
+                                                            "line": 115
                                                           }
                                                         },
                                                         "ifStmt": {
@@ -2609,7 +2609,7 @@
                                                               "column": 21
                                                             },
                                                             "end": {
-                                                              "line": 114
+                                                              "line": 115
                                                             }
                                                           },
                                                           "branches": [
@@ -2620,7 +2620,7 @@
                                                                   "column": 24
                                                                 },
                                                                 "end": {
-                                                                  "line": 114
+                                                                  "line": 115
                                                                 }
                                                               },
                                                               "condition": "fid in func_status",
@@ -2631,7 +2631,7 @@
                                                                     "column": 25
                                                                   },
                                                                   "end": {
-                                                                    "line": 114
+                                                                    "line": 115
                                                                   }
                                                                 },
                                                                 "stmts": [
@@ -2642,7 +2642,7 @@
                                                                         "column": 25
                                                                       },
                                                                       "end": {
-                                                                        "line": 114
+                                                                        "line": 115
                                                                       }
                                                                     },
                                                                     "ifStmt": {
@@ -2652,7 +2652,7 @@
                                                                           "column": 25
                                                                         },
                                                                         "end": {
-                                                                          "line": 114
+                                                                          "line": 115
                                                                         }
                                                                       },
                                                                       "branches": [
@@ -2663,7 +2663,7 @@
                                                                               "column": 28
                                                                             },
                                                                             "end": {
-                                                                              "line": 114
+                                                                              "line": 115
                                                                             }
                                                                           },
                                                                           "condition": "func_status[fid] == \"ACTIVE\"",
@@ -2674,7 +2674,7 @@
                                                                                 "column": 29
                                                                               },
                                                                               "end": {
-                                                                                "line": 114
+                                                                                "line": 115
                                                                               }
                                                                             },
                                                                             "stmts": [
@@ -2685,7 +2685,7 @@
                                                                                     "column": 29
                                                                                   },
                                                                                   "end": {
-                                                                                    "line": 114
+                                                                                    "line": 115
                                                                                   }
                                                                                 },
                                                                                 "anyStmt": {
@@ -2695,7 +2695,7 @@
                                                                                       "column": 29
                                                                                     },
                                                                                     "end": {
-                                                                                      "line": 114
+                                                                                      "line": 115
                                                                                     }
                                                                                   },
                                                                                   "loopVars": [
@@ -2709,7 +2709,7 @@
                                                                                         "column": 33
                                                                                       },
                                                                                       "end": {
-                                                                                        "line": 114
+                                                                                        "line": 115
                                                                                       }
                                                                                     },
                                                                                     "stmts": [
@@ -2720,7 +2720,7 @@
                                                                                             "column": 33
                                                                                           },
                                                                                           "end": {
-                                                                                            "line": 114
+                                                                                            "line": 115
                                                                                           }
                                                                                         },
                                                                                         "ifStmt": {
@@ -2730,7 +2730,7 @@
                                                                                               "column": 33
                                                                                             },
                                                                                             "end": {
-                                                                                              "line": 114
+                                                                                              "line": 115
                                                                                             }
                                                                                           },
                                                                                           "branches": [
@@ -2741,7 +2741,7 @@
                                                                                                   "column": 36
                                                                                                 },
                                                                                                 "end": {
-                                                                                                  "line": 114
+                                                                                                  "line": 115
                                                                                                 }
                                                                                               },
                                                                                               "condition": "rid not in req_status or req_status[rid] == \"SUCCESS\" or req_status[rid] == \"FAILED\"",
@@ -2752,7 +2752,7 @@
                                                                                                     "column": 37
                                                                                                   },
                                                                                                   "end": {
-                                                                                                    "line": 114
+                                                                                                    "line": 115
                                                                                                   }
                                                                                                 },
                                                                                                 "stmts": [
@@ -2763,7 +2763,7 @@
                                                                                                         "column": 37
                                                                                                       },
                                                                                                       "end": {
-                                                                                                        "line": 114
+                                                                                                        "line": 115
                                                                                                       }
                                                                                                     },
                                                                                                     "anyStmt": {
@@ -2773,7 +2773,7 @@
                                                                                                           "column": 37
                                                                                                         },
                                                                                                         "end": {
-                                                                                                          "line": 114
+                                                                                                          "line": 115
                                                                                                         }
                                                                                                       },
                                                                                                       "loopVars": [
@@ -2787,7 +2787,7 @@
                                                                                                             "column": 41
                                                                                                           },
                                                                                                           "end": {
-                                                                                                            "line": 114
+                                                                                                            "line": 115
                                                                                                           }
                                                                                                         },
                                                                                                         "stmts": [
@@ -2798,7 +2798,7 @@
                                                                                                                 "column": 41
                                                                                                               },
                                                                                                               "end": {
-                                                                                                                "line": 114
+                                                                                                                "line": 115
                                                                                                               }
                                                                                                             },
                                                                                                             "ifStmt": {
@@ -2808,7 +2808,7 @@
                                                                                                                   "column": 41
                                                                                                                 },
                                                                                                                 "end": {
-                                                                                                                  "line": 114
+                                                                                                                  "line": 115
                                                                                                                 }
                                                                                                               },
                                                                                                               "branches": [
@@ -2819,7 +2819,7 @@
                                                                                                                       "column": 44
                                                                                                                     },
                                                                                                                     "end": {
-                                                                                                                      "line": 114
+                                                                                                                      "line": 115
                                                                                                                     }
                                                                                                                   },
                                                                                                                   "condition": "iid not in inv_status or inv_status[iid] == \"SUCCESS\" or inv_status[iid] == \"FAILED\"",
@@ -2830,7 +2830,7 @@
                                                                                                                         "column": 45
                                                                                                                       },
                                                                                                                       "end": {
-                                                                                                                        "line": 114
+                                                                                                                        "line": 115
                                                                                                                       }
                                                                                                                     },
                                                                                                                     "stmts": [
@@ -2916,7 +2916,7 @@
                                                                                                                             "column": 45
                                                                                                                           },
                                                                                                                           "end": {
-                                                                                                                            "line": 114
+                                                                                                                            "line": 115
                                                                                                                           }
                                                                                                                         },
                                                                                                                         "pyStmt": {
@@ -2958,11 +2958,11 @@
                                                                                                         "sourceInfo": {
                                                                                                           "start": {
                                                                                                             "line": 102,
-                                                                                                            "column": 48
+                                                                                                            "column": 50
                                                                                                           },
                                                                                                           "end": {
                                                                                                             "line": 102,
-                                                                                                            "column": 54
+                                                                                                            "column": 56
                                                                                                           }
                                                                                                         },
                                                                                                         "pyExpr": "INV_IDS"
@@ -2994,11 +2994,11 @@
                                                                                     "sourceInfo": {
                                                                                       "start": {
                                                                                         "line": 100,
-                                                                                        "column": 40
+                                                                                        "column": 42
                                                                                       },
                                                                                       "end": {
                                                                                         "line": 100,
-                                                                                        "column": 46
+                                                                                        "column": 48
                                                                                       }
                                                                                     },
                                                                                     "pyExpr": "REQ_IDS"
@@ -3106,11 +3106,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 93,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 93,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "API_IDS"
@@ -3123,11 +3123,11 @@
     {
       "sourceInfo": {
         "start": {
-          "line": 114,
+          "line": 115,
           "column": 1
         },
         "end": {
-          "line": 127
+          "line": 129
         }
       },
       "name": "InvocationSucceeds",
@@ -3138,11 +3138,11 @@
       "block": {
         "sourceInfo": {
           "start": {
-            "line": 115,
+            "line": 116,
             "column": 5
           },
           "end": {
-            "line": 127
+            "line": 129
           }
         },
         "flow": "FLOW_ATOMIC",
@@ -3150,21 +3150,21 @@
           {
             "sourceInfo": {
               "start": {
-                "line": 115,
+                "line": 116,
                 "column": 5
               },
               "end": {
-                "line": 127
+                "line": 129
               }
             },
             "anyStmt": {
               "sourceInfo": {
                 "start": {
-                  "line": 115,
+                  "line": 116,
                   "column": 5
                 },
                 "end": {
-                  "line": 127
+                  "line": 129
                 }
               },
               "loopVars": [
@@ -3174,119 +3174,119 @@
               "block": {
                 "sourceInfo": {
                   "start": {
-                    "line": 116,
+                    "line": 117,
                     "column": 9
                   },
                   "end": {
-                    "line": 127
+                    "line": 129
                   }
                 },
                 "stmts": [
                   {
                     "sourceInfo": {
                       "start": {
-                        "line": 116,
+                        "line": 117,
                         "column": 9
                       },
                       "end": {
-                        "line": 127
+                        "line": 129
                       }
                     },
                     "ifStmt": {
                       "sourceInfo": {
                         "start": {
-                          "line": 116,
+                          "line": 117,
                           "column": 9
                         },
                         "end": {
-                          "line": 127
+                          "line": 129
                         }
                       },
                       "branches": [
                         {
                           "sourceInfo": {
                             "start": {
-                              "line": 116,
+                              "line": 117,
                               "column": 12
                             },
                             "end": {
-                              "line": 127
+                              "line": 129
                             }
                           },
                           "condition": "iid in inv_status",
                           "block": {
                             "sourceInfo": {
                               "start": {
-                                "line": 117,
+                                "line": 118,
                                 "column": 13
                               },
                               "end": {
-                                "line": 127
+                                "line": 129
                               }
                             },
                             "stmts": [
                               {
                                 "sourceInfo": {
                                   "start": {
-                                    "line": 117,
+                                    "line": 118,
                                     "column": 13
                                   },
                                   "end": {
-                                    "line": 127
+                                    "line": 129
                                   }
                                 },
                                 "ifStmt": {
                                   "sourceInfo": {
                                     "start": {
-                                      "line": 117,
+                                      "line": 118,
                                       "column": 13
                                     },
                                     "end": {
-                                      "line": 127
+                                      "line": 129
                                     }
                                   },
                                   "branches": [
                                     {
                                       "sourceInfo": {
                                         "start": {
-                                          "line": 117,
+                                          "line": 118,
                                           "column": 16
                                         },
                                         "end": {
-                                          "line": 127
+                                          "line": 129
                                         }
                                       },
                                       "condition": "inv_status[iid] == \"IN_PROGRESS\"",
                                       "block": {
                                         "sourceInfo": {
                                           "start": {
-                                            "line": 118,
+                                            "line": 119,
                                             "column": 17
                                           },
                                           "end": {
-                                            "line": 127
+                                            "line": 129
                                           }
                                         },
                                         "stmts": [
                                           {
                                             "sourceInfo": {
                                               "start": {
-                                                "line": 118,
+                                                "line": 119,
                                                 "column": 17
                                               },
                                               "end": {
-                                                "line": 119,
+                                                "line": 120,
                                                 "column": 16
                                               }
                                             },
                                             "pyStmt": {
                                               "sourceInfo": {
                                                 "start": {
-                                                  "line": 118,
+                                                  "line": 119,
                                                   "column": 17
                                                 },
                                                 "end": {
-                                                  "line": 118,
+                                                  "line": 119,
                                                   "column": 34
                                                 }
                                               },
@@ -3296,22 +3296,22 @@
                                           {
                                             "sourceInfo": {
                                               "start": {
-                                                "line": 119,
+                                                "line": 120,
                                                 "column": 17
                                               },
                                               "end": {
-                                                "line": 120,
+                                                "line": 121,
                                                 "column": 16
                                               }
                                             },
                                             "pyStmt": {
                                               "sourceInfo": {
                                                 "start": {
-                                                  "line": 119,
+                                                  "line": 120,
                                                   "column": 17
                                                 },
                                                 "end": {
-                                                  "line": 119,
+                                                  "line": 120,
                                                   "column": 43
                                                 }
                                               },
@@ -3321,21 +3321,21 @@
                                           {
                                             "sourceInfo": {
                                               "start": {
-                                                "line": 120,
+                                                "line": 121,
                                                 "column": 17
                                               },
                                               "end": {
-                                                "line": 127
+                                                "line": 129
                                               }
                                             },
                                             "pyStmt": {
                                               "sourceInfo": {
                                                 "start": {
-                                                  "line": 120,
+                                                  "line": 121,
                                                   "column": 17
                                                 },
                                                 "end": {
-                                                  "line": 120,
+                                                  "line": 121,
                                                   "column": 43
                                                 }
                                               },
@@ -3347,11 +3347,11 @@
                                       "conditionExpr": {
                                         "sourceInfo": {
                                           "start": {
-                                            "line": 117,
+                                            "line": 118,
                                             "column": 16
                                           },
                                           "end": {
-                                            "line": 117,
+                                            "line": 118,
                                             "column": 47
                                           }
                                         },
@@ -3366,11 +3366,11 @@
                           "conditionExpr": {
                             "sourceInfo": {
                               "start": {
-                                "line": 116,
+                                "line": 117,
                                 "column": 12
                               },
                               "end": {
-                                "line": 116,
+                                "line": 117,
                                 "column": 28
                               }
                             },
@@ -3385,12 +3385,12 @@
               "iterExpr": {
                 "sourceInfo": {
                   "start": {
-                    "line": 115,
-                    "column": 16
+                    "line": 116,
+                    "column": 18
                   },
                   "end": {
-                    "line": 115,
-                    "column": 22
+                    "line": 116,
+                    "column": 24
                   }
                 },
                 "pyExpr": "INV_IDS"
@@ -3403,11 +3403,11 @@
     {
       "sourceInfo": {
         "start": {
-          "line": 127,
+          "line": 129,
           "column": 1
         },
         "end": {
-          "line": 137
+          "line": 139
         }
       },
       "name": "InvocationFails",
@@ -3418,11 +3418,11 @@
       "block": {
         "sourceInfo": {
           "start": {
-            "line": 128,
+            "line": 130,
             "column": 5
           },
           "end": {
-            "line": 137
+            "line": 139
           }
         },
         "flow": "FLOW_ATOMIC",
@@ -3430,21 +3430,21 @@
           {
             "sourceInfo": {
               "start": {
-                "line": 128,
+                "line": 130,
                 "column": 5
               },
               "end": {
-                "line": 137
+                "line": 139
               }
             },
             "anyStmt": {
               "sourceInfo": {
                 "start": {
-                  "line": 128,
+                  "line": 130,
                   "column": 5
                 },
                 "end": {
-                  "line": 137
+                  "line": 139
                 }
               },
               "loopVars": [
@@ -3454,119 +3454,119 @@
               "block": {
                 "sourceInfo": {
                   "start": {
-                    "line": 129,
+                    "line": 131,
                     "column": 9
                   },
                   "end": {
-                    "line": 137
+                    "line": 139
                   }
                 },
                 "stmts": [
                   {
                     "sourceInfo": {
                       "start": {
-                        "line": 129,
+                        "line": 131,
                         "column": 9
                       },
                       "end": {
-                        "line": 137
+                        "line": 139
                       }
                     },
                     "ifStmt": {
                       "sourceInfo": {
                         "start": {
-                          "line": 129,
+                          "line": 131,
                           "column": 9
                         },
                         "end": {
-                          "line": 137
+                          "line": 139
                         }
                       },
                       "branches": [
                         {
                           "sourceInfo": {
                             "start": {
-                              "line": 129,
+                              "line": 131,
                               "column": 12
                             },
                             "end": {
-                              "line": 137
+                              "line": 139
                             }
                           },
                           "condition": "iid in inv_status",
                           "block": {
                             "sourceInfo": {
                               "start": {
-                                "line": 130,
+                                "line": 132,
                                 "column": 13
                               },
                               "end": {
-                                "line": 137
+                                "line": 139
                               }
                             },
                             "stmts": [
                               {
                                 "sourceInfo": {
                                   "start": {
-                                    "line": 130,
+                                    "line": 132,
                                     "column": 13
                                   },
                                   "end": {
-                                    "line": 137
+                                    "line": 139
                                   }
                                 },
                                 "ifStmt": {
                                   "sourceInfo": {
                                     "start": {
-                                      "line": 130,
+                                      "line": 132,
                                       "column": 13
                                     },
                                     "end": {
-                                      "line": 137
+                                      "line": 139
                                     }
                                   },
                                   "branches": [
                                     {
                                       "sourceInfo": {
                                         "start": {
-                                          "line": 130,
+                                          "line": 132,
                                           "column": 16
                                         },
                                         "end": {
-                                          "line": 137
+                                          "line": 139
                                         }
                                       },
                                       "condition": "inv_status[iid] == \"IN_PROGRESS\"",
                                       "block": {
                                         "sourceInfo": {
                                           "start": {
-                                            "line": 131,
+                                            "line": 133,
                                             "column": 17
                                           },
                                           "end": {
-                                            "line": 137
+                                            "line": 139
                                           }
                                         },
                                         "stmts": [
                                           {
                                             "sourceInfo": {
                                               "start": {
-                                                "line": 131,
+                                                "line": 133,
                                                 "column": 17
                                               },
                                               "end": {
-                                                "line": 132,
+                                                "line": 134,
                                                 "column": 16
                                               }
                                             },
                                             "pyStmt": {
                                               "sourceInfo": {
                                                 "start": {
-                                                  "line": 131,
+                                                  "line": 133,
                                                   "column": 17
                                                 },
                                                 "end": {
-                                                  "line": 131,
+                                                  "line": 133,
                                                   "column": 34
                                                 }
                                               },
@@ -3576,22 +3576,22 @@
                                           {
                                             "sourceInfo": {
                                               "start": {
-                                                "line": 132,
+                                                "line": 134,
                                                 "column": 17
                                               },
                                               "end": {
-                                                "line": 133,
+                                                "line": 135,
                                                 "column": 16
                                               }
                                             },
                                             "pyStmt": {
                                               "sourceInfo": {
                                                 "start": {
-                                                  "line": 132,
+                                                  "line": 134,
                                                   "column": 17
                                                 },
                                                 "end": {
-                                                  "line": 132,
+                                                  "line": 134,
                                                   "column": 42
                                                 }
                                               },
@@ -3601,21 +3601,21 @@
                                           {
                                             "sourceInfo": {
                                               "start": {
-                                                "line": 133,
+                                                "line": 135,
                                                 "column": 17
                                               },
                                               "end": {
-                                                "line": 137
+                                                "line": 139
                                               }
                                             },
                                             "pyStmt": {
                                               "sourceInfo": {
                                                 "start": {
-                                                  "line": 133,
+                                                  "line": 135,
                                                   "column": 17
                                                 },
                                                 "end": {
-                                                  "line": 133,
+                                                  "line": 135,
                                                   "column": 42
                                                 }
                                               },
@@ -3627,11 +3627,11 @@
                                       "conditionExpr": {
                                         "sourceInfo": {
                                           "start": {
-                                            "line": 130,
+                                            "line": 132,
                                             "column": 16
                                           },
                                           "end": {
-                                            "line": 130,
+                                            "line": 132,
                                             "column": 47
                                           }
                                         },
@@ -3646,11 +3646,11 @@
                           "conditionExpr": {
                             "sourceInfo": {
                               "start": {
-                                "line": 129,
+                                "line": 131,
                                 "column": 12
                               },
                               "end": {
-                                "line": 129,
+                                "line": 131,
                                 "column": 28
                               }
                             },
@@ -3665,12 +3665,12 @@
               "iterExpr": {
                 "sourceInfo": {
                   "start": {
-                    "line": 128,
-                    "column": 16
+                    "line": 130,
+                    "column": 18
                   },
                   "end": {
-                    "line": 128,
-                    "column": 22
+                    "line": 130,
+                    "column": 24
                   }
                 },
                 "pyExpr": "INV_IDS"

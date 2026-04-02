@@ -224,7 +224,7 @@ atomic action ShardReallocation:
 
 # fake_skip: internal
 # step: a replica sync lag event occurs on an active "elasticsearch" "domain"
-# result: the replica eventually catches up without changing document counts
+# result: the "elasticsearch" "domain" replica will eventually catch up without changing document counts
 # guard: the "elasticsearch" "domain" existed
 # guard_violation: the "elasticsearch" "domain" did not exist
 # guard: the "elasticsearch" "domain" was "ACTIVE"
@@ -257,7 +257,7 @@ atomic action NodeFailure:
                 domain_status[domain] = "PROCESSING"
                 domain_pending_config[domain] = False
 
-# check: every active index belongs to an existing non-deleted domain
+# check: every active "elasticsearch" "index" belongs to an existing non-deleted "elasticsearch" "domain"
 always assertion IndicesHaveParentDomain:
     for idx_key in index_status:
         if index_status[idx_key] == "ACTIVE":
@@ -269,7 +269,7 @@ always assertion IndicesHaveParentDomain:
                 return False
     return True
 
-# check: every active tag belongs to an existing non-deleted domain
+# check: every active "elasticsearch" "tag" belongs to an existing non-deleted "elasticsearch" "domain"
 always assertion TagsHaveParentDomain:
     for tkey in domain_tag:
         if domain_tag[tkey] == True:
@@ -281,7 +281,7 @@ always assertion TagsHaveParentDomain:
                 return False
     return True
 
-# check: a pending config change only exists on a "elasticsearch" "domain" that is PROCESSING
+# check: a pending config change only exists on an "elasticsearch" "domain" that is "PROCESSING"
 always assertion PendingConfigOnlyOnProcessingDomain:
     for domain in DOMAIN_NAMES:
         if domain in domain_pending_config:

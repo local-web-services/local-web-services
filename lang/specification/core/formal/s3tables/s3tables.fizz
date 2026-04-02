@@ -29,7 +29,7 @@ action Init:
 
     table_policy_exists = {}
 
-# step: a "s3 tables" "table" s3 tables bucket is created
+# step: a "s3 tables" "bucket" is created
 # result: the "s3 tables" "bucket" will be in "CREATING" state
 # guard: the "s3 tables" "bucket" did not already exist
 # guard_violation: the "s3 tables" "bucket" already existed
@@ -39,7 +39,7 @@ atomic action CreateTableBucket:
             bucket_status[bname] = "CREATING"
 
 # fake_skip: internal
-# step: a "s3 tables" "table" s3 tables bucket finishes creating
+# step: a "s3 tables" "bucket" finishes creating
 # result: the "s3 tables" "bucket" will be "ACTIVE"
 # guard: the "s3 tables" "bucket" existed
 # guard_violation: the "s3 tables" "bucket" did not exist
@@ -51,7 +51,7 @@ atomic action FinishCreatingTableBucket:
             if bucket_status[bname] == "CREATING":
                 bucket_status[bname] = "ACTIVE"
 
-# step: a "s3 tables" "table" s3 tables bucket is deleted
+# step: a "s3 tables" "bucket" is deleted
 # result: the "s3 tables" "bucket" will be in "DELETING" state
 # guard: the "s3 tables" "bucket" existed
 # guard_violation: the "s3 tables" "bucket" did not exist
@@ -67,7 +67,7 @@ atomic action DeleteTableBucket:
                     bucket_status[bname] = "DELETING"
 
 # fake_skip: internal
-# step: a "s3 tables" "table" s3 tables bucket finishes being deleted
+# step: a "s3 tables" "bucket" finishes being deleted
 # result: the "s3 tables" "bucket" will be "DELETED" and all its namespaces and tables will be deleted
 # guard: the "s3 tables" "bucket" existed
 # guard_violation: the "s3 tables" "bucket" did not exist
@@ -91,7 +91,7 @@ atomic action FinishDeletingTableBucket:
                             if tkey in table_status:
                                 table_status[tkey] = "DELETED"
 
-# step: a "s3 tables" "namespace" is created in a "s3 tables" "table" s3 tables bucket
+# step: a "s3 tables" "namespace" is created in a "s3 tables" "bucket"
 # result: the "s3 tables" "namespace" will be "ACTIVE"
 # guard: the "s3 tables" "bucket" existed
 # guard_violation: the "s3 tables" "bucket" did not exist
@@ -108,7 +108,7 @@ atomic action CreateNamespace:
                     if ns_key not in ns_status:
                         ns_status[ns_key] = "ACTIVE"
 
-# step: a "s3 tables" "namespace" is deleted from a "s3 tables" "table" s3 tables bucket
+# step: a "s3 tables" "namespace" is deleted from a "s3 tables" "bucket"
 # result: the "s3 tables" "namespace" will be in "DELETING" state
 # guard: the "s3 tables" "bucket" existed
 # guard_violation: the "s3 tables" "bucket" did not exist
@@ -235,7 +235,7 @@ atomic action FinishDeletingTable:
                                 snapshot_status[snap_key] = "DELETED"
 
 # step: a "s3 tables" "snapshot" is created for a "s3 tables" "table"
-# result: the "s3 tables" "SNAPSHOT" will be "ACTIVE" and the "s3 tables" "table" s3 tables snapshot count will increase
+# result: the "s3 tables" "snapshot" will be "ACTIVE" and the "s3 tables" "table" snapshot count will increase
 # guard: the "s3 tables" "table" existed
 # guard_violation: the "s3 tables" "table" did not exist
 # guard: the "s3 tables" "table" was "ACTIVE"
@@ -256,7 +256,7 @@ atomic action CreateSnapshot:
                                 table_snapshot_count[tkey] = table_snapshot_count[tkey] + 1
 
 # step: a "s3 tables" "table"'s schema is evolved
-# result: the schema version will be incremented
+# result: the "s3 tables" "table" schema version will be incremented
 # guard: the "s3 tables" "table" existed
 # guard_violation: the "s3 tables" "table" did not exist
 # guard: the "s3 tables" "table" was "ACTIVE"
@@ -338,7 +338,7 @@ atomic action StartCompaction:
 
 # fake_skip: internal
 # step: compaction finishes on a "s3 tables" "table"
-# result: the "s3 tables" "table" returns to ACTIVE state
+# result: the "s3 tables" "table" returns to "ACTIVE" state
 # guard: the "s3 tables" "table" existed
 # guard_violation: the "s3 tables" "table" did not exist
 # guard: the "s3 tables" "table" was in "MAINTENANCE" state
@@ -353,7 +353,7 @@ atomic action FinishCompaction:
                         table_status[tkey] = "ACTIVE"
 
 # step: an expired s3 tables snapshot is removed from a "s3 tables" "table"
-# result: the "s3 tables" "SNAPSHOT" will be "DELETED" and the "s3 tables" "table" s3 tables snapshot count decreases
+# result: the "s3 tables" "snapshot" will be "DELETED" and the "s3 tables" "table" snapshot count will decrease
 # guard: the "s3 tables" "table" existed
 # guard_violation: the "s3 tables" "table" did not exist
 # guard: the "s3 tables" "table" was "ACTIVE"
@@ -379,7 +379,7 @@ atomic action ExpireSnapshot:
                                         snapshot_status[snap_key] = "DELETED"
                                         table_snapshot_count[tkey] = table_snapshot_count[tkey] - 1
 
-# check: a bucket in DELETING state has no ACTIVE namespaces
+# check: a "s3 tables" "bucket" in "DELETING" state has no "ACTIVE" "s3 tables" "namespace"s
 always assertion BucketDeletionRequiresNoNamespaces:
     for bname in BUCKET_NAMES:
         if bname in bucket_status:
@@ -391,7 +391,7 @@ always assertion BucketDeletionRequiresNoNamespaces:
                             return False
     return True
 
-# check: a "s3 tables" "namespace" in DELETING state has no ACTIVE tables
+# check: a "s3 tables" "namespace" in "DELETING" state has no "ACTIVE" "s3 tables" "table"s
 always assertion NamespaceDeletionRequiresNoTables:
     for bname in BUCKET_NAMES:
         for ns in NS_NAMES:
@@ -405,7 +405,7 @@ always assertion NamespaceDeletionRequiresNoTables:
                                 return False
     return True
 
-# check: snapshot count is never negative
+# check: "s3 tables" "table" snapshot count is never negative
 always assertion SnapshotCountNonNegative:
     for bname in BUCKET_NAMES:
         for ns in NS_NAMES:
@@ -416,7 +416,7 @@ always assertion SnapshotCountNonNegative:
                         return False
     return True
 
-# check: schema version is always at least one
+# check: "s3 tables" "table" schema version is always at least one
 always assertion SchemaVersionAtLeastOne:
     for bname in BUCKET_NAMES:
         for ns in NS_NAMES:

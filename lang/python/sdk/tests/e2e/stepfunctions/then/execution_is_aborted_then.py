@@ -1,11 +1,11 @@
-"""Then: the execution will be "ABORTED" """
+"""Then: the "step functions" "execution" will be "ABORTED" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the execution will be "ABORTED"')
+@then('the "step functions" "execution" will be "ABORTED"')
 def execution_is_aborted_then(lws_session, world):
     assert world["error"] is None, f"Expected stop_execution to succeed but got: {world['error']}"
     execution_arn = world.get("execution_arn", "")

@@ -13,10 +13,10 @@ Feature: Sns - A "Sns" "Subscription" Confirmation Token Expires
     And the "sns" "subscription" was "PENDING_CONFIRMATION"
     When a "sns" "subscription" confirmation token expires
     Then the pending "sns" "subscription" will be "DELETED"
-    And no delivery is in-flight to a deleted subscription
-    And no delivery is in-flight to an unconfirmed subscription
-    And every active subscription references an "ACTIVE" topic
-    And every delivery retry count is within the allowed limit
+    And no "sns" "delivery" is "IN_FLIGHT" to a deleted "sns" "subscription"
+    And no "sns" "delivery" is "IN_FLIGHT" to an unconfirmed "sns" "subscription"
+    And every active "sns" "subscription" references an "ACTIVE" "sns" "topic"
+    And every "sns" "delivery" retry count is within the allowed limit
 
   @guard @negative @confirmation_token_expires @internal
   Scenario: a "sns" "subscription" confirmation token expires fails when the "sns" "subscription" did not exist

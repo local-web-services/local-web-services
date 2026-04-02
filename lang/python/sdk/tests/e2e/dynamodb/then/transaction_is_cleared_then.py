@@ -1,4 +1,4 @@
-"""Then: a committed transaction is cleared"""
+"""Then: a committed "dynamodb" "transaction" is cleared"""
 
 from __future__ import annotations
 
@@ -6,6 +6,6 @@ import pytest
 from pytest_bdd import then
 
 
-@then("a committed transaction is cleared")
+@then('a committed "dynamodb" "transaction" is cleared')
 def transaction_is_cleared_then(world):
     pytest.skip("Cannot observe transaction clearing in this abstract context")

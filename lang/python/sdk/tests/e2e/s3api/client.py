@@ -19,7 +19,10 @@ class S3apiTestClient:
         try:
             self._client.create_bucket(Bucket=name)
         except ClientError as exc:
-            if exc.response["Error"]["Code"] in ("BucketAlreadyOwnedByYou", "BucketAlreadyExists"):
+            if exc.response["Error"]["Code"] in (
+                "BucketAlreadyOwnedByYou",
+                "BucketAlreadyExists",
+            ):
                 return
             raise
 

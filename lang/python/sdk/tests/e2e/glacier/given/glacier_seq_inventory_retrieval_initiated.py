@@ -12,5 +12,7 @@ from ..constants import TEST_VAULT
 def glacier_seq_inventory_retrieval_initiated(lws_session):
     GlacierTestClient(lws_session).create_vault()
     GlacierTestClient(lws_session).initiate_job(
-        accountId="-", vaultName=TEST_VAULT, jobParameters={"Type": "inventory-retrieval"}
+        accountId="-",
+        vaultName=TEST_VAULT,
+        jobParameters={"Type": "inventory-retrieval"},
     )

@@ -11,15 +11,15 @@ Feature: GlacierSns - The Glacier Job Completes But Notification Delivery Fails 
   Scenario: the Glacier job completes but notification delivery fails because the "sns" "topic" was deleted
     Given a "glacier" "job" was "IN_PROGRESS"
     And the "glacier" "vault" has a "SNS" notification configured
-    And the configured topic was "DELETED"
+    And the configured "sns" "topic" was "DELETED"
     When the Glacier job completes but notification delivery fails because the "sns" "topic" was deleted
     Then the "glacier" "job" will be "SUCCEEDED" but no notification will be published
     And every "PUBLISHED" notification references a "glacier" "job" that exists
     And every "PUBLISHED" notification references a "sns" "topic" that exists
 
   @guard @negative @job_completed_notification_fails @internal
-  Scenario: the Glacier job completes but notification delivery fails because the "sns" "topic" was deleted fails when no job was "IN_PROGRESS"
-    Given no job was "IN_PROGRESS"
+  Scenario: the Glacier job completes but notification delivery fails because the "sns" "topic" was deleted fails when no "glacier" "job" was "IN_PROGRESS"
+    Given no "glacier" "job" was "IN_PROGRESS"
     When the Glacier job completes but notification delivery fails because the "sns" "topic" was deleted
     Then the operation is rejected
 
@@ -31,9 +31,9 @@ Feature: GlacierSns - The Glacier Job Completes But Notification Delivery Fails 
     Then the operation is rejected
 
   @guard @negative @job_completed_notification_fails @internal
-  Scenario: the Glacier job completes but notification delivery fails because the "sns" "topic" was deleted fails when the configured topic was not "DELETED"
+  Scenario: the Glacier job completes but notification delivery fails because the "sns" "topic" was deleted fails when the configured "sns" "topic" was not "DELETED"
     Given a "glacier" "job" was "IN_PROGRESS"
     And the "glacier" "vault" has a "SNS" notification configured
-    And the configured topic was not "DELETED"
+    And the configured "sns" "topic" was not "DELETED"
     When the Glacier job completes but notification delivery fails because the "sns" "topic" was deleted
     Then the operation is rejected

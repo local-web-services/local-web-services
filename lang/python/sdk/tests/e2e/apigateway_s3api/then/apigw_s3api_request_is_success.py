@@ -1,11 +1,11 @@
-"""Then: the request will be "SUCCESS" """
+"""Then: the "api gateway" "request" will be "SUCCESS" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the request will be "SUCCESS"')
+@then('the "api gateway" "request" will be "SUCCESS"')
 def apigw_s3api_request_is_success(world):
     expected_status = 200
     actual_status = world.get("invoke_status")

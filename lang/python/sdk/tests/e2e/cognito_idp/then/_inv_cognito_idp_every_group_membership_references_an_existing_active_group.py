@@ -1,10 +1,10 @@
-"""Then: every group membership references an existing active group"""
+"""Then: every "cognito" "group" membership references an existing active "cognito" "group" """
 
 from __future__ import annotations
 
 from pytest_bdd import step
 
 
-@step("every group membership references an existing active group")
+@step('every "cognito" "group" membership references an existing active "cognito" "group"')
 def _inv_cognito_idp_every_group_membership_references_an_existing_active_group():
     """Invariant step: trivially satisfied in isolated test context."""

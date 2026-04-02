@@ -1,10 +1,10 @@
-"""Given: the target queue was "ACTIVE" """
+"""Given: the target "sqs" "queue" was "ACTIVE" """
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given('the target queue was "ACTIVE"')
+@given('the target "sqs" "queue" was "ACTIVE"')
 def queue_is_active_given():
     """No-op: queues are ACTIVE by default."""

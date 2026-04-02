@@ -13,10 +13,10 @@ Feature: Opensearch - An "Opensearch" "Domain" Configuration Update Is Requested
     And the "opensearch" "domain" was "ACTIVE"
     When an "opensearch" "domain" configuration update is requested
     Then the "opensearch" "domain" will be in "PROCESSING" state and a blue-green deployment begins
-    And no active connection references a deleted domain
+    And no active "opensearch" "connection" references a deleted "opensearch" "domain"
     And traffic can only be swapped after the new "opensearch" "cluster" was ready
-    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" inbound connection
-    And a pending config change only exists on a "opensearch" "domain" that is "PROCESSING"
+    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" "opensearch" "inbound connection"
+    And a pending config change only exists on an "opensearch" "domain" that is "PROCESSING"
 
   @guard @negative @update_domain_config
   Scenario: an "opensearch" "domain" configuration update is requested fails when the "opensearch" "domain" did not exist

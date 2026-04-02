@@ -12,8 +12,8 @@ Feature: StepfunctionsNeptune - A "Neptune" "Cluster" Is Created
     Given the "neptune" "cluster" did not already exist
     When a "neptune" "cluster" is created
     Then the "neptune" "cluster" will be "AVAILABLE"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which cluster it queried
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "neptune" "cluster" it queried
 
   @guard @negative @create_cluster
   Scenario: a "neptune" "cluster" is created fails when the "neptune" "cluster" already existed

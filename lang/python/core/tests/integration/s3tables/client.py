@@ -16,6 +16,9 @@ class S3tablesTestClient:
         self._client.put(f"/namespaces/{bucket}", json={"namespace": [namespace]})
 
     def create_table(
-        self, bucket: str = INT_BUCKET, namespace: str = INT_NAMESPACE, table: str = INT_TABLE
+        self,
+        bucket: str = INT_BUCKET,
+        namespace: str = INT_NAMESPACE,
+        table: str = INT_TABLE,
     ) -> None:
         self._client.put(f"/tables/{bucket}/{namespace}", json={"name": table, "format": "ICEBERG"})

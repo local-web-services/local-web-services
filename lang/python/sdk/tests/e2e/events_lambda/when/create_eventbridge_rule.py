@@ -17,13 +17,19 @@ from ..constants import EVENT_PATTERN, TEST_BUS, TEST_FUNC, TEST_RULE
 def create_eventbridge_rule(lws_session, world):
     try:
         lws_session.client("events").put_rule(
-            Name=TEST_RULE, EventBusName=TEST_BUS, EventPattern=EVENT_PATTERN, State="ENABLED"
+            Name=TEST_RULE,
+            EventBusName=TEST_BUS,
+            EventPattern=EVENT_PATTERN,
+            State="ENABLED",
         )
         resp = lws_session.client("events").put_targets(
             Rule=TEST_RULE,
             EventBusName=TEST_BUS,
             Targets=[
-                {"Id": "t1", "Arn": f"arn:aws:lambda:us-east-1:000000000000:function:{TEST_FUNC}"}
+                {
+                    "Id": "t1",
+                    "Arn": f"arn:aws:lambda:us-east-1:000000000000:function:{TEST_FUNC}",
+                }
             ],
         )
         world["result"] = resp

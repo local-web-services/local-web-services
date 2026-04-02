@@ -13,8 +13,8 @@ Feature: StepfunctionsGlacier - A Running "Step Functions" "Execution" Fails Bec
     And the "glacier" "vault" was "DELETED"
     When a running "step functions" "execution" fails because the Glacier vault has been deleted
     Then the "step functions" "execution" will be "FAILED" with a ResourceNotFoundException
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which vault it called
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "glacier" "vault" it called
 
   @guard @negative @glacier_task_fails @internal
   Scenario: a running "step functions" "execution" fails because the Glacier vault has been deleted fails when no "step functions" "execution" was "RUNNING"

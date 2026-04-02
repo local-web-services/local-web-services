@@ -1,11 +1,11 @@
-"""Then: the invocation will be "FAILED" """
+"""Then: the "lambda" "invocation" will be "FAILED" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the invocation will be "FAILED"')
+@then('the "lambda" "invocation" will be "FAILED"')
 def invocation_is_failed_then(lws_session, world):
     # Arrange
     invocation_id = world.get("invocation_id") or "nonexistent-invocation-id"

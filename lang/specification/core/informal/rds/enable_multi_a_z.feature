@@ -13,9 +13,9 @@ Feature: Rds - Multi-Az Was "Enabled" On A "Rds" "Instance"
     And the "rds" "instance" was "AVAILABLE"
     When multi-"AZ" was "ENABLED" on a "rds" "instance"
     Then the "rds" "instance" will be configured for multi-"AZ" deployment
-    And every database instance has a valid status
-    And every database snapshot has a valid status
-    And every backing-up instance has a corresponding in-progress snapshot
+    And every "rds" "instance" has a valid status
+    And every "rds" "snapshot" has a valid status
+    And every backing-up "rds" "instance" has a corresponding in-progress "rds" "snapshot"
 
   @guard @negative @enable_multi_a_z
   Scenario: multi-"AZ" was "ENABLED" on a "rds" "instance" fails when the "rds" "instance" did not exist

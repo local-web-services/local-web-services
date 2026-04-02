@@ -9,22 +9,22 @@ Feature: RdsEvents - The "Rds" "Instance" Stops But The State Change Event Deliv
 
   @minimal @happy @d_b_stop_event_fails @internal
   Scenario: the "rds" "instance" stops but the state change event delivery fails because the bus is deleted
-    Given the "DB" instance was "AVAILABLE"
-    And the bus was "DELETED"
+    Given the "rds" "DB instance" was "AVAILABLE"
+    And the "eventbridge" "bus" was "DELETED"
     When the "rds" "instance" stops but the state change event delivery fails because the bus is deleted
-    Then the "DB" instance will be "STOPPING" but no event will be delivered
-    And every "DELIVERED" event references a "DB" instance that exists
-    And every "DELIVERED" event references a bus that exists
+    Then the "rds" "DB instance" will be "STOPPING" but no event will be delivered
+    And every "DELIVERED" "eventbridge" "event" references an "rds" "DB instance" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @guard @negative @d_b_stop_event_fails @internal
-  Scenario: the "rds" "instance" stops but the state change event delivery fails because the bus is deleted fails when the "DB" instance was not "AVAILABLE"
-    Given the "DB" instance was not "AVAILABLE"
+  Scenario: the "rds" "instance" stops but the state change event delivery fails because the bus is deleted fails when the "rds" "DB instance" was not "AVAILABLE"
+    Given the "rds" "DB instance" was not "AVAILABLE"
     When the "rds" "instance" stops but the state change event delivery fails because the bus is deleted
     Then the operation is rejected
 
   @guard @negative @d_b_stop_event_fails @internal
-  Scenario: the "rds" "instance" stops but the state change event delivery fails because the bus is deleted fails when the bus was not "DELETED"
-    Given the "DB" instance was "AVAILABLE"
-    And the bus was not "DELETED"
+  Scenario: the "rds" "instance" stops but the state change event delivery fails because the bus is deleted fails when the "eventbridge" "bus" was not "DELETED"
+    Given the "rds" "DB instance" was "AVAILABLE"
+    And the "eventbridge" "bus" was not "DELETED"
     When the "rds" "instance" stops but the state change event delivery fails because the bus is deleted
     Then the operation is rejected

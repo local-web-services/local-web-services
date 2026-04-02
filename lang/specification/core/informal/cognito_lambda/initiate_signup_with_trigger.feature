@@ -12,14 +12,14 @@ Feature: CognitoLambda - A "Cognito" "User" Initiates Signup To A "Cognito" "Use
     Given the "cognito" "user pool" existed
     And the "cognito" "user pool" was "ACTIVE"
     And the "cognito" "user pool" has a pre-signup trigger configured
-    And the trigger function was "ACTIVE"
+    And the trigger "lambda" "function" was "ACTIVE"
     And the "cognito" "user" slot is available
     And a "lambda" "invocation" slot is available
     When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
     Then the "cognito" "user" will be "PENDING" and the trigger Lambda will be invoked synchronously
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "IN_PROGRESS" "lambda" "invocation" is for a "PENDING" "cognito" "user"
+    And every "PENDING" "cognito" "user" has a corresponding "IN_PROGRESS" "lambda" "invocation"
 
   @guard @negative @initiate_signup_with_trigger
   Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured fails when the "cognito" "user pool" did not exist
@@ -43,31 +43,31 @@ Feature: CognitoLambda - A "Cognito" "User" Initiates Signup To A "Cognito" "Use
     Then the operation is rejected
 
   @guard @negative @initiate_signup_with_trigger @lifecycle
-  Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured fails when the trigger function was not "ACTIVE"
+  Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured fails when the trigger "lambda" "function" was not "ACTIVE"
     Given the "cognito" "user pool" existed
     And the "cognito" "user pool" was "ACTIVE"
     And the "cognito" "user pool" has a pre-signup trigger configured
-    And the trigger function was not "ACTIVE"
+    And the trigger "lambda" "function" was not "ACTIVE"
     When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
     Then the operation is rejected
 
   @guard @negative @initiate_signup_with_trigger @capacity
-  Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured fails when no user slot is available
+  Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured fails when no "cognito" "user" "slot" was "available"
     Given the "cognito" "user pool" existed
     And the "cognito" "user pool" was "ACTIVE"
     And the "cognito" "user pool" has a pre-signup trigger configured
-    And the trigger function was "ACTIVE"
-    And no user slot is available
+    And the trigger "lambda" "function" was "ACTIVE"
+    And no "cognito" "user" "slot" was "available"
     When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
     Then the operation is rejected
 
   @guard @negative @initiate_signup_with_trigger @capacity
-  Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured fails when no invocation slot is available
+  Scenario: a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured fails when no "lambda" "invocation" "slot" was "available"
     Given the "cognito" "user pool" existed
     And the "cognito" "user pool" was "ACTIVE"
     And the "cognito" "user pool" has a pre-signup trigger configured
-    And the trigger function was "ACTIVE"
+    And the trigger "lambda" "function" was "ACTIVE"
     And the "cognito" "user" slot is available
-    And no invocation slot is available
+    And no "lambda" "invocation" "slot" was "available"
     When a "cognito" "user" initiates signup to a "cognito" "user pool" that has a pre-signup trigger configured
     Then the operation is rejected

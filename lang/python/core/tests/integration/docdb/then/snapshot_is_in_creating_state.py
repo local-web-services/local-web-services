@@ -1,4 +1,4 @@
-"""Then: the "documentdb" "SNAPSHOT" will be in "CREATING" state and linked to the "documentdb" "cluster" """
+"""Then: the "documentdb" "snapshot" will be in "CREATING" state and linked to the "documentdb" "cluster" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..constants import _DOCDB_TARGET, INT_SNAPSHOT_ID
 
 
 @then(
-    'the "documentdb" "SNAPSHOT" will be in "CREATING" state and linked to the "documentdb" "cluster"'
+    'the "documentdb" "snapshot" will be in "CREATING" state and linked to the "documentdb" "cluster"'
 )
 def snapshot_is_in_creating_state(client: TestClient, world):
     actual_error = world["error"]

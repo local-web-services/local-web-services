@@ -15,11 +15,11 @@ Feature: Glacier - An Empty "Glacier" "Vault" Is Deleted
     And the "glacier" "vault" had no in-progress jobs
     When an empty "glacier" "vault" is deleted
     Then the "glacier" "vault" will be "DELETED"
-    And every in-progress job references an active vault
-    And vault archive count is never negative
-    And all stored archives belong to an "ACTIVE" vault
-    And job output is only available for succeeded jobs
-    And every archive retrieval job references a non-empty archive "ID"
+    And every in-progress "glacier" "job" references an active "glacier" "vault"
+    And "glacier" "vault" archive count is never negative
+    And all stored "glacier" "archive"s belong to an "ACTIVE" "glacier" "vault"
+    And "glacier" "job" output is only available for succeeded "glacier" "job"s
+    And every "glacier" "archive" retrieval "glacier" "job" references a non-empty "glacier" "archive" "ID"
 
   @guard @negative @delete_vault
   Scenario: an empty "glacier" "vault" is deleted fails when the "glacier" "vault" did not exist

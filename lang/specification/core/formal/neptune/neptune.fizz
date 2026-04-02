@@ -75,7 +75,7 @@ atomic action ModifyDBCluster:
 
 # fake_skip: internal
 # step: a "neptune" "cluster" modification completes
-# result: the "neptune" "cluster" returns to AVAILABLE state
+# result: the "neptune" "cluster" returns to "AVAILABLE" state
 # guard: the "neptune" "cluster" existed
 # guard_violation: the "neptune" "cluster" did not exist
 # guard: the "neptune" "cluster" was "MODIFYING"
@@ -100,14 +100,14 @@ atomic action StopDBCluster:
 
 # fake_skip: internal
 # step: a "neptune" "cluster" stop completes
-# result: the "neptune" "cluster" and its instances are STOPPED
+# result: the "neptune" "cluster" and its instances are "STOPPED"
 # guard: the "neptune" "cluster" existed
 # guard_violation: the "neptune" "cluster" did not exist
 # guard: the "neptune" "cluster" was "STOPPING"
 # guard_violation: the "neptune" "cluster" was not "STOPPING"
 # guard: the "neptune" "instance" is associated with a "neptune" "cluster"
 # guard_violation: the "neptune" "instance" is not associated with a "neptune" "cluster"
-# guard: the "neptune" "instance" belongs to this neptune cluster
+# guard: the "neptune" "instance" belongs to this "neptune" "cluster"
 # guard_violation: the "neptune" "instance" belongs to a different neptune cluster
 # guard: the "neptune" "instance" was "AVAILABLE"
 # guard_violation: the "neptune" "instance" was not "AVAILABLE"
@@ -122,7 +122,7 @@ atomic action CompleteClusterStop:
                             if instance_status[iid] == "AVAILABLE":
                                 instance_status[iid] = "STOPPED"
 
-# step: a stopped neptune database neptune cluster is started
+# step: a stopped "neptune" "cluster" is started
 # result: the "neptune" "cluster" will be in "STARTING" state
 # guard: the "neptune" "cluster" existed
 # guard_violation: the "neptune" "cluster" did not exist
@@ -136,14 +136,14 @@ atomic action StartDBCluster:
 
 # fake_skip: internal
 # step: a "neptune" "cluster" start completes
-# result: the "neptune" "cluster" and its instances are AVAILABLE
+# result: the "neptune" "cluster" and its instances are "AVAILABLE"
 # guard: the "neptune" "cluster" existed
 # guard_violation: the "neptune" "cluster" did not exist
 # guard: the "neptune" "cluster" was "STARTING"
 # guard_violation: the "neptune" "cluster" was not "STARTING"
 # guard: the "neptune" "instance" is associated with a "neptune" "cluster"
 # guard_violation: the "neptune" "instance" is not associated with a "neptune" "cluster"
-# guard: the "neptune" "instance" belongs to this neptune cluster
+# guard: the "neptune" "instance" belongs to this "neptune" "cluster"
 # guard_violation: the "neptune" "instance" belongs to a different neptune cluster
 # guard: the "neptune" "instance" was "STOPPED"
 # guard_violation: the "neptune" "instance" was not "STOPPED"
@@ -187,7 +187,7 @@ atomic action CompleteClusterDeletion:
                 cluster_status[cid] = "DELETED"
 
 # step: a "neptune" "instance" is created in an available neptune cluster
-# result: the "neptune" "INSTANCE" will be in "CREATING" state and associated with the "neptune" "cluster"
+# result: the "neptune" "instance" will be in "CREATING" state and associated with the "neptune" "cluster"
 # guard: the "neptune" "cluster" existed
 # guard_violation: the "neptune" "cluster" did not exist
 # guard: the "neptune" "cluster" was "AVAILABLE"
@@ -209,7 +209,7 @@ atomic action CreateDBInstance:
 
 # fake_skip: internal
 # step: a "neptune" "instance" finishes creating
-# result: the "neptune" "INSTANCE" will be "AVAILABLE" and the "neptune" "cluster" primary will be updated if applicable
+# result: the "neptune" "instance" will be "AVAILABLE" and the "neptune" "cluster" primary will be updated if applicable
 # guard: the "neptune" "instance" existed
 # guard_violation: the "neptune" "instance" did not exist
 # guard: the "neptune" "instance" was "CREATING"
@@ -229,7 +229,7 @@ atomic action CompleteInstanceCreation:
                         cluster_primary_instance[cid] = iid
 
 # step: a "neptune" "instance" configuration is modified
-# result: the "neptune" "INSTANCE" will be in "MODIFYING" state
+# result: the "neptune" "instance" will be in "MODIFYING" state
 # guard: the "neptune" "instance" existed
 # guard_violation: the "neptune" "instance" did not exist
 # guard: the "neptune" "instance" was "AVAILABLE"
@@ -249,7 +249,7 @@ atomic action ModifyDBInstance:
 
 # fake_skip: internal
 # step: a "neptune" "instance" modification completes
-# result: the "neptune" "instance" returns to AVAILABLE state
+# result: the "neptune" "instance" returns to "AVAILABLE" state
 # guard: the "neptune" "instance" existed
 # guard_violation: the "neptune" "instance" did not exist
 # guard: the "neptune" "instance" was "MODIFYING"
@@ -261,7 +261,7 @@ atomic action CompleteInstanceModification:
                 instance_status[iid] = "AVAILABLE"
 
 # step: a "neptune" "instance" is rebooted
-# result: the "neptune" "INSTANCE" will be in "REBOOTING" state
+# result: the "neptune" "instance" will be in "REBOOTING" state
 # guard: the "neptune" "instance" existed
 # guard_violation: the "neptune" "instance" did not exist
 # guard: the "neptune" "instance" was "AVAILABLE"
@@ -281,7 +281,7 @@ atomic action RebootDBInstance:
 
 # fake_skip: internal
 # step: a "neptune" "instance" reboot completes
-# result: the "neptune" "instance" returns to AVAILABLE state
+# result: the "neptune" "instance" returns to "AVAILABLE" state
 # guard: the "neptune" "instance" existed
 # guard_violation: the "neptune" "instance" did not exist
 # guard: the "neptune" "instance" was "REBOOTING"
@@ -293,7 +293,7 @@ atomic action CompleteInstanceReboot:
                 instance_status[iid] = "AVAILABLE"
 
 # step: a "neptune" "instance" is deleted
-# result: the "neptune" "INSTANCE" will be in "DELETING" state
+# result: the "neptune" "instance" will be in "DELETING" state
 # guard: the "neptune" "instance" existed
 # guard_violation: the "neptune" "instance" did not exist
 # guard: the "neptune" "instance" was "AVAILABLE"
@@ -306,7 +306,7 @@ atomic action DeleteDBInstance:
 
 # fake_skip: internal
 # step: a "neptune" "instance" deletion completes
-# result: the "neptune" "INSTANCE" will be "DELETED" and the "neptune" "cluster" primary will be cleared if applicable
+# result: the "neptune" "instance" will be "DELETED" and the "neptune" "cluster" primary will be cleared if applicable
 # guard: the "neptune" "instance" existed
 # guard_violation: the "neptune" "instance" did not exist
 # guard: the "neptune" "instance" was "DELETING"
@@ -344,15 +344,15 @@ atomic action MultiAZFailover:
 # fake_skip: internal
 # Promote a replica instance to primary while cluster is MODIFYING
 # step: a replica "neptune" "instance" is promoted to primary during failover
-# result: the "neptune" "cluster" returns to AVAILABLE with a new primary neptune instance
+# result: the "neptune" "cluster" returns to "AVAILABLE" with a new primary "neptune" "instance"
 # guard: the "neptune" "cluster" existed
 # guard_violation: the "neptune" "cluster" did not exist
 # guard: the "neptune" "cluster" was "MODIFYING"
 # guard_violation: the "neptune" "cluster" was not "MODIFYING"
 # guard: the new primary "neptune" "instance" existed
 # guard_violation: the new primary "neptune" "instance" did not exist
-# guard: the "neptune" "instance" belongs to this neptune cluster
-# guard_violation: the "neptune" "instance" does not belong to this neptune cluster
+# guard: the "neptune" "instance" belongs to this "neptune" "cluster"
+# guard_violation: the "neptune" "instance" does not belong to this "neptune" "cluster"
 # guard: the "neptune" "instance" was not already the primary
 # guard_violation: the "neptune" "instance" was already the primary
 # guard: the "neptune" "instance" was "AVAILABLE"
@@ -374,7 +374,7 @@ atomic action PromoteReplicaToPrimary:
                                     cluster_status[cid] = "AVAILABLE"
 
 # step: a "neptune" "cluster" neptune snapshot is created
-# result: the "neptune" "SNAPSHOT" will be in "CREATING" state and linked to the "neptune" "cluster"
+# result: the "neptune" "snapshot" will be in "CREATING" state and linked to the "neptune" "cluster"
 # guard: the "neptune" "cluster" existed
 # guard_violation: the "neptune" "cluster" did not exist
 # guard: the "neptune" "cluster" was "AVAILABLE"
@@ -392,7 +392,7 @@ atomic action CreateDBClusterSnapshot:
 
 # fake_skip: internal
 # step: a "neptune" "cluster" neptune snapshot finishes creating
-# result: the "neptune" "SNAPSHOT" will be "AVAILABLE" and the "neptune" "cluster" returns to AVAILABLE if it was backing up
+# result: the "neptune" "snapshot" will be "AVAILABLE" and the "neptune" "cluster" returns to "AVAILABLE" if it was backing up
 # guard: the "neptune" "snapshot" existed
 # guard_violation: the "neptune" "snapshot" did not exist
 # guard: the "neptune" "snapshot" was "CREATING"
@@ -408,7 +408,7 @@ atomic action CompleteSnapshotCreation:
                         cluster_status[cid] = "AVAILABLE"
 
 # step: a "neptune" "cluster" neptune snapshot is deleted
-# result: the "neptune" "SNAPSHOT" will be in "DELETING" state
+# result: the "neptune" "snapshot" will be in "DELETING" state
 # guard: the "neptune" "snapshot" existed
 # guard_violation: the "neptune" "snapshot" did not exist
 # guard: the "neptune" "snapshot" was "AVAILABLE"
@@ -421,7 +421,7 @@ atomic action DeleteDBClusterSnapshot:
 
 # fake_skip: internal
 # step: a "neptune" "cluster" neptune snapshot deletion completes
-# result: the "neptune" "SNAPSHOT" will be "DELETED"
+# result: the "neptune" "snapshot" will be "DELETED"
 # guard: the "neptune" "snapshot" existed
 # guard_violation: the "neptune" "snapshot" did not exist
 # guard: the "neptune" "snapshot" was "DELETING"
@@ -433,7 +433,7 @@ atomic action CompleteSnapshotDeletion:
                 snapshot_status[sid] = "DELETED"
 
 # step: a "neptune" "cluster" is restored from a neptune snapshot
-# result: the restored neptune cluster will be in "RESTORING" state
+# result: the restored "neptune" "cluster" will be in "RESTORING" state
 # guard: the "neptune" "snapshot" existed
 # guard_violation: the "neptune" "snapshot" did not exist
 # guard: the "neptune" "snapshot" was "AVAILABLE"
@@ -464,14 +464,14 @@ atomic action CompleteClusterRestore:
                 cluster_status[cid] = "AVAILABLE"
 
 # fake_skip: internal
-# step: an automated backup window runs on an available neptune cluster
+# step: an automated backup window runs on an available "neptune" "cluster"
 # result: a neptune snapshot will be "CREATING" and the "neptune" "cluster" will be in "BACKING_UP" state
 # guard: the "neptune" "cluster" existed
 # guard_violation: the "neptune" "cluster" did not exist
 # guard: the "neptune" "cluster" was "AVAILABLE"
 # guard_violation_lifecycle: the "neptune" "cluster" was not "AVAILABLE"
-# guard: a neptune snapshot slot is available
-# guard_violation: no neptune snapshot slot is available
+# guard: a "neptune" "snapshot" "slot" was "available"
+# guard_violation: no "neptune" "snapshot" "slot" was "available"
 atomic action AutomatedBackupWindow:
     oneof cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -483,7 +483,7 @@ atomic action AutomatedBackupWindow:
                         cluster_status[cid] = "BACKING_UP"
 
 # Safety: cluster statuses are valid
-# check: every cluster has a valid status
+# check: every "neptune" "cluster" has a valid status
 always assertion ValidClusterStatus:
     for cid in cluster_status:
         s = cluster_status[cid]
@@ -492,7 +492,7 @@ always assertion ValidClusterStatus:
     return True
 
 # Safety: instance statuses are valid
-# check: every instance has a valid status
+# check: every "neptune" "instance" has a valid status
 always assertion ValidInstanceStatus:
     for iid in instance_status:
         s = instance_status[iid]
@@ -501,7 +501,7 @@ always assertion ValidInstanceStatus:
     return True
 
 # Safety: snapshot statuses are valid
-# check: every snapshot has a valid status
+# check: every "neptune" "snapshot" has a valid status
 always assertion ValidSnapshotStatus:
     for sid in snapshot_status:
         s = snapshot_status[sid]
@@ -510,7 +510,7 @@ always assertion ValidSnapshotStatus:
     return True
 
 # Safety: stopped clusters must not have AVAILABLE instances
-# check: a stopped cluster has no available instances
+# check: a stopped "neptune" "cluster" has no available "neptune" "instance"s
 always assertion StoppedClusterHasNoAvailableInstances:
     for cid in cluster_status:
         if cluster_status[cid] == "STOPPED":
@@ -522,7 +522,7 @@ always assertion StoppedClusterHasNoAvailableInstances:
     return True
 
 # Safety: instances on a stopped/stopping cluster cannot be modifying
-# check: instances on a stopped or stopping cluster are not in MODIFYING state
+# check: "neptune" "instance"s on a stopped or stopping "neptune" "cluster" are not in "MODIFYING" state
 always assertion StoppedClusterInstancesNotModifiable:
     for iid in instance_status:
         if instance_status[iid] == "MODIFYING":
@@ -534,7 +534,7 @@ always assertion StoppedClusterInstancesNotModifiable:
     return True
 
 # Safety: DELETED clusters should not have non-deleted instances
-# check: a deleted cluster has no available instances
+# check: a deleted "neptune" "cluster" has no available "neptune" "instance"s
 always assertion NoAvailableInstancesOnDeletedCluster:
     for cid in cluster_status:
         if cluster_status[cid] == "DELETED":
@@ -547,7 +547,7 @@ always assertion NoAvailableInstancesOnDeletedCluster:
     return True
 
 # Safety: a BACKING_UP cluster must have a corresponding in-progress snapshot
-# check: every backing-up cluster has a corresponding in-progress snapshot
+# check: every backing-up "neptune" "cluster" has a corresponding in-progress "neptune" "snapshot"
 always assertion BackingUpClusterHasSnapshot:
     for cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -563,7 +563,7 @@ always assertion BackingUpClusterHasSnapshot:
     return True
 
 # Safety: FAILED clusters should not have AVAILABLE instances
-# check: a failed cluster has no available instances
+# check: a failed "neptune" "cluster" has no available "neptune" "instance"s
 always assertion NoAvailableInstancesOnFailedCluster:
     for cid in cluster_status:
         if cluster_status[cid] == "FAILED":

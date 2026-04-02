@@ -1,4 +1,4 @@
-"""When: a "SQS" notification configuration is added to the bucket"""
+"""When: an "sqs" notification configuration is added to the "s3" "bucket" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUCKET, TEST_QUEUE
 
 
-@when('a "SQS" notification configuration is added to the bucket')
+@when('an "sqs" notification configuration is added to the "s3" "bucket"')
 def add_sqs_notification_config(lws_session, world):
     queue_arn = f"arn:aws:sqs:us-east-1:000000000000:{TEST_QUEUE}"
     try:

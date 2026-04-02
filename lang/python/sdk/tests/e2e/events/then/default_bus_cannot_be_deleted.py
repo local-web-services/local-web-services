@@ -1,11 +1,11 @@
-"""Then: the default event bus cannot be deleted"""
+"""Then: the default "eventbridge" "bus" cannot be deleted"""
 
 from __future__ import annotations
 
 from pytest_bdd import step
 
 
-@step("the default event bus cannot be deleted")
+@step('the default "eventbridge" "bus" cannot be deleted')
 def default_bus_cannot_be_deleted(lws_session):
     """Invariant: attempting to delete the default bus always raises an error."""
     try:

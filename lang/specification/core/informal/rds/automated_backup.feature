@@ -14,9 +14,9 @@ Feature: Rds - An Automated Backup Runs On An Available "Rds" "Instance"
     And a "rds" "snapshot" slot is available
     When an automated backup runs on an available "rds" "instance"
     Then a "rds" "snapshot" will be "CREATING" and the "rds" "instance" will be in "BACKING_UP" state
-    And every database instance has a valid status
-    And every database snapshot has a valid status
-    And every backing-up instance has a corresponding in-progress snapshot
+    And every "rds" "instance" has a valid status
+    And every "rds" "snapshot" has a valid status
+    And every backing-up "rds" "instance" has a corresponding in-progress "rds" "snapshot"
 
   @guard @negative @automated_backup @internal
   Scenario: an automated backup runs on an available "rds" "instance" fails when the "rds" "instance" did not exist

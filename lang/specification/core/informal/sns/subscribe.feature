@@ -11,13 +11,13 @@ Feature: Sns - An Endpoint Subscribes To A "Sns" "Topic"
   Scenario: an endpoint subscribes to a "sns" "topic"
     Given the "sns" "topic" existed
     And the "sns" "topic" was "ACTIVE"
-    And the subscription slot is available
+    And an "sns" "subscription" "slot" was "available"
     When an endpoint subscribes to a "sns" "topic"
     Then the "sns" "subscription" will be "PENDING_CONFIRMATION" or "CONFIRMED"
-    And no delivery is in-flight to a deleted subscription
-    And no delivery is in-flight to an unconfirmed subscription
-    And every active subscription references an "ACTIVE" topic
-    And every delivery retry count is within the allowed limit
+    And no "sns" "delivery" is "IN_FLIGHT" to a deleted "sns" "subscription"
+    And no "sns" "delivery" is "IN_FLIGHT" to an unconfirmed "sns" "subscription"
+    And every active "sns" "subscription" references an "ACTIVE" "sns" "topic"
+    And every "sns" "delivery" retry count is within the allowed limit
 
   @guard @negative @subscribe
   Scenario: an endpoint subscribes to a "sns" "topic" fails when the "sns" "topic" did not exist
@@ -33,9 +33,9 @@ Feature: Sns - An Endpoint Subscribes To A "Sns" "Topic"
     Then the operation is rejected
 
   @guard @negative @subscribe @capacity
-  Scenario: an endpoint subscribes to a "sns" "topic" fails when the subscription slot is not available
+  Scenario: an endpoint subscribes to a "sns" "topic" fails when no "sns" "subscription" "slot" was "available"
     Given the "sns" "topic" existed
     And the "sns" "topic" was "ACTIVE"
-    And the subscription slot is not available
+    And no "sns" "subscription" "slot" was "available"
     When an endpoint subscribes to a "sns" "topic"
     Then the operation is rejected

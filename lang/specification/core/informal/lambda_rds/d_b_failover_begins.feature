@@ -13,8 +13,8 @@ Feature: LambdaRds - A Multi-Az Failover Begins On The "Rds" "Instance"
     And the "rds" "instance" was "AVAILABLE"
     When a Multi-"AZ" failover begins on the "rds" "instance"
     Then the "rds" "instance" will be "FAILING_OVER" and temporarily unavailable for connections
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every successful "lambda" "invocation" recorded which "rds" "database instance" it queried
 
   @guard @negative @d_b_failover_begins
   Scenario: a Multi-"AZ" failover begins on the "rds" "instance" fails when the "rds" "instance" did not exist

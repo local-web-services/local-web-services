@@ -2,7 +2,14 @@
 
 from __future__ import annotations
 
-from .constants import PASS_DEFINITION, ROLE_ARN, TEST_INPUT, TEST_SM, TEST_TOPIC, _sm_arn
+from .constants import (
+    PASS_DEFINITION,
+    ROLE_ARN,
+    TEST_INPUT,
+    TEST_SM,
+    TEST_TOPIC,
+    _sm_arn,
+)
 
 
 class StepfunctionsSnsTestClient:

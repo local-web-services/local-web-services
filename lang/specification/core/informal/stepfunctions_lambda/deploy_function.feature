@@ -12,9 +12,9 @@ Feature: StepfunctionsLambda - A "Lambda" "Function" Is Deployed
     Given the "lambda" "function" did not already exist
     When a "lambda" "function" is deployed
     Then the "lambda" "function" will be "ACTIVE"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation has a corresponding "RUNNING" execution
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "IN_PROGRESS" "lambda" "invocation" has a corresponding "RUNNING" "step functions" "execution"
 
   @guard @negative @deploy_function
   Scenario: a "lambda" "function" is deployed fails when the "lambda" "function" already existed

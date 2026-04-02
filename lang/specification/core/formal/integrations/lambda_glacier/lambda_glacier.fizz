@@ -58,13 +58,13 @@ atomic action DeleteVault:
 
 
 # step: the "lambda" "function" is invoked
-# result: the invocation will be "IN_PROGRESS"
+# result: the "lambda" "invocation" will be "IN_PROGRESS"
 # guard: the "lambda" "function" existed
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
 # guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
 # guard: a "lambda" "invocation" slot is available
-# guard_violation_capacity: no invocation slot is available
+# guard_violation_capacity: no "lambda" "invocation" "slot" was "available"
 atomic action InvokeFunction:
     oneof fid in FUNC_IDS:
         if fid in func_status:
@@ -83,7 +83,7 @@ atomic action InvokeFunction:
 # guard: the "glacier" "vault" existed
 # guard_violation_lifecycle: the "glacier" "vault" did not exist or was "DELETED"
 # guard: an "glacier" "archive" slot is available
-# guard_violation_capacity: no archive slot is available
+# guard_violation_capacity: no "glacier" "archive" "slot" was "available"
 atomic action UploadArchiveTask:
     oneof iid in INV_IDS:
         if iid in inv_status:
@@ -100,7 +100,7 @@ atomic action UploadArchiveTask:
 
 
 # step: the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
-# result: the invocation will be "FAILED" with a ResourceNotFoundException
+# result: the "lambda" "invocation" will be "FAILED" with a ResourceNotFoundException
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 # guard: the "glacier" "vault" was "DELETED"
@@ -115,7 +115,7 @@ atomic action InvocationFailsVaultDeleted:
                             inv_status[iid] = "FAILED"
 
 
-# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+# check: every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
 always assertion InvocationRequiresActiveFunction:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":

@@ -14,9 +14,9 @@ Feature: Rds - A "Rds" "Snapshot" Is Created From A "Rds" "Instance"
     And a "rds" "snapshot" slot is available
     When a "rds" "snapshot" is created from a "rds" "instance"
     Then the "rds" "snapshot" will be "CREATING" and the "rds" "instance" will be in "BACKING_UP" state
-    And every database instance has a valid status
-    And every database snapshot has a valid status
-    And every backing-up instance has a corresponding in-progress snapshot
+    And every "rds" "instance" has a valid status
+    And every "rds" "snapshot" has a valid status
+    And every backing-up "rds" "instance" has a corresponding in-progress "rds" "snapshot"
 
   @guard @negative @create_d_b_snapshot
   Scenario: a "rds" "snapshot" is created from a "rds" "instance" fails when the "rds" "instance" did not exist

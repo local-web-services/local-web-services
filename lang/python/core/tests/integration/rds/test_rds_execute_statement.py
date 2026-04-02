@@ -102,7 +102,11 @@ class TestRdsExecuteStatement:
         # Act
         actual_response = await client.post(
             "/execute",
-            json={"resourceArn": unknown_arn, "secretArn": _SECRET_ARN, "sql": "SELECT 1"},
+            json={
+                "resourceArn": unknown_arn,
+                "secretArn": _SECRET_ARN,
+                "sql": "SELECT 1",
+            },
         )
 
         # Assert

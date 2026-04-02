@@ -21,7 +21,10 @@ def simple_config() -> FakeServerConfig:
         path="/v1/users/{user_id}",
         method="GET",
         responses=[
-            (MatchCriteria(), FakeResponse(status=200, body={"id": "{{path.user_id}}"})),
+            (
+                MatchCriteria(),
+                FakeResponse(status=200, body={"id": "{{path.user_id}}"}),
+            ),
         ],
     )
     return FakeServerConfig(name="test-api", routes=[route])

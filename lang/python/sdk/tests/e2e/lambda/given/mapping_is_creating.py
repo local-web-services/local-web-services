@@ -6,6 +6,6 @@ import pytest
 from pytest_bdd import given
 
 
-@given('the mapping was "CREATING"')
+@given('the "lambda" "event source mapping" was "CREATING"')
 def mapping_is_creating():
     pytest.skip("Cannot observe ESM CREATING state in lws")

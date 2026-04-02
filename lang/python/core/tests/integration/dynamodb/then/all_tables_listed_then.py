@@ -1,11 +1,11 @@
-"""Then: all tables are listed"""
+"""Then: all "dynamodb" "table"s are listed"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("all tables are listed")
+@then('all "dynamodb" "table"s are listed')
 def all_tables_listed_then(world: dict):
     expected_field = "TableNames"
     actual_result = world["result"]

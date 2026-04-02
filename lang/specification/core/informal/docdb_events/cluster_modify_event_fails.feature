@@ -10,11 +10,11 @@ Feature: DocdbEvents - A "Documentdb" "Cluster" Modification Begins But Event De
   @minimal @happy @cluster_modify_event_fails @internal
   Scenario: a "documentdb" "cluster" modification begins but event delivery fails because the bus is deleted
     Given the "documentdb" "cluster" was "AVAILABLE"
-    And the bus was "DELETED"
+    And the "eventbridge" "bus" was "DELETED"
     When a "documentdb" "cluster" modification begins but event delivery fails because the bus is deleted
     Then the "documentdb" "cluster" will be "MODIFYING" but no event will be delivered
     And every "DELIVERED" event references a "documentdb" "cluster" that exists
-    And every "DELIVERED" event references a bus that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @guard @negative @cluster_modify_event_fails @internal
   Scenario: a "documentdb" "cluster" modification begins but event delivery fails because the bus is deleted fails when the "documentdb" "cluster" was not "AVAILABLE"
@@ -23,8 +23,8 @@ Feature: DocdbEvents - A "Documentdb" "Cluster" Modification Begins But Event De
     Then the operation is rejected
 
   @guard @negative @cluster_modify_event_fails @internal
-  Scenario: a "documentdb" "cluster" modification begins but event delivery fails because the bus is deleted fails when the bus was not "DELETED"
+  Scenario: a "documentdb" "cluster" modification begins but event delivery fails because the bus is deleted fails when the "eventbridge" "bus" was not "DELETED"
     Given the "documentdb" "cluster" was "AVAILABLE"
-    And the bus was not "DELETED"
+    And the "eventbridge" "bus" was not "DELETED"
     When a "documentdb" "cluster" modification begins but event delivery fails because the bus is deleted
     Then the operation is rejected

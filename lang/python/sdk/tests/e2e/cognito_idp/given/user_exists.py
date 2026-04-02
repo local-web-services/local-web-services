@@ -13,6 +13,8 @@ def user_exists(lws_session, world):
     if not world.get("pool_id"):
         world["pool_id"] = CognitoIdpTestClient(lws_session).create_pool()
     CognitoIdpTestClient(lws_session).admin_create_user(
-        UserPoolId=world["pool_id"], Username=TEST_USERNAME, TemporaryPassword=TEST_TEMP_PASSWORD
+        UserPoolId=world["pool_id"],
+        Username=TEST_USERNAME,
+        TemporaryPassword=TEST_TEMP_PASSWORD,
     )
     world["username"] = TEST_USERNAME

@@ -14,13 +14,13 @@ Feature: CognitoIdp - A "Cognito" "User" Is Created By An Admin In An Active "Co
     And the "cognito" "user" did not already exist
     When a "cognito" "user" is created by an admin in an active "cognito" "user pool"
     Then the "cognito" "user" will exist in "FORCE_CHANGE_PASSWORD" state and will be enabled
-    And every user pool has a valid status ("ACTIVE" or "DELETED")
-    And every user has a valid status
-    And every non-deleted user has an enabled flag set
-    And every group membership references an existing active group
-    And every auth session has a valid status
-    And deleted users do not have active authenticated sessions
-    And disabled users do not have active authenticated sessions
+    And every "cognito" "user pool" has a valid status ("ACTIVE" or "DELETED")
+    And every "cognito" "user" has a valid status
+    And every non-deleted "cognito" "user" has an enabled flag set
+    And every "cognito" "group" membership references an existing active "cognito" "group"
+    And every "cognito" "session" has a valid status
+    And deleted "cognito" "user"s do not have active authenticated "cognito" "session"s
+    And disabled "cognito" "user"s do not have active authenticated "cognito" "session"s
 
   @guard @negative @admin_create_user
   Scenario: a "cognito" "user" is created by an admin in an active "cognito" "user pool" fails when the "cognito" "user pool" did not exist

@@ -13,7 +13,7 @@ Feature: LambdaDocdb - The "Documentdb" "Cluster" Is Stopped
     And the "documentdb" "cluster" was "AVAILABLE"
     When the "documentdb" "cluster" is stopped
     Then the "documentdb" "cluster" will be "STOPPED" and connections will be rejected
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @guard @negative @stop_cluster

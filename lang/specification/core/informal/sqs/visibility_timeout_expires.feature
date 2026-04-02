@@ -13,9 +13,9 @@ Feature: Sqs - A "Sqs" "Message" Visibility Timeout Expires
     And the "sqs" "message" was "IN_FLIGHT"
     When a "sqs" "message" visibility timeout expires
     Then the "sqs" "message" becomes "AVAILABLE" again
-    And every non-deleted message belongs to an "ACTIVE" queue
-    And every in-flight message belongs to an "ACTIVE" queue
-    And every message has a non-negative receive count
+    And every non-deleted "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
+    And every "IN_FLIGHT" "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
+    And every "sqs" "message" has a non-negative receive count
 
   @guard @negative @visibility_timeout_expires @internal
   Scenario: a "sqs" "message" visibility timeout expires fails when the "sqs" "message" did not exist

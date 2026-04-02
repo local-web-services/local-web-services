@@ -12,8 +12,8 @@ Feature: ApigatewayCognito - A "Cognito" "User Pool" Is Created
     Given the "cognito" "user pool" did not already exist
     When a "cognito" "user pool" is created
     Then the "cognito" "user pool" will be "ACTIVE"
-    And every "API" with a configured authorizer references an "ACTIVE" pool
-    And every "AUTHORIZED" request was validated against a "VALID" token
+    And every "api gateway" "API" with a configured authorizer references an "ACTIVE" "cognito" "user pool"
+    And every "AUTHORIZED" "api gateway" "request" was validated against a "VALID" "token"
     And every "AUTHORIZED" request's token belongs to a "cognito" "user" in the "api gateway" "API"'s configured pool
     And every "REJECTED" request's token belongs to a "cognito" "user" in a different pool than the configured authorizer
 

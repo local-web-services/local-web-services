@@ -12,8 +12,8 @@ Feature: StepfunctionsMemorydb - The "Memorydb" "Cluster" Update Completes
     Given the "memorydb" "cluster" was "UPDATING"
     When the "memorydb" "cluster" update completes
     Then the "memorydb" "cluster" will be "AVAILABLE" again
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which cluster it connected to
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "memorydb" "cluster" it connected to
 
   @guard @negative @cluster_update_complete @internal
   Scenario: the "memorydb" "cluster" update completes fails when the "memorydb" "cluster" was not "UPDATING"

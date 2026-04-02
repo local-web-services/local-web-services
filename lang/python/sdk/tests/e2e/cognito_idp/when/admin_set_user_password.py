@@ -14,7 +14,10 @@ def admin_set_user_password(lws_session, world):
         pool_id = world.get("pool_id", "")
         username = world.get("username", TEST_USERNAME)
         world["result"] = lws_session.client("cognito-idp").admin_set_user_password(
-            UserPoolId=pool_id, Username=username, Password=TEST_PASSWORD, Permanent=True
+            UserPoolId=pool_id,
+            Username=username,
+            Password=TEST_PASSWORD,
+            Permanent=True,
         )
         world["error"] = None
     except (ClientError, Exception) as exc:

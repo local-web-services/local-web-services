@@ -14,14 +14,14 @@ Feature: Docdb - A "Documentdb" "Instance" Finishes Creating
     And the "documentdb" "cluster" existed
     And the "documentdb" "instance" is the primary
     When a "documentdb" "instance" finishes creating
-    Then the "documentdb" "INSTANCE" will be "AVAILABLE" and the "documentdb" "cluster" primary will be updated if applicable
-    And every cluster has a valid status
-    And every instance has a valid status
-    And every snapshot has a valid status
-    And a deleted cluster has no non-deleted instances
-    And a failed cluster has no available instances
-    And a deleting cluster receives no new instances
-    And every creating snapshot references a cluster that has not been deleted
+    Then the "documentdb" "instance" will be "AVAILABLE" and the "documentdb" "cluster" primary will be updated if applicable
+    And every "documentdb" "cluster" has a valid status
+    And every "documentdb" "instance" has a valid status
+    And every "documentdb" "snapshot" has a valid status
+    And a deleted "documentdb" "cluster" has no non-deleted "documentdb" "instance"s
+    And a failed "documentdb" "cluster" has no available "documentdb" "instance"s
+    And a deleting "documentdb" "cluster" receives no new "documentdb" "instance"s
+    And every creating "documentdb" "snapshot" references a "documentdb" "cluster" that has not been deleted
 
   @guard @negative @complete_instance_creation @internal
   Scenario: a "documentdb" "instance" finishes creating fails when the "documentdb" "instance" did not exist

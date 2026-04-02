@@ -1,0 +1,65 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 10
+---
+# CloudFormation Formal Specification
+# Models the stack lifecycle: CreateStack, UpdateStack, DeleteStack.
+# Stack status transitions: absent -> CREATE_COMPLETE -> UPDATE_COMPLETE -> DELETED
+
+STACK_IDS = ["s1", "s2"]
+LIVE_STATUSES = ["CREATE_COMPLETE", "UPDATE_COMPLETE"]
+
+action Init:
+    stack_status = {}
+
+# step: a "cloudformation" "stack" is created
+# result: the "cloudformation" "stack" will be "CREATE_COMPLETE"
+# guard: the "cloudformation" "stack" did not already exist
+# guard_violation: the "cloudformation" "stack" already existed
+atomic action CreateStack:
+    oneof sid in STACK_IDS:
+        if sid not in stack_status:
+            stack_status[sid] = "CREATE_COMPLETE"
+
+# step: a "cloudformation" "stack" is updated
+# result: the "cloudformation" "stack" will be "UPDATE_COMPLETE"
+# guard: the "cloudformation" "stack" existed
+# guard_violation: the "cloudformation" "stack" did not exist
+atomic action UpdateStack:
+    oneof sid in STACK_IDS:
+        if sid in stack_status:
+            if stack_status[sid] in LIVE_STATUSES:
+                stack_status[sid] = "UPDATE_COMPLETE"
+
+# step: a "cloudformation" "stack" is deleted
+# result: the "cloudformation" "stack" will no longer exist
+# guard: the "cloudformation" "stack" existed
+# guard_violation: the "cloudformation" "stack" did not exist
+atomic action DeleteStack:
+    oneof sid in STACK_IDS:
+        if sid in stack_status:
+            stack_status[sid] = "DELETED"
+
+# check: every "cloudformation" "stack" has a valid status
+always assertion StackStatusValid:
+    for sid in stack_status:
+        if stack_status[sid] not in ["CREATE_COMPLETE", "UPDATE_COMPLETE", "DELETED"]:
+            return False
+    return True
+
+# check: deleted "cloudformation" "stacks" are not describable
+always assertion DeletedStackNotDescribable:
+    for sid in stack_status:
+        if stack_status[sid] == "DELETED":
+            if stack_status[sid] in LIVE_STATUSES:
+                return False
+    return True
+
+# check: "cloudformation" "stack" names are unique per account
+always assertion UniqueStackNamesPerAccount:
+    for sid in stack_status:
+        if stack_status[sid] in LIVE_STATUSES:
+            pass
+    return True

@@ -1,11 +1,11 @@
-"""Then: every event bus has a valid status ("ACTIVE" or "DELETED")"""
+"""Then: every "eventbridge" "bus" has a valid status ("ACTIVE" or "DELETED")"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('every event bus has a valid status ("ACTIVE" or "DELETED")')
+@then('every "eventbridge" "bus" has a valid status ("ACTIVE" or "DELETED")')
 def every_event_bus_has_valid_status(lws_session):
     """Invariant: every event bus returned by list_event_buses has a known status.
 

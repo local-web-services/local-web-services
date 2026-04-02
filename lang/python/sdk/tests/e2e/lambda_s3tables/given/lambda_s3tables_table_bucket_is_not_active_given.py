@@ -1,4 +1,4 @@
-"""Given: the table bucket was not "ACTIVE" """
+"""Given: the "s3 tables" "bucket" was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaS3tablesTestClient
 from ..constants import _table_bucket_arn
 
 
-@given('the table bucket was not "ACTIVE"')
+@given('the "s3 tables" "bucket" was not "ACTIVE"')
 def lambda_s3tables_table_bucket_is_not_active_given(lws_session, world):
     try:
         lws_session.client("s3tables").delete_table_bucket(tableBucketARN=_table_bucket_arn())

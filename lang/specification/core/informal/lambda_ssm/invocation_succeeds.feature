@@ -12,9 +12,9 @@ Feature: LambdaSsm - The "Lambda" "Function" Reads An Existing Parameter And Com
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "ssm" "parameter" existed
     When the "lambda" "function" reads an existing parameter and completes successfully
-    Then the invocation will be "SUCCESS"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which parameter it read
+    Then the "lambda" "invocation" will be "SUCCESS"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every successful "lambda" "invocation" recorded which "ssm" "parameter" it read
 
   @guard @negative @invocation_succeeds @internal
   Scenario: the "lambda" "function" reads an existing parameter and completes successfully fails when no "lambda" "invocation" was "IN_PROGRESS"

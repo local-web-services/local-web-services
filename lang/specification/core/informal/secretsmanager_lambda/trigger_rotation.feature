@@ -9,31 +9,31 @@ Feature: SecretsmanagerLambda - A Rotation Is Triggered For The "Secretsmanager"
 
   @minimal @happy @trigger_rotation
   Scenario: a rotation is triggered for the "secretsmanager" "secret"
-    Given the secrets manager secret existed and was "ACTIVE"
+    Given the "secrets manager" "secret" existed and was "ACTIVE"
     And the "secretsmanager" "secret" has a rotation function configured
     And a "lambda" "invocation" slot is available
     When a rotation is triggered for the "secretsmanager" "secret"
     Then the "secrets manager" "secret" will be "ROTATING" and Secrets Manager will invoke the "lambda" "rotation function"
-    And every "ROTATING" secret has an "IN_PROGRESS" rotation invocation
-    And every successful rotation invocation recorded which secret it rotated
+    And every "ROTATING" "secrets manager" "secret" has an "IN_PROGRESS" "lambda" "rotation invocation"
+    And every successful "lambda" "rotation invocation" recorded which "secrets manager" "secret" it rotated
 
   @guard @negative @trigger_rotation @lifecycle
-  Scenario: a rotation is triggered for the "secretsmanager" "secret" fails when the secrets manager secret did not exist or was "ACTIVE"
-    Given the secrets manager secret did not exist or was "ACTIVE"
+  Scenario: a rotation is triggered for the "secretsmanager" "secret" fails when the "secrets manager" "secret" did not exist or was not "ACTIVE"
+    Given the "secrets manager" "secret" did not exist or was not "ACTIVE"
     When a rotation is triggered for the "secretsmanager" "secret"
     Then the operation is rejected
 
   @guard @negative @trigger_rotation
   Scenario: a rotation is triggered for the "secretsmanager" "secret" fails when the "secretsmanager" "secret" has no rotation function configured
-    Given the secrets manager secret existed and was "ACTIVE"
+    Given the "secrets manager" "secret" existed and was "ACTIVE"
     And the "secretsmanager" "secret" has no rotation function configured
     When a rotation is triggered for the "secretsmanager" "secret"
     Then the operation is rejected
 
   @guard @negative @trigger_rotation @capacity
-  Scenario: a rotation is triggered for the "secretsmanager" "secret" fails when no invocation slot is available
-    Given the secrets manager secret existed and was "ACTIVE"
+  Scenario: a rotation is triggered for the "secretsmanager" "secret" fails when no "lambda" "invocation" "slot" was "available"
+    Given the "secrets manager" "secret" existed and was "ACTIVE"
     And the "secretsmanager" "secret" has a rotation function configured
-    And no invocation slot is available
+    And no "lambda" "invocation" "slot" was "available"
     When a rotation is triggered for the "secretsmanager" "secret"
     Then the operation is rejected

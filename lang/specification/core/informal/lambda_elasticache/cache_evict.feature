@@ -1,5 +1,5 @@
 @lambdaelasticache @generated
-Feature: LambdaElasticache - Elasticache Evicts A Cache Entry Due To Memory Pressure Or Ttl Expiry
+Feature: LambdaElasticache - The "Elasticache" "Cluster" Evicts A "Cache" "Entry" Due To Memory Pressure Or Ttl Expiry
 
   # Generated from FizzBee spec: lambda_elasticache.fizz
   # Safety invariants: InvocationRequiresActiveFunction, CachedEntryRequiresAvailableCluster
@@ -8,15 +8,15 @@ Feature: LambdaElasticache - Elasticache Evicts A Cache Entry Due To Memory Pres
     Given the system is initialized
 
   @minimal @happy @cache_evict @internal
-  Scenario: ElastiCache evicts a cache entry due to memory pressure or "TTL" expiry
-    Given a "CACHED" entry existed
-    When ElastiCache evicts a cache entry due to memory pressure or "TTL" expiry
-    Then the cache entry will be "EVICTED"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "CACHED" entry belongs to an "AVAILABLE" cluster
+  Scenario: the "elasticache" "cluster" evicts a "cache" "entry" due to memory pressure or "TTL" expiry
+    Given a "CACHED" "elasticache" "entry" existed
+    When the "elasticache" "cluster" evicts a "cache" "entry" due to memory pressure or "TTL" expiry
+    Then the "elasticache" "cache entry" will be "EVICTED"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "CACHED" "elasticache" "entry" belongs to an "AVAILABLE" "elasticache" "cluster"
 
   @guard @negative @cache_evict @internal
-  Scenario: ElastiCache evicts a cache entry due to memory pressure or "TTL" expiry fails when no "CACHED" entry existed
-    Given no "CACHED" entry existed
-    When ElastiCache evicts a cache entry due to memory pressure or "TTL" expiry
+  Scenario: the "elasticache" "cluster" evicts a "cache" "entry" due to memory pressure or "TTL" expiry fails when no "CACHED" "elasticache" "entry" existed
+    Given no "CACHED" "elasticache" "entry" existed
+    When the "elasticache" "cluster" evicts a "cache" "entry" due to memory pressure or "TTL" expiry
     Then the operation is rejected

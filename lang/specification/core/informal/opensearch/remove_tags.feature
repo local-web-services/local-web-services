@@ -15,10 +15,10 @@ Feature: Opensearch - Tags Are Removed From An "Opensearch" "Domain"
     And the "opensearch" "tag key" existed
     When tags are removed from an "opensearch" "domain"
     Then the specified tags are no longer associated with the "opensearch" "domain"
-    And no active connection references a deleted domain
+    And no active "opensearch" "connection" references a deleted "opensearch" "domain"
     And traffic can only be swapped after the new "opensearch" "cluster" was ready
-    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" inbound connection
-    And a pending config change only exists on a "opensearch" "domain" that is "PROCESSING"
+    And an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" "opensearch" "inbound connection"
+    And a pending config change only exists on an "opensearch" "domain" that is "PROCESSING"
 
   @guard @negative @remove_tags
   Scenario: tags are removed from an "opensearch" "domain" fails when the "opensearch" "domain" did not exist

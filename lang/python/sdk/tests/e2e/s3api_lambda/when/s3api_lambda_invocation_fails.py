@@ -1,11 +1,11 @@
-"""When: the Lambda invocation fails"""
+"""When: the "lambda" "function" invocation fails"""
 
 from __future__ import annotations
 
 from pytest_bdd import when
 
 
-@when("the Lambda invocation fails")
+@when('the "lambda" "function" invocation fails')
 def s3api_lambda_invocation_fails(world):
     """Internal scenario: invocation failures are not observable via public API."""
     if world.get("error") is not None:

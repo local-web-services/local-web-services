@@ -14,8 +14,8 @@ Feature: LambdaSns - The "Lambda" "Function" Publishes A Message To The "Sns" "T
     And the "sns" "topic" was "ACTIVE"
     When the "lambda" "function" publishes a message to the "sns" "topic" during invocation
     Then the "sns" "message" will be published to the "sns" "topic"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And publishing requires an "ACTIVE" topic to be present
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And "sns" publishing requires an "ACTIVE" "sns" "topic" to be present
 
   @guard @negative @publish_to_topic @lifecycle
   Scenario: the "lambda" "function" publishes a message to the "sns" "topic" during invocation fails when no "lambda" "invocation" was "IN_PROGRESS"

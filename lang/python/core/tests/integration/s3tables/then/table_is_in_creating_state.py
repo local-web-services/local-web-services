@@ -13,7 +13,11 @@ from ..constants import INT_BUCKET, INT_NAMESPACE, INT_TABLE
 def table_is_in_creating_state(client: TestClient):
     r = client.get(
         "/get-table",
-        params={"tableBucketARN": INT_BUCKET, "namespace": INT_NAMESPACE, "name": INT_TABLE},
+        params={
+            "tableBucketARN": INT_BUCKET,
+            "namespace": INT_NAMESPACE,
+            "name": INT_TABLE,
+        },
     )
     expected_valid_statuses = ("CREATING", "ACTIVE")
     actual_status = r.json().get("status", "ACTIVE")

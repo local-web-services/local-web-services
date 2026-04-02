@@ -10,14 +10,14 @@ Feature: StepfunctionsLambda - A Running "Step Functions" "Execution" Reaches Th
   @minimal @happy @invoke_task
   Scenario: a running "step functions" "execution" reaches the Lambda task state and invokes the function
     Given a "step functions" "execution" was "RUNNING"
-    And the execution's state machine has a configured Lambda task
-    And the configured function was "ACTIVE"
+    And the "step functions" "execution"'s state machine has a configured "lambda" task
+    And the configured "lambda" "function" was "ACTIVE"
     And a "lambda" "invocation" slot is available
     When a running "step functions" "execution" reaches the Lambda task state and invokes the function
-    Then the invocation will be "IN_PROGRESS"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation has a corresponding "RUNNING" execution
+    Then the "lambda" "invocation" will be "IN_PROGRESS"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "IN_PROGRESS" "lambda" "invocation" has a corresponding "RUNNING" "step functions" "execution"
 
   @guard @negative @invoke_task
   Scenario: a running "step functions" "execution" reaches the Lambda task state and invokes the function fails when no "step functions" "execution" was "RUNNING"
@@ -26,25 +26,25 @@ Feature: StepfunctionsLambda - A Running "Step Functions" "Execution" Reaches Th
     Then the operation is rejected
 
   @guard @negative @invoke_task
-  Scenario: a running "step functions" "execution" reaches the Lambda task state and invokes the function fails when the execution's state machine has no Lambda task configured
+  Scenario: a running "step functions" "execution" reaches the Lambda task state and invokes the function fails when the "step functions" "execution"'s state machine has no "lambda" task configured
     Given a "step functions" "execution" was "RUNNING"
-    And the execution's state machine has no Lambda task configured
+    And the "step functions" "execution"'s state machine has no "lambda" task configured
     When a running "step functions" "execution" reaches the Lambda task state and invokes the function
     Then the operation is rejected
 
   @guard @negative @invoke_task @lifecycle
-  Scenario: a running "step functions" "execution" reaches the Lambda task state and invokes the function fails when the configured function was not "ACTIVE"
+  Scenario: a running "step functions" "execution" reaches the Lambda task state and invokes the function fails when the configured "lambda" "function" was not "ACTIVE"
     Given a "step functions" "execution" was "RUNNING"
-    And the execution's state machine has a configured Lambda task
-    And the configured function was not "ACTIVE"
+    And the "step functions" "execution"'s state machine has a configured "lambda" task
+    And the configured "lambda" "function" was not "ACTIVE"
     When a running "step functions" "execution" reaches the Lambda task state and invokes the function
     Then the operation is rejected
 
   @guard @negative @invoke_task @capacity
-  Scenario: a running "step functions" "execution" reaches the Lambda task state and invokes the function fails when no invocation slot is available
+  Scenario: a running "step functions" "execution" reaches the Lambda task state and invokes the function fails when no "lambda" "invocation" "slot" was "available"
     Given a "step functions" "execution" was "RUNNING"
-    And the execution's state machine has a configured Lambda task
-    And the configured function was "ACTIVE"
-    And no invocation slot is available
+    And the "step functions" "execution"'s state machine has a configured "lambda" task
+    And the configured "lambda" "function" was "ACTIVE"
+    And no "lambda" "invocation" "slot" was "available"
     When a running "step functions" "execution" reaches the Lambda task state and invokes the function
     Then the operation is rejected

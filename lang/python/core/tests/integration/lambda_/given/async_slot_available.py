@@ -1,10 +1,10 @@
-"""Given: an async slot is available"""
+"""Given: a "lambda" "async" "slot" was "available" """
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given("an async slot is available")
+@given('a "lambda" "async" "slot" was "available"')
 def async_slot_available():
     """No-op: async slots are available by default."""

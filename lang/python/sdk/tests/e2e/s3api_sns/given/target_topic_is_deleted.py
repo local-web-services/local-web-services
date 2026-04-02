@@ -1,4 +1,4 @@
-"""Given: the target topic was "DELETED" """
+"""Given: the target "sns" "topic" was "DELETED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import S3apiSnsTestClient
 from ..constants import _topic_arn
 
 
-@given('the target topic was "DELETED"')
+@given('the target "sns" "topic" was "DELETED"')
 def target_topic_is_deleted(lws_session, world):
     try:
         S3apiSnsTestClient(lws_session).create_topic()

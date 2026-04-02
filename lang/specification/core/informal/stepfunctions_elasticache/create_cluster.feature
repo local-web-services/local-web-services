@@ -9,14 +9,14 @@ Feature: StepfunctionsElasticache - An "Elasticache" "Cluster" Is Created And Be
 
   @minimal @happy @create_cluster
   Scenario: an "elasticache" "cluster" is created and becomes "AVAILABLE"
-    Given the cluster did not already exist
+    Given the "elasticache" "cluster" did not already exist
     When an "elasticache" "cluster" is created and becomes "AVAILABLE"
     Then the "elasticache" "cluster" will be "AVAILABLE"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which cluster it read
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "elasticache" "cluster" it read
 
   @guard @negative @create_cluster
-  Scenario: an "elasticache" "cluster" is created and becomes "AVAILABLE" fails when the cluster already existed
-    Given the cluster already existed
+  Scenario: an "elasticache" "cluster" is created and becomes "AVAILABLE" fails when the "elasticache" "cluster" already existed
+    Given the "elasticache" "cluster" already existed
     When an "elasticache" "cluster" is created and becomes "AVAILABLE"
     Then the operation is rejected

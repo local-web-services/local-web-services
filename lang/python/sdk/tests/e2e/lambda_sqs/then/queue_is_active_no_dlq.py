@@ -10,7 +10,8 @@ from ..client import LambdaSqsTestClient
 @then('the "sqs" "queue" will be "ACTIVE" with no dead-letter queue configured')
 def queue_is_active_no_dlq(lws_session):
     resp = lws_session.client("sqs").get_queue_attributes(
-        QueueUrl=LambdaSqsTestClient(lws_session).queue_url(), AttributeNames=["RedrivePolicy"]
+        QueueUrl=LambdaSqsTestClient(lws_session).queue_url(),
+        AttributeNames=["RedrivePolicy"],
     )
     actual_redrive = resp["Attributes"].get("RedrivePolicy", "")
     expected_redrive = ""

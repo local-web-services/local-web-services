@@ -391,7 +391,7 @@
           }
         ]
       },
-      "pyCode": "def AuthorizerRequiresActivePool():\n    for aid in api_pool:\n        if api_pool[aid] != \"\":\n            pid = api_pool[aid]\n            if pid in pool_status:\n                if pool_status[pid] != \"ACTIVE\":\n                    return False\n    return True\n\n\n# check: every AUTHORIZED request was validated against a VALID token\n"
+      "pyCode": "def AuthorizerRequiresActivePool():\n    for aid in api_pool:\n        if api_pool[aid] != \"\":\n            pid = api_pool[aid]\n            if pid in pool_status:\n                if pool_status[pid] != \"ACTIVE\":\n                    return False\n    return True\n\n\n# check: every \"AUTHORIZED\" \"api gateway\" \"request\" was validated against a \"VALID\" \"token\"\n"
     },
     {
       "sourceInfo": {
@@ -774,7 +774,7 @@
           }
         ]
       },
-      "pyCode": "def AuthorizedRequestRequiresValidToken():\n    for rid in req_status:\n        if req_status[rid] == \"AUTHORIZED\":\n            tkid = req_token[rid]\n            if tkid in token_status:\n                if token_status[tkid] != \"VALID\":\n                    return False\n    return True\n\n\n# check: every AUTHORIZED request's token belongs to a user in the API's configured pool\n"
+      "pyCode": "def AuthorizedRequestRequiresValidToken():\n    for rid in req_status:\n        if req_status[rid] == \"AUTHORIZED\":\n            tkid = req_token[rid]\n            if tkid in token_status:\n                if token_status[tkid] != \"VALID\":\n                    return False\n    return True\n\n\n# check: every AUTHORIZED request's token belongs to a \"cognito\" \"user\" in the \"api gateway\" \"API\"'s configured pool\n"
     },
     {
       "sourceInfo": {
@@ -1273,7 +1273,7 @@
           }
         ]
       },
-      "pyCode": "def AuthorizedRequestRequiresPoolMembership():\n    for rid in req_status:\n        if req_status[rid] == \"AUTHORIZED\":\n            aid = req_api[rid]\n            tkid = req_token[rid]\n            if aid in api_pool:\n                pid = api_pool[aid]\n                if tkid in token_pool:\n                    if token_pool[tkid] != pid:\n                        return False\n    return True\n\n\n# check: every REJECTED request's token belongs to a user in a different pool than the configured authorizer\n"
+      "pyCode": "def AuthorizedRequestRequiresPoolMembership():\n    for rid in req_status:\n        if req_status[rid] == \"AUTHORIZED\":\n            aid = req_api[rid]\n            tkid = req_token[rid]\n            if aid in api_pool:\n                pid = api_pool[aid]\n                if tkid in token_pool:\n                    if token_pool[tkid] != pid:\n                        return False\n    return True\n\n\n# check: every REJECTED request's token belongs to a \"cognito\" \"user\" in a different pool than the configured authorizer\n"
     },
     {
       "sourceInfo": {
@@ -2259,11 +2259,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 47,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 47,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "API_IDS"
@@ -2427,11 +2427,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 58,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 58,
-                    "column": 23
+                    "column": 25
                   }
                 },
                 "pyExpr": "POOL_IDS"
@@ -2821,11 +2821,11 @@
                                                             "sourceInfo": {
                                                               "start": {
                                                                 "line": 80,
-                                                                "column": 32
+                                                                "column": 34
                                                               },
                                                               "end": {
                                                                 "line": 80,
-                                                                "column": 39
+                                                                "column": 41
                                                               }
                                                             },
                                                             "pyExpr": "POOL_IDS"
@@ -2895,11 +2895,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 76,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 76,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "API_IDS"
@@ -3209,11 +3209,11 @@
                                                 "sourceInfo": {
                                                   "start": {
                                                     "line": 98,
-                                                    "column": 28
+                                                    "column": 30
                                                   },
                                                   "end": {
                                                     "line": 98,
-                                                    "column": 35
+                                                    "column": 37
                                                   }
                                                 },
                                                 "pyExpr": "USER_IDS"
@@ -3264,11 +3264,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 95,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 95,
-                    "column": 23
+                    "column": 25
                   }
                 },
                 "pyExpr": "POOL_IDS"
@@ -3603,11 +3603,11 @@
                                                 "sourceInfo": {
                                                   "start": {
                                                     "line": 116,
-                                                    "column": 29
+                                                    "column": 31
                                                   },
                                                   "end": {
                                                     "line": 116,
-                                                    "column": 37
+                                                    "column": 39
                                                   }
                                                 },
                                                 "pyExpr": "TOKEN_IDS"
@@ -3658,11 +3658,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 113,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 113,
-                    "column": 23
+                    "column": 25
                   }
                 },
                 "pyExpr": "USER_IDS"
@@ -4416,11 +4416,11 @@
                                                                                 "sourceInfo": {
                                                                                   "start": {
                                                                                     "line": 145,
-                                                                                    "column": 41
+                                                                                    "column": 43
                                                                                   },
                                                                                   "end": {
                                                                                     "line": 145,
-                                                                                    "column": 49
+                                                                                    "column": 51
                                                                                   }
                                                                                 },
                                                                                 "pyExpr": "TOKEN_IDS"
@@ -4490,11 +4490,11 @@
                                     "sourceInfo": {
                                       "start": {
                                         "line": 140,
-                                        "column": 24
+                                        "column": 26
                                       },
                                       "end": {
                                         "line": 140,
-                                        "column": 30
+                                        "column": 32
                                       }
                                     },
                                     "pyExpr": "API_IDS"
@@ -4526,11 +4526,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 138,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 138,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "REQ_IDS"
@@ -5135,11 +5135,11 @@
                                                                                 "sourceInfo": {
                                                                                   "start": {
                                                                                     "line": 177,
-                                                                                    "column": 41
+                                                                                    "column": 43
                                                                                   },
                                                                                   "end": {
                                                                                     "line": 177,
-                                                                                    "column": 49
+                                                                                    "column": 51
                                                                                   }
                                                                                 },
                                                                                 "pyExpr": "TOKEN_IDS"
@@ -5209,11 +5209,11 @@
                                     "sourceInfo": {
                                       "start": {
                                         "line": 172,
-                                        "column": 24
+                                        "column": 26
                                       },
                                       "end": {
                                         "line": 172,
-                                        "column": 30
+                                        "column": 32
                                       }
                                     },
                                     "pyExpr": "API_IDS"
@@ -5245,11 +5245,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 170,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 170,
-                    "column": 22
+                    "column": 24
                   }
                 },
                 "pyExpr": "REQ_IDS"

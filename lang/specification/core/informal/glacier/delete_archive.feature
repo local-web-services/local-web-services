@@ -15,11 +15,11 @@ Feature: Glacier - A "Glacier" "Archive" Is Deleted From A "Glacier" "Vault"
     And the "glacier" "archive" was "STORED"
     When a "glacier" "archive" is deleted from a "glacier" "vault"
     Then the "glacier" "archive" will be deleted and the "glacier" "vault" archive count decreases
-    And every in-progress job references an active vault
-    And vault archive count is never negative
-    And all stored archives belong to an "ACTIVE" vault
-    And job output is only available for succeeded jobs
-    And every archive retrieval job references a non-empty archive "ID"
+    And every in-progress "glacier" "job" references an active "glacier" "vault"
+    And "glacier" "vault" archive count is never negative
+    And all stored "glacier" "archive"s belong to an "ACTIVE" "glacier" "vault"
+    And "glacier" "job" output is only available for succeeded "glacier" "job"s
+    And every "glacier" "archive" retrieval "glacier" "job" references a non-empty "glacier" "archive" "ID"
 
   @guard @negative @delete_archive
   Scenario: a "glacier" "archive" is deleted from a "glacier" "vault" fails when the "glacier" "vault" did not exist

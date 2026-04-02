@@ -1,11 +1,11 @@
-"""Then: prod stage requests are not throttled"""
+"""Then: "api gateway" "prod stage" requests will not be throttled"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("prod stage requests are not throttled")
+@then('"api gateway" "prod stage" requests will not be throttled')
 def prod_stage_requests_not_throttled_then(world):
     assert (
         world["error"] is None

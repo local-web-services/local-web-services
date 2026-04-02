@@ -13,10 +13,10 @@ Feature: S3tables - A Policy Is Attached To A "S3 Tables" "Table"
     And the "s3 tables" "table" was "ACTIVE"
     When a policy is attached to a "s3 tables" "table"
     Then the "s3 tables" "table" has a policy
-    And a bucket in "DELETING" state has no "ACTIVE" namespaces
-    And a "s3 tables" "namespace" in "DELETING" state has no "ACTIVE" tables
-    And snapshot count is never negative
-    And schema version is always at least one
+    And a "s3 tables" "bucket" in "DELETING" state has no "ACTIVE" "s3 tables" "namespace"s
+    And a "s3 tables" "namespace" in "DELETING" state has no "ACTIVE" "s3 tables" "table"s
+    And "s3 tables" "table" snapshot count is never negative
+    And "s3 tables" "table" schema version is always at least one
 
   @guard @negative @put_table_policy
   Scenario: a policy is attached to a "s3 tables" "table" fails when the "s3 tables" "table" did not exist

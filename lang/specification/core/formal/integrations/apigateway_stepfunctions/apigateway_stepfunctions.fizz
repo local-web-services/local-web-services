@@ -69,19 +69,19 @@ atomic action ConfigureIntegration:
 
 
 # step: the "api gateway" "API" receives a HTTP request and synchronously starts a Step Functions execution
-# result: the request and execution are both "IN_PROGRESS" and "RUNNING" respectively
+# result: the "api gateway" "request" will be "IN_PROGRESS" and the "step functions" "execution" will be "RUNNING"
 # guard: the "api gateway" "API" existed
 # guard_violation: the "api gateway" "API" did not exist
 # guard: the "api gateway" "api" was "ACTIVE"
 # guard_violation_lifecycle: the "api gateway" "api" was not "ACTIVE"
 # guard: the "api gateway" "api" has a Step Functions integration configured
 # guard_violation: the "api gateway" "api" has no Step Functions integration configured
-# guard: the integrated state machine was "ACTIVE"
-# guard_violation_lifecycle: the integrated state machine was not "ACTIVE"
-# guard: a request slot is available
-# guard_violation_capacity: no request slot is available
-# guard: an "step functions" "execution" slot is available
-# guard_violation_capacity: no execution slot is available
+# guard: the integrated "step functions" "state machine" was "ACTIVE"
+# guard_violation_lifecycle: the integrated "step functions" "state machine" was not "ACTIVE"
+# guard: a "api gateway" "request" "slot" was "available"
+# guard_violation_capacity: no "api gateway" "request" "slot" was "available"
+# guard: a "step functions" "execution" "slot" was "available"
+# guard_violation_capacity: no "step functions" "execution" "slot" was "available"
 atomic action HandleRequest:
     oneof aid in API_IDS:
         if aid in api_status:
@@ -102,7 +102,7 @@ atomic action HandleRequest:
 
 # fake_skip: internal
 # step: the Step Functions execution completes successfully and the "api gateway" "API" returns a successful response
-# result: the "step functions" "execution" will be "SUCCEEDED" and the request will be "SUCCESS"
+# result: the "step functions" "execution" will be "SUCCEEDED" and the "api gateway" "request" will be "SUCCESS"
 # guard: a "step functions" "execution" was "RUNNING"
 # guard_violation_lifecycle: no "step functions" "execution" was "RUNNING"
 atomic action ExecutionSucceeds:
@@ -116,7 +116,7 @@ atomic action ExecutionSucceeds:
 
 # fake_skip: internal
 # step: the Step Functions execution fails and the "api gateway" "API" returns an error response
-# result: the "step functions" "execution" will be "FAILED" and the request will be "FAILED"
+# result: the "step functions" "execution" will be "FAILED" and the "api gateway" "request" will be "FAILED"
 # guard: a "step functions" "execution" was "RUNNING"
 # guard_violation_lifecycle: no "step functions" "execution" was "RUNNING"
 atomic action ExecutionFails:
@@ -128,7 +128,7 @@ atomic action ExecutionFails:
                 req_status[rid] = "FAILED"
 
 
-# check: every IN_PROGRESS request references an ACTIVE API
+# check: every "IN_PROGRESS" "api gateway" "request" references an "ACTIVE" "api gateway" "API"
 always assertion RequestRequiresActiveApi:
     for rid in req_status:
         if req_status[rid] == "IN_PROGRESS":
@@ -139,7 +139,7 @@ always assertion RequestRequiresActiveApi:
     return True
 
 
-# check: every RUNNING execution references an ACTIVE state machine
+# check: every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
 always assertion ExecutionRequiresActiveStateMachine:
     for eid in exec_status:
         if exec_status[eid] == "RUNNING":
@@ -154,7 +154,7 @@ always assertion ExecutionRequiresActiveStateMachine:
     return True
 
 
-# check: every RUNNING execution has a corresponding IN_PROGRESS request
+# check: every "RUNNING" "step functions" "execution" has a corresponding "IN_PROGRESS" "api gateway" "request"
 always assertion ExecutionLinkedToRequest:
     for eid in exec_status:
         if exec_status[eid] == "RUNNING":

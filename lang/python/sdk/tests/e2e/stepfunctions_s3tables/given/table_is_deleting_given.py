@@ -1,4 +1,4 @@
-"""Given: the table was "DELETING" """
+"""Given: the "s3 tables" "table" was "DELETING" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsS3tablesTestClient
 from ..constants import TEST_BUCKET
 
 
-@given('the table was "DELETING"')
+@given('the "s3 tables" "table" was "DELETING"')
 def table_is_deleting_given(lws_session, world):
     try:
         StepfunctionsS3tablesTestClient(lws_session).create_table_bucket()

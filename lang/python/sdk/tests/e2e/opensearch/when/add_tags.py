@@ -14,7 +14,8 @@ def add_tags(lws_session, world):
         resp = lws_session.client("opensearch").describe_domain(DomainName=TEST_DOMAIN)
         actual_arn = resp["DomainStatus"]["ARN"]
         world["result"] = lws_session.client("opensearch").add_tags(
-            ARN=actual_arn, TagList=[{"Key": "e2e-test-key-1", "Value": "e2e-test-value-1"}]
+            ARN=actual_arn,
+            TagList=[{"Key": "e2e-test-key-1", "Value": "e2e-test-value-1"}],
         )
         world["error"] = None
     except (ClientError, Exception) as exc:

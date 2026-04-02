@@ -12,7 +12,8 @@ from ..client import SqsTestClient
 def delete_message(lws_session, world):
     try:
         world["result"] = SqsTestClient(lws_session).delete_message(
-            QueueUrl=SqsTestClient(lws_session).queue_url(), ReceiptHandle=world["receipt_handle"]
+            QueueUrl=SqsTestClient(lws_session).queue_url(),
+            ReceiptHandle=world["receipt_handle"],
         )
         world["error"] = None
     except (ClientError, Exception) as exc:

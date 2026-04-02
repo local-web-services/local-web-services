@@ -1,4 +1,4 @@
-"""When: an async invocation succeeds"""
+"""When: a "lambda" "async" invocation succeeds"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_FUNCTION_NAME
 
 
-@when("an async invocation succeeds")
+@when('a "lambda" "async" invocation succeeds')
 def async_invocation_succeeds(client: TestClient, world):
     r = client.get(f"/2015-03-31/functions/{INT_FUNCTION_NAME}")
     if r.status_code < 300:

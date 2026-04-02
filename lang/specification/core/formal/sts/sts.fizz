@@ -1,0 +1,42 @@
+ACCOUNT_IDS = ["111111111111", "222222222222"]
+SESSION_IDS = ["s1", "s2"]
+
+action Init:
+    session_account = {}
+    last_caller_account = "none"
+    last_caller_sid = "none"
+
+# step: an "sts" "role" is assumed for an account
+# result: the "sts" "session" will be created with the account id embedded in the token
+# guard: an "sts" "session" "slot" was "available"
+# guard_violation_capacity: no "sts" "session" "slot" was "available"
+atomic action AssumeRole:
+    oneof sid in SESSION_IDS:
+        oneof account_id in ACCOUNT_IDS:
+            if sid not in session_account:
+                session_account[sid] = account_id
+
+# step: the "sts" "caller identity" is retrieved with a session token
+# result: the "sts" "caller identity" will return the account from the session
+# guard: the "sts" "session" existed
+# guard_violation: the "sts" "session" did not exist
+atomic action GetCallerIdentity:
+    oneof sid in SESSION_IDS:
+        if sid in session_account:
+            last_caller_sid = sid
+            last_caller_account = session_account[sid]
+
+# check: every "sts" "session" token maps to a valid account id
+always assertion SessionTokenContainsAccountId:
+    for sid in session_account:
+        if session_account[sid] not in ACCOUNT_IDS:
+            return False
+    return True
+
+# check: the "sts" "caller identity" account matches the "sts" "session" account
+always assertion CallerIdentityMatchesSession:
+    if last_caller_sid != "none":
+        if last_caller_sid in session_account:
+            if last_caller_account != session_account[last_caller_sid]:
+                return False
+    return True

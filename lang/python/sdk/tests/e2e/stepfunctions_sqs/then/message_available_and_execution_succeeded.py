@@ -1,4 +1,4 @@
-"""Then: the message will be "AVAILABLE" in the queue and the "step functions" "execution" will be "SUCCEEDED" """
+"""Then: the "sqs" "message" will be "AVAILABLE" in the "sqs" "queue" and the "step functions" "execution" will be "SUCCEEDED" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..constants import TEST_MESSAGE_BODY, TEST_QUEUE
 
 
 @then(
-    'the message will be "AVAILABLE" in the queue and the "step functions" "execution" will be "SUCCEEDED"'
+    'the "sqs" "message" will be "AVAILABLE" in the "sqs" "queue" and the "step functions" "execution" will be "SUCCEEDED"'
 )
 def message_available_and_execution_succeeded(lws_session, world):
     expected_error = None

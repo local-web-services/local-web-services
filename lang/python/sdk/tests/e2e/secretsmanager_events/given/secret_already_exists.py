@@ -1,4 +1,4 @@
-"""Given: the bus already existed"""
+"""Given: the "eventbridge" "bus" already existed"""
 
 from __future__ import annotations
 

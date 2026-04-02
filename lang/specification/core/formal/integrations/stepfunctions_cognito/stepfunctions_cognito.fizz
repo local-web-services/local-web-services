@@ -61,8 +61,8 @@ atomic action DeleteUserPool:
 # guard_violation: the "step functions" "state machine" did not exist
 # guard: the "step functions" "state machine" was "ACTIVE"
 # guard_violation_lifecycle: the "step functions" "state machine" was not "ACTIVE"
-# guard: an "step functions" "execution" slot is available
-# guard_violation_capacity: no execution slot is available
+# guard: a "step functions" "execution" "slot" was "available"
+# guard_violation_capacity: no "step functions" "execution" "slot" was "available"
 atomic action StartExecution:
     oneof smid in SM_IDS:
         if smid in sm_status:
@@ -109,7 +109,7 @@ atomic action CognitoTaskFails:
                             exec_pool[eid] = pid
 
 
-# check: every RUNNING execution references an ACTIVE state machine
+# check: every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
 always assertion ExecutionRequiresActiveStateMachine:
     for eid in exec_status:
         if exec_status[eid] == "RUNNING":
@@ -120,7 +120,7 @@ always assertion ExecutionRequiresActiveStateMachine:
     return True
 
 
-# check: every succeeded execution recorded which pool it called
+# check: every "SUCCEEDED" "step functions" "execution" recorded which "cognito" "user pool" it called
 # (verifies an execution cannot succeed without calling a pool; pool may be deleted afterwards)
 always assertion SuccessfulExecutionCalledAPool:
     for eid in exec_status:

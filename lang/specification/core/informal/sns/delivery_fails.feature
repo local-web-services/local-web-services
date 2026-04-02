@@ -9,33 +9,33 @@ Feature: Sns - A "Sns" "Delivery" Attempt Fails And Is Retried
 
   @minimal @happy @delivery_fails @internal
   Scenario: a "sns" "delivery" attempt fails and is retried
-    Given the delivery existed
+    Given the "sns" "delivery" existed
     And the "sns" "delivery" was "IN_FLIGHT"
-    And the retry count was below the limit
+    And the "sns" "delivery" retry count was below the limit
     When a "sns" "delivery" attempt fails and is retried
     Then the "sns" "delivery" retry count will be incremented
-    And no delivery is in-flight to a deleted subscription
-    And no delivery is in-flight to an unconfirmed subscription
-    And every active subscription references an "ACTIVE" topic
-    And every delivery retry count is within the allowed limit
+    And no "sns" "delivery" is "IN_FLIGHT" to a deleted "sns" "subscription"
+    And no "sns" "delivery" is "IN_FLIGHT" to an unconfirmed "sns" "subscription"
+    And every active "sns" "subscription" references an "ACTIVE" "sns" "topic"
+    And every "sns" "delivery" retry count is within the allowed limit
 
   @guard @negative @delivery_fails @internal
-  Scenario: a "sns" "delivery" attempt fails and is retried fails when the delivery did not exist
-    Given the delivery did not exist
+  Scenario: a "sns" "delivery" attempt fails and is retried fails when the "sns" "delivery" did not exist
+    Given the "sns" "delivery" did not exist
     When a "sns" "delivery" attempt fails and is retried
     Then the operation is rejected
 
   @guard @negative @delivery_fails @internal
   Scenario: a "sns" "delivery" attempt fails and is retried fails when the "sns" "delivery" was not "IN_FLIGHT"
-    Given the delivery existed
+    Given the "sns" "delivery" existed
     And the "sns" "delivery" was not "IN_FLIGHT"
     When a "sns" "delivery" attempt fails and is retried
     Then the operation is rejected
 
   @guard @negative @delivery_fails @internal
-  Scenario: a "sns" "delivery" attempt fails and is retried fails when the retry count had reached the limit
-    Given the delivery existed
+  Scenario: a "sns" "delivery" attempt fails and is retried fails when the "sns" "delivery" retry count had reached the limit
+    Given the "sns" "delivery" existed
     And the "sns" "delivery" was "IN_FLIGHT"
-    And the retry count had reached the limit
+    And the "sns" "delivery" retry count had reached the limit
     When a "sns" "delivery" attempt fails and is retried
     Then the operation is rejected

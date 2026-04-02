@@ -9,15 +9,15 @@ Feature: SnsSqs - A "Sqs" "Queue" Is Created
 
   @minimal @happy @create_queue
   Scenario: a "sqs" "queue" is created
-    Given the queue did not already exist
+    Given the "sqs" "queue" did not already exist
     When a "sqs" "queue" is created
     Then the "sqs" "queue" will be "ACTIVE"
-    And every confirmed subscription references an "ACTIVE" "SNS" topic
-    And every "AVAILABLE" message belongs to an "ACTIVE" queue
-    And a message can only be delivered if a confirmed subscription exists for the topic
+    And every "CONFIRMED" "sns" "subscription" references an "ACTIVE" "sns" "topic"
+    And every "AVAILABLE" "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
+    And an "sqs" "message" can only be delivered if a "CONFIRMED" "sns" "subscription" exists for the "sns" "topic"
 
   @guard @negative @create_queue
-  Scenario: a "sqs" "queue" is created fails when the queue already existed
-    Given the queue already existed
+  Scenario: a "sqs" "queue" is created fails when the "sqs" "queue" already existed
+    Given the "sqs" "queue" already existed
     When a "sqs" "queue" is created
     Then the operation is rejected

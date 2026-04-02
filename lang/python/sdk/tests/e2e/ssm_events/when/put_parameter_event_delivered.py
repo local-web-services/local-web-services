@@ -1,4 +1,4 @@
-"""When: a parameter is created and "SSM" delivers a "CREATED" event to the EventBridge bus"""
+"""When: a "ssm" "parameter" is created and "ssm" delivers a "CREATED" "eventbridge" "event" to the "eventbridge" "bus" """
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from pytest_bdd import when
 from ..constants import TEST_PARAM, TEST_VALUE
 
 
-@when('a parameter is created and "SSM" delivers a "CREATED" event to the EventBridge bus')
+@when(
+    'a "ssm" "parameter" is created and "ssm" delivers a "CREATED" "eventbridge" "event" to the "eventbridge" "bus"'
+)
 def put_parameter_event_delivered(lws_session, world):
     try:
         world["result"] = lws_session.client("ssm").put_parameter(

@@ -33,7 +33,7 @@ atomic action DeployFunction:
 
 
 # step: a "ssm" "parameter" is created
-# result: the parameter will exist and can be read by Lambda
+# result: the "ssm" "parameter" will exist and can be read by "lambda"
 # guard: the "ssm" "parameter" did not already exist
 # guard_violation: the "ssm" "parameter" already existed
 atomic action CreateParameter:
@@ -47,7 +47,7 @@ atomic action CreateParameter:
 # guard: the "ssm" "parameter" existed
 # guard_violation: the "ssm" "parameter" did not exist
 # guard: the "ssm" "parameter" existed
-# guard_violation_lifecycle: the parameter is already "DELETED"
+# guard_violation_lifecycle: the "ssm" "parameter" is already "DELETED"
 atomic action DeleteParameter:
     oneof pid in PARAM_IDS:
         if pid in param_status:
@@ -56,13 +56,13 @@ atomic action DeleteParameter:
 
 
 # step: the "lambda" "function" is invoked
-# result: the invocation will be "IN_PROGRESS"
+# result: the "lambda" "invocation" will be "IN_PROGRESS"
 # guard: the "lambda" "function" existed
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
 # guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
 # guard: a "lambda" "invocation" slot is available
-# guard_violation_capacity: no invocation slot is available
+# guard_violation_capacity: no "lambda" "invocation" "slot" was "available"
 atomic action InvokeFunction:
     oneof fid in FUNC_IDS:
         if fid in func_status:
@@ -75,7 +75,7 @@ atomic action InvokeFunction:
 
 # fake_skip: internal
 # step: the "lambda" "function" reads an existing parameter and completes successfully
-# result: the invocation will be "SUCCESS"
+# result: the "lambda" "invocation" will be "SUCCESS"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 # guard: the "ssm" "parameter" existed
@@ -93,7 +93,7 @@ atomic action InvocationSucceeds:
 
 # fake_skip: internal
 # step: the "lambda" "function" fails because the parameter has been deleted
-# result: the invocation will be "FAILED" with a ParameterNotFound error
+# result: the "lambda" "invocation" will be "FAILED" with a ParameterNotFound error
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 # guard: the "ssm" "parameter" was "DELETED"
@@ -109,7 +109,7 @@ atomic action InvocationFailsParameterNotFound:
                             inv_param[iid] = pid
 
 
-# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+# check: every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
 always assertion InvocationRequiresActiveFunction:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":
@@ -120,7 +120,7 @@ always assertion InvocationRequiresActiveFunction:
     return True
 
 
-# check: every successful invocation recorded which parameter it read
+# check: every successful "lambda" "invocation" recorded which "ssm" "parameter" it read
 # (verifies Lambda cannot succeed without reading a parameter; parameter may be deleted afterwards)
 always assertion SuccessfulInvocationReadAParameter:
     for iid in inv_status:

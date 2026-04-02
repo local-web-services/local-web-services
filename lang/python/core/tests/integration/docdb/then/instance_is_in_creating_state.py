@@ -1,4 +1,4 @@
-"""Then: the "documentdb" "INSTANCE" will be in "CREATING" state and associated with the "documentdb" "cluster" """
+"""Then: the "documentdb" "instance" will be in "CREATING" state and associated with the "documentdb" "cluster" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..constants import _DOCDB_TARGET, INT_INSTANCE_ID
 
 
 @then(
-    'the "documentdb" "INSTANCE" will be in "CREATING" state and associated with the "documentdb" "cluster"'
+    'the "documentdb" "instance" will be in "CREATING" state and associated with the "documentdb" "cluster"'
 )
 def instance_is_in_creating_state(client: TestClient, world):
     actual_error = world["error"]

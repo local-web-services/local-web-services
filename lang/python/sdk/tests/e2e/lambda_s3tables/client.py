@@ -2,7 +2,13 @@
 
 from __future__ import annotations
 
-from .constants import ROLE_ARN, TEST_BUCKET, TEST_FUNC, TEST_NAMESPACE, _table_bucket_arn
+from .constants import (
+    ROLE_ARN,
+    TEST_BUCKET,
+    TEST_FUNC,
+    TEST_NAMESPACE,
+    _table_bucket_arn,
+)
 
 
 class LambdaS3tablesTestClient:

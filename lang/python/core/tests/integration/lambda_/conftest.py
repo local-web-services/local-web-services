@@ -5,7 +5,10 @@ from __future__ import annotations
 import pytest
 from starlette.testclient import TestClient
 
-from lws.providers.lambda_runtime.routes import LambdaRegistry, create_lambda_management_app
+from lws.providers.lambda_runtime.routes import (
+    LambdaRegistry,
+    create_lambda_management_app,
+)
 
 # Import step packages — each __init__.py aggregates its step files.
 # Wildcard into conftest namespace so pytest-bdd can discover step definitions.

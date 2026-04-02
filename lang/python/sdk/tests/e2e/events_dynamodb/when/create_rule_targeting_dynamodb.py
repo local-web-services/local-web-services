@@ -13,7 +13,10 @@ def create_rule_targeting_dynamodb(lws_session, world):
     try:
         events = lws_session.client("events")
         world["result"] = events.put_rule(
-            Name=TEST_RULE, EventBusName=TEST_BUS, EventPattern=EVENT_PATTERN, State="DISABLED"
+            Name=TEST_RULE,
+            EventBusName=TEST_BUS,
+            EventPattern=EVENT_PATTERN,
+            State="DISABLED",
         )
         table_arn = f"arn:aws:dynamodb:us-east-1:000000000000:table/{TEST_TABLE}"
         events.put_targets(

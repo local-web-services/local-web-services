@@ -13,7 +13,7 @@ Feature: EventsDynamodb - A "Dynamodb" "Table" Is Created
     When a "dynamodb" "table" is created
     Then the "dynamodb" "table" will be "ACTIVE"
     And every existing item references a "dynamodb" "table" that exists
-    And every matched event references a rule that exists
+    And every matched "eventbridge" "event" references an "eventbridge" "rule" that exists
 
   @guard @negative @create_table
   Scenario: a "dynamodb" "table" is created fails when the "dynamodb" "table" already existed

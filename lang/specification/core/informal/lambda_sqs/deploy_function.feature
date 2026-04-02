@@ -12,10 +12,10 @@ Feature: LambdaSqs - A "Lambda" "Function" Is Deployed
     Given the "lambda" "function" did not already exist
     When a "lambda" "function" is deployed
     Then the "lambda" "function" will be "ACTIVE"
-    And every in-progress invocation was initiated by an "ENABLED" event source mapping
-    And every in-progress invocation references an "ACTIVE" Lambda function
-    And every "AVAILABLE" or "IN_FLIGHT" message belongs to an "ACTIVE" queue
-    And every "ENABLED" event source mapping references an "ACTIVE" queue
+    And every "IN_PROGRESS" "lambda" "function" invocation was initiated by an "ENABLED" "lambda" "event source mapping"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "AVAILABLE" or "IN_FLIGHT" "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
+    And every "ENABLED" "lambda" "event source mapping" references an "ACTIVE" "sqs" "queue"
 
   @guard @negative @deploy_function
   Scenario: a "lambda" "function" is deployed fails when the "lambda" "function" already existed

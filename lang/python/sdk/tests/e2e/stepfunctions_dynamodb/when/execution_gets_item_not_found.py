@@ -6,7 +6,13 @@ from botocore.exceptions import ClientError
 from pytest_bdd import when
 
 from ..client import StepfunctionsDynamodbTestClient
-from ..constants import TEST_INPUT, TEST_PK, TEST_TABLE, _dynamodb_get_item_definition, _sm_arn
+from ..constants import (
+    TEST_INPUT,
+    TEST_PK,
+    TEST_TABLE,
+    _dynamodb_get_item_definition,
+    _sm_arn,
+)
 
 
 @when(

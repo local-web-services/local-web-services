@@ -5,7 +5,10 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from lws.providers.lambda_runtime.routes import LambdaRegistry, create_lambda_management_app
+from lws.providers.lambda_runtime.routes import (
+    LambdaRegistry,
+    create_lambda_management_app,
+)
 
 _INT_FUNCTION_NAME = "int-async-lambda-fn-1"
 _INT_ROLE_ARN = "arn:aws:iam::000000000000:role/int-test-role-1"

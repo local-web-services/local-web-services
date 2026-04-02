@@ -1,4 +1,4 @@
-"""When: an admin initiates authentication on behalf of a confirmed enabled user"""
+"""When: an admin initiates authentication on behalf of a confirmed enabled "cognito" "user" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_PASSWORD, TEST_USERNAME, _skip_if_not_implemented
 
 
-@when("an admin initiates authentication on behalf of a confirmed enabled user")
+@when('an admin initiates authentication on behalf of a confirmed enabled "cognito" "user"')
 def admin_initiates_auth(lws_session, world):
     try:
         pool_id = world.get("pool_id", "")

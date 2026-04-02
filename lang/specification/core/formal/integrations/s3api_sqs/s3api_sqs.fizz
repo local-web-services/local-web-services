@@ -28,9 +28,9 @@ action Init:
 
 
 # step: a "s3" "bucket" is created
-# result: the bucket will be "ACTIVE" with no notification configuration
-# guard: the bucket did not already exist
-# guard_violation: the bucket already existed
+# result: the "s3" "bucket" will be "ACTIVE" with no notification configuration
+# guard: the "s3" "bucket" did not already exist
+# guard_violation: the "s3" "bucket" already existed
 atomic action CreateBucket:
     oneof bid in BUCKET_IDS:
         if bid not in bucket_status:
@@ -40,8 +40,8 @@ atomic action CreateBucket:
 
 # step: a "sqs" "queue" is created
 # result: the "sqs" "queue" will be "ACTIVE"
-# guard: the queue did not already exist
-# guard_violation: the queue already existed
+# guard: the "sqs" "queue" did not already exist
+# guard_violation: the "sqs" "queue" already existed
 atomic action CreateQueue:
     oneof qid in QUEUE_IDS:
         if qid not in queue_status:
@@ -53,7 +53,7 @@ atomic action CreateQueue:
 # guard: the "sqs" "queue" existed
 # guard_violation: the "sqs" "queue" did not exist
 # guard: the "sqs" "queue" was "ACTIVE"
-# guard_violation_lifecycle: the queue is already "DELETED"
+# guard_violation_lifecycle: the "sqs" "queue" is already "DELETED"
 atomic action DeleteQueue:
     oneof qid in QUEUE_IDS:
         if qid in queue_status:
@@ -61,12 +61,12 @@ atomic action DeleteQueue:
                 queue_status[qid] = "DELETED"
 
 
-# step: a SQS notification configuration is added to the bucket
-# result: the bucket will send notifications to the queue when objects are uploaded
-# guard: the bucket existed and was "ACTIVE"
-# guard_violation: the bucket did not exist or was "ACTIVE"
-# guard: the bucket has no notification configuration
-# guard_violation: the bucket already has a notification configuration
+# step: an "sqs" notification configuration is added to the "s3" "bucket"
+# result: the "s3" "bucket" will send "sqs" notifications to the "sqs" "queue" when "s3" "objects" are uploaded
+# guard: the "s3" "bucket" existed and was "ACTIVE"
+# guard_violation: the "s3" "bucket" did not exist or was "ACTIVE"
+# guard: the "s3" "bucket" has no notification configuration
+# guard_violation: the "s3" "bucket" already has a notification configuration
 # guard: the "sqs" "queue" existed and was "ACTIVE"
 # guard_violation: the "sqs" "queue" did not exist or was "ACTIVE"
 atomic action ConfigureNotification:
@@ -81,17 +81,17 @@ atomic action ConfigureNotification:
 
 
 # step: an object is uploaded to the bucket and S3 delivers a notification to the "sqs" "queue"
-# result: the object will exist and a notification message will be "QUEUED"
-# guard: the bucket was "ACTIVE"
-# guard_violation_lifecycle: the bucket was not "ACTIVE"
-# guard: the bucket has a notification configuration
-# guard_violation: the bucket has no notification configuration
-# guard: the target queue was "ACTIVE"
-# guard_violation_lifecycle: the target queue was "DELETED"
-# guard: an object slot is available
-# guard_violation_capacity: no object slot is available
-# guard: a message slot is available
-# guard_violation_capacity: no message slot is available
+# result: the "s3" "object" will exist and a "sqs" notification "message" will be "QUEUED"
+# guard: the "s3" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3" "bucket" was not "ACTIVE"
+# guard: the "s3" "bucket" has a notification configuration
+# guard_violation: the "s3" "bucket" has no notification configuration
+# guard: the target "sqs" "queue" was "ACTIVE"
+# guard_violation_lifecycle: the target "sqs" "queue" was "DELETED"
+# guard: a "s3" "object" "slot" was "available"
+# guard_violation_capacity: no "s3" "object" "slot" was "available"
+# guard: a "sqs" "message" "slot" was "available"
+# guard_violation_capacity: no "sqs" "message" "slot" was "available"
 atomic action PutObjectWithNotification:
     oneof bid in BUCKET_IDS:
         if bid in bucket_status:
@@ -111,16 +111,16 @@ atomic action PutObjectWithNotification:
                                             msg_obj[mid] = oid
 
 
-# step: an object is uploaded but notification delivery fails because the queue has been deleted
-# result: the object will exist but no notification message will be delivered
-# guard: the bucket was "ACTIVE"
-# guard_violation_lifecycle: the bucket was not "ACTIVE"
-# guard: the bucket has a notification configuration
-# guard_violation: the bucket has no notification configuration
-# guard: the target queue was "DELETED"
-# guard_violation_lifecycle: the target queue was not "DELETED"
-# guard: an object slot is available
-# guard_violation_capacity: no object slot is available
+# step: an "s3" "object" is uploaded but "sqs" notification delivery fails because the "sqs" "queue" has been deleted
+# result: the "s3" "object" will exist but no "sqs" notification "message" will be delivered
+# guard: the "s3" "bucket" was "ACTIVE"
+# guard_violation_lifecycle: the "s3" "bucket" was not "ACTIVE"
+# guard: the "s3" "bucket" has a notification configuration
+# guard_violation: the "s3" "bucket" has no notification configuration
+# guard: the target "sqs" "queue" was "DELETED"
+# guard_violation_lifecycle: the target "sqs" "queue" was not "DELETED"
+# guard: a "s3" "object" "slot" was "available"
+# guard_violation_capacity: no "s3" "object" "slot" was "available"
 atomic action PutObjectNotificationFails:
     oneof bid in BUCKET_IDS:
         if bid in bucket_status:
@@ -135,7 +135,7 @@ atomic action PutObjectNotificationFails:
                                     obj_bucket[oid] = bid
 
 
-# check: every QUEUED message references an object that exists
+# check: every "QUEUED" "sqs" "message" references an "s3" "object" that exists
 always assertion QueuedMessageReferencesExistingObject:
     for mid in msg_status:
         if msg_status[mid] == "QUEUED":
@@ -145,7 +145,7 @@ always assertion QueuedMessageReferencesExistingObject:
     return True
 
 
-# check: every QUEUED message references a queue that exists
+# check: every "QUEUED" "sqs" "message" references an "sqs" "queue" that exists
 always assertion QueuedMessageReferencesExistingQueue:
     for mid in msg_status:
         if msg_status[mid] == "QUEUED":

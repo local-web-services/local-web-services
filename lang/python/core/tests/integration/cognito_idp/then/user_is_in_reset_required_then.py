@@ -12,7 +12,8 @@ from ..constants import INT_POOL_ID, INT_USERNAME
 @then('the "cognito" "user" will be in "RESET_REQUIRED" state')
 def user_is_in_reset_required_then(client: TestClient, world):
     r = CognitoIdpTestClient(client).cognito_post(
-        "AdminGetUser", {"UserPoolId": INT_POOL_ID, "Username": world.get("username", INT_USERNAME)}
+        "AdminGetUser",
+        {"UserPoolId": INT_POOL_ID, "Username": world.get("username", INT_USERNAME)},
     )
     body = r.json()
     expected_status = "RESET_REQUIRED"

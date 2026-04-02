@@ -1,11 +1,13 @@
-"""Then: the bucket will send notifications to the queue when objects are uploaded"""
+"""Then: the "s3" "bucket" will send "sqs" notifications to the "sqs" "queue" when "s3" "objects" are uploaded"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the bucket will send notifications to the queue when objects are uploaded")
+@then(
+    'the "s3" "bucket" will send "sqs" notifications to the "sqs" "queue" when "s3" "objects" are uploaded'
+)
 def bucket_will_send_notifications(world):
     # Arrange
     expected_error = None

@@ -1,10 +1,10 @@
-"""Given: reads were not throttled"""
+"""Given: "dynamodb" "read" throttling was not active"""
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given("reads were not throttled")
+@given('"dynamodb" "read" throttling was not active')
 def reads_not_throttled():
     """No-op: no throttling by default."""

@@ -1,4 +1,4 @@
-"""When: an admin updates attributes for a confirmed user"""
+"""When: an admin updates attributes for a confirmed "cognito" "user" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_USERNAME, _skip_if_not_implemented
 
 
-@when("an admin updates attributes for a confirmed user")
+@when('an admin updates attributes for a confirmed "cognito" "user"')
 def admin_update_user_attributes(lws_session, world):
     try:
         pool_id = world.get("pool_id", "")

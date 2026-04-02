@@ -1,11 +1,11 @@
-"""Then: the error rate configuration will be updated"""
+"""Then: the "chaos" "error rate" configuration will be updated"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the error rate configuration will be updated")
+@then('the "chaos" "error rate" configuration will be updated')
 def then_error_rate_updated(world):
     """Verify that the error rate configuration call succeeded."""
     expected_error = None

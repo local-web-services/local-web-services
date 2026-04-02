@@ -12,10 +12,10 @@ Feature: Sns - A "Sns" "Topic" Is Created
     Given the "sns" "topic" did not already exist
     When a "sns" "topic" is created
     Then the "sns" "topic" will be "ACTIVE"
-    And no delivery is in-flight to a deleted subscription
-    And no delivery is in-flight to an unconfirmed subscription
-    And every active subscription references an "ACTIVE" topic
-    And every delivery retry count is within the allowed limit
+    And no "sns" "delivery" is "IN_FLIGHT" to a deleted "sns" "subscription"
+    And no "sns" "delivery" is "IN_FLIGHT" to an unconfirmed "sns" "subscription"
+    And every active "sns" "subscription" references an "ACTIVE" "sns" "topic"
+    And every "sns" "delivery" retry count is within the allowed limit
 
   @guard @negative @create_topic
   Scenario: a "sns" "topic" is created fails when the "sns" "topic" already existed

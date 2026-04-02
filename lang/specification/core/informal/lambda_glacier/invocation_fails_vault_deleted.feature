@@ -12,8 +12,8 @@ Feature: LambdaGlacier - The "Lambda" "Function" Fails To Upload Because The "Gl
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "glacier" "vault" was "DELETED"
     When the "lambda" "function" fails to upload because the "glacier" "vault" has been deleted
-    Then the invocation will be "FAILED" with a ResourceNotFoundException
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then the "lambda" "invocation" will be "FAILED" with a ResourceNotFoundException
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @guard @negative @invocation_fails_vault_deleted @lifecycle

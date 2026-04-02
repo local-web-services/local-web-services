@@ -1,10 +1,10 @@
-"""Given: the target topic was "ACTIVE" """
+"""Given: the target "sns" "topic" was "ACTIVE" """
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given('the target topic was "ACTIVE"')
+@given('the target "sns" "topic" was "ACTIVE"')
 def topic_is_active_given():
     """No-op: topics are ACTIVE immediately after creation."""

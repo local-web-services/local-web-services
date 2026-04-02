@@ -1,4 +1,4 @@
-"""Given: the target topic was not "ACTIVE" """
+"""Given: the target "sns" "topic" was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import ApigatewaySnsTestClient
 from ..constants import _topic_arn
 
 
-@given('the target topic was not "ACTIVE"')
+@given('the target "sns" "topic" was not "ACTIVE"')
 def apigw_sns_target_topic_is_not_active(lws_session, world):
     try:
         lws_session.client("sns").delete_topic(TopicArn=_topic_arn())

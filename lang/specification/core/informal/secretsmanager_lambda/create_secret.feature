@@ -12,8 +12,8 @@ Feature: SecretsmanagerLambda - A "Secretsmanager" "Secret" Is Created In Secret
     Given the "secretsmanager" "secret" did not already exist
     When a "secretsmanager" "secret" is created in Secrets Manager
     Then the "secrets manager" "secret" will be "ACTIVE"
-    And every "ROTATING" secret has an "IN_PROGRESS" rotation invocation
-    And every successful rotation invocation recorded which secret it rotated
+    And every "ROTATING" "secrets manager" "secret" has an "IN_PROGRESS" "lambda" "rotation invocation"
+    And every successful "lambda" "rotation invocation" recorded which "secrets manager" "secret" it rotated
 
   @guard @negative @create_secret
   Scenario: a "secretsmanager" "secret" is created in Secrets Manager fails when the "secretsmanager" "secret" already existed

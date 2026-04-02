@@ -1,11 +1,11 @@
-"""Then: the "elasticache" parameter group no longer will exist"""
+"""Then: the "elasticache" "parameter group" will no longer exist"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the "elasticache" parameter group no longer will exist')
+@then('the "elasticache" "parameter group" will no longer exist')
 def parameter_group_no_longer_exists_then(world):
     expected_error = None
     actual_error = world["error"]

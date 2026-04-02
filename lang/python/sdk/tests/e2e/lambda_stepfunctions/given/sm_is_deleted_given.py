@@ -1,4 +1,4 @@
-"""Given: the state machine is already "DELETED" """
+"""Given: the "step functions" "state machine" is already "DELETED" """
 
 from __future__ import annotations
 

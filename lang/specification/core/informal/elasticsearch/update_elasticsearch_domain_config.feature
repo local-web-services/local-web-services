@@ -13,9 +13,9 @@ Feature: Elasticsearch - An "Elasticsearch" "Domain" Configuration Update Is Req
     And the "elasticsearch" "domain" was "ACTIVE"
     When an "elasticsearch" "domain" configuration update is requested
     Then the "elasticsearch" "domain" will be in "PROCESSING" state with a pending config change
-    And every active index belongs to an existing non-deleted domain
-    And every active tag belongs to an existing non-deleted domain
-    And a pending config change only exists on a "elasticsearch" "domain" that is "PROCESSING"
+    And every active "elasticsearch" "index" belongs to an existing non-deleted "elasticsearch" "domain"
+    And every active "elasticsearch" "tag" belongs to an existing non-deleted "elasticsearch" "domain"
+    And a pending config change only exists on an "elasticsearch" "domain" that is "PROCESSING"
 
   @guard @negative @update_elasticsearch_domain_config
   Scenario: an "elasticsearch" "domain" configuration update is requested fails when the "elasticsearch" "domain" did not exist

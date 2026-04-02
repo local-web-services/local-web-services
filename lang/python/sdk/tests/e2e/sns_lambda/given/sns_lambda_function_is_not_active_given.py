@@ -1,4 +1,4 @@
-"""Given: the subscribed function was not "ACTIVE" """
+"""Given: the subscribed "lambda" "function" was not "ACTIVE" """
 
 from __future__ import annotations
 

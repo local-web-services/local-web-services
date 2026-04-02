@@ -1,4 +1,4 @@
-"""When: an object is uploaded but notification delivery fails because the queue has been deleted"""
+"""When: an "s3" "object" is uploaded but "sqs" notification delivery fails because the "sqs" "queue" has been deleted"""
 
 from __future__ import annotations
 
@@ -7,7 +7,9 @@ from pytest_bdd import when
 from ..constants import TEST_BODY, TEST_BUCKET, TEST_KEY
 
 
-@when("an object is uploaded but notification delivery fails because the queue has been deleted")
+@when(
+    'an "s3" "object" is uploaded but "sqs" notification delivery fails because the "sqs" "queue" has been deleted'
+)
 def put_object_notification_fails(lws_session, world):
     try:
         world["result"] = lws_session.client("s3").put_object(

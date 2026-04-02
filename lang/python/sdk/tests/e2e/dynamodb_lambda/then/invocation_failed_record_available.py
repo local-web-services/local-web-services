@@ -1,4 +1,4 @@
-"""Then: the invocation will be "FAILED" and the record will be "AVAILABLE" again for reprocessing"""
+"""Then: the "lambda" "invocation" will be "FAILED" and the "dynamodb" "record" will be "AVAILABLE" again for reprocessing"""
 
 from __future__ import annotations
 
@@ -6,7 +6,9 @@ import pytest
 from pytest_bdd import then
 
 
-@then('the invocation will be "FAILED" and the record will be "AVAILABLE" again for reprocessing')
+@then(
+    'the "lambda" "invocation" will be "FAILED" and the "dynamodb" "record" will be "AVAILABLE" again for reprocessing'
+)
 def invocation_failed_record_available(world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

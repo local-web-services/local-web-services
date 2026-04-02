@@ -14,7 +14,10 @@ def create_table(lws_session, world):
         resp = lws_session.client("s3tables").get_table_bucket(tableBucketARN=TEST_BUCKET)
         actual_arn = resp.get("arn", TEST_BUCKET)
         world["result"] = lws_session.client("s3tables").create_table(
-            tableBucketARN=actual_arn, namespace=TEST_NAMESPACE, name=TEST_TABLE, format="ICEBERG"
+            tableBucketARN=actual_arn,
+            namespace=TEST_NAMESPACE,
+            name=TEST_TABLE,
+            format="ICEBERG",
         )
         world["error"] = None
     except (ClientError, Exception) as exc:

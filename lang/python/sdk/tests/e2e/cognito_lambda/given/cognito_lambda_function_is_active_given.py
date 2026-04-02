@@ -1,4 +1,4 @@
-"""Given: the trigger function was "ACTIVE" """
+"""Given: the trigger "lambda" "function" was "ACTIVE" """
 
 from __future__ import annotations
 

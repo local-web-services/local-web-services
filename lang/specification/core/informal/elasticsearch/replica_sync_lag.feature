@@ -14,10 +14,10 @@ Feature: Elasticsearch - A Replica Sync Lag Event Occurs On An Active "Elasticse
     And the "elasticsearch" "index" existed
     And the "elasticsearch" "index" was "ACTIVE"
     When a replica sync lag event occurs on an active "elasticsearch" "domain"
-    Then the replica eventually catches up without changing document counts
-    And every active index belongs to an existing non-deleted domain
-    And every active tag belongs to an existing non-deleted domain
-    And a pending config change only exists on a "elasticsearch" "domain" that is "PROCESSING"
+    Then the "elasticsearch" "domain" replica will eventually catch up without changing document counts
+    And every active "elasticsearch" "index" belongs to an existing non-deleted "elasticsearch" "domain"
+    And every active "elasticsearch" "tag" belongs to an existing non-deleted "elasticsearch" "domain"
+    And a pending config change only exists on an "elasticsearch" "domain" that is "PROCESSING"
 
   @guard @negative @replica_sync_lag @internal
   Scenario: a replica sync lag event occurs on an active "elasticsearch" "domain" fails when the "elasticsearch" "domain" did not exist

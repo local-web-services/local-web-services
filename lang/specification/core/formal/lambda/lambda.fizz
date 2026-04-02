@@ -162,7 +162,7 @@ atomic action SetReservedConcurrency:
                     func_reserved_conc[fid] = 5
 
 # step: a "lambda" "function" is invoked synchronously without a concurrency limit
-# result: the active execution count increases
+# result: the "lambda" "function" active execution count will increase
 # guard: the "lambda" "function" existed
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
@@ -181,7 +181,7 @@ atomic action InvokeFunctionSync:
                         func_active_execs[fid] = func_active_execs[fid] + 1
 
 # step: a "lambda" "function" is invoked synchronously within its concurrency limit
-# result: the active execution count increases
+# result: the "lambda" "function" active execution count will increase
 # guard: the "lambda" "function" existed
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
@@ -192,8 +192,8 @@ atomic action InvokeFunctionSync:
 # guard_violation_capacity: the "lambda" "function" did not have a positive concurrency limit
 # guard: the "lambda" "function" had active executions tracked
 # guard_violation: the "lambda" "function" does not have active executions tracked
-# guard: the active executions were below the concurrency limit
-# guard_violation_capacity: the active executions were at or above the concurrency limit
+# guard: the "lambda" "function" active executions were below the concurrency limit
+# guard_violation_capacity: the "lambda" "function" active executions were at or above the concurrency limit
 atomic action InvokeFunctionSyncWithConcurrency:
     oneof fid in FUNC_IDS:
         if fid in func_status:
@@ -206,7 +206,7 @@ atomic action InvokeFunctionSyncWithConcurrency:
 
 # fake_skip: internal
 # step: a synchronous "lambda" "function" invocation completes
-# result: the active execution count decreases
+# result: the "lambda" "function" active execution count will decrease
 # guard: the "lambda" "function" had active execution tracking
 # guard_violation: the "lambda" "function" did not have active execution tracking
 # guard: the "lambda" "function" had at least one active execution
@@ -219,13 +219,13 @@ atomic action FinishInvokeFunctionSync:
                 func_active_execs[fid] = func_active_execs[fid] - 1
 
 # step: a "lambda" "function" is invoked asynchronously
-# result: the event will be queued in an async slot
+# result: the "lambda" "function" event will be queued in an "async" "slot"
 # guard: the "lambda" "function" existed
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
 # guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
-# guard: an async slot is available
-# guard_violation_capacity: no async slot is available
+# guard: a "lambda" "async" "slot" was "available"
+# guard_violation_capacity: no "lambda" "async" "slot" was "available"
 # InvokeFunctionAsync: place event in a free async slot
 atomic action InvokeFunctionAsync:
     oneof fid in FUNC_IDS:
@@ -237,10 +237,10 @@ atomic action InvokeFunctionAsync:
                         async_retries[slot] = 0
 
 # fake_skip: internal
-# step: an async invocation succeeds
-# result: the async slot will be freed
-# guard: the async slot is occupied
-# guard_violation: the async slot was empty
+# step: a "lambda" "async" invocation succeeds
+# result: the "lambda" "async" "slot" will be freed
+# guard: the "lambda" "async" "slot" was occupied
+# guard_violation: the "lambda" "async" "slot" was empty
 # guard: the async slot has a "lambda" "function" assigned
 # guard_violation: the async slot does not have a "lambda" "function" assigned
 # guard: the "lambda" "function" existed
@@ -258,20 +258,20 @@ atomic action ProcessAsyncSuccess:
                         async_func[slot] = ""
 
 # fake_skip: internal
-# step: an async invocation fails and is retried
-# result: the retry count increases
-# guard: the async slot is occupied
-# guard_violation: the async slot was empty
+# step: a "lambda" "async" invocation fails and is retried
+# result: the "lambda" "function" async retry count will increase
+# guard: the "lambda" "async" "slot" was occupied
+# guard_violation: the "lambda" "async" "slot" was empty
 # guard: the async slot has a "lambda" "function" assigned
 # guard_violation: the async slot does not have a "lambda" "function" assigned
 # guard: the "lambda" "function" existed
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
 # guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
-# guard: retry tracking is available for the slot
-# guard_violation: retry tracking is not available for the slot
-# guard: the retry count had not been exhausted
-# guard_violation: the retry count had been exhausted
+# guard: "lambda" "async" "slot" retry tracking was available
+# guard_violation: "lambda" "async" "slot" retry tracking was not available
+# guard: the "lambda" "function" async retry count had not been exhausted
+# guard_violation: the "lambda" "function" async retry count had been exhausted
 # ProcessAsyncRetry: invocation failed but retries remain; increment retry count
 atomic action ProcessAsyncRetry:
     oneof slot in ASYNC_SLOTS:
@@ -285,20 +285,20 @@ atomic action ProcessAsyncRetry:
                                 async_retries[slot] = async_retries[slot] + 1
 
 # fake_skip: internal
-# step: an async invocation exhausts all retries
-# result: the event will be dropped and the slot will be freed
-# guard: the async slot is occupied
-# guard_violation: the async slot was empty
+# step: a "lambda" "async" invocation exhausts all retries
+# result: the "lambda" "function" async event will be dropped and the "async" "slot" will be freed
+# guard: the "lambda" "async" "slot" was occupied
+# guard_violation: the "lambda" "async" "slot" was empty
 # guard: the async slot has a "lambda" "function" assigned
 # guard_violation: the async slot does not have a "lambda" "function" assigned
 # guard: the "lambda" "function" existed
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
 # guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
-# guard: retry tracking is available for the slot
-# guard_violation: retry tracking is not available for the slot
-# guard: the retry count had been exhausted
-# guard_violation: the retry count had not been exhausted
+# guard: "lambda" "async" "slot" retry tracking was available
+# guard_violation: "lambda" "async" "slot" retry tracking was not available
+# guard: the "lambda" "function" async retry count had been exhausted
+# guard_violation: the "lambda" "function" async retry count had not been exhausted
 # ProcessAsyncExhausted: retries exhausted; drop the event
 atomic action ProcessAsyncExhausted:
     oneof slot in ASYNC_SLOTS:
@@ -311,8 +311,8 @@ atomic action ProcessAsyncExhausted:
                             if async_retries[slot] >= 2:
                                 async_func[slot] = ""
 
-# step: a "lambda" event source mapping is created
-# result: the mapping will be in "CREATING" state and linked to a "lambda" "function"
+# step: a "lambda" "event source mapping" is created
+# result: the "lambda" "event source mapping" will be in "CREATING" state and linked to a "lambda" "function"
 # guard: the "lambda" "event source mapping" did not already exist
 # guard_violation: the "lambda" "event source mapping" already existed
 # guard: the "lambda" "function" existed
@@ -332,11 +332,11 @@ atomic action CreateEventSourceMapping:
 
 # fake_skip: internal
 # step: a "lambda" "event source mapping" finishes creating
-# result: the mapping will be "ENABLED"
+# result: the "lambda" "event source mapping" will be "ENABLED"
 # guard: the "lambda" "event source mapping" existed
 # guard_violation: the "lambda" "event source mapping" did not exist
-# guard: the mapping was "CREATING"
-# guard_violation_lifecycle: the mapping was not "CREATING"
+# guard: the "lambda" "event source mapping" was "CREATING"
+# guard_violation_lifecycle: the "lambda" "event source mapping" was not "CREATING"
 # ActivateEventSourceMapping: CREATING -> ENABLED
 atomic action ActivateEventSourceMapping:
     oneof mid in MAPPING_IDS:
@@ -344,12 +344,12 @@ atomic action ActivateEventSourceMapping:
             if mapping_status[mid] == "CREATING":
                 mapping_status[mid] = "ENABLED"
 
-# step: a disabled lambda event source mapping was "ENABLED"
-# result: the mapping will be "ENABLED" and active
+# step: a disabled "lambda" "event source mapping" was "ENABLED"
+# result: the "lambda" "event source mapping" will be "ENABLED" and active
 # guard: the "lambda" "event source mapping" existed
 # guard_violation: the "lambda" "event source mapping" did not exist
-# guard: the mapping was "DISABLED"
-# guard_violation_lifecycle: the mapping was not "DISABLED"
+# guard: the "lambda" "event source mapping" was "DISABLED"
+# guard_violation_lifecycle: the "lambda" "event source mapping" was not "DISABLED"
 # UpdateEventSourceMapping: toggle enabled/disabled
 atomic action EnableEventSourceMapping:
     oneof mid in MAPPING_IDS:
@@ -359,12 +359,12 @@ atomic action EnableEventSourceMapping:
                     mapping_status[mid] = "ENABLED"
                     mapping_enabled[mid] = True
 
-# step: an enabled lambda event source mapping was "DISABLED"
-# result: the mapping will be "DISABLED" and inactive
+# step: an enabled "lambda" "event source mapping" was "DISABLED"
+# result: the "lambda" "event source mapping" will be "DISABLED" and inactive
 # guard: the "lambda" "event source mapping" existed
 # guard_violation: the "lambda" "event source mapping" did not exist
-# guard: the mapping was "ENABLED"
-# guard_violation_lifecycle: the mapping was not "ENABLED"
+# guard: the "lambda" "event source mapping" was "ENABLED"
+# guard_violation_lifecycle: the "lambda" "event source mapping" was not "ENABLED"
 atomic action DisableEventSourceMapping:
     oneof mid in MAPPING_IDS:
         if mid in mapping_status:
@@ -373,12 +373,12 @@ atomic action DisableEventSourceMapping:
                     mapping_status[mid] = "DISABLED"
                     mapping_enabled[mid] = False
 
-# step: an enabled lambda event source mapping is deleted
-# result: the mapping will be in "DELETING" state
+# step: an enabled "lambda" "event source mapping" is deleted
+# result: the "lambda" "event source mapping" will be in "DELETING" state
 # guard: the "lambda" "event source mapping" existed
 # guard_violation: the "lambda" "event source mapping" did not exist
-# guard: the mapping was "ENABLED"
-# guard_violation_lifecycle: the mapping was not "ENABLED"
+# guard: the "lambda" "event source mapping" was "ENABLED"
+# guard_violation_lifecycle: the "lambda" "event source mapping" was not "ENABLED"
 # DeleteEventSourceMapping: begin deletion
 atomic action DeleteEventSourceMapping:
     oneof mid in MAPPING_IDS:
@@ -386,12 +386,12 @@ atomic action DeleteEventSourceMapping:
             if mapping_status[mid] == "ENABLED":
                 mapping_status[mid] = "DELETING"
 
-# step: a disabled lambda event source mapping is deleted
-# result: the mapping will be in "DELETING" state
+# step: a disabled "lambda" "event source mapping" is deleted
+# result: the "lambda" "event source mapping" will be in "DELETING" state
 # guard: the "lambda" "event source mapping" existed
 # guard_violation: the "lambda" "event source mapping" did not exist
-# guard: the mapping was "DISABLED"
-# guard_violation_lifecycle: the mapping was not "DISABLED"
+# guard: the "lambda" "event source mapping" was "DISABLED"
+# guard_violation_lifecycle: the "lambda" "event source mapping" was not "DISABLED"
 atomic action DeleteDisabledEventSourceMapping:
     oneof mid in MAPPING_IDS:
         if mid in mapping_status:
@@ -399,11 +399,11 @@ atomic action DeleteDisabledEventSourceMapping:
                 mapping_status[mid] = "DELETING"
 
 # step: a "lambda" "event source mapping" finishes being deleted
-# result: the mapping will be deleted
+# result: the "lambda" "event source mapping" will be deleted
 # guard: the "lambda" "event source mapping" existed
 # guard_violation: the "lambda" "event source mapping" did not exist
-# guard: the mapping was "DELETING"
-# guard_violation_lifecycle: the mapping was not "DELETING"
+# guard: the "lambda" "event source mapping" was "DELETING"
+# guard_violation_lifecycle: the "lambda" "event source mapping" was not "DELETING"
 # FinishDeleteEventSourceMapping: mark DELETED
 atomic action FinishDeleteEventSourceMapping:
     oneof mid in MAPPING_IDS:
@@ -434,8 +434,8 @@ atomic action TagResource:
 # guard_violation: the "lambda" "function" did not exist
 # guard: the tag existed on the "lambda" "function"
 # guard_violation: the tag did not exist on the "lambda" "function"
-# guard: the tag was set
-# guard_violation: the tag was not set
+# guard: the "lambda" "function" tag was set
+# guard_violation: the "lambda" "function" tag was not set
 # UntagResource: clear the tag
 atomic action UntagResource:
     oneof fid in FUNC_IDS:
@@ -471,7 +471,7 @@ atomic action RemovePermission:
             if func_has_policy[fid] == True:
                 func_has_policy[fid] = False
 
-# check: every active event source mapping references an existing non-deleted function
+# check: every active "lambda" "event source mapping" references an existing non-deleted "lambda" "function"
 always assertion ActiveMappingReferencesActiveFunction:
     for mid in mapping_status:
         if mapping_status[mid] != "DELETED":
@@ -482,7 +482,7 @@ always assertion ActiveMappingReferencesActiveFunction:
                         return False
     return True
 
-# check: no function in DELETING state has active executions
+# check: no "lambda" "function" in "DELETING" state has active executions
 # Safety: no DELETING function has active executions
 always assertion NoExecutionsOnDeletingFunction:
     for fid in func_status:
@@ -492,7 +492,7 @@ always assertion NoExecutionsOnDeletingFunction:
                     return False
     return True
 
-# check: active execution count never exceeds reserved concurrency when set
+# check: "lambda" "function" active execution count never exceeds reserved concurrency when set
 # Safety: active_executions never exceeds reserved_concurrency when set
 always assertion ConcurrencyLimitRespected:
     for fid in func_reserved_conc:
@@ -502,7 +502,7 @@ always assertion ConcurrencyLimitRespected:
                     return False
     return True
 
-# check: async retry count never exceeds two
+# check: "lambda" "function" async retry count never exceeds two
 # Safety: async retries never exceed 2
 always assertion AsyncRetryLimitRespected:
     for slot in async_retries:
@@ -510,7 +510,7 @@ always assertion AsyncRetryLimitRespected:
             return False
     return True
 
-# check: every event source mapping has a valid status
+# check: every "lambda" "event source mapping" has a valid status
 # Safety: event source mapping statuses are valid
 always assertion ValidEventSourceMappingStatus:
     for mid in mapping_status:
@@ -523,7 +523,7 @@ always assertion ValidEventSourceMappingStatus:
                             return False
     return True
 
-# check: every function has a valid status
+# check: every "lambda" "function" has a valid status
 # Safety: function statuses are valid
 always assertion ValidFunctionStatus:
     for fid in func_status:
@@ -537,7 +537,7 @@ always assertion ValidFunctionStatus:
                                 return False
     return True
 
-# check: all async slots reference known function IDs or are empty
+# check: all "lambda" "async" "slot"s reference known "lambda" "function" IDs or are empty
 # Safety: async slots reference known function IDs or are empty
 always assertion AsyncSlotsReferenceKnownFunctions:
     for slot in async_func:

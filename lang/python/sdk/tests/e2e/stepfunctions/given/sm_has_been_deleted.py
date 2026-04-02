@@ -1,4 +1,4 @@
-"""Given: all state machines are listed"""
+"""Given: all "step functions" "state machine"s are listed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsTestClient
 from ..constants import TEST_SM, _sm_arn
 
 
-@given("all state machines are listed")
+@given('all "step functions" "state machine"s are listed')
 def sm_has_been_deleted(lws_session, world):
     world["state_machine_name"] = TEST_SM
     world["state_machine_arn"] = StepfunctionsTestClient(lws_session).create_sm()

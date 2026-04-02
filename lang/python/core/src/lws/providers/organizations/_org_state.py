@@ -39,6 +39,7 @@ class _OrganizationsState:
         self._account_parents: dict[str, str] = {}
         self._policies: dict[str, dict] = {}
         self._policy_attachments: dict[str, set[str]] = {}
+        self._resource_tags: dict[str, dict[str, str]] = {}
         self._next_account_number: int = 1
 
     @property
@@ -86,6 +87,11 @@ class _OrganizationsState:
         """Return mapping of policy_id to set of target IDs."""
         return self._policy_attachments
 
+    @property
+    def resource_tags(self) -> dict[str, dict[str, str]]:
+        """Return mapping of resource_id to tags dict."""
+        return self._resource_tags
+
     def next_account_id(self) -> str:
         """Return the next sequential 12-digit account ID string."""
         account_id = str(self._next_account_number).zfill(12)
@@ -101,4 +107,5 @@ class _OrganizationsState:
         self._account_parents = {}
         self._policies = {}
         self._policy_attachments = {}
+        self._resource_tags = {}
         self._next_account_number = 1

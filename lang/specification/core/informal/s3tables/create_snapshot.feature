@@ -13,11 +13,11 @@ Feature: S3tables - A "S3 Tables" "Snapshot" Is Created For A "S3 Tables" "Table
     And the "s3 tables" "table" was "ACTIVE"
     And the "s3 tables" "snapshot" did not already exist
     When a "s3 tables" "snapshot" is created for a "s3 tables" "table"
-    Then the "s3 tables" "SNAPSHOT" will be "ACTIVE" and the "s3 tables" "table" s3 tables snapshot count will increase
-    And a bucket in "DELETING" state has no "ACTIVE" namespaces
-    And a "s3 tables" "namespace" in "DELETING" state has no "ACTIVE" tables
-    And snapshot count is never negative
-    And schema version is always at least one
+    Then the "s3 tables" "snapshot" will be "ACTIVE" and the "s3 tables" "table" snapshot count will increase
+    And a "s3 tables" "bucket" in "DELETING" state has no "ACTIVE" "s3 tables" "namespace"s
+    And a "s3 tables" "namespace" in "DELETING" state has no "ACTIVE" "s3 tables" "table"s
+    And "s3 tables" "table" snapshot count is never negative
+    And "s3 tables" "table" schema version is always at least one
 
   @guard @negative @create_snapshot
   Scenario: a "s3 tables" "snapshot" is created for a "s3 tables" "table" fails when the "s3 tables" "table" did not exist

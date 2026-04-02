@@ -10,12 +10,12 @@ Feature: LambdaEvents - The "Lambda" "Function" Publishes An Event To The Active
   @minimal @happy @publish_event_task @internal
   Scenario: the "lambda" "function" publishes an event to the "ACTIVE" event bus and succeeds
     Given a "lambda" "invocation" was "IN_PROGRESS"
-    And the bus was "ACTIVE"
-    And an event slot is available
+    And the "eventbridge" "bus" was "ACTIVE"
+    And an "eventbridge" "event" "slot" was "available"
     When the "lambda" "function" publishes an event to the "ACTIVE" event bus and succeeds
-    Then the event will be "PUBLISHED" and the invocation will be "SUCCESS"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "PUBLISHED" event references a bus that exists
+    Then the "eventbridge" "event" will be "PUBLISHED" and the "lambda" "invocation" will be "SUCCESS"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "PUBLISHED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @guard @negative @publish_event_task @internal
   Scenario: the "lambda" "function" publishes an event to the "ACTIVE" event bus and succeeds fails when no "lambda" "invocation" was "IN_PROGRESS"
@@ -24,16 +24,16 @@ Feature: LambdaEvents - The "Lambda" "Function" Publishes An Event To The Active
     Then the operation is rejected
 
   @guard @negative @publish_event_task @internal
-  Scenario: the "lambda" "function" publishes an event to the "ACTIVE" event bus and succeeds fails when the bus did not exist or was "DELETED"
+  Scenario: the "lambda" "function" publishes an event to the "ACTIVE" event bus and succeeds fails when the "eventbridge" "bus" did not exist or was "DELETED"
     Given a "lambda" "invocation" was "IN_PROGRESS"
-    And the bus did not exist or was "DELETED"
+    And the "eventbridge" "bus" did not exist or was "DELETED"
     When the "lambda" "function" publishes an event to the "ACTIVE" event bus and succeeds
     Then the operation is rejected
 
   @guard @negative @publish_event_task @internal
-  Scenario: the "lambda" "function" publishes an event to the "ACTIVE" event bus and succeeds fails when no event slot is available
+  Scenario: the "lambda" "function" publishes an event to the "ACTIVE" event bus and succeeds fails when no "eventbridge" "event" "slot" was "available"
     Given a "lambda" "invocation" was "IN_PROGRESS"
-    And the bus was "ACTIVE"
-    And no event slot is available
+    And the "eventbridge" "bus" was "ACTIVE"
+    And no "eventbridge" "event" "slot" was "available"
     When the "lambda" "function" publishes an event to the "ACTIVE" event bus and succeeds
     Then the operation is rejected

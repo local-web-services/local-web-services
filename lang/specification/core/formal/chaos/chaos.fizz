@@ -17,14 +17,14 @@ action Init:
 
 
 # step: chaos was "ENABLED" for a service
-# result: chaos will be enabled for the service
+# result: "chaos" will be enabled for the "service"
 atomic action EnableChaos:
     oneof svc in SERVICES:
         chaos_enabled[svc] = True
 
 
 # step: chaos was "DISABLED" for a service
-# result: chaos will be disabled for the service
+# result: "chaos" will be disabled for the "service"
 # guard: chaos was "ENABLED" for the service
 # guard_violation: chaos was not "ENABLED" for the service
 atomic action DisableChaos:
@@ -34,8 +34,8 @@ atomic action DisableChaos:
                 chaos_enabled[svc] = False
 
 
-# step: the chaos error rate is configured for a service
-# result: the error rate configuration will be updated
+# step: the "chaos" "error rate" is configured for a "service"
+# result: the "chaos" "error rate" configuration will be updated
 atomic action SetErrorRate:
     oneof svc in SERVICES:
         oneof:
@@ -43,8 +43,8 @@ atomic action SetErrorRate:
             chaos_error_full[svc] = False
 
 
-# step: the chaos latency is configured for a service
-# result: the latency configuration will be updated
+# step: the "chaos" "latency" is configured for a "service"
+# result: the "chaos" "latency" configuration will be updated
 atomic action SetLatency:
     oneof svc in SERVICES:
         oneof:
@@ -52,18 +52,18 @@ atomic action SetLatency:
             chaos_has_latency[svc] = False
 
 
-# step: the chaos status for all services is retrieved
-# result: the chaos configuration for each service will be returned
+# step: the "chaos" status for all "services" is retrieved
+# result: the "chaos" configuration for each "service" will be returned
 atomic action GetChaosStatus:
     pass
 
 
-# step: a service call is injected with a chaos error
-# result: the service call receives a chaos error response
+# step: a "service" call is injected with a "chaos" "error"
+# result: the "service" call receives a "chaos" "error" response
 # guard: chaos was "ENABLED" for the service
 # guard_violation: chaos was not "ENABLED" for the service
-# guard: the error rate is set to full for the service
-# guard_violation: the error rate is not set to full for the service
+# guard: the "chaos" "error rate" is set to full for the "service"
+# guard_violation: the "chaos" "error rate" is not set to full for the "service"
 atomic action InjectError:
     oneof svc in SERVICES:
         if svc in chaos_enabled:
@@ -73,12 +73,12 @@ atomic action InjectError:
                         pass
 
 
-# step: a service call is delayed by chaos latency injection
-# result: the service call takes at least the configured minimum latency
+# step: a "service" call is delayed by "chaos" "latency" injection
+# result: the "service" call takes at least the configured minimum "chaos" "latency"
 # guard: chaos was "ENABLED" for the service
 # guard_violation: chaos was not "ENABLED" for the service
-# guard: latency is configured for the service
-# guard_violation: latency is not configured for the service
+# guard: "chaos" "latency" is configured for the "service"
+# guard_violation: "chaos" "latency" is not configured for the "service"
 atomic action InjectLatency:
     oneof svc in SERVICES:
         if svc in chaos_enabled:
@@ -88,7 +88,7 @@ atomic action InjectLatency:
                         pass
 
 
-# check: every chaos-configured service is a known service
+# check: every "chaos"-configured "service" is a known "service"
 always assertion ChaosConfigOnlyForKnownServices:
     for svc in chaos_enabled:
         if svc not in SERVICES:

@@ -33,8 +33,8 @@ action Init:
 
 # step: a "sns" "topic" is created
 # result: the "sns" "topic" will be "ACTIVE"
-# guard: the topic did not already exist
-# guard_violation: the topic already existed
+# guard: the "sns" "topic" did not already exist
+# guard_violation: the "sns" "topic" already existed
 atomic action CreateTopic:
     oneof tid in TOPIC_IDS:
         if tid not in topic_status:
@@ -52,7 +52,7 @@ atomic action DeployFunction:
 
 
 # step: a "lambda" "function" subscribes to a "sns" "topic"
-# result: the subscription will be "CONFIRMED" and the "lambda" "function" will be invoked on published messages
+# result: the "sns" "subscription" will be "CONFIRMED" and the "lambda" "function" will be invoked on published messages
 # guard: the "sns" "topic" existed
 # guard_violation: the "sns" "topic" did not exist
 # guard: the "sns" "topic" was "ACTIVE"
@@ -61,8 +61,8 @@ atomic action DeployFunction:
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
 # guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
-# guard: the subscription slot is available
-# guard_violation_capacity: the subscription slot is not available
+# guard: a "sns" "subscription" "slot" was "available"
+# guard_violation_capacity: no "sns" "subscription" "slot" was "available"
 atomic action SubscribeFunctionToTopic:
     oneof tid in TOPIC_IDS:
         if tid in topic_status:
@@ -78,17 +78,17 @@ atomic action SubscribeFunctionToTopic:
 
 
 # step: a message is published to a "sns" "topic" and asynchronously invokes the subscribed Lambda function
-# result: the invocation will be "IN_PROGRESS"
+# result: the "lambda" "invocation" will be "IN_PROGRESS"
 # guard: the "sns" "topic" existed
 # guard_violation: the "sns" "topic" did not exist
 # guard: the "sns" "topic" was "ACTIVE"
 # guard_violation_lifecycle: the "sns" "topic" was not "ACTIVE"
-# guard: a confirmed subscription existed for the "sns" "topic"
-# guard_violation_lifecycle: no confirmed subscription existed for the topic
-# guard: the subscribed function was "ACTIVE"
-# guard_violation_lifecycle: the subscribed function was not "ACTIVE"
-# guard: a "lambda" "invocation" slot is available
-# guard_violation_capacity: no invocation slot is available
+# guard: a "sns" "subscription" was "CONFIRMED" for the "sns" "topic"
+# guard_violation_lifecycle: no "sns" "subscription" was "CONFIRMED" for the "sns" "topic"
+# guard: the subscribed "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the subscribed "lambda" "function" was not "ACTIVE"
+# guard: a "lambda" "invocation" "slot" was "available"
+# guard_violation_capacity: no "lambda" "invocation" "slot" was "available"
 atomic action PublishAndInvoke:
     oneof tid in TOPIC_IDS:
         if tid in topic_status:
@@ -108,8 +108,8 @@ atomic action PublishAndInvoke:
 
 
 # fake_skip: internal
-# step: the Lambda invocation completes successfully
-# result: the invocation will be "SUCCESS"
+# step: the "lambda" "function" invocation completes successfully
+# result: the "lambda" "invocation" will be "SUCCESS"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationSucceeds:
@@ -120,8 +120,8 @@ atomic action InvocationSucceeds:
 
 
 # fake_skip: internal
-# step: the Lambda invocation fails
-# result: the invocation will be "FAILED"
+# step: the "lambda" "function" invocation fails
+# result: the "lambda" "invocation" will be "FAILED"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationFails:
@@ -131,7 +131,7 @@ atomic action InvocationFails:
                 inv_status[iid] = "FAILED"
 
 
-# check: every CONFIRMED subscription references an ACTIVE SNS topic
+# check: every "CONFIRMED" "sns" "subscription" references an "ACTIVE" "sns" "topic"
 always assertion SubscriptionReferencesActiveTopic:
     for sid in sub_status:
         if sub_status[sid] == "CONFIRMED":
@@ -142,7 +142,7 @@ always assertion SubscriptionReferencesActiveTopic:
     return True
 
 
-# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+# check: every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
 always assertion InvocationRequiresActiveFunction:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":
@@ -153,7 +153,7 @@ always assertion InvocationRequiresActiveFunction:
     return True
 
 
-# check: every IN_PROGRESS invocation was triggered by a CONFIRMED subscription
+# check: every "IN_PROGRESS" "lambda" "invocation" was triggered by a "CONFIRMED" "sns" "subscription"
 always assertion InvocationRequiresConfirmedSubscription:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":

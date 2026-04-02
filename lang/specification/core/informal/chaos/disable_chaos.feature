@@ -11,8 +11,8 @@ Feature: Chaos - Chaos Was "Disabled" For A Service
   Scenario: chaos was "DISABLED" for a service
     Given chaos was "ENABLED" for the service
     When chaos was "DISABLED" for a service
-    Then chaos will be disabled for the service
-    And every chaos-configured service is a known service
+    Then "chaos" will be disabled for the "service"
+    And every "chaos"-configured "service" is a known "service"
 
   @guard @negative @disable_chaos
   Scenario: chaos was "DISABLED" for a service fails when chaos was not "ENABLED" for the service

@@ -58,8 +58,8 @@ atomic action DomainProcessingBegins:
 # fake_skip: internal
 # step: the "elasticsearch" "domain" configuration update completes
 # result: the "elasticsearch" "domain" will be "AVAILABLE" again
-# guard: the "elasticsearch" "domain" was PROCESSING
-# guard_violation_lifecycle: the "elasticsearch" "domain" was not PROCESSING
+# guard: the "elasticsearch" "domain" was "PROCESSING"
+# guard_violation_lifecycle: the "elasticsearch" "domain" was not "PROCESSING"
 atomic action DomainProcessingComplete:
     oneof did in DOMAIN_IDS:
         if did in domain_status:
@@ -73,8 +73,8 @@ atomic action DomainProcessingComplete:
 # guard_violation: the "step functions" "state machine" did not exist
 # guard: the "step functions" "state machine" was "ACTIVE"
 # guard_violation_lifecycle: the "step functions" "state machine" was not "ACTIVE"
-# guard: an "step functions" "execution" slot is available
-# guard_violation_capacity: no execution slot is available
+# guard: a "step functions" "execution" "slot" was "available"
+# guard_violation_capacity: no "step functions" "execution" "slot" was "available"
 atomic action StartExecution:
     oneof smid in SM_IDS:
         if smid in sm_status:
@@ -108,8 +108,8 @@ atomic action SearchTaskSucceeds:
 # result: the "step functions" "execution" will be "FAILED" with a connection error
 # guard: a "step functions" "execution" was "RUNNING"
 # guard_violation: no "step functions" "execution" was "RUNNING"
-# guard: the "elasticsearch" "domain" was PROCESSING
-# guard_violation_lifecycle: the "elasticsearch" "domain" was not PROCESSING
+# guard: the "elasticsearch" "domain" was "PROCESSING"
+# guard_violation_lifecycle: the "elasticsearch" "domain" was not "PROCESSING"
 atomic action SearchTaskFails:
     oneof eid in EXEC_IDS:
         if eid in exec_status:
@@ -121,7 +121,7 @@ atomic action SearchTaskFails:
                             exec_domain[eid] = did
 
 
-# check: every RUNNING execution references an ACTIVE state machine
+# check: every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
 always assertion ExecutionRequiresActiveStateMachine:
     for eid in exec_status:
         if exec_status[eid] == "RUNNING":
@@ -132,7 +132,7 @@ always assertion ExecutionRequiresActiveStateMachine:
     return True
 
 
-# check: every succeeded execution recorded which domain it called
+# check: every "SUCCEEDED" "step functions" "execution" recorded which "elasticsearch" "domain" it called
 # (verifies an execution cannot succeed without calling a domain; domain may enter PROCESSING afterwards)
 always assertion SuccessfulExecutionCalledADomain:
     for eid in exec_status:

@@ -19,6 +19,7 @@ def finish_delete_db_instance(client: TestClient, world: dict):
         world["error"] = check.json()
         return
     r = RdsTestClient(client).post(
-        "DeleteDBInstance", {"DBInstanceIdentifier": INT_DB_INSTANCE, "SkipFinalSnapshot": True}
+        "DeleteDBInstance",
+        {"DBInstanceIdentifier": INT_DB_INSTANCE, "SkipFinalSnapshot": True},
     )
     _store(world, r)

@@ -12,7 +12,9 @@ from ..constants import TEST_BUCKET, TEST_KEY, TEST_KEY2
 def copy_object_old(lws_session, world):
     try:
         world["result"] = lws_session.client("s3").copy_object(
-            Bucket=TEST_BUCKET, Key=TEST_KEY2, CopySource={"Bucket": TEST_BUCKET, "Key": TEST_KEY}
+            Bucket=TEST_BUCKET,
+            Key=TEST_KEY2,
+            CopySource={"Bucket": TEST_BUCKET, "Key": TEST_KEY},
         )
         world["error"] = None
     except (ClientError, Exception) as exc:

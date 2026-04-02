@@ -1,4 +1,4 @@
-"""Then: the object will exist in the bucket and an invocation will be "IN_PROGRESS" """
+"""Then: the "s3" "object" will exist in the "s3" "bucket" and a "lambda" "invocation" will be "IN_PROGRESS" """
 
 from __future__ import annotations
 
@@ -7,7 +7,9 @@ from pytest_bdd import then
 from ..constants import TEST_BUCKET, TEST_KEY
 
 
-@then('the object will exist in the bucket and an invocation will be "IN_PROGRESS"')
+@then(
+    'the "s3" "object" will exist in the "s3" "bucket" and a "lambda" "invocation" will be "IN_PROGRESS"'
+)
 def object_exists_invocation_in_progress(lws_session):
     resp = lws_session.client("s3").list_objects_v2(Bucket=TEST_BUCKET)
     actual_keys = [obj["Key"] for obj in resp.get("Contents", [])]

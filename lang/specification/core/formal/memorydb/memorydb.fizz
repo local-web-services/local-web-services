@@ -225,7 +225,7 @@ atomic action CompleteClusterRestore:
                 cluster_status[cid] = "AVAILABLE"
 
 # step: an "memorydb" "ACL" is created
-# result: the "memorydb" "ACL" will be in CREATING state
+# result: the "memorydb" "ACL" will be in "CREATING" state
 # guard: the "memorydb" "ACL" did not already exist
 # guard_violation: the "memorydb" "ACL" already existed
 atomic action CreateACL:
@@ -247,7 +247,7 @@ atomic action CompleteACLCreation:
                 acl_status[aid] = "ACTIVE"
 
 # step: an "memorydb" "ACL" is updated
-# result: the "memorydb" "ACL" will be in MODIFYING state
+# result: the "memorydb" "ACL" will be in "MODIFYING" state
 # guard: the "memorydb" "ACL" existed
 # guard_violation: the "memorydb" "ACL" did not exist
 # guard: the "memorydb" "ACL" was "ACTIVE"
@@ -260,7 +260,7 @@ atomic action UpdateACL:
 
 # fake_skip: internal
 # step: an "memorydb" "ACL" update completes
-# result: the "memorydb" "ACL" returns to ACTIVE state
+# result: the "memorydb" "ACL" returns to "ACTIVE" state
 # guard: the "memorydb" "ACL" existed
 # guard_violation: the "memorydb" "ACL" did not exist
 # guard: the "memorydb" "ACL" was "MODIFYING"
@@ -272,7 +272,7 @@ atomic action CompleteACLUpdate:
                 acl_status[aid] = "ACTIVE"
 
 # step: an "memorydb" "ACL" is deleted
-# result: the "memorydb" "ACL" will be in DELETING state
+# result: the "memorydb" "ACL" will be in "DELETING" state
 # guard: the "memorydb" "ACL" existed
 # guard_violation: the "memorydb" "ACL" did not exist
 # guard: the "memorydb" "ACL" was "ACTIVE"
@@ -328,7 +328,7 @@ atomic action AssociateACLWithCluster:
                             cluster_acl[cid] = aid
 
 # step: a "memorydb" "user" is created
-# result: the "memorydb" "user" will be in CREATING state
+# result: the "memorydb" "user" will be in "CREATING" state
 # guard: the "memorydb" "user" did not already exist
 # guard_violation: the "memorydb" "user" already existed
 atomic action CreateUser:
@@ -350,7 +350,7 @@ atomic action CompleteUserCreation:
                 user_status[uid] = "ACTIVE"
 
 # step: a "memorydb" "user" is updated
-# result: the "memorydb" "user" will be in MODIFYING state
+# result: the "memorydb" "user" will be in "MODIFYING" state
 # guard: the "memorydb" "user" existed
 # guard_violation: the "memorydb" "user" did not exist
 # guard: the "memorydb" "user" was "ACTIVE"
@@ -363,7 +363,7 @@ atomic action UpdateUser:
 
 # fake_skip: internal
 # step: a "memorydb" "user" update completes
-# result: the "memorydb" "user" returns to ACTIVE state
+# result: the "memorydb" "user" returns to "ACTIVE" state
 # guard: the "memorydb" "user" existed
 # guard_violation: the "memorydb" "user" did not exist
 # guard: the "memorydb" "user" was "MODIFYING"
@@ -375,7 +375,7 @@ atomic action CompleteUserUpdate:
                 user_status[uid] = "ACTIVE"
 
 # step: a "memorydb" "user" is deleted
-# result: the "memorydb" "user" will be in DELETING state
+# result: the "memorydb" "user" will be in "DELETING" state
 # guard: the "memorydb" "user" existed
 # guard_violation: the "memorydb" "user" did not exist
 # guard: the "memorydb" "user" was "ACTIVE"
@@ -413,7 +413,7 @@ atomic action CompleteUserDeletion:
                 user_status[uid] = "DELETED"
 
 # step: a "memorydb" "user" is added to an "memorydb" "ACL"
-# result: the memorydb user will be a member of the "memorydb" "ACL"
+# result: the "memorydb" "user" will be a member of the "memorydb" "ACL"
 # guard: the "memorydb" "ACL" existed
 # guard_violation: the "memorydb" "ACL" did not exist
 # guard: the "memorydb" "ACL" was "ACTIVE"
@@ -436,7 +436,7 @@ atomic action AddUserToACL:
                                 acl_has_user[mkey] = True
 
 # step: a "memorydb" "user" is removed from an "memorydb" "ACL"
-# result: the memorydb user will no longer be a member of the "memorydb" "ACL"
+# result: the "memorydb" "user" will no longer be a member of the "memorydb" "ACL"
 # guard: the "memorydb" "ACL" existed
 # guard_violation: the "memorydb" "ACL" did not exist
 # guard: the "memorydb" "ACL" was "ACTIVE"
@@ -455,7 +455,7 @@ atomic action RemoveUserFromACL:
                         if acl_has_user[mkey]:
                             acl_has_user[mkey] = False
 
-# step: tags are added to a MemoryDB resource
+# step: tags are added to a "memorydb" "resource"
 # result: the "memorydb" "resource" remains tagged
 # guard: the "memorydb" "resource" has a tag entry
 # guard_violation: the "memorydb" "resource" does not have a tag entry
@@ -467,7 +467,7 @@ atomic action TagResource:
             if tag_exists[cid]:
                 tag_exists[cid] = True
 
-# step: tags are removed from a MemoryDB resource
+# step: tags are removed from a "memorydb" "resource"
 # result: the "memorydb" "resource" tag state will be unchanged (no-op model)
 # guard: the "memorydb" "resource" has a tag entry
 # guard_violation: the "memorydb" "resource" does not have a tag entry
@@ -480,7 +480,7 @@ atomic action UntagResource:
                 tag_exists[cid] = True
 
 # All MemoryDB clusters have writes_persisted set (durability guarantee)
-# check: every active cluster has write durability enabled
+# check: every active "memorydb" "cluster" has write durability enabled
 always assertion AllClustersHaveDurability:
     for cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -490,7 +490,7 @@ always assertion AllClustersHaveDurability:
     return True
 
 # A cluster in SNAPSHOTTING state must have a corresponding in-progress snapshot
-# check: every snapshotting cluster has a corresponding in-progress snapshot
+# check: every snapshotting "memorydb" "cluster" has a corresponding in-progress "memorydb" "snapshot"
 always assertion SnapshottingClusterHasSnapshot:
     for cid in CLUSTER_IDS:
         if cid in cluster_status:
@@ -506,7 +506,7 @@ always assertion SnapshottingClusterHasSnapshot:
     return True
 
 # An ACL cannot be deleted while associated with a cluster
-# check: no ACL in DELETING state is currently associated with a "memorydb" "cluster"
+# check: no "memorydb" "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"
 always assertion ACLNotDeletedWhileInUse:
     for aid in ACL_IDS:
         if aid in acl_status:
@@ -518,7 +518,7 @@ always assertion ACLNotDeletedWhileInUse:
     return True
 
 # A user cannot be deleted while referenced by an ACL
-# check: no user in DELETING state is currently a member of an "memorydb" "ACL"
+# check: no "memorydb" "user" in "DELETING" state is currently a member of a "memorydb" "ACL"
 always assertion UserNotDeletedWhileInACL:
     for uid in USER_IDS:
         if uid in user_status:
@@ -531,7 +531,7 @@ always assertion UserNotDeletedWhileInACL:
     return True
 
 # Tags exist for every active resource
-# check: every active cluster and snapshot has tags
+# check: every active "memorydb" "cluster" and "snapshot" has tags
 always assertion TagsExistForResources:
     for cid in CLUSTER_IDS:
         if cid in cluster_status:

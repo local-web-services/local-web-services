@@ -62,7 +62,9 @@ class TestCloudTrailRoutesTrailLifecycle:
     async def test_get_trail_returns_200(self, client) -> None:
         # Arrange
         await client.post(
-            "/", headers=_headers("CreateTrail"), json={"Name": "t1", "S3BucketName": "b"}
+            "/",
+            headers=_headers("CreateTrail"),
+            json={"Name": "t1", "S3BucketName": "b"},
         )
 
         # Act
@@ -87,10 +89,14 @@ class TestCloudTrailRoutesTrailLifecycle:
     async def test_list_trails(self, client) -> None:
         # Arrange
         await client.post(
-            "/", headers=_headers("CreateTrail"), json={"Name": "t1", "S3BucketName": "b"}
+            "/",
+            headers=_headers("CreateTrail"),
+            json={"Name": "t1", "S3BucketName": "b"},
         )
         await client.post(
-            "/", headers=_headers("CreateTrail"), json={"Name": "t2", "S3BucketName": "b"}
+            "/",
+            headers=_headers("CreateTrail"),
+            json={"Name": "t2", "S3BucketName": "b"},
         )
 
         # Act
@@ -104,7 +110,9 @@ class TestCloudTrailRoutesTrailLifecycle:
     async def test_start_and_stop_logging(self, client) -> None:
         # Arrange
         await client.post(
-            "/", headers=_headers("CreateTrail"), json={"Name": "t1", "S3BucketName": "b"}
+            "/",
+            headers=_headers("CreateTrail"),
+            json={"Name": "t1", "S3BucketName": "b"},
         )
 
         # Act
@@ -126,7 +134,9 @@ class TestCloudTrailRoutesTrailLifecycle:
     async def test_delete_trail(self, client) -> None:
         # Arrange
         await client.post(
-            "/", headers=_headers("CreateTrail"), json={"Name": "t1", "S3BucketName": "b"}
+            "/",
+            headers=_headers("CreateTrail"),
+            json={"Name": "t1", "S3BucketName": "b"},
         )
 
         # Act

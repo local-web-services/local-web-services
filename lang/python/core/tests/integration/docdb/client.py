@@ -41,5 +41,8 @@ class DocdbTestClient:
         self._client.post(
             "/",
             headers={"X-Amz-Target": f"{_DOCDB_TARGET}.CreateDBClusterSnapshot"},
-            json={"DBClusterSnapshotIdentifier": snapshot_id, "DBClusterIdentifier": cluster_id},
+            json={
+                "DBClusterSnapshotIdentifier": snapshot_id,
+                "DBClusterIdentifier": cluster_id,
+            },
         )

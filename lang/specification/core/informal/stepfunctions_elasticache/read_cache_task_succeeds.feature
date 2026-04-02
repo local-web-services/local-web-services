@@ -13,8 +13,8 @@ Feature: StepfunctionsElasticache - A Running "Step Functions" "Execution" Reads
     And the "elasticache" "cluster" was "AVAILABLE"
     When a running "step functions" "execution" reads from the "AVAILABLE" ElastiCache cluster and succeeds
     Then the "step functions" "execution" will be "SUCCEEDED"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which cluster it read
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "elasticache" "cluster" it read
 
   @guard @negative @read_cache_task_succeeds @internal
   Scenario: a running "step functions" "execution" reads from the "AVAILABLE" ElastiCache cluster and succeeds fails when no "step functions" "execution" was "RUNNING"

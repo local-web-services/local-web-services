@@ -13,7 +13,8 @@ def tag_state_machine(lws_session, world):
     try:
         sm_name = world.get("state_machine_name") or TEST_SM
         resp = lws_session.client("stepfunctions").tag_resource(
-            resourceArn=_sm_arn(sm_name), tags=[{"key": TEST_TAG_KEY, "value": TEST_TAG_VALUE}]
+            resourceArn=_sm_arn(sm_name),
+            tags=[{"key": TEST_TAG_KEY, "value": TEST_TAG_VALUE}],
         )
         world["result"] = resp
         world["error"] = None

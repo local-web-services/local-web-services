@@ -1,4 +1,4 @@
-"""Then: the message will be "AVAILABLE" in the queue"""
+"""Then: the "sqs" "message" will be "AVAILABLE" in the "sqs" "queue" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SnsSqsTestClient
 from ..constants import TEST_MESSAGE, TEST_QUEUE
 
 
-@then('the message will be "AVAILABLE" in the queue')
+@then('the "sqs" "message" will be "AVAILABLE" in the "sqs" "queue"')
 def message_available_in_queue(lws_session):
     url = SnsSqsTestClient(lws_session).queue_url()
     expected_message = TEST_MESSAGE

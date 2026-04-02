@@ -36,7 +36,10 @@ class S3apiLambdaTestClient:
             Bucket=bucket,
             NotificationConfiguration={
                 "LambdaFunctionConfigurations": [
-                    {"LambdaFunctionArn": function_arn, "Events": ["s3:ObjectCreated:*"]}
+                    {
+                        "LambdaFunctionArn": function_arn,
+                        "Events": ["s3:ObjectCreated:*"],
+                    }
                 ]
             },
         )

@@ -12,8 +12,8 @@ Feature: StepfunctionsOpensearch - An "Opensearch" "Domain" Is Created And Becom
     Given the "opensearch" "domain" did not already exist
     When an "opensearch" "domain" is created and becomes "ACTIVE"
     Then the "opensearch" "domain" will be "ACTIVE"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which domain it called
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "opensearch" "domain" it called
 
   @guard @negative @create_domain
   Scenario: an "opensearch" "domain" is created and becomes "ACTIVE" fails when the "opensearch" "domain" already existed

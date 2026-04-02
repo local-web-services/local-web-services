@@ -1,4 +1,4 @@
-"""Then: the mapping will be in "CREATING" state and linked to a "lambda" "function" """
+"""Then: the "lambda" "event source mapping" will be in "CREATING" state and linked to a "lambda" "function" """
 
 from __future__ import annotations
 
@@ -6,7 +6,9 @@ from pytest_bdd import then
 from starlette.testclient import TestClient
 
 
-@then('the mapping will be in "CREATING" state and linked to a "lambda" "function"')
+@then(
+    'the "lambda" "event source mapping" will be in "CREATING" state and linked to a "lambda" "function"'
+)
 def mapping_is_in_creating_state(client: TestClient, world):
     actual_error = world["error"]
     assert (

@@ -13,7 +13,7 @@ Feature: DocdbEvents - A "Documentdb" "Cluster" Is Created And Becomes Available
     When a "documentdb" "cluster" is created and becomes "AVAILABLE"
     Then the "documentdb" "cluster" will be "AVAILABLE"
     And every "DELIVERED" event references a "documentdb" "cluster" that exists
-    And every "DELIVERED" event references a bus that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @guard @negative @create_cluster
   Scenario: a "documentdb" "cluster" is created and becomes "AVAILABLE" fails when the "documentdb" "cluster" already existed

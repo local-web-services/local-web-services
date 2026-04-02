@@ -1,4 +1,4 @@
-"""Given: the configured function was not "ACTIVE" """
+"""Given: the configured "lambda" "function" was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsLambdaTestClient
 from ..constants import TEST_FUNC
 
 
-@given('the configured function was not "ACTIVE"')
+@given('the configured "lambda" "function" was not "ACTIVE"')
 def configured_function_is_not_active_given(lws_session, world):
     try:
         StepfunctionsLambdaTestClient(lws_session)._lambda.delete_function(FunctionName=TEST_FUNC)

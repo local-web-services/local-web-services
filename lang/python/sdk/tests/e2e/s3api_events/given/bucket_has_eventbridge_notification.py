@@ -1,4 +1,4 @@
-"""Given: the bucket has an EventBridge notification configured"""
+"""Given: the "s3" "bucket" has an "eventbridge" notification configured"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import S3apiEventsTestClient
 from ..constants import TEST_BUCKET
 
 
-@given("the bucket has an EventBridge notification configured")
+@given('the "s3" "bucket" has an "eventbridge" notification configured')
 def bucket_has_eventbridge_notification(lws_session):
     client = S3apiEventsTestClient(lws_session)
     client.create_bucket()

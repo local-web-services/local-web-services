@@ -13,7 +13,7 @@ Feature: LambdaElasticsearch - A "Elasticsearch" "Domain" Configuration Update B
     And the "elasticsearch" "domain" was "AVAILABLE"
     When a "elasticsearch" "domain" configuration update begins
     Then the "elasticsearch" "domain" will be "PROCESSING" and write operations may fail
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "elasticsearch" "domain" that exists
 
   @guard @negative @domain_processing_begins

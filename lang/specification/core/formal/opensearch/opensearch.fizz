@@ -148,8 +148,8 @@ atomic action BlueGreenNewClusterReady:
 # guard_violation: the "opensearch" "domain" was not "PROCESSING"
 # guard: the new "opensearch" "cluster" was ready
 # guard_violation: the new "opensearch" "cluster" was not ready
-# guard: traffic has not been swapped yet
-# guard_violation: traffic has already been swapped
+# guard: the "opensearch" "domain" blue-green traffic had not been swapped yet
+# guard_violation: the "opensearch" "domain" blue-green traffic had already been swapped
 atomic action BlueGreenSwapTraffic:
     oneof domain in DOMAIN_NAMES:
         if domain in domain_status:
@@ -159,7 +159,7 @@ atomic action BlueGreenSwapTraffic:
                         domain_bg_traffic_swapped[domain] = True
 
 # fake_skip: internal
-# step: a blue-green deployment completes
+# step: a "opensearch" "domain" blue-green deployment completes
 # result: the "opensearch" "domain" will be "ACTIVE" with the new configuration applied
 # guard: the "opensearch" "domain" existed
 # guard_violation: the "opensearch" "domain" did not exist
@@ -181,7 +181,7 @@ atomic action BlueGreenComplete:
 
 # fake_skip: internal
 # step: shards are rebalanced across nodes in an active "opensearch" "domain"
-# result: the instance count will be updated without data loss
+# result: the "opensearch" "domain" instance count will be updated without data loss
 # guard: the "opensearch" "domain" existed
 # guard_violation: the "opensearch" "domain" did not exist
 # guard: the "opensearch" "domain" was "ACTIVE"
@@ -193,9 +193,9 @@ atomic action ShardRebalancing:
                 domain_instance_count[domain] = domain_instance_count[domain]
 
 # step: an outbound cross-cluster connection is created between two "opensearch" "domain"s
-# result: the connection will be in "PENDING_ACCEPTANCE" state
-# guard: the connection slot is available
-# guard_violation: the connection slot is not available
+# result: the "opensearch" "connection" will be in "PENDING_ACCEPTANCE" state
+# guard: an "opensearch" "connection" "slot" was "available"
+# guard_violation: no "opensearch" "connection" "slot" was "available"
 # guard: the local "opensearch" "domain" existed
 # guard_violation: the local "opensearch" "domain" did not exist
 # guard: the local "opensearch" "domain" was "ACTIVE"
@@ -204,8 +204,8 @@ atomic action ShardRebalancing:
 # guard_violation: the remote "opensearch" "domain" did not exist
 # guard: the remote "opensearch" "domain" was "ACTIVE"
 # guard_violation_lifecycle: the remote "opensearch" "domain" was not "ACTIVE"
-# guard: the local and remote domains are different
-# guard_violation: the local and remote domains are the same
+# guard: the local and remote "opensearch" "domain"s are different
+# guard_violation: the local and remote "opensearch" "domain"s are the same
 atomic action CreateOutboundConnection:
     oneof conn in CONNECTION_IDS:
         if conn not in outbound_status:
@@ -221,7 +221,7 @@ atomic action CreateOutboundConnection:
                                         outbound_remote[conn] = remote_domain
                                         inbound_status[conn] = "PENDING_ACCEPTANCE"
 
-# step: an inbound cross-cluster connection is accepted
+# step: an "opensearch" "inbound connection" is accepted
 # result: both the inbound and outbound connection are "ACTIVE"
 # guard: the "opensearch" "inbound connection" existed
 # guard_violation: the "opensearch" "inbound connection" did not exist
@@ -237,7 +237,7 @@ atomic action AcceptInboundConnection:
                 if conn in outbound_status:
                     outbound_status[conn] = "ACTIVE"
 
-# step: an inbound cross-cluster connection is rejected
+# step: an "opensearch" "inbound connection" is rejected
 # result: both the inbound and outbound connection are "REJECTED"
 # guard: the "opensearch" "inbound connection" existed
 # guard_violation: the "opensearch" "inbound connection" did not exist
@@ -253,7 +253,7 @@ atomic action RejectInboundConnection:
                 if conn in outbound_status:
                     outbound_status[conn] = "REJECTED"
 
-# step: an outbound cross-cluster connection is deleted
+# step: an "opensearch" "outbound connection" is deleted
 # result: the "opensearch" "outbound connection" will be in "DELETING" state
 # guard: the "opensearch" "outbound connection" existed
 # guard_violation: the "opensearch" "outbound connection" did not exist
@@ -270,7 +270,7 @@ atomic action DeleteOutboundConnection:
 
 # fake_skip: internal
 # step: an "opensearch" "outbound connection" finishes deleting
-# result: the outbound and associated inbound connection will be "DELETED"
+# result: the "opensearch" "outbound connection" and associated "opensearch" "inbound connection" will be "DELETED"
 # guard: the "opensearch" "outbound connection" existed
 # guard_violation: the "opensearch" "outbound connection" did not exist
 # guard: the "opensearch" "outbound connection" was "DELETING"
@@ -285,7 +285,7 @@ atomic action FinishDeletingOutboundConnection:
                 if conn in inbound_status:
                     inbound_status[conn] = "DELETED"
 
-# step: an inbound cross-cluster connection is deleted
+# step: an "opensearch" "inbound connection" is deleted
 # result: the "opensearch" "inbound connection" will be in "DELETING" state
 # guard: the "opensearch" "inbound connection" existed
 # guard_violation: the "opensearch" "inbound connection" did not exist
@@ -349,7 +349,7 @@ atomic action RemoveTags:
                         if tk in domain_tag:
                             domain_tag[tk] = False
 
-# check: no active connection references a deleted domain
+# check: no active "opensearch" "connection" references a deleted "opensearch" "domain"
 always assertion ActiveConnectionsReferenceActiveDomains:
     for conn in CONNECTION_IDS:
         if conn in outbound_status:
@@ -375,7 +375,7 @@ always assertion TrafficSwapRequiresNewCluster:
                     return False
     return True
 
-# check: an "opensearch" "outbound connection" that was "ACTIVE" cannot have a REJECTED inbound connection
+# check: an "opensearch" "outbound connection" that was "ACTIVE" cannot have a "REJECTED" "opensearch" "inbound connection"
 always assertion ConnectionStatusConsistency:
     for conn in CONNECTION_IDS:
         if conn in outbound_status:
@@ -385,7 +385,7 @@ always assertion ConnectionStatusConsistency:
                         return False
     return True
 
-# check: a pending config change only exists on a "opensearch" "domain" that is PROCESSING
+# check: a pending config change only exists on an "opensearch" "domain" that is "PROCESSING"
 always assertion PendingConfigOnlyOnProcessingDomain:
     for domain in DOMAIN_NAMES:
         if domain in domain_pending_config:

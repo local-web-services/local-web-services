@@ -1,4 +1,4 @@
-"""Given: the "elasticache" subnet group will exist"""
+"""Given: the "elasticache" "subnet group" will exist"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..client import ElasticacheTestClient
 
 
-@given('the "elasticache" subnet group existed')
-@given('the "elasticache" subnet group will exist')
+@given('the "elasticache" "subnet group" existed')
+@given('the "elasticache" "subnet group" will exist')
 def subnet_group_exists(client: TestClient):
     ElasticacheTestClient(client).create_subnet_group()

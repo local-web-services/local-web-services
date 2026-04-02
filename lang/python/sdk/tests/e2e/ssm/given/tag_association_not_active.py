@@ -1,4 +1,4 @@
-"""Given: the tag association was not "ACTIVE" """
+"""Given: the "ssm" "parameter" tag association was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SsmTestClient
 from ..constants import TEST_PARAM
 
 
-@given('the tag association was not "ACTIVE"')
+@given('the "ssm" "parameter" tag association was not "ACTIVE"')
 def tag_association_not_active(lws_session, world):
     try:
         SsmTestClient(lws_session).delete_parameter(Name=TEST_PARAM)

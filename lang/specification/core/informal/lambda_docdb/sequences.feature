@@ -12,7 +12,7 @@ Feature: LambdaDocdb - Action Sequences
     Given fid not in func_status
     When a "lambda" "function" is deployed
     When a "documentdb" "cluster" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -20,7 +20,7 @@ Feature: LambdaDocdb - Action Sequences
     Given fid not in func_status
     When a "lambda" "function" is deployed
     When the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -28,7 +28,7 @@ Feature: LambdaDocdb - Action Sequences
     Given fid not in func_status
     When a "lambda" "function" is deployed
     When the "documentdb" "cluster" is started
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -36,7 +36,7 @@ Feature: LambdaDocdb - Action Sequences
     Given fid not in func_status
     When a "lambda" "function" is deployed
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -44,7 +44,7 @@ Feature: LambdaDocdb - Action Sequences
     Given fid not in func_status
     When a "lambda" "function" is deployed
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -52,7 +52,7 @@ Feature: LambdaDocdb - Action Sequences
     Given fid not in func_status
     When a "lambda" "function" is deployed
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -60,7 +60,7 @@ Feature: LambdaDocdb - Action Sequences
     Given cid not in cluster_status
     When a "documentdb" "cluster" is created
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -68,7 +68,7 @@ Feature: LambdaDocdb - Action Sequences
     Given cid not in cluster_status
     When a "documentdb" "cluster" is created
     When the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -76,7 +76,7 @@ Feature: LambdaDocdb - Action Sequences
     Given cid not in cluster_status
     When a "documentdb" "cluster" is created
     When the "documentdb" "cluster" is started
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -84,7 +84,7 @@ Feature: LambdaDocdb - Action Sequences
     Given cid not in cluster_status
     When a "documentdb" "cluster" is created
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -92,7 +92,7 @@ Feature: LambdaDocdb - Action Sequences
     Given cid not in cluster_status
     When a "documentdb" "cluster" is created
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -100,7 +100,7 @@ Feature: LambdaDocdb - Action Sequences
     Given cid not in cluster_status
     When a "documentdb" "cluster" is created
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -108,7 +108,7 @@ Feature: LambdaDocdb - Action Sequences
     Given cid in cluster_status
     When the "documentdb" "cluster" is stopped
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -116,7 +116,7 @@ Feature: LambdaDocdb - Action Sequences
     Given cid in cluster_status
     When the "documentdb" "cluster" is stopped
     When a "documentdb" "cluster" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -124,7 +124,7 @@ Feature: LambdaDocdb - Action Sequences
     Given cid in cluster_status
     When the "documentdb" "cluster" is stopped
     When the "documentdb" "cluster" is started
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -132,7 +132,7 @@ Feature: LambdaDocdb - Action Sequences
     Given cid in cluster_status
     When the "documentdb" "cluster" is stopped
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -140,7 +140,7 @@ Feature: LambdaDocdb - Action Sequences
     Given cid in cluster_status
     When the "documentdb" "cluster" is stopped
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -148,7 +148,7 @@ Feature: LambdaDocdb - Action Sequences
     Given cid in cluster_status
     When the "documentdb" "cluster" is stopped
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -156,7 +156,7 @@ Feature: LambdaDocdb - Action Sequences
     Given cid in cluster_status
     When the "documentdb" "cluster" is started
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -164,7 +164,7 @@ Feature: LambdaDocdb - Action Sequences
     Given cid in cluster_status
     When the "documentdb" "cluster" is started
     When a "documentdb" "cluster" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -172,7 +172,7 @@ Feature: LambdaDocdb - Action Sequences
     Given cid in cluster_status
     When the "documentdb" "cluster" is started
     When the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -180,7 +180,7 @@ Feature: LambdaDocdb - Action Sequences
     Given cid in cluster_status
     When the "documentdb" "cluster" is started
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -188,7 +188,7 @@ Feature: LambdaDocdb - Action Sequences
     Given cid in cluster_status
     When the "documentdb" "cluster" is started
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -196,7 +196,7 @@ Feature: LambdaDocdb - Action Sequences
     Given cid in cluster_status
     When the "documentdb" "cluster" is started
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -204,7 +204,7 @@ Feature: LambdaDocdb - Action Sequences
     Given fid in func_status
     When the "lambda" "function" is invoked
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -212,7 +212,7 @@ Feature: LambdaDocdb - Action Sequences
     Given fid in func_status
     When the "lambda" "function" is invoked
     When a "documentdb" "cluster" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -220,7 +220,7 @@ Feature: LambdaDocdb - Action Sequences
     Given fid in func_status
     When the "lambda" "function" is invoked
     When the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -228,7 +228,7 @@ Feature: LambdaDocdb - Action Sequences
     Given fid in func_status
     When the "lambda" "function" is invoked
     When the "documentdb" "cluster" is started
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -236,7 +236,7 @@ Feature: LambdaDocdb - Action Sequences
     Given fid in func_status
     When the "lambda" "function" is invoked
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -244,7 +244,7 @@ Feature: LambdaDocdb - Action Sequences
     Given fid in func_status
     When the "lambda" "function" is invoked
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -252,7 +252,7 @@ Feature: LambdaDocdb - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -260,7 +260,7 @@ Feature: LambdaDocdb - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     When a "documentdb" "cluster" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -268,7 +268,7 @@ Feature: LambdaDocdb - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     When the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -276,7 +276,7 @@ Feature: LambdaDocdb - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     When the "documentdb" "cluster" is started
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -284,7 +284,7 @@ Feature: LambdaDocdb - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -292,7 +292,7 @@ Feature: LambdaDocdb - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -300,7 +300,7 @@ Feature: LambdaDocdb - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -308,7 +308,7 @@ Feature: LambdaDocdb - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     When a "documentdb" "cluster" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -316,7 +316,7 @@ Feature: LambdaDocdb - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     When the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -324,7 +324,7 @@ Feature: LambdaDocdb - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     When the "documentdb" "cluster" is started
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -332,7 +332,7 @@ Feature: LambdaDocdb - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -340,7 +340,7 @@ Feature: LambdaDocdb - Action Sequences
     Given iid in inv_status
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -349,7 +349,7 @@ Feature: LambdaDocdb - Action Sequences
     When a "lambda" "function" is deployed
     When a "documentdb" "cluster" is created
     When the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -358,7 +358,7 @@ Feature: LambdaDocdb - Action Sequences
     When a "lambda" "function" is deployed
     When the "documentdb" "cluster" is stopped
     When the "documentdb" "cluster" is started
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -367,7 +367,7 @@ Feature: LambdaDocdb - Action Sequences
     When a "lambda" "function" is deployed
     When the "documentdb" "cluster" is started
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -376,7 +376,7 @@ Feature: LambdaDocdb - Action Sequences
     When a "lambda" "function" is deployed
     When the "lambda" "function" is invoked
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -385,7 +385,7 @@ Feature: LambdaDocdb - Action Sequences
     When a "lambda" "function" is deployed
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -394,7 +394,7 @@ Feature: LambdaDocdb - Action Sequences
     When a "lambda" "function" is deployed
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     When a "documentdb" "cluster" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -403,7 +403,7 @@ Feature: LambdaDocdb - Action Sequences
     When a "documentdb" "cluster" is created
     When a "lambda" "function" is deployed
     When the "documentdb" "cluster" is started
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -412,7 +412,7 @@ Feature: LambdaDocdb - Action Sequences
     When a "documentdb" "cluster" is created
     When the "documentdb" "cluster" is stopped
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -421,7 +421,7 @@ Feature: LambdaDocdb - Action Sequences
     When a "documentdb" "cluster" is created
     When the "documentdb" "cluster" is started
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -430,7 +430,7 @@ Feature: LambdaDocdb - Action Sequences
     When a "documentdb" "cluster" is created
     When the "lambda" "function" is invoked
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -439,7 +439,7 @@ Feature: LambdaDocdb - Action Sequences
     When a "documentdb" "cluster" is created
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -448,7 +448,7 @@ Feature: LambdaDocdb - Action Sequences
     When a "documentdb" "cluster" is created
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     When the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -457,7 +457,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "documentdb" "cluster" is stopped
     When a "lambda" "function" is deployed
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -466,7 +466,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "documentdb" "cluster" is stopped
     When a "documentdb" "cluster" is created
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -475,7 +475,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "documentdb" "cluster" is stopped
     When the "documentdb" "cluster" is started
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -484,7 +484,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "documentdb" "cluster" is stopped
     When the "lambda" "function" is invoked
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -493,7 +493,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "documentdb" "cluster" is stopped
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     When a "documentdb" "cluster" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -502,7 +502,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "documentdb" "cluster" is stopped
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     When the "documentdb" "cluster" is started
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -511,7 +511,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "documentdb" "cluster" is started
     When a "lambda" "function" is deployed
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -520,7 +520,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "documentdb" "cluster" is started
     When a "documentdb" "cluster" is created
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -529,7 +529,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "documentdb" "cluster" is started
     When the "documentdb" "cluster" is stopped
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -538,7 +538,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "documentdb" "cluster" is started
     When the "lambda" "function" is invoked
     When a "documentdb" "cluster" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -547,7 +547,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "documentdb" "cluster" is started
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     When the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -556,7 +556,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "documentdb" "cluster" is started
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -565,7 +565,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "lambda" "function" is invoked
     When a "lambda" "function" is deployed
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -574,7 +574,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "lambda" "function" is invoked
     When a "documentdb" "cluster" is created
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -583,7 +583,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "lambda" "function" is invoked
     When the "documentdb" "cluster" is stopped
     When a "documentdb" "cluster" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -592,7 +592,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "lambda" "function" is invoked
     When the "documentdb" "cluster" is started
     When the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -601,7 +601,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "lambda" "function" is invoked
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     When the "documentdb" "cluster" is started
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -610,7 +610,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "lambda" "function" is invoked
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -619,7 +619,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     When a "lambda" "function" is deployed
     When a "documentdb" "cluster" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -628,7 +628,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     When a "documentdb" "cluster" is created
     When the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -637,7 +637,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     When the "documentdb" "cluster" is stopped
     When the "documentdb" "cluster" is started
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -646,7 +646,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     When the "documentdb" "cluster" is started
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -655,7 +655,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     When the "lambda" "function" is invoked
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -664,7 +664,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -673,7 +673,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     When a "lambda" "function" is deployed
     When the "documentdb" "cluster" is stopped
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -682,7 +682,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     When a "documentdb" "cluster" is created
     When the "documentdb" "cluster" is started
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -691,7 +691,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     When the "documentdb" "cluster" is stopped
     When the "lambda" "function" is invoked
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -700,7 +700,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     When the "documentdb" "cluster" is started
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -709,7 +709,7 @@ Feature: LambdaDocdb - Action Sequences
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     When the "lambda" "function" is invoked
     When a "lambda" "function" is deployed
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @sequence
@@ -718,5 +718,5 @@ Feature: LambdaDocdb - Action Sequences
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
     When the "lambda" "function" writes a document to the "documentdb" "cluster" that was "AVAILABLE" and succeeds
     When a "documentdb" "cluster" is created
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists

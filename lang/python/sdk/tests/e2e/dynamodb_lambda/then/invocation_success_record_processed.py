@@ -1,4 +1,4 @@
-"""Then: the invocation will be "SUCCESS" and the record will be "PROCESSED" """
+"""Then: the "lambda" "invocation" will be "SUCCESS" and the "dynamodb" "record" will be "PROCESSED" """
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import pytest
 from pytest_bdd import then
 
 
-@then('the invocation will be "SUCCESS" and the record will be "PROCESSED"')
+@then('the "lambda" "invocation" will be "SUCCESS" and the "dynamodb" "record" will be "PROCESSED"')
 def invocation_success_record_processed(world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

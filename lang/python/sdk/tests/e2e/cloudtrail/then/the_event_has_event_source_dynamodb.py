@@ -13,7 +13,10 @@ def the_event_has_event_source_dynamodb(lws_session, world):
     if found_event is None:
         resp = lws_session.client("cloudtrail").lookup_events(
             LookupAttributes=[
-                {"AttributeKey": "EventSource", "AttributeValue": "dynamodb.amazonaws.com"}
+                {
+                    "AttributeKey": "EventSource",
+                    "AttributeValue": "dynamodb.amazonaws.com",
+                }
             ]
         )
         actual_events = resp.get("Events", [])

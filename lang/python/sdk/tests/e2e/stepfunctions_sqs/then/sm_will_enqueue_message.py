@@ -1,11 +1,13 @@
-"""Then: the state machine will enqueue a message when it reaches the task state"""
+"""Then: the "step functions" "state machine" will enqueue an "sqs" "message" when it reaches the task state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the state machine will enqueue a message when it reaches the task state")
+@then(
+    'the "step functions" "state machine" will enqueue an "sqs" "message" when it reaches the task state'
+)
 def sm_will_enqueue_message(world):
     # Arrange
     expected_error = None

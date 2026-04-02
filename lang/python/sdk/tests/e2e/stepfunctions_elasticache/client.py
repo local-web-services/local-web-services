@@ -4,7 +4,14 @@ from __future__ import annotations
 
 import pytest
 
-from .constants import PASS_DEFINITION, ROLE_ARN, TEST_CLUSTER, TEST_INPUT, TEST_SM, _sm_arn
+from .constants import (
+    PASS_DEFINITION,
+    ROLE_ARN,
+    TEST_CLUSTER,
+    TEST_INPUT,
+    TEST_SM,
+    _sm_arn,
+)
 
 
 class StepfunctionsElasticacheTestClient:
@@ -24,7 +31,10 @@ class StepfunctionsElasticacheTestClient:
     def create_cluster(self, name=TEST_CLUSTER):
         pytest.skip("lws cluster_db_service does not implement boto3 RDS query protocol")
         self._elasticache.create_cache_cluster(
-            CacheClusterId=name, CacheNodeType="cache.t3.micro", Engine="redis", NumCacheNodes=1
+            CacheClusterId=name,
+            CacheNodeType="cache.t3.micro",
+            Engine="redis",
+            NumCacheNodes=1,
         )
 
     def start_execution(self, name=TEST_SM):

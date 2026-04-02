@@ -13,10 +13,10 @@ Feature: S3tables - A "S3 Tables" "Table" Finishes Creating
     And the "s3 tables" "table" was "CREATING"
     When a "s3 tables" "table" finishes creating
     Then the "s3 tables" "table" will be "ACTIVE"
-    And a bucket in "DELETING" state has no "ACTIVE" namespaces
-    And a "s3 tables" "namespace" in "DELETING" state has no "ACTIVE" tables
-    And snapshot count is never negative
-    And schema version is always at least one
+    And a "s3 tables" "bucket" in "DELETING" state has no "ACTIVE" "s3 tables" "namespace"s
+    And a "s3 tables" "namespace" in "DELETING" state has no "ACTIVE" "s3 tables" "table"s
+    And "s3 tables" "table" snapshot count is never negative
+    And "s3 tables" "table" schema version is always at least one
 
   @guard @negative @finish_creating_table @internal
   Scenario: a "s3 tables" "table" finishes creating fails when the "s3 tables" "table" did not exist

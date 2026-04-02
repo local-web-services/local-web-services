@@ -13,10 +13,10 @@ Feature: Ssm - A "Ssm" "Parameter" Is Retrieved
     And the "ssm" "parameter" was "active"
     When a "ssm" "parameter" is retrieved
     Then the "ssm" "parameter" value will be returned
-    And every parameter version is a positive integer
-    And every parameter has a valid type (String, SecureString, or StringList)
-    And param_exists values are always valid booleans
-    And the error log only contains ParameterAlreadyExists entries
+    And every "ssm" "parameter" version is a positive integer
+    And every "ssm" "parameter" has a valid type (String, SecureString, or StringList)
+    And "ssm" "parameter" param_exists values are always valid booleans
+    And the "ssm" error log only contains "ParameterAlreadyExists" entries
 
   @guard @negative @get_parameter
   Scenario: a "ssm" "parameter" is retrieved fails when the "ssm" "parameter" did not exist

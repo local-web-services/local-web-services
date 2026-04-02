@@ -85,8 +85,8 @@ atomic action DescribeStateMachine:
             if sm_status[arn] == "ACTIVE":
                 pass
 
-# step: all state machines are listed
-# result: the list of state machines will be returned
+# step: all "step functions" "state machine"s are listed
+# result: the list of "step functions" "state machine"s will be returned
 atomic action ListStateMachines:
     pass
 
@@ -103,7 +103,7 @@ atomic action ListStateMachineVersions:
                 pass
 
 # step: a "step functions" "state machine" definition is validated
-# result: the definition will be valid or invalid
+# result: the "step functions" "state machine" definition will be valid or invalid
 # guard: the "step functions" "state machine" existed
 # guard_violation: the "step functions" "state machine" did not exist
 # guard: the "step functions" "state machine" was "ACTIVE"
@@ -137,8 +137,8 @@ atomic action TagResource:
 # guard_violation_lifecycle: the "step functions" "state machine" was not "ACTIVE"
 # guard: the tag was associated with the "step functions" "state machine"
 # guard_violation: the tag was not associated with the "step functions" "state machine"
-# guard: the tag association was "ACTIVE"
-# guard_violation: the tag association was not "ACTIVE"
+# guard: the "step functions" "state machine" tag association was "ACTIVE"
+# guard_violation: the "step functions" "state machine" tag association was not "ACTIVE"
 atomic action UntagResource:
     oneof arn in SM_ARNS:
         if arn in sm_status:
@@ -149,7 +149,7 @@ atomic action UntagResource:
                             sm_tag[arn + "#" + tkey] = False
 
 # step: tags for a "step functions" "state machine" are listed
-# result: the list of tags will be returned
+# result: the list of "step functions" "state machine" tags will be returned
 # guard: the "step functions" "state machine" existed
 # guard_violation: the "step functions" "state machine" did not exist
 # guard: the "step functions" "state machine" was "ACTIVE"
@@ -161,15 +161,15 @@ atomic action ListTagsForResource:
                 pass
 
 # step: an execution is started on a standard "step functions" "state machine"
-# result: the execution will be "RUNNING"
+# result: the "step functions" "execution" will be "RUNNING"
 # guard: the "step functions" "state machine" existed
 # guard_violation: the "step functions" "state machine" did not exist
 # guard: the "step functions" "state machine" was "ACTIVE"
 # guard_violation_lifecycle: the "step functions" "state machine" was not "ACTIVE"
 # guard: the "step functions" "state machine" is a STANDARD type
 # guard_violation: the "step functions" "state machine" is not a STANDARD type
-# guard: the execution slot is available
-# guard_violation_capacity: the execution slot is not available
+# guard: a "step functions" "execution" "slot" was "available"
+# guard_violation_capacity: no "step functions" "execution" "slot" was "available"
 atomic action StartExecution:
     oneof arn in SM_ARNS:
         if arn in sm_status:
@@ -181,15 +181,15 @@ atomic action StartExecution:
                             exec_sm[eid] = arn
 
 # step: a synchronous execution is started on an express "step functions" "state machine"
-# result: the execution will be "SUCCEEDED" or "FAILED"
+# result: the "step functions" "execution" will be "SUCCEEDED" or "FAILED"
 # guard: the "step functions" "state machine" existed
 # guard_violation: the "step functions" "state machine" did not exist
 # guard: the "step functions" "state machine" was "ACTIVE"
 # guard_violation_lifecycle: the "step functions" "state machine" was not "ACTIVE"
 # guard: the "step functions" "state machine" is an EXPRESS type
 # guard_violation: the "step functions" "state machine" is not an EXPRESS type
-# guard: the execution slot is available
-# guard_violation_capacity: the execution slot is not available
+# guard: a "step functions" "execution" "slot" was "available"
+# guard_violation_capacity: no "step functions" "execution" "slot" was "available"
 atomic action StartSyncExecution:
     oneof arn in SM_ARNS:
         if arn in sm_status:
@@ -205,29 +205,29 @@ atomic action StartSyncExecution:
                                     exec_status[eid] = "FAILED"
                                     exec_sm[eid] = arn
 
-# step: a running execution is stopped
-# result: the execution will be "ABORTED"
-# guard: the execution existed
-# guard_violation: the execution did not exist
-# guard: the execution was "RUNNING"
-# guard_violation_lifecycle: the execution was not "RUNNING"
+# step: a running "step functions" "execution" is stopped
+# result: the "step functions" "execution" will be "ABORTED"
+# guard: the "step functions" "execution" existed
+# guard_violation: the "step functions" "execution" did not exist
+# guard: the "step functions" "execution" was "RUNNING"
+# guard_violation_lifecycle: the "step functions" "execution" was not "RUNNING"
 atomic action StopExecution:
     oneof eid in EXEC_IDS:
         if eid in exec_status:
             if exec_status[eid] == "RUNNING":
                 exec_status[eid] = "ABORTED"
 
-# step: an execution is described
-# result: the execution details will be returned
-# guard: the execution existed
-# guard_violation: the execution did not exist
+# step: a "step functions" "execution" is described
+# result: the "step functions" "execution" details will be returned
+# guard: the "step functions" "execution" existed
+# guard_violation: the "step functions" "execution" did not exist
 atomic action DescribeExecution:
     oneof eid in EXEC_IDS:
         if eid in exec_status:
             pass
 
 # step: executions for a "step functions" "state machine" are listed
-# result: the list of executions will be returned
+# result: the list of "step functions" "execution"s will be returned
 # guard: the "step functions" "state machine" existed
 # guard_violation: the "step functions" "state machine" did not exist
 # guard: the "step functions" "state machine" was "ACTIVE"
@@ -238,22 +238,22 @@ atomic action ListExecutions:
             if sm_status[arn] == "ACTIVE":
                 pass
 
-# step: the event history of an execution is retrieved
-# result: the execution history will be returned
-# guard: the execution existed
-# guard_violation: the execution did not exist
+# step: the event history of a "step functions" "execution" is retrieved
+# result: the "step functions" "execution" history will be returned
+# guard: the "step functions" "execution" existed
+# guard_violation: the "step functions" "execution" did not exist
 atomic action GetExecutionHistory:
     oneof eid in EXEC_IDS:
         if eid in exec_status:
             pass
 
 # fake_skip: internal
-# step: a running execution transitions to a terminal state
-# result: the execution will be "SUCCEEDED" or "FAILED"
-# guard: the execution existed
-# guard_violation: the execution did not exist
-# guard: the execution was "RUNNING"
-# guard_violation: the execution was not "RUNNING"
+# step: a running "step functions" "execution" transitions to a terminal state
+# result: the "step functions" "execution" will be "SUCCEEDED" or "FAILED"
+# guard: the "step functions" "execution" existed
+# guard_violation: the "step functions" "execution" did not exist
+# guard: the "step functions" "execution" was "RUNNING"
+# guard_violation: the "step functions" "execution" was not "RUNNING"
 atomic action ExecutionStepTransition:
     oneof eid in EXEC_IDS:
         if eid in exec_status:
@@ -263,19 +263,19 @@ atomic action ExecutionStepTransition:
                     exec_status[eid] = "FAILED"
 
 # fake_skip: internal
-# step: a running execution exceeds its timeout
-# result: the execution will be "TIMED_OUT"
-# guard: the execution existed
-# guard_violation: the execution did not exist
-# guard: the execution was "RUNNING"
-# guard_violation: the execution was not "RUNNING"
+# step: a running "step functions" "execution" exceeds its timeout
+# result: the "step functions" "execution" will be "TIMED_OUT"
+# guard: the "step functions" "execution" existed
+# guard_violation: the "step functions" "execution" did not exist
+# guard: the "step functions" "execution" was "RUNNING"
+# guard_violation: the "step functions" "execution" was not "RUNNING"
 atomic action ExecutionTimeout:
     oneof eid in EXEC_IDS:
         if eid in exec_status:
             if exec_status[eid] == "RUNNING":
                 exec_status[eid] = "TIMED_OUT"
 
-# check: every state machine has a valid status (ACTIVE, DELETING, or DELETED)
+# check: every "step functions" "state machine" has a valid status (ACTIVE, DELETING, or DELETED)
 always assertion StateMachineStatusValid:
     for arn in SM_ARNS:
         if arn in sm_status:
@@ -283,7 +283,7 @@ always assertion StateMachineStatusValid:
                 return False
     return True
 
-# check: every execution has a valid status (RUNNING, SUCCEEDED, FAILED, TIMED_OUT, or ABORTED)
+# check: every "step functions" "execution" has a valid status (RUNNING, SUCCEEDED, FAILED, TIMED_OUT, or ABORTED)
 always assertion ExecutionStatusValid:
     for eid in EXEC_IDS:
         if eid in exec_status:
@@ -291,7 +291,7 @@ always assertion ExecutionStatusValid:
                 return False
     return True
 
-# check: every state machine has a valid type (STANDARD or EXPRESS)
+# check: every "step functions" "state machine" has a valid type (STANDARD or EXPRESS)
 always assertion StateMachineTypeValid:
     for arn in SM_ARNS:
         if arn in sm_type:
@@ -299,7 +299,7 @@ always assertion StateMachineTypeValid:
                 return False
     return True
 
-# check: synchronous executions only run on express state machines
+# check: synchronous "step functions" "execution"s only run on express "step functions" "state machine"s
 always assertion SyncExecutionOnlyForExpress:
     for eid in EXEC_IDS:
         if eid in exec_status:
@@ -310,7 +310,7 @@ always assertion SyncExecutionOnlyForExpress:
                         return False
     return True
 
-# check: every execution belongs to a known state machine
+# check: every "step functions" "execution" belongs to a known "step functions" "state machine"
 always assertion ExecutionBelongsToKnownStateMachine:
     for eid in EXEC_IDS:
         if eid in exec_sm:

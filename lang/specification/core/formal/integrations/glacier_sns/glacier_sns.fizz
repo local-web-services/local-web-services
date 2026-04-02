@@ -83,8 +83,8 @@ atomic action ConfigureNotification:
 # result: the "glacier" "job" will be "IN_PROGRESS"
 # guard: the "glacier" "vault" existed
 # guard_violation: the "glacier" "vault" did not exist
-# guard: a "glacier" "job" slot is available
-# guard_violation_capacity: no job slot is available
+# guard: a "glacier" "job" "slot" was "available"
+# guard_violation_capacity: no "glacier" "job" "slot" was "available"
 atomic action InitiateJob:
     oneof vid in VAULT_IDS:
         if vid in vault_status:
@@ -95,16 +95,16 @@ atomic action InitiateJob:
 
 
 # fake_skip: internal
-# step: the Glacier job completes and publishes a notification to the configured SNS topic
+# step: the "glacier" "job" completes and publishes a notification to the configured "sns" "topic"
 # result: the "glacier" "job" will be "SUCCEEDED" and the notification will be "PUBLISHED"
 # guard: a "glacier" "job" was "IN_PROGRESS"
-# guard_violation_lifecycle: no job was "IN_PROGRESS"
+# guard_violation_lifecycle: no "glacier" "job" was "IN_PROGRESS"
 # guard: the "glacier" "vault" has a SNS notification configured
 # guard_violation: the "glacier" "vault" has no SNS notification configured
-# guard: the configured topic was "ACTIVE"
-# guard_violation_lifecycle: the configured topic was "DELETED"
-# guard: a message slot is available
-# guard_violation_capacity: no message slot is available
+# guard: the configured "sns" "topic" was "ACTIVE"
+# guard_violation_lifecycle: the configured "sns" "topic" was "DELETED"
+# guard: a "sns" "message" "slot" was "available"
+# guard_violation_capacity: no "sns" "message" "slot" was "available"
 atomic action JobCompletedNotificationDelivered:
     oneof jid in JOB_IDS:
         if jid in job_status:
@@ -127,11 +127,11 @@ atomic action JobCompletedNotificationDelivered:
 # step: the Glacier job completes but notification delivery fails because the "sns" "topic" was deleted
 # result: the "glacier" "job" will be "SUCCEEDED" but no notification will be published
 # guard: a "glacier" "job" was "IN_PROGRESS"
-# guard_violation_lifecycle: no job was "IN_PROGRESS"
+# guard_violation_lifecycle: no "glacier" "job" was "IN_PROGRESS"
 # guard: the "glacier" "vault" has a SNS notification configured
 # guard_violation: the "glacier" "vault" has no SNS notification configured
-# guard: the configured topic was "DELETED"
-# guard_violation_lifecycle: the configured topic was not "DELETED"
+# guard: the configured "sns" "topic" was "DELETED"
+# guard_violation_lifecycle: the configured "sns" "topic" was not "DELETED"
 atomic action JobCompletedNotificationFails:
     oneof jid in JOB_IDS:
         if jid in job_status:

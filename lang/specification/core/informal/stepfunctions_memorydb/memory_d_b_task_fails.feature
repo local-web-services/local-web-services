@@ -13,8 +13,8 @@ Feature: StepfunctionsMemorydb - A Running "Step Functions" "Execution" Fails To
     And the "memorydb" "cluster" was "UPDATING"
     When a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating
     Then the "step functions" "execution" will be "FAILED" with a connection error
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which cluster it connected to
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "memorydb" "cluster" it connected to
 
   @guard @negative @memory_d_b_task_fails @internal
   Scenario: a running "step functions" "execution" fails to connect because the "memorydb" "cluster" is updating fails when no "step functions" "execution" was "RUNNING"

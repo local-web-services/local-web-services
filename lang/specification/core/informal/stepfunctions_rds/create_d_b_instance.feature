@@ -1,5 +1,5 @@
 @stepfunctionsrds @generated
-Feature: StepfunctionsRds - A Rds Db Instance Is Created
+Feature: StepfunctionsRds - An "Rds" "Db Instance" Is Created
 
   # Generated from FizzBee spec: stepfunctions_rds.fizz
   # Safety invariants: ExecutionRequiresActiveStateMachine, SuccessfulExecutionQueriedADB
@@ -8,15 +8,15 @@ Feature: StepfunctionsRds - A Rds Db Instance Is Created
     Given the system is initialized
 
   @minimal @happy @create_d_b_instance
-  Scenario: a "RDS" "DB" instance is created
-    Given the "DB" instance did not already exist
-    When a "RDS" "DB" instance is created
-    Then the "DB" instance will be "AVAILABLE"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which "DB" instance it queried
+  Scenario: an "rds" "DB instance" is created
+    Given the "rds" "instance" did not already exist
+    When an "rds" "DB instance" is created
+    Then the "rds" "DB instance" will be "AVAILABLE"
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "rds" "DB instance" it queried
 
   @guard @negative @create_d_b_instance
-  Scenario: a "RDS" "DB" instance is created fails when the "DB" instance already existed
-    Given the "DB" instance already existed
-    When a "RDS" "DB" instance is created
+  Scenario: an "rds" "DB instance" is created fails when the "rds" "instance" already existed
+    Given the "rds" "instance" already existed
+    When an "rds" "DB instance" is created
     Then the operation is rejected

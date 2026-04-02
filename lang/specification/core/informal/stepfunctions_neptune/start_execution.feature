@@ -11,11 +11,11 @@ Feature: StepfunctionsNeptune - An "Step Functions" "Execution" Of The "Step Fun
   Scenario: an "step functions" "execution" of the "step functions" "state machine" is started
     Given the "step functions" "state machine" existed
     And the "step functions" "state machine" was "ACTIVE"
-    And an "step functions" "execution" slot is available
+    And a "step functions" "execution" "slot" was "available"
     When an "step functions" "execution" of the "step functions" "state machine" is started
     Then the "step functions" "execution" will be "RUNNING"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which cluster it queried
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "neptune" "cluster" it queried
 
   @guard @negative @start_execution
   Scenario: an "step functions" "execution" of the "step functions" "state machine" is started fails when the "step functions" "state machine" did not exist
@@ -31,9 +31,9 @@ Feature: StepfunctionsNeptune - An "Step Functions" "Execution" Of The "Step Fun
     Then the operation is rejected
 
   @guard @negative @start_execution @capacity
-  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started fails when no execution slot is available
+  Scenario: an "step functions" "execution" of the "step functions" "state machine" is started fails when no "step functions" "execution" "slot" was "available"
     Given the "step functions" "state machine" existed
     And the "step functions" "state machine" was "ACTIVE"
-    And no execution slot is available
+    And no "step functions" "execution" "slot" was "available"
     When an "step functions" "execution" of the "step functions" "state machine" is started
     Then the operation is rejected

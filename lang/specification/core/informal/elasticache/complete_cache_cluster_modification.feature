@@ -13,11 +13,11 @@ Feature: Elasticache - An "Elasticache" "Cluster" Modification Completes
     And the "elasticache" "cluster" was "MODIFYING"
     When an "elasticache" "cluster" modification completes
     Then the "elasticache" "cluster" returns to "AVAILABLE" state
-    And memcached clusters are never associated with a "elasticache" "replication group"
-    And all snapshots reference redis clusters only
-    And every available replication group has a primary cluster assigned
-    And every active cluster, replication group, and snapshot has tags
-    And every snapshotting cluster has a corresponding in-progress snapshot
+    And "memcached" "elasticache" "cluster"s are never associated with a "elasticache" "replication group"
+    And all "elasticache" "snapshot"s reference "redis" "elasticache" "cluster"s only
+    And every "AVAILABLE" "elasticache" "replication group" has a primary "elasticache" "cluster" assigned
+    And every active "elasticache" "cluster", "replication group", and "snapshot" has tags
+    And every snapshotting "elasticache" "cluster" has a corresponding in-progress "elasticache" "snapshot"
 
   @guard @negative @complete_cache_cluster_modification @internal
   Scenario: an "elasticache" "cluster" modification completes fails when the "elasticache" "cluster" did not exist

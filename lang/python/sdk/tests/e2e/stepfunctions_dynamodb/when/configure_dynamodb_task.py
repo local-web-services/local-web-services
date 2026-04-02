@@ -1,14 +1,20 @@
-"""When: a DynamoDB PutItem task is configured on the state machine"""
+"""When: a "dynamodb" "PutItem" task is configured on the "step functions" "state machine" """
 
 from __future__ import annotations
 
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..constants import TEST_ITEM_KEY, TEST_PK, TEST_TABLE, _dynamodb_put_item_definition, _sm_arn
+from ..constants import (
+    TEST_ITEM_KEY,
+    TEST_PK,
+    TEST_TABLE,
+    _dynamodb_put_item_definition,
+    _sm_arn,
+)
 
 
-@when("a DynamoDB PutItem task is configured on the state machine")
+@when('a "dynamodb" "PutItem" task is configured on the "step functions" "state machine"')
 def configure_dynamodb_task(lws_session, world):
     try:
         world["result"] = lws_session.client("stepfunctions").update_state_machine(

@@ -325,7 +325,7 @@
           }
         ]
       },
-      "pyCode": "def ItemReferencesExistingTable():\n    for iid in item_status:\n        if item_status[iid] == \"EXISTS\":\n            tid = item_table[iid]\n            if tid not in table_status:\n                return False\n    return True\n\n\n# check: every matched event references a rule that exists\n"
+      "pyCode": "def ItemReferencesExistingTable():\n    for iid in item_status:\n        if item_status[iid] == \"EXISTS\":\n            tid = item_table[iid]\n            if tid not in table_status:\n                return False\n    return True\n\n\n# check: every matched \"eventbridge\" \"event\" references an \"eventbridge\" \"rule\" that exists\n"
     },
     {
       "sourceInfo": {
@@ -1079,11 +1079,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 37,
-                    "column": 18
+                    "column": 20
                   },
                   "end": {
                     "line": 37,
-                    "column": 24
+                    "column": 26
                   }
                 },
                 "pyExpr": "BUS_IDS"
@@ -1247,11 +1247,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 47,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 47,
-                    "column": 24
+                    "column": 26
                   }
                 },
                 "pyExpr": "TABLE_IDS"
@@ -1477,11 +1477,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 59,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 59,
-                    "column": 24
+                    "column": 26
                   }
                 },
                 "pyExpr": "TABLE_IDS"
@@ -1956,11 +1956,11 @@
                                                                     "sourceInfo": {
                                                                       "start": {
                                                                         "line": 79,
-                                                                        "column": 36
+                                                                        "column": 38
                                                                       },
                                                                       "end": {
                                                                         "line": 79,
-                                                                        "column": 44
+                                                                        "column": 46
                                                                       }
                                                                     },
                                                                     "pyExpr": "TABLE_IDS"
@@ -1992,11 +1992,11 @@
                                                 "sourceInfo": {
                                                   "start": {
                                                     "line": 77,
-                                                    "column": 28
+                                                    "column": 30
                                                   },
                                                   "end": {
                                                     "line": 77,
-                                                    "column": 35
+                                                    "column": 37
                                                   }
                                                 },
                                                 "pyExpr": "RULE_IDS"
@@ -2047,11 +2047,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 74,
-                    "column": 18
+                    "column": 20
                   },
                   "end": {
                     "line": 74,
-                    "column": 24
+                    "column": 26
                   }
                 },
                 "pyExpr": "BUS_IDS"
@@ -2277,11 +2277,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 94,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 94,
-                    "column": 23
+                    "column": 25
                   }
                 },
                 "pyExpr": "RULE_IDS"
@@ -2507,11 +2507,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 107,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 107,
-                    "column": 23
+                    "column": 25
                   }
                 },
                 "pyExpr": "RULE_IDS"
@@ -3085,11 +3085,11 @@
                                                                                             "sourceInfo": {
                                                                                               "start": {
                                                                                                 "line": 132,
-                                                                                                "column": 44
+                                                                                                "column": 46
                                                                                               },
                                                                                               "end": {
                                                                                                 "line": 132,
-                                                                                                "column": 51
+                                                                                                "column": 53
                                                                                               }
                                                                                             },
                                                                                             "pyExpr": "ITEM_IDS"
@@ -3121,11 +3121,11 @@
                                                                         "sourceInfo": {
                                                                           "start": {
                                                                             "line": 130,
-                                                                            "column": 36
+                                                                            "column": 38
                                                                           },
                                                                           "end": {
                                                                             "line": 130,
-                                                                            "column": 44
+                                                                            "column": 46
                                                                           }
                                                                         },
                                                                         "pyExpr": "EVENT_IDS"
@@ -3214,11 +3214,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 124,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 124,
-                    "column": 23
+                    "column": 25
                   }
                 },
                 "pyExpr": "RULE_IDS"
@@ -3639,11 +3639,11 @@
                                                                         "sourceInfo": {
                                                                           "start": {
                                                                             "line": 156,
-                                                                            "column": 36
+                                                                            "column": 38
                                                                           },
                                                                           "end": {
                                                                             "line": 156,
-                                                                            "column": 44
+                                                                            "column": 46
                                                                           }
                                                                         },
                                                                         "pyExpr": "EVENT_IDS"
@@ -3732,11 +3732,11 @@
                 "sourceInfo": {
                   "start": {
                     "line": 150,
-                    "column": 16
+                    "column": 18
                   },
                   "end": {
                     "line": 150,
-                    "column": 23
+                    "column": 25
                   }
                 },
                 "pyExpr": "RULE_IDS"

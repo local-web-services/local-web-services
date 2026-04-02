@@ -16,7 +16,10 @@ def create_dynamodb_table_with_stream(lws_session, world):
             KeySchema=[{"AttributeName": "id", "KeyType": "HASH"}],
             AttributeDefinitions=[{"AttributeName": "id", "AttributeType": "S"}],
             BillingMode="PAY_PER_REQUEST",
-            StreamSpecification={"StreamEnabled": True, "StreamViewType": "NEW_AND_OLD_IMAGES"},
+            StreamSpecification={
+                "StreamEnabled": True,
+                "StreamViewType": "NEW_AND_OLD_IMAGES",
+            },
         )
         world["result"] = resp
         world["error"] = None

@@ -1,4 +1,4 @@
-"""When: a confirmed enabled user initiates authentication"""
+"""When: a confirmed enabled "cognito" "user" initiates authentication"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_PASSWORD, TEST_USERNAME, _skip_if_not_implemented
 
 
-@when("a confirmed enabled user initiates authentication")
+@when('a confirmed enabled "cognito" "user" initiates authentication')
 def confirmed_user_initiates_auth(lws_session, world):
     try:
         pool_id = world.get("pool_id", "")

@@ -9,14 +9,14 @@ Feature: S3apiSns - A "Sns" "Topic" Is Created
 
   @minimal @happy @create_topic
   Scenario: a "sns" "topic" is created
-    Given the topic did not already exist
+    Given the "sns" "topic" did not already exist
     When a "sns" "topic" is created
     Then the "sns" "topic" will be "ACTIVE"
-    And every "PUBLISHED" notification references an object that exists
-    And every "PUBLISHED" notification references a topic that exists
+    And every "PUBLISHED" "sns" notification references an "s3" "object" that exists
+    And every "PUBLISHED" "sns" notification references an "sns" "topic" that exists
 
   @guard @negative @create_topic
-  Scenario: a "sns" "topic" is created fails when the topic already existed
-    Given the topic already existed
+  Scenario: a "sns" "topic" is created fails when the "sns" "topic" already existed
+    Given the "sns" "topic" already existed
     When a "sns" "topic" is created
     Then the operation is rejected

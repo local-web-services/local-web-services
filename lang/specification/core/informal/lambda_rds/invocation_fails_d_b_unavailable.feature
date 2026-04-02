@@ -12,9 +12,9 @@ Feature: LambdaRds - The "Lambda" "Function" Fails To Connect Because The Databa
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "rds" "database instance" was "FAILING_OVER"
     When the "lambda" "function" fails to connect because the database is failing over
-    Then the invocation will be "FAILED" with a connection error
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which database it queried
+    Then the "lambda" "invocation" will be "FAILED" with a connection error
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every successful "lambda" "invocation" recorded which "rds" "database instance" it queried
 
   @guard @negative @invocation_fails_d_b_unavailable @lifecycle
   Scenario: the "lambda" "function" fails to connect because the database is failing over fails when no "lambda" "invocation" was "IN_PROGRESS"

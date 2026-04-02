@@ -1,10 +1,10 @@
-"""Given: there were no writes pending propagation to the "GSI" """
+"""Given: there were no writes pending propagation to the "dynamodb" "GSI" """
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given('there were no writes pending propagation to the "GSI"')
+@given('there were no writes pending propagation to the "dynamodb" "GSI"')
 def there_are_no_writes_pending_gsi_propagation():
     """No-op: no GSI writes are pending by default."""

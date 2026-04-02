@@ -10,7 +10,9 @@ from ..client import S3apiEventsTestClient
 from ..constants import TEST_BODY, TEST_BUCKET, TEST_KEY
 
 
-@given("an object is uploaded but event delivery fails because the bus has been deleted")
+@given(
+    'an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted'
+)
 def s3api_events_object_uploaded_event_failed(lws_session):
     S3apiEventsTestClient(lws_session).create_bucket()
     S3apiEventsTestClient(lws_session)._s3.put_object(

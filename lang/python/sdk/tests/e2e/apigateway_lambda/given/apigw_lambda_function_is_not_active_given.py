@@ -1,4 +1,4 @@
-"""Given: the integrated function was not "ACTIVE" """
+"""Given: the integrated "lambda" "function" was not "ACTIVE" """
 
 from __future__ import annotations
 

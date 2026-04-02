@@ -1,4 +1,4 @@
-"""When: an object is uploaded and S3 delivers an event to the EventBridge bus"""
+"""When: an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus" """
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from pytest_bdd import when
 from ..constants import TEST_BODY, TEST_BUCKET, TEST_BUS, TEST_KEY
 
 
-@when("an object is uploaded and S3 delivers an event to the EventBridge bus")
+@when(
+    'an "s3" "object" is uploaded and "s3" delivers an "eventbridge" "event" to the "eventbridge" "bus"'
+)
 def put_object_with_event(lws_session, world):
     try:
         world["result"] = lws_session.client("s3").put_object(

@@ -12,9 +12,9 @@ Feature: CognitoLambda - A "Cognito" "User Pool" Is Created
     Given the "cognito" "user pool" did not already exist
     When a "cognito" "user pool" is created
     Then the "cognito" "user pool" will be "ACTIVE" with no pre-signup trigger configured
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "IN_PROGRESS" invocation is for a "PENDING" user
-    And every "PENDING" user has a corresponding "IN_PROGRESS" invocation
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "IN_PROGRESS" "lambda" "invocation" is for a "PENDING" "cognito" "user"
+    And every "PENDING" "cognito" "user" has a corresponding "IN_PROGRESS" "lambda" "invocation"
 
   @guard @negative @create_user_pool
   Scenario: a "cognito" "user pool" is created fails when the "cognito" "user pool" already existed

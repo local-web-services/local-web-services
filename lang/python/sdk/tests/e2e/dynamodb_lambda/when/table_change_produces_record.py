@@ -15,7 +15,8 @@ def table_change_produces_record(lws_session, world):
         pytest.skip(world["_skip"])
     try:
         resp = lws_session.client("dynamodb").put_item(
-            TableName=TEST_TABLE, Item={"id": {"S": "stream-record-1"}, "data": {"S": "test-value"}}
+            TableName=TEST_TABLE,
+            Item={"id": {"S": "stream-record-1"}, "data": {"S": "test-value"}},
         )
         world["result"] = resp
         world["error"] = None

@@ -14,7 +14,7 @@ Feature: LambdaGlacier - The "Lambda" "Function" Uploads An "Glacier" "Archive" 
     And an "glacier" "archive" slot is available
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     Then the "glacier" "archive" will exist in the "glacier" "vault" and the invocation will be "SUCCESS"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing archive references a "glacier" "vault" that exists
 
   @guard @negative @upload_archive_task @internal
@@ -31,9 +31,9 @@ Feature: LambdaGlacier - The "Lambda" "Function" Uploads An "Glacier" "Archive" 
     Then the operation is rejected
 
   @guard @negative @upload_archive_task @internal
-  Scenario: the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds fails when no archive slot is available
+  Scenario: the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds fails when no "glacier" "archive" "slot" was "available"
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "glacier" "vault" existed
-    And no archive slot is available
+    And no "glacier" "archive" "slot" was "available"
     When the "lambda" "function" uploads an "glacier" "archive" to an existing vault and succeeds
     Then the operation is rejected

@@ -1,4 +1,4 @@
-"""Then: the "elasticache" subnet group will exist"""
+"""Then: the "elasticache" "subnet group" will exist"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_SUBNET_GROUP_ID
 
 
-@then('the "elasticache" subnet group will exist')
+@then('the "elasticache" "subnet group" will exist')
 def subnet_group_exists_then(client: TestClient, world):
     actual_error = world["error"]
     assert (

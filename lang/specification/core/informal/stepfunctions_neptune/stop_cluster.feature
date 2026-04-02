@@ -13,8 +13,8 @@ Feature: StepfunctionsNeptune - The "Neptune" "Cluster" Is Stopped
     And the "neptune" "cluster" was "AVAILABLE"
     When the "neptune" "cluster" is stopped
     Then the "neptune" "cluster" will be "STOPPED" and graph queries will be rejected
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which cluster it queried
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "neptune" "cluster" it queried
 
   @guard @negative @stop_cluster
   Scenario: the "neptune" "cluster" is stopped fails when the "neptune" "cluster" did not exist

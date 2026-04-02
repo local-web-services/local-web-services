@@ -1,4 +1,4 @@
-"""Then: the event bus will be "ACTIVE" """
+"""Then: the "eventbridge" "bus" will be "ACTIVE" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_BUS
 
 
-@then('the event bus will be "ACTIVE"')
+@then('the "eventbridge" "bus" will be "ACTIVE"')
 def event_bus_is_active_then(lws_session):
     resp = lws_session.client("events").list_event_buses()
     actual_names = [b["Name"] for b in resp.get("EventBuses", [])]

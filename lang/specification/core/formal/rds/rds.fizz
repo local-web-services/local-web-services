@@ -303,7 +303,7 @@ atomic action TagDBInstance:
                 instance_multi_az[iid] = instance_multi_az[iid]
 
 # Safety: DB instance statuses are valid
-# check: every database instance has a valid status
+# check: every "rds" "instance" has a valid status
 always assertion ValidDBInstanceStatus:
     for iid in instance_status:
         s = instance_status[iid]
@@ -312,7 +312,7 @@ always assertion ValidDBInstanceStatus:
     return True
 
 # Safety: DB snapshot statuses are valid
-# check: every database snapshot has a valid status
+# check: every "rds" "snapshot" has a valid status
 always assertion ValidDBSnapshotStatus:
     for sid in snapshot_status:
         s = snapshot_status[sid]
@@ -321,7 +321,7 @@ always assertion ValidDBSnapshotStatus:
     return True
 
 # Safety: every BACKING_UP instance has a corresponding in-progress snapshot
-# check: every backing-up instance has a corresponding in-progress snapshot
+# check: every backing-up "rds" "instance" has a corresponding in-progress "rds" "snapshot"
 always assertion BackingUpInstanceHasSnapshot:
     for iid in INSTANCE_IDS:
         if iid in instance_status:

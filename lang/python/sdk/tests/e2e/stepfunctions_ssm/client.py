@@ -22,7 +22,9 @@ class StepfunctionsSsmTestClient:
         self._ssm = _ssm
 
     def create_sm(self, name=TEST_SM):
-        from botocore.exceptions import ClientError  # pylint: disable=import-outside-toplevel
+        from botocore.exceptions import (
+            ClientError,
+        )  # pylint: disable=import-outside-toplevel
 
         try:
             resp = self._sfn.create_state_machine(

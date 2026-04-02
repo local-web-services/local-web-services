@@ -73,8 +73,8 @@ atomic action ClusterUpdateComplete:
 # guard_violation: the "step functions" "state machine" did not exist
 # guard: the "step functions" "state machine" was "ACTIVE"
 # guard_violation_lifecycle: the "step functions" "state machine" was not "ACTIVE"
-# guard: an "step functions" "execution" slot is available
-# guard_violation_capacity: no execution slot is available
+# guard: a "step functions" "execution" "slot" was "available"
+# guard_violation_capacity: no "step functions" "execution" "slot" was "available"
 atomic action StartExecution:
     oneof smid in SM_IDS:
         if smid in sm_status:
@@ -121,7 +121,7 @@ atomic action MemoryDBTaskFails:
                             exec_cluster[eid] = cid
 
 
-# check: every RUNNING execution references an ACTIVE state machine
+# check: every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
 always assertion ExecutionRequiresActiveStateMachine:
     for eid in exec_status:
         if exec_status[eid] == "RUNNING":
@@ -132,7 +132,7 @@ always assertion ExecutionRequiresActiveStateMachine:
     return True
 
 
-# check: every succeeded execution recorded which cluster it connected to
+# check: every "SUCCEEDED" "step functions" "execution" recorded which "memorydb" "cluster" it connected to
 # (verifies an execution cannot succeed without connecting to a cluster; cluster may enter UPDATING afterwards)
 always assertion SuccessfulExecutionConnectedToACluster:
     for eid in exec_status:

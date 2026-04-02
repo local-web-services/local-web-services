@@ -1,4 +1,4 @@
-"""Given: the table was "ACTIVE" """
+"""Given: the "s3 tables" "table" was "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaS3tablesTestClient
 from ..constants import TEST_NAMESPACE, TEST_TABLE, _table_bucket_arn
 
 
-@given('the table was "ACTIVE"')
+@given('the "s3 tables" "table" was "ACTIVE"')
 def lambda_s3tables_table_is_active_given(lws_session):
     try:
         LambdaS3tablesTestClient(lws_session).create_table_bucket()

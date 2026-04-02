@@ -1,4 +1,4 @@
-"""Given: the parameter is already "DELETED" """
+"""Given: the "ssm" "parameter" is already "DELETED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaSsmTestClient
 from ..constants import TEST_PARAM
 
 
-@given('the parameter is already "DELETED"')
+@given('the "ssm" "parameter" is already "DELETED"')
 def param_is_already_deleted(lws_session, world):
     try:
         LambdaSsmTestClient(lws_session).create_param()

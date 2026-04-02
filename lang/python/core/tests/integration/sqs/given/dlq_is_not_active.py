@@ -1,4 +1,4 @@
-"""Given: the dead-letter queue was not "ACTIVE" """
+"""Given: the "sqs" "dead-letter queue" was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -6,6 +6,6 @@ import pytest
 from pytest_bdd import given
 
 
-@given('the dead-letter queue was not "ACTIVE"')
+@given('the "sqs" "dead-letter queue" was not "ACTIVE"')
 def dlq_is_not_active():
     pytest.skip("Cannot configure lifecycle state in integration test context")

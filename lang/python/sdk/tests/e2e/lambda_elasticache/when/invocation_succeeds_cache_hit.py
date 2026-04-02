@@ -1,11 +1,11 @@
-"""When: the Lambda invocation reads an existing cache entry and completes successfully"""
+"""When: the "lambda" "function" invocation reads an existing cache entry and completes successfully"""
 
 from __future__ import annotations
 
 from pytest_bdd import when
 
 
-@when("the Lambda invocation reads an existing cache entry and completes successfully")
+@when('the "lambda" "function" invocation reads an existing cache entry and completes successfully')
 def invocation_succeeds_cache_hit(lws_session, world):
     # Arrange
     invocation_id = world.get("invocation_id")

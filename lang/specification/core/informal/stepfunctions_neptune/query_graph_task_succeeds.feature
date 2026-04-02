@@ -13,8 +13,8 @@ Feature: StepfunctionsNeptune - A Running "Step Functions" "Execution" Queries T
     And the "neptune" "cluster" was "AVAILABLE"
     When a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds
     Then the "step functions" "execution" will be "SUCCEEDED"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which cluster it queried
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "neptune" "cluster" it queried
 
   @guard @negative @query_graph_task_succeeds @internal
   Scenario: a running "step functions" "execution" queries the "AVAILABLE" Neptune cluster and the task succeeds fails when no "step functions" "execution" was "RUNNING"

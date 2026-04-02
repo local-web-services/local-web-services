@@ -1,4 +1,4 @@
-"""Then: the object will exist in the bucket and the "step functions" "execution" will be "SUCCEEDED" """
+"""Then: the "s3" "object" will exist in the "s3" "bucket" and the "step functions" "execution" will be "SUCCEEDED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..constants import TEST_BODY, TEST_BUCKET, TEST_KEY
 
 
 @then(
-    'the object will exist in the bucket and the "step functions" "execution" will be "SUCCEEDED"'
+    'the "s3" "object" will exist in the "s3" "bucket" and the "step functions" "execution" will be "SUCCEEDED"'
 )
 def object_exists_and_execution_succeeded(lws_session, world):
     expected_error = None

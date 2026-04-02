@@ -12,9 +12,9 @@ Feature: ApigatewayS3api - A Request Fails Because The "S3" "Bucket" Has Been De
     Given the "api gateway" "api" was "ACTIVE"
     And the "api gateway" "api" has a S3 integration configured
     And the "s3" "bucket" was "DELETED"
-    And a request slot is available
+    And a "request" "slot" was "available"
     When a request fails because the "s3" "bucket" has been deleted
-    Then the request will be "FAILED" with a NoSuchBucket error
+    Then the "api gateway" "request" will be "FAILED" with a NoSuchBucket error
     And every existing object references a "s3" "bucket" that exists
     And every successful request references an "api gateway" "API" that exists
 
@@ -40,10 +40,10 @@ Feature: ApigatewayS3api - A Request Fails Because The "S3" "Bucket" Has Been De
     Then the operation is rejected
 
   @guard @negative @request_fails @capacity
-  Scenario: a request fails because the "s3" "bucket" has been deleted fails when no request slot is available
+  Scenario: a request fails because the "s3" "bucket" has been deleted fails when no "request" "slot" was "available"
     Given the "api gateway" "api" was "ACTIVE"
     And the "api gateway" "api" has a S3 integration configured
     And the "s3" "bucket" was "DELETED"
-    And no request slot is available
+    And no "request" "slot" was "available"
     When a request fails because the "s3" "bucket" has been deleted
     Then the operation is rejected

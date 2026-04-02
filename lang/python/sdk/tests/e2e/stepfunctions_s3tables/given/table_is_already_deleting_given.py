@@ -1,4 +1,4 @@
-"""Given: the table is already "DELETING" """
+"""Given: the "s3 tables" "table" is already "DELETING" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsS3tablesTestClient
 from ..constants import TEST_BUCKET
 
 
-@given('the table is already "DELETING"')
+@given('the "s3 tables" "table" is already "DELETING"')
 def table_is_already_deleting_given(lws_session, world):
     try:
         StepfunctionsS3tablesTestClient(lws_session).create_table_bucket()

@@ -9,33 +9,33 @@ Feature: Sns - All "Sns" "Delivery" Retries Are Exhausted
 
   @minimal @happy @retry_exhausted @internal
   Scenario: all "sns" "delivery" retries are exhausted
-    Given the delivery existed
+    Given the "sns" "delivery" existed
     And the "sns" "delivery" was "IN_FLIGHT"
-    And the retry count had reached the limit
+    And the "sns" "delivery" retry count had reached the limit
     When all "sns" "delivery" retries are exhausted
     Then the "sns" "delivery" will be marked "DONE"
-    And no delivery is in-flight to a deleted subscription
-    And no delivery is in-flight to an unconfirmed subscription
-    And every active subscription references an "ACTIVE" topic
-    And every delivery retry count is within the allowed limit
+    And no "sns" "delivery" is "IN_FLIGHT" to a deleted "sns" "subscription"
+    And no "sns" "delivery" is "IN_FLIGHT" to an unconfirmed "sns" "subscription"
+    And every active "sns" "subscription" references an "ACTIVE" "sns" "topic"
+    And every "sns" "delivery" retry count is within the allowed limit
 
   @guard @negative @retry_exhausted @internal
-  Scenario: all "sns" "delivery" retries are exhausted fails when the delivery did not exist
-    Given the delivery did not exist
+  Scenario: all "sns" "delivery" retries are exhausted fails when the "sns" "delivery" did not exist
+    Given the "sns" "delivery" did not exist
     When all "sns" "delivery" retries are exhausted
     Then the operation is rejected
 
   @guard @negative @retry_exhausted @internal
   Scenario: all "sns" "delivery" retries are exhausted fails when the "sns" "delivery" was not "IN_FLIGHT"
-    Given the delivery existed
+    Given the "sns" "delivery" existed
     And the "sns" "delivery" was not "IN_FLIGHT"
     When all "sns" "delivery" retries are exhausted
     Then the operation is rejected
 
   @guard @negative @retry_exhausted @internal
-  Scenario: all "sns" "delivery" retries are exhausted fails when the retry count was below the limit
-    Given the delivery existed
+  Scenario: all "sns" "delivery" retries are exhausted fails when the "sns" "delivery" retry count was below the limit
+    Given the "sns" "delivery" existed
     And the "sns" "delivery" was "IN_FLIGHT"
-    And the retry count was below the limit
+    And the "sns" "delivery" retry count was below the limit
     When all "sns" "delivery" retries are exhausted
     Then the operation is rejected

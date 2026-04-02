@@ -72,8 +72,8 @@ action Init:
 # result: the "api gateway" "API" will be "ACTIVE" and its root resource will be "ACTIVE"
 # guard: the "api gateway" "API" did not already exist
 # guard_violation: the "api gateway" "API" already existed
-# guard: a "api gateway" "resource" slot is available
-# guard_violation_capacity: no resource slot is available
+# guard: a "api gateway" "resource" "slot" was "available"
+# guard_violation_capacity: no "api gateway" "resource" "slot" was "available"
 atomic action CreateRestApi:
     oneof aid in API_IDS:
         if aid not in api_status:
@@ -211,7 +211,7 @@ atomic action PutMethodGet:
                     method_api[mk] = resource_api[rid]
                     method_resource[mk] = rid
 
-# step: an existing method is updated
+# step: an existing "api gateway" "method" is updated
 # result: the "api gateway" "method" remains unchanged
 # guard: the "api gateway" "method" existed
 # guard_violation: the "api gateway" "method" did not exist
@@ -239,7 +239,7 @@ atomic action DeleteMethod:
                     if integration_status[mk] == "EXISTS":
                         integration_status[mk] = "DELETED"
 
-# step: a 200 method response is configured
+# step: a 200 "api gateway" "method" response is configured
 # result: the "api gateway" "method" response will exist
 # guard: the "api gateway" "method" existed
 # guard_violation: the "api gateway" "method" did not exist
@@ -280,7 +280,7 @@ atomic action DeleteIntegration:
             if integration_status[mk] == "EXISTS":
                 integration_status[mk] = "DELETED"
 
-# step: a 200 integration response is configured
+# step: a 200 "api gateway" "integration" response is configured
 # result: the "api gateway" "integration" response will exist
 # guard: the "api gateway" "integration" existed
 # guard_violation: the "api gateway" "integration" did not exist
@@ -336,8 +336,8 @@ atomic action CreateDeployment:
 # guard_violation: the "api gateway" "stage" does not have a "api gateway" "deployment" reference
 # guard: the "api gateway" "stage" references this deployment
 # guard_violation: the "api gateway" "stage" does not reference this deployment
-# guard: no stage references this deployment
-# guard_violation: a "api gateway" "stage" references this deployment
+# guard: no "api gateway" "stage" references this "api gateway" "deployment"
+# guard_violation: an "api gateway" "stage" references this "api gateway" "deployment"
 # DeleteDeployment: only if no stage references it
 atomic action DeleteDeployment:
     oneof did in DEPLOYMENT_IDS:
@@ -411,7 +411,7 @@ atomic action UpdateStageProd:
                         stage_deployment[sk] = did
 
 # step: throttling was "ENABLED" for the "api gateway" "prod stage"
-# result: prod stage requests are throttled
+# result: "api gateway" "prod stage" requests will be throttled
 # guard: the "api gateway" "prod stage" existed
 # guard_violation: the "api gateway" "prod stage" did not exist
 # guard: the "api gateway" "prod stage" is "ACTIVE"
@@ -425,7 +425,7 @@ atomic action EnableStageThrottlingProd:
                 stage_throttling[sk] = True
 
 # step: throttling was "DISABLED" for the "api gateway" "prod stage"
-# result: prod stage requests are not throttled
+# result: "api gateway" "prod stage" requests will not be throttled
 # guard: the "api gateway" "prod stage" existed
 # guard_violation: the "api gateway" "prod stage" did not exist
 # guard: the "api gateway" "prod stage" is "ACTIVE"
@@ -438,8 +438,8 @@ atomic action DisableStageThrottlingProd:
                 stage_throttling[sk] = False
 
 # fake_skip: internal
-# step: a request is made to the throttled prod stage
-# result: the request will be throttled or pass non-deterministically
+# step: a request is made to the throttled "api gateway" "prod stage"
+# result: the "api gateway" "prod stage" request will be throttled or pass non-deterministically
 # guard: the "api gateway" "prod stage" has throttling configured
 # guard_violation: the "api gateway" "prod stage" does not have throttling configured
 # guard: throttling was "ENABLED" for the "api gateway" "prod stage"
@@ -455,7 +455,7 @@ atomic action RequestThrottledProd:
                     pass
 
 # fake_skip: internal
-# step: a backend integration is called
+# step: a "api gateway" "backend integration" is called
 # result: the "api gateway" "integration" times out or responds non-deterministically
 # guard: the "api gateway" "integration" existed
 # guard_violation: the "api gateway" "integration" did not exist
@@ -470,7 +470,7 @@ atomic action IntegrationTimeout:
                     pass
                     pass
 
-# check: all ACTIVE resources belong to ACTIVE APIs
+# check: all "ACTIVE" "api gateway" "resource"s belong to "ACTIVE" "api gateway" "API"s
 # Safety: all ACTIVE resources belong to ACTIVE APIs
 always assertion ResourcesBelongToExistingApis:
     for rid in resource_api:
@@ -482,7 +482,7 @@ always assertion ResourcesBelongToExistingApis:
                         return False
     return True
 
-# check: all EXISTING methods belong to ACTIVE resources
+# check: all "api gateway" "method"s belong to "ACTIVE" "api gateway" "resource"s
 # Safety: all EXISTING methods belong to ACTIVE resources
 always assertion MethodsBelongToExistingResources:
     for mk in method_resource:
@@ -494,7 +494,7 @@ always assertion MethodsBelongToExistingResources:
                         return False
     return True
 
-# check: all EXISTING integrations correspond to EXISTING methods
+# check: all "api gateway" "integration"s correspond to existing "api gateway" "method"s
 # Safety: all EXISTING integrations correspond to EXISTING methods
 always assertion IntegrationsBelongToExistingMethods:
     for mk in integration_status:
@@ -504,7 +504,7 @@ always assertion IntegrationsBelongToExistingMethods:
                     return False
     return True
 
-# check: all ACTIVE deployments belong to ACTIVE APIs
+# check: all "ACTIVE" "api gateway" "deployment"s belong to "ACTIVE" "api gateway" "API"s
 # Safety: all ACTIVE deployments belong to ACTIVE APIs
 always assertion DeploymentsBelongToExistingApis:
     for did in deployment_api:
@@ -516,7 +516,7 @@ always assertion DeploymentsBelongToExistingApis:
                         return False
     return True
 
-# check: all active stages reference ACTIVE deployments
+# check: all active "api gateway" "stage"s reference "ACTIVE" "api gateway" "deployment"s
 # Safety: all active stages reference ACTIVE deployments
 always assertion StagesReferenceExistingDeployments:
     for sk in stage_deployment:
@@ -528,7 +528,7 @@ always assertion StagesReferenceExistingDeployments:
                         return False
     return True
 
-# check: all active stages belong to ACTIVE APIs
+# check: all active "api gateway" "stage"s belong to "ACTIVE" "api gateway" "API"s
 # Safety: all active stages belong to ACTIVE APIs
 always assertion StagesBelongToExistingApis:
     for aid in API_IDS:
@@ -541,7 +541,7 @@ always assertion StagesBelongToExistingApis:
                             return False
     return True
 
-# check: each ACTIVE API has at least one ACTIVE root resource
+# check: each "ACTIVE" "api gateway" "API" has at least one "ACTIVE" root "api gateway" "resource"
 # Safety: each ACTIVE API has at least one root resource (path "/")
 always assertion RootResourcePreserved:
     for aid in API_IDS:

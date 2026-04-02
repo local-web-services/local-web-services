@@ -1,5 +1,5 @@
 @chaos @generated
-Feature: Chaos - A Service Call Is Delayed By Chaos Latency Injection
+Feature: Chaos - A "Service" Call Is Delayed By "Chaos" "Latency" Injection
 
   # Generated from FizzBee spec: chaos.fizz
   # Safety invariants: ChaosConfigOnlyForKnownServices
@@ -8,22 +8,22 @@ Feature: Chaos - A Service Call Is Delayed By Chaos Latency Injection
     Given the system is initialized
 
   @minimal @happy @inject_latency
-  Scenario: a service call is delayed by chaos latency injection
+  Scenario: a "service" call is delayed by "chaos" "latency" injection
     Given chaos was "ENABLED" for the service
-    And latency is configured for the service
-    When a service call is delayed by chaos latency injection
-    Then the service call takes at least the configured minimum latency
-    And every chaos-configured service is a known service
+    And "chaos" "latency" is configured for the "service"
+    When a "service" call is delayed by "chaos" "latency" injection
+    Then the "service" call takes at least the configured minimum "chaos" "latency"
+    And every "chaos"-configured "service" is a known "service"
 
   @guard @negative @inject_latency
-  Scenario: a service call is delayed by chaos latency injection fails when chaos was not "ENABLED" for the service
+  Scenario: a "service" call is delayed by "chaos" "latency" injection fails when chaos was not "ENABLED" for the service
     Given chaos was not "ENABLED" for the service
-    When a service call is delayed by chaos latency injection
+    When a "service" call is delayed by "chaos" "latency" injection
     Then the operation is rejected
 
   @guard @negative @inject_latency
-  Scenario: a service call is delayed by chaos latency injection fails when latency is not configured for the service
+  Scenario: a "service" call is delayed by "chaos" "latency" injection fails when "chaos" "latency" is not configured for the "service"
     Given chaos was "ENABLED" for the service
-    And latency is not configured for the service
-    When a service call is delayed by chaos latency injection
+    And "chaos" "latency" is not configured for the "service"
+    When a "service" call is delayed by "chaos" "latency" injection
     Then the operation is rejected

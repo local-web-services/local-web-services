@@ -25,7 +25,12 @@ def put_parameter_overwrite(client: TestClient, world):
     r = client.post(
         "/",
         headers={"X-Amz-Target": f"{_SSM_TARGET}.PutParameter"},
-        json={"Name": INT_PARAM, "Value": INT_VALUE2, "Type": "String", "Overwrite": True},
+        json={
+            "Name": INT_PARAM,
+            "Value": INT_VALUE2,
+            "Type": "String",
+            "Overwrite": True,
+        },
     )
     if r.status_code == 200:
         world["result"] = r.json()

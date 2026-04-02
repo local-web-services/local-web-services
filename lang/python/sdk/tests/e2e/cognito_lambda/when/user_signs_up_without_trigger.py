@@ -16,7 +16,12 @@ def user_signs_up_without_trigger(lws_session, world):
         pool_id = CognitoLambdaTestClient(lws_session).get_pool_id()
         if pool_id is None:
             raise ClientError(
-                {"Error": {"Code": "ResourceNotFoundException", "Message": "Pool not found"}},
+                {
+                    "Error": {
+                        "Code": "ResourceNotFoundException",
+                        "Message": "Pool not found",
+                    }
+                },
                 "AdminCreateUser",
             )
         resp = lws_session.client("cognito-idp").admin_create_user(

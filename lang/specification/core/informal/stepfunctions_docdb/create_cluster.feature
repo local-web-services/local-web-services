@@ -12,8 +12,8 @@ Feature: StepfunctionsDocdb - A "Documentdb" "Cluster" Is Created
     Given the "documentdb" "cluster" did not already exist
     When a "documentdb" "cluster" is created
     Then the "documentdb" "cluster" will be "AVAILABLE"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which cluster it connected to
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "documentdb" "cluster" it connected to
 
   @guard @negative @create_cluster
   Scenario: a "documentdb" "cluster" is created fails when the "documentdb" "cluster" already existed

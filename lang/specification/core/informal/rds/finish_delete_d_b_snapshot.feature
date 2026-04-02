@@ -13,9 +13,9 @@ Feature: Rds - A "Rds" "Snapshot" Deletion Completes
     And the "rds" "snapshot" was "DELETING"
     When a "rds" "snapshot" deletion completes
     Then the "rds" "snapshot" will be "DELETED"
-    And every database instance has a valid status
-    And every database snapshot has a valid status
-    And every backing-up instance has a corresponding in-progress snapshot
+    And every "rds" "instance" has a valid status
+    And every "rds" "snapshot" has a valid status
+    And every backing-up "rds" "instance" has a corresponding in-progress "rds" "snapshot"
 
   @guard @negative @finish_delete_d_b_snapshot @internal
   Scenario: a "rds" "snapshot" deletion completes fails when the "rds" "snapshot" did not exist

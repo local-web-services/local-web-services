@@ -1,4 +1,4 @@
-"""Given: the bucket did not exist"""
+"""Given: the "s3" "bucket" did not exist"""
 
 from __future__ import annotations
 

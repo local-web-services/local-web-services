@@ -13,10 +13,10 @@ Feature: Sns - A "Sns" "Topic" Is Deleted
     And the "sns" "topic" was "ACTIVE"
     When a "sns" "topic" is deleted
     Then the "sns" "topic" will be "DELETED" and its subscriptions will be removed
-    And no delivery is in-flight to a deleted subscription
-    And no delivery is in-flight to an unconfirmed subscription
-    And every active subscription references an "ACTIVE" topic
-    And every delivery retry count is within the allowed limit
+    And no "sns" "delivery" is "IN_FLIGHT" to a deleted "sns" "subscription"
+    And no "sns" "delivery" is "IN_FLIGHT" to an unconfirmed "sns" "subscription"
+    And every active "sns" "subscription" references an "ACTIVE" "sns" "topic"
+    And every "sns" "delivery" retry count is within the allowed limit
 
   @guard @negative @delete_topic
   Scenario: a "sns" "topic" is deleted fails when the "sns" "topic" did not exist

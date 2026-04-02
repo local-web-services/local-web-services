@@ -1,4 +1,4 @@
-"""Given: a running execution exceeds its timeout"""
+"""Given: a running "step functions" "execution" exceeds its timeout"""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from pytest_bdd import given
 from ..constants import PASS_DEFINITION, ROLE_ARN, TEST_SM
 
 
-@given("a running execution exceeds its timeout")
+@given('a running "step functions" "execution" exceeds its timeout')
 def running_execution_timed_out_given(lws_session, world):
     # Arrange
     sm_name = world.get("state_machine_name") or TEST_SM

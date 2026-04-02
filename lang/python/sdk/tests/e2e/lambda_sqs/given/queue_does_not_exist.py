@@ -1,4 +1,4 @@
-"""Given: the source queue did not exist"""
+"""Given: the source "sqs" "queue" did not exist"""
 
 from __future__ import annotations
 

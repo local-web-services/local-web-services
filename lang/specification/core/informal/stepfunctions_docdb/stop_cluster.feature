@@ -13,8 +13,8 @@ Feature: StepfunctionsDocdb - The "Documentdb" "Cluster" Is Stopped
     And the "documentdb" "cluster" was "AVAILABLE"
     When the "documentdb" "cluster" is stopped
     Then the "documentdb" "cluster" will be "STOPPED" and connections will be rejected
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which cluster it connected to
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "documentdb" "cluster" it connected to
 
   @guard @negative @stop_cluster
   Scenario: the "documentdb" "cluster" is stopped fails when the "documentdb" "cluster" did not exist

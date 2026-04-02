@@ -12,7 +12,9 @@ from ..constants import TEST_VAULT
 def initiate_glacier_job(lws_session, world):
     try:
         resp = lws_session.client("glacier").initiate_job(
-            accountId="-", vaultName=TEST_VAULT, jobParameters={"Type": "archive-retrieval"}
+            accountId="-",
+            vaultName=TEST_VAULT,
+            jobParameters={"Type": "archive-retrieval"},
         )
         world["result"] = resp
         world["error"] = None

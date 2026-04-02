@@ -13,9 +13,9 @@ Feature: Rds - A "Rds" "Instance" Configuration Is Modified
     And the "rds" "instance" was "AVAILABLE"
     When a "rds" "instance" configuration is modified
     Then the "rds" "instance" will be in "MODIFYING" state
-    And every database instance has a valid status
-    And every database snapshot has a valid status
-    And every backing-up instance has a corresponding in-progress snapshot
+    And every "rds" "instance" has a valid status
+    And every "rds" "snapshot" has a valid status
+    And every backing-up "rds" "instance" has a corresponding in-progress "rds" "snapshot"
 
   @guard @negative @modify_d_b_instance
   Scenario: a "rds" "instance" configuration is modified fails when the "rds" "instance" did not exist

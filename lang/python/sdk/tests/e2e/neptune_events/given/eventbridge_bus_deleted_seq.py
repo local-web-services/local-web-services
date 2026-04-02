@@ -1,4 +1,4 @@
-"""Given: the EventBridge event bus is deleted"""
+"""Given: the "eventbridge" "bus" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import NeptuneEventsTestClient
 from ..constants import TEST_BUS
 
 
-@given("the EventBridge event bus is deleted")
+@given('the "eventbridge" "bus" is deleted')
 def eventbridge_bus_deleted_seq(lws_session):
     try:
         NeptuneEventsTestClient(lws_session).create_bus()

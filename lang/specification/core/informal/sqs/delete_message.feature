@@ -13,9 +13,9 @@ Feature: Sqs - An In-Flight "Sqs" "Message" Is Deleted
     And the "sqs" "message" was "IN_FLIGHT"
     When an in-flight "sqs" "message" is deleted
     Then the "sqs" "message" will be removed from the "sqs" "queue"
-    And every non-deleted message belongs to an "ACTIVE" queue
-    And every in-flight message belongs to an "ACTIVE" queue
-    And every message has a non-negative receive count
+    And every non-deleted "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
+    And every "IN_FLIGHT" "sqs" "message" belongs to an "ACTIVE" "sqs" "queue"
+    And every "sqs" "message" has a non-negative receive count
 
   @guard @negative @delete_message
   Scenario: an in-flight "sqs" "message" is deleted fails when the "sqs" "message" did not exist

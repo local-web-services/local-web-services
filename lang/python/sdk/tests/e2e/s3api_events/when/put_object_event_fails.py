@@ -1,4 +1,4 @@
-"""When: an object is uploaded but event delivery fails because the bus has been deleted"""
+"""When: an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from pytest_bdd import when
 from ..constants import TEST_BODY, TEST_BUCKET, TEST_BUS, TEST_KEY
 
 
-@when("an object is uploaded but event delivery fails because the bus has been deleted")
+@when(
+    'an "s3" "object" is uploaded but "eventbridge" "event" delivery fails because the "eventbridge" "bus" has been deleted'
+)
 def put_object_event_fails(lws_session, world):
     try:
         world["result"] = lws_session.client("s3").put_object(

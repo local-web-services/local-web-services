@@ -9,14 +9,14 @@ Feature: S3apiEvents - A "S3" "Bucket" Is Created
 
   @minimal @happy @create_bucket
   Scenario: a "s3" "bucket" is created
-    Given the bucket did not already exist
+    Given the "s3" "bucket" did not already exist
     When a "s3" "bucket" is created
-    Then the bucket will be "ACTIVE" with no EventBridge notification configuration
-    And every "DELIVERED" event references an object that exists
-    And every "DELIVERED" event references a bus that exists
+    Then the "s3" "bucket" will be "ACTIVE" with no EventBridge notification configuration
+    And every "DELIVERED" "eventbridge" "event" references an "s3" "object" that exists
+    And every "DELIVERED" "eventbridge" "event" references a "eventbridge" "bus" that exists
 
   @guard @negative @create_bucket
-  Scenario: a "s3" "bucket" is created fails when the bucket already existed
-    Given the bucket already existed
+  Scenario: a "s3" "bucket" is created fails when the "s3" "bucket" already existed
+    Given the "s3" "bucket" already existed
     When a "s3" "bucket" is created
     Then the operation is rejected

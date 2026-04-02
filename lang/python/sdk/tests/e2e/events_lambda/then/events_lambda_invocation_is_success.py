@@ -1,11 +1,11 @@
-"""Then: the invocation will be "SUCCESS" """
+"""Then: the "lambda" "invocation" will be "SUCCESS" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the invocation will be "SUCCESS"')
+@then('the "lambda" "invocation" will be "SUCCESS"')
 def events_lambda_invocation_is_success(lws_session, world):
     # Arrange
     invocation_id = world.get("invocation_id") or "nonexistent-invocation-id"

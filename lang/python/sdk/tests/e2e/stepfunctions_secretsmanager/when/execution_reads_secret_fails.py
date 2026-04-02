@@ -31,7 +31,8 @@ def execution_reads_secret_fails(lws_session, world):
     execution_arn = world["execution_arn"]
     try:
         lws_session.client("stepfunctions").update_state_machine(
-            stateMachineArn=_sm_arn(), definition=_secretsmanager_get_secret_definition(TEST_SECRET)
+            stateMachineArn=_sm_arn(),
+            definition=_secretsmanager_get_secret_definition(TEST_SECRET),
         )
     except Exception:
         pass

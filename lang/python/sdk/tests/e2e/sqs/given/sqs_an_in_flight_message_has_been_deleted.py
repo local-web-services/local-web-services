@@ -14,5 +14,6 @@ def sqs_an_in_flight_message_has_been_deleted(lws_session):
     msg = SqsTestClient(lws_session).receive_message()
     if msg:
         SqsTestClient(lws_session).delete_message(
-            QueueUrl=SqsTestClient(lws_session).queue_url(), ReceiptHandle=msg["ReceiptHandle"]
+            QueueUrl=SqsTestClient(lws_session).queue_url(),
+            ReceiptHandle=msg["ReceiptHandle"],
         )

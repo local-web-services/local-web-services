@@ -11,11 +11,11 @@ Feature: LambdaStepfunctions - The "Lambda" "Function" Starts An Execution Of An
   Scenario: the "lambda" "function" starts an execution of an "ACTIVE" state machine and succeeds
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "step functions" "state machine" was "ACTIVE"
-    And an "step functions" "execution" slot is available
+    And a "step functions" "execution" "slot" was "available"
     When the "lambda" "function" starts an execution of an "ACTIVE" state machine and succeeds
-    Then the "step functions" "execution" will be "RUNNING" and the invocation will be "SUCCESS"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "RUNNING" execution references a state machine that exists
+    Then the "step functions" "execution" will be "RUNNING" and the "lambda" "invocation" will be "SUCCESS"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "RUNNING" "step functions" "execution" references a "step functions" "state machine" that exists
 
   @guard @negative @start_execution_task @internal
   Scenario: the "lambda" "function" starts an execution of an "ACTIVE" state machine and succeeds fails when no "lambda" "invocation" was "IN_PROGRESS"
@@ -31,9 +31,9 @@ Feature: LambdaStepfunctions - The "Lambda" "Function" Starts An Execution Of An
     Then the operation is rejected
 
   @guard @negative @start_execution_task @internal
-  Scenario: the "lambda" "function" starts an execution of an "ACTIVE" state machine and succeeds fails when no execution slot is available
+  Scenario: the "lambda" "function" starts an execution of an "ACTIVE" state machine and succeeds fails when no "step functions" "execution" "slot" was "available"
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "step functions" "state machine" was "ACTIVE"
-    And no execution slot is available
+    And no "step functions" "execution" "slot" was "available"
     When the "lambda" "function" starts an execution of an "ACTIVE" state machine and succeeds
     Then the operation is rejected

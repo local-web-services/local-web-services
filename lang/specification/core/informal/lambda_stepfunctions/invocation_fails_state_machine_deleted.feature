@@ -12,9 +12,9 @@ Feature: LambdaStepfunctions - The "Lambda" "Function" Fails To Start An Executi
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "step functions" "state machine" was "DELETED"
     When the "lambda" "function" fails to start an execution because the state machine has been deleted
-    Then the invocation will be "FAILED" with a StateMachineDoesNotExist error
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "RUNNING" execution references a state machine that exists
+    Then the "lambda" "invocation" will be "FAILED" with a StateMachineDoesNotExist error
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "RUNNING" "step functions" "execution" references a "step functions" "state machine" that exists
 
   @guard @negative @invocation_fails_state_machine_deleted @lifecycle
   Scenario: the "lambda" "function" fails to start an execution because the state machine has been deleted fails when no "lambda" "invocation" was "IN_PROGRESS"

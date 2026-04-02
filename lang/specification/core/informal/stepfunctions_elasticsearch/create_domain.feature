@@ -12,8 +12,8 @@ Feature: StepfunctionsElasticsearch - An "Elasticsearch" "Domain" Is Created And
     Given the "elasticsearch" "domain" did not already exist
     When an "elasticsearch" "domain" is created and becomes "AVAILABLE"
     Then the "elasticsearch" "domain" will be "AVAILABLE"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which domain it called
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "elasticsearch" "domain" it called
 
   @guard @negative @create_domain
   Scenario: an "elasticsearch" "domain" is created and becomes "AVAILABLE" fails when the "elasticsearch" "domain" already existed

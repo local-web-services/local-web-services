@@ -18,7 +18,9 @@ class EventsTestClient:
 
     def create_bus(self, name: str = INT_BUS) -> None:
         self._client.post(
-            "/", headers={"X-Amz-Target": f"{_EVENTS_TARGET}.CreateEventBus"}, json={"Name": name}
+            "/",
+            headers={"X-Amz-Target": f"{_EVENTS_TARGET}.CreateEventBus"},
+            json={"Name": name},
         )
 
     def create_rule(self, bus_name: str = INT_BUS, rule_name: str = INT_RULE) -> None:

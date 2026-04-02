@@ -53,7 +53,11 @@ class TestIamAuthDynamoDbAudit:
                 {
                     "Version": "2012-10-17",
                     "Statement": [
-                        {"Effect": "Allow", "Action": "dynamodb:GetItem", "Resource": "*"}
+                        {
+                            "Effect": "Allow",
+                            "Action": "dynamodb:GetItem",
+                            "Resource": "*",
+                        }
                     ],
                 }
             ],

@@ -1,4 +1,4 @@
-"""Given: the target queue was "ACTIVE" """
+"""Given: the target "sqs" "queue" was "ACTIVE" """
 
 from __future__ import annotations
 

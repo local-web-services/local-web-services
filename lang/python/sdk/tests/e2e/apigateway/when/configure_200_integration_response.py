@@ -1,4 +1,4 @@
-"""When: a 200 integration response is configured"""
+"""When: a 200 "api gateway" "integration" response is configured"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import ApigatewayTestClient
 from ..constants import TEST_HTTP_METHOD, TEST_STATUS_CODE
 
 
-@when("a 200 integration response is configured")
+@when('a 200 "api gateway" "integration" response is configured')
 def configure_200_integration_response(lws_session, world):
     try:
         api_id = ApigatewayTestClient(lws_session).get_api_id()

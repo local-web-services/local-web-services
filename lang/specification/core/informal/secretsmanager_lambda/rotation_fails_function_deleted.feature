@@ -10,11 +10,11 @@ Feature: SecretsmanagerLambda - The "Lambda" "Rotation Function" Fails And The R
   @minimal @happy @rotation_fails_function_deleted @internal
   Scenario: the "lambda" "rotation function" fails and the rotation is aborted
     Given a "lambda" "invocation" was "IN_PROGRESS"
-    And the rotation function was "DELETED"
+    And the rotation "lambda" "function" was "DELETED"
     When the "lambda" "rotation function" fails and the rotation is aborted
     Then the invocation will be "FAILED" and the "secretsmanager" "secret" remains "ACTIVE" with the old version
-    And every "ROTATING" secret has an "IN_PROGRESS" rotation invocation
-    And every successful rotation invocation recorded which secret it rotated
+    And every "ROTATING" "secrets manager" "secret" has an "IN_PROGRESS" "lambda" "rotation invocation"
+    And every successful "lambda" "rotation invocation" recorded which "secrets manager" "secret" it rotated
 
   @guard @negative @rotation_fails_function_deleted @internal
   Scenario: the "lambda" "rotation function" fails and the rotation is aborted fails when no "lambda" "invocation" was "IN_PROGRESS"
@@ -23,8 +23,8 @@ Feature: SecretsmanagerLambda - The "Lambda" "Rotation Function" Fails And The R
     Then the operation is rejected
 
   @guard @negative @rotation_fails_function_deleted @internal
-  Scenario: the "lambda" "rotation function" fails and the rotation is aborted fails when the rotation function was not "DELETED"
+  Scenario: the "lambda" "rotation function" fails and the rotation is aborted fails when the rotation "lambda" "function" was not "DELETED"
     Given a "lambda" "invocation" was "IN_PROGRESS"
-    And the rotation function was not "DELETED"
+    And the rotation "lambda" "function" was not "DELETED"
     When the "lambda" "rotation function" fails and the rotation is aborted
     Then the operation is rejected

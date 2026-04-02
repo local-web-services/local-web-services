@@ -12,8 +12,8 @@ Feature: LambdaDocdb - The "Lambda" "Function" Fails To Connect Because The "Doc
     Given a "lambda" "invocation" was "IN_PROGRESS"
     And the "documentdb" "cluster" was "STOPPED"
     When the "lambda" "function" fails to connect because the "documentdb" "cluster" is stopped
-    Then the invocation will be "FAILED" with a connection error
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    Then the "lambda" "invocation" will be "FAILED" with a connection error
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing document references a "documentdb" "cluster" that exists
 
   @guard @negative @invocation_fails_cluster_stopped @lifecycle

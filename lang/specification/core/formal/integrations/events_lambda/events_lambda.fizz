@@ -29,10 +29,10 @@ action Init:
     inv_rule = {}               # inv_rule[iid] = rule_id
 
 
-# step: an EventBridge event bus is created
-# result: the event bus will be "ACTIVE"
-# guard: the event bus did not already exist
-# guard_violation: the event bus already existed
+# step: an "eventbridge" "bus" is created
+# result: the "eventbridge" "bus" will be "ACTIVE"
+# guard: the "eventbridge" "bus" did not already exist
+# guard_violation: the "eventbridge" "bus" already existed
 atomic action CreateEventBus:
     oneof bid in BUS_IDS:
         if bid not in bus_status:
@@ -50,17 +50,17 @@ atomic action DeployFunction:
 
 
 # step: an "eventbridge" "rule" is created to asynchronously invoke a "lambda" "function" on matching events
-# result: the rule will be "ENABLED" and will trigger the function when matching events are published
-# guard: the event bus existed
-# guard_violation: the event bus did not exist
-# guard: the event bus was "ACTIVE"
-# guard_violation_lifecycle: the event bus was not "ACTIVE"
+# result: the "eventbridge" "rule" will be "ENABLED" and will trigger the "lambda" "function" when matching events are published
+# guard: the "eventbridge" "bus" existed
+# guard_violation: the "eventbridge" "bus" did not exist
+# guard: the "eventbridge" "bus" was "ACTIVE"
+# guard_violation_lifecycle: the "eventbridge" "bus" was not "ACTIVE"
 # guard: the "lambda" "function" existed
 # guard_violation: the "lambda" "function" did not exist
 # guard: the "lambda" "function" was "ACTIVE"
 # guard_violation_lifecycle: the "lambda" "function" was not "ACTIVE"
-# guard: the rule did not already exist
-# guard_violation: the rule already existed
+# guard: the "eventbridge" "rule" did not already exist
+# guard_violation: the "eventbridge" "rule" already existed
 atomic action PutRule:
     oneof rid in RULE_IDS:
         if rid not in rule_status:
@@ -75,18 +75,18 @@ atomic action PutRule:
                                     rule_func[rid] = fid
 
 
-# step: an event is published to the bus and triggers an asynchronous Lambda invocation
-# result: the invocation will be "IN_PROGRESS"
-# guard: the event bus existed
-# guard_violation: the event bus did not exist
-# guard: the event bus was "ACTIVE"
-# guard_violation_lifecycle: the event bus was not "ACTIVE"
-# guard: an ENABLED rule existed on the bus targeting a function
+# step: an "eventbridge" "event" is published to the "eventbridge" "bus" and triggers an asynchronous "lambda" "function" invocation
+# result: the "lambda" "invocation" will be "IN_PROGRESS"
+# guard: the "eventbridge" "bus" existed
+# guard_violation: the "eventbridge" "bus" did not exist
+# guard: the "eventbridge" "bus" was "ACTIVE"
+# guard_violation_lifecycle: the "eventbridge" "bus" was not "ACTIVE"
+# guard: an "ENABLED" "eventbridge" "rule" existed on the "eventbridge" "bus" targeting a "lambda" "function"
 # guard_violation_lifecycle: no ENABLED rule existed on the bus targeting a function
-# guard: the target function was "ACTIVE"
-# guard_violation_lifecycle: the target function was not "ACTIVE"
+# guard: the target "lambda" "function" was "ACTIVE"
+# guard_violation_lifecycle: the target "lambda" "function" was not "ACTIVE"
 # guard: a "lambda" "invocation" slot is available
-# guard_violation_capacity: no invocation slot is available
+# guard_violation_capacity: no "lambda" "invocation" "slot" was "available"
 atomic action PutEvent:
     oneof bid in BUS_IDS:
         if bid in bus_status:
@@ -106,8 +106,8 @@ atomic action PutEvent:
 
 
 # fake_skip: internal
-# step: the Lambda invocation completes successfully
-# result: the invocation will be "SUCCESS"
+# step: the "lambda" "function" invocation completes successfully
+# result: the "lambda" "invocation" will be "SUCCESS"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationSucceeds:
@@ -118,8 +118,8 @@ atomic action InvocationSucceeds:
 
 
 # fake_skip: internal
-# step: the Lambda invocation fails
-# result: the invocation will be "FAILED"
+# step: the "lambda" "function" invocation fails
+# result: the "lambda" "invocation" will be "FAILED"
 # guard: a "lambda" "invocation" was "IN_PROGRESS"
 # guard_violation_lifecycle: no "lambda" "invocation" was "IN_PROGRESS"
 atomic action InvocationFails:
@@ -129,7 +129,7 @@ atomic action InvocationFails:
                 inv_status[iid] = "FAILED"
 
 
-# check: every IN_PROGRESS invocation was triggered by an ENABLED rule
+# check: every "IN_PROGRESS" "lambda" "invocation" was triggered by an "ENABLED" "eventbridge" "rule"
 always assertion InvocationRequiresEnabledRule:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":
@@ -140,7 +140,7 @@ always assertion InvocationRequiresEnabledRule:
     return True
 
 
-# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+# check: every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
 always assertion InvocationRequiresActiveFunction:
     for iid in inv_status:
         if inv_status[iid] == "IN_PROGRESS":
@@ -151,7 +151,7 @@ always assertion InvocationRequiresActiveFunction:
     return True
 
 
-# check: every ENABLED rule references an ACTIVE event bus
+# check: every "ENABLED" "eventbridge" "rule" references an "ACTIVE" "eventbridge" "bus"
 always assertion RuleReferencesActiveBus:
     for rid in rule_status:
         if rule_status[rid] == "ENABLED":

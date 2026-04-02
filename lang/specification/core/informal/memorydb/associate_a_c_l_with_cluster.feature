@@ -15,11 +15,11 @@ Feature: Memorydb - An "Memorydb" "Acl" Is Associated With A "Memorydb" "Cluster
     And the "memorydb" "ACL" was "ACTIVE"
     When an "memorydb" "ACL" is associated with a "memorydb" "cluster"
     Then the "memorydb" "cluster" will be linked to the active "ACL"
-    And every active cluster has write durability enabled
-    And every snapshotting cluster has a corresponding in-progress snapshot
-    And no "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"
-    And no user in "DELETING" state is currently a member of an "memorydb" "ACL"
-    And every active cluster and snapshot has tags
+    And every active "memorydb" "cluster" has write durability enabled
+    And every snapshotting "memorydb" "cluster" has a corresponding in-progress "memorydb" "snapshot"
+    And no "memorydb" "ACL" in "DELETING" state is currently associated with a "memorydb" "cluster"
+    And no "memorydb" "user" in "DELETING" state is currently a member of a "memorydb" "ACL"
+    And every active "memorydb" "cluster" and "snapshot" has tags
 
   @guard @negative @associate_a_c_l_with_cluster
   Scenario: an "memorydb" "ACL" is associated with a "memorydb" "cluster" fails when the "memorydb" "cluster" did not exist

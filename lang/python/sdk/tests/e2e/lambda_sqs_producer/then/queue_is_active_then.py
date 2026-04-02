@@ -10,7 +10,8 @@ from ..client import LambdaSqsProducerTestClient
 @then('the "sqs" "queue" will be "ACTIVE"')
 def queue_is_active_then(lws_session):
     resp = lws_session.client("sqs").get_queue_attributes(
-        QueueUrl=LambdaSqsProducerTestClient(lws_session).queue_url(), AttributeNames=["QueueArn"]
+        QueueUrl=LambdaSqsProducerTestClient(lws_session).queue_url(),
+        AttributeNames=["QueueArn"],
     )
     actual_arn = resp["Attributes"].get("QueueArn", "")
     expected_prefix = "arn:aws:sqs:"

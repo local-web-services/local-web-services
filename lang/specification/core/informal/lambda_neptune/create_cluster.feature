@@ -12,8 +12,8 @@ Feature: LambdaNeptune - A "Neptune" "Cluster" Is Created
     Given the "neptune" "cluster" did not already exist
     When a "neptune" "cluster" is created
     Then the "neptune" "cluster" will be "AVAILABLE"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which cluster it queried
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every successful "lambda" "invocation" recorded which "neptune" "cluster" it queried
 
   @guard @negative @create_cluster
   Scenario: a "neptune" "cluster" is created fails when the "neptune" "cluster" already existed

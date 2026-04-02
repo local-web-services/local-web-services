@@ -10,11 +10,11 @@ Feature: StepfunctionsS3tables - A Running "Step Functions" "Execution" Calls An
   @minimal @happy @s3_tables_task_succeeds @internal
   Scenario: a running "step functions" "execution" calls an "ACTIVE" S3 Tables table and the task succeeds
     Given a "step functions" "execution" was "RUNNING"
-    And the table was "ACTIVE"
+    And the "s3 tables" "table" was "ACTIVE"
     When a running "step functions" "execution" calls an "ACTIVE" S3 Tables table and the task succeeds
     Then the "step functions" "execution" will be "SUCCEEDED"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which table it called
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "s3 tables" "table" it called
 
   @guard @negative @s3_tables_task_succeeds @internal
   Scenario: a running "step functions" "execution" calls an "ACTIVE" S3 Tables table and the task succeeds fails when no "step functions" "execution" was "RUNNING"
@@ -23,8 +23,8 @@ Feature: StepfunctionsS3tables - A Running "Step Functions" "Execution" Calls An
     Then the operation is rejected
 
   @guard @negative @s3_tables_task_succeeds @internal
-  Scenario: a running "step functions" "execution" calls an "ACTIVE" S3 Tables table and the task succeeds fails when the table did not exist or was "DELETING"
+  Scenario: a running "step functions" "execution" calls an "ACTIVE" S3 Tables table and the task succeeds fails when the "s3 tables" "table" did not exist or was "DELETING"
     Given a "step functions" "execution" was "RUNNING"
-    And the table did not exist or was "DELETING"
+    And the "s3 tables" "table" did not exist or was "DELETING"
     When a running "step functions" "execution" calls an "ACTIVE" S3 Tables table and the task succeeds
     Then the operation is rejected

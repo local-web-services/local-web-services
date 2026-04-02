@@ -1,11 +1,11 @@
-"""Then: the part will be recorded for the "glacier" "glacier" "upload" """
+"""Then: the "glacier" "upload" part will be recorded"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the part will be recorded for the "glacier" "glacier" "upload"')
+@then('the "glacier" "upload" part will be recorded')
 def part_is_recorded_then(world):
     expected_error = None
     actual_error = world.get("error")

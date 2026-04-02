@@ -1,4 +1,4 @@
-"""When: an automated backup window runs on an available neptune cluster"""
+"""When: an automated backup window runs on an available "neptune" "cluster" """
 
 from __future__ import annotations
 
@@ -7,6 +7,6 @@ from pytest_bdd import when
 from starlette.testclient import TestClient
 
 
-@when("an automated backup window runs on an available neptune cluster")
+@when('an automated backup window runs on an available "neptune" "cluster"')
 def automated_backup_window(client: TestClient, world: dict):
     pytest.skip("CreateDBClusterSnapshot is not yet implemented in lws.")

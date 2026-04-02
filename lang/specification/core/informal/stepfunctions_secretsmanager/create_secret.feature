@@ -12,8 +12,8 @@ Feature: StepfunctionsSecretsmanager - A "Secretsmanager" "Secret" Is Created In
     Given the "secretsmanager" "secret" did not already exist
     When a "secretsmanager" "secret" is created in Secrets Manager
     Then the "secrets manager" "secret" will be "ACTIVE"
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which secret it read
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "secrets manager" "secret" it read
 
   @guard @negative @create_secret
   Scenario: a "secretsmanager" "secret" is created in Secrets Manager fails when the "secretsmanager" "secret" already existed

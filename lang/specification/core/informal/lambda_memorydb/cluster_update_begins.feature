@@ -13,7 +13,7 @@ Feature: LambdaMemorydb - A "Memorydb" "Cluster" Update Begins
     And the "memorydb" "cluster" was "AVAILABLE"
     When a "memorydb" "cluster" update begins
     Then the "memorydb" "cluster" will be "UPDATING" and write operations may fail
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing record references a "memorydb" "cluster" that exists
 
   @guard @negative @cluster_update_begins

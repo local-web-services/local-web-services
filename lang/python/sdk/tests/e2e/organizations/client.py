@@ -63,7 +63,10 @@ class OrganizationsTestClient:
     def create_policy(self, name=TEST_POLICY_NAME):
         try:
             resp = self._client.create_policy(
-                Name=name, Description="e2e test policy", Content="{}", Type=TEST_POLICY_TYPE
+                Name=name,
+                Description="e2e test policy",
+                Content="{}",
+                Type=TEST_POLICY_TYPE,
             )
             return resp["Policy"]["PolicySummary"]["Id"]
         except ClientError as exc:
@@ -81,3 +84,20 @@ class OrganizationsTestClient:
             if exc.response["Error"]["Code"] == "DuplicatePolicyAttachmentException":
                 return
             raise
+
+    def move_account(self, account_id, source_parent_id, dest_parent_id):
+        self._client.move_account(
+            AccountId=account_id,
+            SourceParentId=source_parent_id,
+            DestinationParentId=dest_parent_id,
+        )
+
+    def tag_resource(self, resource_id, tags: dict):
+        tags_list = [{"Key": k, "Value": v} for k, v in tags.items()]
+        self._client.tag_resource(ResourceId=resource_id, Tags=tags_list)
+
+    def list_tags_for_resource(self, resource_id):
+        return self._client.list_tags_for_resource(ResourceId=resource_id)
+
+    def list_children(self, parent_id, child_type):
+        return self._client.list_children(ParentId=parent_id, ChildType=child_type)

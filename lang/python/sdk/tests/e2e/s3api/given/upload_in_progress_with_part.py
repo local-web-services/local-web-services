@@ -13,6 +13,10 @@ def upload_in_progress_with_part(lws_session, world):
     resp = S3apiTestClient(lws_session).create_multipart_upload(Bucket=TEST_BUCKET, Key=TEST_KEY)
     world["upload_id"] = resp["UploadId"]
     part_resp = S3apiTestClient(lws_session).upload_part(
-        Bucket=TEST_BUCKET, Key=TEST_KEY, UploadId=world["upload_id"], PartNumber=1, Body=TEST_BODY
+        Bucket=TEST_BUCKET,
+        Key=TEST_KEY,
+        UploadId=world["upload_id"],
+        PartNumber=1,
+        Body=TEST_BODY,
     )
     world["etags"] = [{"ETag": part_resp["ETag"], "PartNumber": 1}]

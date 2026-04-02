@@ -1,4 +1,4 @@
-"""When: a parameter is deleted and "SSM" delivers a "DELETED" event to the EventBridge bus"""
+"""When: a "ssm" "parameter" is deleted and "ssm" delivers a "DELETED" "eventbridge" "event" to the "eventbridge" "bus" """
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from pytest_bdd import when
 from ..constants import TEST_PARAM
 
 
-@when('a parameter is deleted and "SSM" delivers a "DELETED" event to the EventBridge bus')
+@when(
+    'a "ssm" "parameter" is deleted and "ssm" delivers a "DELETED" "eventbridge" "event" to the "eventbridge" "bus"'
+)
 def delete_parameter_event_delivered(lws_session, world):
     try:
         world["result"] = lws_session.client("ssm").delete_parameter(Name=TEST_PARAM)

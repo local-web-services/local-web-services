@@ -1,11 +1,11 @@
-"""Then: the definition will be valid or invalid"""
+"""Then: the "step functions" "state machine" definition will be valid or invalid"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the definition will be valid or invalid")
+@then('the "step functions" "state machine" definition will be valid or invalid')
 def definition_is_valid_or_invalid(world):
     assert (
         world["error"] is None

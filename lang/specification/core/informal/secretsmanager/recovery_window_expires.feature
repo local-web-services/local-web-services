@@ -11,17 +11,17 @@ Feature: Secretsmanager - The Recovery Window For A Deleted "Secrets Manager" "S
   Scenario: the recovery window for a deleted "secrets manager" "secret" expires
     Given the "secrets manager" "secret" existed
     And the "secrets manager" "secret" was "DELETED"
-    And the recovery window was open
+    And the "secrets manager" "secret" recovery window was open
     When the recovery window for a deleted "secrets manager" "secret" expires
     Then the "secrets manager" "secret" can no longer be restored
-    And every "ACTIVE" secret has a current version assigned
-    And at most one current version exists per secret
-    And at most one previous version exists per secret
-    And a deleted secret with a closed recovery window cannot be restored
-    And all secret names are unique
-    And all version identifiers are unique across secrets
-    And every deleted secret with an open recovery window can still be restored or expired
-    And every active secret has a current version assigned
+    And every "ACTIVE" "secrets manager" "secret" has a current version assigned
+    And at most one current version exists per "secrets manager" "secret"
+    And at most one previous version exists per "secrets manager" "secret"
+    And a deleted "secrets manager" "secret" with a closed recovery window cannot be restored
+    And all "secrets manager" "secret" names are unique
+    And all "secrets manager" "secret" version identifiers are unique
+    And every deleted "secrets manager" "secret" with an open recovery window can still be restored or expired
+    And every active "secrets manager" "secret" has a current version assigned
 
   @guard @negative @recovery_window_expires @internal
   Scenario: the recovery window for a deleted "secrets manager" "secret" expires fails when the "secrets manager" "secret" did not exist
@@ -37,9 +37,9 @@ Feature: Secretsmanager - The Recovery Window For A Deleted "Secrets Manager" "S
     Then the operation is rejected
 
   @guard @negative @recovery_window_expires @internal
-  Scenario: the recovery window for a deleted "secrets manager" "secret" expires fails when the recovery window was not open
+  Scenario: the recovery window for a deleted "secrets manager" "secret" expires fails when the "secrets manager" "secret" recovery window was not open
     Given the "secrets manager" "secret" existed
     And the "secrets manager" "secret" was "DELETED"
-    And the recovery window was not open
+    And the "secrets manager" "secret" recovery window was not open
     When the recovery window for a deleted "secrets manager" "secret" expires
     Then the operation is rejected

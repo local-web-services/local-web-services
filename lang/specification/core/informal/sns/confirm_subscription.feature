@@ -11,14 +11,14 @@ Feature: Sns - A Pending "Sns" "Subscription" Is Confirmed
   Scenario: a pending "sns" "subscription" is confirmed
     Given the "sns" "subscription" existed
     And the "sns" "subscription" was "PENDING_CONFIRMATION"
-    And the "sns" "subscription"'s sns topic existed
+    And the "sns" "subscription"'s "sns" "topic" existed
     And the "sns" "subscription"'s "sns" "topic" was "ACTIVE"
     When a pending "sns" "subscription" is confirmed
     Then the "sns" "subscription" will be "CONFIRMED"
-    And no delivery is in-flight to a deleted subscription
-    And no delivery is in-flight to an unconfirmed subscription
-    And every active subscription references an "ACTIVE" topic
-    And every delivery retry count is within the allowed limit
+    And no "sns" "delivery" is "IN_FLIGHT" to a deleted "sns" "subscription"
+    And no "sns" "delivery" is "IN_FLIGHT" to an unconfirmed "sns" "subscription"
+    And every active "sns" "subscription" references an "ACTIVE" "sns" "topic"
+    And every "sns" "delivery" retry count is within the allowed limit
 
   @guard @negative @confirm_subscription
   Scenario: a pending "sns" "subscription" is confirmed fails when the "sns" "subscription" did not exist
@@ -34,10 +34,10 @@ Feature: Sns - A Pending "Sns" "Subscription" Is Confirmed
     Then the operation is rejected
 
   @guard @negative @confirm_subscription
-  Scenario: a pending "sns" "subscription" is confirmed fails when the "sns" "subscription"'s sns topic did not exist
+  Scenario: a pending "sns" "subscription" is confirmed fails when the "sns" "subscription"'s "sns" "topic" did not exist
     Given the "sns" "subscription" existed
     And the "sns" "subscription" was "PENDING_CONFIRMATION"
-    And the "sns" "subscription"'s sns topic did not exist
+    And the "sns" "subscription"'s "sns" "topic" did not exist
     When a pending "sns" "subscription" is confirmed
     Then the operation is rejected
 
@@ -45,7 +45,7 @@ Feature: Sns - A Pending "Sns" "Subscription" Is Confirmed
   Scenario: a pending "sns" "subscription" is confirmed fails when the "sns" "subscription"'s "sns" "topic" was not "ACTIVE"
     Given the "sns" "subscription" existed
     And the "sns" "subscription" was "PENDING_CONFIRMATION"
-    And the "sns" "subscription"'s sns topic existed
+    And the "sns" "subscription"'s "sns" "topic" existed
     And the "sns" "subscription"'s "sns" "topic" was not "ACTIVE"
     When a pending "sns" "subscription" is confirmed
     Then the operation is rejected

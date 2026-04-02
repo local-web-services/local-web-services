@@ -1,10 +1,12 @@
-"""Then: every active index belongs to an existing non-deleted domain"""
+"""Then: every active "elasticsearch" "index" belongs to an existing non-deleted "elasticsearch" "domain" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("every active index belongs to an existing non-deleted domain")
+@then(
+    'every active "elasticsearch" "index" belongs to an existing non-deleted "elasticsearch" "domain"'
+)
 def every_active_index_belongs_to_existing_domain():
     """Invariant trivially satisfied in isolated test context."""

@@ -12,7 +12,7 @@ Feature: LambdaMemorydb - The "Memorydb" "Cluster" Update Completes
     Given the "memorydb" "cluster" was "UPDATING"
     When the "memorydb" "cluster" update completes
     Then the "memorydb" "cluster" will be "AVAILABLE" again
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
     And every existing record references a "memorydb" "cluster" that exists
 
   @guard @negative @cluster_update_complete @lifecycle

@@ -1,4 +1,4 @@
-"""Given: the target state machine was "ACTIVE" """
+"""Given: the target "step functions" "state machine" was "ACTIVE" """
 
 from __future__ import annotations
 

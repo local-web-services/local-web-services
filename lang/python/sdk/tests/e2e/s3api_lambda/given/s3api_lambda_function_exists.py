@@ -1,4 +1,4 @@
-"""Given: the bucket existed"""
+"""Given: the "s3" "bucket" existed"""
 
 from __future__ import annotations
 

@@ -12,8 +12,8 @@ Feature: LambdaSecretsmanager - A "Secretsmanager" "Secret" Is Created In Secret
     Given the "secretsmanager" "secret" did not already exist
     When a "secretsmanager" "secret" is created in Secrets Manager
     Then the "secrets manager" "secret" will be "ACTIVE" and can be read by Lambda
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which secret it read
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every successful "lambda" "invocation" recorded which "secrets manager" "secret" it read
 
   @guard @negative @create_secret
   Scenario: a "secretsmanager" "secret" is created in Secrets Manager fails when the "secretsmanager" "secret" already existed

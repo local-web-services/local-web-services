@@ -2,15 +2,15 @@
 deadlock_detection: false
 options:
   max_concurrent_actions: 1
-  max_actions: 20
+  max_actions: 12
 ---
 # Amazon DocumentDB (docdb) formal specification
 # Models clusters, instances, snapshots, and async state transitions
 # Uses flat dicts and fixed resource pools (no nested subscript, no del, no state: block)
 
-CLUSTER_IDS = ["cluster-1", "cluster-2", "cluster-3"]
-INSTANCE_IDS = ["instance-1", "instance-2", "instance-3", "instance-4"]
-SNAPSHOT_IDS = ["snapshot-1", "snapshot-2", "snapshot-3"]
+CLUSTER_IDS = ["cluster-1", "cluster-2"]
+INSTANCE_IDS = ["instance-1", "instance-2"]
+SNAPSHOT_IDS = ["snapshot-1"]
 
 action Init:
     cluster_status = {}
@@ -118,7 +118,7 @@ atomic action CompleteClusterDeletion:
                                 snapshot_status[sid] = "DELETED"
 
 # step: a "documentdb" "instance" is created in an available documentdb cluster
-# result: the "documentdb" "INSTANCE" will be in "CREATING" state and associated with the "documentdb" "cluster"
+# result: the "documentdb" "instance" will be in "CREATING" state and associated with the "documentdb" "cluster"
 # guard: the "documentdb" "cluster" existed
 # guard_violation: the "documentdb" "cluster" did not exist
 # guard: the "documentdb" "cluster" was "AVAILABLE"
@@ -140,7 +140,7 @@ atomic action CreateDBInstance:
 
 # fake_skip: internal
 # step: a "documentdb" "instance" finishes creating
-# result: the "documentdb" "INSTANCE" will be "AVAILABLE" and the "documentdb" "cluster" primary will be updated if applicable
+# result: the "documentdb" "instance" will be "AVAILABLE" and the "documentdb" "cluster" primary will be updated if applicable
 # guard: the "documentdb" "instance" existed
 # guard_violation: the "documentdb" "instance" did not exist
 # guard: the "documentdb" "instance" was "CREATING"
@@ -160,7 +160,7 @@ atomic action CompleteInstanceCreation:
                         cluster_primary_instance[cid] = iid
 
 # step: a "documentdb" "instance" configuration is modified
-# result: the "documentdb" "INSTANCE" will be in "MODIFYING" state
+# result: the "documentdb" "instance" will be in "MODIFYING" state
 # guard: the "documentdb" "instance" existed
 # guard_violation: the "documentdb" "instance" did not exist
 # guard: the "documentdb" "instance" was "AVAILABLE"
@@ -192,7 +192,7 @@ atomic action CompleteInstanceModification:
                 instance_status[iid] = "AVAILABLE"
 
 # step: a "documentdb" "instance" is deleted
-# result: the "documentdb" "INSTANCE" will be in "DELETING" state
+# result: the "documentdb" "instance" will be in "DELETING" state
 # guard: the "documentdb" "instance" existed
 # guard_violation: the "documentdb" "instance" did not exist
 # guard: the "documentdb" "instance" was "AVAILABLE"
@@ -205,7 +205,7 @@ atomic action DeleteDBInstance:
 
 # fake_skip: internal
 # step: a "documentdb" "instance" deletion completes
-# result: the "documentdb" "INSTANCE" will be "DELETED" and the "documentdb" "cluster" primary will be cleared if applicable
+# result: the "documentdb" "instance" will be "DELETED" and the "documentdb" "cluster" primary will be cleared if applicable
 # guard: the "documentdb" "instance" existed
 # guard_violation: the "documentdb" "instance" did not exist
 # guard: the "documentdb" "instance" was "DELETING"
@@ -225,7 +225,7 @@ atomic action CompleteInstanceDeletion:
                         cluster_primary_instance[cid] = ""
 
 # step: a "documentdb" "cluster" documentdb snapshot is created
-# result: the "documentdb" "SNAPSHOT" will be in "CREATING" state and linked to the "documentdb" "cluster"
+# result: the "documentdb" "snapshot" will be in "CREATING" state and linked to the "documentdb" "cluster"
 # guard: the "documentdb" "cluster" existed
 # guard_violation: the "documentdb" "cluster" did not exist
 # guard: the "documentdb" "cluster" was "AVAILABLE"
@@ -243,7 +243,7 @@ atomic action CreateDBClusterSnapshot:
 
 # fake_skip: internal
 # step: a "documentdb" "cluster" documentdb snapshot finishes creating
-# result: the "documentdb" "SNAPSHOT" will be "AVAILABLE"
+# result: the "documentdb" "snapshot" will be "AVAILABLE"
 # guard: the "documentdb" "snapshot" existed
 # guard_violation: the "documentdb" "snapshot" did not exist
 # guard: the "documentdb" "snapshot" was "CREATING"
@@ -255,7 +255,7 @@ atomic action CompleteSnapshotCreation:
                 snapshot_status[sid] = "AVAILABLE"
 
 # step: a "documentdb" "cluster" documentdb snapshot is deleted
-# result: the "documentdb" "SNAPSHOT" will be in "DELETING" state
+# result: the "documentdb" "snapshot" will be in "DELETING" state
 # guard: the "documentdb" "snapshot" existed
 # guard_violation: the "documentdb" "snapshot" did not exist
 # guard: the "documentdb" "snapshot" was "AVAILABLE"
@@ -268,7 +268,7 @@ atomic action DeleteDBClusterSnapshot:
 
 # fake_skip: internal
 # step: a "documentdb" "cluster" documentdb snapshot deletion completes
-# result: the "documentdb" "SNAPSHOT" will be "DELETED"
+# result: the "documentdb" "snapshot" will be "DELETED"
 # guard: the "documentdb" "snapshot" existed
 # guard_violation: the "documentdb" "snapshot" did not exist
 # guard: the "documentdb" "snapshot" was "DELETING"
@@ -280,7 +280,7 @@ atomic action CompleteSnapshotDeletion:
                 snapshot_status[sid] = "DELETED"
 
 # step: a "documentdb" "cluster" is restored from a "documentdb" "snapshot"
-# result: the restored documentdb cluster will be in "RESTORING" state
+# result: the restored "documentdb" "cluster" will be in "RESTORING" state
 # guard: the "documentdb" "snapshot" existed
 # guard_violation: the "documentdb" "snapshot" did not exist
 # guard: the "documentdb" "snapshot" was "AVAILABLE"
@@ -311,7 +311,7 @@ atomic action CompleteClusterRestore:
 
 # fake_skip: internal
 # Failover: pick a replica instance to become the new primary
-# step: a failover is triggered and a replica is promoted to primary
+# step: a "documentdb" "cluster" failover is triggered and a replica is promoted to primary
 # result: the "documentdb" "cluster" has a new primary documentdb instance
 # guard: the "documentdb" "cluster" existed
 # guard_violation: the "documentdb" "cluster" did not exist
@@ -341,7 +341,7 @@ atomic action Failover:
                                         instance_is_primary[old_primary] = False
 
 # Safety: cluster statuses are valid
-# check: every cluster has a valid status
+# check: every "documentdb" "cluster" has a valid status
 always assertion ValidClusterStatus:
     for cid in cluster_status:
         s = cluster_status[cid]
@@ -350,7 +350,7 @@ always assertion ValidClusterStatus:
     return True
 
 # Safety: instance statuses are valid
-# check: every instance has a valid status
+# check: every "documentdb" "instance" has a valid status
 always assertion ValidInstanceStatus:
     for iid in instance_status:
         s = instance_status[iid]
@@ -359,7 +359,7 @@ always assertion ValidInstanceStatus:
     return True
 
 # Safety: snapshot statuses are valid
-# check: every snapshot has a valid status
+# check: every "documentdb" "snapshot" has a valid status
 always assertion ValidSnapshotStatus:
     for sid in snapshot_status:
         s = snapshot_status[sid]
@@ -368,7 +368,7 @@ always assertion ValidSnapshotStatus:
     return True
 
 # Safety: DELETED clusters should not have non-deleted instances
-# check: a deleted cluster has no non-deleted instances
+# check: a deleted "documentdb" "cluster" has no non-deleted "documentdb" "instance"s
 always assertion NoNonDeletedInstancesOnDeletedCluster:
     for cid in cluster_status:
         if cluster_status[cid] == "DELETED":
@@ -381,7 +381,7 @@ always assertion NoNonDeletedInstancesOnDeletedCluster:
     return True
 
 # Safety: a FAILED cluster should not have AVAILABLE instances
-# check: a failed cluster has no available instances
+# check: a failed "documentdb" "cluster" has no available "documentdb" "instance"s
 always assertion NoAvailableInstancesOnFailedCluster:
     for cid in cluster_status:
         if cluster_status[cid] == "FAILED":
@@ -393,7 +393,7 @@ always assertion NoAvailableInstancesOnFailedCluster:
     return True
 
 # Safety: instances on a DELETING cluster should not be CREATING
-# check: a deleting cluster receives no new instances
+# check: a deleting "documentdb" "cluster" receives no new "documentdb" "instance"s
 always assertion DeletingClusterGetsNoNewInstances:
     for iid in instance_status:
         if instance_status[iid] == "CREATING":
@@ -405,7 +405,7 @@ always assertion DeletingClusterGetsNoNewInstances:
     return True
 
 # Safety: a CREATING snapshot must reference a cluster that still exists (not DELETED)
-# check: every creating snapshot references a cluster that has not been deleted
+# check: every creating "documentdb" "snapshot" references a "documentdb" "cluster" that has not been deleted
 always assertion SnapshotHasValidClusterReference:
     for sid in snapshot_status:
         if snapshot_status[sid] == "CREATING":

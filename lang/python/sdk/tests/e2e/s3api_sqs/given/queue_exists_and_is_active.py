@@ -1,4 +1,4 @@
-"""Given: the bucket existed and was "ACTIVE" """
+"""Given: the "s3" "bucket" existed and was "ACTIVE" """
 
 from __future__ import annotations
 

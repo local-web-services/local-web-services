@@ -12,8 +12,8 @@ Feature: LambdaLambda - A Caller "Lambda" "Function" Is Deployed
     Given the caller "lambda" "function" did not already exist
     When a caller "lambda" "function" is deployed
     Then the caller "lambda" "function" will be "ACTIVE"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" caller function
-    And every successful invocation recorded which callee was invoked
+    And every "IN_PROGRESS" "lambda" "invocation" references an "ACTIVE" caller "lambda" "function"
+    And every successful "lambda" "invocation" recorded which callee "lambda" "function" was invoked
 
   @guard @negative @deploy_caller
   Scenario: a caller "lambda" "function" is deployed fails when the caller "lambda" "function" already existed

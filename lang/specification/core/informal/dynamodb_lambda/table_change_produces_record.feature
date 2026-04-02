@@ -12,12 +12,12 @@ Feature: DynamodbLambda - A Change To The "Dynamodb" "Table" Produces A Stream R
     Given the "dynamodb" "table" existed
     And the "dynamodb" "table" was "ACTIVE"
     And the "dynamodb" "table" has a stream enabled
-    And a record slot is available
+    And a "dynamodb" "record" "slot" was "available"
     When a change to the "dynamodb" "table" produces a stream record
-    Then a change record will be "AVAILABLE" for the event source mapping to process
-    And every "IN_PROGRESS" invocation was initiated by an "ENABLED" event source mapping
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every "ENABLED" event source mapping references an "ACTIVE" table with streaming enabled
+    Then a "dynamodb" "change record" will be "AVAILABLE" for the "lambda" "event source mapping" to process
+    And every "IN_PROGRESS" "lambda" "function" invocation was initiated by an "ENABLED" "lambda" "event source mapping"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every "ENABLED" "lambda" "event source mapping" references an "ACTIVE" "dynamodb" "table" with streaming enabled
 
   @guard @negative @table_change_produces_record
   Scenario: a change to the "dynamodb" "table" produces a stream record fails when the "dynamodb" "table" did not exist
@@ -41,10 +41,10 @@ Feature: DynamodbLambda - A Change To The "Dynamodb" "Table" Produces A Stream R
     Then the operation is rejected
 
   @guard @negative @table_change_produces_record @capacity
-  Scenario: a change to the "dynamodb" "table" produces a stream record fails when no record slot is available
+  Scenario: a change to the "dynamodb" "table" produces a stream record fails when no "dynamodb" "record" "slot" was "available"
     Given the "dynamodb" "table" existed
     And the "dynamodb" "table" was "ACTIVE"
     And the "dynamodb" "table" has a stream enabled
-    And no record slot is available
+    And no "dynamodb" "record" "slot" was "available"
     When a change to the "dynamodb" "table" produces a stream record
     Then the operation is rejected

@@ -1,4 +1,4 @@
-"""Given: the target topic was not "ACTIVE" """
+"""Given: the target "sns" "topic" was not "ACTIVE" """
 
 from __future__ import annotations
 

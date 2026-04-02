@@ -12,8 +12,8 @@ Feature: LambdaCognito - A "Cognito" "User Pool" Is Created
     Given the "cognito" "user pool" did not already exist
     When a "cognito" "user pool" is created
     Then the "cognito" "user pool" will be "ACTIVE"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every successful invocation recorded which pool it called
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every successful "lambda" "invocation" recorded which "cognito" "user pool" it called
 
   @guard @negative @create_user_pool
   Scenario: a "cognito" "user pool" is created fails when the "cognito" "user pool" already existed

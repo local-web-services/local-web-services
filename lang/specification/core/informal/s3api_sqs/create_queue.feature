@@ -9,14 +9,14 @@ Feature: S3apiSqs - A "Sqs" "Queue" Is Created
 
   @minimal @happy @create_queue
   Scenario: a "sqs" "queue" is created
-    Given the queue did not already exist
+    Given the "sqs" "queue" did not already exist
     When a "sqs" "queue" is created
     Then the "sqs" "queue" will be "ACTIVE"
-    And every "QUEUED" message references an object that exists
-    And every "QUEUED" message references a queue that exists
+    And every "QUEUED" "sqs" "message" references an "s3" "object" that exists
+    And every "QUEUED" "sqs" "message" references an "sqs" "queue" that exists
 
   @guard @negative @create_queue
-  Scenario: a "sqs" "queue" is created fails when the queue already existed
-    Given the queue already existed
+  Scenario: a "sqs" "queue" is created fails when the "sqs" "queue" already existed
+    Given the "sqs" "queue" already existed
     When a "sqs" "queue" is created
     Then the operation is rejected

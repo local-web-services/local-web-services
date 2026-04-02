@@ -1,4 +1,4 @@
-"""Given: an "AVAILABLE" message existed in the queue"""
+"""Given: an "AVAILABLE" "sqs" "message" existed in the "sqs" "queue" """
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from ..client import SnsSqsTestClient
 from ..constants import TEST_MESSAGE
 
 
+@given('an "AVAILABLE" "sqs" "message" existed in the "sqs" "queue"')
 @given('an "AVAILABLE" message existed in the queue')
 def available_message_exists_in_queue(lws_session):
     SnsSqsTestClient(lws_session).create_queue()

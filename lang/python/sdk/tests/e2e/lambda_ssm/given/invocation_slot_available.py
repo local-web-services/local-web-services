@@ -6,5 +6,6 @@ from pytest_bdd import given
 
 
 @given('a "lambda" "invocation" slot is available')
+@given('a "lambda" "invocation" "slot" was "available"')
 def invocation_slot_available():
     """No-op: always room for invocations."""

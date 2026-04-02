@@ -12,10 +12,10 @@ Feature: ApigatewayDynamodb - A Request Is Received, The "Api Gateway" "Api" Wri
     Given the "api gateway" "api" was "ACTIVE"
     And the "api gateway" "api" has a "dynamodb" integration configured
     And the target "dynamodb" "table" was "ACTIVE"
-    And a request slot is available
-    And an item slot is available
+    And a "request" "slot" was "available"
+    And an "item" "slot" was "available"
     When a request is received, the "api gateway" "API" writes to the "dynamodb" "table", and returns 200
-    Then the item will exist and the request will be "SUCCESS"
+    Then the "dynamodb" "item" will exist and the "api gateway" "request" will be "SUCCESS"
     And every existing item references a "dynamodb" "table" that exists
     And every successful request references an "api gateway" "API" that exists
 
@@ -41,20 +41,20 @@ Feature: ApigatewayDynamodb - A Request Is Received, The "Api Gateway" "Api" Wri
     Then the operation is rejected
 
   @guard @negative @request_succeeds @capacity
-  Scenario: a request is received, the "api gateway" "API" writes to the "dynamodb" "table", and returns 200 fails when no request slot is available
+  Scenario: a request is received, the "api gateway" "API" writes to the "dynamodb" "table", and returns 200 fails when no "request" "slot" was "available"
     Given the "api gateway" "api" was "ACTIVE"
     And the "api gateway" "api" has a "dynamodb" integration configured
     And the target "dynamodb" "table" was "ACTIVE"
-    And no request slot is available
+    And no "request" "slot" was "available"
     When a request is received, the "api gateway" "API" writes to the "dynamodb" "table", and returns 200
     Then the operation is rejected
 
   @guard @negative @request_succeeds @capacity
-  Scenario: a request is received, the "api gateway" "API" writes to the "dynamodb" "table", and returns 200 fails when no item slot is available
+  Scenario: a request is received, the "api gateway" "API" writes to the "dynamodb" "table", and returns 200 fails when no "item" "slot" was "available"
     Given the "api gateway" "api" was "ACTIVE"
     And the "api gateway" "api" has a "dynamodb" integration configured
     And the target "dynamodb" "table" was "ACTIVE"
-    And a request slot is available
-    And no item slot is available
+    And a "request" "slot" was "available"
+    And no "item" "slot" was "available"
     When a request is received, the "api gateway" "API" writes to the "dynamodb" "table", and returns 200
     Then the operation is rejected

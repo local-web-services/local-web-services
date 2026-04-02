@@ -10,12 +10,12 @@ Feature: LambdaS3tables - The "Lambda" "Function" Writes A Record To An Active T
   @minimal @happy @write_record @internal
   Scenario: the "lambda" "function" writes a record to an "ACTIVE" table and succeeds
     Given a "lambda" "invocation" was "IN_PROGRESS"
-    And a table was "ACTIVE"
-    And a record slot is available
+    And a "s3 tables" "table" was "ACTIVE"
+    And a "s3 tables" "record" "slot" was "available"
     When the "lambda" "function" writes a record to an "ACTIVE" table and succeeds
-    Then the record will exist and the invocation will be "SUCCESS"
-    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
-    And every existing record references a table that exists
+    Then the "s3 tables" "record" will exist and the "lambda" "invocation" will be "SUCCESS"
+    And every "IN_PROGRESS" "lambda" "function" invocation references an "ACTIVE" "lambda" "function"
+    And every existing "s3 tables" "record" references a "s3 tables" "table" that exists
 
   @guard @negative @write_record @internal
   Scenario: the "lambda" "function" writes a record to an "ACTIVE" table and succeeds fails when no "lambda" "invocation" was "IN_PROGRESS"
@@ -24,16 +24,16 @@ Feature: LambdaS3tables - The "Lambda" "Function" Writes A Record To An Active T
     Then the operation is rejected
 
   @guard @negative @write_record @internal
-  Scenario: the "lambda" "function" writes a record to an "ACTIVE" table and succeeds fails when no table was "ACTIVE"
+  Scenario: the "lambda" "function" writes a record to an "ACTIVE" table and succeeds fails when no "s3 tables" "table" was "ACTIVE"
     Given a "lambda" "invocation" was "IN_PROGRESS"
-    And no table was "ACTIVE"
+    And no "s3 tables" "table" was "ACTIVE"
     When the "lambda" "function" writes a record to an "ACTIVE" table and succeeds
     Then the operation is rejected
 
   @guard @negative @write_record @internal
-  Scenario: the "lambda" "function" writes a record to an "ACTIVE" table and succeeds fails when no record slot is available
+  Scenario: the "lambda" "function" writes a record to an "ACTIVE" table and succeeds fails when no "s3 tables" "record" "slot" was "available"
     Given a "lambda" "invocation" was "IN_PROGRESS"
-    And a table was "ACTIVE"
-    And no record slot is available
+    And a "s3 tables" "table" was "ACTIVE"
+    And no "s3 tables" "record" "slot" was "available"
     When the "lambda" "function" writes a record to an "ACTIVE" table and succeeds
     Then the operation is rejected

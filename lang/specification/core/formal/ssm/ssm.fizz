@@ -46,7 +46,7 @@ atomic action PutParameterOverwrite:
                 param_version[pname] = param_version[pname] + 1
 
 # step: a "ssm" "parameter" is written without overwrite when it already exists
-# result: a ParameterAlreadyExists error will be recorded
+# result: a "ssm" "ParameterAlreadyExists" error will be recorded
 # guard: the "ssm" "parameter" existed
 # guard_violation: the "ssm" "parameter" did not exist
 # guard: the "ssm" "parameter" was "active"
@@ -129,8 +129,8 @@ atomic action AddTagsToResource:
 # guard_violation: the "ssm" "parameter" was not "active"
 # guard: the tag was associated with the "ssm" "parameter"
 # guard_violation: the tag was not associated with the "ssm" "parameter"
-# guard: the tag association was "ACTIVE"
-# guard_violation: the tag association was not "ACTIVE"
+# guard: the "ssm" "parameter" tag association was "ACTIVE"
+# guard_violation: the "ssm" "parameter" tag association was not "ACTIVE"
 atomic action RemoveTagsFromResource:
     oneof pname in PARAM_NAMES:
         if pname in param_exists:
@@ -141,7 +141,7 @@ atomic action RemoveTagsFromResource:
                             param_tag[pname + "#" + tkey] = False
 
 # step: tags for a "ssm" "parameter" are listed
-# result: the list of tags will be returned
+# result: the list of "ssm" "parameter" tags will be returned
 # guard: the "ssm" "parameter" existed
 # guard_violation: the "ssm" "parameter" did not exist
 # guard: the "ssm" "parameter" was "active"
@@ -152,7 +152,7 @@ atomic action ListTagsForResource:
             if param_exists[pname] == True:
                 pass
 
-# check: every parameter version is a positive integer
+# check: every "ssm" "parameter" version is a positive integer
 always assertion VersionIsPositive:
     for pname in PARAM_NAMES:
         if pname in param_version:
@@ -160,7 +160,7 @@ always assertion VersionIsPositive:
                 return False
     return True
 
-# check: every parameter has a valid type (String, SecureString, or StringList)
+# check: every "ssm" "parameter" has a valid type (String, SecureString, or StringList)
 always assertion TypeIsValid:
     valid_types = ["String", "SecureString", "StringList"]
     for pname in PARAM_NAMES:
@@ -169,7 +169,7 @@ always assertion TypeIsValid:
                 return False
     return True
 
-# check: param_exists values are always valid booleans
+# check: "ssm" "parameter" param_exists values are always valid booleans
 always assertion ParamExistsValuesValid:
     for pname in PARAM_NAMES:
         if pname in param_exists:
@@ -177,7 +177,7 @@ always assertion ParamExistsValuesValid:
                 return False
     return True
 
-# check: the error log only contains ParameterAlreadyExists entries
+# check: the "ssm" error log only contains "ParameterAlreadyExists" entries
 always assertion ErrorLogEntriesAreValid:
     for entry in errors:
         valid = False

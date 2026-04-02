@@ -10,11 +10,11 @@ Feature: StepfunctionsSecretsmanager - A Running "Step Functions" "Execution" Fa
   @minimal @happy @read_secret_task_fails @internal
   Scenario: a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
     Given a "step functions" "execution" was "RUNNING"
-    And the "secretsmanager" "secret" was "PENDING_DELETION"
+    And the "secrets manager" "secret" was "PENDING_DELETION"
     When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
     Then the "step functions" "execution" will be "FAILED" with a ResourceNotFoundException
-    And every "RUNNING" execution references an "ACTIVE" state machine
-    And every succeeded execution recorded which secret it read
+    And every "RUNNING" "step functions" "execution" references an "ACTIVE" "step functions" "state machine"
+    And every "SUCCEEDED" "step functions" "execution" recorded which "secrets manager" "secret" it read
 
   @guard @negative @read_secret_task_fails @internal
   Scenario: a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion fails when no "step functions" "execution" was "RUNNING"
@@ -23,8 +23,8 @@ Feature: StepfunctionsSecretsmanager - A Running "Step Functions" "Execution" Fa
     Then the operation is rejected
 
   @guard @negative @read_secret_task_fails @internal
-  Scenario: a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion fails when the "secretsmanager" "secret" is not pending deletion
+  Scenario: a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion fails when the "secrets manager" "secret" was not "PENDING_DELETION"
     Given a "step functions" "execution" was "RUNNING"
-    And the "secretsmanager" "secret" is not pending deletion
+    And the "secrets manager" "secret" was not "PENDING_DELETION"
     When a running "step functions" "execution" fails to read the "secretsmanager" "secret" because it is pending deletion
     Then the operation is rejected

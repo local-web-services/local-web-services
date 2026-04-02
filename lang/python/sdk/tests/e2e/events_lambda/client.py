@@ -35,7 +35,10 @@ class EventsLambdaTestClient:
         self.create_bus()
         try:
             self._events.put_rule(
-                Name=TEST_RULE, EventBusName=TEST_BUS, EventPattern=EVENT_PATTERN, State="ENABLED"
+                Name=TEST_RULE,
+                EventBusName=TEST_BUS,
+                EventPattern=EVENT_PATTERN,
+                State="ENABLED",
             )
         except Exception:
             pass

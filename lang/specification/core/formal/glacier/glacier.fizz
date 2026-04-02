@@ -115,13 +115,13 @@ atomic action InitiateMultipartUpload:
                         upload_vault[upload] = vault
 
 # step: a part is uploaded for a multipart "glacier" "upload"
-# result: the part will be recorded for the "glacier" "glacier" "upload"
+# result: the "glacier" "upload" part will be recorded
 # guard: the "glacier" "upload" existed
 # guard_violation: the "glacier" "upload" did not exist
 # guard: the "glacier" "upload" was "InProgress"
 # guard_violation_lifecycle: the "glacier" "upload" was not "InProgress"
-# guard: the part has not already been uploaded
-# guard_violation: the part has already been uploaded
+# guard: the "glacier" "upload" part has not already been uploaded
+# guard_violation: the "glacier" "upload" part has already been uploaded
 atomic action UploadMultipartPart:
     oneof upload in UPLOAD_IDS:
         if upload in upload_status:
@@ -246,7 +246,7 @@ atomic action JobFails:
             if job_status[jid] == "InProgress":
                 job_status[jid] = "Failed"
 
-# step: the output of a succeeded job is retrieved
+# step: the output of a succeeded "glacier" "job" is retrieved
 # result: the "glacier" "job" output will be marked as retrieved
 # guard: the "glacier" "job" existed
 # guard_violation: the "glacier" "job" did not exist
@@ -274,7 +274,7 @@ atomic action VaultInventoryRefresh:
             if vault_status[vault] == "ACTIVE":
                 vault_inventory_fresh[vault] = True
 
-# check: every in-progress job references an active vault
+# check: every in-progress "glacier" "job" references an active "glacier" "vault"
 always assertion InProgressJobReferencesActiveVault:
     for jid in JOB_IDS:
         if jid in job_status:
@@ -286,7 +286,7 @@ always assertion InProgressJobReferencesActiveVault:
                             return False
     return True
 
-# check: vault archive count is never negative
+# check: "glacier" "vault" archive count is never negative
 always assertion VaultArchiveCountNonNegative:
     for vault in VAULT_NAMES:
         if vault in vault_archive_count:
@@ -294,7 +294,7 @@ always assertion VaultArchiveCountNonNegative:
                 return False
     return True
 
-# check: all stored archives belong to an ACTIVE vault
+# check: all stored "glacier" "archive"s belong to an "ACTIVE" "glacier" "vault"
 always assertion ArchivesHaveActiveParentVault:
     for arch_key in archive_status:
         if archive_status[arch_key] == "STORED":
@@ -306,7 +306,7 @@ always assertion ArchivesHaveActiveParentVault:
                 return False
     return True
 
-# check: job output is only available for succeeded jobs
+# check: "glacier" "job" output is only available for succeeded "glacier" "job"s
 always assertion JobOutputOnlyOnSuccess:
     for jid in JOB_IDS:
         if jid in job_output_available:
@@ -315,7 +315,7 @@ always assertion JobOutputOnlyOnSuccess:
                     return False
     return True
 
-# check: every archive retrieval job references a non-empty archive ID
+# check: every "glacier" "archive" retrieval "glacier" "job" references a non-empty "glacier" "archive" ID
 always assertion ArchiveRetrievalJobHasArchive:
     for jid in JOB_IDS:
         if jid in job_type:

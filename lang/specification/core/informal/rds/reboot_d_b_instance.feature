@@ -13,9 +13,9 @@ Feature: Rds - A "Rds" "Instance" Is Rebooted
     And the "rds" "instance" was "AVAILABLE"
     When a "rds" "instance" is rebooted
     Then the "rds" "instance" will be in "REBOOTING" state
-    And every database instance has a valid status
-    And every database snapshot has a valid status
-    And every backing-up instance has a corresponding in-progress snapshot
+    And every "rds" "instance" has a valid status
+    And every "rds" "snapshot" has a valid status
+    And every backing-up "rds" "instance" has a corresponding in-progress "rds" "snapshot"
 
   @guard @negative @reboot_d_b_instance
   Scenario: a "rds" "instance" is rebooted fails when the "rds" "instance" did not exist

@@ -1,4 +1,4 @@
-"""Given: the execution existed"""
+"""Given: the "step functions" "execution" existed"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import StepfunctionsTestClient
 from ..constants import INT_SM
 
 
-@given("the execution existed")
+@given('the "step functions" "execution" existed')
 def execution_exists(client: TestClient, world):
     if not world.get("state_machine_arn"):
         world["state_machine_name"] = INT_SM

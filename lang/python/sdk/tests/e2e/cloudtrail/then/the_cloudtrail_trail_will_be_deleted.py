@@ -8,6 +8,7 @@ from ..constants import TEST_TRAIL
 
 
 @then('the cloudtrail trail will be "DELETED"')
+@then('the "cloudtrail" "trail" will be "DELETED"')
 def the_cloudtrail_trail_will_be_deleted(lws_session):
     ct = lws_session.client("cloudtrail")
     error_raised = False

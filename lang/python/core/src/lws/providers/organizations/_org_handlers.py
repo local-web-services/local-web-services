@@ -420,6 +420,52 @@ async def _handle_list_targets_for_policy(state: _OrganizationsState, body: dict
     return _json_response({"Targets": targets})
 
 
+async def _handle_tag_resource(state: _OrganizationsState, body: dict) -> Response:
+    """Handle TagResource — attach tags to an account or OU."""
+    resource_id = body.get("ResourceId", "")
+    tags_list = body.get("Tags", [])
+    existing = state.resource_tags.get(resource_id, {})
+    for tag in tags_list:
+        existing[tag["Key"]] = tag["Value"]
+    state.resource_tags[resource_id] = existing
+    return _json_response({})
+
+
+async def _handle_list_tags_for_resource(state: _OrganizationsState, body: dict) -> Response:
+    """Handle ListTagsForResource — return tags for a resource ID."""
+    resource_id = body.get("ResourceId", "")
+    tags_dict = state.resource_tags.get(resource_id, {})
+    tags = [{"Key": k, "Value": v} for k, v in tags_dict.items()]
+    return _json_response({"Tags": tags})
+
+
+_VALID_CHILD_TYPES = {"ACCOUNT", "ORGANIZATIONAL_UNIT"}
+
+
+async def _handle_list_children(state: _OrganizationsState, body: dict) -> Response:
+    """Handle ListChildren — return children of a parent filtered by ChildType."""
+    parent_id = body.get("ParentId", "")
+    child_type = body.get("ChildType", "")
+
+    if child_type not in _VALID_CHILD_TYPES:
+        return _error_response(
+            "InvalidInputException",
+            f"Invalid ChildType '{child_type}'. Must be ACCOUNT or ORGANIZATIONAL_UNIT.",
+        )
+
+    children = []
+    if child_type == "ACCOUNT":
+        for acct_id, _acct in state.accounts.items():
+            if state.account_parents.get(acct_id) == parent_id:
+                children.append({"Id": acct_id, "Type": "ACCOUNT"})
+    else:
+        for ou_id, ou in state.ous.items():
+            if ou.get("ParentId") == parent_id:
+                children.append({"Id": ou_id, "Type": "ORGANIZATIONAL_UNIT"})
+
+    return _json_response({"Children": children})
+
+
 _ACTION_HANDLERS: dict[str, Any] = {
     "CreateOrganization": _handle_create_organization,
     "DescribeOrganization": _handle_describe_organization,
@@ -440,4 +486,7 @@ _ACTION_HANDLERS: dict[str, Any] = {
     "DetachPolicy": _handle_detach_policy,
     "ListPoliciesForTarget": _handle_list_policies_for_target,
     "ListTargetsForPolicy": _handle_list_targets_for_policy,
+    "TagResource": _handle_tag_resource,
+    "ListTagsForResource": _handle_list_tags_for_resource,
+    "ListChildren": _handle_list_children,
 }

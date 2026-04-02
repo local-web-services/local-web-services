@@ -1,10 +1,10 @@
-"""Then: items only exist in non-deleted tables"""
+"""Then: "dynamodb" "item"s only exist in non-deleted "dynamodb" "table"s"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("items only exist in non-deleted tables")
+@then('"dynamodb" "item"s only exist in non-deleted "dynamodb" "table"s')
 def items_only_in_non_deleted_tables():
     """No-op: item-table consistency is an internal invariant; always passes."""

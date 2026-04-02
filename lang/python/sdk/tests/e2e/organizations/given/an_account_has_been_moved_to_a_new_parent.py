@@ -16,5 +16,7 @@ def an_account_has_been_moved_to_a_new_parent(lws_session, world):
         world["root_id"], "e2e-test-dest-ou-1"
     )
     OrganizationsTestClient(lws_session).move_account(
-        AccountId=account_id, SourceParentId=world["root_id"], DestinationParentId=dest_ou_id
+        AccountId=account_id,
+        SourceParentId=world["root_id"],
+        DestinationParentId=dest_ou_id,
     )

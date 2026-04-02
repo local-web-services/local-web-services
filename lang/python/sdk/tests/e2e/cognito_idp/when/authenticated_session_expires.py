@@ -1,4 +1,4 @@
-"""When: an authenticated session expires"""
+"""When: an authenticated "cognito" "session" expires"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import _skip_if_not_implemented
 
 
-@when("an authenticated session expires")
+@when('an authenticated "cognito" "session" expires')
 def authenticated_session_expires(lws_session, world):
     if world.get("session_token") is None:
         world["result"] = None

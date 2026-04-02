@@ -8,6 +8,7 @@ from ..constants import TEST_TRAIL
 
 
 @when("StartLogging is called on the cloudtrail trail")
+@when('"StartLogging" is called on a "cloudtrail" "trail"')
 def start_logging_is_called_on_the_cloudtrail_trail(lws_session, world):
     try:
         world["result"] = lws_session.client("cloudtrail").start_logging(Name=TEST_TRAIL)

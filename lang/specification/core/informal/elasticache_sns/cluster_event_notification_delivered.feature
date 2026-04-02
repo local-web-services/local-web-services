@@ -12,10 +12,10 @@ Feature: ElasticacheSns - A Cluster Modification Event Occurs And Elasticache Pu
     Given the "elasticache" "cluster" existed and was "AVAILABLE"
     And the "elasticache" "cluster" has a "SNS" notification configured
     And the "sns" "topic" was "ACTIVE"
-    And a message slot is available
+    And a "sns" "message" "slot" was "available"
     When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     Then the "elasticache" "cluster" will be "MODIFYING" and the notification will be "PUBLISHED" to the "sns" "topic"
-    And every "PUBLISHED" notification references a cluster that exists
+    And every "PUBLISHED" "sns" "notification" references a "elasticache" "cluster" that exists
     And every "PUBLISHED" notification references a "sns" "topic" that exists
 
   @guard @negative @cluster_event_notification_delivered @internal
@@ -40,10 +40,10 @@ Feature: ElasticacheSns - A Cluster Modification Event Occurs And Elasticache Pu
     Then the operation is rejected
 
   @guard @negative @cluster_event_notification_delivered @internal
-  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" fails when no message slot is available
+  Scenario: a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic" fails when no "sns" "message" "slot" was "available"
     Given the "elasticache" "cluster" existed and was "AVAILABLE"
     And the "elasticache" "cluster" has a "SNS" notification configured
     And the "sns" "topic" was "ACTIVE"
-    And no message slot is available
+    And no "sns" "message" "slot" was "available"
     When a cluster modification event occurs and ElastiCache publishes a notification to the "sns" "topic"
     Then the operation is rejected
