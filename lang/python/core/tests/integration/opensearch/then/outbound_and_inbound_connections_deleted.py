@@ -1,11 +1,13 @@
-"""Then: the outbound and associated inbound connection will be "DELETED" """
+"""Then: the "opensearch" "outbound connection" and associated "opensearch" "inbound connection" will be "DELETED" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the outbound and associated inbound connection will be "DELETED"')
+@then(
+    'the "opensearch" "outbound connection" and associated "opensearch" "inbound connection" will be "DELETED"'
+)
 def outbound_and_inbound_connections_deleted(world: dict):
     actual_result = world["result"]
     assert (

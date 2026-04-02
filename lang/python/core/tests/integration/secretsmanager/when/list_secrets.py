@@ -1,4 +1,4 @@
-"""When: all secrets are listed"""
+"""When: all "secrets manager" "secret"s are listed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SM_TARGET_PREFIX
 
 
-@when("all secrets are listed")
+@when('all "secrets manager" "secret"s are listed')
 def list_secrets(sync_client: TestClient, world):
     r = sync_client.post(
         "/",

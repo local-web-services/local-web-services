@@ -10,7 +10,7 @@ from pytest_bdd import then
 
 
 @then(
-    "the request will be rejected because the token's issuing pool does not match the configured authorizer"
+    'the "api gateway" "request" will be "REJECTED" because the "cognito" "token" issuing "cognito" "user pool" does not match the configured authorizer'
 )  # noqa: E501
 def request_is_rejected():
     pytest.skip("Cannot send requests through API Gateway Cognito authorizer in lws")

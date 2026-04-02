@@ -23,5 +23,6 @@ def sqs_queue_configured_with_dlq_seq(lws_session):
     dlq_arn = _queue_arn(TEST_DLQ)
     redrive = json.dumps({"deadLetterTargetArn": dlq_arn, "maxReceiveCount": 2})
     LambdaSqsTestClient(lws_session)._sqs.set_queue_attributes(
-        QueueUrl=LambdaSqsTestClient(lws_session).queue_url(), Attributes={"RedrivePolicy": redrive}
+        QueueUrl=LambdaSqsTestClient(lws_session).queue_url(),
+        Attributes={"RedrivePolicy": redrive},
     )

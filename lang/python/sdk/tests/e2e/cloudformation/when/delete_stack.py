@@ -9,6 +9,7 @@ from ..constants import TEST_STACK_NAME
 
 
 @when("a cloudformation stack is deleted")
+@when('a "cloudformation" "stack" is deleted')
 def delete_stack(lws_session, world):
     try:
         result = lws_session.client("cloudformation").delete_stack(StackName=TEST_STACK_NAME)

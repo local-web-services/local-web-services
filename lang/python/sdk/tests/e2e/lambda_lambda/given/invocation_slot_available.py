@@ -1,10 +1,11 @@
-"""Given: an invocation slot is available"""
+"""Given: a "lambda" "invocation" slot is available"""
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given("an invocation slot is available")
+@given('a "lambda" "invocation" slot is available')
+@given('a "lambda" "invocation" "slot" was "available"')
 def invocation_slot_available():
     """No-op: always room for invocations."""

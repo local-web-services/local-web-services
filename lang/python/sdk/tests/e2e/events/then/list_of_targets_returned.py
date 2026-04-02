@@ -1,11 +1,11 @@
-"""Then: the list of targets will be returned"""
+"""Then: the list of "eventbridge" "rule" targets will be returned"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the list of targets will be returned")
+@then('the list of "eventbridge" "rule" targets will be returned')
 def list_of_targets_returned(world):
     assert (
         world["error"] is None

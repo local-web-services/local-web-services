@@ -2,7 +2,13 @@
 
 from __future__ import annotations
 
-from .constants import TEST_BUCKET, TEST_BUCKET_2, TEST_EB_BUS_ARN, TEST_TRAIL, TEST_TRAIL_2
+from .constants import (
+    TEST_BUCKET,
+    TEST_BUCKET_2,
+    TEST_EB_BUS_ARN,
+    TEST_TRAIL,
+    TEST_TRAIL_2,
+)
 
 
 class CloudtrailTestClient:

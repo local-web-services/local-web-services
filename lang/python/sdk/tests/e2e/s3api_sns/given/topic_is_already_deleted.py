@@ -1,4 +1,4 @@
-"""Given: the topic is already "DELETED" """
+"""Given: the "sns" "topic" is already "DELETED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import S3apiSnsTestClient
 from ..constants import _topic_arn
 
 
-@given('the topic is already "DELETED"')
+@given('the "sns" "topic" is already "DELETED"')
 def topic_is_already_deleted(lws_session, world):
     try:
         S3apiSnsTestClient(lws_session).create_topic()

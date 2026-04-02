@@ -6,6 +6,6 @@ import pytest
 from pytest_bdd import then
 
 
-@then('the mapping will be in "DELETING" state')
+@then('the "lambda" "event source mapping" will be in "DELETING" state')
 def mapping_enters_deleting_state(world):
     pytest.skip("Cannot observe ESM DELETING state in lws")

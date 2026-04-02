@@ -1,10 +1,12 @@
-"""Then: every "ENABLED" event source mapping references an "ACTIVE" table with streaming enabled"""
+"""Then: every "ENABLED" "lambda" "event source mapping" references an "ACTIVE" "dynamodb" "table" with streaming enabled"""
 
 from __future__ import annotations
 
 from pytest_bdd import step
 
 
-@step('every "ENABLED" event source mapping references an "ACTIVE" table with streaming enabled')
+@step(
+    'every "ENABLED" "lambda" "event source mapping" references an "ACTIVE" "dynamodb" "table" with streaming enabled'
+)
 def invariant_enabled_esm_references_active_table():
     """Invariant: trivially satisfied in isolated lws context."""

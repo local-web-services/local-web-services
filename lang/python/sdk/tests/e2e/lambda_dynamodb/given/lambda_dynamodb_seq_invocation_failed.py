@@ -1,4 +1,4 @@
-"""Given: the Lambda invocation fails"""
+"""Given: the "lambda" "function" invocation fails"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import uuid
 from pytest_bdd import given
 
 
-@given("the Lambda invocation fails")
+@given('the "lambda" "function" invocation fails')
 def lambda_dynamodb_seq_invocation_failed(lws_session, world):
     # Arrange
     invocation_id = str(uuid.uuid4())

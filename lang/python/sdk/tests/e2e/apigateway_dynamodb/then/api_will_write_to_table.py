@@ -14,7 +14,10 @@ def api_will_write_to_table(lws_session, world):
     assert api_id is not None, "Expected API to exist"
     resp = ApigatewayDynamodbTestClient(lws_session).invoke_api(
         api_id,
-        {"TableName": TEST_TABLE, "Item": {_ITEM_KEY: {"S": "check-item-1"}, "value": {"S": "ok"}}},
+        {
+            "TableName": TEST_TABLE,
+            "Item": {_ITEM_KEY: {"S": "check-item-1"}, "value": {"S": "ok"}},
+        },
     )
     expected_status = 200
     actual_status = resp["status_code"]

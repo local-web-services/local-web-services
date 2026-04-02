@@ -1,11 +1,11 @@
-"""Then: the message will be "PUBLISHED" and the request will be "SUCCESS" """
+"""Then: the "sns" "message" will be "PUBLISHED" and the "api gateway" "request" will be "SUCCESS" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the message will be "PUBLISHED" and the request will be "SUCCESS"')
+@then('the "sns" "message" will be "PUBLISHED" and the "api gateway" "request" will be "SUCCESS"')
 def message_published_request_success(world):
     expected_status = 200
     actual_status = world.get("invoke_status")

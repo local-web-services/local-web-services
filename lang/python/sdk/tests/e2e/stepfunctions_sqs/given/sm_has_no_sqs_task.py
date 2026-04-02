@@ -1,4 +1,4 @@
-"""Given: the state machine has no "SQS" task configured"""
+"""Given: the "step functions" "state machine" has no "sqs" task configured"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..client import StepfunctionsSqsTestClient
 
 
-@given('the state machine has no "SQS" task configured')
+@given('the "step functions" "state machine" has no "sqs" task configured')
 def sm_has_no_sqs_task(lws_session, world):
     """Ensure a PASS-only state machine exists with no SQS task."""
     try:

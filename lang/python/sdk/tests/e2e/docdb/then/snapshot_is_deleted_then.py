@@ -1,11 +1,11 @@
-"""Then: the "documentdb" "SNAPSHOT" will be "DELETED" """
+"""Then: the "documentdb" "snapshot" will be "DELETED" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the "documentdb" "SNAPSHOT" will be "DELETED"')
+@then('the "documentdb" "snapshot" will be "DELETED"')
 def snapshot_is_deleted_then(world):
     expected_error = None
     actual_error = world["error"]

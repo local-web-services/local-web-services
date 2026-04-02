@@ -2,7 +2,14 @@
 
 from __future__ import annotations
 
-from .constants import PASS_DEFINITION, ROLE_ARN, TEST_BUCKET, TEST_INPUT, TEST_SM, _sm_arn
+from .constants import (
+    PASS_DEFINITION,
+    ROLE_ARN,
+    TEST_BUCKET,
+    TEST_INPUT,
+    TEST_SM,
+    _sm_arn,
+)
 
 
 class StepfunctionsS3apiTestClient:

@@ -2,7 +2,15 @@
 
 from __future__ import annotations
 
-from .constants import PASS_DEFINITION, ROLE_ARN, TEST_INPUT, TEST_PK, TEST_SM, TEST_TABLE, _sm_arn
+from .constants import (
+    PASS_DEFINITION,
+    ROLE_ARN,
+    TEST_INPUT,
+    TEST_PK,
+    TEST_SM,
+    TEST_TABLE,
+    _sm_arn,
+)
 
 
 class StepfunctionsDynamodbTestClient:

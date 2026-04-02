@@ -1,4 +1,4 @@
-"""When: a "SNS" publish task is configured on the state machine"""
+"""When: an "sns" publish task is configured on the "step functions" "state machine" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pytest_bdd import when
 from ..constants import TEST_TOPIC, _sm_arn, _sns_task_definition
 
 
-@when('a "SNS" publish task is configured on the state machine')
+@when('an "sns" publish task is configured on the "step functions" "state machine"')
 def configure_sns_task(lws_session, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

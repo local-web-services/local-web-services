@@ -1,11 +1,11 @@
-"""Then: the table will be "DELETING" and "SDK" task calls targeting it will fail"""
+"""Then: the "s3 tables" "table" will be "DELETING" and "SDK" task calls targeting it will fail"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the table will be "DELETING" and "SDK" task calls targeting it will fail')
+@then('the "s3 tables" "table" will be "DELETING" and "SDK" task calls targeting it will fail')
 def table_is_deleting_then(lws_session, world):
     expected_error = None
     actual_error = world["error"]

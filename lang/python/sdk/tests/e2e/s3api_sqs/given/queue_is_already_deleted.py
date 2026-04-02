@@ -1,4 +1,4 @@
-"""Given: the queue is already "DELETED" """
+"""Given: the "sqs" "queue" is already "DELETED" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..client import S3apiSqsTestClient
 
 
-@given('the queue is already "DELETED"')
+@given('the "sqs" "queue" is already "DELETED"')
 def queue_is_already_deleted(lws_session, world):
     try:
         S3apiSqsTestClient(lws_session).create_queue()

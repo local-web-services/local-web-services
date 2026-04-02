@@ -31,7 +31,8 @@ class OrganizationsTestClient:
 
     def create_account(self) -> str:
         _, body = self.post(
-            "CreateAccount", {"AccountName": INT_ACCOUNT_NAME, "Email": INT_ACCOUNT_EMAIL}
+            "CreateAccount",
+            {"AccountName": INT_ACCOUNT_NAME, "Email": INT_ACCOUNT_EMAIL},
         )
         return body["CreateAccountStatus"]["AccountId"]
 

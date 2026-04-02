@@ -1,4 +1,4 @@
-"""When: a confirmed enabled user initiates authentication"""
+"""When: a confirmed enabled "cognito" "user" initiates authentication"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import CognitoIdpTestClient
 from ..constants import INT_CLIENT_ID, INT_PASSWORD, INT_USERNAME, _store
 
 
-@when("a confirmed enabled user initiates authentication")
+@when('a confirmed enabled "cognito" "user" initiates authentication')
 def initiate_auth(client: TestClient, world):
     username = world.get("username", INT_USERNAME)
     r = CognitoIdpTestClient(client).cognito_post(

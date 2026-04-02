@@ -1,4 +1,4 @@
-"""Then: the object will exist and a notification will be "PUBLISHED" to the topic"""
+"""Then: the "s3" "object" will exist and a "sns" notification will be "PUBLISHED" to the "sns" "topic" """
 
 from __future__ import annotations
 
@@ -7,7 +7,9 @@ from pytest_bdd import then
 from ..constants import TEST_BUCKET, TEST_KEY
 
 
-@then('the object will exist and a notification will be "PUBLISHED" to the topic')
+@then(
+    'the "s3" "object" will exist and a "sns" notification will be "PUBLISHED" to the "sns" "topic"'
+)
 def object_exists_and_notification_published(lws_session, world):
     expected_error = None
     expected_key = TEST_KEY

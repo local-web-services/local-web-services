@@ -6,7 +6,10 @@ import httpx
 import pytest
 from fastapi import FastAPI
 
-from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
+from lws.providers._shared.aws_lifecycle import (
+    ResourceLifecycleConfig,
+    ResourceStateTracker,
+)
 from lws.providers._shared.lifecycle_control import create_lifecycle_control_router
 
 _SVC = "dynamodb"

@@ -1,4 +1,4 @@
-"""Then: the table will be "ACTIVE" """
+"""Then: the "s3 tables" "table" will be "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsS3tablesTestClient
 from ..constants import TEST_BUCKET
 
 
-@then('the table will be "ACTIVE"')
+@then('the "s3 tables" "table" will be "ACTIVE"')
 def table_is_active_then(lws_session):
     expected_exists = True
     actual_exists = StepfunctionsS3tablesTestClient(lws_session).table_bucket_exists()

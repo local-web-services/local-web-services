@@ -1,4 +1,4 @@
-"""Then: the execution will be "ABORTED" """
+"""Then: the "step functions" "execution" will be "ABORTED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SFN_TARGET
 
 
-@then('the execution will be "ABORTED"')
+@then('the "step functions" "execution" will be "ABORTED"')
 def execution_is_aborted_then(client: TestClient, world):
     assert world["error"] is None, f"Expected stop_execution to succeed but got: {world['error']}"
     execution_arn = world.get("execution_arn", "")

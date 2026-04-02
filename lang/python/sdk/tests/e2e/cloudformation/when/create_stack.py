@@ -9,6 +9,7 @@ from ..constants import TEST_STACK_NAME
 
 
 @when("a cloudformation stack is created")
+@when('a "cloudformation" "stack" is created')
 def create_stack(lws_session, world):
     try:
         result = lws_session.client("cloudformation").create_stack(StackName=TEST_STACK_NAME)

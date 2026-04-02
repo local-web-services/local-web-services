@@ -1,4 +1,4 @@
-"""Given: a "SQS" notification configuration is added to the bucket"""
+"""Given: an "sqs" notification configuration is added to the "s3" "bucket" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import S3apiSqsTestClient
 from ..constants import TEST_BUCKET, TEST_QUEUE
 
 
-@given('a "SQS" notification configuration is added to the bucket')
+@given('an "sqs" notification configuration is added to the "s3" "bucket"')
 def s3api_sqs_sqs_notification_config_added(lws_session):
     S3apiSqsTestClient(lws_session).create_bucket()
     S3apiSqsTestClient(lws_session).create_queue()

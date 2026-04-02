@@ -1,4 +1,4 @@
-"""Given: the target queue was "DELETED" """
+"""Given: the target "sqs" "queue" was "DELETED" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..client import S3apiSqsTestClient
 
 
-@given('the target queue was "DELETED"')
+@given('the target "sqs" "queue" was "DELETED"')
 def target_queue_is_deleted(lws_session, world):
     try:
         S3apiSqsTestClient(lws_session).create_queue()

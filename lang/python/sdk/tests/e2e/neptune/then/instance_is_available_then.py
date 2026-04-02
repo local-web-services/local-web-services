@@ -1,4 +1,4 @@
-"""Then: the "neptune" "INSTANCE" will be "AVAILABLE" and the "neptune" "cluster" primary will be updated if applicable"""
+"""Then: the "neptune" "instance" will be "AVAILABLE" and the "neptune" "cluster" primary will be updated if applicable"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..constants import TEST_INSTANCE
 
 
 @then(
-    'the "neptune" "INSTANCE" will be "AVAILABLE" and the "neptune" "cluster" primary will be updated if applicable'
+    'the "neptune" "instance" will be "AVAILABLE" and the "neptune" "cluster" primary will be updated if applicable'
 )
 def instance_is_available_then(lws_session, world):
     expected_status = "available"

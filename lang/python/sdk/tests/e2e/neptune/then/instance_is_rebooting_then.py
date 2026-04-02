@@ -1,11 +1,11 @@
-"""Then: the "neptune" "INSTANCE" will be in "REBOOTING" state"""
+"""Then: the "neptune" "instance" will be in "REBOOTING" state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the "neptune" "INSTANCE" will be in "REBOOTING" state')
+@then('the "neptune" "instance" will be in "REBOOTING" state')
 def instance_is_rebooting_then(lws_session, world):
     expected_error = None
     actual_error = world.get("error")

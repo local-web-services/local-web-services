@@ -28,7 +28,10 @@ class DynamodbLambdaTestClient:
                 KeySchema=[{"AttributeName": "id", "KeyType": "HASH"}],
                 AttributeDefinitions=[{"AttributeName": "id", "AttributeType": "S"}],
                 BillingMode="PAY_PER_REQUEST",
-                StreamSpecification={"StreamEnabled": True, "StreamViewType": "NEW_AND_OLD_IMAGES"},
+                StreamSpecification={
+                    "StreamEnabled": True,
+                    "StreamViewType": "NEW_AND_OLD_IMAGES",
+                },
             )
         except Exception:
             pass

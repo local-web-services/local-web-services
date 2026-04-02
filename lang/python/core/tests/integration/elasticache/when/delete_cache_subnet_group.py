@@ -1,4 +1,4 @@
-"""When: an "elasticache" subnet group is deleted"""
+"""When: an "elasticache" "subnet group" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_SUBNET_GROUP_ID
 
 
-@when('an "elasticache" subnet group is deleted')
+@when('an "elasticache" "subnet group" is deleted')
 def delete_cache_subnet_group(client: TestClient, world):
     r = client.post(
         "/",

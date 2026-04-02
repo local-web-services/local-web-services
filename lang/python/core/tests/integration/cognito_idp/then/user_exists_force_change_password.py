@@ -12,7 +12,8 @@ from ..constants import INT_POOL_ID, INT_USERNAME
 @then('the "cognito" "user" will exist in "FORCE_CHANGE_PASSWORD" state and will be enabled')
 def user_exists_force_change_password(client: TestClient, world):
     r = CognitoIdpTestClient(client).cognito_post(
-        "AdminGetUser", {"UserPoolId": INT_POOL_ID, "Username": world.get("username", INT_USERNAME)}
+        "AdminGetUser",
+        {"UserPoolId": INT_POOL_ID, "Username": world.get("username", INT_USERNAME)},
     )
     body = r.json()
     actual_status = body.get("UserStatus", "")

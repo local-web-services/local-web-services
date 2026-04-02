@@ -1,10 +1,10 @@
-"""Given: a record slot is available"""
+"""Given: a "dynamodb" "record" "slot" was "available" """
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given("a record slot is available")
+@given('a "dynamodb" "record" "slot" was "available"')
 def record_slot_available():
     """No-op: always room for records."""

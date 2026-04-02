@@ -1,4 +1,4 @@
-"""When: an EventBridge event bus is created"""
+"""When: an "eventbridge" "bus" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import LambdaEventsTestClient
 from ..constants import TEST_BUS
 
 
-@when("an EventBridge event bus is created")
+@when('an "eventbridge" "bus" is created')
 def create_event_bus(lws_session, world):
     try:
         LambdaEventsTestClient(lws_session).create_bus()

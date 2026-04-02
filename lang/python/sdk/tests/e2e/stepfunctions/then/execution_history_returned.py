@@ -1,11 +1,11 @@
-"""Then: the execution history will be returned"""
+"""Then: the "step functions" "execution" history will be returned"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the execution history will be returned")
+@then('the "step functions" "execution" history will be returned')
 def execution_history_returned(world):
     assert (
         world["error"] is None

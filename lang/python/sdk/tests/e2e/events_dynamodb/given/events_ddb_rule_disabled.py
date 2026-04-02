@@ -8,7 +8,7 @@ from ..client import EventsDynamodbTestClient
 from ..constants import TEST_BUS, TEST_RULE
 
 
-@given('the rule was "DISABLED"')
+@given('the "eventbridge" "rule" was "DISABLED"')
 def events_ddb_rule_disabled(lws_session):
     EventsDynamodbTestClient(lws_session).create_rule()
     try:

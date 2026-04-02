@@ -9,6 +9,7 @@ from ..client import ServiceCatalogTestClient
 
 
 @when("a record is described")
+@when('a "service catalog" "record" is described')
 def a_record_is_described(lws_session, world):
     """Call DescribeRecord with the record ID from world (set by given steps)."""
     client = ServiceCatalogTestClient(lws_session)

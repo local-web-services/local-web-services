@@ -1,11 +1,11 @@
-"""When: a service call is injected with a chaos error"""
+"""When: a "service" call is injected with a "chaos" "error" """
 
 from __future__ import annotations
 
 from pytest_bdd import when
 
 
-@when("a service call is injected with a chaos error")
+@when('a "service" call is injected with a "chaos" "error"')
 def when_service_call_injected_with_error(lws_session, world):
     """Attempt a service call expected to receive a chaos error response."""
     import boto3

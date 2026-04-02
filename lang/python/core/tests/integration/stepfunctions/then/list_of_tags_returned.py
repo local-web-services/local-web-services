@@ -1,11 +1,11 @@
-"""Then: the list of tags will be returned"""
+"""Then: the list of "step functions" "state machine" tags will be returned"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the list of tags will be returned")
+@then('the list of "step functions" "state machine" tags will be returned')
 def list_of_tags_returned(world):
     assert (
         world["error"] is None

@@ -1,4 +1,4 @@
-"""When: tags are removed from a MemoryDB resource"""
+"""When: tags are removed from a "memorydb" "resource" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import MemorydbTestClient
 from ..constants import _MDB_TARGET, INT_TAG_KEY
 
 
-@when("tags are removed from a MemoryDB resource")
+@when('tags are removed from a "memorydb" "resource"')
 def remove_tags_from_memorydb_resource(client: TestClient, world):
     arn = MemorydbTestClient(client).get_cluster_arn()
     r = client.post(

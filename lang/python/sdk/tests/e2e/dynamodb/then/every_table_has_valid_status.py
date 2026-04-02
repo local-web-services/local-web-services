@@ -1,11 +1,11 @@
-"""Then: every table has a valid status ("CREATING", "ACTIVE", or "DELETED")"""
+"""Then: every "dynamodb" "table" has a valid status ("CREATING", "ACTIVE", or "DELETED")"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('every table has a valid status ("CREATING", "ACTIVE", or "DELETED")')
+@then('every "dynamodb" "table" has a valid status ("CREATING", "ACTIVE", or "DELETED")')
 def every_table_has_valid_status(lws_session):
     client = lws_session.client("dynamodb")
     resp = client.list_tables()

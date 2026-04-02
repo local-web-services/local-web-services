@@ -1,4 +1,4 @@
-"""Given: a running execution is stopped"""
+"""Given: a running "step functions" "execution" is stopped"""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from pytest_bdd import given
 from ..constants import PASS_DEFINITION, ROLE_ARN, TEST_SM
 
 
-@given("a running execution is stopped")
+@given('a running "step functions" "execution" is stopped')
 def running_execution_stopped_given(lws_session, world):
     # Arrange
     sm_name = world.get("state_machine_name") or TEST_SM

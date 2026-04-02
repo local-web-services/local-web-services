@@ -22,7 +22,9 @@ class LambdaTestClient:
         )
 
     def create_esm(
-        self, function_name: str = INT_FUNCTION_NAME, source_arn: str = INT_ESM_SOURCE_ARN
+        self,
+        function_name: str = INT_FUNCTION_NAME,
+        source_arn: str = INT_ESM_SOURCE_ARN,
     ) -> None:
         return self._client.post(
             "/2015-03-31/event-source-mappings",

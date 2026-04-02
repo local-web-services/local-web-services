@@ -1,11 +1,11 @@
-"""Then: the active execution count decreases"""
+"""Then: the "lambda" "function" active execution count will decrease"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the active execution count decreases")
+@then('the "lambda" "function" active execution count will decrease')
 def active_execution_count_decreases(world):
     actual_error = world["error"]
     assert (

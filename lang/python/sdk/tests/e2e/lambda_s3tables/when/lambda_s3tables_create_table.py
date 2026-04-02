@@ -1,4 +1,4 @@
-"""When: a table is created in the table bucket"""
+"""When: a "s3 tables" "table" is created in the "s3 tables" "bucket" """
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import LambdaS3tablesTestClient
 from ..constants import TEST_NAMESPACE, TEST_TABLE, _table_bucket_arn
 
 
-@when("a table is created in the table bucket")
+@when('a "s3 tables" "table" is created in the "s3 tables" "bucket"')
 def lambda_s3tables_create_table(lws_session, world):
     try:
         if not LambdaS3tablesTestClient(lws_session).table_bucket_exists():

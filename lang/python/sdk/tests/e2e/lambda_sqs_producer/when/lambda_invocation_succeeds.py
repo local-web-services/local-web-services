@@ -1,11 +1,11 @@
-"""When: the Lambda invocation completes successfully"""
+"""When: the "lambda" "function" invocation completes successfully"""
 
 from __future__ import annotations
 
 from pytest_bdd import when
 
 
-@when("the Lambda invocation completes successfully")
+@when('the "lambda" "function" invocation completes successfully')
 def lambda_invocation_succeeds(lws_session, world):
     # Arrange
     invocation_id = world.get("invocation_id")

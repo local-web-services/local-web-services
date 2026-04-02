@@ -12,7 +12,8 @@ from ..constants import INT_POOL_ID, INT_USERNAME
 @then('the "cognito" "user" was "ENABLED"')
 def user_is_enabled_then(client: TestClient, world):
     r = CognitoIdpTestClient(client).cognito_post(
-        "AdminGetUser", {"UserPoolId": INT_POOL_ID, "Username": world.get("username", INT_USERNAME)}
+        "AdminGetUser",
+        {"UserPoolId": INT_POOL_ID, "Username": world.get("username", INT_USERNAME)},
     )
     body = r.json()
     expected_enabled = True

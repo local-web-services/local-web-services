@@ -1,4 +1,4 @@
-"""When: a "SQS" send-message task is configured on the state machine"""
+"""When: an "sqs" send-message task is configured on the "step functions" "state machine" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_QUEUE, _sm_arn, _sqs_task_definition
 
 
-@when('a "SQS" send-message task is configured on the state machine')
+@when('an "sqs" send-message task is configured on the "step functions" "state machine"')
 def configure_sqs_task(lws_session, world):
     # Arrange
     queue_url = lws_session.queue_url(TEST_QUEUE)

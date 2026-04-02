@@ -1,4 +1,4 @@
-"""Given: the bucket did not exist or was "ACTIVE" """
+"""Given: the "s3" "bucket" did not exist or was "ACTIVE" """
 
 from __future__ import annotations
 

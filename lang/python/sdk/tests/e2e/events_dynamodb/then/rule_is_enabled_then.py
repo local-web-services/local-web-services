@@ -1,4 +1,4 @@
-"""Then: the rule will be "ENABLED" and will match events"""
+"""Then: the "eventbridge" "rule" will be "ENABLED" and will match events"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_BUS, TEST_RULE
 
 
-@then('the rule will be "ENABLED" and will match events')
+@then('the "eventbridge" "rule" will be "ENABLED" and will match events')
 def rule_is_enabled_then(lws_session):
     resp = lws_session.client("events").describe_rule(Name=TEST_RULE, EventBusName=TEST_BUS)
     expected_state = "ENABLED"

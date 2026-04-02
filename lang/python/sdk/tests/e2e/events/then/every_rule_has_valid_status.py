@@ -1,11 +1,11 @@
-"""Then: every rule has a valid status ("ENABLED", "DISABLED", or "DELETED")"""
+"""Then: every "eventbridge" "rule" has a valid status ("ENABLED", "DISABLED", or "DELETED")"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('every rule has a valid status ("ENABLED", "DISABLED", or "DELETED")')
+@then('every "eventbridge" "rule" has a valid status ("ENABLED", "DISABLED", or "DELETED")')
 def every_rule_has_valid_status(lws_session):
     """Invariant: every rule has a status of ENABLED or DISABLED.
 

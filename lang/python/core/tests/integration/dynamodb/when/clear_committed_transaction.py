@@ -1,4 +1,4 @@
-"""When: a committed transaction is cleared"""
+"""When: a committed "dynamodb" "transaction" is cleared"""
 
 from __future__ import annotations
 
@@ -6,6 +6,6 @@ import pytest
 from pytest_bdd import when
 
 
-@when("a committed transaction is cleared")
+@when('a committed "dynamodb" "transaction" is cleared')
 def clear_committed_transaction(world: dict):
     pytest.skip("Cannot trigger committed transaction clearing in integration context")

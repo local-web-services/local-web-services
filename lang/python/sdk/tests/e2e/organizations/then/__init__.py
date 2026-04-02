@@ -13,5 +13,6 @@ from .ou_is_deleted import *  # noqa: F401,F403
 from .policy_is_active import *  # noqa: F401,F403
 from .policy_is_attached_to_target import *  # noqa: F401,F403
 from .policy_no_longer_attached_to_target import *  # noqa: F401,F403
+from .resource_tags_set import *  # noqa: F401,F403
 from .root_active_when_org_exists import *  # noqa: F401,F403
 from .tags_returned import *  # noqa: F401,F403

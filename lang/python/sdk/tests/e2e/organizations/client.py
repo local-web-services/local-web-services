@@ -63,7 +63,10 @@ class OrganizationsTestClient:
     def create_policy(self, name=TEST_POLICY_NAME):
         try:
             resp = self._client.create_policy(
-                Name=name, Description="e2e test policy", Content="{}", Type=TEST_POLICY_TYPE
+                Name=name,
+                Description="e2e test policy",
+                Content="{}",
+                Type=TEST_POLICY_TYPE,
             )
             return resp["Policy"]["PolicySummary"]["Id"]
         except ClientError as exc:

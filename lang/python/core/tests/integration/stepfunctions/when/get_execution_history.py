@@ -1,4 +1,4 @@
-"""When: the event history of an execution is retrieved"""
+"""When: the event history of a "step functions" "execution" is retrieved"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SFN_TARGET
 
 
-@when("the event history of an execution is retrieved")
+@when('the event history of a "step functions" "execution" is retrieved')
 def get_execution_history(client: TestClient, world):
     execution_arn = world.get("execution_arn", "")
     r = client.post(

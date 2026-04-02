@@ -1,4 +1,4 @@
-"""Then: chaos will be disabled for the service"""
+"""Then: "chaos" will be disabled for the "service" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import ChaosTestClient
 from ..constants import TEST_SERVICE
 
 
-@then("chaos will be disabled for the service")
+@then('"chaos" will be disabled for the "service"')
 def then_chaos_is_disabled(lws_session):
     """Verify that chaos is disabled for the test service."""
     status = ChaosTestClient(lws_session).get_chaos_status()

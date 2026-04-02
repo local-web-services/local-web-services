@@ -1,4 +1,4 @@
-"""Given: the bucket was not "ACTIVE" """
+"""Given: the "s3" "bucket" was not "ACTIVE" """
 
 from __future__ import annotations
 

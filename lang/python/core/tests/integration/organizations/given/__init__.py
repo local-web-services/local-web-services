@@ -31,6 +31,8 @@ from .policy_exists_and_active import *  # noqa: F401,F403
 from .policy_not_already_attached import *  # noqa: F401,F403
 from .policy_not_already_exist import *  # noqa: F401,F403
 from .policy_not_attached_to_target import *  # noqa: F401,F403
+from .resource_does_not_exist import *  # noqa: F401,F403
+from .resource_exists import *  # noqa: F401,F403
 from .source_parent_does_not_match import *  # noqa: F401,F403
 from .source_parent_matches import *  # noqa: F401,F403
 from .target_does_not_exist_or_not_active import *  # noqa: F401,F403

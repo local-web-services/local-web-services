@@ -1,4 +1,4 @@
-"""Given: the rotation function was "ACTIVE" """
+"""Given: the rotation "lambda" "function" was "ACTIVE" """
 
 from __future__ import annotations
 

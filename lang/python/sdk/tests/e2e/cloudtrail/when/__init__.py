@@ -1,4 +1,6 @@
 from .a_caller_invokes_an_operation_that_returns_an_aws_error import *  # noqa: F401,F403
+from .a_cloudtrail_event_is_delivered_to_s3 import *  # noqa: F401,F403
+from .a_cloudtrail_event_is_recorded import *  # noqa: F401,F403
 from .a_cloudtrail_trail_is_created import *  # noqa: F401,F403
 from .a_cloudtrail_trail_is_deleted import *  # noqa: F401,F403
 from .a_flush_is_attempted import *  # noqa: F401,F403

@@ -1,10 +1,10 @@
-"""Given: a record slot is available"""
+"""Given: a "s3 tables" "record" "slot" was "available" """
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given("a record slot is available")
+@given('a "s3 tables" "record" "slot" was "available"')
 def lambda_s3tables_record_slot_available():
     """No-op: always room for records."""

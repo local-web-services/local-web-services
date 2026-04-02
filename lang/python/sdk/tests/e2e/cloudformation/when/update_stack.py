@@ -9,6 +9,7 @@ from ..constants import TEST_STACK_NAME
 
 
 @when("a cloudformation stack is updated")
+@when('a "cloudformation" "stack" is updated')
 def update_stack(lws_session, world):
     try:
         result = lws_session.client("cloudformation").update_stack(

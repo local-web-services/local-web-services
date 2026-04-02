@@ -1,4 +1,4 @@
-"""Then: the "neptune" "SNAPSHOT" will be in "CREATING" state and linked to the "neptune" "cluster" """
+"""Then: the "neptune" "snapshot" will be in "CREATING" state and linked to the "neptune" "cluster" """
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import then
 from ..constants import TEST_SNAPSHOT
 
 
-@then('the "neptune" "SNAPSHOT" will be in "CREATING" state and linked to the "neptune" "cluster"')
+@then('the "neptune" "snapshot" will be in "CREATING" state and linked to the "neptune" "cluster"')
 def snapshot_is_creating_then(lws_session, world):
     snapshot_id = world.get("snapshot_id", TEST_SNAPSHOT)
     response = lws_session.client("neptune").describe_db_cluster_snapshots(

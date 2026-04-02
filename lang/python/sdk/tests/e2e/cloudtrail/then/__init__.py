@@ -9,6 +9,7 @@ from .a_deleted_trail_is_never_in_logging_state import *  # noqa: F401,F403
 from .a_gzip_compressed_json_log_file_is_written_to_the_trails_s3_bucket import *  # noqa: F401,F403
 from .a_next_token_is_included_in_the_response import *  # noqa: F401,F403
 from .a_warning_is_logged import *  # noqa: F401,F403
+from .active_trail_count_never_exceeds_max import *  # noqa: F401,F403
 from .all_buffered_events_reference_valid_trails import *  # noqa: F401,F403
 from .all_matching_buffered_events_are_returned import *  # noqa: F401,F403
 from .an_eventbridge_event_is_published_to_the_configured_bus import *  # noqa: F401,F403
@@ -17,6 +18,8 @@ from .buffered_events_are_returned import *  # noqa: F401,F403
 from .each_element_in_records_is_a_valid_cloudtrail_event import *  # noqa: F401,F403
 from .event_capture_continues_normally import *  # noqa: F401,F403
 from .events_are_returned_in_reverse_chronological_order import *  # noqa: F401,F403
+from .events_only_delivered_when_logging import *  # noqa: F401,F403
+from .events_reference_valid_trails_invariant import *  # noqa: F401,F403
 from .fifty_events_are_returned import *  # noqa: F401,F403
 from .get_trail_status_returns_a_latest_delivery_error import *  # noqa: F401,F403
 from .is_logging_is_true import *  # noqa: F401,F403
@@ -49,6 +52,8 @@ from .the_buffered_event_includes_recipient_account_id import *  # noqa: F401,F4
 from .the_buffered_event_includes_source_ip_address import *  # noqa: F401,F403
 from .the_buffered_event_includes_user_identity import *  # noqa: F401,F403
 from .the_capacity_limit_is_respected import *  # noqa: F401,F403
+from .the_cloudtrail_event_will_be_buffered import *  # noqa: F401,F403
+from .the_cloudtrail_event_will_be_delivered import *  # noqa: F401,F403
 from .the_cloudtrail_trail_logging_will_be_disabled import *  # noqa: F401,F403
 from .the_cloudtrail_trail_logging_will_be_enabled import *  # noqa: F401,F403
 from .the_cloudtrail_trail_will_be_created import *  # noqa: F401,F403

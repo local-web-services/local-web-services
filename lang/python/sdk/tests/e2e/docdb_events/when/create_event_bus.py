@@ -1,4 +1,4 @@
-"""When: an EventBridge event bus is created"""
+"""When: an "eventbridge" "bus" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pytest_bdd import when
 from ..constants import TEST_BUS
 
 
-@when("an EventBridge event bus is created")
+@when('an "eventbridge" "bus" is created')
 def create_event_bus(lws_session, world):
     try:
         world["result"] = lws_session.client("events").create_event_bus(Name=TEST_BUS)

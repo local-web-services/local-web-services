@@ -1,4 +1,4 @@
-"""Given: the configured topic was "ACTIVE" """
+"""Given: the configured "sns" "topic" was "ACTIVE" """
 
 from __future__ import annotations
 
@@ -6,6 +6,6 @@ import pytest
 from pytest_bdd import given
 
 
-@given('the configured topic was "ACTIVE"')
+@given('the configured "sns" "topic" was "ACTIVE"')
 def configured_topic_is_active():
     pytest.skip("Cannot configure Glacier vault notifications in lws")

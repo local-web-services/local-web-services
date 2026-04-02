@@ -1,4 +1,4 @@
-"""Given: a request matching an "AWS" fake operation is intercepted"""
+"""Given: a request matching an "aws fake" "operation" is intercepted"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pytest_bdd import given
 from ..client import AwsFakeTestClient
 
 
-@given('a request matching an "AWS" fake operation is intercepted')
+@given('a request matching an "aws fake" "operation" is intercepted')
 def aws_fake_request_intercepted(lws_session):
     AwsFakeTestClient(lws_session).create()
     AwsFakeTestClient(lws_session).add_operation()

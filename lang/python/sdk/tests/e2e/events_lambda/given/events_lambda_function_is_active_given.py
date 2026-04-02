@@ -1,4 +1,4 @@
-"""Given: the target function was "ACTIVE" """
+"""Given: the target "lambda" "function" was "ACTIVE" """
 
 from __future__ import annotations
 

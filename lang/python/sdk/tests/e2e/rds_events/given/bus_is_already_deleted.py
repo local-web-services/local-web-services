@@ -1,4 +1,4 @@
-"""Given: the bus is already "DELETED" """
+"""Given: the "eventbridge" "bus" is already "DELETED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import RdsEventsTestClient
 from ..constants import TEST_BUS
 
 
-@given('the bus is already "DELETED"')
+@given('the "eventbridge" "bus" is already "DELETED"')
 def bus_is_already_deleted(lws_session, world):
     try:
         RdsEventsTestClient(lws_session).create_bus()

@@ -1,4 +1,4 @@
-"""Given: the target association was not "ACTIVE" """
+"""Given: the "eventbridge" "rule" target association was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import pytest
 from pytest_bdd import given
 
 
-@given('the target association was not "ACTIVE"')
+@given('the "eventbridge" "rule" target association was not "ACTIVE"')
 def target_association_not_active():
     """Target associations have no deactivation mechanism in this implementation.
 

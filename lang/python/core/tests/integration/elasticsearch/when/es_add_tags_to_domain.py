@@ -17,6 +17,7 @@ def es_add_tags_to_domain(client: TestClient, world: dict):
         world["error"] = {"message": f"Domain {INT_DOMAIN} not found"}
         return
     r = ElasticsearchTestClient(client).post(
-        "AddTags", {"ARN": arn, "TagList": [{"Key": INT_TAG_KEY, "Value": INT_TAG_VALUE}]}
+        "AddTags",
+        {"ARN": arn, "TagList": [{"Key": INT_TAG_KEY, "Value": INT_TAG_VALUE}]},
     )
     _store(world, r)

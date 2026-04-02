@@ -1,4 +1,4 @@
-"""When: a 200 integration response is configured"""
+"""When: a 200 "api gateway" "integration" response is configured"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_HTTP_METHOD, INT_STATUS_CODE
 
 
-@when("a 200 integration response is configured")
+@when('a 200 "api gateway" "integration" response is configured')
 def put_integration_response(client: TestClient, world):
     list_r = client.get("/restapis")
     items = list_r.json().get("item", [])

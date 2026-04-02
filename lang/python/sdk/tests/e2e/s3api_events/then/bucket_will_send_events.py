@@ -1,11 +1,13 @@
-"""Then: the bucket will send events to the bus when objects are uploaded"""
+"""Then: the "s3" "bucket" will send "eventbridge" "events" to the "eventbridge" "bus" when "s3" "objects" are uploaded"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the bucket will send events to the bus when objects are uploaded")
+@then(
+    'the "s3" "bucket" will send "eventbridge" "events" to the "eventbridge" "bus" when "s3" "objects" are uploaded'
+)
 def bucket_will_send_events(world):
     expected_error = None
     actual_error = world["error"]

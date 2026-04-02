@@ -12,10 +12,15 @@ from ..constants import EVENT_PATTERN, TEST_BUS, TEST_RULE, _sm_arn
 def put_rule_targeting_sfn(lws_session, world):
     try:
         result = lws_session.client("events").put_rule(
-            Name=TEST_RULE, EventBusName=TEST_BUS, EventPattern=EVENT_PATTERN, State="ENABLED"
+            Name=TEST_RULE,
+            EventBusName=TEST_BUS,
+            EventPattern=EVENT_PATTERN,
+            State="ENABLED",
         )
         lws_session.client("events").put_targets(
-            Rule=TEST_RULE, EventBusName=TEST_BUS, Targets=[{"Id": "t1", "Arn": _sm_arn()}]
+            Rule=TEST_RULE,
+            EventBusName=TEST_BUS,
+            Targets=[{"Id": "t1", "Arn": _sm_arn()}],
         )
         world["result"] = result
         world["error"] = None

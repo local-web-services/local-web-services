@@ -11,3 +11,4 @@ from .list_children_ou_type import *  # noqa: F401,F403
 from .list_tags_for_resource_with_account_id import *  # noqa: F401,F403
 from .list_tags_for_resource_with_unknown_id import *  # noqa: F401,F403
 from .move_account import *  # noqa: F401,F403
+from .tag_resource import *  # noqa: F401,F403

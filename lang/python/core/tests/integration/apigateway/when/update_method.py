@@ -1,4 +1,4 @@
-"""When: an existing method is updated"""
+"""When: an existing "api gateway" "method" is updated"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_HTTP_METHOD
 
 
-@when("an existing method is updated")
+@when('an existing "api gateway" "method" is updated')
 def update_method(client: TestClient, world):
     list_r = client.get("/restapis")
     items = list_r.json().get("item", [])

@@ -2,7 +2,12 @@
 
 from __future__ import annotations
 
-from .constants import INT_API_NAME, INT_HTTP_METHOD, INT_INTEGRATION_TYPE, INT_RESOURCE_PATH
+from .constants import (
+    INT_API_NAME,
+    INT_HTTP_METHOD,
+    INT_INTEGRATION_TYPE,
+    INT_RESOURCE_PATH,
+)
 
 
 class ApigatewayTestClient:

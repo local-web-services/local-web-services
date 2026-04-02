@@ -1,4 +1,4 @@
-"""Given: the integrated state machine was "ACTIVE" """
+"""Given: the integrated "step functions" "state machine" was "ACTIVE" """
 
 from __future__ import annotations
 

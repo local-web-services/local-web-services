@@ -22,7 +22,12 @@ def sts_client() -> TestClient:
 def _assume_role(sts_client: TestClient, role_arn: str, **extra) -> ET.Element:
     resp = sts_client.post(
         "/",
-        data={"Action": "AssumeRole", "RoleArn": role_arn, "RoleSessionName": "s", **extra},
+        data={
+            "Action": "AssumeRole",
+            "RoleArn": role_arn,
+            "RoleSessionName": "s",
+            **extra,
+        },
     )
     return ET.fromstring(resp.text)
 

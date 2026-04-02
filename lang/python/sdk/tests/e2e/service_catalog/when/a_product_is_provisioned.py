@@ -10,6 +10,7 @@ from ..constants import TEST_PRODUCT_ID
 
 
 @when("a product is provisioned")
+@when('a "service catalog" "product" is provisioned')
 def a_product_is_provisioned(lws_session, world):
     """Call ProvisionProduct with the product ID from world (set by given steps)."""
     client = ServiceCatalogTestClient(lws_session)

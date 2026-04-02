@@ -8,6 +8,7 @@ from ..constants import TEST_BUCKET, TEST_TRAIL
 
 
 @when("a cloudtrail trail is created")
+@when('a "cloudtrail" "trail" is created')
 def a_cloudtrail_trail_is_created(lws_session, world):
     try:
         world["result"] = lws_session.client("cloudtrail").create_trail(

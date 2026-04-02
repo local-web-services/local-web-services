@@ -1,4 +1,4 @@
-"""Given: all state machines are listed"""
+"""Given: all "step functions" "state machine"s are listed"""
 
 from __future__ import annotations
 

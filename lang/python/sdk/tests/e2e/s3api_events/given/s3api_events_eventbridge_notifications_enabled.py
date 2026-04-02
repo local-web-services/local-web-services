@@ -1,4 +1,4 @@
-"""Given: EventBridge notifications are enabled on the bucket targeting a specific bus"""
+"""Given: "eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus" """
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from ..client import S3apiEventsTestClient
 from ..constants import TEST_BUCKET
 
 
-@given("EventBridge notifications are enabled on the bucket targeting a specific bus")
+@given(
+    '"eventbridge" notifications are enabled on the "s3" "bucket" targeting a specific "eventbridge" "bus"'
+)
 def s3api_events_eventbridge_notifications_enabled(lws_session):
     S3apiEventsTestClient(lws_session).create_bucket()
     S3apiEventsTestClient(lws_session).create_bus()

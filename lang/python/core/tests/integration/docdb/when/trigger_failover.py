@@ -1,4 +1,4 @@
-"""When: a failover is triggered and a replica is promoted to primary"""
+"""When: a "documentdb" "cluster" failover is triggered and a replica is promoted to primary"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _DOCDB_TARGET, INT_CLUSTER_ID
 
 
-@when("a failover is triggered and a replica is promoted to primary")
+@when('a "documentdb" "cluster" failover is triggered and a replica is promoted to primary')
 def trigger_failover(client: TestClient, world):
     r = client.post(
         "/",

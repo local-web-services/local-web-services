@@ -1,4 +1,4 @@
-"""When: a running execution is stopped"""
+"""When: a running "step functions" "execution" is stopped"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _SFN_TARGET
 
 
-@when("a running execution is stopped")
+@when('a running "step functions" "execution" is stopped')
 def stop_execution(client: TestClient, world):
     execution_arn = world.get("execution_arn", "")
     r = client.post(

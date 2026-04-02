@@ -7,7 +7,9 @@ from __future__ import annotations
 from pytest_bdd import then
 
 
-@then("the state machine will read or write objects to the bucket when it reaches the task state")
+@then(
+    'the "step functions" "state machine" will read or write "s3" "objects" to the "s3" "bucket" when it reaches the task state'
+)
 def sm_will_read_write_objects(world):
     # Arrange
     expected_error = None

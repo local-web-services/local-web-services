@@ -16,5 +16,8 @@ def resource_is_tagged(client: TestClient):
     client.post(
         "/",
         headers={"X-Amz-Target": f"{_MDB_TARGET}.TagResource"},
-        json={"ResourceArn": arn, "Tags": [{"Key": INT_TAG_KEY, "Value": INT_TAG_VALUE}]},
+        json={
+            "ResourceArn": arn,
+            "Tags": [{"Key": INT_TAG_KEY, "Value": INT_TAG_VALUE}],
+        },
     )

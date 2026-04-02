@@ -6,7 +6,13 @@ from pytest_bdd import given
 from starlette.testclient import TestClient
 
 from ..client import CognitoIdpTestClient
-from ..constants import _COGNITO_TARGET, INT_CLIENT_ID, INT_PASSWORD, INT_POOL_ID, INT_USERNAME
+from ..constants import (
+    _COGNITO_TARGET,
+    INT_CLIENT_ID,
+    INT_PASSWORD,
+    INT_POOL_ID,
+    INT_USERNAME,
+)
 
 
 @given('the "cognito" "user" was "CONFIRMED"')
@@ -22,6 +28,10 @@ def user_is_confirmed(client: TestClient, world):
             "X-Amz-Target": f"{_COGNITO_TARGET}.SignUp",
             "Content-Type": "application/x-amz-json-1.1",
         },
-        json={"ClientId": INT_CLIENT_ID, "Username": INT_USERNAME, "Password": INT_PASSWORD},
+        json={
+            "ClientId": INT_CLIENT_ID,
+            "Username": INT_USERNAME,
+            "Password": INT_PASSWORD,
+        },
     )
     world["username"] = INT_USERNAME

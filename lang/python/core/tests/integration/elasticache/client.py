@@ -27,7 +27,10 @@ class ElasticacheTestClient:
         self._client.post(
             "/",
             headers={"X-Amz-Target": f"{_EC_TARGET}.CreateReplicationGroup"},
-            json={"ReplicationGroupId": rg_id, "ReplicationGroupDescription": "int-test-rg"},
+            json={
+                "ReplicationGroupId": rg_id,
+                "ReplicationGroupDescription": "int-test-rg",
+            },
         )
 
     def create_snapshot(

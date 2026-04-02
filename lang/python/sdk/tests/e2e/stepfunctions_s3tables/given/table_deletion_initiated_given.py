@@ -1,4 +1,4 @@
-"""Given: a table deletion is initiated"""
+"""Given: a "s3 tables" "table" deletion is initiated"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsS3tablesTestClient
 from ..constants import TEST_BUCKET
 
 
-@given("a table deletion is initiated")
+@given('a "s3 tables" "table" deletion is initiated')
 def table_deletion_initiated_given(lws_session):
     try:
         StepfunctionsS3tablesTestClient(lws_session).create_table_bucket()

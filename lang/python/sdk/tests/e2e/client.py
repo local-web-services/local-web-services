@@ -58,7 +58,10 @@ class E2eTestClient:
 
     def create_rule(self, bus_name=TEST_BUS, rule_name=TEST_RULE):
         self._events.put_rule(
-            Name=rule_name, EventBusName=bus_name, EventPattern=EVENT_PATTERN, State="ENABLED"
+            Name=rule_name,
+            EventBusName=bus_name,
+            EventPattern=EVENT_PATTERN,
+            State="ENABLED",
         )
 
     def create_sm(self, name=TEST_SM, sm_type="STANDARD"):

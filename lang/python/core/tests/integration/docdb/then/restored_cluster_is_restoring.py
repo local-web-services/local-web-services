@@ -1,4 +1,4 @@
-"""Then: the restored documentdb cluster will be in "RESTORING" state"""
+"""Then: the restored "documentdb" "cluster" will be in "RESTORING" state"""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from pytest_bdd import then
 from starlette.testclient import TestClient
 
 
-@then('the restored documentdb cluster will be in "RESTORING" state')
+@then('the restored "documentdb" "cluster" will be in "RESTORING" state')
 def restored_cluster_is_restoring(client: TestClient, world):
     # Arrange
     expected_error = None

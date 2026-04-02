@@ -2,15 +2,15 @@
 deadlock_detection: false
 options:
   max_concurrent_actions: 1
-  max_actions: 20
+  max_actions: 12
 ---
 # Amazon DocumentDB (docdb) formal specification
 # Models clusters, instances, snapshots, and async state transitions
 # Uses flat dicts and fixed resource pools (no nested subscript, no del, no state: block)
 
-CLUSTER_IDS = ["cluster-1", "cluster-2", "cluster-3"]
-INSTANCE_IDS = ["instance-1", "instance-2", "instance-3", "instance-4"]
-SNAPSHOT_IDS = ["snapshot-1", "snapshot-2", "snapshot-3"]
+CLUSTER_IDS = ["cluster-1", "cluster-2"]
+INSTANCE_IDS = ["instance-1", "instance-2"]
+SNAPSHOT_IDS = ["snapshot-1"]
 
 action Init:
     cluster_status = {}

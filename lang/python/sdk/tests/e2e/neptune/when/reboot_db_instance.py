@@ -1,4 +1,4 @@
-"""When: a stopped neptune database neptune cluster is started"""
+"""When: a stopped "neptune" "cluster" is started"""
 
 from __future__ import annotations
 

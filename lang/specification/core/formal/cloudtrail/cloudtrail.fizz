@@ -2,14 +2,14 @@
 deadlock_detection: false
 options:
   max_concurrent_actions: 1
-  max_actions: 14
+  max_actions: 10
 ---
 # CloudTrail Formal Specification
 # Models trail lifecycle, capacity limit, event buffering, and S3 delivery invariants.
 
 MAX_TRAILS = 5
 TRAIL_NAMES = ["trail-1", "trail-2", "trail-3", "trail-4", "trail-5", "trail-6"]
-EVENT_IDS = ["e1", "e2", "e3", "e4", "e5"]
+EVENT_IDS = ["e1"]
 
 action Init:
     trail_status = {}

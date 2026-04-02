@@ -1,4 +1,4 @@
-"""Given: the integrated state machine was not "ACTIVE" """
+"""Given: the integrated "step functions" "state machine" was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import ApigatewayStepfunctionsTestClient
 from ..constants import _sm_arn
 
 
-@given('the integrated state machine was not "ACTIVE"')
+@given('the integrated "step functions" "state machine" was not "ACTIVE"')
 def apigw_sfn_integrated_sm_is_not_active(lws_session, world):
     try:
         lws_session.client("stepfunctions").delete_state_machine(stateMachineArn=_sm_arn())

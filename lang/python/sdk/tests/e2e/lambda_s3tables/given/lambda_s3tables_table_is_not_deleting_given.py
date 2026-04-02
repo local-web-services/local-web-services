@@ -1,4 +1,4 @@
-"""Given: the table was not "DELETING" """
+"""Given: the "s3 tables" "table" was not "DELETING" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaS3tablesTestClient
 from ..constants import TEST_NAMESPACE, TEST_TABLE, _table_bucket_arn
 
 
-@given('the table was not "DELETING"')
+@given('the "s3 tables" "table" was not "DELETING"')
 def lambda_s3tables_table_is_not_deleting_given(lws_session):
     try:
         LambdaS3tablesTestClient(lws_session).create_table_bucket()

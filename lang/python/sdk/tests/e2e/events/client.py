@@ -32,7 +32,10 @@ class EventsTestClient:
         self.create_target_lambda()
         try:
             self._client.put_rule(
-                Name=rule_name, EventBusName=bus_name, EventPattern=EVENT_PATTERN, State="ENABLED"
+                Name=rule_name,
+                EventBusName=bus_name,
+                EventPattern=EVENT_PATTERN,
+                State="ENABLED",
             )
         except Exception:
             pass

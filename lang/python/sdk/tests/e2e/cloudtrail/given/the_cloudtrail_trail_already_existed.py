@@ -8,5 +8,6 @@ from ..client import CloudtrailTestClient
 
 
 @given("the cloudtrail trail already existed")
+@given('the "cloudtrail" "trail" already existed')
 def the_cloudtrail_trail_already_existed(lws_session):
     CloudtrailTestClient(lws_session).create_trail()

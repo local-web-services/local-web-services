@@ -1,10 +1,10 @@
-"""Given: no invocation slot is available"""
+"""Given: no "lambda" "invocation" "slot" was "available" """
 
 from __future__ import annotations
 
 from pytest_bdd import given
 
 
-@given("no invocation slot is available")
+@given('no "lambda" "invocation" "slot" was "available"')
 def sns_lambda_no_invocation_slot_available(lws_session):
     lws_session.capacity("lambda").exhaust().apply()

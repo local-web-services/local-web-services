@@ -1,11 +1,11 @@
-"""Then: the list of tables will be returned"""
+"""Then: the list of "dynamodb" "table"s will be returned"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the list of tables will be returned")
+@then('the list of "dynamodb" "table"s will be returned')
 def list_of_tables_returned_then(world):
     expected_field = "TableNames"
     actual_result = world["result"]

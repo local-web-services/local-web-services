@@ -1,10 +1,10 @@
-"""Then: deleting a bucket requires it to be empty"""
+"""Then: deleting an "s3" "bucket" requires it to be empty"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("deleting a bucket requires it to be empty")
+@then('deleting an "s3" "bucket" requires it to be empty')
 def deleting_bucket_requires_empty():
     """No-op invariant: lws enforces this constraint at the API level."""

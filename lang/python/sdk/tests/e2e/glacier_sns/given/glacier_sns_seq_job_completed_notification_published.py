@@ -8,6 +8,6 @@ import pytest
 from pytest_bdd import given
 
 
-@given('the Glacier job completes and publishes a notification to the configured "SNS" topic')
+@given('the "glacier" "job" completes and publishes a notification to the configured "sns" "topic"')
 def glacier_sns_seq_job_completed_notification_published():
     pytest.skip("Cannot trigger internal Glacier->SNS notification in lws")

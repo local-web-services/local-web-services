@@ -14,7 +14,12 @@ def delete_user_pool(lws_session, world):
         pool_id = StepfunctionsCognitoTestClient(lws_session).get_pool_id()
         if pool_id is None:
             raise ClientError(
-                {"Error": {"Code": "ResourceNotFoundException", "Message": "Pool not found"}},
+                {
+                    "Error": {
+                        "Code": "ResourceNotFoundException",
+                        "Message": "Pool not found",
+                    }
+                },
                 "DeleteUserPool",
             )
         resp = lws_session.client("cognito-idp").delete_user_pool(UserPoolId=pool_id)

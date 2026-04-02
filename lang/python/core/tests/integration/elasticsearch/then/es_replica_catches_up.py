@@ -1,11 +1,13 @@
-"""Then: the replica eventually catches up without changing document counts"""
+"""Then: the "elasticsearch" "domain" replica will eventually catch up without changing document counts"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the replica eventually catches up without changing document counts")
+@then(
+    'the "elasticsearch" "domain" replica will eventually catch up without changing document counts'
+)
 def es_replica_catches_up(world: dict):
     actual_result = world["result"]
     assert (

@@ -1,4 +1,4 @@
-"""Given: the table is already "DELETING" """
+"""Given: the "s3 tables" "table" is already "DELETING" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaS3tablesTestClient
 from ..constants import TEST_NAMESPACE, TEST_TABLE, _table_bucket_arn
 
 
-@given('the table is already "DELETING"')
+@given('the "s3 tables" "table" is already "DELETING"')
 def lambda_s3tables_table_is_already_deleting_given(lws_session, world):
     LambdaS3tablesTestClient(lws_session).create_table_bucket()
     LambdaS3tablesTestClient(lws_session).create_namespace()

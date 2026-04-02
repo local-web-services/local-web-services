@@ -1,4 +1,4 @@
-"""Given: no delivery slot is available"""
+"""Given: no "sns" "delivery" "slot" was "available" """
 
 from __future__ import annotations
 
@@ -6,6 +6,6 @@ import pytest
 from pytest_bdd import given
 
 
-@given("no delivery slot is available")
+@given('no "sns" "delivery" "slot" was "available"')
 def delivery_slot_not_available():
     pytest.skip("Cannot exhaust delivery slot limit in integration test context")

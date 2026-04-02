@@ -8,6 +8,7 @@ from ..constants import TEST_TRAIL
 
 
 @then("the cloudtrail trail logging will be enabled")
+@then('the "cloudtrail" "trail" will be "LOGGING"')
 def the_cloudtrail_trail_logging_will_be_enabled(lws_session):
     resp = lws_session.client("cloudtrail").get_trail_status(Name=TEST_TRAIL)
     actual_is_logging = resp.get("IsLogging")

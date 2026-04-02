@@ -2,7 +2,13 @@
 
 from __future__ import annotations
 
-from .constants import _MDB_TARGET, INT_ACL_NAME, INT_CLUSTER_NAME, INT_SNAPSHOT_NAME, INT_USER_NAME
+from .constants import (
+    _MDB_TARGET,
+    INT_ACL_NAME,
+    INT_CLUSTER_NAME,
+    INT_SNAPSHOT_NAME,
+    INT_USER_NAME,
+)
 
 
 class MemorydbTestClient:
@@ -17,7 +23,9 @@ class MemorydbTestClient:
         )
 
     def create_snapshot(
-        self, snapshot_name: str = INT_SNAPSHOT_NAME, cluster_name: str = INT_CLUSTER_NAME
+        self,
+        snapshot_name: str = INT_SNAPSHOT_NAME,
+        cluster_name: str = INT_CLUSTER_NAME,
     ) -> None:
         self._client.post(
             "/",
@@ -38,7 +46,9 @@ class MemorydbTestClient:
 
     def create_acl(self, acl_name: str = INT_ACL_NAME) -> None:
         self._client.post(
-            "/", headers={"X-Amz-Target": f"{_MDB_TARGET}.CreateACL"}, json={"ACLName": acl_name}
+            "/",
+            headers={"X-Amz-Target": f"{_MDB_TARGET}.CreateACL"},
+            json={"ACLName": acl_name},
         )
 
     def get_cluster_arn(self, name: str = INT_CLUSTER_NAME) -> str:

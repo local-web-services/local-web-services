@@ -14,7 +14,9 @@ def start_compaction(lws_session, world):
         resp = lws_session.client("s3tables").get_table_bucket(tableBucketARN=TEST_BUCKET)
         actual_arn = resp.get("arn", TEST_BUCKET)
         world["result"] = lws_session.client("s3tables").start_table_bucket_maintenance(
-            tableBucketARN=actual_arn, type="icebergCompaction", value={"status": "enabled"}
+            tableBucketARN=actual_arn,
+            type="icebergCompaction",
+            value={"status": "enabled"},
         )
         world["error"] = None
     except (ClientError, Exception) as exc:

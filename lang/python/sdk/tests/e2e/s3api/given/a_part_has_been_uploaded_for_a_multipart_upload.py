@@ -13,5 +13,9 @@ def a_part_has_been_uploaded_for_a_multipart_upload(lws_session):
     S3apiTestClient(lws_session).create_bucket()
     resp = S3apiTestClient(lws_session).create_multipart_upload(Bucket=TEST_BUCKET, Key=TEST_KEY)
     S3apiTestClient(lws_session).upload_part(
-        Bucket=TEST_BUCKET, Key=TEST_KEY, UploadId=resp["UploadId"], PartNumber=1, Body=TEST_BODY
+        Bucket=TEST_BUCKET,
+        Key=TEST_KEY,
+        UploadId=resp["UploadId"],
+        PartNumber=1,
+        Body=TEST_BODY,
     )

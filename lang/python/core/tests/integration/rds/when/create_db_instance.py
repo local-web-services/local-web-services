@@ -12,6 +12,7 @@ from ..constants import INT_DB_INSTANCE, _store
 @when('a "rds" "instance" is created')
 def create_db_instance(client: TestClient, world: dict):
     r = RdsTestClient(client).post(
-        "CreateDBInstance", {"DBInstanceIdentifier": INT_DB_INSTANCE, "Engine": "postgres"}
+        "CreateDBInstance",
+        {"DBInstanceIdentifier": INT_DB_INSTANCE, "Engine": "postgres"},
     )
     _store(world, r)

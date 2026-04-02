@@ -1,4 +1,4 @@
-"""When: a route is added to a fake server"""
+"""When: a "route" is added to a "fake" "server" """
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from ..constants import (
 )
 
 
-@when("a route is added to a fake server")
+@when('a "route" is added to a "fake" "server"')
 def add_route_to_fake_server(lws_session, world):
     try:
         world["result"] = lws_session.client("fake").add_route(

@@ -6,6 +6,6 @@ from pytest_bdd import given
 
 
 @given('the "api gateway" "resource" slot is unallocated')
-@given('a "api gateway" "resource" slot is available')
+@given('a "api gateway" "resource" "slot" was "available"')
 def resource_slot_unallocated():
     """No-op: fresh state has no allocated resource slots."""

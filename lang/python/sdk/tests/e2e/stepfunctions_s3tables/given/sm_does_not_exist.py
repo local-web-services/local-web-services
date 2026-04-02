@@ -1,4 +1,4 @@
-"""Given: the table did not exist"""
+"""Given: the "s3 tables" "table" did not exist"""
 
 from __future__ import annotations
 

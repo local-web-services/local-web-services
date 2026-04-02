@@ -15,7 +15,12 @@ class SqsTestClient:
 
     def send_message(self, queue_url: str = QUEUE_URL) -> None:
         r = self._client.post(
-            "/", data={"Action": "SendMessage", "QueueUrl": queue_url, "MessageBody": TEST_MESSAGE}
+            "/",
+            data={
+                "Action": "SendMessage",
+                "QueueUrl": queue_url,
+                "MessageBody": TEST_MESSAGE,
+            },
         )
         assert r.status_code == 200, f"Expected {200!r} but got {r.status_code!r}"
 

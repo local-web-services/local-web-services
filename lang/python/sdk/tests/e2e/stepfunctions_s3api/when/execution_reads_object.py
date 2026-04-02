@@ -36,7 +36,8 @@ def execution_reads_object(lws_session, world):
         pass
     try:
         lws_session.client("stepfunctions").update_state_machine(
-            stateMachineArn=_sm_arn(), definition=_s3_get_object_definition(TEST_BUCKET, TEST_KEY)
+            stateMachineArn=_sm_arn(),
+            definition=_s3_get_object_definition(TEST_BUCKET, TEST_KEY),
         )
     except Exception:
         pass

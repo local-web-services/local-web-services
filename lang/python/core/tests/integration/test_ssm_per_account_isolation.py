@@ -33,7 +33,12 @@ class TestSsmPerAccountIsolation:
         registry = PerAccountStateRegistry(_SsmState)
         app, _ = create_ssm_app(registry=registry)
         ssm_client = TestClient(app, raise_server_exceptions=False)
-        _ssm_post(ssm_client, "PutParameter", {"Name": "/my/param", "Value": "val-a"}, _TOKEN_A)
+        _ssm_post(
+            ssm_client,
+            "PutParameter",
+            {"Name": "/my/param", "Value": "val-a"},
+            _TOKEN_A,
+        )
 
         # Act
         actual_status, actual_body = _ssm_post(
@@ -50,7 +55,12 @@ class TestSsmPerAccountIsolation:
         registry = PerAccountStateRegistry(_SsmState)
         app, _ = create_ssm_app(registry=registry)
         ssm_client = TestClient(app, raise_server_exceptions=False)
-        _ssm_post(ssm_client, "PutParameter", {"Name": "/my/param", "Value": "val-a"}, _TOKEN_A)
+        _ssm_post(
+            ssm_client,
+            "PutParameter",
+            {"Name": "/my/param", "Value": "val-a"},
+            _TOKEN_A,
+        )
 
         # Act
         actual_status, actual_body = _ssm_post(

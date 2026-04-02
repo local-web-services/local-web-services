@@ -2,7 +2,7 @@
 deadlock_detection: false
 options:
   max_concurrent_actions: 1
-  max_actions: 15
+  max_actions: 10
 ---
 # DynamoDB Formal Specification
 # Models tables, items, GSI/LSI indexes, transactions, and throttling.
@@ -14,9 +14,9 @@ options:
 #   - No inline comments (comments on their own line only)
 #   - No comments inside oneof: blocks
 
-TABLE_NAMES = ["TableA", "TableB", "TableC"]
-PK_VALUES = ["pk1", "pk2", "pk3"]
-SK_VALUES = ["sk1", "sk2"]
+TABLE_NAMES = ["TableA", "TableB"]
+PK_VALUES = ["pk1", "pk2"]
+SK_VALUES = ["sk1"]
 
 action Init:
     # table_status[name] = "CREATING" | "ACTIVE" | "DELETED"

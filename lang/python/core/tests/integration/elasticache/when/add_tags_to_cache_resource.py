@@ -15,7 +15,10 @@ def add_tags_to_cache_resource(client: TestClient, world):
     r = client.post(
         "/",
         headers={"X-Amz-Target": f"{_EC_TARGET}.AddTagsToResource"},
-        json={"ResourceName": arn, "Tags": [{"Key": INT_TAG_KEY, "Value": INT_TAG_VALUE}]},
+        json={
+            "ResourceName": arn,
+            "Tags": [{"Key": INT_TAG_KEY, "Value": INT_TAG_VALUE}],
+        },
     )
     if r.status_code < 300:
         world["result"] = r.json()

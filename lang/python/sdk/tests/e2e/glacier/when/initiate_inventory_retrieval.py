@@ -12,7 +12,9 @@ from ..constants import TEST_VAULT
 def initiate_inventory_retrieval(lws_session, world):
     try:
         world["result"] = lws_session.client("glacier").initiate_job(
-            accountId="-", vaultName=TEST_VAULT, jobParameters={"Type": "inventory-retrieval"}
+            accountId="-",
+            vaultName=TEST_VAULT,
+            jobParameters={"Type": "inventory-retrieval"},
         )
         world["error"] = None
     except (ClientError, Exception) as exc:

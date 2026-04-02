@@ -1,11 +1,11 @@
-"""Then: matching items will be returned"""
+"""Then: matching "dynamodb" "item"s will be returned"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("matching items will be returned")
+@then('matching "dynamodb" "item"s will be returned')
 def matching_items_returned_then(world):
     expected_field = "Items"
     actual_result = world["result"]

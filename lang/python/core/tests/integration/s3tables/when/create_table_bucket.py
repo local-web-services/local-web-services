@@ -1,4 +1,4 @@
-"""When: a "s3 tables" "table" s3 tables bucket is created"""
+"""When: a "s3 tables" "bucket" is created"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import INT_BUCKET
 
 
-@when('a "s3 tables" "table" s3 tables bucket is created')
+@when('a "s3 tables" "bucket" is created')
 def create_table_bucket(client: TestClient, world: dict):
     r = client.put("/buckets", json={"name": INT_BUCKET})
     if r.status_code < 300:

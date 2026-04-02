@@ -9,6 +9,7 @@ from ..client import StsTestClient
 
 
 @when("the sts caller identity is retrieved with a session token")
+@when('the "sts" "caller identity" is retrieved with a session token')
 def the_sts_caller_identity_is_retrieved_with_a_session_token(lws_session, world):
     try:
         session_token = world.get("session_token")

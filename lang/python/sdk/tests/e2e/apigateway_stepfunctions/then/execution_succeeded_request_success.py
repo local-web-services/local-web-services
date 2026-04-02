@@ -1,11 +1,13 @@
-"""Then: the "step functions" "execution" will be "SUCCEEDED" and the request will be "SUCCESS" """
+"""Then: the "step functions" "execution" will be "SUCCEEDED" and the "api gateway" "request" will be "SUCCESS" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the "step functions" "execution" will be "SUCCEEDED" and the request will be "SUCCESS"')
+@then(
+    'the "step functions" "execution" will be "SUCCEEDED" and the "api gateway" "request" will be "SUCCESS"'
+)
 def execution_succeeded_request_success(world):
     expected_status = 200
     actual_status = world.get("invoke_status")

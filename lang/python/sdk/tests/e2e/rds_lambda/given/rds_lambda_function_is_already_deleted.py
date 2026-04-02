@@ -1,4 +1,4 @@
-"""Given: the function is already "DELETED" """
+"""Given: the "lambda" "function" is already "DELETED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import RdsLambdaTestClient
 from ..constants import TEST_FUNC
 
 
-@given('the function is already "DELETED"')
+@given('the "lambda" "function" is already "DELETED"')
 def rds_lambda_function_is_already_deleted(lws_session, world):
     try:
         RdsLambdaTestClient(lws_session).create_function()

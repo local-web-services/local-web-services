@@ -1,4 +1,4 @@
-"""Given: the bus did not exist or was "ACTIVE" """
+"""Given: the "eventbridge" "bus" did not exist or was "ACTIVE" """
 
 from __future__ import annotations
 

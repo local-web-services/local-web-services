@@ -1,10 +1,10 @@
-"""Then: every database instance has a valid status"""
+"""Then: every "rds" "instance" has a valid status"""
 
 from __future__ import annotations
 
 from pytest_bdd import step
 
 
-@step("every database instance has a valid status")
+@step('every "rds" "instance" has a valid status')
 def every_db_instance_has_valid_status():
     """No-op: instance status validity is an internal invariant; always passes."""

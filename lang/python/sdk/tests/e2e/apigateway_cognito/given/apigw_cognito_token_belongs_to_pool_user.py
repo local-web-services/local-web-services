@@ -1,4 +1,4 @@
-"""Given: the token belongs to a "CONFIRMED" user in the "api gateway" "API"'s configured pool"""
+"""Given: the "cognito" "token" belongs to a "CONFIRMED" "cognito" "user" in the "api gateway" "API"'s configured pool"""
 
 from __future__ import annotations
 

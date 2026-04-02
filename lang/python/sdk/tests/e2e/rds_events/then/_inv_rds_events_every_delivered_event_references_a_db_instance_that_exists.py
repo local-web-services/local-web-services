@@ -1,10 +1,10 @@
-"""Then: every "DELIVERED" event references a "DB" instance that exists"""
+"""Then: every "DELIVERED" "eventbridge" "event" references an "rds" "DB instance" that exists"""
 
 from __future__ import annotations
 
 from pytest_bdd import step
 
 
-@step('every "DELIVERED" event references a "DB" instance that exists')
+@step('every "DELIVERED" "eventbridge" "event" references an "rds" "DB instance" that exists')
 def _inv_rds_events_every_delivered_event_references_a_db_instance_that_exists():
     """Invariant step: trivially satisfied in isolated test context."""

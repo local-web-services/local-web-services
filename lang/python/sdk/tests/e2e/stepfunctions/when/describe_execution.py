@@ -1,4 +1,4 @@
-"""When: an execution is described"""
+"""When: a "step functions" "execution" is described"""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from botocore.exceptions import ClientError
 from pytest_bdd import when
 
 
-@when("an execution is described")
+@when('a "step functions" "execution" is described')
 def describe_execution(lws_session, world):
     try:
         execution_arn = world.get("execution_arn", "")

@@ -12,7 +12,11 @@ from ..constants import INT_BUCKET, INT_NAMESPACE, INT_TABLE
 def table_is_deleted_and_snapshots_deleted(client: TestClient):
     r = client.get(
         "/get-table",
-        params={"tableBucketARN": INT_BUCKET, "namespace": INT_NAMESPACE, "name": INT_TABLE},
+        params={
+            "tableBucketARN": INT_BUCKET,
+            "namespace": INT_NAMESPACE,
+            "name": INT_TABLE,
+        },
     )
     expected_status_code = 404
     assert (

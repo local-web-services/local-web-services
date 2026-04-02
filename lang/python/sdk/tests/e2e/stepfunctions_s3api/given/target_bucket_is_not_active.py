@@ -1,4 +1,4 @@
-"""Given: the target bucket was not "ACTIVE" """
+"""Given: the target "s3" "bucket" was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsS3apiTestClient
 from ..constants import TEST_BUCKET
 
 
-@given('the target bucket was not "ACTIVE"')
+@given('the target "s3" "bucket" was not "ACTIVE"')
 def target_bucket_is_not_active(lws_session, world):
     try:
         StepfunctionsS3apiTestClient(lws_session)._s3.delete_bucket(Bucket=TEST_BUCKET)

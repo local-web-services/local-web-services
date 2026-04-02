@@ -29,7 +29,9 @@ def _has_decorator(node: ast.FunctionDef | ast.AsyncFunctionDef, name: str) -> b
     return False
 
 
-def _get_methods(cls: ast.ClassDef) -> dict[str, ast.FunctionDef | ast.AsyncFunctionDef]:
+def _get_methods(
+    cls: ast.ClassDef,
+) -> dict[str, ast.FunctionDef | ast.AsyncFunctionDef]:
     methods = {}
     for node in ast.iter_child_nodes(cls):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -37,7 +39,9 @@ def _get_methods(cls: ast.ClassDef) -> dict[str, ast.FunctionDef | ast.AsyncFunc
     return methods
 
 
-def _get_return_annotation_name(node: ast.FunctionDef | ast.AsyncFunctionDef) -> str | None:
+def _get_return_annotation_name(
+    node: ast.FunctionDef | ast.AsyncFunctionDef,
+) -> str | None:
     ann = node.returns
     if isinstance(ann, ast.Name):
         return ann.id

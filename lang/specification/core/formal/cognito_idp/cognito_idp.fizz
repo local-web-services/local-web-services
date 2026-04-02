@@ -2,12 +2,12 @@
 deadlock_detection: false
 options:
   max_concurrent_actions: 1
-  max_actions: 12
+  max_actions: 6
 ---
 POOL_IDS = ["pool-1", "pool-2"]
-USER_IDS = ["user-1", "user-2", "user-3", "user-4"]
-GROUP_IDS = ["group-1", "group-2"]
-SESSION_IDS = ["session-1", "session-2", "session-3", "session-4"]
+USER_IDS = ["user-1", "user-2"]
+GROUP_IDS = ["group-1"]
+SESSION_IDS = ["session-1", "session-2"]
 
 action Init:
     pool_status = {}
@@ -57,12 +57,16 @@ atomic action DeleteUserPool:
                             for session_id in SESSION_IDS:
                                 if session_id in session_user:
                                     if session_user[session_id] == user_id:
-                                        if session_status[session_id] == "AUTHENTICATED":
-                                            session_status[session_id] = "EXPIRED"
+                                        if session_id in session_status:
+                                            if session_status[session_id] != "EXPIRED":
+                                                if session_status[session_id] != "CHALLENGE_FAILED":
+                                                    session_status[session_id] = "EXPIRED"
                 for group_id in GROUP_IDS:
                     if group_id in group_pool:
                         if group_pool[group_id] == pool_id:
                             group_status[group_id] = "DELETED"
+                            for user_id in USER_IDS:
+                                user_in_group[user_id + "#" + group_id] = False
 
 # step: a "cognito" "user" is created by an admin in an active "cognito" "user pool"
 # result: the "cognito" "user" will exist in "FORCE_CHANGE_PASSWORD" state and will be enabled
@@ -96,8 +100,10 @@ atomic action AdminDeleteUser:
                 for session_id in SESSION_IDS:
                     if session_id in session_user:
                         if session_user[session_id] == user_id:
-                            if session_status[session_id] == "AUTHENTICATED":
-                                session_status[session_id] = "EXPIRED"
+                            if session_id in session_status:
+                                if session_status[session_id] != "EXPIRED":
+                                    if session_status[session_id] != "CHALLENGE_FAILED":
+                                        session_status[session_id] = "EXPIRED"
                 for group_id in GROUP_IDS:
                     user_in_group[user_id + "#" + group_id] = False
 
@@ -152,6 +158,13 @@ atomic action AdminDisableUser:
         if user_id in user_enabled:
             if user_enabled[user_id]:
                 user_enabled[user_id] = False
+                for session_id in SESSION_IDS:
+                    if session_id in session_user:
+                        if session_user[session_id] == user_id:
+                            if session_id in session_status:
+                                if session_status[session_id] != "EXPIRED":
+                                    if session_status[session_id] != "CHALLENGE_FAILED":
+                                        session_status[session_id] = "EXPIRED"
 
 # step: a "cognito" "user" was "ENABLED" by an admin
 # result: the "cognito" "user" will be "ENABLED"

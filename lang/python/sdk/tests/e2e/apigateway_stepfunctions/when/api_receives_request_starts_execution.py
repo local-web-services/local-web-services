@@ -18,7 +18,8 @@ def api_receives_request_starts_execution(lws_session, world):
     try:
         api_id = world.get("api_id") or ApigatewayStepfunctionsTestClient(lws_session).get_api_id()
         resp = ApigatewayStepfunctionsTestClient(lws_session).invoke_api(
-            api_id, {"stateMachineArn": _sm_arn(), "input": json.dumps({"key": "value"})}
+            api_id,
+            {"stateMachineArn": _sm_arn(), "input": json.dumps({"key": "value"})},
         )
         world["result"] = resp
         world["invoke_status"] = resp["status_code"]

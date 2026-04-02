@@ -1,11 +1,11 @@
-"""Then: the "documentdb" "INSTANCE" will be in "DELETING" state"""
+"""Then: the "documentdb" "instance" will be in "DELETING" state"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the "documentdb" "INSTANCE" will be in "DELETING" state')
+@then('the "documentdb" "instance" will be in "DELETING" state')
 def instance_is_deleting_then(world):
     expected_error = None
     actual_error = world["error"]

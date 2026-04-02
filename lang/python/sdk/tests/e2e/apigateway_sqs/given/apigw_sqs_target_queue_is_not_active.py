@@ -1,4 +1,4 @@
-"""Given: the target queue was not "ACTIVE" """
+"""Given: the target "sqs" "queue" was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import ApigatewaySqsTestClient
 from ..constants import TEST_QUEUE
 
 
-@given('the target queue was not "ACTIVE"')
+@given('the target "sqs" "queue" was not "ACTIVE"')
 def apigw_sqs_target_queue_is_not_active(lws_session, world):
     try:
         url = lws_session.queue_url(TEST_QUEUE)

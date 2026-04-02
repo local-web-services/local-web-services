@@ -1,4 +1,4 @@
-"""Given: the state machine is already "DELETED" """
+"""Given: the "step functions" "state machine" is already "DELETED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaStepfunctionsTestClient
 from ..constants import _sm_arn
 
 
-@given('the state machine is already "DELETED"')
+@given('the "step functions" "state machine" is already "DELETED"')
 def sm_is_already_deleted(lws_session, world):
     try:
         LambdaStepfunctionsTestClient(lws_session).create_sm()

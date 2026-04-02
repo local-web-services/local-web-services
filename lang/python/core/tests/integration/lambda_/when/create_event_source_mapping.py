@@ -1,4 +1,4 @@
-"""When: a "lambda" event source mapping is created"""
+"""When: a "lambda" "event source mapping" is created"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from starlette.testclient import TestClient
 from ..client import LambdaTestClient
 
 
-@when('a "lambda" event source mapping is created')
+@when('a "lambda" "event source mapping" is created')
 def create_event_source_mapping(client: TestClient, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

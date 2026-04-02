@@ -1,11 +1,11 @@
-"""Then: the list of executions will be returned"""
+"""Then: the list of "step functions" "execution"s will be returned"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then("the list of executions will be returned")
+@then('the list of "step functions" "execution"s will be returned')
 def list_of_executions_returned(world):
     assert world["error"] is None, f"Expected list_executions to succeed but got: {world['error']}"
     assert "executions" in world["result"], "Expected 'executions' in response"

@@ -1,4 +1,4 @@
-"""Given: the rotation function was not "ACTIVE" """
+"""Given: the rotation "lambda" "function" was not "ACTIVE" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import SecretsmanagerLambdaTestClient
 from ..constants import TEST_FUNC
 
 
-@given('the rotation function was not "ACTIVE"')
+@given('the rotation "lambda" "function" was not "ACTIVE"')
 def sm_lambda_function_is_not_active_given(lws_session, world):
     try:
         SecretsmanagerLambdaTestClient(lws_session)._lambda.delete_function(FunctionName=TEST_FUNC)

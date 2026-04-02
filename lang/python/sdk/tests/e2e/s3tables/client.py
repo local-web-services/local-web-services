@@ -29,7 +29,10 @@ class S3tablesTestClient:
         if bucket_arn is None:
             bucket_arn = self.get_bucket_arn()
         self._client.create_table(
-            tableBucketARN=bucket_arn, namespace=namespace, name=table_name, format="ICEBERG"
+            tableBucketARN=bucket_arn,
+            namespace=namespace,
+            name=table_name,
+            format="ICEBERG",
         )
 
     def setup_bucket_and_namespace(self):

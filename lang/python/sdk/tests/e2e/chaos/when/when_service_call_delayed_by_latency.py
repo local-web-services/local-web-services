@@ -1,11 +1,11 @@
-"""When: a service call is delayed by chaos latency injection"""
+"""When: a "service" call is delayed by "chaos" "latency" injection"""
 
 from __future__ import annotations
 
 from pytest_bdd import when
 
 
-@when("a service call is delayed by chaos latency injection")
+@when('a "service" call is delayed by "chaos" "latency" injection')
 def when_service_call_delayed_by_latency(lws_session, world):
     """Attempt a service call expected to be delayed by chaos latency injection."""
     import boto3

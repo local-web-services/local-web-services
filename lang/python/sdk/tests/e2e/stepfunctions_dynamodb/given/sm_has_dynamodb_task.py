@@ -1,4 +1,4 @@
-"""Given: the state machine had a DynamoDB task configured"""
+"""Given: the "step functions" "state machine" had a "dynamodb" task configured"""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from ..constants import (
 )
 
 
-@given("the state machine had a DynamoDB task configured")
+@given('the "step functions" "state machine" had a "dynamodb" task configured')
 def sm_has_dynamodb_task(lws_session):
     """Create a state machine with a DynamoDB PutItem task; update if it already exists."""
     try:

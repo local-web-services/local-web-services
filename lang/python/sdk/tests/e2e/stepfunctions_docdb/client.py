@@ -4,7 +4,14 @@ from __future__ import annotations
 
 import pytest
 
-from .constants import PASS_DEFINITION, ROLE_ARN, TEST_CLUSTER, TEST_INPUT, TEST_SM, _sm_arn
+from .constants import (
+    PASS_DEFINITION,
+    ROLE_ARN,
+    TEST_CLUSTER,
+    TEST_INPUT,
+    TEST_SM,
+    _sm_arn,
+)
 
 
 class StepfunctionsDocdbTestClient:

@@ -1,11 +1,13 @@
-"""Then: every state machine has a valid status ("ACTIVE", "DELETING", or "DELETED")"""
+"""Then: every "step functions" "state machine" has a valid status ("ACTIVE", "DELETING", or "DELETED")"""
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('every state machine has a valid status ("ACTIVE", "DELETING", or "DELETED")')
+@then(
+    'every "step functions" "state machine" has a valid status ("ACTIVE", "DELETING", or "DELETED")'
+)
 def every_sm_has_valid_status(lws_session):
     list_resp = lws_session.client("stepfunctions").list_state_machines()
     expected_statuses = {"ACTIVE", "DELETING", "DELETED"}

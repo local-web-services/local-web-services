@@ -10,6 +10,7 @@ from ..constants import TEST_ACCOUNT_ID
 
 
 @when("an sts role is assumed for an account")
+@when('an "sts" "role" is assumed for an account')
 def an_sts_role_is_assumed_for_an_account(lws_session, world):
     try:
         resp = StsTestClient(lws_session).assume_role()

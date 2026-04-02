@@ -7,6 +7,7 @@ from pytest_bdd import given
 from ..client import LambdaSecretsmanagerTestClient
 
 
+@given('the "secrets manager" "secret" was not "PENDING_DELETION"')
 @given('the "secretsmanager" "secret" is not pending deletion')
 def secret_is_not_pending_deletion(lws_session):
     LambdaSecretsmanagerTestClient(lws_session).create_secret()

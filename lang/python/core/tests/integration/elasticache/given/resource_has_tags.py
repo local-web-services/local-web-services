@@ -16,5 +16,8 @@ def resource_has_tags(client: TestClient):
     client.post(
         "/",
         headers={"X-Amz-Target": f"{_EC_TARGET}.AddTagsToResource"},
-        json={"ResourceName": arn, "Tags": [{"Key": INT_TAG_KEY, "Value": INT_TAG_VALUE}]},
+        json={
+            "ResourceName": arn,
+            "Tags": [{"Key": INT_TAG_KEY, "Value": INT_TAG_VALUE}],
+        },
     )

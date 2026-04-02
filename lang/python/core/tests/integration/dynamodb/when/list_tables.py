@@ -1,4 +1,4 @@
-"""When: all tables are listed"""
+"""When: all "dynamodb" "table"s are listed"""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from ..client import DynamodbTestClient
 from ..constants import _store
 
 
-@when("all tables are listed")
+@when('all "dynamodb" "table"s are listed')
 def list_tables(client: TestClient, world: dict):
     r = DynamodbTestClient(client).post("ListTables", {})
     _store(world, r)

@@ -9,6 +9,7 @@ from ..client import ServiceCatalogTestClient
 
 
 @given("a provisioned product with a known record exists")
+@given('a "service catalog" "provisioned product" with a known "service catalog" "record" exists')
 def a_provisioned_product_with_a_known_record_exists(lws_session, world):
     """Provision a product and store the RecordId for later steps."""
     client = ServiceCatalogTestClient(lws_session)

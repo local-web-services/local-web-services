@@ -1,4 +1,4 @@
-"""Given: the state machine has a Lambda task configured"""
+"""Given: the "step functions" "state machine" has a "lambda" task configured"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import StepfunctionsLambdaTestClient
 from ..constants import LAMBDA_DEFINITION, _sm_arn
 
 
-@given("the state machine has a Lambda task configured")
+@given('the "step functions" "state machine" has a "lambda" task configured')
 def sm_has_lambda_task_given(lws_session):
     try:
         StepfunctionsLambdaTestClient(lws_session).create_function()

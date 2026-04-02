@@ -1,4 +1,4 @@
-"""When: a S3 task is configured on the state machine"""
+"""When: an "s3" task is configured on the "step functions" "state machine" """
 
 from __future__ import annotations
 
@@ -6,10 +6,16 @@ import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import when
 
-from ..constants import TEST_BODY, TEST_BUCKET, TEST_KEY, _s3_put_object_definition, _sm_arn
+from ..constants import (
+    TEST_BODY,
+    TEST_BUCKET,
+    TEST_KEY,
+    _s3_put_object_definition,
+    _sm_arn,
+)
 
 
-@when("a S3 task is configured on the state machine")
+@when('an "s3" task is configured on the "step functions" "state machine"')
 def configure_s3_task(lws_session, world):
     if world.get("_skip"):
         pytest.skip(world["_skip"])

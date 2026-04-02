@@ -1,4 +1,4 @@
-"""When: an "elasticache" parameter group is deleted"""
+"""When: an "elasticache" "parameter group" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from ..constants import _EC_TARGET, INT_PARAM_GROUP_ID
 
 
-@when('an "elasticache" parameter group is deleted')
+@when('an "elasticache" "parameter group" is deleted')
 def delete_cache_parameter_group(client: TestClient, world):
     r = client.post(
         "/",

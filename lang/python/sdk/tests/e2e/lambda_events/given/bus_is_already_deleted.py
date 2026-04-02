@@ -1,4 +1,4 @@
-"""Given: the bus is already "DELETED" """
+"""Given: the "eventbridge" "bus" is already "DELETED" """
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import LambdaEventsTestClient
 from ..constants import TEST_BUS
 
 
-@given('the bus is already "DELETED"')
+@given('the "eventbridge" "bus" is already "DELETED"')
 def bus_is_already_deleted(lws_session, world):
     try:
         LambdaEventsTestClient(lws_session)._events.delete_event_bus(Name=TEST_BUS)

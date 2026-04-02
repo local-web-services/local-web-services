@@ -1,4 +1,4 @@
-"""Given: the bucket was "ACTIVE" """
+"""Given: the "s3" "bucket" was "ACTIVE" """
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Given: the event source mapping already existed"""
+"""Given: the "lambda" "event source mapping" already existed"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from ..client import DynamodbLambdaTestClient
 from ..constants import TEST_TABLE
 
 
-@given("the event source mapping already existed")
+@given('the "lambda" "event source mapping" already existed')
 def dynamodb_lambda_esm_already_exists(lws_session, world):
     try:
         DynamodbLambdaTestClient(lws_session)._dynamodb.delete_table(TableName=TEST_TABLE)

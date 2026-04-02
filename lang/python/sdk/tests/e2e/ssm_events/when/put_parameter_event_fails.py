@@ -1,4 +1,4 @@
-"""When: a parameter is created but the "CREATED" event delivery fails because the bus is deleted"""
+"""When: a "ssm" "parameter" is created but the "CREATED" "eventbridge" "event" delivery fails because the "eventbridge" "bus" is deleted"""
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from pytest_bdd import when
 from ..constants import TEST_PARAM, TEST_VALUE
 
 
-@when('a parameter is created but the "CREATED" event delivery fails because the bus is deleted')
+@when(
+    'a "ssm" "parameter" is created but the "CREATED" "eventbridge" "event" delivery fails because the "eventbridge" "bus" is deleted'
+)
 def put_parameter_event_fails(lws_session, world):
     try:
         world["result"] = lws_session.client("ssm").put_parameter(

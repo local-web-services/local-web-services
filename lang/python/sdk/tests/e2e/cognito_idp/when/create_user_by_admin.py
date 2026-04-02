@@ -13,7 +13,9 @@ def create_user_by_admin(lws_session, world):
     try:
         pool_id = world.get("pool_id", "")
         resp = lws_session.client("cognito-idp").admin_create_user(
-            UserPoolId=pool_id, Username=TEST_USERNAME, TemporaryPassword=TEST_TEMP_PASSWORD
+            UserPoolId=pool_id,
+            Username=TEST_USERNAME,
+            TemporaryPassword=TEST_TEMP_PASSWORD,
         )
         world["result"] = resp
         world["username"] = TEST_USERNAME

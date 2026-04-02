@@ -6,6 +6,6 @@ import pytest
 from pytest_bdd import given
 
 
-@given('the mapping was not "DELETING"')
+@given('the "lambda" "event source mapping" was not "DELETING"')
 def mapping_is_not_deleting():
     pytest.skip("Cannot observe ESM state in lws without real event source")

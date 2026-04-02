@@ -30,5 +30,6 @@ class DynamodbTestClient:
 
     def put_item(self, name=TEST_TABLE):
         self._client.put_item(
-            TableName=name, Item={TEST_PK: {"S": TEST_ITEM_KEY}, "data": {"S": TEST_ATTR_VAL}}
+            TableName=name,
+            Item={TEST_PK: {"S": TEST_ITEM_KEY}, "data": {"S": TEST_ATTR_VAL}},
         )

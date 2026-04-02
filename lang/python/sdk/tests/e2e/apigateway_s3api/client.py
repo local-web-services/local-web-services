@@ -61,7 +61,10 @@ class ApigatewayS3apiTestClient:
         port = self._session.port_for("apigateway")
         url = f"http://127.0.0.1:{port}/{api_id}/{_STAGE}/"
         req = urllib.request.Request(
-            url, data=body, headers={"Content-Type": "application/octet-stream"}, method="PUT"
+            url,
+            data=body,
+            headers={"Content-Type": "application/octet-stream"},
+            method="PUT",
         )
         try:
             with urllib.request.urlopen(req) as resp:

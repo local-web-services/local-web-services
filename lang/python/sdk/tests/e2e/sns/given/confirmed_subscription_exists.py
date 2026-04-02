@@ -1,4 +1,4 @@
-"""Given: a confirmed subscription existed for the "sns" "topic" """
+"""Given: a "sns" "subscription" was "CONFIRMED" for the "sns" "topic" """
 
 from __future__ import annotations
 

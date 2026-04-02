@@ -1,4 +1,4 @@
-"""Given: the cluster did not already exist"""
+"""Given: the "elasticache" "cluster" did not already exist"""
 
 from __future__ import annotations
 

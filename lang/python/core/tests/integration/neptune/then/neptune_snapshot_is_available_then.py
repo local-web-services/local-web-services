@@ -1,11 +1,11 @@
-"""Then: the "documentdb" "SNAPSHOT" will be "AVAILABLE" """
+"""Then: the "documentdb" "snapshot" will be "AVAILABLE" """
 
 from __future__ import annotations
 
 from pytest_bdd import then
 
 
-@then('the "documentdb" "SNAPSHOT" will be "AVAILABLE"')
+@then('the "documentdb" "snapshot" will be "AVAILABLE"')
 def neptune_snapshot_is_available_then(world: dict):
     actual_result = world["result"]
     assert (
