@@ -13,7 +13,9 @@ Prepare a pattern discovery report for OpenSpec change: $ARGUMENTS
 
 1. Read `openspec/changes/$ARGUMENTS/tasks.md` to understand the full scope of work.
 
-2. Identify the implementation type (new provider, SDK wiring, middleware, E2E suite, etc.) and find 1–2 existing implementations of the same type to use as a reference:
+2. Scan `openspec/adrs/` for existing ADRs whose topic overlaps with this change. Read `adr.md` for any that seem relevant. Note their numbers and titles for the report.
+
+3. Identify the implementation type (new provider, SDK wiring, middleware, E2E suite, etc.) and find 1–2 existing implementations of the same type to use as a reference:
    - **New simple provider** → the only file to edit is the service's own `routes.py`. Add a `DESCRIPTOR = ServiceDescriptor(name=..., factory=...)` constant and the service is auto-discovered. Do NOT list `inprocess.py`, `_SERVICE_NAMES`, `_build_service_apps`, or `_ldk_providers_extended.py` as edit points.
    - New complex provider → read an existing provider's `routes.py`, unit tests, integration tests, and E2E suite (e.g. `lang/python/core/src/lws/providers/sqs/`)
    - **New cross-cutting concern** → add a field to `ProviderContext` in `lang/python/core/src/lws/providers/_shared/provider_context.py`. Do NOT modify individual `create_*_app` factory signatures.
@@ -21,13 +23,16 @@ Prepare a pattern discovery report for OpenSpec change: $ARGUMENTS
    - Shared middleware → read an existing middleware file and its wiring across provider routes
    - E2E suite → read an existing suite's `given/`, `when/`, `then/`, `conftest.py`, `constants.py`
 
-3. For every file that will be **modified** (not created), check its current line count with `wc -l`. Flag any file within 50 lines of the 500-line architecture limit.
+4. For every file that will be **modified** (not created), check its current line count with `wc -l`. Flag any file within 50 lines of the 500-line architecture limit.
 
-4. Group the tasks from `tasks.md` into parallel workstreams — identify which groups have no dependencies on each other and can run concurrently.
+5. Group the tasks from `tasks.md` into parallel workstreams — identify which groups have no dependencies on each other and can run concurrently.
 
 ## Output
 
 Produce a structured report with these sections:
+
+### Relevant ADRs
+List any ADRs found in `openspec/adrs/` whose topic overlaps with this change. For each: number, title, one-sentence summary of the constraint or decision it records, and whether it directly affects any task in this change. If no ADRs exist yet, say so.
 
 ### Reference implementations used
 List the files you read and why they were chosen.

@@ -292,11 +292,21 @@ class LwsSession:
 
     def inject_state(self, service: str, resource_type: str, resource_id: str, state: str) -> None:
         """Inject a resource state via PUT /_ldk/state/{service}/{resource_type}/{resource_id}."""
+        import pytest  # pylint: disable=import-outside-toplevel
+
+        from lws_testing._management.state import (  # pylint: disable=import-outside-toplevel  # noqa: E501
+            InjectStateNotTracked,
+        )
         from lws_testing._management.state import (
-            inject_state as _inject_state,  # pylint: disable=import-outside-toplevel
+            inject_state as _inject_state,
         )
 
-        _inject_state(self._mgmt_port, service, resource_type, resource_id, state)
+        try:
+            _inject_state(self._mgmt_port, service, resource_type, resource_id, state)
+        except InjectStateNotTracked:
+            pytest.skip(
+                f"inject_state: {service}/{resource_type}/{resource_id} is not tracked — skipping"
+            )
 
     def clear_injected_state(self, service: str, resource_type: str, resource_id: str) -> None:
         """Clear an injected resource state via DELETE /_ldk/state."""

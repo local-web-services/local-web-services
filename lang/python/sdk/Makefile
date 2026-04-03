@@ -55,13 +55,13 @@ test-architecture: ## Run architecture constraint tests
 
 # Pass SUITE=tests/e2e/<name> on the command line to target one suite.
 test-e2e-minimal: ## Run @minimal e2e scenarios (requires Docker)
-	uv run pytest $(SUITE) -v -m "minimal and not internal and not lifecycle and not capacity" --junitxml=test-results/junit-minimal.xml
+	uv run pytest $(SUITE) -v -m minimal --junitxml=test-results/junit-minimal.xml
 
 test-e2e-guard: ## Run @guard e2e scenarios (requires Docker)
-	uv run pytest $(SUITE) -v -m "guard and not internal and not lifecycle and not capacity" --junitxml=test-results/junit-guard.xml
+	uv run pytest $(SUITE) -v -m guard --junitxml=test-results/junit-guard.xml
 
 test-e2e-sequence: ## Run @sequence e2e scenarios (requires Docker)
-	uv run pytest $(SUITE) -v -m "sequence and not internal and not lifecycle and not capacity" --junitxml=test-results/junit-sequence.xml
+	uv run pytest $(SUITE) -v -m sequence --junitxml=test-results/junit-sequence.xml
 
 # ── Aliases (backward-compatible) ─────────────────────────────────────────────
 
