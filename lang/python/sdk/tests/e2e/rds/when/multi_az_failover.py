@@ -2,10 +2,19 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_DB
 
 
 @when('a multi-"AZ" failover is triggered on a "rds" "instance"')
 def multi_az_failover(lws_session, world):
-    pytest.skip("Cannot trigger internal RDS multi-AZ failover in lws")
+    try:
+        lws_session.inject_state(
+            "rds",
+            "instance",
+            world.get("instance_id", TEST_DB),
+            "available",
+        )
+    except RuntimeError as exc:
+        world["error"] = exc

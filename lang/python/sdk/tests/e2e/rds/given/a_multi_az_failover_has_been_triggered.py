@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
+
+from ..constants import TEST_DB
 
 
 @given('a multi-"AZ" failover is triggered on a "rds" "instance"')
-def a_multi_az_failover_has_been_triggered():
-    pytest.skip("Cannot trigger internal RDS multi-AZ failover in lws")
+def a_multi_az_failover_has_been_triggered(lws_session):
+    lws_session.inject_state("rds", "instance", TEST_DB, "failing_over")

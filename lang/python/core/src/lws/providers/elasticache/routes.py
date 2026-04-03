@@ -140,7 +140,7 @@ async def _handle_delete_cache_cluster(
 
 
 async def _handle_modify_cache_cluster(
-    state: _ElastiCacheState, body: dict, _tracker: ResourceStateTracker
+    state: _ElastiCacheState, body: dict, tracker: ResourceStateTracker
 ) -> Response:
     cluster_id = body.get("CacheClusterId", "")
     cluster = state.clusters.get(cluster_id)
@@ -156,6 +156,12 @@ async def _handle_modify_cache_cluster(
         cluster.cache_node_type = body["CacheNodeType"]
     if "Engine" in body:
         cluster.engine = body["Engine"]
+
+    lc = tracker.config
+    if lc.enabled:
+        tracker.set_state(cluster_id, "MODIFYING")
+        if lc.modify_dwell_ms > 0:
+            tracker.schedule_transition(cluster_id, "ACTIVE", lc.modify_dwell_ms)
 
     return _json_response({"CacheCluster": _format_cache_cluster(cluster)})
 
@@ -225,7 +231,7 @@ async def _handle_describe_replication_groups(
 
 
 async def _handle_modify_replication_group(
-    state: _ElastiCacheState, body: dict, _tracker: ResourceStateTracker
+    state: _ElastiCacheState, body: dict, tracker: ResourceStateTracker
 ) -> Response:
     rg_id = body.get("ReplicationGroupId", "")
     rg = state.replication_groups.get(rg_id)
@@ -239,6 +245,13 @@ async def _handle_modify_replication_group(
         rg.description = body["ReplicationGroupDescription"]
     if "NotificationTopicArn" in body:
         rg.notification_topic_arn = body["NotificationTopicArn"]
+
+    lc = tracker.config
+    rg_tracker_key = f"rg:{rg_id}"
+    if lc.enabled:
+        tracker.set_state(rg_tracker_key, "MODIFYING")
+        if lc.modify_dwell_ms > 0:
+            tracker.schedule_transition(rg_tracker_key, "ACTIVE", lc.modify_dwell_ms)
 
     return _json_response({"ReplicationGroup": _format_replication_group(rg)})
 
@@ -420,6 +433,7 @@ def create_elasticache_app(
     if registry is not None:
         register_tracker(registry, "elasticache", "cluster", _tracker)
         register_tracker(registry, "elasticache", "replication-group", _tracker)
+        register_tracker(registry, "elasticache", "snapshot", _tracker)
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:

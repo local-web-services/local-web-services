@@ -187,7 +187,7 @@ async def _handle_delete_cluster(
 
 
 async def _handle_update_cluster(
-    state: _MemoryDBState, body: dict, _tracker: ResourceStateTracker
+    state: _MemoryDBState, body: dict, tracker: ResourceStateTracker
 ) -> Response:
     cluster_name = body.get("ClusterName", "")
     cluster = state.clusters.get(cluster_name)
@@ -201,6 +201,12 @@ async def _handle_update_cluster(
         cluster.node_type = body["NodeType"]
     if "NumShards" in body:
         cluster.num_shards = body["NumShards"]
+
+    lc = tracker.config
+    if lc.enabled:
+        tracker.set_state(cluster_name, "UPDATING")
+        if lc.modify_dwell_ms > 0:
+            tracker.schedule_transition(cluster_name, "ACTIVE", lc.modify_dwell_ms)
 
     return _json_response({"Cluster": _format_cluster(cluster)})
 
@@ -332,6 +338,9 @@ def create_memorydb_app(
     _tracker = ResourceStateTracker(_lc)
     if registry is not None:
         register_tracker(registry, "memorydb", "cluster", _tracker)
+        register_tracker(registry, "memorydb", "snapshot", _tracker)
+        register_tracker(registry, "memorydb", "user", _tracker)
+        register_tracker(registry, "memorydb", "acl", _tracker)
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:

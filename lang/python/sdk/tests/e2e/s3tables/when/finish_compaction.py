@@ -2,10 +2,19 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_TABLE
 
 
 @when('compaction finishes on a "s3 tables" "table"')
 def finish_compaction(lws_session, world):
-    pytest.skip("Cannot trigger internal table compaction completion in lws")
+    try:
+        lws_session.inject_state(
+            "s3tables",
+            "table",
+            world.get("table_id", TEST_TABLE),
+            "active",
+        )
+    except RuntimeError as exc:
+        world["error"] = exc

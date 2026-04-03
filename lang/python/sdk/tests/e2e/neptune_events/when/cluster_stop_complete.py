@@ -2,10 +2,19 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_CLUSTER
 
 
 @when('the "neptune" "cluster" finishes stopping')
 def cluster_stop_complete(lws_session, world):
-    pytest.skip("Cannot trigger internal Neptune cluster stop completion in lws")
+    try:
+        lws_session.inject_state(
+            "neptune",
+            "cluster",
+            world.get("cluster_id", TEST_CLUSTER),
+            "stopped",
+        )
+    except RuntimeError as exc:
+        world["error"] = exc
