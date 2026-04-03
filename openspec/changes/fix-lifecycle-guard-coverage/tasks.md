@@ -20,4 +20,4 @@
 
 - [x] 5.1 Run `make -C lang/python/sdk test-unit` — all unit tests pass
 - [x] 5.2 Run `make -C lang/python/sdk test-e2e-guard SUITE=tests/e2e/elasticache` locally to confirm the guard run collects lifecycle scenarios and skips (not fails) the ones that cannot inject state
-- [ ] 5.3 Confirm CI `python-sdk-test-e2e-guard` job recovers to ≥ 900 passing tests (close to the PR #60 baseline of 1030)
+- [x] 5.3 Confirm CI `python-sdk-test-e2e-guard` job recovers to ≥ 900 passing tests (close to the PR #60 baseline of 1030)
