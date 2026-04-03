@@ -2,10 +2,19 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_USER
 
 
 @when('a "memorydb" "user" update completes')
 def user_update_completes(lws_session, world):
-    pytest.skip("Cannot trigger internal MemoryDB user update completion in lws")
+    try:
+        lws_session.inject_state_unchecked(
+            "memorydb",
+            "user",
+            world.get("user_id", TEST_USER),
+            "available",
+        )
+    except RuntimeError as exc:
+        world["error"] = exc

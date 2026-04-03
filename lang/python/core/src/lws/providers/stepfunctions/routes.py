@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from fastapi import APIRouter, FastAPI, Request, Response
 
-from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_capacity import AwsCapacityConfig
@@ -27,6 +26,7 @@ from lws.providers._shared.aws_operation_fake import (
     AwsFakeConfig,
     AwsOperationFakeMiddleware,
 )
+from lws.providers._shared.provider_context import ProviderContext
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
 from lws.providers.sqs.provider import SqsProvider
 from lws.providers.stepfunctions._stepfunctions_helpers import (
@@ -463,7 +463,7 @@ def create_stepfunctions_app(
     capacity: AwsCapacityConfig | None = None,
     sqs_provider: SqsProvider | None = None,
     sqs_tracker: ResourceStateTracker | None = None,
-    cloudtrail_provider: ICloudTrail | None = None,
+    context: ProviderContext | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the Step Functions wire protocol.
 
@@ -496,5 +496,5 @@ def create_stepfunctions_app(
     if tracker_ref is not None:
         tracker_ref.append(sfn_router.tracker)
     app.include_router(sfn_router.router)
-    apply_cloudtrail_middleware(app, cloudtrail_provider, "stepfunctions")
+    apply_cloudtrail_middleware(app, context.cloudtrail if context else None, "stepfunctions")
     return app

@@ -2,10 +2,19 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_INSTANCE
 
 
 @when('a "neptune" "instance" modification completes')
 def instance_modification_completes(lws_session, world):
-    pytest.skip("Cannot trigger internal Neptune instance modification completion in lws")
+    try:
+        lws_session.inject_state_unchecked(
+            "neptune",
+            "instance",
+            world.get("instance_id", TEST_INSTANCE),
+            "available",
+        )
+    except RuntimeError as exc:
+        world["error"] = exc

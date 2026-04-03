@@ -2,10 +2,19 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_CLUSTER
 
 
 @when('a "memorydb" "cluster" update completes')
 def cluster_update_completes(lws_session, world):
-    pytest.skip("Cannot trigger internal MemoryDB cluster update completion in lws")
+    try:
+        lws_session.inject_state_unchecked(
+            "memorydb",
+            "cluster",
+            world.get("cluster_id", TEST_CLUSTER),
+            "available",
+        )
+    except RuntimeError as exc:
+        world["error"] = exc

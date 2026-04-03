@@ -12,7 +12,6 @@ from typing import Any
 
 from fastapi import FastAPI, Request, Response
 
-from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_capacity import AwsCapacityConfig
@@ -31,6 +30,7 @@ from lws.providers._shared.aws_operation_fake import (
     AwsFakeConfig,
     AwsOperationFakeMiddleware,
 )
+from lws.providers._shared.provider_context import ProviderContext
 from lws.providers.sns._sns_handlers import _ACTION_HANDLERS
 from lws.providers.sns.provider import SnsProvider
 from lws.providers.sqs.provider import SqsProvider
@@ -368,7 +368,7 @@ def create_sns_app(
     sqs_tracker: ResourceStateTracker | None = None,
     tracker_ref: list[ResourceStateTracker] | None = None,
     sns_capacity: AwsCapacityConfig | None = None,
-    cloudtrail_provider: ICloudTrail | None = None,
+    context: ProviderContext | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the SNS wire protocol.
 
@@ -400,5 +400,5 @@ def create_sns_app(
             request, provider, _lc, _tracker, sqs_capacity, sqs_provider, sqs_tracker, sns_capacity
         )
 
-    apply_cloudtrail_middleware(app, cloudtrail_provider, "sns")
+    apply_cloudtrail_middleware(app, context.cloudtrail if context else None, "sns")
     return app

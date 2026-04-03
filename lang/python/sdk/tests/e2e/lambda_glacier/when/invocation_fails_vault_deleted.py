@@ -22,4 +22,4 @@ def invocation_fails_vault_deleted(lws_session, world):
     except ClientError:
         pass
     # Act
-    lws_session.inject_state("lambda", "invocation", invocation_id, "FAILED")
+    lws_session.inject_state_unchecked("lambda", "invocation", invocation_id, "FAILED")

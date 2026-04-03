@@ -33,10 +33,9 @@ from lws.cli._ldk_providers_core import (  # noqa: F401  # pylint: disable=unuse
     _wire_remaining_providers,
 )
 from lws.cli._ldk_providers_extended import (  # noqa: F401  # pylint: disable=unused-import
-    _register_cloudformation_provider,
     _register_experimental_providers,
     _register_organizations_provider,
-    _register_service_catalog_provider,
+    _register_simple_providers,
     _register_ssm_secretsmanager_providers,
 )
 from lws.config.loader import LdkConfig
@@ -319,20 +318,12 @@ def _create_providers(  # pylint: disable=too-many-statements
         organizations_seed=organizations_seed,
     )
 
-    # 13. CloudFormation
-    _register_cloudformation_provider(
+    # 13. Auto-discovered simple services (cloudformation, servicecatalog, sts, etc.)
+    _register_simple_providers(
         providers,
         chaos_configs=chaos_configs,
         aws_fake_configs=aws_fake_configs,
-        cloudformation_port=ports["cloudformation"],
-    )
-
-    # 14. Service Catalog
-    _register_service_catalog_provider(
-        providers,
-        chaos_configs=chaos_configs,
-        aws_fake_configs=aws_fake_configs,
-        service_catalog_port=ports["servicecatalog"],
+        ports=ports,
     )
 
     # 15. Wire service providers into the StepFunctions engine

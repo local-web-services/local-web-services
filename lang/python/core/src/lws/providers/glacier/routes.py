@@ -11,12 +11,12 @@ import uuid
 
 from fastapi import FastAPI, Request, Response
 
-from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_capacity import AwsCapacityConfig, check_capacity
 from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
+from lws.providers._shared.provider_context import ProviderContext
 from lws.providers._shared.response_helpers import (
     json_response as _json_response,
 )
@@ -382,7 +382,7 @@ def _register_notification_routes(app: FastAPI, state: _GlacierState) -> None:
 def create_glacier_app(
     lifecycle: ResourceLifecycleConfig | None = None,
     capacity: AwsCapacityConfig | None = None,
-    cloudtrail_provider: ICloudTrail | None = None,
+    context: ProviderContext | None = None,
 ) -> tuple[FastAPI, _GlacierState]:
     """Create a FastAPI application that speaks the Glacier REST wire protocol."""
     _lc = lifecycle or ResourceLifecycleConfig()
@@ -398,5 +398,5 @@ def create_glacier_app(
     _register_multipart_routes(app, state, _capacity)
     _register_notification_routes(app, state)
 
-    apply_cloudtrail_middleware(app, cloudtrail_provider, "glacier")
+    apply_cloudtrail_middleware(app, context.cloudtrail if context else None, "glacier")
     return app, state

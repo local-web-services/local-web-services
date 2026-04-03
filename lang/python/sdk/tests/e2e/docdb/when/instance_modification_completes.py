@@ -2,10 +2,19 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_INSTANCE
 
 
 @when('a "documentdb" "instance" modification completes')
 def instance_modification_completes(lws_session, world):
-    pytest.skip("Cannot trigger internal DocumentDB instance modification completion in lws")
+    try:
+        lws_session.inject_state_unchecked(
+            "docdb",
+            "instance",
+            world.get("instance_id", TEST_INSTANCE),
+            "available",
+        )
+    except RuntimeError as exc:
+        world["error"] = exc

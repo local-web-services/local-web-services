@@ -2,10 +2,19 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_SNAPSHOT
 
 
 @when('an "elasticache" "snapshot" finishes creating')
 def snapshot_finishes_creating(lws_session, world):
-    pytest.skip("Cannot trigger internal ElastiCache snapshot creation completion in lws")
+    try:
+        lws_session.inject_state_unchecked(
+            "elasticache",
+            "snapshot",
+            world.get("snapshot_id", TEST_SNAPSHOT),
+            "available",
+        )
+    except RuntimeError as exc:
+        world["error"] = exc

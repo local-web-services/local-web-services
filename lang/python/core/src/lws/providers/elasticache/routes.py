@@ -10,7 +10,6 @@ from typing import Any
 
 from fastapi import FastAPI, Request, Response
 
-from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
@@ -20,6 +19,7 @@ from lws.providers._shared.aws_lifecycle import (
     TrackerRegistry,
     register_tracker,
 )
+from lws.providers._shared.provider_context import ProviderContext
 from lws.providers._shared.request_helpers import action_dispatch as _action_dispatch
 from lws.providers._shared.resource_container import ResourceContainerManager
 from lws.providers._shared.response_helpers import error_response as _error_response_base
@@ -140,7 +140,7 @@ async def _handle_delete_cache_cluster(
 
 
 async def _handle_modify_cache_cluster(
-    state: _ElastiCacheState, body: dict, _tracker: ResourceStateTracker
+    state: _ElastiCacheState, body: dict, tracker: ResourceStateTracker
 ) -> Response:
     cluster_id = body.get("CacheClusterId", "")
     cluster = state.clusters.get(cluster_id)
@@ -156,6 +156,12 @@ async def _handle_modify_cache_cluster(
         cluster.cache_node_type = body["CacheNodeType"]
     if "Engine" in body:
         cluster.engine = body["Engine"]
+
+    lc = tracker.config
+    if lc.enabled:
+        tracker.set_state(cluster_id, "MODIFYING")
+        if lc.modify_dwell_ms > 0:
+            tracker.schedule_transition(cluster_id, "ACTIVE", lc.modify_dwell_ms)
 
     return _json_response({"CacheCluster": _format_cache_cluster(cluster)})
 
@@ -225,7 +231,7 @@ async def _handle_describe_replication_groups(
 
 
 async def _handle_modify_replication_group(
-    state: _ElastiCacheState, body: dict, _tracker: ResourceStateTracker
+    state: _ElastiCacheState, body: dict, tracker: ResourceStateTracker
 ) -> Response:
     rg_id = body.get("ReplicationGroupId", "")
     rg = state.replication_groups.get(rg_id)
@@ -239,6 +245,13 @@ async def _handle_modify_replication_group(
         rg.description = body["ReplicationGroupDescription"]
     if "NotificationTopicArn" in body:
         rg.notification_topic_arn = body["NotificationTopicArn"]
+
+    lc = tracker.config
+    rg_tracker_key = f"rg:{rg_id}"
+    if lc.enabled:
+        tracker.set_state(rg_tracker_key, "MODIFYING")
+        if lc.modify_dwell_ms > 0:
+            tracker.schedule_transition(rg_tracker_key, "ACTIVE", lc.modify_dwell_ms)
 
     return _json_response({"ReplicationGroup": _format_replication_group(rg)})
 
@@ -409,7 +422,7 @@ def create_elasticache_app(
     container_manager: ResourceContainerManager | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
     registry: TrackerRegistry | None = None,
-    cloudtrail_provider: ICloudTrail | None = None,
+    context: ProviderContext | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the ElastiCache wire protocol."""
     app = FastAPI(title="LDK ElastiCache")
@@ -420,6 +433,7 @@ def create_elasticache_app(
     if registry is not None:
         register_tracker(registry, "elasticache", "cluster", _tracker)
         register_tracker(registry, "elasticache", "replication-group", _tracker)
+        register_tracker(registry, "elasticache", "snapshot", _tracker)
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:
@@ -427,5 +441,5 @@ def create_elasticache_app(
             request, state, _tracker, _ACTION_HANDLERS, "ElastiCache", _logger, _error_response
         )
 
-    apply_cloudtrail_middleware(app, cloudtrail_provider, "elasticache")
+    apply_cloudtrail_middleware(app, context.cloudtrail if context else None, "elasticache")
     return app

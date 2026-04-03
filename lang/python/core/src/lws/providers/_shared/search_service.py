@@ -456,6 +456,11 @@ def create_search_service_app(  # noqa: C901
         cluster_config = body.get(config.cluster_config_field)
         if cluster_config:
             domain.cluster_config.update(cluster_config)
+        if _lc.enabled:
+            _tracker.set_state(DomainName, "PROCESSING")
+            if _lc.modify_dwell_ms > 0:
+                _tracker.schedule_transition(DomainName, "ACTIVE", _lc.modify_dwell_ms)
+            domain.processing = True
         return _json_response({"DomainConfig": {"DomainName": {"Value": DomainName}}})
 
     return app, state

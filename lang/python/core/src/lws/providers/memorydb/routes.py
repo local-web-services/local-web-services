@@ -11,7 +11,6 @@ from typing import Any
 
 from fastapi import FastAPI, Request, Response
 
-from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
@@ -21,6 +20,7 @@ from lws.providers._shared.aws_lifecycle import (
     TrackerRegistry,
     register_tracker,
 )
+from lws.providers._shared.provider_context import ProviderContext
 from lws.providers._shared.request_helpers import action_dispatch as _action_dispatch
 from lws.providers._shared.resource_container import ResourceContainerManager
 from lws.providers._shared.response_helpers import (
@@ -187,7 +187,7 @@ async def _handle_delete_cluster(
 
 
 async def _handle_update_cluster(
-    state: _MemoryDBState, body: dict, _tracker: ResourceStateTracker
+    state: _MemoryDBState, body: dict, tracker: ResourceStateTracker
 ) -> Response:
     cluster_name = body.get("ClusterName", "")
     cluster = state.clusters.get(cluster_name)
@@ -201,6 +201,12 @@ async def _handle_update_cluster(
         cluster.node_type = body["NodeType"]
     if "NumShards" in body:
         cluster.num_shards = body["NumShards"]
+
+    lc = tracker.config
+    if lc.enabled:
+        tracker.set_state(cluster_name, "UPDATING")
+        if lc.modify_dwell_ms > 0:
+            tracker.schedule_transition(cluster_name, "ACTIVE", lc.modify_dwell_ms)
 
     return _json_response({"Cluster": _format_cluster(cluster)})
 
@@ -322,7 +328,7 @@ def create_memorydb_app(
     container_manager: ResourceContainerManager | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
     registry: TrackerRegistry | None = None,
-    cloudtrail_provider: ICloudTrail | None = None,
+    context: ProviderContext | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the MemoryDB wire protocol."""
     app = FastAPI(title="LDK MemoryDB")
@@ -332,6 +338,9 @@ def create_memorydb_app(
     _tracker = ResourceStateTracker(_lc)
     if registry is not None:
         register_tracker(registry, "memorydb", "cluster", _tracker)
+        register_tracker(registry, "memorydb", "snapshot", _tracker)
+        register_tracker(registry, "memorydb", "user", _tracker)
+        register_tracker(registry, "memorydb", "acl", _tracker)
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:
@@ -339,5 +348,5 @@ def create_memorydb_app(
             request, state, _tracker, _ACTION_HANDLERS, "MemoryDB", _logger, _error_response
         )
 
-    apply_cloudtrail_middleware(app, cloudtrail_provider, "memorydb")
+    apply_cloudtrail_middleware(app, context.cloudtrail if context else None, "memorydb")
     return app

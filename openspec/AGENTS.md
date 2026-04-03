@@ -5,6 +5,7 @@ Instructions for AI coding assistants using OpenSpec for spec-driven development
 ## TL;DR Quick Checklist
 
 - Search existing work: `openspec spec list --long`, `openspec list` (use `rg` only for full-text search)
+- Check relevant ADRs: `ls openspec/adrs/` and read any that may apply
 - Decide scope: new capability vs modify existing capability
 - Pick a unique `change-id`: kebab-case, verb-led (`add-`, `update-`, `remove-`, `refactor-`)
 - Scaffold: `proposal.md`, `tasks.md`, `design.md` (only if needed), and delta specs per affected capability
@@ -18,7 +19,7 @@ Instructions for AI coding assistants using OpenSpec for spec-driven development
 Create proposal when you need to:
 - Add features or functionality
 - Make breaking changes (API, schema)
-- Change architecture or patterns  
+- Change architecture or patterns
 - Optimize performance (changes behavior)
 - Update security patterns
 
@@ -42,9 +43,11 @@ Skip proposal for:
 
 **Workflow**
 1. Review `openspec/project.md`, `openspec list`, and `openspec list --specs` to understand current context.
-2. Choose a unique verb-led `change-id` and scaffold `proposal.md`, `tasks.md`, optional `design.md`, and spec deltas under `openspec/changes/<id>/`.
-3. Draft spec deltas using `## ADDED|MODIFIED|REMOVED Requirements` with at least one `#### Scenario:` per requirement.
-4. Run `openspec validate <id> --strict --no-interactive` and resolve any issues before sharing the proposal.
+2. Scan `openspec/adrs/` for existing ADRs that constrain or inform the proposed change. Reference any relevant ADRs in the proposal and write a `proposal-<change-id>.md` entry in each referenced ADR directory.
+3. Choose a unique verb-led `change-id` and scaffold `proposal.md`, `tasks.md`, optional `design.md`, and spec deltas under `openspec/changes/<id>/`.
+4. If the proposal involves a significant architectural decision (see ADR criteria below), create a new ADR under `openspec/adrs/adr-NNN-<slug>/` and write a `proposal-<change-id>.md` entry in it.
+5. Draft spec deltas using `## ADDED|MODIFIED|REMOVED Requirements` with at least one `#### Scenario:` per requirement.
+6. Run `openspec validate <id> --strict --no-interactive` and resolve any issues before sharing the proposal.
 
 ### Stage 2: Implementing Changes
 Track these steps as TODOs and complete them one by one.
@@ -53,11 +56,12 @@ Track these steps as TODOs and complete them one by one.
 3. **Read tasks.md** - Get implementation checklist
 4. **Approval gate** - Do not start implementation until the proposal is reviewed and approved
 5. **Run `/discover <change-id>`** - Run pattern discovery before writing any code; read the full report before proceeding
-6. **Plan parallel workstreams** - Use the discovery report to group independent tasks; launch each workstream as a parallel agent with `isolation: "worktree"` where possible
-7. **Implement** - Complete all tasks; check file-length risks flagged by discovery before adding to any file near the 500-line limit
-8. **Validate once** - Run `make check` once after all implementation is done, not after each file
-9. **Confirm completion** - Ensure every item in `tasks.md` is finished before updating statuses
-10. **Update checklist** - After all work is done, set every task to `- [x]` so the list reflects reality
+6. **Check ADRs** - Read any ADRs referenced in the proposal; scan `openspec/adrs/` for others that may apply to the implementation. Write an `apply-<change-id>.md` entry in each ADR directory consulted or created during this stage.
+7. **Plan parallel workstreams** - Use the discovery report to group independent tasks; launch each workstream as a parallel agent with `isolation: "worktree"` where possible
+8. **Implement** - Complete all tasks; check file-length risks flagged by discovery before adding to any file near the 500-line limit
+9. **Validate once** - Run `make check` once after all implementation is done, not after each file
+10. **Confirm completion** - Ensure every item in `tasks.md` is finished before updating statuses
+11. **Update checklist** - After all work is done, set every task to `- [x]` so the list reflects reality
 
 ### Stage 3: Archiving Changes
 After deployment, create separate PR to:
@@ -73,6 +77,7 @@ After deployment, create separate PR to:
 **Context Checklist:**
 - [ ] Read relevant specs in `specs/[capability]/spec.md`
 - [ ] Check pending changes in `changes/` for conflicts
+- [ ] Scan `openspec/adrs/` for ADRs that constrain or inform the work
 - [ ] Read `openspec/project.md` for conventions
 - [ ] Run `openspec list` to see active changes
 - [ ] Run `openspec list --specs` to see existing capabilities
@@ -86,9 +91,11 @@ After deployment, create separate PR to:
 ### Search Guidance
 - Enumerate specs: `openspec spec list --long` (or `--json` for scripts)
 - Enumerate changes: `openspec list` (or `openspec change list --json` - deprecated but available)
+- Enumerate ADRs: `ls openspec/adrs/`
 - Show details:
   - Spec: `openspec show <spec-id> --type spec` (use `--json` for filters)
   - Change: `openspec show <change-id> --json --deltas-only`
+  - ADR: `cat openspec/adrs/<adr-id>/adr.md`
 - Full-text search (use ripgrep): `rg -n "Requirement:|Scenario:" openspec/specs`
 
 ## Quick Start
@@ -134,6 +141,11 @@ openspec/
 │   └── [capability]/       # Single focused capability
 │       ├── spec.md         # Requirements and scenarios
 │       └── design.md       # Technical patterns
+├── adrs/                   # Architectural Decision Records - why it was built that way
+│   └── adr-NNN-[slug]/     # One directory per decision (NNN = zero-padded number)
+│       ├── adr.md          # The decision itself
+│       ├── proposal-[change-id].md   # Written when ADR is created/used during a proposal
+│       └── apply-[change-id].md      # Written when ADR is created/used during implementation
 ├── changes/                # Proposals - what SHOULD change
 │   ├── [change-name]/
 │   │   ├── proposal.md     # Why, what, impact
@@ -145,6 +157,84 @@ openspec/
 │   └── archive/            # Completed changes
 ```
 
+## Architectural Decision Records
+
+ADRs capture significant architectural decisions at the project level — decisions whose rationale future contributors need to understand when writing new proposals or implementing changes. They live in `openspec/adrs/` and are durable: they do not get archived when a change is deployed.
+
+### When to Create an ADR
+
+Create an ADR when a decision:
+- Defines how two or more systems or services integrate
+- Introduces or removes an external library or framework dependency
+- Establishes a design pattern that will be reused across multiple providers or changes
+- Sets a constraint based on an external service limit, protocol behaviour, or AWS wire protocol detail
+- Defines a schema or data model that multiple components depend on
+- Is significant enough that a future proposal author would need to understand it to make a correct design choice
+
+If a decision belongs in a `design.md` and it meets the above criteria, promote it to an ADR instead of (or in addition to) the `design.md`.
+
+### Numbering
+
+ADRs are numbered sequentially: `adr-001-`, `adr-002-`, etc. Find the highest existing number with `ls openspec/adrs/` and increment by one. The slug after the number is a short, descriptive kebab-case phrase (e.g. `adr-003-state-injection-skip-on-404`).
+
+### ADR File Format
+
+`adr.md` in each ADR directory follows this structure:
+
+```markdown
+# ADR-NNN: Title
+
+## Status
+Proposed | Accepted | Deprecated | Superseded by ADR-NNN
+
+## Context
+Background: what situation or constraint led to this decision.
+
+## Options Considered
+- **Option A** — description and trade-offs
+- **Option B** — description and trade-offs
+
+## Decision
+What was decided, stated clearly and specifically.
+
+## Rationale
+Why this option was chosen over the alternatives.
+
+## Consequences / Limitations
+- What becomes easier as a result
+- What becomes harder or is now constrained
+- Any known limitations of the chosen approach
+```
+
+### Supersession
+
+When a newer decision overrides an older one:
+1. Update the old ADR's `## Status` to `Superseded by ADR-NNN`
+2. In the new ADR's `## Context`, reference the old ADR and explain why it no longer holds
+
+### Reference Tracking
+
+Whenever an ADR is **created or consulted** during a proposal or apply stage, write a small reference file inside the ADR directory. This creates a forward-trace from the ADR to the changes that relied on it.
+
+**File name:** `proposal-<change-id>.md` or `apply-<change-id>.md`
+
+**Format:**
+```markdown
+# Reference: <change-id> (<stage>)
+
+## Stage
+proposal | apply
+
+## How This ADR Was Used
+Created here | Consulted | Superseded during this change
+
+## Decision Made
+What specific decision was made in the context of this change that relates to this ADR.
+
+## Impact
+How this ADR shaped the design, constrained options, or influenced implementation details.
+```
+
 ## Creating Change Proposals
 
 ### Decision Tree
@@ -152,10 +242,10 @@ openspec/
 ```
 New request?
 ├─ Bug fix restoring spec behavior? → Fix directly
-├─ Typo/format/comment? → Fix directly  
+├─ Typo/format/comment? → Fix directly
 ├─ New feature/capability? → Create proposal
 ├─ Breaking change? → Create proposal
-├─ Architecture change? → Create proposal
+├─ Architecture change? → Create proposal + ADR
 └─ Unclear? → Create proposal (safer)
 ```
 
@@ -177,6 +267,7 @@ New request?
 ## Impact
 - Affected specs: [list capabilities]
 - Affected code: [key files/systems]
+- Relevant ADRs: [list any ADRs consulted or created]
 ```
 
 3. **Create spec deltas:** `specs/[capability]/spec.md`
@@ -215,6 +306,8 @@ Create `design.md` if any of the following apply; otherwise omit it:
 - New external dependency or significant data model changes
 - Security, performance, or migration complexity
 - Ambiguity that benefits from technical decisions before coding
+
+If a decision in `design.md` is significant enough to affect future proposals (see ADR criteria), create an ADR instead of or in addition to `design.md`.
 
 Minimal `design.md` skeleton:
 ```markdown
@@ -276,7 +369,7 @@ Headers matched with `trim(header)` - whitespace ignored.
 - MODIFIED: Changes the behavior, scope, or acceptance criteria of an existing requirement. Always paste the full, updated requirement content (header + all scenarios). The archiver will replace the entire requirement with what you provide here; partial deltas will drop previous details.
 - RENAMED: Use when only the name changes. If you also change behavior, use RENAMED (name) plus MODIFIED (content) referencing the new name.
 
-Common pitfall: Using MODIFIED to add a new concern without including the previous text. This causes loss of detail at archive time. If you aren’t explicitly changing the existing requirement, add a new requirement under ADDED instead.
+Common pitfall: Using MODIFIED to add a new concern without including the previous text. This causes loss of detail at archive time. If you aren't explicitly changing the existing requirement, add a new requirement under ADDED instead.
 
 Authoring a MODIFIED requirement correctly:
 1) Locate the existing requirement in `openspec/specs/<capability>/spec.md`.
@@ -326,6 +419,7 @@ openspec show [spec] --json -r 1
 # 1) Explore current state
 openspec spec list --long
 openspec list
+ls openspec/adrs/
 # Optional full-text search:
 # rg -n "Requirement:|Scenario:" openspec/specs
 # rg -n "^#|Requirement:" openspec/changes
@@ -347,7 +441,12 @@ Users MUST provide a second factor during login.
 - **THEN** an OTP challenge is required
 EOF
 
-# 4) Validate
+# 4) Create ADR if the proposal introduces a significant architectural decision
+# ADR_NUM=$(ls openspec/adrs/ | grep -E '^adr-[0-9]+' | sort | tail -1 | grep -oE '[0-9]+' | head -1)
+# ADR_NEXT=$(printf "%03d" $((10#$ADR_NUM + 1)))
+# mkdir -p openspec/adrs/adr-$ADR_NEXT-<slug>
+
+# 5) Validate
 openspec validate $CHANGE --strict --no-interactive
 ```
 
@@ -395,6 +494,7 @@ Only add complexity with:
 ### Clear References
 - Use `file.ts:42` format for code locations
 - Reference specs as `specs/auth/spec.md`
+- Reference ADRs as `adrs/adr-NNN-<slug>/adr.md`
 - Link related changes and PRs
 
 ### Capability Naming
@@ -434,21 +534,25 @@ Only add complexity with:
 ### Missing Context
 1. Read project.md first
 2. Check related specs
-3. Review recent archives
-4. Ask for clarification
+3. Review relevant ADRs in `openspec/adrs/`
+4. Review recent archives
+5. Ask for clarification
 
 ## Quick Reference
 
 ### Stage Indicators
 - `changes/` - Proposed, not yet built
 - `specs/` - Built and deployed
+- `adrs/` - Architectural decisions (durable, never archived)
 - `archive/` - Completed changes
 
 ### File Purposes
 - `proposal.md` - Why and what
 - `tasks.md` - Implementation steps
-- `design.md` - Technical decisions
+- `design.md` - Change-specific technical decisions
 - `spec.md` - Requirements and behavior
+- `adr.md` - Project-wide architectural decision (rationale, options, consequences)
+- `proposal-<id>.md` / `apply-<id>.md` in ADR dir - Forward-trace: which changes relied on this ADR
 
 ### CLI Essentials
 ```bash
@@ -456,6 +560,7 @@ openspec list              # What's in progress?
 openspec show [item]       # View details
 openspec validate --strict --no-interactive  # Is it correct?
 openspec archive <change-id> [--yes|-y]  # Mark complete (add --yes for automation)
+ls openspec/adrs/          # Browse architectural decisions
 ```
 
-Remember: Specs are truth. Changes are proposals. Keep them in sync.
+Remember: Specs are truth. Changes are proposals. ADRs are rationale. Keep them in sync.

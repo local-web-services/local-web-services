@@ -15,4 +15,4 @@ def lambda_writes_record(lws_session, world):
     if invocation_id is None:
         world["error"] = RuntimeError("No invocation is in progress")
         return
-    lws_session.inject_state("lambda", "invocation", invocation_id, "SUCCESS")
+    lws_session.inject_state_unchecked("lambda", "invocation", invocation_id, "SUCCESS")

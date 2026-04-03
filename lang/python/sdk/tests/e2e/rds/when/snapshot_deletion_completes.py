@@ -2,10 +2,19 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_SNAPSHOT
 
 
 @when('a "rds" "snapshot" deletion completes')
 def snapshot_deletion_completes(lws_session, world):
-    pytest.skip("Cannot trigger internal RDS snapshot deletion completion in lws")
+    try:
+        lws_session.inject_state_unchecked(
+            "rds",
+            "snapshot",
+            world.get("snapshot_id", TEST_SNAPSHOT),
+            "deleted",
+        )
+    except RuntimeError as exc:
+        world["error"] = exc

@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
+
+from ..constants import TEST_TABLE
 
 
 @given('the "s3 tables" "table" was in "MAINTENANCE" state')
-def table_is_in_maintenance_given():
-    pytest.skip("Cannot trigger internal table MAINTENANCE state in lws")
+def table_is_in_maintenance_given(lws_session):
+    lws_session.inject_state("s3tables", "table", TEST_TABLE, "maintenance")

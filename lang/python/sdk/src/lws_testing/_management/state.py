@@ -7,6 +7,10 @@ from urllib.parse import quote
 import httpx
 
 
+class InjectStateNotTracked(Exception):
+    """Raised when inject_state returns 404 because the resource is not in the tracker."""
+
+
 def _state_url(mgmt_port: int, service: str, resource_type: str, resource_id: str) -> str:
     encoded = quote(resource_id, safe="/")
     return f"http://127.0.0.1:{mgmt_port}/_ldk/state/{service}/{resource_type}/{encoded}"
@@ -21,6 +25,8 @@ def inject_state(
         json={"state": state},
         timeout=5.0,
     )
+    if resp.status_code == 404 and "is not tracked" in resp.text:
+        raise InjectStateNotTracked(resp.text)
     if resp.status_code != 200:
         raise RuntimeError(f"inject_state failed ({resp.status_code}): {resp.text}")
 

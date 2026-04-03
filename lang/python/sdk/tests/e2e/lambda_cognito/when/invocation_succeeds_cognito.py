@@ -19,4 +19,4 @@ def invocation_succeeds_cognito(lws_session, world):
         world["error"] = RuntimeError("Pool does not exist or is deleted")
         return
     # Act
-    lws_session.inject_state("lambda", "invocation", invocation_id, "SUCCESS")
+    lws_session.inject_state_unchecked("lambda", "invocation", invocation_id, "SUCCESS")

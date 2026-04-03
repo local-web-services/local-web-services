@@ -16,4 +16,4 @@ def invocation_fails_cache_miss(lws_session, world):
     if world.get("cached_entry_exists", False):
         world["error"] = RuntimeError('A "CACHED" entry exists in the cluster')
         return
-    lws_session.inject_state("lambda", "invocation", invocation_id, "FAILED")
+    lws_session.inject_state_unchecked("lambda", "invocation", invocation_id, "FAILED")

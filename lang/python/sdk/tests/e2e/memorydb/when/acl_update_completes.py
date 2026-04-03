@@ -2,10 +2,19 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_ACL
 
 
 @when('an "memorydb" "ACL" update completes')
 def acl_update_completes(lws_session, world):
-    pytest.skip("Cannot trigger internal MemoryDB ACL update completion in lws")
+    try:
+        lws_session.inject_state_unchecked(
+            "memorydb",
+            "acl",
+            world.get("acl_id", TEST_ACL),
+            "available",
+        )
+    except RuntimeError as exc:
+        world["error"] = exc

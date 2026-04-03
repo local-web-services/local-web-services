@@ -12,10 +12,13 @@ from datetime import UTC, datetime
 
 from fastapi import FastAPI, Request, Response
 
-from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_chaos import AwsChaosConfig
 from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
+from lws.providers._shared.aws_operation_fake import AwsFakeConfig
+from lws.providers._shared.provider_context import ProviderContext
+from lws.providers._shared.service_descriptor import ServiceDescriptor
 
 _logger = get_logger("ldk.sts")
 
@@ -97,7 +100,7 @@ _ACTION_HANDLERS = {
 
 
 def create_sts_app(
-    cloudtrail_provider: ICloudTrail | None = None,
+    context: ProviderContext | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the STS wire protocol."""
     app = FastAPI(title="LDK STS")
@@ -125,5 +128,16 @@ def create_sts_app(
 
         return await handler(params)
 
-    apply_cloudtrail_middleware(app, cloudtrail_provider, "sts")
+    apply_cloudtrail_middleware(app, context.cloudtrail if context else None, "sts")
     return app
+
+
+def _sts_factory(  # pylint: disable=unused-argument
+    chaos: AwsChaosConfig | None = None,
+    aws_fake: AwsFakeConfig | None = None,
+    context: ProviderContext | None = None,
+) -> tuple[FastAPI, None]:
+    return create_sts_app(context=context), None
+
+
+DESCRIPTOR = ServiceDescriptor(name="sts", factory=_sts_factory)

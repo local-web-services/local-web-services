@@ -11,13 +11,13 @@ from typing import Any
 
 from fastapi import FastAPI, Request, Response
 
-from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
+from lws.providers._shared.provider_context import ProviderContext
 from lws.providers.iam._iam_handlers import (  # pylint: disable=unused-import
     _ACTION_HANDLERS,
     _request_id,
@@ -163,7 +163,7 @@ def create_iam_app(
     chaos: AwsChaosConfig | None = None,
     aws_fake: AwsFakeConfig | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
-    cloudtrail_provider: ICloudTrail | None = None,
+    context: ProviderContext | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the IAM wire protocol."""
     _lc = lifecycle or ResourceLifecycleConfig()
@@ -181,5 +181,5 @@ def create_iam_app(
     async def dispatch(request: Request) -> Response:
         return await _iam_dispatch(request, state, _lc, _tracker)
 
-    apply_cloudtrail_middleware(app, cloudtrail_provider, "iam")
+    apply_cloudtrail_middleware(app, context.cloudtrail if context else None, "iam")
     return app

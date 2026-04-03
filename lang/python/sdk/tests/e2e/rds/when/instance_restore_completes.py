@@ -2,10 +2,19 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import when
+
+from ..constants import TEST_DB
 
 
 @when('a "rds" "instance" restore from "rds" "snapshot" completes')
 def instance_restore_completes(lws_session, world):
-    pytest.skip("Cannot trigger internal RDS instance restore completion in lws")
+    try:
+        lws_session.inject_state_unchecked(
+            "rds",
+            "instance",
+            world.get("instance_id", TEST_DB),
+            "available",
+        )
+    except RuntimeError as exc:
+        world["error"] = exc

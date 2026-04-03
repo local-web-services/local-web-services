@@ -8,6 +8,7 @@ import httpx
 import pytest
 
 from lws.interfaces import KeyAttribute, KeySchema, TableConfig
+from lws.providers._shared.provider_context import ProviderContext
 from lws.providers.cloudtrail.provider import CloudTrailProvider
 from lws.providers.dynamodb.provider import SqliteDynamoProvider
 from lws.providers.dynamodb.routes import create_dynamodb_app
@@ -37,7 +38,9 @@ class TestCloudTrailMiddlewareCapturesDynamoDB:
 
     @pytest.fixture
     async def client(self, dynamo_provider, cloudtrail_provider):
-        app = create_dynamodb_app(dynamo_provider, cloudtrail_provider=cloudtrail_provider)
+        app = create_dynamodb_app(
+            dynamo_provider, context=ProviderContext(cloudtrail=cloudtrail_provider)
+        )
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as c:
             yield c, cloudtrail_provider

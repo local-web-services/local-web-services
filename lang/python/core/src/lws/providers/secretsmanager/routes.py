@@ -12,7 +12,6 @@ from typing import Any
 
 from fastapi import FastAPI, Request, Response
 
-from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
@@ -20,6 +19,7 @@ from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_mid
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
+from lws.providers._shared.provider_context import ProviderContext
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
 from lws.providers.secretsmanager._secretsmanager_handlers import (  # pylint: disable=unused-import
     _ACTION_HANDLERS,
@@ -184,7 +184,7 @@ def create_secretsmanager_app(
     state: _SecretsState | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
     lambda_registry: Any = None,
-    cloudtrail_provider: ICloudTrail | None = None,
+    context: ProviderContext | None = None,
 ) -> tuple[FastAPI, _SecretsState]:
     """Create a FastAPI application that speaks the Secrets Manager wire protocol.
 
@@ -228,5 +228,5 @@ def create_secretsmanager_app(
     async def dispatch(request: Request) -> Response:
         return await _secretsmanager_dispatch(request, state, _lc, _tracker, lambda_registry)
 
-    apply_cloudtrail_middleware(app, cloudtrail_provider, "secretsmanager")
+    apply_cloudtrail_middleware(app, context.cloudtrail if context else None, "secretsmanager")
     return app, state

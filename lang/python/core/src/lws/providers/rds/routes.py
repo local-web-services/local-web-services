@@ -11,7 +11,6 @@ from typing import Any
 
 from fastapi import FastAPI, Request, Response
 
-from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
@@ -25,6 +24,7 @@ from lws.providers._shared.aws_lifecycle import (
 from lws.providers._shared.cluster_db_service import (
     check_db_resource_read_lifecycle,
 )
+from lws.providers._shared.provider_context import ProviderContext
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
 from lws.providers._shared.resource_container import ResourceContainerManager
 from lws.providers._shared.response_helpers import (
@@ -37,6 +37,12 @@ from lws.providers._shared.response_helpers import (
     json_response as _json_response,
 )
 from lws.providers.rds._rds_data_api import handle_execute_statement as _handle_execute_statement
+from lws.providers.rds._rds_lifecycle import (
+    overlay_instance_tracker_state as _overlay_instance_tracker_state,
+)
+from lws.providers.rds._rds_lifecycle import (
+    rds_lifecycle_modify_instance as _rds_lifecycle_modify_instance,
+)
 from lws.providers.rds._rds_state import (
     _ENGINE_VERSIONS,
     _DBCluster,
@@ -326,11 +332,6 @@ _ACTION_HANDLERS: dict[str, Any] = {
     "DescribeDBEngineVersions": _handle_describe_db_engine_versions,
 }
 
-
-# ------------------------------------------------------------------
-# App factory helpers
-# ------------------------------------------------------------------
-
 _RDS_INSTANCE_READ_ACTIONS = {"DescribeDBInstances", "ModifyDBInstance"}
 _RDS_CLUSTER_READ_ACTIONS = {"DescribeDBClusters"}
 
@@ -377,6 +378,8 @@ async def _rds_lifecycle_instance(
             tracker.set_state(iid, "CREATING")
             tracker.schedule_transition(iid, "ACTIVE", lc.create_dwell_ms)
         return resp
+    if action == "ModifyDBInstance" and lc.enabled:
+        return await _rds_lifecycle_modify_instance(handler, state, body, lc, tracker)
     if action == "DeleteDBInstance" and lc.enabled:
         iid = body.get("DBInstanceIdentifier", "")
         guard = _creating_guard(
@@ -453,12 +456,10 @@ async def _rds_dispatch(
     if result is not None:
         return result
 
-    return await handler(state, body)
-
-
-# ------------------------------------------------------------------
-# App factory
-# ------------------------------------------------------------------
+    resp = await handler(state, body)
+    if action == "DescribeDBInstances" and lc.enabled:
+        return _overlay_instance_tracker_state(resp, instance_tracker)
+    return resp
 
 
 def create_rds_app(
@@ -467,15 +468,17 @@ def create_rds_app(
     mysql_container_manager: ResourceContainerManager | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
     registry: TrackerRegistry | None = None,
-    cloudtrail_provider: ICloudTrail | None = None,
+    context: ProviderContext | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the RDS wire protocol."""
     _lc = lifecycle or ResourceLifecycleConfig()
     _instance_tracker = ResourceStateTracker(_lc)
     _cluster_tracker = ResourceStateTracker(_lc)
+    _snapshot_tracker = ResourceStateTracker(_lc)
     if registry is not None:
         register_tracker(registry, "rds", "instance", _instance_tracker)
         register_tracker(registry, "rds", "cluster", _cluster_tracker)
+        register_tracker(registry, "rds", "snapshot", _snapshot_tracker)
 
     app = FastAPI(title="LDK RDS")
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="rds")
@@ -493,5 +496,5 @@ def create_rds_app(
         body = await parse_json_body(request)
         return await _handle_execute_statement(state, body)
 
-    apply_cloudtrail_middleware(app, cloudtrail_provider, "rds")
+    apply_cloudtrail_middleware(app, context.cloudtrail if context else None, "rds")
     return app

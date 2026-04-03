@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
 from pytest_bdd import given
+
+from ..constants import TEST_SNAPSHOT
 
 
 @given('a "memorydb" "snapshot" finishes creating')
-def memorydb_snapshot_finished_creating_seq():
-    pytest.skip("Cannot trigger internal MemoryDB snapshot creation completion in lws")
+def memorydb_snapshot_finished_creating_seq(lws_session):
+    lws_session.inject_state("memorydb", "snapshot", TEST_SNAPSHOT, "available")

@@ -10,6 +10,6 @@ from ..constants import TEST_DB
 @when('a "rds" "instance" finishes creating')
 def instance_finishes_creating(lws_session, world):
     try:
-        lws_session.inject_state("rds", "instance", TEST_DB, "available")
+        lws_session.inject_state_unchecked("rds", "instance", TEST_DB, "available")
     except RuntimeError as exc:
         world["error"] = exc

@@ -10,6 +10,6 @@ from ..constants import TEST_DOMAIN
 @when('an "opensearch" "domain" finishes deleting')
 def domain_finishes_deleting(lws_session, world):
     try:
-        lws_session.inject_state("opensearch", "domain", TEST_DOMAIN, "deleted")
+        lws_session.inject_state_unchecked("opensearch", "domain", TEST_DOMAIN, "deleted")
     except RuntimeError as exc:
         world["error"] = exc

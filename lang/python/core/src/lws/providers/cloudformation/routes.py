@@ -17,6 +17,8 @@ from lws.providers._shared.per_account_state import (
     PerAccountStateRegistry,
     extract_account_id_from_token,
 )
+from lws.providers._shared.provider_context import ProviderContext
+from lws.providers._shared.service_descriptor import ServiceDescriptor
 from lws.providers.cloudformation._cfn_handlers import _ACTION_HANDLERS
 from lws.providers.cloudformation._cfn_state import _CfnState
 
@@ -66,3 +68,14 @@ def create_cloudformation_app(
         return await handler(state, params, account_id)
 
     return app
+
+
+def _cloudformation_factory(  # pylint: disable=unused-argument
+    chaos: AwsChaosConfig | None = None,
+    aws_fake: AwsFakeConfig | None = None,
+    context: ProviderContext | None = None,
+) -> tuple[FastAPI, None]:
+    return create_cloudformation_app(chaos=chaos, aws_fake=aws_fake), None
+
+
+DESCRIPTOR = ServiceDescriptor(name="cloudformation", factory=_cloudformation_factory)

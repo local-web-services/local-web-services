@@ -9,9 +9,9 @@ from dataclasses import replace
 
 from fastapi import FastAPI
 
-from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, TrackerRegistry
+from lws.providers._shared.provider_context import ProviderContext
 from lws.providers._shared.search_service import (
     SearchServiceConfig,
     _SearchState,
@@ -46,7 +46,7 @@ def create_opensearch_app(
     container_manager=None,
     lifecycle: ResourceLifecycleConfig | None = None,
     registry: TrackerRegistry | None = None,
-    cloudtrail_provider: ICloudTrail | None = None,
+    context: ProviderContext | None = None,
 ) -> tuple[FastAPI, _SearchState]:
     """Create a FastAPI application that speaks the OpenSearch Service wire protocol.
 
@@ -59,5 +59,5 @@ def create_opensearch_app(
         updates["lifecycle"] = lifecycle
     config = replace(_OPENSEARCH_CONFIG, **updates) if updates else _OPENSEARCH_CONFIG
     app, state = create_search_service_app(config, registry=registry)
-    apply_cloudtrail_middleware(app, cloudtrail_provider, "opensearch")
+    apply_cloudtrail_middleware(app, context.cloudtrail if context else None, "opensearch")
     return app, state
