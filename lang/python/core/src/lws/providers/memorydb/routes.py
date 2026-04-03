@@ -11,7 +11,6 @@ from typing import Any
 
 from fastapi import FastAPI, Request, Response
 
-from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
@@ -21,6 +20,7 @@ from lws.providers._shared.aws_lifecycle import (
     TrackerRegistry,
     register_tracker,
 )
+from lws.providers._shared.provider_context import ProviderContext
 from lws.providers._shared.request_helpers import action_dispatch as _action_dispatch
 from lws.providers._shared.resource_container import ResourceContainerManager
 from lws.providers._shared.response_helpers import (
@@ -328,7 +328,7 @@ def create_memorydb_app(
     container_manager: ResourceContainerManager | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
     registry: TrackerRegistry | None = None,
-    cloudtrail_provider: ICloudTrail | None = None,
+    context: ProviderContext | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the MemoryDB wire protocol."""
     app = FastAPI(title="LDK MemoryDB")
@@ -348,5 +348,5 @@ def create_memorydb_app(
             request, state, _tracker, _ACTION_HANDLERS, "MemoryDB", _logger, _error_response
         )
 
-    apply_cloudtrail_middleware(app, cloudtrail_provider, "memorydb")
+    apply_cloudtrail_middleware(app, context.cloudtrail if context else None, "memorydb")
     return app

@@ -154,52 +154,31 @@ def _register_cloudtrail_provider(
     return ct_provider
 
 
-def _register_cloudformation_provider(
+def _register_simple_providers(
     providers: dict,
     *,
     chaos_configs: dict,
     aws_fake_configs: dict,
-    cloudformation_port: int,
+    ports: dict[str, int],
 ) -> None:
-    """Register the CloudFormation HTTP provider."""
+    """Register all auto-discovered simple-service providers."""
     from lws.cli._ldk_http_registry import (  # pylint: disable=import-outside-toplevel
         _HttpServiceProvider,
     )
-    from lws.providers.cloudformation.routes import (  # pylint: disable=import-outside-toplevel
-        create_cloudformation_app,
+    from lws.providers._shared.service_descriptor import (  # pylint: disable=import-outside-toplevel
+        discover_simple_services,
     )
 
-    providers["__cloudformation_http__"] = _HttpServiceProvider(
-        "cloudformation-http",
-        lambda c=chaos_configs.get("cloudformation"), m=aws_fake_configs.get(
-            "cloudformation"
-        ): create_cloudformation_app(chaos=c, aws_fake=m),
-        cloudformation_port,
-    )
-
-
-def _register_service_catalog_provider(
-    providers: dict,
-    *,
-    chaos_configs: dict,
-    aws_fake_configs: dict,
-    service_catalog_port: int,
-) -> None:
-    """Register the Service Catalog HTTP provider."""
-    from lws.cli._ldk_http_registry import (  # pylint: disable=import-outside-toplevel
-        _HttpServiceProvider,
-    )
-    from lws.providers.service_catalog.routes import (  # pylint: disable=import-outside-toplevel
-        create_service_catalog_app,
-    )
-
-    providers["__servicecatalog_http__"] = _HttpServiceProvider(
-        "servicecatalog-http",
-        lambda c=chaos_configs.get("servicecatalog"), m=aws_fake_configs.get(
-            "servicecatalog"
-        ): create_service_catalog_app(chaos=c, aws_fake=m),
-        service_catalog_port,
-    )
+    for desc in discover_simple_services():
+        if desc.name not in ports:
+            continue
+        c = chaos_configs.get(desc.name)
+        m = aws_fake_configs.get(desc.name)
+        providers[f"__{desc.name}_http__"] = _HttpServiceProvider(
+            f"{desc.name}-http",
+            lambda chaos=c, fake=m, factory=desc.factory: factory(chaos=chaos, aws_fake=fake),
+            ports[desc.name],
+        )
 
 
 def _register_experimental_providers(

@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 
-from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.providers._shared.aws_capacity import AwsCapacityConfig
 from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, TrackerRegistry
@@ -17,6 +16,7 @@ from lws.providers._shared.cluster_db_service import (
     _ClusterDBState,
     create_cluster_db_app,
 )
+from lws.providers._shared.provider_context import ProviderContext
 
 _DOCDB_CONFIG = ClusterDBConfig(
     service_name="docdb",
@@ -39,7 +39,7 @@ def create_docdb_app(
     lifecycle: ResourceLifecycleConfig | None = None,
     capacity: AwsCapacityConfig | None = None,
     registry: TrackerRegistry | None = None,
-    cloudtrail_provider: ICloudTrail | None = None,
+    context: ProviderContext | None = None,
 ) -> tuple[FastAPI, _ClusterDBState]:
     """Create a FastAPI app that speaks the DocumentDB wire protocol.
 
@@ -49,5 +49,5 @@ def create_docdb_app(
         _DOCDB_CONFIG.with_overrides(container_manager, lifecycle, capacity),
         registry=registry,
     )
-    apply_cloudtrail_middleware(app, cloudtrail_provider, "docdb")
+    apply_cloudtrail_middleware(app, context.cloudtrail if context else None, "docdb")
     return app, state

@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Any
 
 from lws.providers._shared.async_state_store import AsyncStateStore
+from lws.providers._shared.provider_context import ProviderContext
+from lws.providers._shared.service_descriptor import discover_simple_services
 
 from lws_testing._transport._management_app import _create_management_app
 from lws_testing._transport._provider_wrappers import (
@@ -142,31 +144,28 @@ def _build_service_apps(
     - dict of extra providers (ssm, secretsmanager state wrappers) for reset support
     """
     from lws.providers.apigateway.routes import create_apigateway_management_app
-    from lws.providers.cloudformation.routes import create_cloudformation_app
     from lws.providers.cloudtrail.routes import create_cloudtrail_app
     from lws.providers.dynamodb.routes import create_dynamodb_app
     from lws.providers.eventbridge.routes import create_eventbridge_app
-    from lws.providers.organizations.routes import create_organizations_app
     from lws.providers.s3.routes import create_s3_app
     from lws.providers.secretsmanager.routes import create_secretsmanager_app
-    from lws.providers.service_catalog.routes import create_service_catalog_app
     from lws.providers.sns.routes import create_sns_app
     from lws.providers.sqs.routes import create_sqs_app
     from lws.providers.ssm.routes import create_ssm_app
     from lws.providers.stepfunctions.routes import create_stepfunctions_app
-    from lws.providers.sts.routes import create_sts_app
 
     from lws_testing._transport._extended_services import build_extended_service_apps
 
     _cap = capacity_configs or {}
     _ct = providers.get("cloudtrail")
+    _ctx = ProviderContext(cloudtrail=_ct)
     extended_apps, extended_extra_providers = build_extended_service_apps(
         providers,
         lifecycle_configs,
         capacity_configs=_cap,
         dynamodb_tracker_ref=(_dynamodb_tracker_ref := []),
         tracker_registry=tracker_registry,
-        cloudtrail_provider=_ct,
+        context=_ctx,
     )
 
     ssm_app, ssm_state = create_ssm_app(
@@ -174,14 +173,14 @@ def _build_service_apps(
         chaos=chaos_configs["ssm"],
         aws_fake=fake_configs["ssm"],
         lifecycle=lifecycle_configs["ssm"],
-        cloudtrail_provider=_ct,
+        context=_ctx,
     )
     secretsmanager_app, secretsmanager_state = create_secretsmanager_app(
         initial_secrets=cfg["secrets"] or None,
         chaos=chaos_configs["secretsmanager"],
         aws_fake=fake_configs["secretsmanager"],
         lifecycle=lifecycle_configs["secretsmanager"],
-        cloudtrail_provider=_ct,
+        context=_ctx,
     )
 
     service_apps = [
@@ -194,7 +193,7 @@ def _build_service_apps(
                 lifecycle=lifecycle_configs["dynamodb"],
                 capacity=_cap.get("dynamodb"),
                 tracker_ref=_dynamodb_tracker_ref,
-                cloudtrail_provider=_ct,
+                context=_ctx,
             ),
         ),
         (
@@ -207,7 +206,7 @@ def _build_service_apps(
                 lifecycle=lifecycle_configs["sqs"],
                 tracker_ref=(_sqs_tracker_ref := []),
                 capacity=_cap.get("sqs"),
-                cloudtrail_provider=_ct,
+                context=_ctx,
             ),
         ),
         (
@@ -222,7 +221,7 @@ def _build_service_apps(
                 sqs_provider=providers["sqs"],
                 compute_providers=extended_extra_providers["lambda_registry"].compute,
                 tracker_ref=(_s3_tracker_ref := []),
-                cloudtrail_provider=_ct,
+                context=_ctx,
             ),
         ),
         (
@@ -237,7 +236,7 @@ def _build_service_apps(
                 sqs_provider=providers["sqs"],
                 sqs_tracker=_unbox(_sqs_tracker_ref),
                 tracker_ref=(_sns_tracker_ref := []),
-                cloudtrail_provider=_ct,
+                context=_ctx,
             ),
         ),
         (
@@ -251,7 +250,7 @@ def _build_service_apps(
                 capacity=_cap.get("stepfunctions"),
                 sqs_provider=providers["sqs"],
                 sqs_tracker=_unbox(_sqs_tracker_ref),
-                cloudtrail_provider=_ct,
+                context=_ctx,
             ),
         ),
         ("ssm", ssm_app),
@@ -273,7 +272,7 @@ def _build_service_apps(
                 lambda_tracker=extended_extra_providers.get("lambda_tracker"),
                 dynamodb_provider=providers["dynamodb"],
                 dynamodb_tracker=_unbox(_dynamodb_tracker_ref),
-                cloudtrail_provider=_ct,
+                context=_ctx,
             ),
         ),
         (
@@ -311,21 +310,18 @@ def _build_service_apps(
         *extended_apps,
     ]
 
-    organizations_app, organizations_state = create_organizations_app(
-        chaos=chaos_configs["organizations"],
-        aws_fake=fake_configs["organizations"],
-        cloudtrail_provider=_ct,
-    )
-    service_apps.append(("organizations", organizations_app))
-    service_apps.append(("sts", create_sts_app()))
-    cfn_app = create_cloudformation_app(
-        chaos=chaos_configs["cloudformation"], aws_fake=fake_configs["cloudformation"]
-    )
-    service_apps.append(("cloudformation", cfn_app))
-    sc_app, _ = create_service_catalog_app(
-        chaos=chaos_configs["servicecatalog"], aws_fake=fake_configs["servicecatalog"]
-    )
-    service_apps.append(("servicecatalog", sc_app))
+    # Auto-discovered simple services (sts, cloudformation, servicecatalog, organizations)
+    _simple_states: dict[str, Any] = {}
+    for desc in discover_simple_services():
+        app, state = desc.factory(
+            chaos=chaos_configs.get(desc.name),
+            aws_fake=fake_configs.get(desc.name),
+            context=_ctx,
+        )
+        service_apps.append((desc.name, app))
+        if state is not None:
+            _simple_states[desc.name] = state
+    organizations_state = _simple_states.get("organizations")
 
     extra_providers = {
         "ssm": _SsmStateProvider(ssm_state),

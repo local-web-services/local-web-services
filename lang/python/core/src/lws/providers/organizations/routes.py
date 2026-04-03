@@ -6,14 +6,17 @@ using JSON request/response format with X-Amz-Target header dispatch.
 
 from __future__ import annotations
 
+from typing import Any
+
 from fastapi import FastAPI, Request, Response
 
-from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
+from lws.providers._shared.provider_context import ProviderContext
+from lws.providers._shared.service_descriptor import ServiceDescriptor
 from lws.providers.organizations._org_config import load_organizations_config
 from lws.providers.organizations._org_handlers import (
     _ACTION_HANDLERS,
@@ -32,7 +35,7 @@ _TARGET_PREFIXES = (
 def create_organizations_app(
     chaos: AwsChaosConfig | None = None,
     aws_fake: AwsFakeConfig | None = None,
-    cloudtrail_provider: ICloudTrail | None = None,
+    context: ProviderContext | None = None,
     config_path: str | None = None,
 ) -> tuple[FastAPI, _OrganizationsState]:
     """Create a FastAPI application that speaks the AWS Organizations wire protocol.
@@ -72,5 +75,16 @@ def create_organizations_app(
             )
         return await handler(state, body)
 
-    apply_cloudtrail_middleware(app, cloudtrail_provider, "organizations")
+    apply_cloudtrail_middleware(app, context.cloudtrail if context else None, "organizations")
     return app, state
+
+
+def _organizations_factory(
+    chaos: AwsChaosConfig | None = None,
+    aws_fake: AwsFakeConfig | None = None,
+    context: ProviderContext | None = None,
+) -> tuple[FastAPI, Any]:
+    return create_organizations_app(chaos=chaos, aws_fake=aws_fake, context=context)
+
+
+DESCRIPTOR = ServiceDescriptor(name="organizations", factory=_organizations_factory)

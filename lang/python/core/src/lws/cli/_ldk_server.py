@@ -32,7 +32,7 @@ from lws.cli._ldk_provider_factory import (
 )
 from lws.cli._ldk_providers_extended import (
     _register_organizations_provider,
-    _register_service_catalog_provider,
+    _register_simple_providers,
 )
 from lws.cli._ldk_resource_metadata import _build_resource_metadata, _service_ports
 from lws.cli.display import print_error
@@ -168,12 +168,12 @@ def _create_terraform_providers(
         organizations_port=ports["organizations"],
     )
 
-    # Service Catalog
-    _register_service_catalog_provider(
+    # Auto-discovered simple services (cloudformation, servicecatalog, sts, etc.)
+    _register_simple_providers(
         providers,
         chaos_configs=chaos_configs,
         aws_fake_configs=aws_fake_configs,
-        service_catalog_port=ports["servicecatalog"],
+        ports=ports,
     )
 
     # SSM Parameter Store

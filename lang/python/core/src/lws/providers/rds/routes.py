@@ -11,7 +11,6 @@ from typing import Any
 
 from fastapi import FastAPI, Request, Response
 
-from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_middleware
@@ -25,6 +24,7 @@ from lws.providers._shared.aws_lifecycle import (
 from lws.providers._shared.cluster_db_service import (
     check_db_resource_read_lifecycle,
 )
+from lws.providers._shared.provider_context import ProviderContext
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
 from lws.providers._shared.resource_container import ResourceContainerManager
 from lws.providers._shared.response_helpers import (
@@ -468,7 +468,7 @@ def create_rds_app(
     mysql_container_manager: ResourceContainerManager | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
     registry: TrackerRegistry | None = None,
-    cloudtrail_provider: ICloudTrail | None = None,
+    context: ProviderContext | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the RDS wire protocol."""
     _lc = lifecycle or ResourceLifecycleConfig()
@@ -496,5 +496,5 @@ def create_rds_app(
         body = await parse_json_body(request)
         return await _handle_execute_statement(state, body)
 
-    apply_cloudtrail_middleware(app, cloudtrail_provider, "rds")
+    apply_cloudtrail_middleware(app, context.cloudtrail if context else None, "rds")
     return app

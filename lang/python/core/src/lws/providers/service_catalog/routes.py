@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import uuid
+from typing import Any
 
 from fastapi import FastAPI, Request, Response
 
@@ -21,7 +22,9 @@ from lws.providers._shared.per_account_state import (
     PerAccountStateRegistry,
     extract_account_id_from_token,
 )
+from lws.providers._shared.provider_context import ProviderContext
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
+from lws.providers._shared.service_descriptor import ServiceDescriptor
 from lws.providers.service_catalog._sc_state import (
     _Product,
     _ProvisioningArtifact,
@@ -267,3 +270,14 @@ def create_service_catalog_app(
         return await _sc_dispatch(request, _state)
 
     return app, default_state
+
+
+def _service_catalog_factory(  # pylint: disable=unused-argument
+    chaos: AwsChaosConfig | None = None,
+    aws_fake: AwsFakeConfig | None = None,
+    context: ProviderContext | None = None,
+) -> tuple[FastAPI, Any]:
+    return create_service_catalog_app(chaos=chaos, aws_fake=aws_fake)
+
+
+DESCRIPTOR = ServiceDescriptor(name="servicecatalog", factory=_service_catalog_factory)

@@ -14,7 +14,9 @@ Prepare a pattern discovery report for OpenSpec change: $ARGUMENTS
 1. Read `openspec/changes/$ARGUMENTS/tasks.md` to understand the full scope of work.
 
 2. Identify the implementation type (new provider, SDK wiring, middleware, E2E suite, etc.) and find 1–2 existing implementations of the same type to use as a reference:
-   - New provider → read an existing provider's `routes.py`, unit tests, integration tests, and E2E suite (e.g. `lang/python/core/src/lws/providers/sqs/`)
+   - **New simple provider** → the only file to edit is the service's own `routes.py`. Add a `DESCRIPTOR = ServiceDescriptor(name=..., factory=...)` constant and the service is auto-discovered. Do NOT list `inprocess.py`, `_SERVICE_NAMES`, `_build_service_apps`, or `_ldk_providers_extended.py` as edit points.
+   - New complex provider → read an existing provider's `routes.py`, unit tests, integration tests, and E2E suite (e.g. `lang/python/core/src/lws/providers/sqs/`)
+   - **New cross-cutting concern** → add a field to `ProviderContext` in `lang/python/core/src/lws/providers/_shared/provider_context.py`. Do NOT modify individual `create_*_app` factory signatures.
    - SDK wiring → read `lang/python/sdk/src/lws_testing/_transport/inprocess.py` and `_extended_services.py`
    - Shared middleware → read an existing middleware file and its wiring across provider routes
    - E2E suite → read an existing suite's `given/`, `when/`, `then/`, `conftest.py`, `constants.py`

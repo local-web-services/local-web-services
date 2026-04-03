@@ -12,7 +12,6 @@ from typing import Any
 
 from fastapi import FastAPI, Request, Response
 
-from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
@@ -25,6 +24,7 @@ from lws.providers._shared.per_account_state import (
     PerAccountStateRegistry,
     extract_account_id_from_token,
 )
+from lws.providers._shared.provider_context import ProviderContext
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
 from lws.providers.ssm._ssm_lifecycle import (
     check_multi_param_lifecycle,
@@ -310,7 +310,7 @@ def create_ssm_app(
     iam_auth: IamAuthBundle | None = None,
     state: _SsmState | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
-    cloudtrail_provider: ICloudTrail | None = None,
+    context: ProviderContext | None = None,
     registry: PerAccountStateRegistry[_SsmState] | None = None,
 ) -> tuple[FastAPI, _SsmState]:
     """Create a FastAPI application that speaks the SSM wire protocol.
@@ -348,5 +348,5 @@ def create_ssm_app(
             _account_trackers[account_id] = ResourceStateTracker(_lc)
         return await _ssm_dispatch(request, _state, _lc, _account_trackers[account_id])
 
-    apply_cloudtrail_middleware(app, cloudtrail_provider, "ssm")
+    apply_cloudtrail_middleware(app, context.cloudtrail if context else None, "ssm")
     return app, default_state

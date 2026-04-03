@@ -11,7 +11,6 @@ import asyncio  # needed for Lock type in _transaction_locks
 
 from fastapi import APIRouter, FastAPI, Request, Response
 
-from lws.interfaces.cloudtrail import ICloudTrail  # noqa: TC001
 from lws.interfaces.key_value_store import (
     IKeyValueStore,
 )
@@ -23,6 +22,7 @@ from lws.providers._shared.aws_cloudtrail_middleware import apply_cloudtrail_mid
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
+from lws.providers._shared.provider_context import ProviderContext
 from lws.providers.dynamodb._dynamodb_helpers import (
     _error_response,
     _json_response,
@@ -463,7 +463,7 @@ def create_dynamodb_app(
     lifecycle: ResourceLifecycleConfig | None = None,
     capacity: AwsCapacityConfig | None = None,
     tracker_ref: list | None = None,
-    cloudtrail_provider: ICloudTrail | None = None,
+    context: ProviderContext | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the DynamoDB wire protocol."""
     app = FastAPI()
@@ -477,5 +477,5 @@ def create_dynamodb_app(
     if tracker_ref is not None:
         tracker_ref.append(dynamo_router._tracker)  # pylint: disable=protected-access
     app.include_router(dynamo_router.router)
-    apply_cloudtrail_middleware(app, cloudtrail_provider, "dynamodb")
+    apply_cloudtrail_middleware(app, context.cloudtrail if context else None, "dynamodb")
     return app
