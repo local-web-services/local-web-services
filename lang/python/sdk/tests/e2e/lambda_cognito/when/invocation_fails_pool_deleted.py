@@ -21,4 +21,4 @@ def invocation_fails_pool_deleted(lws_session, world):
         world["error"] = RuntimeError("Pool is not deleted")
         return
     # Act
-    lws_session.inject_state("lambda", "invocation", invocation_id, "FAILED")
+    lws_session.inject_state_unchecked("lambda", "invocation", invocation_id, "FAILED")

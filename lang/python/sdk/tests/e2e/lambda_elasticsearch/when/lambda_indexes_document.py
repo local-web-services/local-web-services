@@ -30,4 +30,4 @@ def lambda_indexes_document(lws_session, world):
     if lws_session.capacity("es").is_exhausted():
         world["error"] = RuntimeError("No document slot is available")
         return
-    lws_session.inject_state("lambda", "invocation", invocation_id, "SUCCESS")
+    lws_session.inject_state_unchecked("lambda", "invocation", invocation_id, "SUCCESS")

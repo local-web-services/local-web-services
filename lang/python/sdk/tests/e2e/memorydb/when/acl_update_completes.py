@@ -10,7 +10,7 @@ from ..constants import TEST_ACL
 @when('an "memorydb" "ACL" update completes')
 def acl_update_completes(lws_session, world):
     try:
-        lws_session.inject_state(
+        lws_session.inject_state_unchecked(
             "memorydb",
             "acl",
             world.get("acl_id", TEST_ACL),

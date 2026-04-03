@@ -22,7 +22,7 @@ def invoke_function(lws_session, world):
         func_state = resp.get("Configuration", {}).get("State", "")
         if func_state != "Active":
             raise RuntimeError(f"Function is not Active: {func_state!r}")
-        lws_session.inject_state("lambda", "invocation", invocation_id, "IN_PROGRESS")
+        lws_session.inject_state_unchecked("lambda", "invocation", invocation_id, "IN_PROGRESS")
         world["invocation_id"] = invocation_id
         world["error"] = None
     except (ClientError, Exception) as exc:

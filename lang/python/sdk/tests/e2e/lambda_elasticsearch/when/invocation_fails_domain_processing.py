@@ -27,4 +27,4 @@ def invocation_fails_domain_processing(lws_session, world):
         world["error"] = RuntimeError("Domain does not exist")
         return
     # Act
-    lws_session.inject_state("lambda", "invocation", invocation_id, "FAILED")
+    lws_session.inject_state_unchecked("lambda", "invocation", invocation_id, "FAILED")

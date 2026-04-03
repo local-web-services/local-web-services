@@ -24,4 +24,4 @@ def invocation_fails_secret_pending(lws_session, world):
         world["error"] = RuntimeError("Secret does not exist")
         return
     # Act
-    lws_session.inject_state("lambda", "invocation", invocation_id, "FAILED")
+    lws_session.inject_state_unchecked("lambda", "invocation", invocation_id, "FAILED")

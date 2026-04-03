@@ -10,6 +10,6 @@ from ..constants import TEST_CLUSTER
 @when('a "documentdb" "cluster" deletion completes')
 def cluster_deletion_completes(lws_session, world):
     try:
-        lws_session.inject_state("docdb", "cluster", TEST_CLUSTER, "deleted")
+        lws_session.inject_state_unchecked("docdb", "cluster", TEST_CLUSTER, "deleted")
     except RuntimeError as exc:
         world["error"] = exc

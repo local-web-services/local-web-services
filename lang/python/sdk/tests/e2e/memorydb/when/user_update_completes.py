@@ -10,7 +10,7 @@ from ..constants import TEST_USER
 @when('a "memorydb" "user" update completes')
 def user_update_completes(lws_session, world):
     try:
-        lws_session.inject_state(
+        lws_session.inject_state_unchecked(
             "memorydb",
             "user",
             world.get("user_id", TEST_USER),

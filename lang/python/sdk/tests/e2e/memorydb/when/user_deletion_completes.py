@@ -10,7 +10,7 @@ from ..constants import TEST_USER
 @when('a "memorydb" "user" deletion completes')
 def user_deletion_completes(lws_session, world):
     try:
-        lws_session.inject_state(
+        lws_session.inject_state_unchecked(
             "memorydb",
             "user",
             world.get("user_id", TEST_USER),

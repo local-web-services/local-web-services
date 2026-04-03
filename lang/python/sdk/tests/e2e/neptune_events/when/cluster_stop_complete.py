@@ -10,7 +10,7 @@ from ..constants import TEST_CLUSTER
 @when('the "neptune" "cluster" finishes stopping')
 def cluster_stop_complete(lws_session, world):
     try:
-        lws_session.inject_state(
+        lws_session.inject_state_unchecked(
             "neptune",
             "cluster",
             world.get("cluster_id", TEST_CLUSTER),

@@ -4,7 +4,7 @@
 
 ## 2. LwsSession
 
-- [x] 2.1 In `lang/python/sdk/src/lws_testing/session.py`, update `LwsSession.inject_state()` to catch `InjectStateNotTracked` and call `pytest.skip()` with a message of the form `"inject_state: {service}/{resource_type}/{resource_id} is not tracked — skipping"`
+- [x] 2.1 In `lang/python/sdk/src/lws_testing/session.py`, keep `LwsSession.inject_state()` auto-skipping on `InjectStateNotTracked` (for Given steps); add `inject_state_unchecked()` that converts `InjectStateNotTracked` to `RuntimeError` (for When steps); bulk-update all 131 When step files to use `inject_state_unchecked()` so they continue to capture the rejection in `world["error"]`
 
 ## 3. Makefile Cleanup
 
@@ -13,11 +13,11 @@
 
 ## 4. Tests
 
-- [x] 4.1 Add a unit test in `lang/python/sdk/tests/unit/` for `inject_state` 404 → skip behaviour (mock the HTTP response, assert `pytest.skip` is raised)
+- [x] 4.1 Add unit tests in `lang/python/sdk/tests/unit/` for `inject_state` 404 → skip behaviour and `inject_state_unchecked` 404 → `RuntimeError`
 - [x] 4.2 Add a unit test confirming that 409 and 400 responses still raise `RuntimeError`
 
 ## 5. Validation
 
 - [x] 5.1 Run `make -C lang/python/sdk test-unit` — all unit tests pass
-- [ ] 5.2 Run `make -C lang/python/sdk test-e2e-guard SUITE=tests/e2e/elasticache` locally to confirm the guard run collects lifecycle scenarios and skips (not fails) the ones that cannot inject state
+- [x] 5.2 Run `make -C lang/python/sdk test-e2e-guard SUITE=tests/e2e/elasticache` locally to confirm the guard run collects lifecycle scenarios and skips (not fails) the ones that cannot inject state
 - [ ] 5.3 Confirm CI `python-sdk-test-e2e-guard` job recovers to ≥ 900 passing tests (close to the PR #60 baseline of 1030)

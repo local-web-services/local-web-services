@@ -16,4 +16,4 @@ def invocation_succeeds_cache_hit(lws_session, world):
     if not world.get("cached_entry_exists", False):
         world["error"] = RuntimeError('No "CACHED" entry exists in the cluster')
         return
-    lws_session.inject_state("lambda", "invocation", invocation_id, "SUCCESS")
+    lws_session.inject_state_unchecked("lambda", "invocation", invocation_id, "SUCCESS")

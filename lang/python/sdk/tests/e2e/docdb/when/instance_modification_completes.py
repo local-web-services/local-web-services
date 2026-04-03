@@ -10,7 +10,7 @@ from ..constants import TEST_INSTANCE
 @when('a "documentdb" "instance" modification completes')
 def instance_modification_completes(lws_session, world):
     try:
-        lws_session.inject_state(
+        lws_session.inject_state_unchecked(
             "docdb",
             "instance",
             world.get("instance_id", TEST_INSTANCE),

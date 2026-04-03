@@ -24,4 +24,4 @@ def caller_invokes_callee_succeeds(lws_session, world):
         world["error"] = exc
         return
     # Act
-    lws_session.inject_state("lambda", "invocation", invocation_id, "SUCCESS")
+    lws_session.inject_state_unchecked("lambda", "invocation", invocation_id, "SUCCESS")

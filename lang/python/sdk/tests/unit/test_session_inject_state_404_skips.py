@@ -1,4 +1,4 @@
-"""Unit tests: LwsSession.inject_state() skips on 404 not-tracked response."""
+"""Unit tests: LwsSession inject_state / inject_state_unchecked on 404 responses."""
 
 from __future__ import annotations
 
@@ -37,3 +37,15 @@ def test_inject_state_skip_message_includes_resource_path():
     assert (
         expected_fragment in actual_message
     ), f"Expected skip message to contain {expected_fragment!r} but got {actual_message!r}"
+
+
+def test_inject_state_unchecked_raises_runtime_error_when_not_tracked():
+    # Arrange
+    session = LwsSession()
+    session._mgmt_port = 19000
+    mock_response = MagicMock(status_code=404, text='{"error": "cluster \'my-id\' is not tracked"}')
+
+    # Act / Assert
+    with patch("httpx.put", return_value=mock_response):
+        with pytest.raises(RuntimeError):
+            session.inject_state_unchecked("elasticache", "cluster", "my-id", "modifying")

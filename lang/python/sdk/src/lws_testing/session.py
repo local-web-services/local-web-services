@@ -291,7 +291,11 @@ class LwsSession:
         httpx.post(f"http://127.0.0.1:{self._mgmt_port}/_ldk/reset")
 
     def inject_state(self, service: str, resource_type: str, resource_id: str, state: str) -> None:
-        """Inject a resource state via PUT /_ldk/state/{service}/{resource_type}/{resource_id}."""
+        """Inject a resource state via PUT /_ldk/state/{service}/{resource_type}/{resource_id}.
+
+        Skips the test if the resource is not tracked by the lifecycle tracker.
+        Use this in Given steps. For When steps, use inject_state_unchecked() instead.
+        """
         import pytest  # pylint: disable=import-outside-toplevel
 
         from lws_testing._management.state import (  # pylint: disable=import-outside-toplevel  # noqa: E501
@@ -307,6 +311,26 @@ class LwsSession:
             pytest.skip(
                 f"inject_state: {service}/{resource_type}/{resource_id} is not tracked — skipping"
             )
+
+    def inject_state_unchecked(
+        self, service: str, resource_type: str, resource_id: str, state: str
+    ) -> None:
+        """Inject a resource state, raising RuntimeError if the resource is not tracked.
+
+        Use this in When steps where a 404 'not tracked' response means the
+        operation was rejected and should be captured in world["error"].
+        """
+        from lws_testing._management.state import (  # pylint: disable=import-outside-toplevel
+            InjectStateNotTracked,
+        )
+        from lws_testing._management.state import (
+            inject_state as _inject_state,
+        )
+
+        try:
+            _inject_state(self._mgmt_port, service, resource_type, resource_id, state)
+        except InjectStateNotTracked as exc:
+            raise RuntimeError(str(exc)) from exc
 
     def clear_injected_state(self, service: str, resource_type: str, resource_id: str) -> None:
         """Clear an injected resource state via DELETE /_ldk/state."""

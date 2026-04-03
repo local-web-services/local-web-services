@@ -10,7 +10,7 @@ from ..constants import TEST_DB
 @when('a multi-"AZ" failover is triggered on a "rds" "instance"')
 def multi_az_failover(lws_session, world):
     try:
-        lws_session.inject_state(
+        lws_session.inject_state_unchecked(
             "rds",
             "instance",
             world.get("instance_id", TEST_DB),

@@ -16,4 +16,4 @@ def invocation_fails_param_not_found(lws_session, world):
         world["error"] = RuntimeError("Parameter is not DELETED")
         return
     # Act
-    lws_session.inject_state("lambda", "invocation", invocation_id, "FAILED")
+    lws_session.inject_state_unchecked("lambda", "invocation", invocation_id, "FAILED")

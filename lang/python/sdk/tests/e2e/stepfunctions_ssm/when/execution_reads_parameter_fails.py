@@ -33,7 +33,7 @@ def execution_reads_parameter_fails(lws_session, world):
         )
     except Exception:
         pass
-    lws_session.inject_state("stepfunctions", "execution", execution_arn, "FAILED")
+    lws_session.inject_state_unchecked("stepfunctions", "execution", execution_arn, "FAILED")
     # Assert
     world["result"] = {"executionArn": execution_arn}
     world["error"] = None

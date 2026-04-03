@@ -10,7 +10,7 @@ from ..constants import TEST_CLUSTER
 @when('a "memorydb" "cluster" update completes')
 def cluster_update_completes(lws_session, world):
     try:
-        lws_session.inject_state(
+        lws_session.inject_state_unchecked(
             "memorydb",
             "cluster",
             world.get("cluster_id", TEST_CLUSTER),

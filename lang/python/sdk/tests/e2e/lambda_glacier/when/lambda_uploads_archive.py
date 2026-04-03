@@ -24,4 +24,4 @@ def lambda_uploads_archive(lws_session, world):
         world["error"] = RuntimeError("No archive slot is available")
         return
     # Act
-    lws_session.inject_state("lambda", "invocation", invocation_id, "SUCCESS")
+    lws_session.inject_state_unchecked("lambda", "invocation", invocation_id, "SUCCESS")

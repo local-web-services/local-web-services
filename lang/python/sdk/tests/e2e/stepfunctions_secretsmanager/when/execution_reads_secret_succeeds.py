@@ -34,7 +34,7 @@ def execution_reads_secret_succeeds(lws_session, world):
         )
     except Exception:
         pass
-    lws_session.inject_state("stepfunctions", "execution", execution_arn, "SUCCEEDED")
+    lws_session.inject_state_unchecked("stepfunctions", "execution", execution_arn, "SUCCEEDED")
     # Assert
     world["result"] = {"executionArn": execution_arn}
     world["error"] = None

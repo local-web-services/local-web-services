@@ -10,7 +10,7 @@ from ..constants import TEST_SNAPSHOT
 @when('a "rds" "snapshot" finishes creating')
 def snapshot_finishes_creating(lws_session, world):
     try:
-        lws_session.inject_state(
+        lws_session.inject_state_unchecked(
             "rds",
             "snapshot",
             world.get("snapshot_id", TEST_SNAPSHOT),

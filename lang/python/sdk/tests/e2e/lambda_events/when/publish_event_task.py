@@ -24,4 +24,4 @@ def publish_event_task(lws_session, world):
         world["error"] = RuntimeError("No event slot is available")
         return
     # Act
-    lws_session.inject_state("lambda", "invocation", invocation_id, "SUCCESS")
+    lws_session.inject_state_unchecked("lambda", "invocation", invocation_id, "SUCCESS")

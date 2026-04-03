@@ -17,7 +17,7 @@ def lambda_indexes_document(lws_session, world):
             raise RuntimeError("OpenSearch index does not exist")
         if lws_session.capacity("opensearch").is_exhausted():
             raise RuntimeError("No document slot is available")
-        lws_session.inject_state("lambda", "invocation", invocation_id, "SUCCESS")
+        lws_session.inject_state_unchecked("lambda", "invocation", invocation_id, "SUCCESS")
         world["error"] = None
     except Exception as exc:
         world["error"] = exc

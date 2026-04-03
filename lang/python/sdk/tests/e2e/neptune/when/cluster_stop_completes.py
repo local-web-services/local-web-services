@@ -10,6 +10,6 @@ from ..constants import TEST_CLUSTER
 @when('a "neptune" "cluster" stop completes')
 def cluster_stop_completes(lws_session, world):
     try:
-        lws_session.inject_state("neptune", "cluster", TEST_CLUSTER, "stopped")
+        lws_session.inject_state_unchecked("neptune", "cluster", TEST_CLUSTER, "stopped")
     except RuntimeError as exc:
         world["error"] = exc

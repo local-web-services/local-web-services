@@ -13,4 +13,4 @@ def invocation_fails_db_unavailable(lws_session, world):
         world["error"] = RuntimeError("No invocation is in progress")
         return
     # Act
-    lws_session.inject_state("lambda", "invocation", invocation_id, "FAILED")
+    lws_session.inject_state_unchecked("lambda", "invocation", invocation_id, "FAILED")

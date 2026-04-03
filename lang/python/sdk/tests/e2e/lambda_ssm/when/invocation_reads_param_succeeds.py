@@ -16,4 +16,4 @@ def invocation_reads_param_succeeds(lws_session, world):
         world["error"] = RuntimeError("Parameter does not exist or is DELETED")
         return
     # Act
-    lws_session.inject_state("lambda", "invocation", invocation_id, "SUCCESS")
+    lws_session.inject_state_unchecked("lambda", "invocation", invocation_id, "SUCCESS")

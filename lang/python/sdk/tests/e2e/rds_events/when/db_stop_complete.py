@@ -10,7 +10,7 @@ from ..constants import TEST_DB_INSTANCE
 @when('the "rds" "DB instance" finishes stopping')
 def db_stop_complete(lws_session, world):
     try:
-        lws_session.inject_state(
+        lws_session.inject_state_unchecked(
             "rds",
             "instance",
             world.get("instance_id", TEST_DB_INSTANCE),

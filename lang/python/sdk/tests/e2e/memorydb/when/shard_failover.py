@@ -10,7 +10,7 @@ from ..constants import TEST_CLUSTER
 @when('a shard failover is triggered on a multi-"AZ" "memorydb" "cluster"')
 def shard_failover(lws_session, world):
     try:
-        lws_session.inject_state(
+        lws_session.inject_state_unchecked(
             "memorydb",
             "cluster",
             world.get("cluster_id", TEST_CLUSTER),
