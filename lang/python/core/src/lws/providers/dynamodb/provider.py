@@ -27,8 +27,10 @@ from lws.providers.dynamodb._dynamo_query import (
     _VersionStore,
 )
 from lws.providers.dynamodb._provider_helpers import (
+    _create_gsi_tables,
     _extract_key_value,
     _extract_sk,
+    _gsi_table_name,
     _setup_table_connection,
     _validate_batch_size,
     _validate_batch_size_count,
@@ -142,13 +144,7 @@ class SqliteDynamoProvider(IKeyValueStore):
             )
 
             # GSI tables
-            for gsi in config.gsi_definitions:
-                await conn.execute(
-                    f"CREATE TABLE IF NOT EXISTS gsi_{gsi.index_name} "
-                    "(pk TEXT, sk TEXT, item_json TEXT, PRIMARY KEY (pk, sk))"
-                )
-
-            await conn.commit()
+            await _create_gsi_tables(conn, config.gsi_definitions)
 
         if self._stream_dispatcher is not None:
             for table_name, config in self._tables.items():
@@ -203,7 +199,7 @@ class SqliteDynamoProvider(IKeyValueStore):
             )
             gsi_tables = [row[0] async for row in cursor]
             for gsi_table in gsi_tables:
-                await conn.execute(f"DELETE FROM {gsi_table}")
+                await conn.execute(f'DELETE FROM "{gsi_table}"')
             await conn.commit()
         self._version_store = _VersionStore(delay_ms=self._consistency_delay_ms)
 
@@ -236,6 +232,8 @@ class SqliteDynamoProvider(IKeyValueStore):
         )
 
         # Maintain GSI tables with projection support (P1-22)
+        # INSERT OR REPLACE on (table_pk, table_sk) handles both new items and
+        # updates (including GSI key changes) atomically.
         for gsi in config.gsi_definitions:
             await self._update_gsi_entry(conn, gsi, item, config)
 
@@ -294,7 +292,7 @@ class SqliteDynamoProvider(IKeyValueStore):
         if old_item_json is not None:
             item = json.loads(old_item_json)
             for gsi in config.gsi_definitions:
-                await self._delete_gsi_entry(conn, gsi, item)
+                await self._delete_gsi_entry(conn, gsi, item, config)
 
         await conn.commit()
 
@@ -351,7 +349,7 @@ class SqliteDynamoProvider(IKeyValueStore):
         if table_name not in self._tables:
             raise KeyError(f"Table not found: {table_name}")
         conn = self._connections[table_name]
-        table = f"gsi_{index_name}" if index_name else "items"
+        table = _gsi_table_name(index_name) if index_name else "items"
 
         where, params = _parse_key_condition(key_condition, expression_values, expression_names)
 
@@ -487,9 +485,10 @@ class SqliteDynamoProvider(IKeyValueStore):
         conn: aiosqlite.Connection,
         gsi: GsiDefinition,
         item: dict,
+        table_config: TableConfig,
     ) -> None:
         """Delete an item from a GSI table."""
-        await delete_gsi_entry(conn, gsi, item)
+        await delete_gsi_entry(conn, gsi, item, table_config)
 
     def _apply_gsi_projection(
         self, table_name: str, index_name: str, items: list[dict]

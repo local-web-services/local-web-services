@@ -189,3 +189,127 @@ class TestGSI:
         assert (
             len(results) == expected_count
         ), f"Expected {expected_count!r} but got {len(results)!r}"
+
+    async def test_sparse_gsi_excludes_items_without_gsi_key(
+        self, gsi_provider: SqliteDynamoProvider
+    ) -> None:
+        # Arrange
+        await gsi_provider.put_item(
+            "orders",
+            {
+                "orderId": "o1",
+                "itemId": "i1",
+                "status": "shipped",
+                "createdAt": "2024-01-01",
+            },
+        )
+        await gsi_provider.put_item(
+            "orders",
+            {
+                "orderId": "o2",
+                "itemId": "i2",
+                "createdAt": "2024-01-02",
+            },
+        )
+        expected_count = 1
+
+        # Act
+        results = await gsi_provider.query(
+            "orders",
+            "status = :s",
+            expression_values={":s": "shipped"},
+            index_name="byStatus",
+        )
+
+        # Assert
+        assert (
+            len(results) == expected_count
+        ), f"Expected {expected_count!r} (sparse item excluded) but got {len(results)!r}"
+
+    async def test_update_item_propagates_to_gsi(self, gsi_provider: SqliteDynamoProvider) -> None:
+        # Arrange
+        await gsi_provider.put_item(
+            "orders",
+            {
+                "orderId": "o1",
+                "itemId": "i1",
+                "status": "pending",
+                "createdAt": "2024-01-01",
+            },
+        )
+        await gsi_provider.put_item(
+            "orders",
+            {
+                "orderId": "o1",
+                "itemId": "i1",
+                "status": "shipped",
+                "createdAt": "2024-01-01",
+            },
+        )
+        expected_count_shipped = 1
+        expected_count_pending = 0
+
+        # Act
+        shipped_results = await gsi_provider.query(
+            "orders",
+            "status = :s",
+            expression_values={":s": "shipped"},
+            index_name="byStatus",
+        )
+        pending_results = await gsi_provider.query(
+            "orders",
+            "status = :s",
+            expression_values={":s": "pending"},
+            index_name="byStatus",
+        )
+
+        # Assert
+        assert (
+            len(shipped_results) == expected_count_shipped
+        ), f"Expected {expected_count_shipped!r} but got {len(shipped_results)!r}"
+        assert len(pending_results) == expected_count_pending, (
+            f"Expected {expected_count_pending!r} (old GSI entry removed)"
+            f" but got {len(pending_results)!r}"
+        )
+
+    async def test_gsi_sort_key_range_returns_multiple_items(
+        self, gsi_provider: SqliteDynamoProvider
+    ) -> None:
+        # Arrange
+        await gsi_provider.put_item(
+            "orders",
+            {
+                "orderId": "o1",
+                "itemId": "i1",
+                "status": "shipped",
+                "createdAt": "2024-01-01",
+            },
+        )
+        await gsi_provider.put_item(
+            "orders",
+            {
+                "orderId": "o2",
+                "itemId": "i2",
+                "status": "shipped",
+                "createdAt": "2024-01-02",
+            },
+        )
+        expected_count = 2
+
+        # Act
+        results = await gsi_provider.query(
+            "orders",
+            "status = :s",
+            expression_values={":s": "shipped"},
+            index_name="byStatus",
+        )
+
+        # Assert
+        assert (
+            len(results) == expected_count
+        ), f"Expected {expected_count!r} items with same GSI PK but got {len(results)!r}"
+        actual_order_ids = {r["orderId"] for r in results}
+        expected_order_ids = {"o1", "o2"}
+        assert (
+            actual_order_ids == expected_order_ids
+        ), f"Expected {expected_order_ids!r} but got {actual_order_ids!r}"

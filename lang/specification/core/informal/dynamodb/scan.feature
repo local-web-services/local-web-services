@@ -1,8 +1,8 @@
 @dynamodb @generated
-Feature: Dynamodb - All "Dynamodb" "Item"S In The "Dynamodb" "Table" Are Scanned
+Feature: DYNAMODB - All "Dynamodb" "Item"S In The "Dynamodb" "Table" Are Scanned
 
   # Generated from FizzBee spec: dynamodb.fizz
-  # Safety invariants: TableStatusValid, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
+  # Safety invariants: TableStatusValid, GsiQueryOnlyWhenTableActive, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
 
   Background:
     Given the system is initialized
@@ -15,6 +15,7 @@ Feature: Dynamodb - All "Dynamodb" "Item"S In The "Dynamodb" "Table" Are Scanned
     When all "dynamodb" "item"s in the "dynamodb" "table" are scanned
     Then all "dynamodb" "item"s will be returned
     And every "dynamodb" "table" has a valid status ("CREATING", "ACTIVE", or "DELETED")
+    And "dynamodb" "GSI" pending writes exist only for "ACTIVE" "dynamodb" "table"s
     And "dynamodb" "GSI" pending write count is never negative
     And "dynamodb" "transaction" status is always a valid value
     And a pending "dynamodb" "transaction" always references an existing "dynamodb" "table"

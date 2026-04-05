@@ -5,6 +5,7 @@ from .deleted_tables_not_target_of_pending_transaction import *  # noqa: F401,F4
 from .every_table_has_valid_status import *  # noqa: F401,F403
 from .gsi_is_consistent_with_table import *  # noqa: F401,F403
 from .gsi_pending_write_count_non_negative import *  # noqa: F401,F403
+from .gsi_query_only_when_table_active import *  # noqa: F401,F403
 from .item_deleted_or_unchanged_then import *  # noqa: F401,F403
 from .item_does_not_exist_then import *  # noqa: F401,F403
 from .item_exists_and_gsi_pending_then import *  # noqa: F401,F403
@@ -15,6 +16,7 @@ from .item_value_returned_then import *  # noqa: F401,F403
 from .item_written_if_condition_holds_then import *  # noqa: F401,F403
 from .items_only_in_non_deleted_tables import *  # noqa: F401,F403
 from .list_of_tables_returned_then import *  # noqa: F401,F403
+from .matching_items_returned_from_gsi import *  # noqa: F401,F403
 from .matching_items_returned_then import *  # noqa: F401,F403
 from .pending_transaction_references_existing_table import *  # noqa: F401,F403
 from .query_results_contain_item_then import *  # noqa: F401,F403

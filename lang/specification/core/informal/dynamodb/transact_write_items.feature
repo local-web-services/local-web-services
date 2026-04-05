@@ -1,8 +1,8 @@
 @dynamodb @generated
-Feature: Dynamodb - A Transactional Write Is Initiated Across One Or More Items In A "Dynamodb" "Table"
+Feature: DYNAMODB - A Transactional Write Is Initiated Across One Or More Items In A "Dynamodb" "Table"
 
   # Generated from FizzBee spec: dynamodb.fizz
-  # Safety invariants: TableStatusValid, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
+  # Safety invariants: TableStatusValid, GsiQueryOnlyWhenTableActive, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
 
   Background:
     Given the system is initialized
@@ -16,6 +16,7 @@ Feature: Dynamodb - A Transactional Write Is Initiated Across One Or More Items 
     When a transactional write is initiated across one or more items in a "dynamodb" "table"
     Then the "dynamodb" "transaction" will be "PENDING"
     And every "dynamodb" "table" has a valid status ("CREATING", "ACTIVE", or "DELETED")
+    And "dynamodb" "GSI" pending writes exist only for "ACTIVE" "dynamodb" "table"s
     And "dynamodb" "GSI" pending write count is never negative
     And "dynamodb" "transaction" status is always a valid value
     And a pending "dynamodb" "transaction" always references an existing "dynamodb" "table"

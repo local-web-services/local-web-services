@@ -1,8 +1,8 @@
 @dynamodb @generated
-Feature: Dynamodb - "Dynamodb" "Item"S Are Queried From The "Dynamodb" "Table" By Key
+Feature: DYNAMODB - "Dynamodb" "Item"S Are Queried From The "Dynamodb" "Table" By Key
 
   # Generated from FizzBee spec: dynamodb.fizz
-  # Safety invariants: TableStatusValid, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
+  # Safety invariants: TableStatusValid, GsiQueryOnlyWhenTableActive, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
 
   Background:
     Given the system is initialized
@@ -15,6 +15,7 @@ Feature: Dynamodb - "Dynamodb" "Item"S Are Queried From The "Dynamodb" "Table" B
     When "dynamodb" "item"s are queried from the "dynamodb" "table" by key
     Then matching "dynamodb" "item"s will be returned
     And every "dynamodb" "table" has a valid status ("CREATING", "ACTIVE", or "DELETED")
+    And "dynamodb" "GSI" pending writes exist only for "ACTIVE" "dynamodb" "table"s
     And "dynamodb" "GSI" pending write count is never negative
     And "dynamodb" "transaction" status is always a valid value
     And a pending "dynamodb" "transaction" always references an existing "dynamodb" "table"

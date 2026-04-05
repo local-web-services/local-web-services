@@ -66,6 +66,26 @@ def _extract_sk(item: dict, config: TableConfig) -> str:
 # ---------------------------------------------------------------------------
 
 
+async def _create_gsi_tables(conn, gsi_definitions: list) -> None:
+    """Create GSI SQLite tables for *gsi_definitions* on *conn* and commit."""
+    for gsi in gsi_definitions:
+        await conn.execute(
+            f"CREATE TABLE IF NOT EXISTS {_gsi_table_name(gsi.index_name)} "
+            "(pk TEXT, sk TEXT, table_pk TEXT, table_sk TEXT, item_json TEXT,"
+            " PRIMARY KEY (table_pk, table_sk))"
+        )
+    await conn.commit()
+
+
+def _gsi_table_name(index_name: str) -> str:
+    """Return a double-quoted SQLite identifier for a GSI table.
+
+    Index names may contain hyphens (e.g. 'by-status'), which are invalid in
+    unquoted SQLite identifiers.  Wrapping in double-quotes makes them safe.
+    """
+    return f'"gsi_{index_name}"'
+
+
 def _project_item_for_gsi(item: dict, gsi: GsiDefinition, table_config: TableConfig) -> str:
     """Project an item according to the GSI projection type.
 
@@ -278,12 +298,7 @@ async def _setup_table_connection(
         # aiosqlite thread start/stop cycle on every per-test reset.
         recycled_connections.discard(table_name)
         conn = connections[table_name]
-        for gsi in config.gsi_definitions:
-            await conn.execute(
-                f"CREATE TABLE IF NOT EXISTS gsi_{gsi.index_name} "
-                "(pk TEXT, sk TEXT, item_json TEXT, PRIMARY KEY (pk, sk))"
-            )
-        await conn.commit()
+        await _create_gsi_tables(conn, config.gsi_definitions)
         return conn
 
     db_dir = Path(data_dir) / "dynamodb"
@@ -296,12 +311,7 @@ async def _setup_table_connection(
         "CREATE TABLE IF NOT EXISTS items "
         "(pk TEXT, sk TEXT, item_json TEXT, PRIMARY KEY (pk, sk))"
     )
-    for gsi in config.gsi_definitions:
-        await conn.execute(
-            f"CREATE TABLE IF NOT EXISTS gsi_{gsi.index_name} "
-            "(pk TEXT, sk TEXT, item_json TEXT, PRIMARY KEY (pk, sk))"
-        )
-    await conn.commit()
+    await _create_gsi_tables(conn, config.gsi_definitions)
     return conn
 
 
@@ -326,15 +336,24 @@ async def update_gsi_entry(
     item: dict,
     table_config: TableConfig,
 ) -> None:
-    """Insert or replace an item in a GSI table with projection support."""
+    """Insert or replace an item in a GSI table with projection support.
+
+    Primary key is (table_pk, table_sk) so that:
+    - Multiple items with the same GSI key each get their own row.
+    - Re-putting the same table item (even with a changed GSI key) automatically
+      replaces the old GSI row via INSERT OR REPLACE.
+    """
     gsi_pk = _extract_key_value(item, gsi.key_schema.partition_key)
     if not gsi_pk:
-        return  # Item doesn't project into this GSI
+        return  # Item doesn't project into this GSI (sparse index)
     gsi_sk = _extract_key_value(item, gsi.key_schema.sort_key) if gsi.key_schema.sort_key else ""
+    table_pk = _extract_key_value(item, table_config.key_schema.partition_key)
+    table_sk = _extract_sk(item, table_config)
     projected_json = _project_item_for_gsi(item, gsi, table_config)
     await conn.execute(
-        f"INSERT OR REPLACE INTO gsi_{gsi.index_name} (pk, sk, item_json) VALUES (?, ?, ?)",
-        (gsi_pk, gsi_sk, projected_json),
+        f"INSERT OR REPLACE INTO {_gsi_table_name(gsi.index_name)}"
+        " (pk, sk, table_pk, table_sk, item_json) VALUES (?, ?, ?, ?, ?)",
+        (gsi_pk, gsi_sk, table_pk, table_sk, projected_json),
     )
 
 
@@ -342,13 +361,14 @@ async def delete_gsi_entry(
     conn: aiosqlite.Connection,
     gsi: GsiDefinition,
     item: dict,
+    table_config: TableConfig,
 ) -> None:
-    """Delete an item from a GSI table."""
-    gsi_pk = _extract_key_value(item, gsi.key_schema.partition_key)
-    gsi_sk = _extract_key_value(item, gsi.key_schema.sort_key) if gsi.key_schema.sort_key else ""
+    """Delete an item from a GSI table by its table primary key."""
+    table_pk = _extract_key_value(item, table_config.key_schema.partition_key)
+    table_sk = _extract_sk(item, table_config)
     await conn.execute(
-        f"DELETE FROM gsi_{gsi.index_name} WHERE pk = ? AND sk = ?",
-        (gsi_pk, gsi_sk),
+        f"DELETE FROM {_gsi_table_name(gsi.index_name)} WHERE table_pk = ? AND table_sk = ?",
+        (table_pk, table_sk),
     )
 
 

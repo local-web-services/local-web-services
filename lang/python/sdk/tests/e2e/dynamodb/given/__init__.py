@@ -26,6 +26,7 @@ from .dynamodb_transaction_status_pending import *  # noqa: F401,F403
 from .dynamodb_transaction_status_rolled_back import *  # noqa: F401,F403
 from .dynamodb_transactional_write_initiated import *  # noqa: F401,F403
 from .dynamodb_write_throttling_toggled import *  # noqa: F401,F403
+from .gsi_existed import *  # noqa: F401,F403
 from .gsi_exists import *  # noqa: F401,F403
 from .item_does_not_exist import *  # noqa: F401,F403
 from .item_does_not_exist_in_table import *  # noqa: F401,F403
