@@ -1,8 +1,8 @@
 @dynamodb @generated
-Feature: Dynamodb - A "Dynamodb" "Table" Is Deleted
+Feature: DYNAMODB - A "Dynamodb" "Table" Is Deleted
 
   # Generated from FizzBee spec: dynamodb.fizz
-  # Safety invariants: TableStatusValid, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
+  # Safety invariants: TableStatusValid, GsiQueryOnlyWhenTableActive, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
 
   Background:
     Given the system is initialized
@@ -14,6 +14,7 @@ Feature: Dynamodb - A "Dynamodb" "Table" Is Deleted
     When a "dynamodb" "table" is deleted
     Then the "dynamodb" "table" will be in "DELETING" state and all its items will be removed
     And every "dynamodb" "table" has a valid status ("CREATING", "ACTIVE", or "DELETED")
+    And "dynamodb" "GSI" pending writes exist only for "ACTIVE" "dynamodb" "table"s
     And "dynamodb" "GSI" pending write count is never negative
     And "dynamodb" "transaction" status is always a valid value
     And a pending "dynamodb" "transaction" always references an existing "dynamodb" "table"

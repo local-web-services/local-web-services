@@ -1,8 +1,8 @@
 @dynamodb @generated
-Feature: Dynamodb - "Dynamodb" "Read" Throttling Is Toggled On Or Off
+Feature: DYNAMODB - "Dynamodb" "Read" Throttling Is Toggled On Or Off
 
   # Generated from FizzBee spec: dynamodb.fizz
-  # Safety invariants: TableStatusValid, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
+  # Safety invariants: TableStatusValid, GsiQueryOnlyWhenTableActive, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
 
   Background:
     Given the system is initialized
@@ -12,6 +12,7 @@ Feature: Dynamodb - "Dynamodb" "Read" Throttling Is Toggled On Or Off
     When "dynamodb" "read" throttling is toggled on or off
     Then "dynamodb" reads will be throttled or unthrottled
     And every "dynamodb" "table" has a valid status ("CREATING", "ACTIVE", or "DELETED")
+    And "dynamodb" "GSI" pending writes exist only for "ACTIVE" "dynamodb" "table"s
     And "dynamodb" "GSI" pending write count is never negative
     And "dynamodb" "transaction" status is always a valid value
     And a pending "dynamodb" "transaction" always references an existing "dynamodb" "table"

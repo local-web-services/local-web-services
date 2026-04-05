@@ -69,6 +69,7 @@ atomic action DeleteTable:
         if name in table_status:
             if table_status[name] == "ACTIVE":
                 table_status[name] = "DELETING"
+                gsi_pending[name] = 0
                 for pk in PK_VALUES:
                     for sk in SK_VALUES:
                         item_key = name + "#" + pk + "#" + sk
@@ -313,6 +314,21 @@ atomic action PropagateGSI:
             if gsi_pending[name] > 0:
                 gsi_pending[name] = 0
 
+# step: "dynamodb" "item"s are queried from a "dynamodb" "GSI"
+# result: matching "dynamodb" "item"s will be returned from the "dynamodb" "GSI"
+# guard: the "dynamodb" "GSI" existed
+# guard_violation: the "dynamodb" "GSI" did not exist
+# guard: the "dynamodb" "table" was "ACTIVE"
+# guard_violation_lifecycle: the "dynamodb" "table" was not "ACTIVE"
+# guard: there were no writes pending propagation to the "dynamodb" "GSI"
+# guard_violation: there were writes pending propagation to the "dynamodb" "GSI"
+atomic action QueryGSI:
+    oneof name in TABLE_NAMES:
+        if name in gsi_pending:
+            if table_status[name] == "ACTIVE":
+                if gsi_pending[name] == 0:
+                    pass
+
 # step: "dynamodb" "read" throttling is toggled on or off
 # result: "dynamodb" reads will be throttled or unthrottled
 atomic action SetThrottleReads:
@@ -332,6 +348,15 @@ always assertion TableStatusValid:
     for name in table_status:
         if table_status[name] not in ["CREATING", "ACTIVE", "DELETING", "DELETED"]:
             return False
+    return True
+
+# check: "dynamodb" "GSI" pending writes exist only for "ACTIVE" "dynamodb" "table"s
+always assertion GsiQueryOnlyWhenTableActive:
+    for name in gsi_pending:
+        if gsi_pending[name] > 0:
+            if name in table_status:
+                if table_status[name] != "ACTIVE":
+                    return False
     return True
 
 # check: "dynamodb" "GSI" pending write count is never negative

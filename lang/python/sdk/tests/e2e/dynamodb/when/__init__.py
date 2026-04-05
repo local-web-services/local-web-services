@@ -14,6 +14,7 @@ from .gsi_catches_up import *  # noqa: F401,F403
 from .list_tables import *  # noqa: F401,F403
 from .propagate_gsi import *  # noqa: F401,F403
 from .put_item import *  # noqa: F401,F403
+from .query_gsi import *  # noqa: F401,F403
 from .query_items_by_key import *  # noqa: F401,F403
 from .query_table import *  # noqa: F401,F403
 from .resolve_pending_transaction import *  # noqa: F401,F403

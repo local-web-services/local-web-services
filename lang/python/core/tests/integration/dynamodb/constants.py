@@ -12,6 +12,11 @@ TEST_ATTR_VAL = "attr-val-1"
 
 TEST_UPDATED_VAL = "attr-val-updated-1"
 
+GSI_TABLE = "int-test-gsi-tbl-1"
+GSI_INDEX = "by-status"
+GSI_PK = "status"
+GSI_PK_VALUE = "active"
+
 
 def _try_json(r) -> dict:
     try:

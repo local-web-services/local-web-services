@@ -1,6 +1,7 @@
 from .condition_is_not_satisfied import *  # noqa: F401,F403
 from .condition_is_satisfied import *  # noqa: F401,F403
-from .gsi_exists import *  # noqa: F401,F403
+from .gsi_did_not_exist import *  # noqa: F401,F403
+from .gsi_existed import *  # noqa: F401,F403
 from .item_does_not_exist import *  # noqa: F401,F403
 from .item_does_not_exist_in_table import *  # noqa: F401,F403
 from .item_exists import *  # noqa: F401,F403

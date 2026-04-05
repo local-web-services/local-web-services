@@ -1,8 +1,8 @@
 @dynamodb @generated
-Feature: Dynamodb - A "Dynamodb" "Gsi" Catches Up With Pending Write Propagation
+Feature: DYNAMODB - A "Dynamodb" "Gsi" Catches Up With Pending Write Propagation
 
   # Generated from FizzBee spec: dynamodb.fizz
-  # Safety invariants: TableStatusValid, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
+  # Safety invariants: TableStatusValid, GsiQueryOnlyWhenTableActive, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
 
   Background:
     Given the system is initialized
@@ -14,6 +14,7 @@ Feature: Dynamodb - A "Dynamodb" "Gsi" Catches Up With Pending Write Propagation
     When a "dynamodb" "GSI" catches up with pending write propagation
     Then the "dynamodb" "GSI" will be consistent with the "dynamodb" "table"
     And every "dynamodb" "table" has a valid status ("CREATING", "ACTIVE", or "DELETED")
+    And "dynamodb" "GSI" pending writes exist only for "ACTIVE" "dynamodb" "table"s
     And "dynamodb" "GSI" pending write count is never negative
     And "dynamodb" "transaction" status is always a valid value
     And a pending "dynamodb" "transaction" always references an existing "dynamodb" "table"
