@@ -34,9 +34,9 @@ from lws.cli._ldk_providers_core import (  # noqa: F401  # pylint: disable=unuse
 )
 from lws.cli._ldk_providers_extended import (  # noqa: F401  # pylint: disable=unused-import
     _register_experimental_providers,
-    _register_organizations_provider,
     _register_simple_providers,
     _register_ssm_secretsmanager_providers,
+    _wire_organizations_provider,
 )
 from lws.config.loader import LdkConfig
 from lws.graph.builder import AppGraph
@@ -310,12 +310,8 @@ def _create_providers(  # pylint: disable=too-many-statements
     )
 
     # 12. Organizations
-    _register_organizations_provider(
-        providers,
-        chaos_configs=chaos_configs,
-        aws_fake_configs=aws_fake_configs,
-        organizations_port=ports["organizations"],
-        organizations_seed=organizations_seed,
+    _wire_organizations_provider(
+        providers, ports, chaos_configs, aws_fake_configs, organizations_seed
     )
 
     # 13. Auto-discovered simple services (cloudformation, servicecatalog, sts, etc.)
