@@ -31,8 +31,8 @@ from lws.cli._ldk_provider_factory import (
     _register_fake_provider,
 )
 from lws.cli._ldk_providers_extended import (
-    _register_organizations_provider,
     _register_simple_providers,
+    _wire_organizations_provider,
 )
 from lws.cli._ldk_resource_metadata import _build_resource_metadata, _service_ports
 from lws.cli.display import print_error
@@ -61,6 +61,7 @@ def _create_terraform_providers(
     project_dir: Path | None = None,
     iam_auth_bundle: IamAuthBundle | None = None,
     registry: TrackerRegistry | None = None,
+    organizations_seed: str | None = None,
 ) -> tuple[
     dict[str, Provider],
     dict[str, int],
@@ -161,11 +162,8 @@ def _create_terraform_providers(
     providers["__sts_http__"] = _HttpServiceProvider("sts-http", create_sts_app, ports["sts"])
 
     # Organizations
-    _register_organizations_provider(
-        providers,
-        chaos_configs=chaos_configs,
-        aws_fake_configs=aws_fake_configs,
-        organizations_port=ports["organizations"],
+    _wire_organizations_provider(
+        providers, ports, chaos_configs, aws_fake_configs, organizations_seed
     )
 
     # Auto-discovered simple services (cloudformation, servicecatalog, sts, etc.)
@@ -212,7 +210,7 @@ def _create_terraform_providers(
     return providers, ports, chaos_configs, aws_fake_configs, lifecycle_configs
 
 
-async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
+async def _run_dev_terraform(project_dir: Path, config: LdkConfig, seed: str | None = None) -> None:
     """Run the dev server in Terraform mode.
 
     Starts all service providers in always-on mode, generates the
@@ -254,6 +252,7 @@ async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
             project_dir,
             iam_auth_bundle=iam_auth_bundle,
             registry=tracker_registry,
+            organizations_seed=seed,
         )
     )
 
@@ -383,7 +382,7 @@ async def _run_dev(
     # Resolve project mode
     resolved_mode = _resolve_mode(project_dir, config, mode_override)
     if resolved_mode == "terraform":
-        await _run_dev_terraform(project_dir, config)
+        await _run_dev_terraform(project_dir, config, seed=seed)
         return
 
     try:

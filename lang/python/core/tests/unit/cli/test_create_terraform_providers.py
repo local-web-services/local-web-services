@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from unittest.mock import patch
+
 from lws.config.loader import LdkConfig
 
 
@@ -92,3 +94,39 @@ class TestCreateTerraformProviders:
         assert (
             ports["sts"] == expected_sts_port
         ), f'Expected {expected_sts_port!r} but got {ports["sts"]!r}'
+
+    def test_organizations_seed_forwarded_to_provider(self, tmp_path) -> None:
+        from lws.cli.ldk import _create_terraform_providers
+
+        # Arrange
+        expected_seed = "my-org-seed"
+        config = LdkConfig(port=5000)
+        target = "lws.cli._ldk_providers_extended._register_organizations_provider"
+
+        # Act
+        with patch(target) as mock_register:
+            _create_terraform_providers(config, tmp_path, organizations_seed=expected_seed)
+
+        # Assert
+        actual_seed = mock_register.call_args.kwargs.get("organizations_seed")
+        assert (
+            actual_seed == expected_seed
+        ), f"Expected organizations_seed={expected_seed!r} but got {actual_seed!r}"
+
+    def test_organizations_seed_defaults_to_none(self, tmp_path) -> None:
+        from lws.cli.ldk import _create_terraform_providers
+
+        # Arrange
+        expected_seed = None
+        config = LdkConfig(port=6000)
+        target = "lws.cli._ldk_providers_extended._register_organizations_provider"
+
+        # Act
+        with patch(target) as mock_register:
+            _create_terraform_providers(config, tmp_path)
+
+        # Assert
+        actual_seed = mock_register.call_args.kwargs.get("organizations_seed")
+        assert (
+            actual_seed == expected_seed
+        ), f"Expected organizations_seed={expected_seed!r} but got {actual_seed!r}"

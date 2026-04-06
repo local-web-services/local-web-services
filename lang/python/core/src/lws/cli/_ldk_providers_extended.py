@@ -112,6 +112,23 @@ def _register_organizations_provider(
     )
 
 
+def _wire_organizations_provider(
+    providers: dict,
+    ports: dict,
+    chaos_configs: dict,
+    aws_fake_configs: dict,
+    organizations_seed: str | None = None,
+) -> None:
+    """Register the Organizations provider using a ports mapping."""
+    _register_organizations_provider(
+        providers,
+        chaos_configs=chaos_configs,
+        aws_fake_configs=aws_fake_configs,
+        organizations_port=ports["organizations"],
+        organizations_seed=organizations_seed,
+    )
+
+
 def _register_cloudtrail_provider(
     providers: dict,
     *,
