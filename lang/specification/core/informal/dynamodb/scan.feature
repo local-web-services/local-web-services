@@ -22,6 +22,15 @@ Feature: DYNAMODB - All "Dynamodb" "Item"S In The "Dynamodb" "Table" Are Scanned
     And "dynamodb" "item"s only exist in non-deleted "dynamodb" "table"s
     And deleted "dynamodb" "table"s are never the target of a pending "dynamodb" "transaction"
 
+  @minimal @happy @scan
+  Scenario: only matching "dynamodb" "item"s are returned when a filter expression is applied
+    Given the "dynamodb" "table" existed
+    And the "dynamodb" "table" was "ACTIVE"
+    And "dynamodb" "read" throttling was not active
+    And multiple "dynamodb" "item"s with different attribute values existed in the "dynamodb" "table"
+    When all "dynamodb" "item"s in the "dynamodb" "table" are scanned with a filter expression
+    Then only "dynamodb" "item"s matching the filter expression will be returned
+
   @guard @negative @scan
   Scenario: all "dynamodb" "item"s in the "dynamodb" "table" are scanned fails when the "dynamodb" "table" did not exist
     Given the "dynamodb" "table" did not exist

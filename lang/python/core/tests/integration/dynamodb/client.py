@@ -77,3 +77,26 @@ class DynamodbTestClient:
                 },
             },
         )
+
+    def put_items_with_different_statuses(self, name: str = TEST_TABLE) -> None:
+        self.post(
+            "PutItem",
+            {"TableName": name, "Item": {TEST_PK: {"S": "item-1"}, "status": {"S": "active"}}},
+        )
+        self.post(
+            "PutItem",
+            {
+                "TableName": name,
+                "Item": {TEST_PK: {"S": "item-2"}, "status": {"S": "inactive"}},
+            },
+        )
+
+    def scan_with_filter(self, name: str = TEST_TABLE) -> TestClient:
+        return self.post(
+            "Scan",
+            {
+                "TableName": name,
+                "FilterExpression": "status = :s",
+                "ExpressionAttributeValues": {":s": {"S": "active"}},
+            },
+        )

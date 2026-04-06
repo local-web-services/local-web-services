@@ -83,3 +83,20 @@ class DynamodbTestClient:
             ExpressionAttributeNames={"#gsi_pk": GSI_PK},
             ExpressionAttributeValues={":gsi_val": {"S": GSI_PK_VALUE}},
         )
+
+    def put_items_with_different_statuses(self, name=TEST_TABLE):
+        self._client.put_item(
+            TableName=name,
+            Item={TEST_PK: {"S": "item-1"}, "status": {"S": "active"}},
+        )
+        self._client.put_item(
+            TableName=name,
+            Item={TEST_PK: {"S": "item-2"}, "status": {"S": "inactive"}},
+        )
+
+    def scan_with_filter(self, name=TEST_TABLE):
+        return self._client.scan(
+            TableName=name,
+            FilterExpression="status = :s",
+            ExpressionAttributeValues={":s": {"S": "active"}},
+        )

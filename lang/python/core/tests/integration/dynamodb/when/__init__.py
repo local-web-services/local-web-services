@@ -20,6 +20,7 @@ from .query_table import *  # noqa: F401,F403
 from .resolve_pending_transaction import *  # noqa: F401,F403
 from .rollback_transaction import *  # noqa: F401,F403
 from .scan_table import *  # noqa: F401,F403
+from .scan_table_with_filter import *  # noqa: F401,F403
 from .set_throttle_reads import *  # noqa: F401,F403
 from .set_throttle_writes import *  # noqa: F401,F403
 from .toggle_read_throttling import *  # noqa: F401,F403
