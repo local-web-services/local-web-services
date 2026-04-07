@@ -299,11 +299,11 @@ class ExpressionEvaluator:
         ref = node["ref"]
         real_name = self._names.get(ref, ref)
         found, val = _resolve_path(item, real_name)
-        return val if found else None
+        return _unwrap_dynamo_value(val) if found else None
 
     def _eval_path(self, node: dict, item: dict) -> Any:
         found, val = _resolve_path(item, node["path"])
-        return val if found else None
+        return _unwrap_dynamo_value(val) if found else None
 
     def _eval_literal(self, node: dict, _item: dict) -> Any:
         return node["value"]

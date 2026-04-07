@@ -18,6 +18,7 @@ from .items_only_in_non_deleted_tables import *  # noqa: F401,F403
 from .list_of_tables_returned_then import *  # noqa: F401,F403
 from .matching_items_returned_from_gsi import *  # noqa: F401,F403
 from .matching_items_returned_then import *  # noqa: F401,F403
+from .only_matching_items_returned_then import *  # noqa: F401,F403
 from .pending_transaction_references_existing_table import *  # noqa: F401,F403
 from .query_results_contain_item_then import *  # noqa: F401,F403
 from .reads_are_throttled_then import *  # noqa: F401,F403

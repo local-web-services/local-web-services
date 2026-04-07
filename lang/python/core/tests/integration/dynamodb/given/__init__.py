@@ -8,6 +8,7 @@ from .item_exists import *  # noqa: F401,F403
 from .item_exists_in_table import *  # noqa: F401,F403
 from .item_is_not_present import *  # noqa: F401,F403
 from .item_is_present import *  # noqa: F401,F403
+from .items_with_different_attribute_values import *  # noqa: F401,F403
 from .no_transaction_in_progress import *  # noqa: F401,F403
 from .no_transaction_is_pending import *  # noqa: F401,F403
 from .reads_not_throttled import *  # noqa: F401,F403

@@ -150,3 +150,34 @@ class TestScan:
         assert (
             actual_status == expected_status
         ), f"Expected {expected_status!r} but got {actual_status!r}"
+
+    async def test_scan_with_filter_expression_returns_matching_items(
+        self, provider: SqliteDynamoProvider
+    ) -> None:
+        # Arrange — items in DynamoDB JSON format, as stored via the HTTP route
+        await provider.put_item(
+            "orders",
+            {"orderId": {"S": "o1"}, "itemId": {"S": "i1"}, "status": {"S": "active"}},
+        )
+        await provider.put_item(
+            "orders",
+            {"orderId": {"S": "o2"}, "itemId": {"S": "i2"}, "status": {"S": "inactive"}},
+        )
+        expected_count = 1
+        expected_status = {"S": "active"}
+
+        # Act
+        results = await provider.scan(
+            "orders",
+            filter_expression="status = :s",
+            expression_values={":s": {"S": "active"}},
+        )
+
+        # Assert
+        assert (
+            len(results) == expected_count
+        ), f"Expected {expected_count!r} but got {len(results)!r}"
+        actual_status = results[0]["status"]
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
