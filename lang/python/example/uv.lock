@@ -514,7 +514,7 @@ wheels = [
 
 [[package]]
 name = "local-web-services"
-version = "0.21.0"
+version = "0.22.0"
 source = { editable = "../core" }
 dependencies = [
     { name = "aiosqlite" },
@@ -568,7 +568,7 @@ dev = [
 
 [[package]]
 name = "local-web-services-python-sdk"
-version = "0.21.0"
+version = "0.22.0"
 source = { editable = "../sdk" }
 dependencies = [
     { name = "botocore" },

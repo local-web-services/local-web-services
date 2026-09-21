@@ -38,3 +38,26 @@ class TestJsonataPassStateOutput:
         assert history.status == ExecutionStatus.SUCCEEDED
         actual_output = history.output_data
         assert actual_output == expected_output
+
+    async def test_dict_output_evaluates_expression_values(self) -> None:
+        # Arrange
+        expected_output = {"key": 42, "label": "fixed"}
+        definition = {
+            "QueryLanguage": "JSONata",
+            "StartAt": "P",
+            "States": {
+                "P": {
+                    "Type": "Pass",
+                    "Output": {"key": "{% $states.input.x %}", "label": "fixed"},
+                    "End": True,
+                }
+            },
+        }
+
+        # Act
+        history = await _run(definition, input_data={"x": 42})
+
+        # Assert
+        assert history.status == ExecutionStatus.SUCCEEDED
+        actual_output = history.output_data
+        assert actual_output == expected_output

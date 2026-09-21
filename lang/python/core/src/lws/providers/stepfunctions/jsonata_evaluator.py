@@ -60,12 +60,19 @@ def expand_arguments(
     return {key: _expand_value(value, input_data, variables) for key, value in arguments.items()}
 
 
-def _expand_value(value: Any, input_data: Any, variables: dict[str, Any] | None = None) -> Any:
+def _expand_value(
+    value: Any,
+    input_data: Any,
+    variables: dict[str, Any] | None = None,
+    result: Any = None,
+) -> Any:
     """Evaluate if value is a {%...%} expression; recurse into dicts; else return as-is."""
     if isinstance(value, str) and is_jsonata_expression(value):
-        return evaluate_expression(extract_expression(value), input_data, variables=variables)
+        return evaluate_expression(
+            extract_expression(value), input_data, result=result, variables=variables
+        )
     if isinstance(value, dict):
-        return {k: _expand_value(v, input_data, variables) for k, v in value.items()}
+        return {k: _expand_value(v, input_data, variables, result) for k, v in value.items()}
     return value
 
 
@@ -77,13 +84,16 @@ def evaluate_output(
 ) -> Any:
     """Evaluate the Output field of a JSONata-mode state.
 
-    If output is a {%...%} expression string, evaluate it with $states.input and
-    $states.result bound. Otherwise return the value unchanged.
+    If output is a {%...%} expression string, evaluate it as a full expression with
+    $states.input and $states.result bound. If output is a dict, recursively expand
+    {%...%} values within it. Otherwise return the value unchanged.
     """
     if isinstance(output, str) and is_jsonata_expression(output):
         return evaluate_expression(
             extract_expression(output), input_data, result=result, variables=variables
         )
+    if isinstance(output, dict):
+        return {k: _expand_value(v, input_data, variables, result) for k, v in output.items()}
     return output
 
 
