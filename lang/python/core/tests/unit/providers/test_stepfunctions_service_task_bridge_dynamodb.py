@@ -86,3 +86,42 @@ class TestServiceTaskBridgeInvokeDynamoDB:
         # Assert
         with pytest.raises(RuntimeError, match=expected_error):
             await bridge.invoke("arn:aws:states:::dynamodb:getItem", {})
+
+    async def test_update_item_calls_provider(self) -> None:
+        # Arrange
+        expected_table = "orders"
+        expected_key = {"id": {"S": "123"}}
+        expected_expression = "SET #s = :val"
+        expected_attributes = {"id": {"S": "123"}, "status": {"S": "shipped"}}
+        dynamo = FakeDynamoDB()
+        dynamo.update_responses[expected_table] = expected_attributes
+        bridge = make_bridge(dynamodb=dynamo)
+
+        # Act
+        result = await bridge.invoke(
+            "arn:aws:states:::dynamodb:updateItem",
+            {
+                "TableName": expected_table,
+                "Key": expected_key,
+                "UpdateExpression": expected_expression,
+                "ExpressionAttributeNames": {"#s": "status"},
+                "ExpressionAttributeValues": {":val": {"S": "shipped"}},
+            },
+        )
+
+        # Assert
+        actual_calls = dynamo.update_calls
+        assert len(actual_calls) == 1
+        assert actual_calls[0] == (expected_table, expected_key, expected_expression)
+        actual_attributes = result["Attributes"]
+        assert actual_attributes == expected_attributes
+
+    async def test_update_item_missing_provider_raises(self) -> None:
+        # Arrange
+        bridge = make_bridge()
+        expected_error = "No DynamoDB provider"
+
+        # Act
+        # Assert
+        with pytest.raises(RuntimeError, match=expected_error):
+            await bridge.invoke("arn:aws:states:::dynamodb:updateItem", {})

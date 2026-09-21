@@ -37,6 +37,18 @@ class ServiceTaskBridge:
 
     def __init__(self, service_providers: dict[str, Any]) -> None:
         self._services = service_providers
+        self._dispatch: list[tuple[str, Any]] = [
+            ("dynamodb:putItem", self._invoke_dynamodb_put_item),
+            ("dynamodb:getItem", self._invoke_dynamodb_get_item),
+            ("dynamodb:updateItem", self._invoke_dynamodb_update_item),
+            ("sqs:sendMessage", self._invoke_sqs_send_message),
+            ("sns:publish", self._invoke_sns_publish),
+            ("s3:getObject", self._invoke_s3_get_object),
+            ("s3:putObject", self._invoke_s3_put_object),
+            ("secretsmanager:getSecretValue", self._invoke_secretsmanager_get_secret_value),
+            ("ssm:getParameter", self._invoke_ssm_get_parameter),
+            ("events:putEvents", self._invoke_events_put_events),
+        ]
 
     def handles(self, resource_arn: str) -> bool:
         """Return True if this bridge can handle the given resource ARN."""
@@ -44,24 +56,9 @@ class ServiceTaskBridge:
 
     async def invoke(self, resource_arn: str, payload: Any) -> Any:
         """Dispatch a service integration call to the appropriate provider."""
-        if "dynamodb:putItem" in resource_arn:
-            return await self._invoke_dynamodb_put_item(payload)
-        if "dynamodb:getItem" in resource_arn:
-            return await self._invoke_dynamodb_get_item(payload)
-        if "sqs:sendMessage" in resource_arn:
-            return await self._invoke_sqs_send_message(payload)
-        if "sns:publish" in resource_arn:
-            return await self._invoke_sns_publish(payload)
-        if "s3:getObject" in resource_arn:
-            return await self._invoke_s3_get_object(payload)
-        if "s3:putObject" in resource_arn:
-            return await self._invoke_s3_put_object(payload)
-        if "secretsmanager:getSecretValue" in resource_arn:
-            return await self._invoke_secretsmanager_get_secret_value(payload)
-        if "ssm:getParameter" in resource_arn:
-            return await self._invoke_ssm_get_parameter(payload)
-        if "events:putEvents" in resource_arn:
-            return await self._invoke_events_put_events(payload)
+        for fragment, handler in self._dispatch:
+            if fragment in resource_arn:
+                return await handler(payload)
         raise RuntimeError(f"Unsupported service integration ARN: {resource_arn}")
 
     async def _invoke_dynamodb_put_item(self, payload: Any) -> dict:
@@ -91,6 +88,28 @@ class ServiceTaskBridge:
         if item is None:
             return {"Item": {}}
         return {"Item": item}
+
+    async def _invoke_dynamodb_update_item(self, payload: Any) -> dict:
+        """Invoke DynamoDB updateItem via the registered provider."""
+        dynamodb = self._services.get("dynamodb")
+        if dynamodb is None:
+            raise RuntimeError("No DynamoDB provider registered for service task bridge")
+        params = payload if isinstance(payload, dict) else {}
+        table_name = params.get("TableName", "")
+        key = params.get("Key", {})
+        update_expression = params.get("UpdateExpression", "")
+        expression_values = params.get("ExpressionAttributeValues")
+        expression_names = params.get("ExpressionAttributeNames")
+        self._check_capacity(self._services.get("dynamodb_capacity"), "DynamoDB")
+        await self._check_dynamodb_table_exists(dynamodb, table_name)
+        updated = await dynamodb.update_item(
+            table_name,
+            key,
+            update_expression,
+            expression_values=expression_values,
+            expression_names=expression_names,
+        )
+        return {"Attributes": updated}
 
     async def _invoke_sqs_send_message(self, payload: Any) -> dict:
         """Invoke SQS sendMessage via the registered provider."""

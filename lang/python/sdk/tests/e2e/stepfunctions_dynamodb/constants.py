@@ -59,5 +59,37 @@ def _dynamodb_get_item_definition(table_name: str, pk: str, item_key: str) -> st
     )
 
 
+TEST_STATUS_ATTR = "status"
+
+TEST_INITIAL_STATUS = "pending"
+
+TEST_UPDATED_STATUS = "processed"
+
+
+def _dynamodb_update_item_definition(
+    table_name: str, pk: str, item_key: str, attr: str, updated_val: str
+) -> str:
+    """Return a state machine definition with a DynamoDB UpdateItem task."""
+    return json.dumps(
+        {
+            "StartAt": "UpdateItem",
+            "States": {
+                "UpdateItem": {
+                    "Type": "Task",
+                    "Resource": "arn:aws:states:::dynamodb:updateItem",
+                    "Parameters": {
+                        "TableName": table_name,
+                        "Key": {pk: {"S": item_key}},
+                        "UpdateExpression": "SET #a = :val",
+                        "ExpressionAttributeNames": {"#a": attr},
+                        "ExpressionAttributeValues": {":val": {"S": updated_val}},
+                    },
+                    "End": True,
+                }
+            },
+        }
+    )
+
+
 def _sm_arn(name=TEST_SM):
     return f"arn:aws:states:us-east-1:000000000000:stateMachine:{name}"

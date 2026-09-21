@@ -55,3 +55,41 @@ class TestDynamoDbCapacity:
 
         # Assert
         assert result == {}, f"Expected empty result dict but got {result!r}"
+
+    async def test_update_item_raises_when_capacity_exhausted(self) -> None:
+        # Arrange
+        dynamo = FakeDynamoDB()
+        bridge = make_bridge(dynamodb=dynamo, dynamodb_capacity=FakeExhaustedCapacity())
+        expected_error = "DynamoDB capacity is exhausted"
+
+        # Act / Assert
+        with pytest.raises(RuntimeError, match=expected_error):
+            await bridge.invoke(
+                "arn:aws:states:::dynamodb:updateItem",
+                {
+                    "TableName": "orders",
+                    "Key": {"id": {"S": "1"}},
+                    "UpdateExpression": "SET x = :v",
+                },
+            )
+
+    async def test_update_item_succeeds_when_capacity_unlimited(self) -> None:
+        # Arrange
+        dynamo = FakeDynamoDB()
+        bridge = make_bridge(dynamodb=dynamo, dynamodb_capacity=FakeUnlimitedCapacity())
+
+        # Act
+        result = await bridge.invoke(
+            "arn:aws:states:::dynamodb:updateItem",
+            {
+                "TableName": "orders",
+                "Key": {"id": {"S": "1"}},
+                "UpdateExpression": "SET x = :v",
+            },
+        )
+
+        # Assert
+        actual_attributes = result["Attributes"]
+        assert (
+            actual_attributes == {}
+        ), f"Expected empty attributes dict but got {actual_attributes!r}"
