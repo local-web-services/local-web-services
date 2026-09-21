@@ -27,6 +27,7 @@ from lws.providers.dynamodb._dynamo_query import (
     _VersionStore,
 )
 from lws.providers.dynamodb._provider_helpers import (
+    _check_update_condition,
     _create_gsi_tables,
     _extract_key_value,
     _extract_sk,
@@ -312,10 +313,12 @@ class SqliteDynamoProvider(IKeyValueStore):
         update_expression: str,
         expression_values: dict | None = None,
         expression_names: dict | None = None,
+        condition_expression: str | None = None,
     ) -> dict:
         existing = await self.get_item(table_name, key)
         if existing is None:
             existing = dict(key)
+        _check_update_condition(existing, condition_expression, expression_names, expression_values)
 
         # Remember whether the item was stored in DynamoDB JSON format so
         # we can restore it after the evaluator runs.

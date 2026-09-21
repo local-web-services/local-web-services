@@ -14,6 +14,8 @@ from lws.interfaces import (
     KeyAttribute,
     TableConfig,
 )
+from lws.providers.dynamodb._dynamodb_helpers import _unwrap_item
+from lws.providers.dynamodb.expressions import evaluate_filter_expression
 
 if TYPE_CHECKING:
     import aiosqlite
@@ -428,3 +430,18 @@ async def emit_delete_stream_event(
         new_image=None,
         old_image=old_item,
     )
+
+
+def _check_update_condition(
+    item: dict,
+    condition: str | None,
+    expression_names: dict | None,
+    expression_values: dict | None,
+) -> None:
+    """Raise KeyError('ConditionalCheckFailedException') if condition expression is not met."""
+    if not condition:
+        return
+    if not evaluate_filter_expression(
+        _unwrap_item(item), condition, expression_names, expression_values
+    ):
+        raise KeyError("ConditionalCheckFailedException")

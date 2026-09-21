@@ -107,6 +107,7 @@ class FakeDynamoDB:
         update_expression: str,
         expression_values: dict | None = None,
         expression_names: dict | None = None,
+        condition_expression: str | None = None,
     ) -> dict:
         self.update_calls.append((table_name, key, update_expression))
         return self.update_responses.get(table_name, {})

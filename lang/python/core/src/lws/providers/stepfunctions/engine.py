@@ -164,7 +164,8 @@ class ExecutionEngine:
             current_data, current_state_name = await self._execute_state(
                 state, current_data, transition
             )
-            _apply_assign(state, current_data, self._variables)
+            if not isinstance(state, TaskState):
+                _apply_assign(state, current_data, self._variables)
             transition.output_data = current_data
 
         return current_data
@@ -227,6 +228,7 @@ class ExecutionEngine:
         try:
             result = await self._invoke_with_retry(state, effective_input)
             if _is_jsonata_mode(state, self._definition):
+                _apply_assign(state, input_data, self._variables, result=result)
                 return _apply_jsonata_task_output(
                     state, input_data, result, variables=self._variables
                 )
