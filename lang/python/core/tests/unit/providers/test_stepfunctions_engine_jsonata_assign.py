@@ -102,6 +102,34 @@ class TestJsonataAssignField:
         actual_label = history.output_data["label"]
         assert actual_label == expected_label
 
+    async def test_pass_state_assign_states_result_is_null(self) -> None:
+        # Arrange
+        expected_is_null = True
+        definition = {
+            "QueryLanguage": "JSONata",
+            "StartAt": "Check",
+            "States": {
+                "Check": {
+                    "Type": "Pass",
+                    "Assign": {"isNull": "{% $states.result = null %}"},
+                    "Next": "Out",
+                },
+                "Out": {
+                    "Type": "Pass",
+                    "Output": "{% {'is_null': $isNull} %}",
+                    "End": True,
+                },
+            },
+        }
+
+        # Act
+        history = await _run(definition, input_data={"x": 1})
+
+        # Assert
+        assert history.status == ExecutionStatus.SUCCEEDED
+        actual_is_null = history.output_data["is_null"]
+        assert actual_is_null == expected_is_null
+
     async def test_task_assign_captures_states_result(self) -> None:
         # Arrange
         expected_captured = "task-value"
