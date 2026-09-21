@@ -22,7 +22,12 @@ from lws.providers.stepfunctions.asl_parser import (
     TaskState,
     WaitState,
 )
-from lws.providers.stepfunctions.jsonata_evaluator import evaluate_output, expand_arguments
+from lws.providers.stepfunctions.jsonata_evaluator import (
+    evaluate_assign,
+    evaluate_output,
+    expand_arguments,
+    resolve_credentials,
+)
 from lws.providers.stepfunctions.path_utils import (
     apply_context_parameters,
     apply_output_path,
@@ -40,36 +45,64 @@ def _is_jsonata_mode(state: Any, definition: StateMachineDefinition) -> bool:
     return definition.query_language == "JSONata"
 
 
-def _prepare_jsonata_pass_input(state: PassState, input_data: Any) -> Any:
+def _prepare_jsonata_pass_input(
+    state: PassState, input_data: Any, variables: dict[str, Any] | None = None
+) -> Any:
     """Prepare effective input for a JSONata Pass state using Arguments."""
     if state.arguments is not None:
-        return expand_arguments(state.arguments, input_data)
+        return expand_arguments(state.arguments, input_data, variables=variables)
     return input_data
 
 
-def _apply_jsonata_pass_output(state: PassState, effective_input: Any) -> Any:
+def _apply_jsonata_pass_output(
+    state: PassState, effective_input: Any, variables: dict[str, Any] | None = None
+) -> Any:
     """Apply JSONata Output expression to produce Pass state output."""
     if state.output is not None:
-        return evaluate_output(state.output, effective_input)
+        return evaluate_output(state.output, effective_input, variables=variables)
     return effective_input
 
 
-def _prepare_jsonata_task_input(state: TaskState, input_data: Any) -> Any:
+def _prepare_jsonata_task_input(
+    state: TaskState, input_data: Any, variables: dict[str, Any] | None = None
+) -> Any:
     """Prepare effective input for a JSONata Task state using Arguments."""
     if state.arguments is not None:
-        return expand_arguments(state.arguments, input_data)
+        return expand_arguments(state.arguments, input_data, variables=variables)
     return input_data
 
 
 def _apply_jsonata_task_output(
-    state: TaskState, original_input: Any, task_result: Any
+    state: TaskState,
+    original_input: Any,
+    task_result: Any,
+    variables: dict[str, Any] | None = None,
 ) -> tuple[Any, str | None]:
     """Apply JSONata Output expression to task result."""
     if state.output is not None:
-        output = evaluate_output(state.output, original_input, result=task_result)
+        output = evaluate_output(
+            state.output, original_input, result=task_result, variables=variables
+        )
     else:
         output = task_result
     return output, _next_or_none(state.next_state, state.end)
+
+
+def _apply_assign(state: Any, output: Any, variables: dict[str, Any]) -> None:
+    """Evaluate Assign on a state and merge results into the variables dict in place."""
+    assign = getattr(state, "assign", None)
+    if assign is not None:
+        new_vars = evaluate_assign(assign, output, variables=variables)
+        variables.update(new_vars)
+
+
+def _resolve_task_credentials(
+    state: TaskState, input_data: Any, variables: dict[str, Any] | None = None
+) -> dict[str, Any] | None:
+    """Resolve Credentials dict for a Task state, evaluating any {%...%} expressions."""
+    if state.credentials is None:
+        return None
+    return resolve_credentials(state.credentials, input_data, variables=variables)
 
 
 def _next_or_none(next_state: str | None, end: bool) -> str | None:
