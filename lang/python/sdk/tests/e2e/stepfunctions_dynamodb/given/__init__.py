@@ -1,5 +1,6 @@
 from .dynamodb_putitem_task_configured_given import *  # noqa: F401,F403
 from .dynamodb_table_has_been_created import *  # noqa: F401,F403
+from .dynamodb_updateitem_task_configured_given import *  # noqa: F401,F403
 from .eid_in_exec_status import *  # noqa: F401,F403
 from .execution_is_running_given import *  # noqa: F401,F403
 from .execution_of_sm_has_been_started import *  # noqa: F401,F403
@@ -11,6 +12,7 @@ from .no_execution_slot_available import *  # noqa: F401,F403
 from .no_item_exists_in_target_table import *  # noqa: F401,F403
 from .no_item_slot_available import *  # noqa: F401,F403
 from .running_execution_get_item_failed_given import *  # noqa: F401,F403
+from .running_execution_updated_item_succeeded_given import *  # noqa: F401,F403
 from .running_execution_wrote_item_succeeded_given import *  # noqa: F401,F403
 from .sfn_sm_has_been_created import *  # noqa: F401,F403
 from .sm_already_exists import *  # noqa: F401,F403

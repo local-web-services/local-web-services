@@ -84,6 +84,8 @@ class FakeDynamoDB:
     def __init__(self, tables: set[str] | None = None) -> None:
         self.put_calls: list[tuple[str, dict]] = []
         self.get_responses: dict[str, dict | None] = {}
+        self.update_calls: list[tuple[str, dict, str]] = []
+        self.update_responses: dict[str, dict] = {}
         self._tables: set[str] = tables if tables is not None else {"_default_allow_all"}
         self._allow_all: bool = tables is None
 
@@ -97,6 +99,17 @@ class FakeDynamoDB:
 
     async def get_item(self, table_name: str, key: dict) -> dict | None:
         return self.get_responses.get(table_name)
+
+    async def update_item(
+        self,
+        table_name: str,
+        key: dict,
+        update_expression: str,
+        expression_values: dict | None = None,
+        expression_names: dict | None = None,
+    ) -> dict:
+        self.update_calls.append((table_name, key, update_expression))
+        return self.update_responses.get(table_name, {})
 
 
 class FakeSqs:

@@ -5,9 +5,12 @@ from __future__ import annotations
 from .constants import (
     PASS_DEFINITION,
     ROLE_ARN,
+    TEST_INITIAL_STATUS,
     TEST_INPUT,
+    TEST_ITEM_KEY,
     TEST_PK,
     TEST_SM,
+    TEST_STATUS_ATTR,
     TEST_TABLE,
     _sm_arn,
 )
@@ -33,6 +36,15 @@ class StepfunctionsDynamodbTestClient:
             KeySchema=[{"AttributeName": TEST_PK, "KeyType": "HASH"}],
             AttributeDefinitions=[{"AttributeName": TEST_PK, "AttributeType": "S"}],
             BillingMode="PAY_PER_REQUEST",
+        )
+
+    def put_seed_item(self, table=TEST_TABLE):
+        self._ddb.put_item(
+            TableName=table,
+            Item={
+                TEST_PK: {"S": TEST_ITEM_KEY},
+                TEST_STATUS_ATTR: {"S": TEST_INITIAL_STATUS},
+            },
         )
 
     def start_execution(self, name=TEST_SM):
