@@ -8,6 +8,22 @@ TEST_SM = "test-sm-1"
 
 TEST_SM_EXPRESS = "test-sm-express-1"
 
+JSONATA_SM = "e2e-jsonata-sm-1"
+
+JSONATA_PASS_DEFINITION = json.dumps(
+    {
+        "QueryLanguage": "JSONata",
+        "StartAt": "Transform",
+        "States": {
+            "Transform": {
+                "Type": "Pass",
+                "Arguments": {"result_key": "{% $states.input.key %}"},
+                "End": True,
+            }
+        },
+    }
+)
+
 ROLE_ARN = "arn:aws:iam::000000000000:role/test"
 
 PASS_DEFINITION = json.dumps({"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}})

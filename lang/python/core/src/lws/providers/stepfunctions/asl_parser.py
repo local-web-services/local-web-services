@@ -76,6 +76,9 @@ class TaskState:
     retry: list[RetryConfig] = field(default_factory=list)
     catch: list[CatchConfig] = field(default_factory=list)
     comment: str | None = None
+    query_language: str | None = None
+    arguments: dict[str, Any] | None = None
+    output: Any | None = None
 
 
 @dataclass
@@ -121,6 +124,7 @@ class ParallelState:
     retry: list[RetryConfig] = field(default_factory=list)
     catch: list[CatchConfig] = field(default_factory=list)
     comment: str | None = None
+    query_language: str | None = None
 
 
 @dataclass
@@ -141,6 +145,7 @@ class MapState:
     retry: list[RetryConfig] = field(default_factory=list)
     catch: list[CatchConfig] = field(default_factory=list)
     comment: str | None = None
+    query_language: str | None = None
 
 
 @dataclass
@@ -156,6 +161,9 @@ class PassState:
     result_path: str | None = "$"
     parameters: dict[str, Any] | None = None
     comment: str | None = None
+    query_language: str | None = None
+    arguments: dict[str, Any] | None = None
+    output: Any | None = None
 
 
 @dataclass
@@ -198,6 +206,7 @@ class StateMachineDefinition:
     start_at: str
     states: dict[str, StateDefinition] = field(default_factory=dict)
     comment: str | None = None
+    query_language: str = "JSONPath"
 
 
 # ---------------------------------------------------------------------------
@@ -221,6 +230,7 @@ def _parse_state_machine_dict(data: dict) -> StateMachineDefinition:
         start_at=data["StartAt"],
         states=states,
         comment=data.get("Comment"),
+        query_language=data.get("QueryLanguage", "JSONPath"),
     )
 
 
@@ -284,6 +294,9 @@ def _parse_task_state(name: str, data: dict) -> TaskState:
         retry=_parse_retry_list(data),
         catch=_parse_catch_list(data),
         comment=data.get("Comment"),
+        query_language=data.get("QueryLanguage"),
+        arguments=data.get("Arguments"),
+        output=data.get("Output"),
     )
 
 
@@ -429,6 +442,9 @@ def _parse_pass_state(name: str, data: dict) -> PassState:
         result_path=data.get("ResultPath", "$"),
         parameters=data.get("Parameters"),
         comment=data.get("Comment"),
+        query_language=data.get("QueryLanguage"),
+        arguments=data.get("Arguments"),
+        output=data.get("Output"),
     )
 
 
