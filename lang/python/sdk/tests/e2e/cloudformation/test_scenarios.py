@@ -18,7 +18,7 @@ def _has_runnable_scenarios(filepath: str) -> bool:
     return "@minimal" in content or "@standard" in content
 
 
-for _f in glob.glob(os.path.join(_INFORMAL, "cloudformation", "*.feature")):
+for _f in sorted(glob.glob(os.path.join(_INFORMAL, "cloudformation", "*.feature"))):
     if "sequences" not in os.path.basename(_f) and _has_runnable_scenarios(_f):
         scenarios(_f)
 
