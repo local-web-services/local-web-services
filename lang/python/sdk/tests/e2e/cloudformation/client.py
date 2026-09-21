@@ -18,3 +18,9 @@ class CloudformationTestClient:
             self._client.create_stack(StackName=stack_name)
         except Exception:
             pass
+
+    def delete_stack_if_exists(self, stack_name=TEST_STACK_NAME):
+        try:
+            self._client.delete_stack(StackName=stack_name)
+        except Exception:
+            pass
