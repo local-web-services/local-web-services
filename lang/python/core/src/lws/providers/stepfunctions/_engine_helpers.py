@@ -42,7 +42,7 @@ def _is_jsonata_mode(state: Any, definition: StateMachineDefinition) -> bool:
     state_ql = getattr(state, "query_language", None)
     if state_ql is not None:
         return state_ql == "JSONata"
-    return definition.query_language == "JSONata"
+    return (definition.query_language or "JSONPath") == "JSONata"
 
 
 def _prepare_jsonata_pass_input(

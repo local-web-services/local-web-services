@@ -219,7 +219,7 @@ class StateMachineDefinition:
     start_at: str
     states: dict[str, StateDefinition] = field(default_factory=dict)
     comment: str | None = None
-    query_language: str = "JSONPath"
+    query_language: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -243,7 +243,7 @@ def _parse_state_machine_dict(data: dict) -> StateMachineDefinition:
         start_at=data["StartAt"],
         states=states,
         comment=data.get("Comment"),
-        query_language=data.get("QueryLanguage", "JSONPath"),
+        query_language=data.get("QueryLanguage"),
     )
 
 

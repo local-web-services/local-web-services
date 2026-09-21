@@ -65,6 +65,28 @@ class FakeCompute:
         self._error_until[resource_arn] = attempts
 
 
+class CapturingCompute:
+    """Compute that records invocation payloads and returns a fixed value."""
+
+    def __init__(self, captured: list[Any], return_value: Any = None) -> None:
+        self._captured = captured
+        self._return_value = return_value if return_value is not None else {}
+
+    async def invoke_function(self, resource_arn: str, payload: Any) -> Any:
+        self._captured.append(payload)
+        return self._return_value
+
+
+class FakeConditionalFailCompute:
+    """Compute that always raises DynamoDB.ConditionalCheckFailedException."""
+
+    async def invoke_function(self, resource_arn: str, payload: Any) -> Any:
+        raise StatesTaskFailed(
+            "DynamoDB.ConditionalCheckFailedException",
+            "The conditional request failed",
+        )
+
+
 class SlowCompute:
     """Compute that takes a long time (for timeout tests)."""
 

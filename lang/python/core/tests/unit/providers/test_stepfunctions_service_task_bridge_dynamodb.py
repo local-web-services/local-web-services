@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pytest
 
+from lws.providers.stepfunctions._engine_state import StatesTaskFailed
 from lws.providers.stepfunctions._service_task_bridge import ServiceTaskBridge
 
 from ._helpers import FakeDynamoDB
@@ -152,9 +153,9 @@ class TestServiceTaskBridgeInvokeDynamoDB:
         actual_condition = received_kwargs["condition_expression"]
         assert actual_condition == expected_condition
 
-    async def test_update_item_propagates_condition_check_failure(self) -> None:
+    async def test_update_item_converts_condition_failure_to_states_error(self) -> None:
         # Arrange
-        expected_error = "ConditionalCheckFailedException"
+        expected_error = "DynamoDB.ConditionalCheckFailedException"
         dynamo = FakeDynamoDB()
 
         async def raising_update_item(
@@ -172,7 +173,7 @@ class TestServiceTaskBridgeInvokeDynamoDB:
 
         # Act
         # Assert
-        with pytest.raises(KeyError, match=expected_error):
+        with pytest.raises(StatesTaskFailed, match=expected_error):
             await bridge.invoke(
                 "arn:aws:states:::dynamodb:updateItem",
                 {
