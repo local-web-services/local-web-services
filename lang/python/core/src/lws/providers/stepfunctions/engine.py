@@ -13,6 +13,7 @@ import uuid
 from typing import Any, Protocol
 
 from lws.providers.stepfunctions._engine_helpers import (
+    _apply_assign,
     _apply_jsonata_pass_output,
     _apply_jsonata_task_output,
     _apply_parallel_output,
@@ -32,6 +33,7 @@ from lws.providers.stepfunctions._engine_helpers import (
     _prepare_jsonata_task_input,
     _prepare_task_input,
     _resolve_map_items,
+    _resolve_task_credentials,
     _resolve_wait_seconds,
 )
 from lws.providers.stepfunctions._engine_state import (  # pylint: disable=unused-import
@@ -100,10 +102,12 @@ class ExecutionEngine:
         definition: StateMachineDefinition,
         compute: ComputeInvoker | None = None,
         max_wait_seconds: float = 5.0,
+        variables: dict[str, Any] | None = None,
     ) -> None:
         self._definition = definition
         self._compute = compute
         self._max_wait_seconds = max_wait_seconds
+        self._variables: dict[str, Any] = variables if variables is not None else {}
 
     async def execute(
         self,
@@ -160,6 +164,7 @@ class ExecutionEngine:
             current_data, current_state_name = await self._execute_state(
                 state, current_data, transition
             )
+            _apply_assign(state, current_data, self._variables)
             transition.output_data = current_data
 
         return current_data
@@ -193,8 +198,10 @@ class ExecutionEngine:
     async def _execute_pass(self, state: PassState, input_data: Any) -> tuple[Any, str | None]:
         """Execute a Pass state."""
         if _is_jsonata_mode(state, self._definition):
-            effective_input = _prepare_jsonata_pass_input(state, input_data)
-            output = _apply_jsonata_pass_output(state, effective_input)
+            effective_input = _prepare_jsonata_pass_input(
+                state, input_data, variables=self._variables
+            )
+            output = _apply_jsonata_pass_output(state, effective_input, variables=self._variables)
             return output, _next_or_none(state.next_state, state.end)
         effective_input = apply_input_path(input_data, state.input_path)
         if state.parameters:
@@ -211,13 +218,18 @@ class ExecutionEngine:
     async def _execute_task(self, state: TaskState, input_data: Any) -> tuple[Any, str | None]:
         """Execute a Task state with retry/catch support."""
         if _is_jsonata_mode(state, self._definition):
-            effective_input = _prepare_jsonata_task_input(state, input_data)
+            effective_input = _prepare_jsonata_task_input(
+                state, input_data, variables=self._variables
+            )
+            _resolve_task_credentials(state, input_data, variables=self._variables)
         else:
             effective_input = _prepare_task_input(state, input_data)
         try:
             result = await self._invoke_with_retry(state, effective_input)
             if _is_jsonata_mode(state, self._definition):
-                return _apply_jsonata_task_output(state, input_data, result)
+                return _apply_jsonata_task_output(
+                    state, input_data, result, variables=self._variables
+                )
             return _apply_task_output(state, input_data, result)
         except StatesError as exc:
             return _handle_task_catch(state, input_data, exc)
@@ -290,12 +302,19 @@ class ExecutionEngine:
 
     async def _execute_choice(self, state: ChoiceState, input_data: Any) -> tuple[Any, str | None]:
         """Execute a Choice state by evaluating rules."""
-        effective_input = apply_input_path(input_data, state.input_path)
-        next_state = evaluate_choice_rules(state.choices, effective_input)
+        if _is_jsonata_mode(state, self._definition):
+            effective_input = input_data
+        else:
+            effective_input = apply_input_path(input_data, state.input_path)
+        next_state = evaluate_choice_rules(
+            state.choices, effective_input, variables=self._variables
+        )
         if next_state is None:
             next_state = state.default
         if next_state is None:
             raise StatesError("States.NoChoiceMatched", "No choice rule matched and no Default")
+        if _is_jsonata_mode(state, self._definition):
+            return effective_input, next_state
         output = apply_output_path(effective_input, state.output_path)
         return output, next_state
 
@@ -368,6 +387,7 @@ class ExecutionEngine:
             definition=branch,
             compute=self._compute,
             max_wait_seconds=self._max_wait_seconds,
+            variables=dict(self._variables),
         )
         history = await sub_engine.execute(input_data)
         if history.status == ExecutionStatus.FAILED:

@@ -30,41 +30,89 @@ def extract_expression(value: str) -> str:
     return value[len(_EXPR_OPEN) : -len(_EXPR_CLOSE)].strip()
 
 
-def evaluate_expression(expression: str, input_data: Any, result: Any = None) -> Any:
-    """Evaluate a JSONata expression with $states.input and $states.result bound."""
+def evaluate_expression(
+    expression: str,
+    input_data: Any,
+    result: Any = None,
+    variables: dict[str, Any] | None = None,
+) -> Any:
+    """Evaluate a JSONata expression with $states bindings including context variables."""
     if not _JSONATA_AVAILABLE:
         raise RuntimeError(
             "jsonata-python is required for JSONata support. "
             "Install with: pip install jsonata-python"
         )
     expr = _jsonata_lib.Jsonata(expression)
-    expr.assign("states", {"input": input_data, "result": result})
+    context: dict[str, Any] = {"variables": variables or {}}
+    expr.assign("states", {"input": input_data, "result": result, "context": context})
     return expr.evaluate(input_data if input_data is not None else {})
 
 
-def expand_arguments(arguments: dict[str, Any], input_data: Any) -> dict[str, Any]:
+def expand_arguments(
+    arguments: dict[str, Any],
+    input_data: Any,
+    variables: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Expand {%...%} JSONata expressions in an Arguments template dict.
 
     Non-expression values are returned as-is.
     """
-    return {key: _expand_value(value, input_data) for key, value in arguments.items()}
+    return {key: _expand_value(value, input_data, variables) for key, value in arguments.items()}
 
 
-def _expand_value(value: Any, input_data: Any) -> Any:
+def _expand_value(value: Any, input_data: Any, variables: dict[str, Any] | None = None) -> Any:
     """Evaluate if value is a {%...%} expression; recurse into dicts; else return as-is."""
     if isinstance(value, str) and is_jsonata_expression(value):
-        return evaluate_expression(extract_expression(value), input_data)
+        return evaluate_expression(extract_expression(value), input_data, variables=variables)
     if isinstance(value, dict):
-        return {k: _expand_value(v, input_data) for k, v in value.items()}
+        return {k: _expand_value(v, input_data, variables) for k, v in value.items()}
     return value
 
 
-def evaluate_output(output: Any, input_data: Any, result: Any = None) -> Any:
+def evaluate_output(
+    output: Any,
+    input_data: Any,
+    result: Any = None,
+    variables: dict[str, Any] | None = None,
+) -> Any:
     """Evaluate the Output field of a JSONata-mode state.
 
     If output is a {%...%} expression string, evaluate it with $states.input and
     $states.result bound. Otherwise return the value unchanged.
     """
     if isinstance(output, str) and is_jsonata_expression(output):
-        return evaluate_expression(extract_expression(output), input_data, result=result)
+        return evaluate_expression(
+            extract_expression(output), input_data, result=result, variables=variables
+        )
     return output
+
+
+def evaluate_assign(
+    assign: dict[str, Any],
+    input_data: Any,
+    variables: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Evaluate an Assign dict, expanding {%...%} expressions into resolved key-value pairs."""
+    return {key: _expand_value(value, input_data, variables) for key, value in assign.items()}
+
+
+def evaluate_condition(
+    condition: str,
+    input_data: Any,
+    variables: dict[str, Any] | None = None,
+) -> bool:
+    """Evaluate a JSONata Condition expression and return its boolean result."""
+    if is_jsonata_expression(condition):
+        result = evaluate_expression(extract_expression(condition), input_data, variables=variables)
+    else:
+        result = evaluate_expression(condition, input_data, variables=variables)
+    return bool(result)
+
+
+def resolve_credentials(
+    credentials: dict[str, Any],
+    input_data: Any,
+    variables: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Resolve Credentials dict by evaluating any {%...%} expressions in values."""
+    return {key: _expand_value(value, input_data, variables) for key, value in credentials.items()}

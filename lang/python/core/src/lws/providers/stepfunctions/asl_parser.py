@@ -52,6 +52,8 @@ class ChoiceRule:
     and_rules: list[ChoiceRule] | None = None
     or_rules: list[ChoiceRule] | None = None
     not_rule: ChoiceRule | None = None
+    # JSONata mode
+    condition: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -79,6 +81,8 @@ class TaskState:
     query_language: str | None = None
     arguments: dict[str, Any] | None = None
     output: Any | None = None
+    assign: dict[str, Any] | None = None
+    credentials: dict[str, Any] | None = None
 
 
 @dataclass
@@ -91,6 +95,8 @@ class ChoiceState:
     input_path: str | None = "$"
     output_path: str | None = "$"
     comment: str | None = None
+    query_language: str | None = None
+    assign: dict[str, Any] | None = None
 
 
 @dataclass
@@ -107,6 +113,8 @@ class WaitState:
     input_path: str | None = "$"
     output_path: str | None = "$"
     comment: str | None = None
+    query_language: str | None = None
+    assign: dict[str, Any] | None = None
 
 
 @dataclass
@@ -125,6 +133,7 @@ class ParallelState:
     catch: list[CatchConfig] = field(default_factory=list)
     comment: str | None = None
     query_language: str | None = None
+    assign: dict[str, Any] | None = None
 
 
 @dataclass
@@ -146,6 +155,7 @@ class MapState:
     catch: list[CatchConfig] = field(default_factory=list)
     comment: str | None = None
     query_language: str | None = None
+    assign: dict[str, Any] | None = None
 
 
 @dataclass
@@ -164,6 +174,7 @@ class PassState:
     query_language: str | None = None
     arguments: dict[str, Any] | None = None
     output: Any | None = None
+    assign: dict[str, Any] | None = None
 
 
 @dataclass
@@ -174,6 +185,8 @@ class SucceedState:
     input_path: str | None = "$"
     output_path: str | None = "$"
     comment: str | None = None
+    query_language: str | None = None
+    assign: dict[str, Any] | None = None
 
 
 @dataclass
@@ -297,6 +310,8 @@ def _parse_task_state(name: str, data: dict) -> TaskState:
         query_language=data.get("QueryLanguage"),
         arguments=data.get("Arguments"),
         output=data.get("Output"),
+        assign=data.get("Assign"),
+        credentials=data.get("Credentials"),
     )
 
 
@@ -310,6 +325,8 @@ def _parse_choice_state(name: str, data: dict) -> ChoiceState:
         input_path=data.get("InputPath", "$"),
         output_path=data.get("OutputPath", "$"),
         comment=data.get("Comment"),
+        query_language=data.get("QueryLanguage"),
+        assign=data.get("Assign"),
     )
 
 
@@ -331,6 +348,12 @@ def _parse_choice_rule(rule: dict) -> ChoiceRule:
         return ChoiceRule(
             next_state=next_state,
             not_rule=_parse_choice_rule(rule["Not"]),
+        )
+
+    if "Condition" in rule:
+        return ChoiceRule(
+            next_state=next_state,
+            condition=rule["Condition"],
         )
 
     variable = rule.get("Variable")
@@ -387,6 +410,8 @@ def _parse_wait_state(name: str, data: dict) -> WaitState:
         input_path=data.get("InputPath", "$"),
         output_path=data.get("OutputPath", "$"),
         comment=data.get("Comment"),
+        query_language=data.get("QueryLanguage"),
+        assign=data.get("Assign"),
     )
 
 
@@ -405,6 +430,8 @@ def _parse_parallel_state(name: str, data: dict) -> ParallelState:
         retry=_parse_retry_list(data),
         catch=_parse_catch_list(data),
         comment=data.get("Comment"),
+        query_language=data.get("QueryLanguage"),
+        assign=data.get("Assign"),
     )
 
 
@@ -427,6 +454,8 @@ def _parse_map_state(name: str, data: dict) -> MapState:
         retry=_parse_retry_list(data),
         catch=_parse_catch_list(data),
         comment=data.get("Comment"),
+        query_language=data.get("QueryLanguage"),
+        assign=data.get("Assign"),
     )
 
 
@@ -445,6 +474,7 @@ def _parse_pass_state(name: str, data: dict) -> PassState:
         query_language=data.get("QueryLanguage"),
         arguments=data.get("Arguments"),
         output=data.get("Output"),
+        assign=data.get("Assign"),
     )
 
 
@@ -455,6 +485,8 @@ def _parse_succeed_state(name: str, data: dict) -> SucceedState:
         input_path=data.get("InputPath", "$"),
         output_path=data.get("OutputPath", "$"),
         comment=data.get("Comment"),
+        query_language=data.get("QueryLanguage"),
+        assign=data.get("Assign"),
     )
 
 

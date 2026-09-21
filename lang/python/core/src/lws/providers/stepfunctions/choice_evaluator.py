@@ -12,25 +12,40 @@ from lws.providers.stepfunctions.asl_parser import ChoiceRule
 from lws.providers.stepfunctions.path_utils import resolve_path
 
 
-def evaluate_choice_rules(rules: list[ChoiceRule], input_data: Any) -> str | None:
+def evaluate_choice_rules(
+    rules: list[ChoiceRule],
+    input_data: Any,
+    variables: dict[str, Any] | None = None,
+) -> str | None:
     """Evaluate choice rules in order and return the next state name.
 
     Returns None if no rule matches (caller should use Default).
     """
     for rule in rules:
-        if evaluate_rule(rule, input_data):
+        if evaluate_rule(rule, input_data, variables=variables):
             return rule.next_state
     return None
 
 
-def evaluate_rule(rule: ChoiceRule, input_data: Any) -> bool:
+def evaluate_rule(
+    rule: ChoiceRule,
+    input_data: Any,
+    variables: dict[str, Any] | None = None,
+) -> bool:
     """Evaluate a single choice rule against input data."""
     if rule.and_rules is not None:
-        return all(evaluate_rule(r, input_data) for r in rule.and_rules)
+        return all(evaluate_rule(r, input_data, variables=variables) for r in rule.and_rules)
     if rule.or_rules is not None:
-        return any(evaluate_rule(r, input_data) for r in rule.or_rules)
+        return any(evaluate_rule(r, input_data, variables=variables) for r in rule.or_rules)
     if rule.not_rule is not None:
-        return not evaluate_rule(rule.not_rule, input_data)
+        return not evaluate_rule(rule.not_rule, input_data, variables=variables)
+
+    if rule.condition is not None:
+        from lws.providers.stepfunctions.jsonata_evaluator import (  # pylint: disable=import-outside-toplevel
+            evaluate_condition,
+        )
+
+        return evaluate_condition(rule.condition, input_data, variables=variables)
 
     if rule.variable is None or rule.comparison_operator is None:
         return False
