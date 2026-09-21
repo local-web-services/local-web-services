@@ -12,6 +12,7 @@ from .execution_slot_available import *  # noqa: F401,F403
 from .execution_slot_not_available import *  # noqa: F401,F403
 from .execution_started_on_standard_sm_given import *  # noqa: F401,F403
 from .executions_listed_given import *  # noqa: F401,F403
+from .jsonata_sm_created import *  # noqa: F401,F403
 from .running_execution_stopped_given import *  # noqa: F401,F403
 from .running_execution_terminal_given import *  # noqa: F401,F403
 from .running_execution_timed_out_given import *  # noqa: F401,F403

@@ -13,6 +13,8 @@ import uuid
 from typing import Any, Protocol
 
 from lws.providers.stepfunctions._engine_helpers import (
+    _apply_jsonata_pass_output,
+    _apply_jsonata_task_output,
     _apply_parallel_output,
     _apply_task_output,
     _build_map_item_input,
@@ -22,9 +24,12 @@ from lws.providers.stepfunctions._engine_helpers import (
     _handle_map_catch,
     _handle_parallel_catch,
     _handle_task_catch,
+    _is_jsonata_mode,
     _mark_failed,
     _mark_succeeded,
     _next_or_none,
+    _prepare_jsonata_pass_input,
+    _prepare_jsonata_task_input,
     _prepare_task_input,
     _resolve_map_items,
     _resolve_wait_seconds,
@@ -187,6 +192,10 @@ class ExecutionEngine:
 
     async def _execute_pass(self, state: PassState, input_data: Any) -> tuple[Any, str | None]:
         """Execute a Pass state."""
+        if _is_jsonata_mode(state, self._definition):
+            effective_input = _prepare_jsonata_pass_input(state, input_data)
+            output = _apply_jsonata_pass_output(state, effective_input)
+            return output, _next_or_none(state.next_state, state.end)
         effective_input = apply_input_path(input_data, state.input_path)
         if state.parameters:
             effective_input = apply_parameters(state.parameters, effective_input)
@@ -201,9 +210,14 @@ class ExecutionEngine:
 
     async def _execute_task(self, state: TaskState, input_data: Any) -> tuple[Any, str | None]:
         """Execute a Task state with retry/catch support."""
-        effective_input = _prepare_task_input(state, input_data)
+        if _is_jsonata_mode(state, self._definition):
+            effective_input = _prepare_jsonata_task_input(state, input_data)
+        else:
+            effective_input = _prepare_task_input(state, input_data)
         try:
             result = await self._invoke_with_retry(state, effective_input)
+            if _is_jsonata_mode(state, self._definition):
+                return _apply_jsonata_task_output(state, input_data, result)
             return _apply_task_output(state, input_data, result)
         except StatesError as exc:
             return _handle_task_catch(state, input_data, exc)
