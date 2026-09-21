@@ -45,6 +45,8 @@ def evaluate_expression(
     expr = _jsonata_lib.Jsonata(expression)
     context: dict[str, Any] = {"variables": variables or {}}
     expr.assign("states", {"input": input_data, "result": result, "context": context})
+    for k, v in (variables or {}).items():
+        expr.assign(k, v)
     return expr.evaluate(input_data if input_data is not None else {})
 
 
@@ -101,9 +103,12 @@ def evaluate_assign(
     assign: dict[str, Any],
     input_data: Any,
     variables: dict[str, Any] | None = None,
+    result: Any = None,
 ) -> dict[str, Any]:
     """Evaluate an Assign dict, expanding {%...%} expressions into resolved key-value pairs."""
-    return {key: _expand_value(value, input_data, variables) for key, value in assign.items()}
+    return {
+        key: _expand_value(value, input_data, variables, result) for key, value in assign.items()
+    }
 
 
 def evaluate_condition(

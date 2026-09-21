@@ -86,7 +86,7 @@ class ServiceTaskBridge:
         await self._check_dynamodb_table_exists(dynamodb, table_name)
         item = await dynamodb.get_item(table_name, key)
         if item is None:
-            return {"Item": {}}
+            return {}
         return {"Item": item}
 
     async def _invoke_dynamodb_update_item(self, payload: Any) -> dict:
@@ -100,6 +100,7 @@ class ServiceTaskBridge:
         update_expression = params.get("UpdateExpression", "")
         expression_values = params.get("ExpressionAttributeValues")
         expression_names = params.get("ExpressionAttributeNames")
+        condition_expression = params.get("ConditionExpression")
         self._check_capacity(self._services.get("dynamodb_capacity"), "DynamoDB")
         await self._check_dynamodb_table_exists(dynamodb, table_name)
         updated = await dynamodb.update_item(
@@ -108,6 +109,7 @@ class ServiceTaskBridge:
             update_expression,
             expression_values=expression_values,
             expression_names=expression_names,
+            condition_expression=condition_expression,
         )
         return {"Attributes": updated}
 

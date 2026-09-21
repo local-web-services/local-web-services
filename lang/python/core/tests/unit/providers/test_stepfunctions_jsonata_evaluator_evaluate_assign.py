@@ -56,3 +56,16 @@ class TestEvaluateAssign:
 
         # Assert
         assert actual_result["total"] == expected_sum
+
+    def test_assign_accesses_task_result_via_states_result(self) -> None:
+        # Arrange
+        expected_value = "task-output"
+        assign = {"captured": "{% $states.result.value %}"}
+        input_data = {}
+        task_result = {"value": "task-output"}
+
+        # Act
+        actual_result = evaluate_assign(assign, input_data, result=task_result)
+
+        # Assert
+        assert actual_result["captured"] == expected_value

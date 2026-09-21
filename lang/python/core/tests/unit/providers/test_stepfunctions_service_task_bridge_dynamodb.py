@@ -54,18 +54,19 @@ class TestServiceTaskBridgeInvokeDynamoDB:
 
     async def test_get_item_returns_empty_when_not_found(self) -> None:
         # Arrange
+        expected_result = {}
         dynamo = FakeDynamoDB()
         bridge = make_bridge(dynamodb=dynamo)
 
         # Act
-        result = await bridge.invoke(
+        actual_result = await bridge.invoke(
             "arn:aws:states:::dynamodb:getItem",
             {"TableName": "users", "Key": {"id": {"S": "missing"}}},
         )
 
         # Assert
-        actual_item = result["Item"]
-        assert actual_item == {}
+        assert actual_result == expected_result
+        assert "Item" not in actual_result
 
     async def test_put_item_missing_provider_raises(self) -> None:
         # Arrange
@@ -115,6 +116,72 @@ class TestServiceTaskBridgeInvokeDynamoDB:
         assert actual_calls[0] == (expected_table, expected_key, expected_expression)
         actual_attributes = result["Attributes"]
         assert actual_attributes == expected_attributes
+
+    async def test_update_item_passes_condition_expression(self) -> None:
+        # Arrange
+        expected_condition = "attribute_exists(id)"
+        dynamo = FakeDynamoDB()
+        bridge = make_bridge(dynamodb=dynamo)
+        received_kwargs: dict = {}
+
+        async def capturing_update_item(
+            table_name,
+            key,
+            update_expression,
+            expression_values=None,
+            expression_names=None,
+            condition_expression=None,
+        ):
+            received_kwargs["condition_expression"] = condition_expression
+            return {}
+
+        dynamo.update_item = capturing_update_item  # type: ignore[method-assign]
+
+        # Act
+        await bridge.invoke(
+            "arn:aws:states:::dynamodb:updateItem",
+            {
+                "TableName": "orders",
+                "Key": {"id": {"S": "1"}},
+                "UpdateExpression": "SET #s = :v",
+                "ConditionExpression": expected_condition,
+            },
+        )
+
+        # Assert
+        actual_condition = received_kwargs["condition_expression"]
+        assert actual_condition == expected_condition
+
+    async def test_update_item_propagates_condition_check_failure(self) -> None:
+        # Arrange
+        expected_error = "ConditionalCheckFailedException"
+        dynamo = FakeDynamoDB()
+
+        async def raising_update_item(
+            table_name,
+            key,
+            update_expression,
+            expression_values=None,
+            expression_names=None,
+            condition_expression=None,
+        ):
+            raise KeyError("ConditionalCheckFailedException")
+
+        dynamo.update_item = raising_update_item  # type: ignore[method-assign]
+        bridge = make_bridge(dynamodb=dynamo)
+
+        # Act
+        # Assert
+        with pytest.raises(KeyError, match=expected_error):
+            await bridge.invoke(
+                "arn:aws:states:::dynamodb:updateItem",
+                {
+                    "TableName": "orders",
+                    "Key": {"id": {"S": "1"}},
+                    "UpdateExpression": "SET #s = :v",
+                    "ConditionExpression": "attribute_exists(nonexistent)",
+                },
+            )
 
     async def test_update_item_missing_provider_raises(self) -> None:
         # Arrange

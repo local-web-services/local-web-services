@@ -205,3 +205,22 @@ class TestUpdateItem:
         assert (
             actual_order_id == expected_order_id
         ), f"Expected {expected_order_id!r} but got {actual_order_id!r}"
+
+    async def test_condition_expression_fails_raises_error(
+        self, provider: SqliteDynamoProvider
+    ) -> None:
+        # Arrange
+        expected_error = "ConditionalCheckFailedException"
+        await provider.put_item("orders", {"orderId": "o1", "itemId": "i1", "status": "new"})
+
+        # Act
+        # Assert
+        with pytest.raises(KeyError, match=expected_error):
+            await provider.update_item(
+                "orders",
+                {"orderId": "o1", "itemId": "i1"},
+                "SET #s = :v",
+                expression_values={":v": "shipped"},
+                expression_names={"#s": "status"},
+                condition_expression="attribute_not_exists(orderId)",
+            )

@@ -88,11 +88,11 @@ def _apply_jsonata_task_output(
     return output, _next_or_none(state.next_state, state.end)
 
 
-def _apply_assign(state: Any, output: Any, variables: dict[str, Any]) -> None:
+def _apply_assign(state: Any, output: Any, variables: dict[str, Any], result: Any = None) -> None:
     """Evaluate Assign on a state and merge results into the variables dict in place."""
     assign = getattr(state, "assign", None)
     if assign is not None:
-        new_vars = evaluate_assign(assign, output, variables=variables)
+        new_vars = evaluate_assign(assign, output, variables=variables, result=result)
         variables.update(new_vars)
 
 
