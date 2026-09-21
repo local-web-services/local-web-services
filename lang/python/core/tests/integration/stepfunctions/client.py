@@ -5,6 +5,8 @@ from __future__ import annotations
 from .constants import (
     _SFN_TARGET,
     INT_INPUT,
+    INT_JSONATA_DICT_OUTPUT_DEFINITION,
+    INT_JSONATA_DICT_OUTPUT_SM,
     INT_JSONATA_PASS_DEFINITION,
     INT_JSONATA_SM,
     INT_SM,
@@ -38,6 +40,19 @@ class StepfunctionsTestClient:
             json={
                 "name": name,
                 "definition": INT_JSONATA_PASS_DEFINITION,
+                "roleArn": ROLE_ARN,
+                "type": "EXPRESS",
+            },
+        )
+        return r.json().get("stateMachineArn", _sm_arn(name))
+
+    def create_jsonata_dict_output_sm(self, name: str = INT_JSONATA_DICT_OUTPUT_SM) -> str:
+        r = self._client.post(
+            "/",
+            headers={"X-Amz-Target": f"{_SFN_TARGET}.CreateStateMachine"},
+            json={
+                "name": name,
+                "definition": INT_JSONATA_DICT_OUTPUT_DEFINITION,
                 "roleArn": ROLE_ARN,
                 "type": "EXPRESS",
             },

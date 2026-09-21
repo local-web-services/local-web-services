@@ -5,6 +5,8 @@ from __future__ import annotations
 from botocore.exceptions import ClientError
 
 from .constants import (
+    JSONATA_DICT_OUTPUT_DEFINITION,
+    JSONATA_DICT_OUTPUT_SM,
     JSONATA_PASS_DEFINITION,
     JSONATA_SM,
     PASS_DEFINITION,
@@ -38,6 +40,20 @@ class StepfunctionsTestClient:
         try:
             resp = self._client.create_state_machine(
                 name=name, definition=JSONATA_PASS_DEFINITION, roleArn=ROLE_ARN, type="EXPRESS"
+            )
+            return resp["stateMachineArn"]
+        except ClientError as exc:
+            if exc.response["Error"]["Code"] == "StateMachineAlreadyExists":
+                return _sm_arn(name)
+            raise
+
+    def create_jsonata_dict_output_sm(self, name=JSONATA_DICT_OUTPUT_SM):
+        try:
+            resp = self._client.create_state_machine(
+                name=name,
+                definition=JSONATA_DICT_OUTPUT_DEFINITION,
+                roleArn=ROLE_ARN,
+                type="EXPRESS",
             )
             return resp["stateMachineArn"]
         except ClientError as exc:

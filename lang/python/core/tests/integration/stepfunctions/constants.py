@@ -24,6 +24,22 @@ INT_JSONATA_PASS_DEFINITION = json.dumps(
     }
 )
 
+INT_JSONATA_DICT_OUTPUT_SM = "int-jsonata-dict-output-sm-1"
+
+INT_JSONATA_DICT_OUTPUT_DEFINITION = json.dumps(
+    {
+        "QueryLanguage": "JSONata",
+        "StartAt": "Transform",
+        "States": {
+            "Transform": {
+                "Type": "Pass",
+                "Output": {"result_key": "{% $states.input.key %}"},
+                "End": True,
+            }
+        },
+    }
+)
+
 ROLE_ARN = "arn:aws:iam::000000000000:role/int-test"
 
 PASS_DEFINITION = json.dumps({"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}})
