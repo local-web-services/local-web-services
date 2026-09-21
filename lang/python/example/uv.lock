@@ -504,8 +504,17 @@ wheels = [
 ]
 
 [[package]]
+name = "jsonata-python"
+version = "0.7.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/9d/6a/b756e10939f584b0629c301bb4aa0e79f94163ac3b0083c788b8ee78c708/jsonata_python-0.7.0.tar.gz", hash = "sha256:2cf788147a0d444cb9d7d81c58da9991607280d6a5d0f06bd2dd212a59fdcb16", size = 368727, upload-time = "2026-07-05T00:44:15.238Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/03/30/17eaf4576916556875fc961002cb67d0b404abc3345ab2bb13f1496654a2/jsonata_python-0.7.0-py3-none-any.whl", hash = "sha256:85b8dd2adf9c17a67494892ef04bc191ba2156598daae4465eec30ffd1559238", size = 87399, upload-time = "2026-07-05T00:44:13.885Z" },
+]
+
+[[package]]
 name = "local-web-services"
-version = "0.18.0"
+version = "0.21.0"
 source = { editable = "../core" }
 dependencies = [
     { name = "aiosqlite" },
@@ -513,6 +522,7 @@ dependencies = [
     { name = "docker" },
     { name = "fastapi" },
     { name = "httpx" },
+    { name = "jsonata-python" },
     { name = "pyjwt", extra = ["crypto"] },
     { name = "python-multipart" },
     { name = "pyyaml" },
@@ -531,6 +541,7 @@ requires-dist = [
     { name = "grpcio", marker = "extra == 'grpc'", specifier = ">=1.60.0" },
     { name = "grpcio-tools", marker = "extra == 'grpc'", specifier = ">=1.60.0" },
     { name = "httpx", specifier = ">=0.27.0" },
+    { name = "jsonata-python", specifier = ">=0.5.0" },
     { name = "protobuf", marker = "extra == 'grpc'", specifier = ">=4.25.0" },
     { name = "pyjwt", extras = ["crypto"], specifier = ">=2.8.0" },
     { name = "python-multipart", specifier = ">=0.0.9" },
@@ -557,7 +568,7 @@ dev = [
 
 [[package]]
 name = "local-web-services-python-sdk"
-version = "0.2.2"
+version = "0.21.0"
 source = { editable = "../sdk" }
 dependencies = [
     { name = "botocore" },
