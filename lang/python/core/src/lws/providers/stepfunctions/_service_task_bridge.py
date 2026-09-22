@@ -11,6 +11,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from lws.providers.stepfunctions._engine_state import StatesTaskFailed
+
 if TYPE_CHECKING:
     from lws.providers.stepfunctions.asl_parser import StateMachineDefinition
 
@@ -103,14 +105,22 @@ class ServiceTaskBridge:
         condition_expression = params.get("ConditionExpression")
         self._check_capacity(self._services.get("dynamodb_capacity"), "DynamoDB")
         await self._check_dynamodb_table_exists(dynamodb, table_name)
-        updated = await dynamodb.update_item(
-            table_name,
-            key,
-            update_expression,
-            expression_values=expression_values,
-            expression_names=expression_names,
-            condition_expression=condition_expression,
-        )
+        try:
+            updated = await dynamodb.update_item(
+                table_name,
+                key,
+                update_expression,
+                expression_values=expression_values,
+                expression_names=expression_names,
+                condition_expression=condition_expression,
+            )
+        except KeyError as exc:
+            if exc.args and exc.args[0] == "ConditionalCheckFailedException":
+                raise StatesTaskFailed(
+                    "DynamoDB.ConditionalCheckFailedException",
+                    "The conditional request failed",
+                ) from exc
+            raise
         return {"Attributes": updated}
 
     async def _invoke_sqs_send_message(self, payload: Any) -> dict:

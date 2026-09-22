@@ -7,6 +7,7 @@ Handles all state types, error handling (Retry/Catch), and execution tracking.
 from __future__ import annotations
 
 import asyncio
+import dataclasses
 import logging
 import time
 import uuid
@@ -385,6 +386,10 @@ class ExecutionEngine:
 
     async def _run_branch(self, branch: StateMachineDefinition, input_data: Any) -> Any:
         """Run a single branch as a sub-state-machine."""
+        # Branches inherit the parent's QueryLanguage when not explicitly declared
+        effective_ql = branch.query_language or self._definition.query_language
+        if effective_ql != branch.query_language:
+            branch = dataclasses.replace(branch, query_language=effective_ql)
         sub_engine = ExecutionEngine(
             definition=branch,
             compute=self._compute,
