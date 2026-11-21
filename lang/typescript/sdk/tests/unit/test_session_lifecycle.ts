@@ -20,14 +20,15 @@ describe("LwsSession start and stop", () => {
 
   it("sets AWS test credentials after start", async () => {
     // Arrange
+    const expectedCredential = "ldk-local";
     const session = new LwsSession(new SqsQueue("TestQueue"));
 
     // Act
     await session.start();
 
     // Assert
-    expect(process.env["AWS_ACCESS_KEY_ID"]).toBe("ldk-local");
-    expect(process.env["AWS_SECRET_ACCESS_KEY"]).toBe("ldk-local");
+    expect(process.env["AWS_ACCESS_KEY_ID"]).toBe(expectedCredential);
+    expect(process.env["AWS_SECRET_ACCESS_KEY"]).toBe(expectedCredential);
 
     await session.stop();
   });
@@ -51,8 +52,11 @@ describe("LwsSession start and stop", () => {
     // Arrange
     const session = new LwsSession();
 
-    // Act + Assert (no throw)
-    await expect(session.start()).resolves.toBeUndefined();
+    // Act
+    const actualPromise = session.start();
+
+    // Assert
+    await expect(actualPromise).resolves.toBeUndefined();
     await session.stop();
   });
 
@@ -84,8 +88,11 @@ describe("LwsSession reset", () => {
   it("reset returns without error", async () => {
     // Arrange (session started in beforeAll)
 
-    // Act + Assert
-    await expect(session.reset()).resolves.toBeUndefined();
+    // Act
+    const actualPromise = session.reset();
+
+    // Assert
+    await expect(actualPromise).resolves.toBeUndefined();
   });
 });
 

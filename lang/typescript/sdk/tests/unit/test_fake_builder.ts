@@ -13,8 +13,9 @@ describe("FakeBuilder configuration", () => {
       .build();
 
     // Assert
+    const expectedOperation = "PutItem";
     const rule = actual["dynamodb"]?.rules[0];
-    expect(rule?.operation).toBe("PutItem");
+    expect(rule?.operation).toBe(expectedOperation);
     expect(rule?.response.status).toBe(expectedStatus);
     expect(actual["dynamodb"]?.enabled).toBe(true);
   });
@@ -30,9 +31,10 @@ describe("FakeBuilder configuration", () => {
       .build();
 
     // Assert
+    const expectedType = expectedBody.__type;
     const rule = actual["dynamodb"]?.rules[0];
     const actualBody = JSON.parse(rule?.response.body ?? "{}") as Record<string, unknown>;
-    expect(actualBody["__type"]).toBe("ResourceNotFoundException");
+    expect(actualBody["__type"]).toBe(expectedType);
   });
 
   it("supports header matching", () => {
@@ -72,6 +74,7 @@ describe("FakeBuilder configuration", () => {
     // Arrange
     const expectedErrorType = "AccessDeniedException";
     const expectedMessage = "not allowed";
+    const expectedErrorStatus = 400;
 
     // Act
     const actual = new FakeBuilder("iam", 9999)
@@ -84,7 +87,7 @@ describe("FakeBuilder configuration", () => {
     const body = JSON.parse(rule?.response.body ?? "{}") as Record<string, unknown>;
     expect(body["__type"]).toBe(expectedErrorType);
     expect(body["message"]).toBe(expectedMessage);
-    expect(rule?.response.status).toBe(400);
+    expect(rule?.response.status).toBe(expectedErrorStatus);
   });
 
   it("stacks multiple rules for the same service", () => {

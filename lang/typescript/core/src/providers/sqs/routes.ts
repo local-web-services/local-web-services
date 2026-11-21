@@ -129,6 +129,13 @@ async function handleJsonAction(
       case "CreateQueue": {
         const queueName = body["QueueName"] as string;
         const attrs = (body["Attributes"] as Record<string, string> | undefined) ?? {};
+        if (provider.queues.has(queueName)) {
+          reply
+            .code(400)
+            .type("application/json")
+            .send(jsonError("QueueAlreadyExists", `A queue with the name '${queueName}' already exists.`));
+          return;
+        }
         const url = await provider.createQueue(queueName, attrs);
         reply.code(200).type("application/json").send(JSON.stringify({ QueueUrl: url }));
         break;

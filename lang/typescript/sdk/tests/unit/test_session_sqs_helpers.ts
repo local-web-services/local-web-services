@@ -28,8 +28,11 @@ describe("LwsSession SQS endpoint helpers", () => {
     // Arrange
     const unknownService = "dynamodb";
 
-    // Act + Assert
-    expect(() => session.endpointUrl(unknownService)).toThrow(/not available/);
+    // Act
+    const actualThrow = () => session.endpointUrl(unknownService);
+
+    // Assert
+    expect(actualThrow).toThrow(/not available/);
   });
 
   it("queueUrl returns expected format", () => {
@@ -57,16 +60,19 @@ describe("LwsSession SQS endpoint helpers", () => {
   });
 
   it("clientConfig returns endpoint credentials and region", () => {
-    // Arrange (session started in beforeAll)
+    // Arrange
+    const expectedAccessKeyId = "test";
+    const expectedSecretAccessKey = "test";
+    const expectedRegion = "us-east-1";
 
     // Act
     const actualConfig = session.clientConfig("sqs");
 
     // Assert
     expect(actualConfig.endpoint).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
-    expect(actualConfig.credentials.accessKeyId).toBe("test");
-    expect(actualConfig.credentials.secretAccessKey).toBe("test");
-    expect(actualConfig.region).toBe("us-east-1");
+    expect(actualConfig.credentials.accessKeyId).toBe(expectedAccessKeyId);
+    expect(actualConfig.credentials.secretAccessKey).toBe(expectedSecretAccessKey);
+    expect(actualConfig.region).toBe(expectedRegion);
   });
 
   it("clientConfig endpoint matches endpointUrl", () => {

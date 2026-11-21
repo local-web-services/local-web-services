@@ -23,6 +23,9 @@ import {
 import { type ResourceSpec, SqsQueue } from "./specs.js";
 import { ChaosBuilder } from "./builders/chaos.js";
 import { FakeBuilder } from "./builders/fake.js";
+import { CapacityBuilder } from "./builders/capacity.js";
+import { IamBuilder } from "./builders/iam.js";
+import { LifecycleBuilder } from "./builders/lifecycle.js";
 import { discoverFromCdk } from "./discovery/cdk.js";
 import { discoverFromHcl } from "./discovery/hcl.js";
 
@@ -169,6 +172,18 @@ export class LwsSession {
 
   fake(service: string): FakeBuilder {
     return new FakeBuilder(service, this._mgmtPort);
+  }
+
+  capacity(service: string): CapacityBuilder {
+    return new CapacityBuilder(service, this.managementUrl);
+  }
+
+  iam(): IamBuilder {
+    return new IamBuilder(this.managementUrl);
+  }
+
+  lifecycle(service: string): LifecycleBuilder {
+    return new LifecycleBuilder(service, this.managementUrl);
   }
 
   // ── Internal ────────────────────────────────────────────────────────────────

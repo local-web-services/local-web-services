@@ -30,8 +30,9 @@ describe("Order queue enqueue", () => {
     const actualMessageId = await enqueueOrder(expectedOrder, queueUrl, client);
 
     // Assert
+    const expectedType = "string";
     expect(actualMessageId).toBeTruthy();
-    expect(typeof actualMessageId).toBe("string");
+    expect(typeof actualMessageId).toBe(expectedType);
   });
 
   it("enqueueOrder returns different IDs for different orders", async () => {

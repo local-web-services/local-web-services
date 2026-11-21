@@ -53,16 +53,20 @@ describe("ChaosBuilder configuration", () => {
 
   it("supports method chaining", () => {
     // Arrange
+    const expectedErrorRate = 0.3;
+    const expectedMinMs = 10;
+    const expectedMaxMs = 50;
+    const expectedTimeoutRate = 0.05;
     const builder = new ChaosBuilder("sqs", 9999);
 
     // Act
-    const actual = builder.errorRate(0.3).latency(10, 50).timeoutRate(0.05).build();
+    const actual = builder.errorRate(expectedErrorRate).latency(expectedMinMs, expectedMaxMs).timeoutRate(expectedTimeoutRate).build();
 
     // Assert
-    expect(actual["sqs"]?.error_rate).toBe(0.3);
-    expect(actual["sqs"]?.latency_min_ms).toBe(10);
-    expect(actual["sqs"]?.latency_max_ms).toBe(50);
-    expect(actual["sqs"]?.timeout_rate).toBe(0.05);
+    expect(actual["sqs"]?.error_rate).toBe(expectedErrorRate);
+    expect(actual["sqs"]?.latency_min_ms).toBe(expectedMinMs);
+    expect(actual["sqs"]?.latency_max_ms).toBe(expectedMaxMs);
+    expect(actual["sqs"]?.timeout_rate).toBe(expectedTimeoutRate);
   });
 
   it("includes service name as key in built payload", () => {

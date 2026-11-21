@@ -23,5 +23,14 @@ export type { ChaosConfig } from "./builders/chaos.js";
 export { FakeBuilder, FakeRuleBuilder } from "./builders/fake.js";
 export type { FakeRule } from "./builders/fake.js";
 
+export { CapacityBuilder } from "./builders/capacity.js";
+export type { CapacityConfig } from "./builders/capacity.js";
+
+export { IamBuilder, IamIdentityBuilder } from "./builders/iam.js";
+export type { IamConfig, IamIdentityPolicy } from "./builders/iam.js";
+
+export { LifecycleBuilder } from "./builders/lifecycle.js";
+export type { LifecycleConfig } from "./builders/lifecycle.js";
+
 export { discoverFromCdk } from "./discovery/cdk.js";
 export { discoverFromHcl } from "./discovery/hcl.js";

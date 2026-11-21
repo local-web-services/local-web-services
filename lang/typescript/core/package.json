@@ -15,6 +15,7 @@
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

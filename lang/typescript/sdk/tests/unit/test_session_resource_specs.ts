@@ -14,6 +14,7 @@ describe("DynamoTable spec", () => {
     // Arrange
     const expectedName = "Orders";
     const expectedHashKey = "orderId";
+    const expectedKeyType = "S";
 
     // Act
     const actual = new DynamoTable(expectedName, expectedHashKey);
@@ -21,21 +22,22 @@ describe("DynamoTable spec", () => {
     // Assert
     expect(actual.name).toBe(expectedName);
     expect(actual.hashKey).toBe(expectedHashKey);
-    expect(actual.hashKeyType).toBe("S");
+    expect(actual.hashKeyType).toBe(expectedKeyType);
     expect(actual.sortKey).toBeUndefined();
-    expect(actual.sortKeyType).toBe("S");
+    expect(actual.sortKeyType).toBe(expectedKeyType);
   });
 
   it("accepts sort key", () => {
     // Arrange
     const expectedSortKey = "createdAt";
+    const expectedSortKeyType = "N";
 
     // Act
-    const actual = new DynamoTable("Orders", "id", "S", expectedSortKey, "N");
+    const actual = new DynamoTable("Orders", "id", "S", expectedSortKey, expectedSortKeyType);
 
     // Assert
     expect(actual.sortKey).toBe(expectedSortKey);
-    expect(actual.sortKeyType).toBe("N");
+    expect(actual.sortKeyType).toBe(expectedSortKeyType);
   });
 });
 
@@ -43,13 +45,14 @@ describe("SqsQueue spec", () => {
   it("stores name with defaults", () => {
     // Arrange
     const expectedName = "OrderQueue";
+    const expectedVisibilityTimeout = 30;
 
     // Act
     const actual = new SqsQueue(expectedName);
 
     // Assert
     expect(actual.name).toBe(expectedName);
-    expect(actual.visibilityTimeout).toBe(30);
+    expect(actual.visibilityTimeout).toBe(expectedVisibilityTimeout);
     expect(actual.isFifo).toBe(false);
   });
 
@@ -128,8 +131,9 @@ describe("StateMachine spec", () => {
     const actual = new StateMachine(expectedName, expectedDef);
 
     // Assert
+    const expectedRoleArnFragment = "iam";
     expect(actual.name).toBe(expectedName);
     expect(actual.definition).toBe(expectedDef);
-    expect(actual.roleArn).toContain("iam");
+    expect(actual.roleArn).toContain(expectedRoleArnFragment);
   });
 });

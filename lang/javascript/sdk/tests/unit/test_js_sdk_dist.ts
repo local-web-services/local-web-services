@@ -8,24 +8,36 @@ const distDir = join(__dirname, "../../dist");
 
 describe("JavaScript SDK dist (run `make build` before this suite)", () => {
   it("dist directory exists", () => {
-    // Arrange + Act + Assert
-    expect(existsSync(distDir)).toBe(true);
+    // Arrange
+    const expectedPath = distDir;
+
+    // Act
+    const actualExists = existsSync(expectedPath);
+
+    // Assert
+    expect(actualExists).toBe(true);
   });
 
   it("CJS bundle exists at dist/index.cjs", () => {
     // Arrange
     const expectedPath = join(distDir, "index.cjs");
 
-    // Act + Assert
-    expect(existsSync(expectedPath)).toBe(true);
+    // Act
+    const actualExists = existsSync(expectedPath);
+
+    // Assert
+    expect(actualExists).toBe(true);
   });
 
   it("ESM bundle exists at dist/index.js", () => {
     // Arrange
     const expectedPath = join(distDir, "index.js");
 
-    // Act + Assert
-    expect(existsSync(expectedPath)).toBe(true);
+    // Act
+    const actualExists = existsSync(expectedPath);
+
+    // Assert
+    expect(actualExists).toBe(true);
   });
 
   it("dist contains no .d.ts files", () => {

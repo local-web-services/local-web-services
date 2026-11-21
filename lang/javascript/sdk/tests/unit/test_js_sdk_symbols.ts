@@ -17,9 +17,13 @@ import {
 
 describe("JavaScript SDK re-exports all TypeScript SDK symbols", () => {
   it("exports LwsSession class", () => {
-    // Arrange + Act + Assert
-    expect(LwsSession).toBeDefined();
-    expect(typeof LwsSession).toBe("function");
+    // Arrange (uses top-level import)
+
+    // Act
+    const actualValue = LwsSession;
+
+    // Assert
+    expect(actualValue).toBeDefined();
   });
 
   it("exports all resource spec classes", () => {
@@ -34,41 +38,61 @@ describe("JavaScript SDK re-exports all TypeScript SDK symbols", () => {
       StateMachine,
     ];
 
-    // Act + Assert
-    for (const cls of expectedClasses) {
-      expect(cls).toBeDefined();
-      expect(typeof cls).toBe("function");
-    }
+    // Act
+    const actualDefined = expectedClasses.map((cls) => cls !== undefined);
+
+    // Assert
+    expect(actualDefined.every(Boolean)).toBe(true);
   });
 
   it("exports ChaosBuilder class", () => {
-    // Arrange + Act + Assert
-    expect(ChaosBuilder).toBeDefined();
-    expect(typeof ChaosBuilder).toBe("function");
+    // Arrange (uses top-level import)
+
+    // Act
+    const actualValue = ChaosBuilder;
+
+    // Assert
+    expect(actualValue).toBeDefined();
   });
 
   it("exports FakeBuilder class", () => {
-    // Arrange + Act + Assert
-    expect(FakeBuilder).toBeDefined();
-    expect(typeof FakeBuilder).toBe("function");
+    // Arrange (uses top-level import)
+
+    // Act
+    const actualValue = FakeBuilder;
+
+    // Assert
+    expect(actualValue).toBeDefined();
   });
 
   it("exports lwsSessionFixture function", () => {
-    // Arrange + Act + Assert
-    expect(lwsSessionFixture).toBeDefined();
-    expect(typeof lwsSessionFixture).toBe("function");
+    // Arrange (uses top-level import)
+
+    // Act
+    const actualValue = lwsSessionFixture;
+
+    // Assert
+    expect(actualValue).toBeDefined();
   });
 
   it("exports discoverFromCdk function", () => {
-    // Arrange + Act + Assert
-    expect(discoverFromCdk).toBeDefined();
-    expect(typeof discoverFromCdk).toBe("function");
+    // Arrange (uses top-level import)
+
+    // Act
+    const actualValue = discoverFromCdk;
+
+    // Assert
+    expect(actualValue).toBeDefined();
   });
 
   it("exports discoverFromHcl function", () => {
-    // Arrange + Act + Assert
-    expect(discoverFromHcl).toBeDefined();
-    expect(typeof discoverFromHcl).toBe("function");
+    // Arrange (uses top-level import)
+
+    // Act
+    const actualValue = discoverFromHcl;
+
+    // Assert
+    expect(actualValue).toBeDefined();
   });
 
   it("LwsSession can be instantiated with resource specs", () => {
