@@ -28,6 +28,25 @@ importers:
         specifier: ^1.6.0
         version: 1.6.1(@types/node@20.19.43)(supports-color@7.2.0)
 
+  typescript/sdk:
+    dependencies:
+      fastify:
+        specifier: ^4.28.0
+        version: 4.29.1
+      local-web-services-typescript-core:
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^20.14.0
+        version: 20.19.43
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.1(@types/node@20.19.43)(supports-color@7.2.0)
+
 packages:
 
   '@ampproject/remapping@2.3.0':

@@ -3,11 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "engines": {
     "node": ">=20.0.0"
   },
   "scripts": {
-    "build": "tsc --noEmit",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
     "test:unit": "vitest run tests/unit",
     "lint": "tsc --noEmit"
   },
