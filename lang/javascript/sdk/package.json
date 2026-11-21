@@ -20,7 +20,8 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "fastify": "^4.28.0"
+    "fastify": "^4.28.0",
+    "@fastify/formbody": "^7.4.0"
   },
   "devDependencies": {
     "local-web-services-typescript-core": "workspace:*",

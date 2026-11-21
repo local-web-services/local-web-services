@@ -1,0 +1,19 @@
+{
+  "name": "local-web-services-javascript-example",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "test:unit": "vitest run tests/unit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sqs": "^3.600.0",
+    "local-web-services-javascript-sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest": "^1.6.0"
+  }
+}

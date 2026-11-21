@@ -68,6 +68,19 @@ export async function sqsRoutesPlugin(
   // Register form-body parser for the query/XML protocol
   await fastify.register(formbody);
 
+  // Register JSON body parser for the AWS JSON 1.0 protocol
+  fastify.addContentTypeParser(
+    "application/x-amz-json-1.0",
+    { parseAs: "string" },
+    (_req, body, done) => {
+      try {
+        done(null, JSON.parse(body as string));
+      } catch (err) {
+        done(err as Error);
+      }
+    },
+  );
+
   // --- Logging hooks ---
   const { onRequest, onResponse } = makeLoggingHooks("sqs");
   fastify.addHook("onRequest", onRequest);

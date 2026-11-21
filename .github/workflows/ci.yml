@@ -23,6 +23,11 @@ jobs:
       python-sample-cdk: ${{ steps.filter.outputs.python-sample-cdk }}
       python-sample-hcl: ${{ steps.filter.outputs.python-sample-hcl }}
       specification: ${{ steps.filter.outputs.specification }}
+      typescript-core: ${{ steps.filter.outputs.typescript-core }}
+      typescript-sdk: ${{ steps.filter.outputs.typescript-sdk }}
+      typescript-example: ${{ steps.filter.outputs.typescript-example }}
+      javascript-sdk: ${{ steps.filter.outputs.javascript-sdk }}
+      javascript-example: ${{ steps.filter.outputs.javascript-example }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -59,6 +64,24 @@ jobs:
               - 'lang/python/sdk/**'
             specification:
               - 'lang/specification/core/formal/**'
+            typescript-core:
+              - 'lang/typescript/core/**'
+            typescript-sdk:
+              - 'lang/typescript/sdk/**'
+              - 'lang/typescript/core/**'
+            typescript-example:
+              - 'lang/typescript/example/**'
+              - 'lang/typescript/sdk/**'
+              - 'lang/typescript/core/**'
+            javascript-sdk:
+              - 'lang/javascript/sdk/**'
+              - 'lang/typescript/sdk/**'
+              - 'lang/typescript/core/**'
+            javascript-example:
+              - 'lang/javascript/example/**'
+              - 'lang/javascript/sdk/**'
+              - 'lang/typescript/sdk/**'
+              - 'lang/typescript/core/**'
 
   # ── FizzBee Formal Specs ────────────────────────────────────────────────────
   fizzbee-check:
@@ -735,3 +758,218 @@ jobs:
       - name: Run test-orders.sh
         working-directory: lang/python/sample/hcl
         run: ./test-orders.sh
+
+  # ── TypeScript Core ─────────────────────────────────────────────────────────
+  typescript-core-lint:
+    needs: [changes]
+    if: needs.changes.outputs.typescript-core == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: "lang/pnpm-lock.yaml"
+      - run: pnpm install --frozen-lockfile
+        working-directory: lang
+      - run: make lint
+        working-directory: lang/typescript/core
+
+  typescript-core-test-unit:
+    needs: [changes]
+    if: needs.changes.outputs.typescript-core == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: "lang/pnpm-lock.yaml"
+      - run: pnpm install --frozen-lockfile
+        working-directory: lang
+      - run: make test:unit
+        working-directory: lang/typescript/core
+
+  # ── TypeScript SDK ───────────────────────────────────────────────────────────
+  typescript-sdk-lint:
+    needs: [changes, typescript-core-lint, typescript-core-test-unit]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.typescript-sdk == 'true' &&
+      (needs.typescript-core-lint.result == 'success' || needs.typescript-core-lint.result == 'skipped') &&
+      (needs.typescript-core-test-unit.result == 'success' || needs.typescript-core-test-unit.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: "lang/pnpm-lock.yaml"
+      - run: pnpm install --frozen-lockfile
+        working-directory: lang
+      - run: make lint
+        working-directory: lang/typescript/sdk
+
+  typescript-sdk-test-unit:
+    needs: [changes, typescript-core-lint, typescript-core-test-unit]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.typescript-sdk == 'true' &&
+      (needs.typescript-core-lint.result == 'success' || needs.typescript-core-lint.result == 'skipped') &&
+      (needs.typescript-core-test-unit.result == 'success' || needs.typescript-core-test-unit.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: "lang/pnpm-lock.yaml"
+      - run: pnpm install --frozen-lockfile
+        working-directory: lang
+      - run: make test:unit
+        working-directory: lang/typescript/sdk
+
+  # ── TypeScript Example ───────────────────────────────────────────────────────
+  typescript-example-lint:
+    needs: [changes, typescript-sdk-lint, typescript-sdk-test-unit]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.typescript-example == 'true' &&
+      (needs.typescript-sdk-lint.result == 'success' || needs.typescript-sdk-lint.result == 'skipped') &&
+      (needs.typescript-sdk-test-unit.result == 'success' || needs.typescript-sdk-test-unit.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: "lang/pnpm-lock.yaml"
+      - run: pnpm install --frozen-lockfile
+        working-directory: lang
+      - run: make lint
+        working-directory: lang/typescript/example
+
+  typescript-example-test-unit:
+    needs: [changes, typescript-sdk-lint, typescript-sdk-test-unit]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.typescript-example == 'true' &&
+      (needs.typescript-sdk-lint.result == 'success' || needs.typescript-sdk-lint.result == 'skipped') &&
+      (needs.typescript-sdk-test-unit.result == 'success' || needs.typescript-sdk-test-unit.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: "lang/pnpm-lock.yaml"
+      - run: pnpm install --frozen-lockfile
+        working-directory: lang
+      - run: make test:unit
+        working-directory: lang/typescript/example
+
+  # ── JavaScript SDK ───────────────────────────────────────────────────────────
+  javascript-sdk-lint:
+    needs: [changes, typescript-sdk-lint, typescript-sdk-test-unit]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.javascript-sdk == 'true' &&
+      (needs.typescript-sdk-lint.result == 'success' || needs.typescript-sdk-lint.result == 'skipped') &&
+      (needs.typescript-sdk-test-unit.result == 'success' || needs.typescript-sdk-test-unit.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: "lang/pnpm-lock.yaml"
+      - run: pnpm install --frozen-lockfile
+        working-directory: lang
+      - run: make lint
+        working-directory: lang/javascript/sdk
+
+  javascript-sdk-test-unit:
+    needs: [changes, typescript-sdk-lint, typescript-sdk-test-unit]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.javascript-sdk == 'true' &&
+      (needs.typescript-sdk-lint.result == 'success' || needs.typescript-sdk-lint.result == 'skipped') &&
+      (needs.typescript-sdk-test-unit.result == 'success' || needs.typescript-sdk-test-unit.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: "lang/pnpm-lock.yaml"
+      - run: pnpm install --frozen-lockfile
+        working-directory: lang
+      - run: make build
+        working-directory: lang/javascript/sdk
+      - run: make test:unit
+        working-directory: lang/javascript/sdk
+
+  # ── JavaScript Example ───────────────────────────────────────────────────────
+  javascript-example-test-unit:
+    needs: [changes, javascript-sdk-lint, javascript-sdk-test-unit]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.javascript-example == 'true' &&
+      (needs.javascript-sdk-lint.result == 'success' || needs.javascript-sdk-lint.result == 'skipped') &&
+      (needs.javascript-sdk-test-unit.result == 'success' || needs.javascript-sdk-test-unit.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: "lang/pnpm-lock.yaml"
+      - run: pnpm install --frozen-lockfile
+        working-directory: lang
+      - run: make build
+        working-directory: lang/javascript/sdk
+      - run: make test:unit
+        working-directory: lang/javascript/example
