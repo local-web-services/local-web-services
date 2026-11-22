@@ -100,40 +100,44 @@ describe("DynamoProvider createTable / deleteTable", () => {
 
   it("deletes a table so it no longer appears in listTables", () => {
     // Arrange
-    provider.createTable({ tableName: "temp", hashKey: "pk" });
+    const expectedAbsentTable = "temp";
+    provider.createTable({ tableName: expectedAbsentTable, hashKey: "pk" });
 
     // Act
-    provider.deleteTable("temp");
+    provider.deleteTable(expectedAbsentTable);
 
     // Assert
-    expect(provider.listTables()).not.toContain("temp");
+    expect(provider.listTables()).not.toContain(expectedAbsentTable);
   });
 
   it("throws when deleting a non-existent table", () => {
-    // Arrange (no table created)
+    // Arrange
+    const expectedError = "ResourceNotFoundException";
 
     // Act
     const actualFn = () => provider.deleteTable("ghost");
 
     // Assert
-    expect(actualFn).toThrow("ResourceNotFoundException");
+    expect(actualFn).toThrow(expectedError);
   });
 });
 
 describe("DynamoProvider reset", () => {
   it("removes dynamic tables on reset", async () => {
     // Arrange
-    const provider = new DynamoProvider([{ tableName: "static-table", hashKey: "pk" }]);
+    const expectedPresentTable = "static-table";
+    const expectedAbsentTable = "dynamic-table";
+    const provider = new DynamoProvider([{ tableName: expectedPresentTable, hashKey: "pk" }]);
     await provider.start();
-    provider.createTable({ tableName: "dynamic-table", hashKey: "pk" });
+    provider.createTable({ tableName: expectedAbsentTable, hashKey: "pk" });
 
     // Act
     await provider.reset();
 
     // Assert
     const actualTables = provider.listTables();
-    expect(actualTables).toContain("static-table");
-    expect(actualTables).not.toContain("dynamic-table");
+    expect(actualTables).toContain(expectedPresentTable);
+    expect(actualTables).not.toContain(expectedAbsentTable);
   });
 
   it("purges items from pre-configured tables on reset", async () => {
