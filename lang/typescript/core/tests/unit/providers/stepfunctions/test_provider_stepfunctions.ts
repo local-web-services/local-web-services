@@ -228,7 +228,7 @@ describe("StepFunctionsProvider tagging and extra ops", () => {
   beforeEach(async () => {
     provider = new StepFunctionsProvider();
     await provider.start();
-    const result = provider.createStateMachine("my-machine", "{}", "arn:aws:iam::000000000000:role/role");
+    const result = provider.createStateMachine("my-machine", "{}", "STANDARD", "arn:aws:iam::000000000000:role/role");
     machineArn = result.stateMachineArn;
   });
 
