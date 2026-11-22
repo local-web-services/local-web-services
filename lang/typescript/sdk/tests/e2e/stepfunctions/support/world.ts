@@ -1,6 +1,6 @@
 import { setWorldConstructor, World as CucumberWorld } from "@cucumber/cucumber";
 import type { SFNClient } from "@aws-sdk/client-sfn";
-import { LwsSession, StateMachine } from "../../../../src/index.js";
+import { LwsSession } from "../../../../src/index.js";
 
 export const TEST_MACHINE = "lws-e2e-test-machine";
 export const SIMPLE_DEF = JSON.stringify({

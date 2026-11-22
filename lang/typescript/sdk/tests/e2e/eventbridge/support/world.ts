@@ -1,6 +1,6 @@
 import { setWorldConstructor, World as CucumberWorld } from "@cucumber/cucumber";
 import type { EventBridgeClient } from "@aws-sdk/client-eventbridge";
-import { LwsSession, EventBus } from "../../../../src/index.js";
+import { LwsSession } from "../../../../src/index.js";
 
 export const TEST_BUS = "lws-e2e-test-bus";
 export const TEST_SOURCE = "test.source";
