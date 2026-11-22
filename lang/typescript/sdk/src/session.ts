@@ -15,12 +15,14 @@ import type { IProvider, IOrchestratorStatus } from "local-web-services-typescri
 import {
   SqsProvider,
   sqsRoutesPlugin,
+  DynamoProvider,
+  dynamoRoutesPlugin,
   managementPlugin,
   findFreePort,
   buildSdkEnv,
   defaultChaosConfig,
 } from "local-web-services-typescript-core";
-import { type ResourceSpec, SqsQueue } from "./specs.js";
+import { type ResourceSpec, SqsQueue, DynamoTable } from "./specs.js";
 import { ChaosBuilder } from "./builders/chaos.js";
 import { FakeBuilder } from "./builders/fake.js";
 import { CapacityBuilder } from "./builders/capacity.js";
@@ -35,10 +37,13 @@ export class LwsSession {
   private readonly _resources: ResourceSpec[];
 
   private _sqsPort: number = 0;
+  private _dynamoPort: number = 0;
   private _mgmtPort: number = 0;
   private _sqsFastify: FastifyInstance | null = null;
+  private _dynamoFastify: FastifyInstance | null = null;
   private _mgmtFastify: FastifyInstance | null = null;
   private _sqsProvider: SqsProvider | null = null;
+  private _dynamoProvider: DynamoProvider | null = null;
   private _savedEnv: Record<string, string | undefined> = {};
 
   constructor(...resources: ResourceSpec[]) {
@@ -62,10 +67,13 @@ export class LwsSession {
   async start(): Promise<void> {
     // Allocate ports (release reservations immediately — Fastify binds in the same tick)
     const { port: sqsPort, release: releaseSqs } = await findFreePort();
+    const { port: dynamoPort, release: releaseDynamo } = await findFreePort();
     const { port: mgmtPort, release: releaseMgmt } = await findFreePort();
     releaseSqs();
+    releaseDynamo();
     releaseMgmt();
     this._sqsPort = sqsPort;
+    this._dynamoPort = dynamoPort;
     this._mgmtPort = mgmtPort;
 
     // Build SQS provider from spec
@@ -80,7 +88,21 @@ export class LwsSession {
     this._sqsProvider = new SqsProvider(sqsQueueConfigs);
     await this._sqsProvider.start();
 
-    // Start per-service Fastify server
+    // Build DynamoDB provider from spec
+    const dynamoTableConfigs = this._resources
+      .filter((r): r is DynamoTable => r instanceof DynamoTable)
+      .map((t) => ({
+        tableName: t.name,
+        hashKey: t.hashKey,
+        hashKeyType: t.hashKeyType,
+        sortKey: t.sortKey,
+        sortKeyType: t.sortKeyType,
+      }));
+
+    this._dynamoProvider = new DynamoProvider(dynamoTableConfigs);
+    await this._dynamoProvider.start();
+
+    // Start per-service Fastify server (SQS)
     this._sqsFastify = Fastify({ logger: false });
     const sqsChaos = defaultChaosConfig();
     await this._sqsFastify.register(sqsRoutesPlugin, {
@@ -90,8 +112,18 @@ export class LwsSession {
     });
     await this._sqsFastify.listen({ port: sqsPort, host: "127.0.0.1" });
 
+    // Start per-service Fastify server (DynamoDB)
+    this._dynamoFastify = Fastify({ logger: false });
+    await this._dynamoFastify.register(dynamoRoutesPlugin, {
+      provider: this._dynamoProvider,
+    });
+    await this._dynamoFastify.listen({ port: dynamoPort, host: "127.0.0.1" });
+
     // Start management API
-    const providersMap = new Map<string, IProvider>([["sqs", this._sqsProvider]]);
+    const providersMap = new Map<string, IProvider>([
+      ["sqs", this._sqsProvider],
+      ["dynamodb", this._dynamoProvider],
+    ]);
     const chaosConfigs = new Map([["sqs", sqsChaos]]);
     const orch: IOrchestratorStatus = {
       running: true,
@@ -108,17 +140,24 @@ export class LwsSession {
     await this._mgmtFastify.listen({ port: mgmtPort, host: "127.0.0.1" });
 
     // Patch process.env
-    this._patchEnv({ sqs: `http://127.0.0.1:${sqsPort}` });
+    this._patchEnv({
+      sqs: `http://127.0.0.1:${sqsPort}`,
+      dynamodb: `http://127.0.0.1:${dynamoPort}`,
+    });
   }
 
   async stop(): Promise<void> {
     this._restoreEnv();
     await this._mgmtFastify?.close();
     await this._sqsFastify?.close();
+    await this._dynamoFastify?.close();
     await this._sqsProvider?.stop();
+    await this._dynamoProvider?.stop();
     this._mgmtFastify = null;
     this._sqsFastify = null;
+    this._dynamoFastify = null;
     this._sqsProvider = null;
+    this._dynamoProvider = null;
   }
 
   async [Symbol.asyncDispose](): Promise<void> {
@@ -143,8 +182,9 @@ export class LwsSession {
 
   endpointUrl(service: string): string {
     if (service === "sqs") return `http://127.0.0.1:${this._sqsPort}`;
+    if (service === "dynamodb") return `http://127.0.0.1:${this._dynamoPort}`;
     throw new Error(
-      `Service '${service}' is not available in this session. Currently available: sqs`,
+      `Service '${service}' is not available in this session. Currently available: sqs, dynamodb`,
     );
   }
 

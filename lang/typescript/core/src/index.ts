@@ -14,6 +14,12 @@ export { SqsProvider, buildQueueConfig } from "./providers/sqs/provider.js";
 export { sqsRoutesPlugin } from "./providers/sqs/routes.js";
 export type { SqsRoutesOptions } from "./providers/sqs/routes.js";
 
+export type { TableConfig as DynamoTableConfig } from "./providers/dynamodb/provider.js";
+export { DynamoProvider } from "./providers/dynamodb/provider.js";
+export { dynamoRoutesPlugin } from "./providers/dynamodb/routes.js";
+export type { DynamoRoutesOptions } from "./providers/dynamodb/routes.js";
+export type { DynamoAttributeValue, DynamoItem } from "./providers/dynamodb/table.js";
+
 export { managementPlugin } from "./api/management.js";
 export type { ManagementPluginOptions, IOrchestratorStatus } from "./api/management.js";
 
