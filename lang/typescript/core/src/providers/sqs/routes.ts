@@ -16,6 +16,7 @@ import { makeLoggingHooks } from "../../providers/_shared/logging.js";
 import type { ProviderContext } from "../../providers/_shared/providerContext.js";
 import { LocalQueue } from "./queue.js";
 import type { SqsProvider } from "./provider.js";
+import { handleXmlExtraAction } from "./routes_extra.js";
 
 const FAKE_ACCOUNT = "000000000000";
 const REQUEST_ID = "00000000-0000-0000-0000-000000000000";
@@ -242,6 +243,44 @@ async function handleJsonAction(
         reply.code(200).type("application/json").send("{}");
         break;
       }
+      case "SetQueueAttributes": {
+        const url = body["QueueUrl"] as string;
+        const attrs = (body["Attributes"] as Record<string, string>) ?? {};
+        await provider.setQueueAttributes(extractQueueNameFromUrl(url), attrs);
+        reply.code(200).type("application/json").send("{}");
+        break;
+      }
+      case "ListQueueTags": {
+        const url = body["QueueUrl"] as string;
+        const tags = await provider.listQueueTags(extractQueueNameFromUrl(url));
+        reply.code(200).type("application/json").send(JSON.stringify({ Tags: tags }));
+        break;
+      }
+      case "TagQueue": {
+        const url = body["QueueUrl"] as string;
+        const tags = (body["Tags"] as Record<string, string>) ?? {};
+        await provider.tagQueue(extractQueueNameFromUrl(url), tags);
+        reply.code(200).type("application/json").send("{}");
+        break;
+      }
+      case "UntagQueue": {
+        const url = body["QueueUrl"] as string;
+        const keys = (body["TagKeys"] as string[]) ?? [];
+        await provider.untagQueue(extractQueueNameFromUrl(url), keys);
+        reply.code(200).type("application/json").send("{}");
+        break;
+      }
+      case "ChangeMessageVisibility":
+      case "ChangeMessageVisibilityBatch": {
+        reply.code(200).type("application/json").send("{}");
+        break;
+      }
+      case "ListDeadLetterSourceQueues": {
+        const url = body["QueueUrl"] as string;
+        const queues = await provider.listDeadLetterSourceQueues(extractQueueNameFromUrl(url));
+        reply.code(200).type("application/json").send(JSON.stringify({ queueUrls: queues }));
+        break;
+      }
       default:
         reply
           .code(400)
@@ -403,24 +442,19 @@ async function handleXmlAction(
       case "PurgeQueue": {
         const url = params["QueueUrl"]!;
         await provider.purgeQueue(extractQueueNameFromUrl(url));
-        reply
-          .code(200)
-          .type("text/xml")
-          .send(
-            `<PurgeQueueResponse><ResponseMetadata><RequestId>${REQUEST_ID}</RequestId></ResponseMetadata></PurgeQueueResponse>`,
-          );
+        reply.code(200).type("text/xml").send(
+          `<PurgeQueueResponse><ResponseMetadata><RequestId>${REQUEST_ID}</RequestId></ResponseMetadata></PurgeQueueResponse>`,
+        );
         break;
       }
-      default:
-        reply
-          .code(400)
-          .type("text/xml")
-          .send(
-            errorXml(
-              "InvalidAction",
-              `lws: SQS operation '${action}' is not yet implemented`,
-            ),
+      default: {
+        const handled = await handleXmlExtraAction(action, params, provider, reply);
+        if (!handled) {
+          reply.code(400).type("text/xml").send(
+            errorXml("InvalidAction", `lws: SQS operation '${action}' is not yet implemented`),
           );
+        }
+      }
     }
   } catch (err) {
     reply.code(400).type("text/xml").send(errorXml("InternalError", String(err)));

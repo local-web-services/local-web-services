@@ -220,3 +220,66 @@ describe("StepFunctionsProvider executions", () => {
     expect(actualMachines.stateMachines.length).toBe(0);
   });
 });
+
+describe("StepFunctionsProvider tagging and extra ops", () => {
+  let provider: StepFunctionsProvider;
+  let machineArn: string;
+
+  beforeEach(async () => {
+    provider = new StepFunctionsProvider();
+    await provider.start();
+    const result = provider.createStateMachine("my-machine", "{}", "arn:aws:iam::000000000000:role/role");
+    machineArn = result.stateMachineArn;
+  });
+
+  it("tagResource stores tags retrievable via listTagsForResource", () => {
+    // Arrange
+    const expectedKey = "env";
+    const expectedValue = "prod";
+
+    // Act
+    provider.tagResource(machineArn, [{ Key: expectedKey, Value: expectedValue }]);
+    const actualTags = provider.listTagsForResource(machineArn);
+
+    // Assert
+    expect(actualTags).toContainEqual({ Key: expectedKey, Value: expectedValue });
+  });
+
+  it("untagResource removes a specific tag", () => {
+    // Arrange
+    provider.tagResource(machineArn, [
+      { Key: "env", Value: "prod" },
+      { Key: "team", Value: "platform" },
+    ]);
+    const expectedAbsentKey = "env";
+
+    // Act
+    provider.untagResource(machineArn, [expectedAbsentKey]);
+    const actualTags = provider.listTagsForResource(machineArn);
+
+    // Assert
+    expect(actualTags.map((t) => t.Key)).not.toContain(expectedAbsentKey);
+  });
+
+  it("updateStateMachine returns an updateDate number", () => {
+    // Arrange
+    const expectedType = "number";
+
+    // Act
+    const actual = provider.updateStateMachine(machineArn, '{"Comment":"updated"}');
+
+    // Assert
+    expect(typeof actual.updateDate).toBe(expectedType);
+  });
+
+  it("startSyncExecution returns SUCCEEDED status", () => {
+    // Arrange
+    const expectedStatus = "SUCCEEDED";
+
+    // Act
+    const actual = provider.startSyncExecution(machineArn, "sync-run", "{}") as { status: string };
+
+    // Assert
+    expect(actual.status).toBe(expectedStatus);
+  });
+});

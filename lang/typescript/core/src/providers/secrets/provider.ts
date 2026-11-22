@@ -21,6 +21,7 @@ export class SecretsProvider implements IProvider {
   readonly name = "secretsmanager";
 
   private _secrets = new Map<string, SecretRecord>();
+  private _tags = new Map<string, Map<string, string>>();
   private _preconfiguredNames: ReadonlySet<string>;
   private _running = false;
 
@@ -98,6 +99,48 @@ export class SecretsProvider implements IProvider {
       throw new Error(`ResourceNotFoundException: Secret ${id} not found`);
     }
     return record;
+  }
+
+  updateSecret(id: string, secretString: string): SecretRecord {
+    const existing = this._secrets.get(id);
+    if (existing === undefined) throw new Error(`ResourceNotFoundException: Secret ${id} not found`);
+    const updated: SecretRecord = { ...existing, SecretString: secretString, VersionId: randomUUID() };
+    this._secrets.set(id, updated);
+    return updated;
+  }
+
+  restoreSecret(id: string): SecretRecord {
+    const record = this._secrets.get(id);
+    if (record === undefined) throw new Error(`ResourceNotFoundException: Secret ${id} not found`);
+    return record;
+  }
+
+  getResourcePolicy(id: string): SecretRecord {
+    const record = this._secrets.get(id);
+    if (record === undefined) throw new Error(`ResourceNotFoundException: Secret ${id} not found`);
+    return record;
+  }
+
+  listSecretVersionIds(id: string): SecretRecord {
+    const record = this._secrets.get(id);
+    if (record === undefined) throw new Error(`ResourceNotFoundException: Secret ${id} not found`);
+    return record;
+  }
+
+  tagResource(arn: string, tags: { Key: string; Value: string }[]): void {
+    if (!this._tags.has(arn)) this._tags.set(arn, new Map());
+    for (const t of tags) this._tags.get(arn)!.set(t.Key, t.Value);
+  }
+
+  untagResource(arn: string, tagKeys: string[]): void {
+    const m = this._tags.get(arn);
+    if (m !== undefined) for (const k of tagKeys) m.delete(k);
+  }
+
+  listTagsForResource(arn: string): { Key: string; Value: string }[] {
+    const m = this._tags.get(arn);
+    if (m === undefined) return [];
+    return [...m.entries()].map(([Key, Value]) => ({ Key, Value }));
   }
 
   private _makeRecord(name: string, secretString: string): SecretRecord {

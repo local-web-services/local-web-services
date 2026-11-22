@@ -151,6 +151,26 @@ export async function eventBridgeRoutesPlugin(
           return reply.status(200).send(JSON.stringify(result));
         }
 
+        case "TagResource": {
+          const arn = body["ResourceARN"] as string;
+          const tags = (body["Tags"] as { Key: string; Value: string }[]) ?? [];
+          provider.tagResource(arn, tags);
+          return reply.status(200).send(JSON.stringify({}));
+        }
+
+        case "UntagResource": {
+          const arn = body["ResourceARN"] as string;
+          const keys = (body["TagKeys"] as string[]) ?? [];
+          provider.untagResource(arn, keys);
+          return reply.status(200).send(JSON.stringify({}));
+        }
+
+        case "ListTagsForResource": {
+          const arn = body["ResourceARN"] as string;
+          const tags = provider.listTagsForResource(arn);
+          return reply.status(200).send(JSON.stringify({ Tags: tags }));
+        }
+
         default:
           return reply
             .status(400)

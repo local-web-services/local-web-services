@@ -244,3 +244,43 @@ describe("EventBridgeProvider events", () => {
     expect(actualBuses.EventBuses.some((b) => b.Name === expectedAbsentBus)).toBe(false);
   });
 });
+
+describe("EventBridgeProvider tagging", () => {
+  let provider: EventBridgeProvider;
+
+  beforeEach(async () => {
+    provider = new EventBridgeProvider([{ name: "my-bus" }]);
+    await provider.start();
+  });
+
+  it("tagResource stores tags retrievable via listTagsForResource", () => {
+    // Arrange
+    const expectedArn = "arn:aws:events:us-east-1:000000000000:event-bus/my-bus";
+    const expectedKey = "env";
+    const expectedValue = "prod";
+
+    // Act
+    provider.tagResource(expectedArn, [{ Key: expectedKey, Value: expectedValue }]);
+    const actualTags = provider.listTagsForResource(expectedArn);
+
+    // Assert
+    expect(actualTags).toContainEqual({ Key: expectedKey, Value: expectedValue });
+  });
+
+  it("untagResource removes a specific tag", () => {
+    // Arrange
+    const expectedArn = "arn:aws:events:us-east-1:000000000000:event-bus/my-bus";
+    provider.tagResource(expectedArn, [
+      { Key: "env", Value: "prod" },
+      { Key: "team", Value: "platform" },
+    ]);
+    const expectedAbsentKey = "env";
+
+    // Act
+    provider.untagResource(expectedArn, [expectedAbsentKey]);
+    const actualTags = provider.listTagsForResource(expectedArn);
+
+    // Assert
+    expect(actualTags.map((t) => t.Key)).not.toContain(expectedAbsentKey);
+  });
+});

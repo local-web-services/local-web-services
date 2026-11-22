@@ -183,3 +183,91 @@ describe("S3Provider putObject / getObject", () => {
     expect(actualResult.Contents).toHaveLength(expectedCount);
   });
 });
+
+describe("S3Provider multipart upload and headBucket", () => {
+  let provider: S3Provider;
+
+  beforeEach(async () => {
+    provider = new S3Provider([{ name: "test-bucket" }]);
+    await provider.start();
+  });
+
+  afterEach(async () => {
+    await provider.stop();
+  });
+
+  it("headBucket returns true for existing bucket", () => {
+    // Arrange
+    const expectedResult = true;
+
+    // Act
+    const actualResult = provider.headBucket("test-bucket");
+
+    // Assert
+    expect(actualResult).toBe(expectedResult);
+  });
+
+  it("headBucket returns false for missing bucket", () => {
+    // Arrange
+    const expectedResult = false;
+
+    // Act
+    const actualResult = provider.headBucket("no-such-bucket");
+
+    // Assert
+    expect(actualResult).toBe(expectedResult);
+  });
+
+  it("createMultipartUpload returns an uploadId string", () => {
+    // Arrange
+    const expectedType = "string";
+
+    // Act
+    const actualUploadId = provider.createMultipartUpload("test-bucket", "my-key.bin");
+
+    // Assert
+    expect(typeof actualUploadId).toBe(expectedType);
+  });
+
+  it("uploadPart returns an etag string", () => {
+    // Arrange
+    const uploadId = provider.createMultipartUpload("test-bucket", "my-key.bin");
+    const expectedPrefix = '"';
+
+    // Act
+    const actualEtag = provider.uploadPart(uploadId, 1, Buffer.from("hello"));
+
+    // Assert
+    expect(actualEtag.startsWith(expectedPrefix)).toBe(true);
+  });
+
+  it("completeMultipartUpload assembles parts and object is retrievable", () => {
+    // Arrange
+    const uploadId = provider.createMultipartUpload("test-bucket", "assembled.bin");
+    provider.uploadPart(uploadId, 1, Buffer.from("hello "));
+    provider.uploadPart(uploadId, 2, Buffer.from("world"));
+    const expectedBody = "hello world";
+
+    // Act
+    provider.completeMultipartUpload(uploadId);
+    const actualObj = provider.getObject("test-bucket", "assembled.bin");
+
+    // Assert
+    expect(actualObj.Body.toString()).toBe(expectedBody);
+  });
+
+  it("abortMultipartUpload cleans up without error", () => {
+    // Arrange
+    const uploadId = provider.createMultipartUpload("test-bucket", "partial.bin");
+    provider.uploadPart(uploadId, 1, Buffer.from("partial"));
+    const expectedNoThrow = true;
+    let actualNoThrow = false;
+
+    // Act
+    provider.abortMultipartUpload(uploadId);
+    actualNoThrow = true;
+
+    // Assert
+    expect(actualNoThrow).toBe(expectedNoThrow);
+  });
+});

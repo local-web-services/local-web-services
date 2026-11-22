@@ -22,6 +22,13 @@ export interface ObjectInfo {
   LastModified: string;
 }
 
+interface MultipartUpload {
+  bucket: string;
+  key: string;
+  contentType: string;
+  parts: Map<number, Buffer>;
+}
+
 export class S3Provider implements IProvider {
   readonly name = "s3";
 
@@ -29,6 +36,7 @@ export class S3Provider implements IProvider {
   private _preconfiguredNames: ReadonlySet<string>;
   private _buckets = new Set<string>();
   private _creationDates = new Map<string, string>();
+  private _uploads = new Map<string, MultipartUpload>();
   private _running = false;
 
   constructor(private readonly configs: BucketConfig[] = []) {
@@ -162,6 +170,38 @@ export class S3Provider implements IProvider {
     const src = this.getObject(sourceBucket, sourceKey);
     const etag = this.putObject(bucket, key, src.Body, src.ContentType);
     return { ETag: etag, LastModified: new Date().toISOString() };
+  }
+
+  headBucket(name: string): boolean {
+    return this._buckets.has(name);
+  }
+
+  createMultipartUpload(bucket: string, key: string, contentType?: string): string {
+    if (!this._buckets.has(bucket)) throw new Error(`NoSuchBucket: Bucket ${bucket} does not exist`);
+    const uploadId = `upload-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    this._uploads.set(uploadId, { bucket, key, contentType: contentType ?? "application/octet-stream", parts: new Map() });
+    return uploadId;
+  }
+
+  uploadPart(uploadId: string, partNumber: number, body: Buffer): string {
+    const upload = this._uploads.get(uploadId);
+    if (upload === undefined) throw new Error(`NoSuchUpload: Upload ${uploadId} not found`);
+    upload.parts.set(partNumber, body);
+    return `"${createHash("md5").update(body).digest("hex")}"`;
+  }
+
+  completeMultipartUpload(uploadId: string): { ETag: string; Location: string; Bucket: string; Key: string } {
+    const upload = this._uploads.get(uploadId);
+    if (upload === undefined) throw new Error(`NoSuchUpload: Upload ${uploadId} not found`);
+    const sortedParts = [...upload.parts.entries()].sort(([a], [b]) => a - b).map(([, v]) => v);
+    const assembled = Buffer.concat(sortedParts);
+    const etag = this.putObject(upload.bucket, upload.key, assembled, upload.contentType);
+    this._uploads.delete(uploadId);
+    return { ETag: etag, Location: `/${upload.bucket}/${upload.key}`, Bucket: upload.bucket, Key: upload.key };
+  }
+
+  abortMultipartUpload(uploadId: string): void {
+    this._uploads.delete(uploadId);
   }
 
   private _mkBucketDir(name: string): void {

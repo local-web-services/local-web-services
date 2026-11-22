@@ -86,6 +86,52 @@ export async function secretsRoutesPlugin(
           const record = provider.describeSecret(id);
           return reply.status(200).send(JSON.stringify(record));
         }
+        case "UpdateSecret": {
+          const id = body["SecretId"] as string;
+          const secretString = body["SecretString"] as string;
+          const record = provider.updateSecret(id, secretString);
+          return reply.status(200).send(
+            JSON.stringify({ ARN: record.ARN, Name: record.Name, VersionId: record.VersionId }),
+          );
+        }
+        case "RestoreSecret": {
+          const id = body["SecretId"] as string;
+          const record = provider.restoreSecret(id);
+          return reply.status(200).send(JSON.stringify({ ARN: record.ARN, Name: record.Name }));
+        }
+        case "GetResourcePolicy": {
+          const id = body["SecretId"] as string;
+          const record = provider.getResourcePolicy(id);
+          return reply.status(200).send(
+            JSON.stringify({ ARN: record.ARN, Name: record.Name, ResourcePolicy: "" }),
+          );
+        }
+        case "ListSecretVersionIds": {
+          const id = body["SecretId"] as string;
+          const record = provider.listSecretVersionIds(id);
+          return reply.status(200).send(JSON.stringify({
+            ARN: record.ARN,
+            Name: record.Name,
+            Versions: [{ VersionId: record.VersionId, CreatedDate: record.CreatedDate, VersionStages: ["AWSCURRENT"] }],
+          }));
+        }
+        case "TagResource": {
+          const arn = body["SecretId"] as string;
+          const tags = (body["Tags"] as { Key: string; Value: string }[]) ?? [];
+          provider.tagResource(arn, tags);
+          return reply.status(200).send(JSON.stringify({}));
+        }
+        case "UntagResource": {
+          const arn = body["SecretId"] as string;
+          const keys = (body["TagKeys"] as string[]) ?? [];
+          provider.untagResource(arn, keys);
+          return reply.status(200).send(JSON.stringify({}));
+        }
+        case "ListTagsForResource": {
+          const arn = body["SecretId"] as string;
+          const tags = provider.listTagsForResource(arn);
+          return reply.status(200).send(JSON.stringify({ Tags: tags }));
+        }
         default:
           return reply.status(400).send(
             jsonError("InvalidAction", `lws: SecretsManager operation '${action}' is not yet implemented`),

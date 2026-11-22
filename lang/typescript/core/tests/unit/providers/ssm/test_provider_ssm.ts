@@ -197,3 +197,54 @@ describe("SsmProvider deleteParameter / reset", () => {
     expect(actualAll).not.toContain(expectedAbsentName);
   });
 });
+
+describe("SsmProvider tagging", () => {
+  let provider: SsmProvider;
+
+  beforeEach(async () => {
+    provider = new SsmProvider([{ name: "/p", value: "v" }]);
+    await provider.start();
+  });
+
+  it("tagResource stores tags retrievable via listTagsForResource", () => {
+    // Arrange
+    const expectedArn = "arn:aws:ssm:us-east-1:000000000000:parameter/p";
+    const expectedKey = "env";
+    const expectedValue = "prod";
+
+    // Act
+    provider.tagResource(expectedArn, [{ Key: expectedKey, Value: expectedValue }]);
+    const actualTags = provider.listTagsForResource(expectedArn);
+
+    // Assert
+    expect(actualTags).toContainEqual({ Key: expectedKey, Value: expectedValue });
+  });
+
+  it("untagResource removes a specific tag", () => {
+    // Arrange
+    const expectedArn = "arn:aws:ssm:us-east-1:000000000000:parameter/p";
+    provider.tagResource(expectedArn, [
+      { Key: "env", Value: "prod" },
+      { Key: "team", Value: "platform" },
+    ]);
+    const expectedAbsentKey = "env";
+
+    // Act
+    provider.untagResource(expectedArn, [expectedAbsentKey]);
+    const actualTags = provider.listTagsForResource(expectedArn);
+
+    // Assert
+    expect(actualTags.map((t) => t.Key)).not.toContain(expectedAbsentKey);
+  });
+
+  it("listTagsForResource returns empty array for untagged resource", () => {
+    // Arrange
+    const expectedCount = 0;
+
+    // Act
+    const actualTags = provider.listTagsForResource("arn:aws:ssm:us-east-1:000000000000:parameter/untagged");
+
+    // Assert
+    expect(actualTags).toHaveLength(expectedCount);
+  });
+});

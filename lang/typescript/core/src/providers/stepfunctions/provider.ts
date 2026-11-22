@@ -60,6 +60,7 @@ export class StepFunctionsProvider implements IProvider {
 
   private _machines = new Map<string, StoredMachine>();
   private _executions = new Map<string, StoredExecution>();
+  private _tags = new Map<string, Map<string, string>>();
   private _preconfiguredMachineArns: ReadonlySet<string>;
   private _running = false;
 
@@ -250,6 +251,47 @@ export class StepFunctionsProvider implements IProvider {
       throw new Error(`ExecutionDoesNotExist: Execution '${execArn}' not found`);
     }
     return { events: exec.events };
+  }
+
+  updateStateMachine(arn: string, definition?: string, roleArn?: string): { updateDate: number } {
+    const machine = this._machines.get(arn);
+    if (machine === undefined) throw new Error(`StateMachineDoesNotExist: State machine '${arn}' not found`);
+    this._machines.set(arn, {
+      ...machine,
+      ...(definition !== undefined && { definition }),
+      ...(roleArn !== undefined && { roleArn }),
+    });
+    return { updateDate: Date.now() / 1000 };
+  }
+
+  startSyncExecution(
+    stateMachineArn: string,
+    name?: string,
+    input: string = "{}",
+  ): object {
+    const machine = this._machines.get(stateMachineArn);
+    if (machine === undefined) throw new Error(`StateMachineDoesNotExist: State machine '${stateMachineArn}' not found`);
+    const execName = name ?? `sync-${Date.now()}`;
+    const arn = executionArn(machine.name, execName);
+    const startDate = Date.now() / 1000;
+    const stopDate = Date.now() / 1000;
+    return { executionArn: arn, name: execName, startDate, stopDate, status: "SUCCEEDED", input, output: input };
+  }
+
+  tagResource(arn: string, tags: { Key: string; Value: string }[]): void {
+    if (!this._tags.has(arn)) this._tags.set(arn, new Map());
+    for (const t of tags) this._tags.get(arn)!.set(t.Key, t.Value);
+  }
+
+  untagResource(arn: string, tagKeys: string[]): void {
+    const m = this._tags.get(arn);
+    if (m !== undefined) for (const k of tagKeys) m.delete(k);
+  }
+
+  listTagsForResource(arn: string): { Key: string; Value: string }[] {
+    const m = this._tags.get(arn);
+    if (m === undefined) return [];
+    return [...m.entries()].map(([Key, Value]) => ({ Key, Value }));
   }
 
   private _seedMachine(config: StateMachineConfig): void {

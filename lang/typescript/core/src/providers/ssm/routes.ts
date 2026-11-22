@@ -82,6 +82,23 @@ export async function ssmRoutesPlugin(
           const params = provider.describeParameters();
           return reply.status(200).send(JSON.stringify({ Parameters: params }));
         }
+        case "AddTagsToResource": {
+          const arn = body["ResourceId"] as string;
+          const tags = (body["Tags"] as { Key: string; Value: string }[]) ?? [];
+          provider.tagResource(arn, tags);
+          return reply.status(200).send(JSON.stringify({}));
+        }
+        case "RemoveTagsFromResource": {
+          const arn = body["ResourceId"] as string;
+          const keys = (body["TagKeys"] as string[]) ?? [];
+          provider.untagResource(arn, keys);
+          return reply.status(200).send(JSON.stringify({}));
+        }
+        case "ListTagsForResource": {
+          const arn = body["ResourceId"] as string;
+          const tags = provider.listTagsForResource(arn);
+          return reply.status(200).send(JSON.stringify({ TagList: tags }));
+        }
         default:
           return reply.status(400).send(
             jsonError("InvalidAction", `lws: SSM operation '${action}' is not yet implemented`),

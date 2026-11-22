@@ -54,6 +54,7 @@ export class EventBridgeProvider implements IProvider {
   private _buses = new Map<string, StoredBus>();
   private _events = new Map<string, StoredEvent[]>();
   private _rules = new Map<string, StoredRule>();
+  private _tags = new Map<string, Map<string, string>>();
   private _preconfiguredBusNames: ReadonlySet<string>;
   private _running = false;
 
@@ -273,6 +274,22 @@ export class EventBridgeProvider implements IProvider {
 
   listEvents(busName: string): StoredEvent[] {
     return this._events.get(busName) ?? [];
+  }
+
+  tagResource(arn: string, tags: { Key: string; Value: string }[]): void {
+    if (!this._tags.has(arn)) this._tags.set(arn, new Map());
+    for (const t of tags) this._tags.get(arn)!.set(t.Key, t.Value);
+  }
+
+  untagResource(arn: string, tagKeys: string[]): void {
+    const m = this._tags.get(arn);
+    if (m !== undefined) for (const k of tagKeys) m.delete(k);
+  }
+
+  listTagsForResource(arn: string): { Key: string; Value: string }[] {
+    const m = this._tags.get(arn);
+    if (m === undefined) return [];
+    return [...m.entries()].map(([Key, Value]) => ({ Key, Value }));
   }
 
   private _seedBus(name: string): void {

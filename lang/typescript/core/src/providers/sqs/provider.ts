@@ -41,6 +41,7 @@ export class SqsProvider implements IProvider {
   private _configs: Map<string, QueueConfig>;
   private _preconfiguredNames: ReadonlySet<string>;
   private _queues = new Map<string, LocalQueue>();
+  private _queueTags = new Map<string, Record<string, string>>();
   private _running = false;
 
   constructor(queues: QueueConfig[] = []) {
@@ -152,6 +153,32 @@ export class SqsProvider implements IProvider {
 
   async purgeQueue(queueName: string): Promise<void> {
     this._requireQueue(queueName).messages = [];
+  }
+
+  async setQueueAttributes(queueName: string, _attrs: Record<string, string>): Promise<void> {
+    this._requireQueue(queueName);
+  }
+
+  async listQueueTags(queueName: string): Promise<Record<string, string>> {
+    this._requireQueue(queueName);
+    return this._queueTags.get(queueName) ?? {};
+  }
+
+  async tagQueue(queueName: string, tags: Record<string, string>): Promise<void> {
+    this._requireQueue(queueName);
+    const existing = this._queueTags.get(queueName) ?? {};
+    this._queueTags.set(queueName, { ...existing, ...tags });
+  }
+
+  async untagQueue(queueName: string, tagKeys: string[]): Promise<void> {
+    this._requireQueue(queueName);
+    const existing = this._queueTags.get(queueName) ?? {};
+    for (const k of tagKeys) delete existing[k];
+    this._queueTags.set(queueName, existing);
+  }
+
+  async listDeadLetterSourceQueues(_queueName: string): Promise<string[]> {
+    return [];
   }
 
   // ------------------------------------------------------------------

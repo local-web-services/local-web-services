@@ -22,6 +22,7 @@ export class SsmProvider implements IProvider {
   readonly name = "ssm";
 
   private _parameters = new Map<string, ParameterRecord>();
+  private _tags = new Map<string, Map<string, string>>();
   private _preconfiguredNames: ReadonlySet<string>;
   private _running = false;
 
@@ -101,6 +102,22 @@ export class SsmProvider implements IProvider {
 
   describeParameters(): ParameterRecord[] {
     return [...this._parameters.values()];
+  }
+
+  tagResource(arn: string, tags: { Key: string; Value: string }[]): void {
+    if (!this._tags.has(arn)) this._tags.set(arn, new Map());
+    for (const t of tags) this._tags.get(arn)!.set(t.Key, t.Value);
+  }
+
+  untagResource(arn: string, tagKeys: string[]): void {
+    const m = this._tags.get(arn);
+    if (m !== undefined) for (const k of tagKeys) m.delete(k);
+  }
+
+  listTagsForResource(arn: string): { Key: string; Value: string }[] {
+    const m = this._tags.get(arn);
+    if (m === undefined) return [];
+    return [...m.entries()].map(([Key, Value]) => ({ Key, Value }));
   }
 
   private _makeRecord(name: string, value: string, type: string, version: number): ParameterRecord {

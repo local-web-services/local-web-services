@@ -103,6 +103,52 @@ export async function stepFunctionsRoutesPlugin(
           return reply.status(200).send(JSON.stringify(result));
         }
 
+        case "UpdateStateMachine": {
+          const result = provider.updateStateMachine(
+            body["stateMachineArn"] as string,
+            body["definition"] as string | undefined,
+            body["roleArn"] as string | undefined,
+          );
+          return reply.status(200).send(JSON.stringify(result));
+        }
+
+        case "StartSyncExecution": {
+          const result = provider.startSyncExecution(
+            body["stateMachineArn"] as string,
+            body["name"] as string | undefined,
+            (body["input"] as string | undefined) ?? "{}",
+          );
+          return reply.status(200).send(JSON.stringify(result));
+        }
+
+        case "ListStateMachineVersions": {
+          return reply.status(200).send(JSON.stringify({ stateMachineVersions: [] }));
+        }
+
+        case "ValidateStateMachineDefinition": {
+          return reply.status(200).send(JSON.stringify({ result: "OK", diagnostics: [] }));
+        }
+
+        case "TagResource": {
+          const arn = body["resourceArn"] as string;
+          const tags = (body["tags"] as { Key: string; Value: string }[]) ?? [];
+          provider.tagResource(arn, tags);
+          return reply.status(200).send(JSON.stringify({}));
+        }
+
+        case "UntagResource": {
+          const arn = body["resourceArn"] as string;
+          const keys = (body["tagKeys"] as string[]) ?? [];
+          provider.untagResource(arn, keys);
+          return reply.status(200).send(JSON.stringify({}));
+        }
+
+        case "ListTagsForResource": {
+          const arn = body["resourceArn"] as string;
+          const tags = provider.listTagsForResource(arn);
+          return reply.status(200).send(JSON.stringify({ Tags: tags }));
+        }
+
         default:
           return reply
             .status(400)

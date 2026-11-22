@@ -52,6 +52,12 @@ export async function s3RoutesPlugin(
   fastify.addHook("onRequest", onRequest);
   fastify.addHook("onResponse", onResponse);
 
+  fastify.head("/:bucket", async (req: FastifyRequest, reply: FastifyReply) => {
+    const { bucket } = req.params as { bucket: string };
+    if (provider.headBucket(bucket)) return reply.status(200).send("");
+    return reply.status(404).header("content-type", "application/xml").send(errorXml("NoSuchBucket", `Bucket ${bucket} does not exist`));
+  });
+
   fastify.get("/", async (_req: FastifyRequest, reply: FastifyReply) => {
     const buckets = provider.listBuckets();
     const bucketsXml = buckets
@@ -90,6 +96,11 @@ export async function s3RoutesPlugin(
   fastify.get("/:bucket", async (req: FastifyRequest, reply: FastifyReply) => {
     const { bucket } = req.params as { bucket: string };
     const query = req.query as Record<string, string>;
+    if ("location" in query) {
+      return reply.status(200).header("content-type", "application/xml").send(
+        `<?xml version="1.0" encoding="UTF-8"?><LocationConstraint>us-east-1</LocationConstraint>`,
+      );
+    }
     const prefix = query["prefix"];
     const maxKeysStr = query["max-keys"];
     const maxKeys = maxKeysStr !== undefined ? parseInt(maxKeysStr, 10) : undefined;
@@ -130,18 +141,26 @@ export async function s3RoutesPlugin(
     const params = req.params as { bucket: string; "*": string };
     const { bucket } = params;
     const key = params["*"];
+    const query = req.query as Record<string, string>;
+    if ("partNumber" in query && "uploadId" in query) {
+      const body = req.body as Buffer;
+      try {
+        const etag = provider.uploadPart(query["uploadId"]!, parseInt(query["partNumber"]!, 10), body);
+        return reply.status(200).header("etag", etag).send("");
+      } catch (err) {
+        return reply.status(404).header("content-type", "application/xml").send(errorXml("NoSuchUpload", String(err)));
+      }
+    }
     const copySource = req.headers["x-amz-copy-source"] as string | undefined;
     if (copySource !== undefined) {
       const src = parseCopySource(copySource);
       try {
         const result = provider.copyObject(bucket, key, src.bucket, src.key);
-        return reply
-          .status(200)
-          .header("content-type", "application/xml")
-          .send(`<?xml version="1.0" encoding="UTF-8"?><CopyObjectResult><ETag>${escapeXml(result.ETag)}</ETag><LastModified>${result.LastModified}</LastModified></CopyObjectResult>`);
+        return reply.status(200).header("content-type", "application/xml").send(
+          `<?xml version="1.0" encoding="UTF-8"?><CopyObjectResult><ETag>${escapeXml(result.ETag)}</ETag><LastModified>${result.LastModified}</LastModified></CopyObjectResult>`,
+        );
       } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        return reply.status(404).header("content-type", "application/xml").send(errorXml("NoSuchKey", msg));
+        return reply.status(404).header("content-type", "application/xml").send(errorXml("NoSuchKey", String(err)));
       }
     }
     const body = req.body as Buffer;
@@ -150,9 +169,37 @@ export async function s3RoutesPlugin(
       const etag = provider.putObject(bucket, key, body, contentType);
       return reply.status(200).header("etag", etag).send("");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      return reply.status(404).header("content-type", "application/xml").send(errorXml("NoSuchBucket", msg));
+      return reply.status(404).header("content-type", "application/xml").send(errorXml("NoSuchBucket", String(err)));
     }
+  });
+
+  fastify.post("/:bucket/*", async (req: FastifyRequest, reply: FastifyReply) => {
+    const params = req.params as { bucket: string; "*": string };
+    const { bucket } = params;
+    const key = params["*"];
+    const query = req.query as Record<string, string>;
+    if ("uploads" in query) {
+      const contentType = (req.headers["content-type"] as string | undefined) ?? "application/octet-stream";
+      try {
+        const uploadId = provider.createMultipartUpload(bucket, key, contentType);
+        return reply.status(200).header("content-type", "application/xml").send(
+          `<?xml version="1.0" encoding="UTF-8"?><InitiateMultipartUploadResult><Bucket>${escapeXml(bucket)}</Bucket><Key>${escapeXml(key)}</Key><UploadId>${uploadId}</UploadId></InitiateMultipartUploadResult>`,
+        );
+      } catch (err) {
+        return reply.status(404).header("content-type", "application/xml").send(errorXml("NoSuchBucket", String(err)));
+      }
+    }
+    if ("uploadId" in query) {
+      try {
+        const result = provider.completeMultipartUpload(query["uploadId"]!);
+        return reply.status(200).header("content-type", "application/xml").send(
+          `<?xml version="1.0" encoding="UTF-8"?><CompleteMultipartUploadResult><Location>${escapeXml(result.Location)}</Location><Bucket>${escapeXml(result.Bucket)}</Bucket><Key>${escapeXml(result.Key)}</Key><ETag>${escapeXml(result.ETag)}</ETag></CompleteMultipartUploadResult>`,
+        );
+      } catch (err) {
+        return reply.status(404).header("content-type", "application/xml").send(errorXml("NoSuchUpload", String(err)));
+      }
+    }
+    return reply.status(400).header("content-type", "application/xml").send(errorXml("InvalidRequest", "Unsupported POST on object"));
   });
 
   fastify.get("/:bucket/*", async (req: FastifyRequest, reply: FastifyReply) => {
@@ -198,6 +245,11 @@ export async function s3RoutesPlugin(
     const params = req.params as { bucket: string; "*": string };
     const { bucket } = params;
     const key = params["*"];
+    const query = req.query as Record<string, string>;
+    if ("uploadId" in query) {
+      provider.abortMultipartUpload(query["uploadId"]!);
+      return reply.status(204).send("");
+    }
     provider.deleteObject(bucket, key);
     return reply.status(204).send("");
   });

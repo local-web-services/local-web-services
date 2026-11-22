@@ -151,3 +151,43 @@ describe("SecretsProvider putSecretValue / deleteSecret / listSecrets", () => {
     await seeded.stop();
   });
 });
+
+describe("SecretsProvider tagging", () => {
+  let provider: SecretsProvider;
+
+  beforeEach(async () => {
+    provider = new SecretsProvider([{ name: "my-secret", secretString: "value" }]);
+    await provider.start();
+  });
+
+  it("tagResource stores tags retrievable via listTagsForResource", () => {
+    // Arrange
+    const expectedArn = "arn:aws:secretsmanager:us-east-1:000000000000:secret:my-secret";
+    const expectedKey = "env";
+    const expectedValue = "prod";
+
+    // Act
+    provider.tagResource(expectedArn, [{ Key: expectedKey, Value: expectedValue }]);
+    const actualTags = provider.listTagsForResource(expectedArn);
+
+    // Assert
+    expect(actualTags).toContainEqual({ Key: expectedKey, Value: expectedValue });
+  });
+
+  it("untagResource removes a specific tag", () => {
+    // Arrange
+    const expectedArn = "arn:aws:secretsmanager:us-east-1:000000000000:secret:my-secret";
+    provider.tagResource(expectedArn, [
+      { Key: "env", Value: "prod" },
+      { Key: "team", Value: "platform" },
+    ]);
+    const expectedAbsentKey = "env";
+
+    // Act
+    provider.untagResource(expectedArn, [expectedAbsentKey]);
+    const actualTags = provider.listTagsForResource(expectedArn);
+
+    // Assert
+    expect(actualTags.map((t) => t.Key)).not.toContain(expectedAbsentKey);
+  });
+});
