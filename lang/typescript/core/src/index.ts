@@ -20,3 +20,8 @@ export type { ManagementPluginOptions, IOrchestratorStatus } from "./api/managem
 export type { AwsChaosConfig } from "./providers/_shared/chaos.js";
 export { defaultChaosConfig, resetChaosConfig } from "./providers/_shared/chaos.js";
 export type { ProviderContext } from "./providers/_shared/providerContext.js";
+
+export { startDevServer } from "./cli/server.js";
+export type { DevServerOptions, DevServerHandle } from "./cli/server.js";
+export { fetchStatus, fetchResources, postShutdown, postReset, waitUntilReady } from "./cli/http.js";
+export type { LdkStatus, LdkResources } from "./cli/http.js";

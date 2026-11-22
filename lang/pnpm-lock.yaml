@@ -64,6 +64,9 @@ importers:
       '@fastify/formbody':
         specifier: ^7.4.0
         version: 7.4.0
+      commander:
+        specifier: ^12.0.0
+        version: 12.0.0
       fastify:
         specifier: ^4.28.0
         version: 4.29.1
