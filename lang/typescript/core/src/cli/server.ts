@@ -12,6 +12,14 @@ import { SqsProvider } from "../providers/sqs/provider.js";
 import { sqsRoutesPlugin } from "../providers/sqs/routes.js";
 import { DynamoProvider } from "../providers/dynamodb/provider.js";
 import { dynamoRoutesPlugin } from "../providers/dynamodb/routes.js";
+import { SsmProvider } from "../providers/ssm/provider.js";
+import { ssmRoutesPlugin } from "../providers/ssm/routes.js";
+import { SecretsProvider } from "../providers/secrets/provider.js";
+import { secretsRoutesPlugin } from "../providers/secrets/routes.js";
+import { SnsProvider } from "../providers/sns/provider.js";
+import { snsRoutesPlugin } from "../providers/sns/routes.js";
+import { S3Provider } from "../providers/s3/provider.js";
+import { s3RoutesPlugin } from "../providers/s3/routes.js";
 import { managementPlugin } from "../api/management.js";
 
 export interface DevServerOptions {
@@ -29,11 +37,19 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
 
   const sqsProvider = new SqsProvider([]);
   const dynamoProvider = new DynamoProvider([]);
+  const ssmProvider = new SsmProvider([]);
+  const secretsProvider = new SecretsProvider([]);
+  const snsProvider = new SnsProvider([]);
+  const s3Provider = new S3Provider([]);
   const providers = new Map([
     ["sqs", sqsProvider as never],
     ["dynamodb", dynamoProvider as never],
+    ["ssm", ssmProvider as never],
+    ["secretsmanager", secretsProvider as never],
+    ["sns", snsProvider as never],
+    ["s3", s3Provider as never],
   ]);
-  const startupOrder = ["sqs", "dynamodb"];
+  const startupOrder = ["sqs", "dynamodb", "ssm", "secretsmanager", "sns", "s3"];
 
   const orchestrator = new Orchestrator();
   await orchestrator.start(providers, startupOrder);
@@ -44,12 +60,36 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   app.register(managementPlugin, { orchestrator, providers });
   await app.listen({ port, host: "127.0.0.1" });
 
-  // DynamoDB on a separate port (auto-assigned)
+  // Additional providers on separate ports
   const { port: dynamoPort, release: releaseDynamo } = await findFreePort();
   releaseDynamo();
   const dynamoApp = Fastify({ logger: false });
   dynamoApp.register(dynamoRoutesPlugin, { provider: dynamoProvider });
   await dynamoApp.listen({ port: dynamoPort, host: "127.0.0.1" });
+
+  const { port: ssmPort, release: releaseSsm } = await findFreePort();
+  releaseSsm();
+  const ssmApp = Fastify({ logger: false });
+  ssmApp.register(ssmRoutesPlugin, { provider: ssmProvider });
+  await ssmApp.listen({ port: ssmPort, host: "127.0.0.1" });
+
+  const { port: secretsPort, release: releaseSecrets } = await findFreePort();
+  releaseSecrets();
+  const secretsApp = Fastify({ logger: false });
+  secretsApp.register(secretsRoutesPlugin, { provider: secretsProvider });
+  await secretsApp.listen({ port: secretsPort, host: "127.0.0.1" });
+
+  const { port: snsPort, release: releaseSns } = await findFreePort();
+  releaseSns();
+  const snsApp = Fastify({ logger: false });
+  snsApp.register(snsRoutesPlugin, { provider: snsProvider });
+  await snsApp.listen({ port: snsPort, host: "127.0.0.1" });
+
+  const { port: s3Port, release: releaseS3 } = await findFreePort();
+  releaseS3();
+  const s3App = Fastify({ logger: false });
+  s3App.register(s3RoutesPlugin, { provider: s3Provider });
+  await s3App.listen({ port: s3Port, host: "127.0.0.1" });
 
   const handle: DevServerHandle = {
     port,
@@ -58,6 +98,10 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
       await orchestrator.stop();
       await app.close();
       await dynamoApp.close();
+      await ssmApp.close();
+      await secretsApp.close();
+      await snsApp.close();
+      await s3App.close();
     },
   };
 

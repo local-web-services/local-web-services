@@ -31,11 +31,18 @@ export class SnsTopic {
 }
 
 export class SsmParameter {
-  constructor(public readonly name: string) {}
+  constructor(
+    public readonly name: string,
+    public readonly value: string = "",
+    public readonly type: "String" | "StringList" | "SecureString" = "String",
+  ) {}
 }
 
 export class Secret {
-  constructor(public readonly name: string) {}
+  constructor(
+    public readonly name: string,
+    public readonly secretString?: string,
+  ) {}
 }
 
 export class StateMachine {

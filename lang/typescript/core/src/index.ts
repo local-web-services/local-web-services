@@ -20,6 +20,26 @@ export { dynamoRoutesPlugin } from "./providers/dynamodb/routes.js";
 export type { DynamoRoutesOptions } from "./providers/dynamodb/routes.js";
 export type { DynamoAttributeValue, DynamoItem } from "./providers/dynamodb/table.js";
 
+export type { SsmParameterConfig } from "./providers/ssm/provider.js";
+export { SsmProvider } from "./providers/ssm/provider.js";
+export { ssmRoutesPlugin } from "./providers/ssm/routes.js";
+export type { SsmRoutesOptions } from "./providers/ssm/routes.js";
+
+export type { SecretConfig } from "./providers/secrets/provider.js";
+export { SecretsProvider } from "./providers/secrets/provider.js";
+export { secretsRoutesPlugin } from "./providers/secrets/routes.js";
+export type { SecretsRoutesOptions } from "./providers/secrets/routes.js";
+
+export type { TopicConfig } from "./providers/sns/provider.js";
+export { SnsProvider } from "./providers/sns/provider.js";
+export { snsRoutesPlugin } from "./providers/sns/routes.js";
+export type { SnsRoutesOptions } from "./providers/sns/routes.js";
+
+export type { BucketConfig } from "./providers/s3/provider.js";
+export { S3Provider } from "./providers/s3/provider.js";
+export { s3RoutesPlugin } from "./providers/s3/routes.js";
+export type { S3RoutesOptions } from "./providers/s3/routes.js";
+
 export { managementPlugin } from "./api/management.js";
 export type { ManagementPluginOptions, IOrchestratorStatus } from "./api/management.js";
 

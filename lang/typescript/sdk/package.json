@@ -18,8 +18,12 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "local-web-services-typescript-core": "workspace:*",
-    "fastify": "^4.28.0"
+    "@aws-sdk/client-s3": "^3.1175.0",
+    "@aws-sdk/client-secrets-manager": "^3.1175.0",
+    "@aws-sdk/client-sns": "^3.1175.0",
+    "@aws-sdk/client-ssm": "^3.1175.0",
+    "fastify": "^4.28.0",
+    "local-web-services-typescript-core": "workspace:*"
   },
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.600.0",
