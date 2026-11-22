@@ -25,12 +25,16 @@ import {
   snsRoutesPlugin,
   S3Provider,
   s3RoutesPlugin,
+  EventBridgeProvider,
+  eventBridgeRoutesPlugin,
+  StepFunctionsProvider,
+  stepFunctionsRoutesPlugin,
   managementPlugin,
   findFreePort,
   buildSdkEnv,
   defaultChaosConfig,
 } from "local-web-services-typescript-core";
-import { type ResourceSpec, SqsQueue, DynamoTable, SsmParameter, Secret, SnsTopic, S3Bucket } from "./specs.js";
+import { type ResourceSpec, SqsQueue, DynamoTable, SsmParameter, Secret, SnsTopic, S3Bucket, EventBus, StateMachine } from "./specs.js";
 import { ChaosBuilder } from "./builders/chaos.js";
 import { FakeBuilder } from "./builders/fake.js";
 import { CapacityBuilder } from "./builders/capacity.js";
@@ -50,6 +54,8 @@ export class LwsSession {
   private _secretsPort: number = 0;
   private _snsPort: number = 0;
   private _s3Port: number = 0;
+  private _eventbridgePort: number = 0;
+  private _stepfunctionsPort: number = 0;
   private _mgmtPort: number = 0;
   private _sqsFastify: FastifyInstance | null = null;
   private _dynamoFastify: FastifyInstance | null = null;
@@ -57,6 +63,8 @@ export class LwsSession {
   private _secretsFastify: FastifyInstance | null = null;
   private _snsFastify: FastifyInstance | null = null;
   private _s3Fastify: FastifyInstance | null = null;
+  private _eventbridgeFastify: FastifyInstance | null = null;
+  private _stepfunctionsFastify: FastifyInstance | null = null;
   private _mgmtFastify: FastifyInstance | null = null;
   private _sqsProvider: SqsProvider | null = null;
   private _dynamoProvider: DynamoProvider | null = null;
@@ -64,6 +72,8 @@ export class LwsSession {
   private _secretsProvider: SecretsProvider | null = null;
   private _snsProvider: SnsProvider | null = null;
   private _s3Provider: S3Provider | null = null;
+  private _eventbridgeProvider: EventBridgeProvider | null = null;
+  private _stepfunctionsProvider: StepFunctionsProvider | null = null;
   private _savedEnv: Record<string, string | undefined> = {};
 
   constructor(...resources: ResourceSpec[]) {
@@ -92,14 +102,19 @@ export class LwsSession {
     const { port: secretsPort, release: releaseSecrets } = await findFreePort();
     const { port: snsPort, release: releaseSns } = await findFreePort();
     const { port: s3Port, release: releaseS3 } = await findFreePort();
+    const { port: eventbridgePort, release: releaseEb } = await findFreePort();
+    const { port: stepfunctionsPort, release: releaseSfn } = await findFreePort();
     const { port: mgmtPort, release: releaseMgmt } = await findFreePort();
-    releaseSqs(); releaseDynamo(); releaseSsm(); releaseSecrets(); releaseSns(); releaseS3(); releaseMgmt();
+    releaseSqs(); releaseDynamo(); releaseSsm(); releaseSecrets(); releaseSns(); releaseS3();
+    releaseEb(); releaseSfn(); releaseMgmt();
     this._sqsPort = sqsPort;
     this._dynamoPort = dynamoPort;
     this._ssmPort = ssmPort;
     this._secretsPort = secretsPort;
     this._snsPort = snsPort;
     this._s3Port = s3Port;
+    this._eventbridgePort = eventbridgePort;
+    this._stepfunctionsPort = stepfunctionsPort;
     this._mgmtPort = mgmtPort;
 
     // Build SQS provider from spec
@@ -159,6 +174,20 @@ export class LwsSession {
     this._s3Provider = new S3Provider(s3Configs);
     await this._s3Provider.start();
 
+    // Build EventBridge provider from spec
+    const ebConfigs = this._resources
+      .filter((r): r is EventBus => r instanceof EventBus)
+      .map((b) => ({ name: b.name }));
+    this._eventbridgeProvider = new EventBridgeProvider(ebConfigs);
+    await this._eventbridgeProvider.start();
+
+    // Build Step Functions provider from spec
+    const sfnConfigs = this._resources
+      .filter((r): r is StateMachine => r instanceof StateMachine)
+      .map((m) => ({ name: m.name, definition: m.definition, roleArn: m.roleArn }));
+    this._stepfunctionsProvider = new StepFunctionsProvider(sfnConfigs);
+    await this._stepfunctionsProvider.start();
+
     // Start per-service Fastify server (SQS)
     this._sqsFastify = Fastify({ logger: false });
     const sqsChaos = defaultChaosConfig();
@@ -194,6 +223,16 @@ export class LwsSession {
     await this._s3Fastify.register(s3RoutesPlugin, { provider: this._s3Provider });
     await this._s3Fastify.listen({ port: s3Port, host: "127.0.0.1" });
 
+    // Start per-service Fastify server (EventBridge)
+    this._eventbridgeFastify = Fastify({ logger: false });
+    await this._eventbridgeFastify.register(eventBridgeRoutesPlugin, { provider: this._eventbridgeProvider });
+    await this._eventbridgeFastify.listen({ port: eventbridgePort, host: "127.0.0.1" });
+
+    // Start per-service Fastify server (Step Functions)
+    this._stepfunctionsFastify = Fastify({ logger: false });
+    await this._stepfunctionsFastify.register(stepFunctionsRoutesPlugin, { provider: this._stepfunctionsProvider });
+    await this._stepfunctionsFastify.listen({ port: stepfunctionsPort, host: "127.0.0.1" });
+
     // Start management API
     const providersMap = new Map<string, IProvider>([
       ["sqs", this._sqsProvider],
@@ -202,6 +241,8 @@ export class LwsSession {
       ["secretsmanager", this._secretsProvider],
       ["sns", this._snsProvider],
       ["s3", this._s3Provider],
+      ["events", this._eventbridgeProvider],
+      ["states", this._stepfunctionsProvider],
     ]);
     const chaosConfigs = new Map([["sqs", sqsChaos]]);
     const orch: IOrchestratorStatus = {
@@ -226,6 +267,8 @@ export class LwsSession {
       secretsmanager: `http://127.0.0.1:${secretsPort}`,
       sns: `http://127.0.0.1:${snsPort}`,
       s3: `http://127.0.0.1:${s3Port}`,
+      events: `http://127.0.0.1:${eventbridgePort}`,
+      states: `http://127.0.0.1:${stepfunctionsPort}`,
     });
   }
 
@@ -238,12 +281,16 @@ export class LwsSession {
     await this._secretsFastify?.close();
     await this._snsFastify?.close();
     await this._s3Fastify?.close();
+    await this._eventbridgeFastify?.close();
+    await this._stepfunctionsFastify?.close();
     await this._sqsProvider?.stop();
     await this._dynamoProvider?.stop();
     await this._ssmProvider?.stop();
     await this._secretsProvider?.stop();
     await this._snsProvider?.stop();
     await this._s3Provider?.stop();
+    await this._eventbridgeProvider?.stop();
+    await this._stepfunctionsProvider?.stop();
     this._mgmtFastify = null;
     this._sqsFastify = null;
     this._dynamoFastify = null;
@@ -251,12 +298,16 @@ export class LwsSession {
     this._secretsFastify = null;
     this._snsFastify = null;
     this._s3Fastify = null;
+    this._eventbridgeFastify = null;
+    this._stepfunctionsFastify = null;
     this._sqsProvider = null;
     this._dynamoProvider = null;
     this._ssmProvider = null;
     this._secretsProvider = null;
     this._snsProvider = null;
     this._s3Provider = null;
+    this._eventbridgeProvider = null;
+    this._stepfunctionsProvider = null;
   }
 
   async [Symbol.asyncDispose](): Promise<void> {
@@ -286,8 +337,10 @@ export class LwsSession {
     if (service === "secretsmanager") return `http://127.0.0.1:${this._secretsPort}`;
     if (service === "sns") return `http://127.0.0.1:${this._snsPort}`;
     if (service === "s3") return `http://127.0.0.1:${this._s3Port}`;
+    if (service === "events") return `http://127.0.0.1:${this._eventbridgePort}`;
+    if (service === "states") return `http://127.0.0.1:${this._stepfunctionsPort}`;
     throw new Error(
-      `Service '${service}' is not available in this session. Currently available: sqs, dynamodb, ssm, secretsmanager, sns, s3`,
+      `Service '${service}' is not available in this session. Currently available: sqs, dynamodb, ssm, secretsmanager, sns, s3, events, states`,
     );
   }
 

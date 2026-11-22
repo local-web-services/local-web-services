@@ -108,10 +108,16 @@ importers:
 
   typescript/sdk:
     dependencies:
+      '@aws-sdk/client-eventbridge':
+        specifier: ^3.1175.0
+        version: 3.1175.0
       '@aws-sdk/client-s3':
         specifier: ^3.1175.0
         version: 3.1175.0
       '@aws-sdk/client-secrets-manager':
+        specifier: ^3.1175.0
+        version: 3.1175.0
+      '@aws-sdk/client-sfn':
         specifier: ^3.1175.0
         version: 3.1175.0
       '@aws-sdk/client-sns':
@@ -163,12 +169,20 @@ packages:
     resolution: {integrity: sha512-07NgT3UkrjY4iMUhLDOXcj7y+2RFfaNuqEihH8D0FWgf8i2um8GLJlJ1l70/v3EzT+TY+ZRNo1xSQD1aIc1o8A==}
     engines: {node: '>=20.0.0'}
 
+  '@aws-sdk/client-eventbridge@3.1175.0':
+    resolution: {integrity: sha512-E3a52yLC7Pik06w9UbrDg9ILDvtiL6dIKci3uTg/1KHlBboj2h9VpApfqgukTvrpCXY0OkCcqtdUy4TZ65prqg==}
+    engines: {node: '>=20.0.0'}
+
   '@aws-sdk/client-s3@3.1175.0':
     resolution: {integrity: sha512-vBbIL3dsLsCLfoq7M8PXAybnPkFz7hbGiy6l+RCA81z6vXS88HfxPuxT+e3iuNjR4gXS7QxRSJa/4oSbsEc/Ag==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/client-secrets-manager@3.1175.0':
     resolution: {integrity: sha512-caKYh9hhS4k4/zBiW7St9QgP8R8TkEGyW47IW6FekbamQmFKqk/mZJiAUi00yYKlsfwXGWd97kwhBQ6bYMUqFg==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/client-sfn@3.1175.0':
+    resolution: {integrity: sha512-sXMXxa/g7QqRA+ecCNf451lgkfz6LRxS0jm2liZVaImLOLHvxCqTPkuLoGMZe0AasCdBUo3zIKN4M+FhLsixAA==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/client-sns@3.1175.0':
@@ -2106,6 +2120,18 @@ snapshots:
       '@smithy/types': 4.20.0
       tslib: 2.9.1
 
+  '@aws-sdk/client-eventbridge@3.1175.0':
+    dependencies:
+      '@aws-sdk/core': 3.981.1
+      '@aws-sdk/credential-provider-node': 3.972.98
+      '@aws-sdk/signature-v4-multi-region': 3.996.52
+      '@aws-sdk/types': 3.975.1
+      '@smithy/core': 3.41.0
+      '@smithy/fetch-http-handler': 5.8.1
+      '@smithy/node-http-handler': 4.14.2
+      '@smithy/types': 4.20.0
+      tslib: 2.9.1
+
   '@aws-sdk/client-s3@3.1175.0':
     dependencies:
       '@aws-sdk/checksums': 3.1002.6
@@ -2121,6 +2147,17 @@ snapshots:
       tslib: 2.9.1
 
   '@aws-sdk/client-secrets-manager@3.1175.0':
+    dependencies:
+      '@aws-sdk/core': 3.981.1
+      '@aws-sdk/credential-provider-node': 3.972.98
+      '@aws-sdk/types': 3.975.1
+      '@smithy/core': 3.41.0
+      '@smithy/fetch-http-handler': 5.8.1
+      '@smithy/node-http-handler': 4.14.2
+      '@smithy/types': 4.20.0
+      tslib: 2.9.1
+
+  '@aws-sdk/client-sfn@3.1175.0':
     dependencies:
       '@aws-sdk/core': 3.981.1
       '@aws-sdk/credential-provider-node': 3.972.98

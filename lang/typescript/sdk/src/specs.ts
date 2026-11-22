@@ -53,6 +53,10 @@ export class StateMachine {
   ) {}
 }
 
+export class EventBus {
+  constructor(public readonly name: string) {}
+}
+
 export type ResourceSpec =
   | DynamoTable
   | SqsQueue
@@ -60,4 +64,5 @@ export type ResourceSpec =
   | SnsTopic
   | SsmParameter
   | Secret
-  | StateMachine;
+  | StateMachine
+  | EventBus;

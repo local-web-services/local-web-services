@@ -11,6 +11,7 @@
 const SERVICE_ID_MAP: Record<string, string> = {
   secretsmanager: "SECRETS_MANAGER",
   stepfunctions: "SFN",
+  states: "SFN",
   "cognito-idp": "COGNITO_IDENTITY_PROVIDER",
   events: "EVENTBRIDGE",
 };

@@ -12,6 +12,7 @@ export {
   SsmParameter,
   Secret,
   StateMachine,
+  EventBus,
 } from "./specs.js";
 export type { ResourceSpec } from "./specs.js";
 

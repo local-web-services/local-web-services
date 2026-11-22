@@ -40,6 +40,16 @@ export { S3Provider } from "./providers/s3/provider.js";
 export { s3RoutesPlugin } from "./providers/s3/routes.js";
 export type { S3RoutesOptions } from "./providers/s3/routes.js";
 
+export type { EventBusConfig } from "./providers/eventbridge/provider.js";
+export { EventBridgeProvider } from "./providers/eventbridge/provider.js";
+export { eventBridgeRoutesPlugin } from "./providers/eventbridge/routes.js";
+export type { EventBridgeRoutesOptions } from "./providers/eventbridge/routes.js";
+
+export type { StateMachineConfig } from "./providers/stepfunctions/provider.js";
+export { StepFunctionsProvider } from "./providers/stepfunctions/provider.js";
+export { stepFunctionsRoutesPlugin } from "./providers/stepfunctions/routes.js";
+export type { StepFunctionsRoutesOptions } from "./providers/stepfunctions/routes.js";
+
 export { managementPlugin } from "./api/management.js";
 export type { ManagementPluginOptions, IOrchestratorStatus } from "./api/management.js";
 

@@ -20,6 +20,10 @@ import { SnsProvider } from "../providers/sns/provider.js";
 import { snsRoutesPlugin } from "../providers/sns/routes.js";
 import { S3Provider } from "../providers/s3/provider.js";
 import { s3RoutesPlugin } from "../providers/s3/routes.js";
+import { EventBridgeProvider } from "../providers/eventbridge/provider.js";
+import { eventBridgeRoutesPlugin } from "../providers/eventbridge/routes.js";
+import { StepFunctionsProvider } from "../providers/stepfunctions/provider.js";
+import { stepFunctionsRoutesPlugin } from "../providers/stepfunctions/routes.js";
 import { managementPlugin } from "../api/management.js";
 
 export interface DevServerOptions {
@@ -41,6 +45,8 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   const secretsProvider = new SecretsProvider([]);
   const snsProvider = new SnsProvider([]);
   const s3Provider = new S3Provider([]);
+  const eventBridgeProvider = new EventBridgeProvider([]);
+  const stepFunctionsProvider = new StepFunctionsProvider([]);
   const providers = new Map([
     ["sqs", sqsProvider as never],
     ["dynamodb", dynamoProvider as never],
@@ -48,8 +54,10 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     ["secretsmanager", secretsProvider as never],
     ["sns", snsProvider as never],
     ["s3", s3Provider as never],
+    ["events", eventBridgeProvider as never],
+    ["states", stepFunctionsProvider as never],
   ]);
-  const startupOrder = ["sqs", "dynamodb", "ssm", "secretsmanager", "sns", "s3"];
+  const startupOrder = ["sqs", "dynamodb", "ssm", "secretsmanager", "sns", "s3", "events", "states"];
 
   const orchestrator = new Orchestrator();
   await orchestrator.start(providers, startupOrder);
@@ -91,6 +99,18 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   s3App.register(s3RoutesPlugin, { provider: s3Provider });
   await s3App.listen({ port: s3Port, host: "127.0.0.1" });
 
+  const { port: ebPort, release: releaseEb } = await findFreePort();
+  releaseEb();
+  const ebApp = Fastify({ logger: false });
+  ebApp.register(eventBridgeRoutesPlugin, { provider: eventBridgeProvider });
+  await ebApp.listen({ port: ebPort, host: "127.0.0.1" });
+
+  const { port: sfnPort, release: releaseSfn } = await findFreePort();
+  releaseSfn();
+  const sfnApp = Fastify({ logger: false });
+  sfnApp.register(stepFunctionsRoutesPlugin, { provider: stepFunctionsProvider });
+  await sfnApp.listen({ port: sfnPort, host: "127.0.0.1" });
+
   const handle: DevServerHandle = {
     port,
     waitForShutdown: () => orchestrator.waitForShutdown(),
@@ -102,6 +122,8 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
       await secretsApp.close();
       await snsApp.close();
       await s3App.close();
+      await ebApp.close();
+      await sfnApp.close();
     },
   };
 
