@@ -17,7 +17,7 @@ function errorXml(code: string, message: string): string {
   );
 }
 
-function wrap(outer: string, inner: string, result: string): string {
+function wrap(outer: string, result: string): string {
   return (
     `<${outer}Response><${outer}Result>${result}</${outer}Result>` +
     `<ResponseMetadata><RequestId>${REQUEST_ID}</RequestId></ResponseMetadata></${outer}Response>`
@@ -66,7 +66,7 @@ export async function snsRoutesPlugin(
         case "CreateTopic": {
           const name = params["TopicName"]!;
           const arn = provider.createTopic(name);
-          return reply.status(200).send(wrap("CreateTopic", "", `<TopicArn>${arn}</TopicArn>`));
+          return reply.status(200).send(wrap("CreateTopic", `<TopicArn>${arn}</TopicArn>`));
         }
         case "DeleteTopic": {
           provider.deleteTopic(params["TopicArn"]!);
@@ -75,14 +75,14 @@ export async function snsRoutesPlugin(
         case "ListTopics": {
           const arns = provider.listTopics();
           const members = arns.map((a) => `<member><TopicArn>${a}</TopicArn></member>`).join("");
-          return reply.status(200).send(wrap("ListTopics", "", `<Topics>${members}</Topics>`));
+          return reply.status(200).send(wrap("ListTopics", `<Topics>${members}</Topics>`));
         }
         case "Publish": {
           const topicArn = params["TopicArn"]!;
           const message = params["Message"]!;
           const subject = params["Subject"];
           const msgId = provider.publish(topicArn, message, subject);
-          return reply.status(200).send(wrap("Publish", "", `<MessageId>${msgId}</MessageId>`));
+          return reply.status(200).send(wrap("Publish", `<MessageId>${msgId}</MessageId>`));
         }
         case "Subscribe": {
           const topicArn = params["TopicArn"]!;
@@ -90,7 +90,7 @@ export async function snsRoutesPlugin(
           const endpoint = params["Endpoint"] ?? "";
           const subArn = provider.subscribe(topicArn, protocol, endpoint);
           return reply.status(200).send(
-            wrap("Subscribe", "", `<SubscriptionArn>${subArn}</SubscriptionArn>`),
+            wrap("Subscribe", `<SubscriptionArn>${subArn}</SubscriptionArn>`),
           );
         }
         case "Unsubscribe": {
@@ -100,12 +100,12 @@ export async function snsRoutesPlugin(
         case "ListSubscriptions": {
           const subs = provider.listSubscriptions();
           const xml = subs.map(subXml).join("");
-          return reply.status(200).send(wrap("ListSubscriptions", "", `<Subscriptions>${xml}</Subscriptions>`));
+          return reply.status(200).send(wrap("ListSubscriptions", `<Subscriptions>${xml}</Subscriptions>`));
         }
         case "ListSubscriptionsByTopic": {
           const subs = provider.listSubscriptionsByTopic(params["TopicArn"]!);
           const xml = subs.map(subXml).join("");
-          return reply.status(200).send(wrap("ListSubscriptionsByTopic", "", `<Subscriptions>${xml}</Subscriptions>`));
+          return reply.status(200).send(wrap("ListSubscriptionsByTopic", `<Subscriptions>${xml}</Subscriptions>`));
         }
         case "GetTopicAttributes": {
           const attrs = provider.getTopicAttributes(params["TopicArn"]!);
@@ -113,7 +113,7 @@ export async function snsRoutesPlugin(
             .map(([k, v]) => `<entry><key>${k}</key><value>${v}</value></entry>`)
             .join("");
           return reply.status(200).send(
-            wrap("GetTopicAttributes", "", `<Attributes>${attrsXml}</Attributes>`),
+            wrap("GetTopicAttributes", `<Attributes>${attrsXml}</Attributes>`),
           );
         }
         case "SetTopicAttributes": {
