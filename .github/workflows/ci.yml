@@ -28,6 +28,7 @@ jobs:
       typescript-example: ${{ steps.filter.outputs.typescript-example }}
       javascript-sdk: ${{ steps.filter.outputs.javascript-sdk }}
       javascript-example: ${{ steps.filter.outputs.javascript-example }}
+      typescript-arch-tests: ${{ steps.filter.outputs.typescript-arch-tests }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -82,6 +83,9 @@ jobs:
               - 'lang/javascript/sdk/**'
               - 'lang/typescript/sdk/**'
               - 'lang/typescript/core/**'
+            typescript-arch-tests:
+              - 'lang/typescript/**'
+              - 'lang/javascript/**'
 
   # ── FizzBee Formal Specs ────────────────────────────────────────────────────
   fizzbee-check:
@@ -973,3 +977,81 @@ jobs:
         working-directory: lang/javascript/sdk
       - run: make test:unit
         working-directory: lang/javascript/example
+
+  # ── TypeScript Core Integration ──────────────────────────────────────────────
+  typescript-core-test-integration:
+    needs: [changes, typescript-core-lint, typescript-core-test-unit]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.typescript-core == 'true' &&
+      (needs.typescript-core-lint.result == 'success' || needs.typescript-core-lint.result == 'skipped') &&
+      (needs.typescript-core-test-unit.result == 'success' || needs.typescript-core-test-unit.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: "lang/pnpm-lock.yaml"
+      - run: pnpm install --frozen-lockfile
+        working-directory: lang
+      - run: make test-integration
+        working-directory: lang/typescript/core
+
+  # ── TypeScript Architecture Tests ────────────────────────────────────────────
+  typescript-arch-tests:
+    needs: [changes, typescript-core-test-unit, typescript-sdk-test-unit]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.typescript-arch-tests == 'true' &&
+      (needs.typescript-core-test-unit.result == 'success' || needs.typescript-core-test-unit.result == 'skipped') &&
+      (needs.typescript-sdk-test-unit.result == 'success' || needs.typescript-sdk-test-unit.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: "lang/pnpm-lock.yaml"
+      - run: pnpm install --frozen-lockfile
+        working-directory: lang
+      - run: make check
+        working-directory: lang/typescript/arch_tests
+
+  # ── TypeScript SDK E2E ───────────────────────────────────────────────────────
+  typescript-sdk-test-e2e:
+    needs: [changes, typescript-sdk-lint, typescript-sdk-test-unit, typescript-core-test-integration]
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.changes.outputs.typescript-sdk == 'true' &&
+      (needs.typescript-sdk-lint.result == 'success' || needs.typescript-sdk-lint.result == 'skipped') &&
+      (needs.typescript-sdk-test-unit.result == 'success' || needs.typescript-sdk-test-unit.result == 'skipped') &&
+      (needs.typescript-core-test-integration.result == 'success' || needs.typescript-core-test-integration.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: "lang/pnpm-lock.yaml"
+      - run: pnpm install --frozen-lockfile
+        working-directory: lang
+      - run: make build
+        working-directory: lang/typescript/core
+      - run: make test:e2e
+        working-directory: lang/typescript/sdk

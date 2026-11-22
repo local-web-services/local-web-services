@@ -10,7 +10,7 @@ test\:unit:
 	pnpm exec vitest run tests/unit --reporter=verbose --reporter=junit --outputFile.junit=test-results/junit-unit.xml
 
 test\:e2e:
-	NODE_NO_WARNINGS=1 node --loader ts-node/esm node_modules/.bin/cucumber-js --config cucumber.mjs
+	NODE_NO_WARNINGS=1 node_modules/.bin/cucumber-js --config cucumber.mjs
 
 check: lint test\:unit
 
