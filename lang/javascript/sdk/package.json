@@ -17,6 +17,7 @@
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run tests/unit",
+    "test:e2e": "node tests/e2e/smoke.test.mjs && node tests/e2e/smoke.test.cjs",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
@@ -26,6 +27,8 @@
   "devDependencies": {
     "local-web-services-typescript-core": "workspace:*",
     "local-web-services-typescript-sdk": "workspace:*",
+    "@aws-sdk/client-dynamodb": "^3.600.0",
+    "@aws-sdk/client-sqs": "^3.600.0",
     "@types/node": "^20.14.0",
     "tsup": "^8.0.0",
     "typescript": "^5.5.0",
