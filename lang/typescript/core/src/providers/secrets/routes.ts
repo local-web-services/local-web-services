@@ -70,6 +70,11 @@ export async function secretsRoutesPlugin(
             JSON.stringify({ ARN: record.ARN, Name: record.Name, VersionId: record.VersionId }),
           );
         }
+        case "RotateSecret": {
+          const id = body["SecretId"] as string;
+          const record = provider.getSecretValue(id);
+          return reply.status(200).send(JSON.stringify({ ARN: record.ARN, Name: record.Name, VersionId: record.VersionId }));
+        }
         case "DeleteSecret": {
           const id = body["SecretId"] as string;
           const record = provider.deleteSecret(id);

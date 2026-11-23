@@ -78,6 +78,20 @@ export async function ssmRoutesPlugin(
           provider.deleteParameter(name);
           return reply.status(200).send(JSON.stringify({}));
         }
+        case "DeleteParameters": {
+          const names = (body["Names"] as string[]) ?? [];
+          const deleted: string[] = [];
+          const invalid: string[] = [];
+          for (const n of names) {
+            try {
+              provider.deleteParameter(n);
+              deleted.push(n);
+            } catch {
+              invalid.push(n);
+            }
+          }
+          return reply.status(200).send(JSON.stringify({ DeletedParameters: deleted, InvalidParameters: invalid }));
+        }
         case "DescribeParameters": {
           const params = provider.describeParameters();
           return reply.status(200).send(JSON.stringify({ Parameters: params }));
