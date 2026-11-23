@@ -34,8 +34,9 @@ describe("LambdaProvider functions", () => {
     const actual = provider.createFunction({ functionName: expectedName, handler: "index.handler" });
 
     // Assert
+    const expectedState = "Active";
     expect(actual.FunctionName).toBe(expectedName);
-    expect(actual.State).toBe("Active");
+    expect(actual.State).toBe(expectedState);
   });
 
   it("listFunctions includes created function", () => {
@@ -108,8 +109,9 @@ describe("LambdaProvider functions", () => {
     const actual = await provider.invoke("mock-fn", '{"key":"value"}');
 
     // Assert
+    const expectedPayloadType = "string";
     expect(actual.StatusCode).toBe(expectedStatusCode);
-    expect(typeof actual.Payload).toBe("string");
+    expect(typeof actual.Payload).toBe(expectedPayloadType);
   });
 
   it("invoke returns 202 for Event invocation type", async () => {

@@ -1,61 +1,10 @@
 import { randomUUID } from "crypto";
 import type { IProvider } from "../../interfaces/provider.js";
 import { generatePoolKeys, signAccessToken, signIdToken } from "./auth.js";
-import type { KeyLike } from "./auth.js";
 import { decodeJwt } from "jose";
-
-export interface UserPoolConfig {
-  poolName: string;
-  autoConfirmUsers?: boolean;
-}
-
-interface StoredClient {
-  clientId: string;
-  clientName: string;
-  poolId: string;
-}
-
-interface StoredUser {
-  username: string;
-  sub: string;
-  email: string | undefined;
-  password: string;
-  status: "CONFIRMED" | "UNCONFIRMED" | "FORCE_CHANGE_PASSWORD";
-  enabled: boolean;
-  attributes: { Name: string; Value: string }[];
-  createdAt: number;
-}
-
-interface StoredPool {
-  id: string;
-  name: string;
-  arn: string;
-  privateKey: KeyLike;
-  publicKey: KeyLike;
-  clients: Map<string, StoredClient>;
-  users: Map<string, StoredUser>;
-  createdAt: number;
-}
-
-const REGION = "us-east-1";
-const ACCOUNT = "123456789012";
-
-function randomAlphanumeric(len: number): string {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  for (let i = 0; i < len; i++) {
-    result += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return result;
-}
-
-function poolId(): string {
-  return `${REGION}_${randomAlphanumeric(9)}`;
-}
-
-function clientId(): string {
-  return randomAlphanumeric(26);
-}
+import type { StoredPool, StoredUser, StoredGroup, StoredClient, UserPoolConfig } from "./types.js";
+import { REGION, ACCOUNT, makePoolId, makeClientId } from "./types.js";
+export type { UserPoolConfig } from "./types.js";
 
 export class CognitoProvider implements IProvider {
   readonly name = "cognito-idp";
@@ -101,7 +50,7 @@ export class CognitoProvider implements IProvider {
   }
 
   private async _seedPool(name: string): Promise<StoredPool> {
-    const id = poolId();
+    const id = makePoolId();
     const arn = `arn:aws:cognito-idp:${REGION}:${ACCOUNT}:userpool/${id}`;
     const { privateKey, publicKey } = await generatePoolKeys();
     const pool: StoredPool = {
@@ -112,6 +61,8 @@ export class CognitoProvider implements IProvider {
       publicKey,
       clients: new Map(),
       users: new Map(),
+      groups: new Map(),
+      groupMembers: new Map(),
       createdAt: Math.floor(Date.now() / 1000),
     };
     this._pools.set(id, pool);
@@ -166,7 +117,7 @@ export class CognitoProvider implements IProvider {
   createUserPoolClient(poolId: string, clientName: string): { UserPoolClient: Record<string, unknown> } {
     const id = this._resolvePoolId(poolId);
     const pool = this._getPool(id);
-    const cid = clientId();
+    const cid = makeClientId();
     const client: StoredClient = { clientId: cid, clientName, poolId: id };
     pool.clients.set(cid, client);
     this._clientToPool.set(cid, id);
@@ -328,6 +279,114 @@ export class CognitoProvider implements IProvider {
 
   confirmSignUp(_cid: string, _username: string, _code: string): void {
     // local: auto-confirm, any code works
+  }
+
+  updateUserPool(_poolId: string): void { /* local: no-op */ }
+
+  createGroup(poolId: string, groupName: string, description?: string): { Group: Record<string, unknown> } {
+    const pool = this._getPool(this._resolvePoolId(poolId));
+    const now = Math.floor(Date.now() / 1000);
+    const group: StoredGroup = { GroupName: groupName, UserPoolId: pool.id, CreatedAt: now, LastModifiedDate: now,
+      ...(description !== undefined && { Description: description }) };
+    pool.groups.set(groupName, group);
+    pool.groupMembers.set(groupName, new Set());
+    return { Group: { ...group } };
+  }
+
+  deleteGroup(poolId: string, groupName: string): void {
+    const pool = this._getPool(this._resolvePoolId(poolId));
+    pool.groups.delete(groupName); pool.groupMembers.delete(groupName);
+  }
+
+  listGroups(poolId: string): { Groups: Record<string, unknown>[] } {
+    return { Groups: [...this._getPool(this._resolvePoolId(poolId)).groups.values()].map((g) => ({ ...g })) };
+  }
+
+  adminAddUserToGroup(poolId: string, username: string, groupName: string): void {
+    const pool = this._getPool(this._resolvePoolId(poolId));
+    if (!pool.groups.has(groupName)) throw new Error("ResourceNotFoundException: Group not found.");
+    const members = pool.groupMembers.get(groupName) ?? new Set<string>();
+    members.add(username); pool.groupMembers.set(groupName, members);
+  }
+
+  adminRemoveUserFromGroup(poolId: string, username: string, groupName: string): void {
+    this._getPool(this._resolvePoolId(poolId)).groupMembers.get(groupName)?.delete(username);
+  }
+
+  listUsersInGroup(poolId: string, groupName: string): { Users: Record<string, unknown>[] } {
+    const pool = this._getPool(this._resolvePoolId(poolId));
+    const users = [...(pool.groupMembers.get(groupName) ?? new Set<string>())]
+      .map((u) => pool.users.get(u)).filter(Boolean) as StoredUser[];
+    return { Users: users.map((u) => this._userDesc(u)) };
+  }
+
+  private _requireUser(poolId: string, username: string): StoredUser {
+    const pool = this._getPool(this._resolvePoolId(poolId));
+    const user = pool.users.get(username);
+    if (!user) throw new Error("UserNotFoundException: User does not exist.");
+    return user;
+  }
+
+  adminDisableUser(poolId: string, username: string): void { this._requireUser(poolId, username).enabled = false; }
+  adminEnableUser(poolId: string, username: string): void { this._requireUser(poolId, username).enabled = true; }
+  adminConfirmSignUp(poolId: string, username: string): void { this._requireUser(poolId, username).status = "CONFIRMED"; }
+  adminResetUserPassword(_poolId: string, _username: string): void { /* local: no-op */ }
+  globalSignOut(_accessToken: string): void { /* local: stateless JWTs, no-op */ }
+
+  adminUpdateUserAttributes(poolId: string, username: string, attrs: { Name: string; Value: string }[]): void {
+    const user = this._requireUser(poolId, username);
+    for (const attr of attrs) {
+      const existing = user.attributes.find((a) => a.Name === attr.Name);
+      if (existing) { existing.Value = attr.Value; } else { user.attributes.push(attr); }
+    }
+  }
+
+  forgotPassword(cid: string, username: string): { CodeDeliveryDetails: Record<string, string> } {
+    const pid = this._clientToPool.get(cid);
+    if (!pid) throw new Error("ResourceNotFoundException: User pool client not found.");
+    const user = this._getPool(pid).users.get(username);
+    if (!user) throw new Error("UserNotFoundException: User does not exist.");
+    user.pendingPasswordResetCode = "LOCAL_RESET_CODE";
+    return { CodeDeliveryDetails: { Destination: "local", DeliveryMedium: "EMAIL", AttributeName: "email" } };
+  }
+
+  confirmForgotPassword(cid: string, username: string, _code: string, password: string): void {
+    const pid = this._clientToPool.get(cid);
+    if (!pid) throw new Error("ResourceNotFoundException: User pool client not found.");
+    const user = this._getPool(pid).users.get(username);
+    if (!user) throw new Error("UserNotFoundException: User does not exist.");
+    user.password = password; delete user.pendingPasswordResetCode; user.status = "CONFIRMED";
+  }
+
+  changePassword(accessToken: string, previousPassword: string, proposedPassword: string): void {
+    const payload = decodeJwt(accessToken);
+    const sub = payload["sub"] as string;
+    const username = (payload["username"] as string | undefined) ?? sub;
+    for (const pool of this._pools.values()) {
+      const user = pool.users.get(username);
+      if (user && user.sub === sub) {
+        if (user.password !== previousPassword) throw new Error("NotAuthorizedException: Incorrect username or password.");
+        user.password = proposedPassword; return;
+      }
+    }
+    throw new Error("NotAuthorizedException: Access token is invalid.");
+  }
+
+  async respondToAuthChallenge(cid: string, challengeName: string, challengeResponses: Record<string, string>): Promise<{ AuthenticationResult: Record<string, unknown> }> {
+    const pid = this._clientToPool.get(cid);
+    if (!pid) throw new Error("ResourceNotFoundException: User pool client not found.");
+    const pool = this._getPool(pid);
+    if (challengeName === "NEW_PASSWORD_REQUIRED") {
+      const username = challengeResponses["USERNAME"] ?? "";
+      const user = pool.users.get(username);
+      if (!user) throw new Error("UserNotFoundException: User does not exist.");
+      user.password = challengeResponses["NEW_PASSWORD"] ?? ""; user.status = "CONFIRMED";
+      const issuer = `https://cognito-idp.${REGION}.amazonaws.com/${pid}`;
+      const accessToken = await signAccessToken(pool.privateKey, { sub: user.sub, username, poolId: pid, clientId: cid, issuer });
+      const idToken = await signIdToken(pool.privateKey, { sub: user.sub, username, poolId: pid, clientId: cid, issuer });
+      return { AuthenticationResult: { AccessToken: accessToken, IdToken: idToken, RefreshToken: `refresh-${randomUUID()}`, ExpiresIn: 3600, TokenType: "Bearer" } };
+    }
+    throw new Error("InvalidParameterException: Unsupported challenge: " + challengeName);
   }
 
   private _poolDesc(pool: StoredPool): Record<string, unknown> {

@@ -143,6 +143,58 @@ export async function cognitoRoutesPlugin(
           provider.confirmSignUp(clientId, username, code);
           return reply.status(200).send(JSON.stringify({}));
         }
+        case "UpdateUserPool":
+          provider.updateUserPool(body["UserPoolId"] as string);
+          return reply.status(200).send(JSON.stringify({}));
+        case "CreateGroup": {
+          const result = provider.createGroup(body["UserPoolId"] as string, body["GroupName"] as string, body["Description"] as string | undefined);
+          return reply.status(200).send(JSON.stringify(result));
+        }
+        case "DeleteGroup":
+          provider.deleteGroup(body["UserPoolId"] as string, body["GroupName"] as string);
+          return reply.status(200).send(JSON.stringify({}));
+        case "ListGroups":
+          return reply.status(200).send(JSON.stringify(provider.listGroups(body["UserPoolId"] as string)));
+        case "AdminAddUserToGroup":
+          provider.adminAddUserToGroup(body["UserPoolId"] as string, body["Username"] as string, body["GroupName"] as string);
+          return reply.status(200).send(JSON.stringify({}));
+        case "AdminRemoveUserFromGroup":
+          provider.adminRemoveUserFromGroup(body["UserPoolId"] as string, body["Username"] as string, body["GroupName"] as string);
+          return reply.status(200).send(JSON.stringify({}));
+        case "ListUsersInGroup":
+          return reply.status(200).send(JSON.stringify(provider.listUsersInGroup(body["UserPoolId"] as string, body["GroupName"] as string)));
+        case "AdminDisableUser":
+          provider.adminDisableUser(body["UserPoolId"] as string, body["Username"] as string);
+          return reply.status(200).send(JSON.stringify({}));
+        case "AdminEnableUser":
+          provider.adminEnableUser(body["UserPoolId"] as string, body["Username"] as string);
+          return reply.status(200).send(JSON.stringify({}));
+        case "AdminConfirmSignUp":
+          provider.adminConfirmSignUp(body["UserPoolId"] as string, body["Username"] as string);
+          return reply.status(200).send(JSON.stringify({}));
+        case "AdminResetUserPassword":
+          provider.adminResetUserPassword(body["UserPoolId"] as string, body["Username"] as string);
+          return reply.status(200).send(JSON.stringify({}));
+        case "AdminUpdateUserAttributes": {
+          const attrs = (body["UserAttributes"] as { Name: string; Value: string }[] | undefined) ?? [];
+          provider.adminUpdateUserAttributes(body["UserPoolId"] as string, body["Username"] as string, attrs);
+          return reply.status(200).send(JSON.stringify({}));
+        }
+        case "ForgotPassword":
+          return reply.status(200).send(JSON.stringify(provider.forgotPassword(body["ClientId"] as string, body["Username"] as string)));
+        case "ConfirmForgotPassword":
+          provider.confirmForgotPassword(body["ClientId"] as string, body["Username"] as string, (body["ConfirmationCode"] as string | undefined) ?? "", body["Password"] as string);
+          return reply.status(200).send(JSON.stringify({}));
+        case "ChangePassword":
+          provider.changePassword(body["AccessToken"] as string, body["PreviousPassword"] as string, body["ProposedPassword"] as string);
+          return reply.status(200).send(JSON.stringify({}));
+        case "RespondToAuthChallenge": {
+          const result = await provider.respondToAuthChallenge(body["ClientId"] as string, body["ChallengeName"] as string, (body["ChallengeResponses"] as Record<string, string>) ?? {});
+          return reply.status(200).send(JSON.stringify(result));
+        }
+        case "GlobalSignOut":
+          provider.globalSignOut(body["AccessToken"] as string);
+          return reply.status(200).send(JSON.stringify({}));
         default:
           return reply.status(400).send(jsonError("InvalidAction", `Unsupported action: ${action}`));
       }

@@ -34,8 +34,9 @@ describe("CognitoProvider user pools", () => {
     const actual = await provider.createUserPool(expectedName);
 
     // Assert
+    const expectedIdType = "string";
     expect(actual.UserPool["Name"]).toBe(expectedName);
-    expect(typeof actual.UserPool["Id"]).toBe("string");
+    expect(typeof actual.UserPool["Id"]).toBe(expectedIdType);
   });
 
   it("listUserPools includes created pool", async () => {
@@ -60,8 +61,9 @@ describe("CognitoProvider user pools", () => {
     const actual = provider.createUserPoolClient(pool.UserPool["Id"] as string, expectedClientName);
 
     // Assert
+    const expectedClientIdType = "string";
     expect(actual.UserPoolClient["ClientName"]).toBe(expectedClientName);
-    expect(typeof actual.UserPoolClient["ClientId"]).toBe("string");
+    expect(typeof actual.UserPoolClient["ClientId"]).toBe(expectedClientIdType);
   });
 
   it("adminCreateUser creates a user retrievable via adminGetUser", async () => {
@@ -104,9 +106,11 @@ describe("CognitoProvider user pools", () => {
     });
 
     // Assert
-    expect(typeof actual.AuthenticationResult["AccessToken"]).toBe("string");
-    expect(typeof actual.AuthenticationResult["IdToken"]).toBe("string");
-    expect(actual.AuthenticationResult["ExpiresIn"]).toBe(3600);
+    const expectedTokenType = "string";
+    const expectedExpiresIn = 3600;
+    expect(typeof actual.AuthenticationResult["AccessToken"]).toBe(expectedTokenType);
+    expect(typeof actual.AuthenticationResult["IdToken"]).toBe(expectedTokenType);
+    expect(actual.AuthenticationResult["ExpiresIn"]).toBe(expectedExpiresIn);
   });
 
   it("initiateAuth throws NotAuthorizedException for wrong password", async () => {
@@ -161,8 +165,9 @@ describe("CognitoProvider user pools", () => {
     const actual = provider.signUp(clientId, "eve", "Pass1!");
 
     // Assert
+    const expectedUserSubType = "string";
     expect(actual.UserConfirmed).toBe(expectedConfirmed);
-    expect(typeof actual.UserSub).toBe("string");
+    expect(typeof actual.UserSub).toBe(expectedUserSubType);
   });
 
   it("reset clears dynamic pools and users from pre-configured pools", async () => {

@@ -152,6 +152,74 @@ export async function dynamoRoutesPlugin(
           return reply.status(200).send(JSON.stringify({ Items: items, Count: items.length, ScannedCount: items.length }));
         }
 
+        case "BatchGetItem": {
+          const requestItems = body["RequestItems"] as Record<string, { Keys: DynamoItem[] }>;
+          const responses = provider.batchGetItem(requestItems);
+          return reply.status(200).send(JSON.stringify({ Responses: responses, UnprocessedKeys: {} }));
+        }
+
+        case "BatchWriteItem": {
+          type WriteOp = { PutRequest?: { Item: DynamoItem }; DeleteRequest?: { Key: DynamoItem } };
+          const requestItems = body["RequestItems"] as Record<string, WriteOp[]>;
+          provider.batchWriteItem(requestItems);
+          return reply.status(200).send(JSON.stringify({ UnprocessedItems: {} }));
+        }
+
+        case "TransactGetItems": {
+          type TransactGet = { Get: { TableName: string; Key: DynamoItem } };
+          const transactItems = body["TransactItems"] as TransactGet[];
+          const responses = provider.transactGetItems(transactItems);
+          return reply.status(200).send(JSON.stringify({ Responses: responses }));
+        }
+
+        case "TransactWriteItems": {
+          type TransactWrite = { Put?: { TableName: string; Item: DynamoItem }; Delete?: { TableName: string; Key: DynamoItem }; Update?: { TableName: string; Key: DynamoItem; UpdateExpression: string } & Record<string, unknown> };
+          const transactItems = body["TransactItems"] as TransactWrite[];
+          provider.transactWriteItems(transactItems);
+          return reply.status(200).send(JSON.stringify({}));
+        }
+
+        case "UpdateTable": {
+          const tableName = body["TableName"] as string;
+          return reply.status(200).send(JSON.stringify(provider.updateTable(tableName)));
+        }
+
+        case "DescribeContinuousBackups": {
+          const tableName = body["TableName"] as string;
+          return reply.status(200).send(JSON.stringify(provider.describeContinuousBackups(tableName)));
+        }
+
+        case "DescribeTimeToLive": {
+          const tableName = body["TableName"] as string;
+          return reply.status(200).send(JSON.stringify(provider.describeTimeToLive(tableName)));
+        }
+
+        case "UpdateTimeToLive": {
+          const tableName = body["TableName"] as string;
+          const spec = body["TimeToLiveSpecification"] as { AttributeName: string; Enabled: boolean };
+          return reply.status(200).send(JSON.stringify(provider.updateTimeToLive(tableName, { attributeName: spec.AttributeName, enabled: spec.Enabled })));
+        }
+
+        case "TagResource": {
+          const arn = body["ResourceArn"] as string;
+          const tags = body["Tags"] as Array<{ Key: string; Value: string }>;
+          provider.tagResource(arn, tags);
+          return reply.status(200).send(JSON.stringify({}));
+        }
+
+        case "UntagResource": {
+          const arn = body["ResourceArn"] as string;
+          const tagKeys = body["TagKeys"] as string[];
+          provider.untagResource(arn, tagKeys);
+          return reply.status(200).send(JSON.stringify({}));
+        }
+
+        case "ListTagsOfResource": {
+          const arn = body["ResourceArn"] as string;
+          const tags = provider.listTagsOfResource(arn);
+          return reply.status(200).send(JSON.stringify({ Tags: tags }));
+        }
+
         default:
           return reply
             .status(400)

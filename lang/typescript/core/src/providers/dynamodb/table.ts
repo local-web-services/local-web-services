@@ -23,12 +23,19 @@ export interface TableConfig {
   sortKeyType?: string | undefined;
 }
 
+export interface TtlSpec {
+  attributeName: string;
+  enabled: boolean;
+}
+
 export class LocalTable {
   readonly tableName: string;
   readonly hashKey: string;
   readonly hashKeyType: string;
   readonly sortKey: string | undefined;
   readonly sortKeyType: string;
+  tags: Record<string, string> = {};
+  ttlSpec: TtlSpec = { attributeName: "", enabled: false };
   private _items = new Map<string, DynamoItem>();
 
   constructor(config: TableConfig) {

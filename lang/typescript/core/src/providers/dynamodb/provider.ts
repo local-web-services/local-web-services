@@ -5,7 +5,7 @@
  */
 
 import type { IProvider } from "../../interfaces/provider.js";
-import type { DynamoAttributeValue, DynamoItem } from "./table.js";
+import type { DynamoAttributeValue, DynamoItem, TtlSpec } from "./table.js";
 import { LocalTable } from "./table.js";
 import { applyUpdateExpression, evaluateFilterExpression } from "./expressions.js";
 import type { ExpressionContext } from "./expressions.js";
@@ -195,6 +195,126 @@ export class DynamoProvider implements IProvider {
 
   tableArn(tableName: string): string {
     return `arn:aws:dynamodb:${FAKE_REGION}:${FAKE_ACCOUNT}:table/${tableName}`;
+  }
+
+  tableNameFromArn(arn: string): string {
+    const parts = arn.split("/");
+    return parts[parts.length - 1] ?? arn;
+  }
+
+  // ------------------------------------------------------------------
+  // Batch / Transact
+  // ------------------------------------------------------------------
+
+  batchGetItem(requestItems: Record<string, { Keys: DynamoItem[] }>): Record<string, DynamoItem[]> {
+    const responses: Record<string, DynamoItem[]> = {};
+    for (const [tableName, req] of Object.entries(requestItems)) {
+      const items: DynamoItem[] = [];
+      for (const key of req.Keys) {
+        const item = this.getItem(tableName, key);
+        if (item !== undefined) items.push(item);
+      }
+      responses[tableName] = items;
+    }
+    return responses;
+  }
+
+  batchWriteItem(requestItems: Record<string, Array<{ PutRequest?: { Item: DynamoItem }; DeleteRequest?: { Key: DynamoItem } }>>): void {
+    for (const [tableName, ops] of Object.entries(requestItems)) {
+      for (const op of ops) {
+        if (op.PutRequest !== undefined) {
+          this.putItem(tableName, op.PutRequest.Item);
+        } else if (op.DeleteRequest !== undefined) {
+          this.deleteItem(tableName, op.DeleteRequest.Key);
+        }
+      }
+    }
+  }
+
+  transactGetItems(transactItems: Array<{ Get: { TableName: string; Key: DynamoItem } }>): Array<{ Item?: DynamoItem }> {
+    return transactItems.map(({ Get }) => {
+      const item = this.getItem(Get.TableName, Get.Key);
+      return item !== undefined ? { Item: item } : {};
+    });
+  }
+
+  transactWriteItems(transactItems: Array<{ Put?: { TableName: string; Item: DynamoItem }; Delete?: { TableName: string; Key: DynamoItem }; Update?: { TableName: string; Key: DynamoItem; UpdateExpression: string } & Record<string, unknown> }>): void {
+    for (const op of transactItems) {
+      if (op.Put !== undefined) {
+        this.putItem(op.Put.TableName, op.Put.Item);
+      } else if (op.Delete !== undefined) {
+        this.deleteItem(op.Delete.TableName, op.Delete.Key);
+      } else if (op.Update !== undefined) {
+        const ctx: ExpressionContext = {};
+        if (op.Update["ExpressionAttributeNames"] !== undefined) {
+          ctx.expressionAttributeNames = op.Update["ExpressionAttributeNames"] as Record<string, string>;
+        }
+        if (op.Update["ExpressionAttributeValues"] !== undefined) {
+          ctx.expressionAttributeValues = op.Update["ExpressionAttributeValues"] as Record<string, DynamoAttributeValue>;
+        }
+        this.updateItem(op.Update.TableName, op.Update.Key, op.Update.UpdateExpression, ctx);
+      }
+    }
+  }
+
+  // ------------------------------------------------------------------
+  // Table management stubs
+  // ------------------------------------------------------------------
+
+  updateTable(tableName: string): object {
+    return { TableDescription: this.describeTable(tableName) };
+  }
+
+  describeContinuousBackups(tableName: string): object {
+    this._requireTable(tableName);
+    return {
+      ContinuousBackupsDescription: {
+        ContinuousBackupsStatus: "ENABLED",
+        PointInTimeRecoveryDescription: { PointInTimeRecoveryStatus: "DISABLED" },
+      },
+    };
+  }
+
+  describeTimeToLive(tableName: string): object {
+    const table = this._requireTable(tableName);
+    return {
+      TimeToLiveDescription: {
+        TimeToLiveStatus: table.ttlSpec.enabled ? "ENABLED" : "DISABLED",
+        AttributeName: table.ttlSpec.attributeName,
+      },
+    };
+  }
+
+  updateTimeToLive(tableName: string, spec: TtlSpec): object {
+    const table = this._requireTable(tableName);
+    table.ttlSpec = spec;
+    return { TimeToLiveSpecification: { AttributeName: spec.attributeName, Enabled: spec.enabled } };
+  }
+
+  // ------------------------------------------------------------------
+  // Tagging
+  // ------------------------------------------------------------------
+
+  tagResource(arn: string, tags: Array<{ Key: string; Value: string }>): void {
+    const tableName = this.tableNameFromArn(arn);
+    const table = this._requireTable(tableName);
+    for (const { Key, Value } of tags) {
+      table.tags[Key] = Value;
+    }
+  }
+
+  untagResource(arn: string, tagKeys: string[]): void {
+    const tableName = this.tableNameFromArn(arn);
+    const table = this._requireTable(tableName);
+    for (const key of tagKeys) {
+      delete table.tags[key];
+    }
+  }
+
+  listTagsOfResource(arn: string): Array<{ Key: string; Value: string }> {
+    const tableName = this.tableNameFromArn(arn);
+    const table = this._requireTable(tableName);
+    return Object.entries(table.tags).map(([Key, Value]) => ({ Key, Value }));
   }
 
   // ------------------------------------------------------------------
