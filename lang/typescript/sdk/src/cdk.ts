@@ -6,7 +6,7 @@
 
 import { readFileSync, existsSync, statSync } from "fs";
 import { join, extname } from "path";
-import yaml from "js-yaml";
+import { load as yamlLoad } from "js-yaml";
 import type { ResourceSpec } from "./specs.js";
 import {
   DynamoTable,
@@ -143,7 +143,7 @@ function loadTemplate(filePath: string): CfTemplate {
   const content = readFileSync(filePath, "utf8");
   const ext = extname(filePath).toLowerCase();
   if (ext === ".yaml" || ext === ".yml") {
-    return yaml.load(content) as CfTemplate;
+    return yamlLoad(content) as CfTemplate;
   }
   return JSON.parse(content) as CfTemplate;
 }

@@ -26,7 +26,7 @@ describe("LwsSession SQS endpoint helpers", () => {
 
   it("endpointUrl throws for unknown service", () => {
     // Arrange
-    const unknownService = "dynamodb";
+    const unknownService = "not-a-real-service";
 
     // Act
     const actualThrow = () => session.endpointUrl(unknownService);
