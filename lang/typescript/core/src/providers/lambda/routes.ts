@@ -1,4 +1,4 @@
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyReply } from "fastify";
 import type { LambdaProvider, FunctionConfig } from "./provider.js";
 
 export interface LambdaRoutesOptions {
@@ -19,12 +19,15 @@ export async function lambdaRoutesPlugin(
     "application/x-amz-json-1.1",
     { parseAs: "string" },
     (_req, body, done) => {
-      try {
-        done(null, JSON.parse(body as string));
-      } catch (err) {
-        done(err as Error);
-      }
+      try { done(null, JSON.parse(body as string)); } catch (err) { done(err as Error); }
     },
+  );
+
+  // Lambda Invoke sends application/octet-stream — accept it as raw string
+  fastify.addContentTypeParser(
+    "application/octet-stream",
+    { parseAs: "string" },
+    (_req, body, done) => done(null, body),
   );
 
   // Lambda Invoke uses a REST path, not X-Amz-Target
@@ -54,83 +57,77 @@ export async function lambdaRoutesPlugin(
     },
   );
 
-  // All other Lambda ops use POST / with X-Amz-Target
-  fastify.post("/", async (req: FastifyRequest, reply: FastifyReply) => {
-    const target = (req.headers["x-amz-target"] as string | undefined) ?? "";
-    const prefix = "AWSLambda.";
-    reply.header("content-type", "application/x-amz-json-1.1");
-
-    if (!target.startsWith(prefix)) {
-      return reply.status(400).send(jsonError("InvalidAction", `Unknown target: ${target}`));
+  function handleError(err: unknown, reply: FastifyReply): FastifyReply {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.startsWith("ResourceNotFoundException")) {
+      return reply.status(404).header("content-type", "application/json").send(jsonError("ResourceNotFoundException", msg));
     }
-    const action = target.slice(prefix.length);
+    if (msg.startsWith("ResourceConflictException")) {
+      return reply.status(409).header("content-type", "application/json").send(jsonError("ResourceConflictException", msg));
+    }
+    return reply.status(500).header("content-type", "application/json").send(jsonError("ServiceException", msg));
+  }
+
+  // CreateFunction: POST /2015-03-31/functions
+  fastify.post("/2015-03-31/functions", async (req, reply) => {
     const body = req.body as Record<string, unknown>;
-
     try {
-      switch (action) {
-        case "CreateFunction": {
-          const description = body["Description"] as string | undefined;
-          const config: FunctionConfig = {
-            functionName: body["FunctionName"] as string,
-            handler: body["Handler"] as string,
-            runtime: (body["Runtime"] as FunctionConfig["runtime"]) ?? "nodejs20.x",
-            ...(description !== undefined && { description }),
-          };
-          const env = body["Environment"] as { Variables?: Record<string, string> } | undefined;
-          if (env?.Variables) config.environment = env.Variables;
-          const fn = provider.createFunction(config);
-          return reply.status(201).send(JSON.stringify(fn));
-        }
-        case "DeleteFunction": {
-          const name = body["FunctionName"] as string;
-          provider.deleteFunction(name);
-          return reply.status(204).send("");
-        }
-        case "ListFunctions": {
-          const result = provider.listFunctions();
-          return reply.status(200).send(JSON.stringify(result));
-        }
-        case "GetFunction": {
-          const name = body["FunctionName"] as string;
-          const result = provider.getFunction(name);
-          return reply.status(200).send(JSON.stringify(result));
-        }
-        case "GetFunctionConfiguration": {
-          const name = body["FunctionName"] as string;
-          const result = provider.getFunctionConfiguration(name);
-          return reply.status(200).send(JSON.stringify(result));
-        }
-        case "UpdateFunctionCode": {
-          const name = body["FunctionName"] as string;
-          const result = provider.updateFunctionCode(name);
-          return reply.status(200).send(JSON.stringify(result));
-        }
-        case "UpdateFunctionConfiguration": {
-          const name = body["FunctionName"] as string;
-          const updHandler = body["Handler"] as string | undefined;
-          const updRuntime = body["Runtime"] as FunctionConfig["runtime"] | undefined;
-          const updDescription = body["Description"] as string | undefined;
-          const env = body["Environment"] as { Variables?: Record<string, string> } | undefined;
-          const result = provider.updateFunctionConfiguration(name, {
-            ...(updHandler !== undefined && { handler: updHandler }),
-            ...(updRuntime !== undefined && { runtime: updRuntime }),
-            ...(updDescription !== undefined && { description: updDescription }),
-            ...(env?.Variables !== undefined && { environment: env.Variables }),
-          });
-          return reply.status(200).send(JSON.stringify(result));
-        }
-        default:
-          return reply.status(400).send(jsonError("InvalidAction", `Unsupported action: ${action}`));
-      }
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      if (msg.startsWith("ResourceNotFoundException")) {
-        return reply.status(404).send(jsonError("ResourceNotFoundException", msg));
-      }
-      if (msg.startsWith("ResourceConflictException")) {
-        return reply.status(409).send(jsonError("ResourceConflictException", msg));
-      }
-      return reply.status(500).send(jsonError("InternalServerError", msg));
-    }
+      const description = body["Description"] as string | undefined;
+      const config: FunctionConfig = {
+        functionName: body["FunctionName"] as string,
+        handler: body["Handler"] as string,
+        runtime: (body["Runtime"] as FunctionConfig["runtime"]) ?? "nodejs20.x",
+        ...(description !== undefined && { description }),
+      };
+      const env = body["Environment"] as { Variables?: Record<string, string> } | undefined;
+      if (env?.Variables) config.environment = env.Variables;
+      const fn = provider.createFunction(config);
+      return reply.status(201).header("content-type", "application/json").send(JSON.stringify(fn));
+    } catch (err) { return handleError(err, reply); }
+  });
+
+  // ListFunctions: GET /2015-03-31/functions
+  fastify.get("/2015-03-31/functions", async (_req, reply) => {
+    return reply.status(200).header("content-type", "application/json").send(JSON.stringify(provider.listFunctions()));
+  });
+
+  // GetFunction: GET /2015-03-31/functions/:name
+  fastify.get<{ Params: { functionName: string } }>("/2015-03-31/functions/:functionName", async (req, reply) => {
+    try {
+      return reply.status(200).header("content-type", "application/json").send(JSON.stringify(provider.getFunction(req.params.functionName)));
+    } catch (err) { return handleError(err, reply); }
+  });
+
+  // DeleteFunction: DELETE /2015-03-31/functions/:name
+  fastify.delete<{ Params: { functionName: string } }>("/2015-03-31/functions/:functionName", async (req, reply) => {
+    try {
+      provider.deleteFunction(req.params.functionName);
+      return reply.status(204).send("");
+    } catch (err) { return handleError(err, reply); }
+  });
+
+  // UpdateFunctionCode: PUT /2015-03-31/functions/:name/code
+  fastify.put<{ Params: { functionName: string } }>("/2015-03-31/functions/:functionName/code", async (req, reply) => {
+    try {
+      return reply.status(200).header("content-type", "application/json").send(JSON.stringify(provider.updateFunctionCode(req.params.functionName)));
+    } catch (err) { return handleError(err, reply); }
+  });
+
+  // UpdateFunctionConfiguration: PUT /2015-03-31/functions/:name/configuration
+  fastify.put<{ Params: { functionName: string } }>("/2015-03-31/functions/:functionName/configuration", async (req, reply) => {
+    const body = req.body as Record<string, unknown>;
+    try {
+      const updHandler = body["Handler"] as string | undefined;
+      const updRuntime = body["Runtime"] as FunctionConfig["runtime"] | undefined;
+      const updDescription = body["Description"] as string | undefined;
+      const env = body["Environment"] as { Variables?: Record<string, string> } | undefined;
+      const result = provider.updateFunctionConfiguration(req.params.functionName, {
+        ...(updHandler !== undefined && { handler: updHandler }),
+        ...(updRuntime !== undefined && { runtime: updRuntime }),
+        ...(updDescription !== undefined && { description: updDescription }),
+        ...(env?.Variables !== undefined && { environment: env.Variables }),
+      });
+      return reply.status(200).header("content-type", "application/json").send(JSON.stringify(result));
+    } catch (err) { return handleError(err, reply); }
   });
 }
