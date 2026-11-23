@@ -29,12 +29,16 @@ import {
   eventBridgeRoutesPlugin,
   StepFunctionsProvider,
   stepFunctionsRoutesPlugin,
+  CognitoProvider,
+  cognitoRoutesPlugin,
+  LambdaProvider,
+  lambdaRoutesPlugin,
   managementPlugin,
   findFreePort,
   buildSdkEnv,
   defaultChaosConfig,
 } from "local-web-services-typescript-core";
-import { type ResourceSpec, SqsQueue, DynamoTable, SsmParameter, Secret, SnsTopic, S3Bucket, EventBus, StateMachine } from "./specs.js";
+import { type ResourceSpec, SqsQueue, DynamoTable, SsmParameter, Secret, SnsTopic, S3Bucket, EventBus, StateMachine, CognitoUserPool, LambdaFunction } from "./specs.js";
 import { ChaosBuilder } from "./builders/chaos.js";
 import { FakeBuilder } from "./builders/fake.js";
 import { CapacityBuilder } from "./builders/capacity.js";
@@ -56,6 +60,8 @@ export class LwsSession {
   private _s3Port: number = 0;
   private _eventbridgePort: number = 0;
   private _stepfunctionsPort: number = 0;
+  private _cognitoPort: number = 0;
+  private _lambdaPort: number = 0;
   private _mgmtPort: number = 0;
   private _sqsFastify: FastifyInstance | null = null;
   private _dynamoFastify: FastifyInstance | null = null;
@@ -65,6 +71,8 @@ export class LwsSession {
   private _s3Fastify: FastifyInstance | null = null;
   private _eventbridgeFastify: FastifyInstance | null = null;
   private _stepfunctionsFastify: FastifyInstance | null = null;
+  private _cognitoFastify: FastifyInstance | null = null;
+  private _lambdaFastify: FastifyInstance | null = null;
   private _mgmtFastify: FastifyInstance | null = null;
   private _sqsProvider: SqsProvider | null = null;
   private _dynamoProvider: DynamoProvider | null = null;
@@ -74,6 +82,8 @@ export class LwsSession {
   private _s3Provider: S3Provider | null = null;
   private _eventbridgeProvider: EventBridgeProvider | null = null;
   private _stepfunctionsProvider: StepFunctionsProvider | null = null;
+  private _cognitoProvider: CognitoProvider | null = null;
+  private _lambdaProvider: LambdaProvider | null = null;
   private _savedEnv: Record<string, string | undefined> = {};
 
   constructor(...resources: ResourceSpec[]) {
@@ -104,9 +114,11 @@ export class LwsSession {
     const { port: s3Port, release: releaseS3 } = await findFreePort();
     const { port: eventbridgePort, release: releaseEb } = await findFreePort();
     const { port: stepfunctionsPort, release: releaseSfn } = await findFreePort();
+    const { port: cognitoPort, release: releaseCognito } = await findFreePort();
+    const { port: lambdaPort, release: releaseLambda } = await findFreePort();
     const { port: mgmtPort, release: releaseMgmt } = await findFreePort();
     releaseSqs(); releaseDynamo(); releaseSsm(); releaseSecrets(); releaseSns(); releaseS3();
-    releaseEb(); releaseSfn(); releaseMgmt();
+    releaseEb(); releaseSfn(); releaseCognito(); releaseLambda(); releaseMgmt();
     this._sqsPort = sqsPort;
     this._dynamoPort = dynamoPort;
     this._ssmPort = ssmPort;
@@ -115,6 +127,8 @@ export class LwsSession {
     this._s3Port = s3Port;
     this._eventbridgePort = eventbridgePort;
     this._stepfunctionsPort = stepfunctionsPort;
+    this._cognitoPort = cognitoPort;
+    this._lambdaPort = lambdaPort;
     this._mgmtPort = mgmtPort;
 
     // Build SQS provider from spec
@@ -188,6 +202,27 @@ export class LwsSession {
     this._stepfunctionsProvider = new StepFunctionsProvider(sfnConfigs);
     await this._stepfunctionsProvider.start();
 
+    // Build Cognito IDP provider from spec
+    const cognitoConfigs = this._resources
+      .filter((r): r is CognitoUserPool => r instanceof CognitoUserPool)
+      .map((p) => ({ poolName: p.name, autoConfirmUsers: p.autoConfirmUsers }));
+    this._cognitoProvider = new CognitoProvider(cognitoConfigs);
+    await this._cognitoProvider.start();
+
+    // Build Lambda provider from spec
+    const lambdaConfigs = this._resources
+      .filter((r): r is LambdaFunction => r instanceof LambdaFunction)
+      .map((f) => ({
+        functionName: f.name,
+        handler: f.handler,
+        runtime: f.runtime,
+        ...(f.codeDir !== undefined && { codeDir: f.codeDir }),
+        environment: f.environment,
+        description: f.description,
+      }));
+    this._lambdaProvider = new LambdaProvider(lambdaConfigs);
+    await this._lambdaProvider.start();
+
     // Start per-service Fastify server (SQS)
     this._sqsFastify = Fastify({ logger: false });
     const sqsChaos = defaultChaosConfig();
@@ -233,6 +268,16 @@ export class LwsSession {
     await this._stepfunctionsFastify.register(stepFunctionsRoutesPlugin, { provider: this._stepfunctionsProvider });
     await this._stepfunctionsFastify.listen({ port: stepfunctionsPort, host: "127.0.0.1" });
 
+    // Start per-service Fastify server (Cognito IDP)
+    this._cognitoFastify = Fastify({ logger: false });
+    await this._cognitoFastify.register(cognitoRoutesPlugin, { provider: this._cognitoProvider });
+    await this._cognitoFastify.listen({ port: cognitoPort, host: "127.0.0.1" });
+
+    // Start per-service Fastify server (Lambda)
+    this._lambdaFastify = Fastify({ logger: false });
+    await this._lambdaFastify.register(lambdaRoutesPlugin, { provider: this._lambdaProvider });
+    await this._lambdaFastify.listen({ port: lambdaPort, host: "127.0.0.1" });
+
     // Start management API
     const providersMap = new Map<string, IProvider>([
       ["sqs", this._sqsProvider],
@@ -243,6 +288,8 @@ export class LwsSession {
       ["s3", this._s3Provider],
       ["events", this._eventbridgeProvider],
       ["states", this._stepfunctionsProvider],
+      ["cognito-idp", this._cognitoProvider],
+      ["lambda", this._lambdaProvider],
     ]);
     const chaosConfigs = new Map([["sqs", sqsChaos]]);
     const orch: IOrchestratorStatus = {
@@ -269,6 +316,8 @@ export class LwsSession {
       s3: `http://127.0.0.1:${s3Port}`,
       events: `http://127.0.0.1:${eventbridgePort}`,
       states: `http://127.0.0.1:${stepfunctionsPort}`,
+      "cognito-idp": `http://127.0.0.1:${cognitoPort}`,
+      lambda: `http://127.0.0.1:${lambdaPort}`,
     });
   }
 
@@ -283,6 +332,8 @@ export class LwsSession {
     await this._s3Fastify?.close();
     await this._eventbridgeFastify?.close();
     await this._stepfunctionsFastify?.close();
+    await this._cognitoFastify?.close();
+    await this._lambdaFastify?.close();
     await this._sqsProvider?.stop();
     await this._dynamoProvider?.stop();
     await this._ssmProvider?.stop();
@@ -291,6 +342,8 @@ export class LwsSession {
     await this._s3Provider?.stop();
     await this._eventbridgeProvider?.stop();
     await this._stepfunctionsProvider?.stop();
+    await this._cognitoProvider?.stop();
+    await this._lambdaProvider?.stop();
     this._mgmtFastify = null;
     this._sqsFastify = null;
     this._dynamoFastify = null;
@@ -300,6 +353,8 @@ export class LwsSession {
     this._s3Fastify = null;
     this._eventbridgeFastify = null;
     this._stepfunctionsFastify = null;
+    this._cognitoFastify = null;
+    this._lambdaFastify = null;
     this._sqsProvider = null;
     this._dynamoProvider = null;
     this._ssmProvider = null;
@@ -308,6 +363,8 @@ export class LwsSession {
     this._s3Provider = null;
     this._eventbridgeProvider = null;
     this._stepfunctionsProvider = null;
+    this._cognitoProvider = null;
+    this._lambdaProvider = null;
   }
 
   async [Symbol.asyncDispose](): Promise<void> {
@@ -339,8 +396,10 @@ export class LwsSession {
     if (service === "s3") return `http://127.0.0.1:${this._s3Port}`;
     if (service === "events") return `http://127.0.0.1:${this._eventbridgePort}`;
     if (service === "states") return `http://127.0.0.1:${this._stepfunctionsPort}`;
+    if (service === "cognito-idp") return `http://127.0.0.1:${this._cognitoPort}`;
+    if (service === "lambda") return `http://127.0.0.1:${this._lambdaPort}`;
     throw new Error(
-      `Service '${service}' is not available in this session. Currently available: sqs, dynamodb, ssm, secretsmanager, sns, s3, events, states`,
+      `Service '${service}' is not available in this session. Currently available: sqs, dynamodb, ssm, secretsmanager, sns, s3, events, states, cognito-idp, lambda`,
     );
   }
 

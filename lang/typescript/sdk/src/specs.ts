@@ -57,6 +57,24 @@ export class EventBus {
   constructor(public readonly name: string) {}
 }
 
+export class CognitoUserPool {
+  constructor(
+    public readonly name: string,
+    public readonly autoConfirmUsers: boolean = true,
+  ) {}
+}
+
+export class LambdaFunction {
+  constructor(
+    public readonly name: string,
+    public readonly handler: string = "index.handler",
+    public readonly runtime: "nodejs20.x" | "nodejs18.x" | "nodejs16.x" = "nodejs20.x",
+    public readonly codeDir?: string,
+    public readonly environment: Record<string, string> = {},
+    public readonly description: string = "",
+  ) {}
+}
+
 export type ResourceSpec =
   | DynamoTable
   | SqsQueue
@@ -65,4 +83,6 @@ export type ResourceSpec =
   | SsmParameter
   | Secret
   | StateMachine
-  | EventBus;
+  | EventBus
+  | CognitoUserPool
+  | LambdaFunction;

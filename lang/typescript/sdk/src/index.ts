@@ -13,6 +13,8 @@ export {
   Secret,
   StateMachine,
   EventBus,
+  CognitoUserPool,
+  LambdaFunction,
 } from "./specs.js";
 export type { ResourceSpec } from "./specs.js";
 

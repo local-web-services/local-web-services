@@ -24,6 +24,10 @@ import { EventBridgeProvider } from "../providers/eventbridge/provider.js";
 import { eventBridgeRoutesPlugin } from "../providers/eventbridge/routes.js";
 import { StepFunctionsProvider } from "../providers/stepfunctions/provider.js";
 import { stepFunctionsRoutesPlugin } from "../providers/stepfunctions/routes.js";
+import { CognitoProvider } from "../providers/cognito/provider.js";
+import { cognitoRoutesPlugin } from "../providers/cognito/routes.js";
+import { LambdaProvider } from "../providers/lambda/provider.js";
+import { lambdaRoutesPlugin } from "../providers/lambda/routes.js";
 import { managementPlugin } from "../api/management.js";
 
 export interface DevServerOptions {
@@ -47,6 +51,8 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   const s3Provider = new S3Provider([]);
   const eventBridgeProvider = new EventBridgeProvider([]);
   const stepFunctionsProvider = new StepFunctionsProvider([]);
+  const cognitoProvider = new CognitoProvider([]);
+  const lambdaProvider = new LambdaProvider([]);
   const providers = new Map([
     ["sqs", sqsProvider as never],
     ["dynamodb", dynamoProvider as never],
@@ -56,8 +62,10 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     ["s3", s3Provider as never],
     ["events", eventBridgeProvider as never],
     ["states", stepFunctionsProvider as never],
+    ["cognito-idp", cognitoProvider as never],
+    ["lambda", lambdaProvider as never],
   ]);
-  const startupOrder = ["sqs", "dynamodb", "ssm", "secretsmanager", "sns", "s3", "events", "states"];
+  const startupOrder = ["sqs", "dynamodb", "ssm", "secretsmanager", "sns", "s3", "events", "states", "cognito-idp", "lambda"];
 
   const orchestrator = new Orchestrator();
   await orchestrator.start(providers, startupOrder);
@@ -111,6 +119,18 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   sfnApp.register(stepFunctionsRoutesPlugin, { provider: stepFunctionsProvider });
   await sfnApp.listen({ port: sfnPort, host: "127.0.0.1" });
 
+  const { port: cognitoPort, release: releaseCognito } = await findFreePort();
+  releaseCognito();
+  const cognitoApp = Fastify({ logger: false });
+  cognitoApp.register(cognitoRoutesPlugin, { provider: cognitoProvider });
+  await cognitoApp.listen({ port: cognitoPort, host: "127.0.0.1" });
+
+  const { port: lambdaPort, release: releaseLambda } = await findFreePort();
+  releaseLambda();
+  const lambdaApp = Fastify({ logger: false });
+  lambdaApp.register(lambdaRoutesPlugin, { provider: lambdaProvider });
+  await lambdaApp.listen({ port: lambdaPort, host: "127.0.0.1" });
+
   const handle: DevServerHandle = {
     port,
     waitForShutdown: () => orchestrator.waitForShutdown(),
@@ -124,6 +144,8 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
       await s3App.close();
       await ebApp.close();
       await sfnApp.close();
+      await cognitoApp.close();
+      await lambdaApp.close();
     },
   };
 

@@ -50,6 +50,16 @@ export { StepFunctionsProvider } from "./providers/stepfunctions/provider.js";
 export { stepFunctionsRoutesPlugin } from "./providers/stepfunctions/routes.js";
 export type { StepFunctionsRoutesOptions } from "./providers/stepfunctions/routes.js";
 
+export type { UserPoolConfig } from "./providers/cognito/provider.js";
+export { CognitoProvider } from "./providers/cognito/provider.js";
+export { cognitoRoutesPlugin } from "./providers/cognito/routes.js";
+export type { CognitoRoutesOptions } from "./providers/cognito/routes.js";
+
+export type { FunctionConfig } from "./providers/lambda/provider.js";
+export { LambdaProvider } from "./providers/lambda/provider.js";
+export { lambdaRoutesPlugin } from "./providers/lambda/routes.js";
+export type { LambdaRoutesOptions } from "./providers/lambda/routes.js";
+
 export { managementPlugin } from "./api/management.js";
 export type { ManagementPluginOptions, IOrchestratorStatus } from "./api/management.js";
 
