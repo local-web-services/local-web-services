@@ -11,6 +11,7 @@ export interface TopicConfig {
 interface TopicRecord {
   name: string;
   subscriptions: SubscriptionRecord[];
+  tags: Record<string, string>;
 }
 
 interface SubscriptionRecord {
@@ -19,6 +20,7 @@ interface SubscriptionRecord {
   Protocol: string;
   Endpoint: string;
   Owner: string;
+  attributes: Record<string, string>;
 }
 
 export interface PublishedMessage {
@@ -42,7 +44,7 @@ export class SnsProvider implements IProvider {
     for (const c of configs) {
       const arn = this._topicArn(c.name);
       preArns.push(arn);
-      this._topics.set(arn, { name: c.name, subscriptions: [] });
+      this._topics.set(arn, { name: c.name, subscriptions: [], tags: {} });
       this._messages.set(arn, []);
     }
     this._preconfiguredArns = new Set(preArns);
@@ -79,7 +81,7 @@ export class SnsProvider implements IProvider {
   createTopic(name: string): string {
     const arn = this._topicArn(name);
     if (!this._topics.has(arn)) {
-      this._topics.set(arn, { name, subscriptions: [] });
+      this._topics.set(arn, { name, subscriptions: [], tags: {} });
       this._messages.set(arn, []);
     }
     return arn;
@@ -116,7 +118,21 @@ export class SnsProvider implements IProvider {
       throw new Error(`NotFoundException: Topic ${topicArn} not found`);
     }
     const subArn = `${topicArn}:${randomUUID()}`;
-    const sub: SubscriptionRecord = { SubscriptionArn: subArn, TopicArn: topicArn, Protocol: protocol, Endpoint: endpoint, Owner: FAKE_ACCOUNT };
+    const sub: SubscriptionRecord = {
+      SubscriptionArn: subArn,
+      TopicArn: topicArn,
+      Protocol: protocol,
+      Endpoint: endpoint,
+      Owner: FAKE_ACCOUNT,
+      attributes: {
+        SubscriptionArn: subArn,
+        TopicArn: topicArn,
+        Protocol: protocol,
+        Endpoint: endpoint,
+        RawMessageDelivery: "false",
+        FilterPolicy: "",
+      },
+    };
     this._subscriptions.set(subArn, sub);
     this._topics.get(topicArn)!.subscriptions.push(sub);
     return subArn;
@@ -156,6 +172,46 @@ export class SnsProvider implements IProvider {
 
   getPublishedMessages(topicArn: string): PublishedMessage[] {
     return this._messages.get(topicArn) ?? [];
+  }
+
+  tagTopic(topicArn: string, tags: Record<string, string>): void {
+    const topic = this._topics.get(topicArn);
+    if (topic === undefined) throw new Error(`NotFoundException: Topic ${topicArn} not found`);
+    Object.assign(topic.tags, tags);
+  }
+
+  untagTopic(topicArn: string, tagKeys: string[]): void {
+    const topic = this._topics.get(topicArn);
+    if (topic === undefined) throw new Error(`NotFoundException: Topic ${topicArn} not found`);
+    for (const key of tagKeys) delete topic.tags[key];
+  }
+
+  listTopicTags(topicArn: string): Record<string, string> {
+    const topic = this._topics.get(topicArn);
+    if (topic === undefined) throw new Error(`NotFoundException: Topic ${topicArn} not found`);
+    return { ...topic.tags };
+  }
+
+  getSubscriptionAttributes(subscriptionArn: string): Record<string, string> {
+    const sub = this._subscriptions.get(subscriptionArn);
+    if (sub === undefined) throw new Error(`NotFoundException: Subscription ${subscriptionArn} not found`);
+    return { ...sub.attributes };
+  }
+
+  setSubscriptionAttribute(subscriptionArn: string, attributeName: string, attributeValue: string): void {
+    const sub = this._subscriptions.get(subscriptionArn);
+    if (sub === undefined) throw new Error(`NotFoundException: Subscription ${subscriptionArn} not found`);
+    sub.attributes[attributeName] = attributeValue;
+  }
+
+  confirmSubscription(topicArn: string): string {
+    const existing = [...this._subscriptions.values()].find((s) => s.TopicArn === topicArn);
+    if (existing !== undefined) return existing.SubscriptionArn;
+    return this.subscribe(topicArn, "http", "");
+  }
+
+  topicArnFromName(name: string): string {
+    return this._topicArn(name);
   }
 
   private _topicArn(name: string): string {

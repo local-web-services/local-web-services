@@ -119,6 +119,61 @@ export async function snsRoutesPlugin(
         case "SetTopicAttributes": {
           return reply.status(200).send(emptyResponse("SetTopicAttributes"));
         }
+        case "TagResource": {
+          const resourceArn = params["ResourceArn"]!;
+          const name = resourceArn.split(":").pop() ?? "";
+          const topicArn = provider.topicArnFromName(name);
+          const tags: Record<string, string> = {};
+          let i = 1;
+          while (params[`Tags.member.${i}.Key`] !== undefined) {
+            tags[params[`Tags.member.${i}.Key`]!] = params[`Tags.member.${i}.Value`] ?? "";
+            i++;
+          }
+          provider.tagTopic(topicArn, tags);
+          return reply.status(200).send(emptyResponse("TagResource"));
+        }
+        case "UntagResource": {
+          const resourceArn = params["ResourceArn"]!;
+          const name = resourceArn.split(":").pop() ?? "";
+          const topicArn = provider.topicArnFromName(name);
+          const keys: string[] = [];
+          let j = 1;
+          while (params[`TagKeys.member.${j}`] !== undefined) {
+            keys.push(params[`TagKeys.member.${j}`]!);
+            j++;
+          }
+          provider.untagTopic(topicArn, keys);
+          return reply.status(200).send(emptyResponse("UntagResource"));
+        }
+        case "ListTagsForResource": {
+          const resourceArn = params["ResourceArn"]!;
+          const name = resourceArn.split(":").pop() ?? "";
+          const topicArn = provider.topicArnFromName(name);
+          const tagMap = provider.listTopicTags(topicArn);
+          const tagsXml = Object.entries(tagMap)
+            .map(([k, v]) => `<member><Key>${k}</Key><Value>${v}</Value></member>`)
+            .join("");
+          return reply.status(200).send(wrap("ListTagsForResource", `<Tags>${tagsXml}</Tags>`));
+        }
+        case "GetSubscriptionAttributes": {
+          const attrs = provider.getSubscriptionAttributes(params["SubscriptionArn"]!);
+          const attrsXml = Object.entries(attrs)
+            .map(([k, v]) => `<entry><key>${k}</key><value>${v}</value></entry>`)
+            .join("");
+          return reply.status(200).send(wrap("GetSubscriptionAttributes", `<Attributes>${attrsXml}</Attributes>`));
+        }
+        case "SetSubscriptionAttributes": {
+          provider.setSubscriptionAttribute(
+            params["SubscriptionArn"]!,
+            params["AttributeName"]!,
+            params["AttributeValue"] ?? "",
+          );
+          return reply.status(200).send(emptyResponse("SetSubscriptionAttributes"));
+        }
+        case "ConfirmSubscription": {
+          const subArn = provider.confirmSubscription(params["TopicArn"]!);
+          return reply.status(200).send(wrap("ConfirmSubscription", `<SubscriptionArn>${subArn}</SubscriptionArn>`));
+        }
         default:
           return reply.status(400).send(
             errorXml("InvalidAction", `lws: SNS operation '${action}' is not yet implemented`),
