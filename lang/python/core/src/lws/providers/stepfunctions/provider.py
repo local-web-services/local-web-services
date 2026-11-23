@@ -92,6 +92,7 @@ class StepFunctionsProvider(IStateMachine):
         self._service_providers: dict[str, Any] = {}
         self._tags: dict[str, dict[str, str]] = {}
         self._statuses: dict[str, str] = {}
+        self._activities: dict[str, dict] = {}
         self._max_wait_seconds = max_wait_seconds
         self._running = False
         # Track names of pre-configured (static) state machines so reset()
@@ -394,6 +395,42 @@ class StepFunctionsProvider(IStateMachine):
         """Return tags for a resource as a list of {key, value} dicts."""
         tags = self._tags.get(resource_arn, {})
         return [{"key": k, "value": v} for k, v in tags.items()]
+
+    # ------------------------------------------------------------------
+    # Activities
+    # ------------------------------------------------------------------
+
+    _ACTIVITY_ARN_PREFIX = "arn:aws:states:us-east-1:000000000000:activity:"
+
+    def create_activity(self, name: str) -> dict:
+        """Create an activity. Raises ValueError if it already exists."""
+        if name in self._activities:
+            raise ValueError(f"Activity already exists: {name}")
+        activity = {
+            "activityArn": f"{self._ACTIVITY_ARN_PREFIX}{name}",
+            "name": name,
+            "creationDate": time.time(),
+        }
+        self._activities[name] = activity
+        return activity
+
+    def delete_activity(self, activity_arn: str) -> None:
+        """Delete an activity by ARN. Raises KeyError if not found."""
+        name = activity_arn.rsplit(":", 1)[-1]
+        if name not in self._activities:
+            raise KeyError(f"Activity not found: {activity_arn}")
+        del self._activities[name]
+
+    def list_activities(self) -> list[dict]:
+        """Return all activities."""
+        return list(self._activities.values())
+
+    def describe_activity(self, activity_arn: str) -> dict:
+        """Return an activity by ARN. Raises KeyError if not found."""
+        name = activity_arn.rsplit(":", 1)[-1]
+        if name not in self._activities:
+            raise KeyError(f"Activity not found: {activity_arn}")
+        return self._activities[name]
 
     def get_execution_history(
         self,

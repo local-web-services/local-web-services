@@ -371,6 +371,29 @@ async def _handle_rotate_secret(
     return _json_response({"ARN": secret.arn, "Name": secret.name, "VersionId": new_version_id})
 
 
+async def _handle_cancel_rotate_secret(state: _SecretsState, body: dict) -> Response:
+    secret_id = body.get("SecretId", "")
+    secret = _find_secret(state, secret_id)
+    if secret is None or secret.deleted_date is not None:
+        return _error_response("ResourceNotFoundException", f"Secret {secret_id} not found.")
+    secret.rotation_lambda_arn = None
+    version_id = secret.current_version_id or ""
+    return _json_response({"ARN": secret.arn, "Name": secret.name, "VersionId": version_id})
+
+
+async def _handle_replicate_secret_to_regions(state: _SecretsState, body: dict) -> Response:
+    secret_id = body.get("SecretId", "")
+    replica_regions = body.get("AddReplicaRegions", [])
+    secret = _find_secret(state, secret_id)
+    if secret is None or secret.deleted_date is not None:
+        return _error_response("ResourceNotFoundException", f"Secret {secret_id} not found.")
+    replication_status = [
+        {"Region": r.get("Region", ""), "Status": "InSync", "StatusMessage": ""}
+        for r in replica_regions
+    ]
+    return _json_response({"ARN": secret.arn, "ReplicationStatus": replication_status})
+
+
 _ACTION_HANDLERS: dict[str, Any] = {
     "CreateSecret": _handle_create_secret,
     "GetSecretValue": _handle_get_secret_value,
@@ -385,4 +408,6 @@ _ACTION_HANDLERS: dict[str, Any] = {
     "ListTagsForResource": _handle_list_tags_for_resource,
     "ListSecretVersionIds": _handle_list_secret_version_ids,
     "GetResourcePolicy": _handle_get_resource_policy,
+    "CancelRotateSecret": _handle_cancel_rotate_secret,
+    "ReplicateSecretToRegions": _handle_replicate_secret_to_regions,
 }

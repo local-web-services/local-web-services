@@ -100,6 +100,10 @@ class StepFunctionsRouter:
             "TagResource": self._tag_resource,
             "UntagResource": self._untag_resource,
             "ListTagsForResource": self._list_tags_for_resource,
+            "CreateActivity": self._create_activity,
+            "DeleteActivity": self._delete_activity,
+            "ListActivities": self._list_activities,
+            "DescribeActivity": self._describe_activity,
         }
 
     # ------------------------------------------------------------------
@@ -368,6 +372,34 @@ class StepFunctionsRouter:
             return err
         tags = self.provider.list_tags_for_resource(resource_arn)
         return _json_response({"tags": tags})
+
+    async def _create_activity(self, body: dict) -> Response:
+        name = body.get("name", "")
+        try:
+            activity = self.provider.create_activity(name)
+        except ValueError:
+            return _error_response("ActivityAlreadyExists", f"Activity already exists: {name}")
+        return _json_response(activity)
+
+    async def _delete_activity(self, body: dict) -> Response:
+        activity_arn = body.get("activityArn", "")
+        try:
+            self.provider.delete_activity(activity_arn)
+        except KeyError:
+            return _error_response("ActivityDoesNotExist", f"Activity not found: {activity_arn}")
+        return _json_response({})
+
+    async def _list_activities(self, _body: dict) -> Response:
+        activities = self.provider.list_activities()
+        return _json_response({"activities": activities, "nextToken": None})
+
+    async def _describe_activity(self, body: dict) -> Response:
+        activity_arn = body.get("activityArn", "")
+        try:
+            activity = self.provider.describe_activity(activity_arn)
+        except KeyError:
+            return _error_response("ActivityDoesNotExist", f"Activity not found: {activity_arn}")
+        return _json_response(activity)
 
     async def _stop_execution(self, body: dict) -> Response:
         """Handle StopExecution API action."""
