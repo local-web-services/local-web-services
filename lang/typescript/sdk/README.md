@@ -85,6 +85,8 @@ const session2 = new LwsSession(...await discoverFromHcl("../my-terraform-projec
 | Secrets Manager | `Secret` | `"secretsmanager"` |
 | EventBridge | `EventBus` | `"events"` |
 | Step Functions | `StateMachine` | `"states"` |
+| Cognito IDP | `CognitoUserPool` | `"cognito-idp"` |
+| Lambda | `LambdaFunction` | `"lambda"` |
 
 ## API reference
 
@@ -109,3 +111,5 @@ const session2 = new LwsSession(...await discoverFromHcl("../my-terraform-projec
 - `new Secret(name, secretString?)`
 - `new EventBus(name)`
 - `new StateMachine(name, definition)`
+- `new CognitoUserPool(name, autoConfirmUsers?)`
+- `new LambdaFunction(name, handler?, runtime?, codeDir?, environment?, description?)`

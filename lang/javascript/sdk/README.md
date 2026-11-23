@@ -57,6 +57,6 @@ main();
 
 ## Supported services
 
-Same as the TypeScript SDK: SQS, DynamoDB, S3, SNS, SSM, Secrets Manager, EventBridge, Step Functions.
+Same as the TypeScript SDK: SQS, DynamoDB, S3, SNS, SSM, Secrets Manager, EventBridge, Step Functions, Cognito IDP, Lambda.
 
 See the [TypeScript SDK README](../typescript/sdk/README.md) for the full API reference and resource spec details.
