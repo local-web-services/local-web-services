@@ -124,6 +124,14 @@ export class CognitoProvider implements IProvider {
     return { UserPoolClient: { ClientId: cid, ClientName: clientName, UserPoolId: id } };
   }
 
+  describeUserPoolClient(poolId: string, clientId: string): { UserPoolClient: Record<string, unknown> } {
+    const id = this._resolvePoolId(poolId);
+    const pool = this._getPool(id);
+    const client = pool.clients.get(clientId);
+    if (!client) throw new Error("ResourceNotFoundException: User pool client not found.");
+    return { UserPoolClient: { ClientId: client.clientId, ClientName: client.clientName, UserPoolId: id } };
+  }
+
   deleteUserPoolClient(poolId: string, cid: string): void {
     const id = this._resolvePoolId(poolId);
     const pool = this._getPool(id);

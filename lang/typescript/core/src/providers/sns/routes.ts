@@ -174,6 +174,25 @@ export async function snsRoutesPlugin(
           const subArn = provider.confirmSubscription(params["TopicArn"]!);
           return reply.status(200).send(wrap("ConfirmSubscription", `<SubscriptionArn>${subArn}</SubscriptionArn>`));
         }
+        case "PublishBatch": {
+          const topicArn = params["PublishBatchRequestEntries.member.1.TopicArn"] ?? params["TopicArn"]!;
+          const entries: { Id: string; Message: string; Subject?: string }[] = [];
+          let i = 1;
+          while (params[`PublishBatchRequestEntries.member.${i}.Id`] !== undefined) {
+            const id = params[`PublishBatchRequestEntries.member.${i}.Id`]!;
+            const message = params[`PublishBatchRequestEntries.member.${i}.Message`] ?? "";
+            const subject = params[`PublishBatchRequestEntries.member.${i}.Subject`];
+            entries.push({ Id: id, Message: message, ...(subject !== undefined && { Subject: subject }) });
+            i++;
+          }
+          const result = provider.publishBatch(params["TopicArn"]!, entries);
+          const successXml = result.Successful.map(
+            (s) => `<member><Id>${s.Id}</Id><MessageId>${s.MessageId}</MessageId></member>`,
+          ).join("");
+          return reply.status(200).send(
+            wrap("PublishBatch", `<Successful>${successXml}</Successful><Failed/>`),
+          );
+        }
         default:
           return reply.status(400).send(
             errorXml("InvalidAction", `lws: SNS operation '${action}' is not yet implemented`),

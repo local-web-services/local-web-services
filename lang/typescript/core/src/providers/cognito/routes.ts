@@ -65,6 +65,12 @@ export async function cognitoRoutesPlugin(
           const result = provider.createUserPoolClient(poolId, clientName);
           return reply.status(200).send(JSON.stringify(result));
         }
+        case "DescribeUserPoolClient": {
+          const poolId = body["UserPoolId"] as string;
+          const clientId = body["ClientId"] as string;
+          const result = provider.describeUserPoolClient(poolId, clientId);
+          return reply.status(200).send(JSON.stringify(result));
+        }
         case "DeleteUserPoolClient": {
           const poolId = body["UserPoolId"] as string;
           const clientId = body["ClientId"] as string;

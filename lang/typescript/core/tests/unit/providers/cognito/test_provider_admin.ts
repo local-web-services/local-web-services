@@ -101,4 +101,17 @@ describe("CognitoProvider admin user state", () => {
     const expectedExpiresIn = 3600;
     expect(actual.AuthenticationResult["ExpiresIn"]).toBe(expectedExpiresIn);
   });
+
+  it("describeUserPoolClient returns client record", () => {
+    // Arrange
+    const expectedClientId = clientId;
+    const expectedClientName = "admin-client";
+
+    // Act
+    const actual = provider.describeUserPoolClient(poolId, clientId);
+
+    // Assert
+    expect(actual.UserPoolClient["ClientId"]).toBe(expectedClientId);
+    expect(actual.UserPoolClient["ClientName"]).toBe(expectedClientName);
+  });
 });

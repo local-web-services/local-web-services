@@ -204,6 +204,18 @@ export class SnsProvider implements IProvider {
     sub.attributes[attributeName] = attributeValue;
   }
 
+  publishBatch(
+    topicArn: string,
+    entries: { Id: string; Message: string; Subject?: string }[],
+  ): { Successful: { Id: string; MessageId: string }[]; Failed: [] } {
+    const successful: { Id: string; MessageId: string }[] = [];
+    for (const entry of entries) {
+      const msgId = this.publish(topicArn, entry.Message, entry.Subject);
+      successful.push({ Id: entry.Id, MessageId: msgId });
+    }
+    return { Successful: successful, Failed: [] };
+  }
+
   confirmSubscription(topicArn: string): string {
     const existing = [...this._subscriptions.values()].find((s) => s.TopicArn === topicArn);
     if (existing !== undefined) return existing.SubscriptionArn;

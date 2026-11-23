@@ -64,4 +64,24 @@ describe("SnsProvider tagging and subscription attributes", () => {
     // Assert
     expect(actualSubArn).toContain(expectedArnSubstring);
   });
+
+  it("publishBatch publishes all entries and returns Successful list", () => {
+    // Arrange
+    const expectedCount = 2;
+    const expectedId1 = "entry-1";
+    const expectedId2 = "entry-2";
+    const entries = [
+      { Id: expectedId1, Message: "hello" },
+      { Id: expectedId2, Message: "world" },
+    ];
+
+    // Act
+    const actualResult = provider.publishBatch(topicArn, entries);
+
+    // Assert
+    expect(actualResult.Successful).toHaveLength(expectedCount);
+    expect(actualResult.Successful[0].Id).toBe(expectedId1);
+    expect(actualResult.Successful[1].Id).toBe(expectedId2);
+    expect(actualResult.Failed).toHaveLength(0);
+  });
 });
