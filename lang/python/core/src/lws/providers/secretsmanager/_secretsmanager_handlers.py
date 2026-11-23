@@ -247,6 +247,20 @@ async def _handle_untag_resource(state: _SecretsState, body: dict) -> Response:
     return _json_response({})
 
 
+async def _handle_list_tags_for_resource(state: _SecretsState, body: dict) -> Response:
+    secret_id = body.get("SecretId", "")
+
+    secret = _find_secret(state, secret_id)
+    if secret is None:
+        return _error_response(
+            "ResourceNotFoundException",
+            f"Secret {secret_id} not found.",
+        )
+
+    tags = [{"Key": k, "Value": v} for k, v in secret.tags.items()]
+    return _json_response({"Tags": tags})
+
+
 async def _handle_get_resource_policy(state: _SecretsState, body: dict) -> Response:
     secret_id = body.get("SecretId", "")
     secret = _find_secret(state, secret_id)
@@ -368,6 +382,7 @@ _ACTION_HANDLERS: dict[str, Any] = {
     "RestoreSecret": _handle_restore_secret,
     "TagResource": _handle_tag_resource,
     "UntagResource": _handle_untag_resource,
+    "ListTagsForResource": _handle_list_tags_for_resource,
     "ListSecretVersionIds": _handle_list_secret_version_ids,
     "GetResourcePolicy": _handle_get_resource_policy,
 }
