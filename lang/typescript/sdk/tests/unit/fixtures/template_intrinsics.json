@@ -1,0 +1,16 @@
+{
+  "Resources": {
+    "JoinedBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": { "Fn::Join": ["-", ["prefix", "suffix"]] }
+      }
+    },
+    "RefQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": { "Ref": "BucketNameParam" }
+      }
+    }
+  }
+}

@@ -44,7 +44,7 @@ import { FakeBuilder } from "./builders/fake.js";
 import { CapacityBuilder } from "./builders/capacity.js";
 import { IamBuilder } from "./builders/iam.js";
 import { LifecycleBuilder } from "./builders/lifecycle.js";
-import { discoverFromCdk } from "./discovery/cdk.js";
+import { parseCdkAssembly, type FromCdkOptions } from "./cdk.js";
 import { discoverFromHcl } from "./discovery/hcl.js";
 
 const TEST_ACCOUNT = "000000000000";
@@ -92,8 +92,8 @@ export class LwsSession {
 
   // ── Constructors ────────────────────────────────────────────────────────────
 
-  static fromCdk(projectDir: string = "."): LwsSession {
-    const resources = discoverFromCdk(projectDir);
+  static fromCdk(options?: FromCdkOptions): LwsSession {
+    const resources = parseCdkAssembly(options);
     return new LwsSession(...resources);
   }
 

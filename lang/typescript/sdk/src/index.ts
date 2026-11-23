@@ -35,5 +35,7 @@ export type { IamConfig, IamIdentityPolicy } from "./builders/iam.js";
 export { LifecycleBuilder } from "./builders/lifecycle.js";
 export type { LifecycleConfig } from "./builders/lifecycle.js";
 
+export { parseCdkAssembly } from "./cdk.js";
+export type { FromCdkOptions } from "./cdk.js";
 export { discoverFromCdk } from "./discovery/cdk.js";
 export { discoverFromHcl } from "./discovery/hcl.js";

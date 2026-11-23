@@ -27,12 +27,14 @@
     "@aws-sdk/client-sns": "^3.1175.0",
     "@aws-sdk/client-ssm": "^3.1175.0",
     "fastify": "^4.28.0",
+    "js-yaml": "^5.5.0",
     "local-web-services-typescript-core": "workspace:*"
   },
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.600.0",
     "@aws-sdk/client-sqs": "^3.600.0",
     "@cucumber/cucumber": "^10.0.0",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.14.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.0",
