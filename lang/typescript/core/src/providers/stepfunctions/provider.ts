@@ -55,12 +55,23 @@ function machineName(arn: string): string {
   return arn.split(":").pop() ?? arn;
 }
 
+interface StoredActivity {
+  activityArn: string;
+  name: string;
+  creationDate: number;
+}
+
+function activityArn(name: string): string {
+  return `arn:aws:states:${FAKE_REGION}:${FAKE_ACCOUNT}:activity:${name}`;
+}
+
 export class StepFunctionsProvider implements IProvider {
   readonly name = "states";
 
   private _machines = new Map<string, StoredMachine>();
   private _executions = new Map<string, StoredExecution>();
   private _tags = new Map<string, Map<string, string>>();
+  private _activities = new Map<string, StoredActivity>();
   private _preconfiguredMachineArns: ReadonlySet<string>;
   private _running = false;
 
@@ -78,6 +89,7 @@ export class StepFunctionsProvider implements IProvider {
   async stop(): Promise<void> {
     this._machines.clear();
     this._executions.clear();
+    this._activities.clear();
     this._running = false;
   }
 
@@ -292,6 +304,35 @@ export class StepFunctionsProvider implements IProvider {
     const m = this._tags.get(arn);
     if (m === undefined) return [];
     return [...m.entries()].map(([Key, Value]) => ({ Key, Value }));
+  }
+
+  createActivity(name: string): { activityArn: string; creationDate: number } {
+    const arn = activityArn(name);
+    if (this._activities.has(arn)) {
+      throw new Error(`ActivityAlreadyExists: Activity '${name}' already exists`);
+    }
+    const creationDate = Date.now() / 1000;
+    this._activities.set(arn, { activityArn: arn, name, creationDate });
+    return { activityArn: arn, creationDate };
+  }
+
+  deleteActivity(arn: string): void {
+    if (!this._activities.has(arn)) {
+      throw new Error(`ActivityDoesNotExist: Activity '${arn}' not found`);
+    }
+    this._activities.delete(arn);
+  }
+
+  listActivities(): { activities: StoredActivity[]; nextToken: null } {
+    return { activities: [...this._activities.values()], nextToken: null };
+  }
+
+  describeActivity(arn: string): StoredActivity {
+    const activity = this._activities.get(arn);
+    if (activity === undefined) {
+      throw new Error(`ActivityDoesNotExist: Activity '${arn}' not found`);
+    }
+    return activity;
   }
 
   private _seedMachine(config: StateMachineConfig): void {

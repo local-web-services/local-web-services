@@ -149,6 +149,25 @@ export async function stepFunctionsRoutesPlugin(
           return reply.status(200).send(JSON.stringify({ Tags: tags }));
         }
 
+        case "CreateActivity": {
+          const result = provider.createActivity(body["name"] as string);
+          return reply.status(200).send(JSON.stringify(result));
+        }
+
+        case "DeleteActivity": {
+          provider.deleteActivity(body["activityArn"] as string);
+          return reply.status(200).send(JSON.stringify({}));
+        }
+
+        case "ListActivities": {
+          return reply.status(200).send(JSON.stringify(provider.listActivities()));
+        }
+
+        case "DescribeActivity": {
+          const result = provider.describeActivity(body["activityArn"] as string);
+          return reply.status(200).send(JSON.stringify(result));
+        }
+
         default:
           return reply
             .status(400)
@@ -167,6 +186,12 @@ export async function stepFunctionsRoutesPlugin(
       }
       if (msg.startsWith("ExecutionAlreadyExists")) {
         return reply.status(400).send(jsonError("ExecutionAlreadyExists", msg));
+      }
+      if (msg.startsWith("ActivityAlreadyExists")) {
+        return reply.status(400).send(jsonError("ActivityAlreadyExists", msg));
+      }
+      if (msg.startsWith("ActivityDoesNotExist")) {
+        return reply.status(400).send(jsonError("ActivityDoesNotExist", msg));
       }
       return reply.status(500).send(jsonError("InternalServerError", msg));
     }
