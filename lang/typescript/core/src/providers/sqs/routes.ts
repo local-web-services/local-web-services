@@ -8,6 +8,7 @@
  * Mirrors `providers/sqs/routes.py`.
  */
 
+import { createHash } from "crypto";
 import formbody from "@fastify/formbody";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import type { AwsChaosConfig } from "../../providers/_shared/chaos.js";
@@ -268,6 +269,34 @@ async function handleJsonAction(
         const keys = (body["TagKeys"] as string[]) ?? [];
         await provider.untagQueue(extractQueueNameFromUrl(url), keys);
         reply.code(200).type("application/json").send("{}");
+        break;
+      }
+      case "SendMessageBatch": {
+        const url = body["QueueUrl"] as string;
+        const name = extractQueueNameFromUrl(url);
+        const queue = provider.getQueue(name);
+        if (queue === undefined) {
+          reply.code(400).type("application/json").send(jsonError("AWS.SimpleQueueService.NonExistentQueue", `Queue not found: ${name}`));
+          return;
+        }
+        const entries = (body["Entries"] as Array<{ Id: string; MessageBody: string }>) ?? [];
+        const results = await Promise.all(entries.map(async (e) => {
+          const msgId = await queue.sendMessage(e.MessageBody, {}, 0);
+          return { Id: e.Id, MessageId: msgId, MD5OfMessageBody: createHash("md5").update(e.MessageBody).digest("hex") };
+        }));
+        reply.code(200).type("application/json").send(JSON.stringify({ Successful: results, Failed: [] }));
+        break;
+      }
+      case "DeleteMessageBatch": {
+        const url = body["QueueUrl"] as string;
+        const name = extractQueueNameFromUrl(url);
+        const queue = provider.getQueue(name);
+        const entries = (body["Entries"] as Array<{ Id: string; ReceiptHandle: string }>) ?? [];
+        if (queue !== undefined) {
+          await Promise.all(entries.map((e) => queue.deleteMessage(e.ReceiptHandle)));
+        }
+        const results = entries.map((e) => ({ Id: e.Id }));
+        reply.code(200).type("application/json").send(JSON.stringify({ Successful: results, Failed: [] }));
         break;
       }
       case "ChangeMessageVisibility":

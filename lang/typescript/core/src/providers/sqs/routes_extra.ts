@@ -1,6 +1,23 @@
+import { createHash } from "crypto";
 import type { SqsProvider } from "./provider.js";
 
 const REQUEST_ID = "00000000-0000-0000-0000-000000000000";
+
+function parseBatchEntries(params: Record<string, string>, prefix: string): Record<string, string>[] {
+  const entries: Record<string, string>[] = [];
+  let i = 1;
+  while (params[`${prefix}.${i}.Id`] !== undefined) {
+    const entry: Record<string, string> = {};
+    for (const [k, v] of Object.entries(params)) {
+      if (k.startsWith(`${prefix}.${i}.`)) {
+        entry[k.slice(`${prefix}.${i}.`.length)] = v;
+      }
+    }
+    entries.push(entry);
+    i++;
+  }
+  return entries;
+}
 
 function extractQueueNameFromUrl(url: string): string {
   return url.split("/").pop() ?? "";
@@ -24,6 +41,41 @@ export async function handleXmlExtraAction(
 ): Promise<boolean> {
   try {
     switch (action) {
+      case "SendMessageBatch": {
+        const url = params["QueueUrl"]!;
+        const name = url.split("/").pop() ?? "";
+        const queue = provider.getQueue(name);
+        if (queue === undefined) {
+          reply.code(400).type("text/xml").send(errorXml("AWS.SimpleQueueService.NonExistentQueue", `Queue not found: ${name}`));
+          return true;
+        }
+        const entries = parseBatchEntries(params, "SendMessageBatchRequestEntry");
+        const resultXml = (await Promise.all(entries.map(async (e) => {
+          const msgId = await queue.sendMessage(e["MessageBody"] ?? "", {}, 0);
+          const md5 = createHash("md5").update(e["MessageBody"] ?? "").digest("hex");
+          return `<SendMessageBatchResultEntry><Id>${e["Id"]}</Id><MessageId>${msgId}</MessageId><MD5OfMessageBody>${md5}</MD5OfMessageBody></SendMessageBatchResultEntry>`;
+        }))).join("");
+        reply.code(200).type("text/xml").send(
+          `<SendMessageBatchResponse><SendMessageBatchResult>${resultXml}</SendMessageBatchResult>` +
+          `<ResponseMetadata><RequestId>${REQUEST_ID}</RequestId></ResponseMetadata></SendMessageBatchResponse>`,
+        );
+        return true;
+      }
+      case "DeleteMessageBatch": {
+        const url = params["QueueUrl"]!;
+        const name = url.split("/").pop() ?? "";
+        const queue = provider.getQueue(name);
+        const entries = parseBatchEntries(params, "DeleteMessageBatchRequestEntry");
+        if (queue !== undefined) {
+          await Promise.all(entries.map((e) => queue.deleteMessage(e["ReceiptHandle"] ?? "")));
+        }
+        const resultXml = entries.map((e) => `<DeleteMessageBatchResultEntry><Id>${e["Id"]}</Id></DeleteMessageBatchResultEntry>`).join("");
+        reply.code(200).type("text/xml").send(
+          `<DeleteMessageBatchResponse><DeleteMessageBatchResult>${resultXml}</DeleteMessageBatchResult>` +
+          `<ResponseMetadata><RequestId>${REQUEST_ID}</RequestId></ResponseMetadata></DeleteMessageBatchResponse>`,
+        );
+        return true;
+      }
       case "SetQueueAttributes": {
         const url = params["QueueUrl"]!;
         const attrs: Record<string, string> = {};

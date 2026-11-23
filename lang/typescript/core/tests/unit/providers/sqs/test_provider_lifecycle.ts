@@ -135,4 +135,38 @@ describe("SqsProvider tagging and queue attributes", () => {
     // Assert
     expect(actualQueues).toHaveLength(expectedCount);
   });
+
+  it("sendMessage works for each entry submitted as a batch", async () => {
+    // Arrange
+    await provider.start();
+    await provider.createQueue("batch-queue", {});
+    const expectedCount = 2;
+
+    // Act
+    const queue = provider.getQueue("batch-queue")!;
+    await queue.sendMessage("msg-1", {}, 0);
+    await queue.sendMessage("msg-2", {}, 0);
+    const actualMessages = await queue.receiveMessages(10, 0);
+
+    // Assert
+    expect(actualMessages).toHaveLength(expectedCount);
+  });
+
+  it("deleteMessage removes each entry in a batch", async () => {
+    // Arrange
+    await provider.start();
+    await provider.createQueue("del-batch-queue", {});
+    const queue = provider.getQueue("del-batch-queue")!;
+    await queue.sendMessage("msg-a", {}, 0);
+    await queue.sendMessage("msg-b", {}, 0);
+    const received = await queue.receiveMessages(10, 0);
+    const expectedCount = 0;
+
+    // Act
+    await Promise.all(received.map((m) => queue.deleteMessage(m.receiptHandle)));
+    const actualMessages = await queue.receiveMessages(10, 0);
+
+    // Assert
+    expect(actualMessages).toHaveLength(expectedCount);
+  });
 });

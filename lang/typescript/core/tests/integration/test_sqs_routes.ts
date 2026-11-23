@@ -271,3 +271,62 @@ describe("SQS integration — GetQueueAttributes", () => {
     expect(actualResult.body["Attributes"]).toBeDefined();
   });
 });
+
+describe("SQS integration — SendMessageBatch / DeleteMessageBatch", () => {
+  let app: FastifyInstance;
+
+  beforeEach(async () => {
+    app = await buildSqsApp(["batch-queue"]);
+  });
+
+  it("sends multiple messages in one batch call and returns all MessageIds", async () => {
+    // Arrange
+    const expectedSuccessCount = 2;
+
+    // Act
+    const actualResult = await jsonRequest(app, "SendMessageBatch", {
+      QueueUrl: queueUrl("batch-queue"),
+      Entries: [
+        { Id: "1", MessageBody: "hello" },
+        { Id: "2", MessageBody: "world" },
+      ],
+    });
+
+    // Assert
+    expect(actualResult.status).toBe(200);
+    expect((actualResult.body["Successful"] as unknown[]).length).toBe(expectedSuccessCount);
+  });
+
+  it("deletes multiple messages in one batch call", async () => {
+    // Arrange
+    await jsonRequest(app, "SendMessageBatch", {
+      QueueUrl: queueUrl("batch-queue"),
+      Entries: [
+        { Id: "1", MessageBody: "a" },
+        { Id: "2", MessageBody: "b" },
+      ],
+    });
+    const received = await jsonRequest(app, "ReceiveMessage", {
+      QueueUrl: queueUrl("batch-queue"),
+      MaxNumberOfMessages: 10,
+    });
+    const expectedSuccessCount = 2;
+    const expectedRemainingCount = 0;
+
+    // Act
+    const msgs = received.body["Messages"] as Array<{ ReceiptHandle: string }>;
+    const actualDeleteResult = await jsonRequest(app, "DeleteMessageBatch", {
+      QueueUrl: queueUrl("batch-queue"),
+      Entries: msgs.map((m, i) => ({ Id: String(i + 1), ReceiptHandle: m.ReceiptHandle })),
+    });
+
+    // Assert
+    expect(actualDeleteResult.status).toBe(200);
+    expect((actualDeleteResult.body["Successful"] as unknown[]).length).toBe(expectedSuccessCount);
+    const afterReceive = await jsonRequest(app, "ReceiveMessage", {
+      QueueUrl: queueUrl("batch-queue"),
+      MaxNumberOfMessages: 10,
+    });
+    expect((afterReceive.body["Messages"] as unknown[] | undefined) ?? []).toHaveLength(expectedRemainingCount);
+  });
+});
