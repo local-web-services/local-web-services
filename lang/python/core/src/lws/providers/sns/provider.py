@@ -244,6 +244,22 @@ class SnsProvider(Provider):
             raise KeyError(f"Subscription not found: {subscription_arn}")
         sub.custom_attrs[attr_name] = attr_value
 
+    async def publish_batch(
+        self,
+        topic_name: str,
+        entries: list[dict],
+    ) -> list[dict]:
+        """Publish a batch of messages to a topic. Returns a list of {Id, MessageId} dicts."""
+        results = []
+        for entry in entries:
+            message_id = await self.publish(
+                topic_name=topic_name,
+                message=entry.get("Message", ""),
+                subject=entry.get("Subject") or None,
+            )
+            results.append({"Id": entry["Id"], "MessageId": message_id})
+        return results
+
     async def set_topic_attribute(self, topic_name: str, attr_name: str, attr_value: str) -> None:
         """Set a single topic attribute. Raises KeyError if not found."""
         topic = self._topics.get(topic_name)

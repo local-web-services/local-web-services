@@ -450,6 +450,42 @@ async def _handle_list_subscriptions_by_topic(
     return Response(content=xml, media_type="text/xml")
 
 
+async def _handle_publish_batch(provider: SnsProvider, params: dict[str, str]) -> Response:
+    """Handle the ``PublishBatch`` action."""
+    topic_arn = params.get("TopicArn", "")
+    topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
+
+    entries = []
+    n = 1
+    while True:
+        entry_id = params.get(f"PublishBatchRequestEntries.member.{n}.Id")
+        if entry_id is None:
+            break
+        entries.append({
+            "Id": entry_id,
+            "Message": params.get(f"PublishBatchRequestEntries.member.{n}.Message", ""),
+            "Subject": params.get(f"PublishBatchRequestEntries.member.{n}.Subject"),
+        })
+        n += 1
+
+    results = await provider.publish_batch(topic_name=topic_name, entries=entries)
+
+    members_xml = "".join(
+        f"<member><Id>{r['Id']}</Id><MessageId>{r['MessageId']}</MessageId></member>"
+        for r in results
+    )
+    xml = (
+        "<PublishBatchResponse>"
+        "<PublishBatchResult>"
+        f"<Successful>{members_xml}</Successful>"
+        "<Failed/>"
+        "</PublishBatchResult>"
+        f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+        "</PublishBatchResponse>"
+    )
+    return Response(content=xml, media_type="text/xml")
+
+
 _ACTION_HANDLERS = {
     "Publish": _handle_publish,
     "Subscribe": _handle_subscribe,
@@ -467,4 +503,5 @@ _ACTION_HANDLERS = {
     "SetSubscriptionAttributes": _handle_set_subscription_attributes,
     "ConfirmSubscription": _handle_confirm_subscription,
     "ListSubscriptionsByTopic": _handle_list_subscriptions_by_topic,
+    "PublishBatch": _handle_publish_batch,
 }
