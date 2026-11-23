@@ -1,0 +1,43 @@
+{
+  "name": "local-web-services-typescript-sdk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "./src/index.ts",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run tests/unit",
+    "test:e2e": "NODE_NO_WARNINGS=1 node_modules/.bin/cucumber-js --config cucumber.mjs",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.1175.0",
+    "@aws-sdk/client-eventbridge": "^3.1175.0",
+    "@aws-sdk/client-lambda": "^3.1175.0",
+    "@aws-sdk/client-s3": "^3.1175.0",
+    "@aws-sdk/client-secrets-manager": "^3.1175.0",
+    "@aws-sdk/client-sfn": "^3.1175.0",
+    "@aws-sdk/client-sns": "^3.1175.0",
+    "@aws-sdk/client-ssm": "^3.1175.0",
+    "fastify": "^4.28.0",
+    "js-yaml": "^5.5.0",
+    "local-web-services-typescript-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.600.0",
+    "@aws-sdk/client-sqs": "^3.600.0",
+    "@cucumber/cucumber": "^10.0.0",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.14.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.0",
+    "vitest": "^1.6.0"
+  }
+}

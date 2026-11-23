@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "noEmit": true,
+    "paths": {
+      "local-web-services-typescript-sdk": ["../../sdk/src/index.ts"],
+      "local-web-services-typescript-core": ["../../core/src/index.ts"]
+    }
+  },
+  "include": ["../**/*.ts"],
+  "exclude": ["../node_modules", "../dist"]
+}

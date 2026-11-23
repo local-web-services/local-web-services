@@ -1,0 +1,80 @@
+{
+  "Resources": {
+    "OrdersTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "orders",
+        "KeySchema": [
+          { "AttributeName": "orderId", "KeyType": "HASH" },
+          { "AttributeName": "createdAt", "KeyType": "RANGE" }
+        ]
+      }
+    },
+    "OrderQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "order-queue"
+      }
+    },
+    "AssetsBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "my-assets"
+      }
+    },
+    "OrderCreatedTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicName": "order-created"
+      }
+    },
+    "DbHostParam": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": "/app/db-host",
+        "Value": "localhost",
+        "Type": "String"
+      }
+    },
+    "DbPassword": {
+      "Type": "AWS::SecretsManager::Secret",
+      "Properties": {
+        "Name": "prod/db/password"
+      }
+    },
+    "OrderBus": {
+      "Type": "AWS::Events::EventBus",
+      "Properties": {
+        "Name": "order-bus"
+      }
+    },
+    "OrderProcessor": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "StateMachineName": "order-processor",
+        "DefinitionString": "{\"Comment\":\"order flow\",\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Succeed\"}}}"
+      }
+    },
+    "UserPool": {
+      "Type": "AWS::Cognito::UserPool",
+      "Properties": {
+        "UserPoolName": "app-users"
+      }
+    },
+    "HandlerFn": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": "order-handler",
+        "Handler": "index.handler",
+        "Runtime": "nodejs20.x",
+        "Code": { "ZipFile": "exports.handler = async () => ({});" }
+      }
+    },
+    "RoleResource": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "lambda-role"
+      }
+    }
+  }
+}
