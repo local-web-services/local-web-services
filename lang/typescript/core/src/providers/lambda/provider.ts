@@ -25,6 +25,34 @@ export interface StoredFunction {
   codeDir: string | undefined;
 }
 
+export interface PolicyStatement {
+  Sid: string;
+  Effect: string;
+  Action: string | string[];
+  Principal: unknown;
+  Resource: string;
+}
+
+export interface FunctionUrlConfig {
+  FunctionUrl: string;
+  FunctionArn: string;
+  AuthType: string;
+  Cors: Record<string, unknown>;
+  CreationTime: string;
+  LastModifiedTime: string;
+}
+
+export interface EventSourceMapping {
+  UUID: string;
+  EventSourceArn: string;
+  FunctionName: string;
+  FunctionArn: string;
+  State: string;
+  BatchSize: number;
+  LastModified: string;
+  StartingPosition?: string;
+}
+
 export type InvocationType = "RequestResponse" | "Event" | "DryRun";
 
 const REGION = "us-east-1";
@@ -65,6 +93,10 @@ export class LambdaProvider implements IProvider {
 
   private _functions = new Map<string, StoredFunction>();
   private _preconfiguredNames: ReadonlySet<string>;
+  private _tags = new Map<string, Record<string, string>>();
+  private _policy = new Map<string, PolicyStatement[]>();
+  private _urlConfigs = new Map<string, FunctionUrlConfig>();
+  private _eventSourceMappings = new Map<string, EventSourceMapping>();
 
   constructor(configs: FunctionConfig[] = []) {
     this._preconfiguredNames = new Set(configs.map((c) => c.functionName));
@@ -74,15 +106,31 @@ export class LambdaProvider implements IProvider {
   }
 
   async start(): Promise<void> {}
-  async stop(): Promise<void> { this._functions.clear(); }
+  async stop(): Promise<void> {
+    this._functions.clear();
+    this._tags.clear();
+    this._policy.clear();
+    this._urlConfigs.clear();
+    this._eventSourceMappings.clear();
+  }
   async healthCheck(): Promise<boolean> { return true; }
 
   async reset(): Promise<void> {
     for (const name of [...this._functions.keys()]) {
       if (!this._preconfiguredNames.has(name)) {
         this._functions.delete(name);
+        this._tags.delete(name);
+        this._policy.delete(name);
+        this._urlConfigs.delete(name);
       }
     }
+    this._eventSourceMappings.clear();
+  }
+
+  private _nameFromArn(nameOrArn: string): string {
+    if (!nameOrArn.startsWith("arn:")) return nameOrArn;
+    const parts = nameOrArn.split(":");
+    return parts[parts.length - 1] ?? nameOrArn;
   }
 
   createFunction(config: FunctionConfig): StoredFunction {
@@ -161,6 +209,139 @@ export class LambdaProvider implements IProvider {
     }
     const mock = JSON.stringify({ statusCode: 200, body: '{"message":"ok"}' });
     return { StatusCode: 200, Payload: mock };
+  }
+
+  // --- Tagging ---
+
+  tagFunction(nameOrArn: string, tags: Record<string, string>): void {
+    const name = this._nameFromArn(nameOrArn);
+    if (!this._functions.has(name)) throw new Error("ResourceNotFoundException: Function not found.");
+    const existing = this._tags.get(name) ?? {};
+    this._tags.set(name, { ...existing, ...tags });
+  }
+
+  untagFunction(nameOrArn: string, tagKeys: string[]): void {
+    const name = this._nameFromArn(nameOrArn);
+    if (!this._functions.has(name)) throw new Error("ResourceNotFoundException: Function not found.");
+    const existing = this._tags.get(name) ?? {};
+    for (const k of tagKeys) delete existing[k];
+    this._tags.set(name, existing);
+  }
+
+  listFunctionTags(nameOrArn: string): Record<string, string> {
+    const name = this._nameFromArn(nameOrArn);
+    if (!this._functions.has(name)) throw new Error("ResourceNotFoundException: Function not found.");
+    return { ...(this._tags.get(name) ?? {}) };
+  }
+
+  // --- Permissions ---
+
+  addPermission(name: string, stmt: PolicyStatement): { Statement: string } {
+    if (!this._functions.has(name)) throw new Error("ResourceNotFoundException: Function not found.");
+    const stmts = this._policy.get(name) ?? [];
+    stmts.push(stmt);
+    this._policy.set(name, stmts);
+    return { Statement: JSON.stringify(stmt) };
+  }
+
+  removePermission(name: string, sid: string): void {
+    if (!this._functions.has(name)) throw new Error("ResourceNotFoundException: Function not found.");
+    const stmts = (this._policy.get(name) ?? []).filter((s) => s.Sid !== sid);
+    this._policy.set(name, stmts);
+  }
+
+  getPolicy(name: string): { Policy: string; RevisionId: string } | null {
+    if (!this._functions.has(name)) throw new Error("ResourceNotFoundException: Function not found.");
+    const stmts = this._policy.get(name) ?? [];
+    if (stmts.length === 0) return null;
+    return { Policy: JSON.stringify({ Version: "2012-10-17", Statement: stmts }), RevisionId: "1" };
+  }
+
+  // --- Event Source Mappings ---
+
+  createEventSourceMapping(params: {
+    EventSourceArn: string;
+    FunctionName: string;
+    BatchSize?: number;
+    StartingPosition?: string;
+  }): EventSourceMapping {
+    const uuid = randomUUID();
+    const fn = this._functions.get(params.FunctionName);
+    const mapping: EventSourceMapping = {
+      UUID: uuid,
+      EventSourceArn: params.EventSourceArn,
+      FunctionName: params.FunctionName,
+      FunctionArn: fn ? fn.FunctionArn : functionArn(params.FunctionName),
+      State: "Enabled",
+      BatchSize: params.BatchSize ?? 100,
+      LastModified: new Date().toISOString(),
+      ...(params.StartingPosition !== undefined && { StartingPosition: params.StartingPosition }),
+    };
+    this._eventSourceMappings.set(uuid, mapping);
+    return mapping;
+  }
+
+  getEventSourceMapping(uuid: string): EventSourceMapping {
+    const m = this._eventSourceMappings.get(uuid);
+    if (!m) throw new Error("ResourceNotFoundException: Event source mapping not found.");
+    return m;
+  }
+
+  updateEventSourceMapping(uuid: string, updates: { BatchSize?: number }): EventSourceMapping {
+    const m = this._eventSourceMappings.get(uuid);
+    if (!m) throw new Error("ResourceNotFoundException: Event source mapping not found.");
+    if (updates.BatchSize !== undefined) m.BatchSize = updates.BatchSize;
+    m.LastModified = new Date().toISOString();
+    return m;
+  }
+
+  deleteEventSourceMapping(uuid: string): EventSourceMapping {
+    const m = this._eventSourceMappings.get(uuid);
+    if (!m) throw new Error("ResourceNotFoundException: Event source mapping not found.");
+    this._eventSourceMappings.delete(uuid);
+    return { ...m, State: "Deleting" };
+  }
+
+  listEventSourceMappings(): { EventSourceMappings: EventSourceMapping[] } {
+    return { EventSourceMappings: [...this._eventSourceMappings.values()] };
+  }
+
+  // --- Function URLs ---
+
+  createFunctionUrlConfig(name: string, authType: string, cors?: Record<string, unknown>): FunctionUrlConfig {
+    if (!this._functions.has(name)) throw new Error("ResourceNotFoundException: Function not found.");
+    if (this._urlConfigs.has(name)) throw new Error("ResourceConflictException: Function URL already exists.");
+    const fn = this._functions.get(name)!;
+    const config: FunctionUrlConfig = {
+      FunctionUrl: `http://localhost/${name}`,
+      FunctionArn: fn.FunctionArn,
+      AuthType: authType,
+      Cors: cors ?? {},
+      CreationTime: new Date().toISOString(),
+      LastModifiedTime: new Date().toISOString(),
+    };
+    this._urlConfigs.set(name, config);
+    return config;
+  }
+
+  getFunctionUrlConfig(name: string): FunctionUrlConfig | undefined {
+    if (!this._functions.has(name)) throw new Error("ResourceNotFoundException: Function not found.");
+    return this._urlConfigs.get(name);
+  }
+
+  updateFunctionUrlConfig(name: string, updates: { AuthType?: string; Cors?: Record<string, unknown> }): FunctionUrlConfig {
+    if (!this._functions.has(name)) throw new Error("ResourceNotFoundException: Function not found.");
+    const config = this._urlConfigs.get(name);
+    if (!config) throw new Error("ResourceNotFoundException: Function URL config not found.");
+    if (updates.AuthType !== undefined) config.AuthType = updates.AuthType;
+    if (updates.Cors !== undefined) config.Cors = updates.Cors;
+    config.LastModifiedTime = new Date().toISOString();
+    return config;
+  }
+
+  deleteFunctionUrlConfig(name: string): void {
+    if (!this._functions.has(name)) throw new Error("ResourceNotFoundException: Function not found.");
+    this._urlConfigs.delete(name);
   }
 
   private _publicView(fn: StoredFunction): StoredFunction {

@@ -1,5 +1,7 @@
 import type { FastifyInstance, FastifyReply } from "fastify";
 import type { LambdaProvider, FunctionConfig } from "./provider.js";
+import { lambdaExtraRoutesPlugin } from "./routes_extra.js";
+import { lambdaEsmRoutesPlugin } from "./routes_esm.js";
 
 export interface LambdaRoutesOptions {
   provider: LambdaProvider;
@@ -130,4 +132,7 @@ export async function lambdaRoutesPlugin(
       return reply.status(200).header("content-type", "application/json").send(JSON.stringify(result));
     } catch (err) { return handleError(err, reply); }
   });
+
+  await fastify.register(lambdaExtraRoutesPlugin, { provider });
+  await fastify.register(lambdaEsmRoutesPlugin, { provider });
 }
