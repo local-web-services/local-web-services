@@ -175,7 +175,6 @@ export async function snsRoutesPlugin(
           return reply.status(200).send(wrap("ConfirmSubscription", `<SubscriptionArn>${subArn}</SubscriptionArn>`));
         }
         case "PublishBatch": {
-          const topicArn = params["PublishBatchRequestEntries.member.1.TopicArn"] ?? params["TopicArn"]!;
           const entries: { Id: string; Message: string; Subject?: string }[] = [];
           let i = 1;
           while (params[`PublishBatchRequestEntries.member.${i}.Id`] !== undefined) {
